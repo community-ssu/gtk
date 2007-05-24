@@ -1,3 +1,8 @@
+2007-05-24  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenushell.c (gtk_menu_shell_enter_notify): open submenus
+	also if the menu item we're entering is already selected.
+
 Wed May 23 18:17:18 2007  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtkwidget.c: allow Maemo specific hooks after widget construction
