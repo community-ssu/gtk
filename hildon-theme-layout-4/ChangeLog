@@ -2,7 +2,7 @@
 
 	* rc/gtkcombobox.rc: set child-displacement-{x,y} to 0
 	for the toggle button.
-	* rc/base.rc: make F4 (menu key) close menus.
+	* rc/base.rc: make F4 (menu key) close menus. Fixes: NB#549233
 
 2007-05-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
