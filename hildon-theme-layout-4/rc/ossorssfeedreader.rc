@@ -11,6 +11,9 @@ style "osso-rss-feed-reader"
   HildonDesktopHomeItem::background-borders = { 55, 55, 55, 15 }
   bg_pixmap[PRELIGHT] = "../images/qgn_plat_news_applet_bg_alpha.png"
 
+  GtkScrollbar::has-forward-stepper = 0
+  GtkScrollbar::has-backward-stepper = 0
+
   engine "sapwood"
     {
       image
@@ -20,6 +23,23 @@ style "osso-rss-feed-reader"
           border   = { 55, 55, 55, 15 }
           shaped = TRUE
         }
+
+      image
+        {
+          function        = BOX
+          orientation     = VERTICAL
+          file            = "../images/qgn_plat_scroll_rss_shaft_normal.png"
+          border          = { 0, 0, 6, 6 }
+        }
+
+      image
+        {
+          function        = SLIDER
+          orientation     = VERTICAL
+          file            = "../images/qgn_plat_scroll_rss_thumb_normal.png"
+          border          = { 0, 0, 6, 6 }
+        }
+
     }
 }
 widget "*.osso-rss-feed-reader" style "osso-rss-feed-reader"

@@ -1,5 +1,10 @@
 2007-05-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/ossorssfeedreader.rc: Removing arrows from the RSS reader. Fixes
+	NB#57366. 
+
+2007-05-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/ossomediaplayer.rc: Fixing the borders in the media player. Fixes
 	NB#55620. 
 
