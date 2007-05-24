@@ -2,8 +2,10 @@ gconf2 (2.16.0-1osso5) unstable; urgency=low
 
   * UNRELEASED
   * Handle setting empty pairs
+  * Improve test cases
+  * Use array for dir listing
 
- -- Richard Hult <richard@imendio.com>  Tue, 15 May 2007 15:22:55 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 25 May 2007 16:08:42 +0200
 
 gconf2 (2.16.0-1osso4) unstable; urgency=low
 
