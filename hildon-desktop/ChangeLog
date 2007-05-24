@@ -2060,7 +2060,7 @@
 	- set the applet area as the legitimate child
 	- fixed allocation of the applet area
 
-2006-12-15  Moises Martinez <moises.martinez@nokia.com>
+2006-12-15  Moises Martinez  <moises.martinez@nokia.com>
 
 	* test/test4.c: test updated with refactored appswitcher.
 	* libhildondesktop/hn-app-switcher.[ch]:
@@ -2085,7 +2085,7 @@
 	* libhildondesktop/hildon-home-applet.[ch]: Removed
 	desktop_file property (replaced by desktop item id)
 
-2006-12-15  Moises Martinez <moises.martinez@nokia.com>
+2006-12-15  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hn-app-switcher.c:
 	* libhildonwm/hd-wm.c:
@@ -2562,7 +2562,7 @@
 	* src/Makefile.am, src/main.c, configure.ac: Added hildon-desktop
 	app to the build
 
-2006-11-15  Moises Martinez <moises.martinez@nokia.com>
+2006-11-15  Moises Martinez  <moises.martinez@nokia.com>
 
 	* plugin_manager readme file added
 
@@ -2574,19 +2574,19 @@
 
 	* libhildondesktop/hildon-home-applet.c: Fixed realize and size_allocate
 
-2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+2006-11-14  Moises Martinez  <moises.martinez@nokia.com>
 
 	* Now libhildondesktop builds ok
 
-2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+2006-11-14  Moises Martinez  <moises.martinez@nokia.com>
 
 	* Renamed libdesktop to libhildondesktop
 
-2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+2006-11-14  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/libdesktop.h: new global header file.
 
-2006-11-13  Moises Martinez <moises.martinez@nokia.com>
+2006-11-13  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-desktop-plugin.[ch]: GTypeModule child class
 	for plugins.
@@ -2598,7 +2598,7 @@
 	- added realize/map with visible window and event window when in
 	layout mode.
 
-2006-11-09  Moises Martinez <moises.martinez@nokia.com>
+2006-11-09  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-panel.[ch]: Added optional fixed sizes 
 	for added panel's button.
@@ -2626,7 +2626,7 @@
 	- added
 	- centralized all Hildon Home l10n strings
 
-2006-11-08 Moises Martinez <moises.martinez@nokia.com>
+2006-11-08  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-panel-window.[ch]:
 	- Fixed dragging. 
@@ -2635,7 +2635,7 @@
 	* libdesktop/hildon-desktop-panel-item.c:
 	- Minor fixes
 
-2006-11-07 Moises Martinez <moises.martinez@nokia.com>
+2006-11-07  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/statusbar-item.c:
 	- library is construct only property.
@@ -2643,20 +2643,20 @@
 	- New subclass of HildonDesktopPanelItem for tasknavigator
 	plugins.
 	* libdesktop/tasknavigator-item-wrapper.[ch]:
- 	- Subclass of TaskNavigatorItem that adds support for old API.
+	- Subclass of TaskNavigatorItem that adds support for old API.
 
-2006-11-06 Moises Martinez <moises.martinez@nokia.com>
+2006-11-06  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-desktop-panel-item.[ch]:
 	* libdesktop/statusbar-item.[ch]:
 	- StatusbarItem is a Panel Item.
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
-	* libdesktop/statusbar-item-socket.c: Removing proxy 
-        of GtkSocket's plug_removed signal
+	* libdesktop/statusbar-item-socket.c: Removing proxy of GtkSocket's
+	plug_removed signal
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/statusbar-item-socket.[ch]:
 	- Fixed building problems.
@@ -2664,36 +2664,36 @@
 	- Fixed proxy calling to GtkSocket methods plug_added 
 	and plug_removed
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-desktop-item.[ch]:
 	* libdesktop/statusbar-item-wrapper.[ch]:
 	* libdesktop/statusbar-item.c:
 	- Fixed building problems.
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/statusbar-item-wrapper.[ch]: 
 	- Fixed building problems.
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-desktop-item-socket.c:
 	- Changed _gtk_boolean_handled_accumulator to 
 	  g_signal_accumulator_true_handled.
 	* test/test1.c: Added test 
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-multiscreen.[ch]:
 	* libdesktop/desktop-panel-window.h:
 	- Fixed more building problems
 
-2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+2006-10-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-panel-window.c: Fixed building problem
 	
-2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+2006-10-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-multiscreen.[ch]:
 	* libdesktop/statusbar-item.[ch]:
@@ -2704,32 +2704,32 @@
 	* libdesktop/statusbar-item-socket.[ch]:
 	- Fixed a lot of build problems
 
-2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+2006-10-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/desktop-panel-window.c: Added positioning and resizing
 	code.
 
-2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+2006-10-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/statusbar-item-socket.[ch]: Implementation of
 	a hildon-desktop-item-socket for statusbar items.
 
-2006-10-20 Moises Martinez <moises.martinez@nokia.com>
+2006-10-20  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/statusbar-item-wrapper.[ch]: Added wrapper
 	for supporting statusbar's APIs.
 
-2006-10-20 Moises Martinez <moises.martinez@nokia.com>
+2006-10-20  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/libhildonmenu.[ch];
 	* libdesktop/hildon-thumb-menu-item.[ch]:
 	- Imported libhildonmenu from maemo-af-desktop.
 
-2006-10-19 Moises Martinez <moises.martinez@nokia.com>
+2006-10-19  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-desktop-item-socket.[ch]: Added GInterface 
 	for GtkSocket decoration in DesktopItems
 
-2006-10-19 Moises Martinez <moises.martinez@nokia.com>
+2006-10-19  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libdesktop/*.[ch]:Inital Import
