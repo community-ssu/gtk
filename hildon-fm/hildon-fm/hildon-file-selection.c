@@ -2928,15 +2928,17 @@ repair_button_clicked (GtkWidget *button, HildonFileSelection *self)
 
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
     {
-      char *uri;
+      char *uri, *extra;
 
       gtk_tree_model_get (model, &iter,
 			  HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
+			  HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO, &extra,
 			  -1);
 
-      fprintf (stderr, "REPAIR %s\n", uri);
+      fprintf (stderr, "REPAIR %s %s\n", uri, extra);
 
       g_free (uri);
+      g_free (extra);
     }
 }
 
