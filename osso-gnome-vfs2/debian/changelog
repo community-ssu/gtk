@@ -2,8 +2,9 @@ osso-gnome-vfs2 (2.16.3-1osso17) unstable; urgency=low
 
   * UNRELEASED
   * Fix a daemon crash for "mkdir"
+  * Tweak the way we get volume names
 
- -- Richard Hult <richard@imendio.com>  Wed, 23 May 2007 14:12:45 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 25 May 2007 14:12:45 +0200
 
 osso-gnome-vfs2 (2.16.3-1osso16) unstable; urgency=low
 
@@ -37,8 +38,6 @@ osso-gnome-vfs2 (2.16.3-1osso12) unstable; urgency=low
 
  -- Richard Hult <richard@imendio.com>  Fri, 30 Mar 2007 17:22:17 +0200
 
-
-
 osso-gnome-vfs2 (2.16.3-1osso11) unstable; urgency=low
 
   * Don't package .la files
@@ -56,21 +55,17 @@ osso-gnome-vfs2 (2.16.3-1osso10) unstable; urgency=low
 
  -- Richard Hult <richard@imendio.com>  Fri,  9 Mar 2007 09:08:28 +0100
 
-
-
 osso-gnome-vfs2 (2.16.3-1osso9) unstable; urgency=low
 
   * Make a release with samba enabled
 
  -- Richard Hult <richard@imendio.com>  Fri, 16 Feb 2007 16:01:10 +0100
 
-
 osso-gnome-vfs2 (2.16.3-1osso7) unstable; urgency=low
 
   * Really apply the patch for NB#50018
 
  -- Richard Hult <richard@imendio.com>  Fri,  2 Feb 2007 15:41:41 +0100
-
 
 osso-gnome-vfs2 (2.16.3-1osso6) unstable; urgency=low
 

@@ -1,6 +1,6 @@
 Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
 ===================================================================
---- libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(revision 11674)
+--- libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(revision 11765)
 +++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(arbetskopia)
 @@ -841,6 +841,14 @@ static char *
  make_volume_name_from_path_and_fs (const char *mount_path, const char *fs_type)
@@ -19,7 +19,7 @@ Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
  		return g_strdup (_("Root Volume"));
 Index: libgnomevfs/gnome-vfs-filesystem-type.c
 ===================================================================
---- libgnomevfs/gnome-vfs-filesystem-type.c	(revision 11674)
+--- libgnomevfs/gnome-vfs-filesystem-type.c	(revision 11765)
 +++ libgnomevfs/gnome-vfs-filesystem-type.c	(arbetskopia)
 @@ -127,3 +127,115 @@ _gnome_vfs_filesystem_use_trash (const c
  	
@@ -139,7 +139,7 @@ Index: libgnomevfs/gnome-vfs-filesystem-type.c
 +/* End of maemo patch */
 Index: libgnomevfs/gnome-vfs-filesystem-type.h
 ===================================================================
---- libgnomevfs/gnome-vfs-filesystem-type.h	(revision 11674)
+--- libgnomevfs/gnome-vfs-filesystem-type.h	(revision 11765)
 +++ libgnomevfs/gnome-vfs-filesystem-type.h	(arbetskopia)
 @@ -28,5 +28,6 @@
  
@@ -150,18 +150,35 @@ Index: libgnomevfs/gnome-vfs-filesystem-type.h
  #endif /* GNOME_VFS_FILESYSTEM_TYPE_H */
 Index: libgnomevfs/gnome-vfs-hal-mounts.c
 ===================================================================
---- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 11674)
+--- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 11765)
 +++ libgnomevfs/gnome-vfs-hal-mounts.c	(arbetskopia)
-@@ -570,6 +570,12 @@ _hal_volume_policy_get_display_name (Gno
- 		goto out;
- 	}
+@@ -327,6 +327,17 @@ _hal_drive_policy_get_display_name (Gnom
+ 	char *vm_name;
+ 	gboolean may_prepend_external;
  
++	if (hal_volume) {
++		const char *mountpoint;
++
++		mountpoint = libhal_volume_get_mount_point (hal_volume);
++		if (mountpoint) {
++			name = _gnome_vfs_filesystem_get_label_for_mmc (mountpoint);
++			if (name) {
++				goto out;
++			}
++		}
++	}
+ 
+ 	name = NULL;
+ 	may_prepend_external = FALSE;
+@@ -484,7 +495,10 @@ _hal_volume_policy_get_display_name (Gno
+ 	char *name;
+ 	char *size_str;
+ 
+-	name = NULL;
 +	name = _gnome_vfs_filesystem_get_label_for_mmc (libhal_volume_get_mount_point (hal_volume));
 +	if (name) {
-+		g_print ("Volume fallback: %s\n", name);
 +		goto out;
 +	}
-+	
- 	/* Fallback: size of media */
  
- 	size_str = gnome_vfs_format_file_size_for_display (libhal_volume_get_size (hal_volume));
+ 	drive_type = libhal_drive_get_type (hal_drive);
+ 	volume_label = libhal_volume_get_label (hal_volume);
