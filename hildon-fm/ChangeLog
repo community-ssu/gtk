@@ -1,5 +1,9 @@
 2007-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_create_child_location): Set basepath of
+	child (N58259).  Thanks to Martyn Russel!
+
         Released 1.9.25
 	
 	* hildon-fm/hildon-file-system-voldev.c
