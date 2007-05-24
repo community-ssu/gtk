@@ -1,3 +1,9 @@
+gail (1.18.0-osso5) unstable; urgency=low
+
+  * Fix some more packaging errors from lintian.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 24 May 2007 17:12:31 +0100
+
 gail (1.18.0-osso4) unstable; urgency=low
 
   * Fix some packaging errors from lintian.
