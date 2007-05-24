@@ -1008,7 +1008,7 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
     hd_switcher_menu_position_func,
     (gpointer)switcher,
     GDK_CURRENT_TIME);
-  
+
   if (!hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications))
     gtk_widget_hide (hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 1));
   else
@@ -1371,6 +1371,7 @@ hd_switcher_menu_changed_stack_cb (HDWM *hdwm,
           (switcher->priv->menu_applications, GTK_MENU_ITEM (l->data));
 	
 	switcher->priv->active_menu_item = GTK_WIDGET (l->data);
+	break;
       }
     }	    
   }	  
