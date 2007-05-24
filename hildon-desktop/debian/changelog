@@ -1,3 +1,9 @@
+hildon-desktop (0.0.14-2) sardine; urgency=low
+
+  * src/hd-switcher-menu.c: Fixed behavior I just introduced. 
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Thu, 24 May 2007 09:25:34 +0300
+
 hildon-desktop (0.0.14-1) sardine; urgency=low
 
   * src/hd-switcher-menu.c: check state of blinking application when
