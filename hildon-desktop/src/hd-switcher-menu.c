@@ -290,8 +290,8 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
     {
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 
-      GdkWindow *window = gtk_widget_get_parent_window (GTK_WIDGET (switcher));
-      gtk_widget_grab_focus (GTK_WIDGET (switcher));
+      GdkWindow *window = gtk_widget_get_parent_window (switcher->priv->toggle_button);
+      gtk_widget_grab_focus (GTK_WIDGET (switcher->priv->toggle_button));
       hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS,window);
     }
 
@@ -786,9 +786,13 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
   apps = hd_wm_get_applications (switcher->hdwm);
   
   if (apps || children)
-  {
+  {    
+    g_object_set (switcher->priv->toggle_button, "can-focus", TRUE, NULL);
+    gtk_widget_grab_focus (switcher->priv->toggle_button);
+    gtk_widget_set_sensitive (switcher->priv->toggle_button, TRUE);
+
     gtk_widget_show (GTK_BIN (switcher->priv->toggle_button)->child);
-     
+
     if (children)
     {	     
       if (GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
@@ -822,7 +826,9 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
      hd_switcher_menu_update_highlighting (switcher, FALSE);
 	  
      gtk_widget_hide (GTK_BIN (switcher->priv->toggle_button)->child);	  
-
+     g_object_set (switcher->priv->toggle_button, "can-focus", FALSE, NULL);
+     gtk_widget_set_sensitive (switcher->priv->toggle_button, FALSE);
+     
      if (switcher->priv->is_open)
        hildon_desktop_popup_window_popdown 
          (switcher->priv->popup_window);	       

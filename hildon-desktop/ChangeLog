@@ -1,3 +1,8 @@
+2007-05-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: Fixed "switcher area highlighted when tapped
+	on it with no applications opened". Fixes: NB#58320
+
 2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: Fixed behavior I just introduced.
