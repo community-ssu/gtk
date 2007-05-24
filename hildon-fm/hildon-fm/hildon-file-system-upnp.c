@@ -142,6 +142,8 @@ hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
       child->failed_access_message = _("sfil_ib_cannot_connect_device");
 
       HILDON_FILE_SYSTEM_UPNP (location)->has_children = TRUE;
+
+      child->basepath = g_strdup (uri);
     }
 
     return child;
