@@ -1,3 +1,11 @@
+2007-05-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c (translate_special_name): New.
+	(_hildon_file_system_create_file_name): Use it.
+
+	* hildon-fm/hildon-file-selection.c (trigger_repair): New.
+	(repair_button_clicked): Call it.
+
 2007-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-upnp.c
