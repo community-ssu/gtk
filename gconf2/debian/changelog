@@ -1,6 +1,5 @@
 gconf2 (2.16.0-1osso5) unstable; urgency=low
 
-  * UNRELEASED
   * Handle setting empty pairs
   * Improve test cases
   * Use array for dir listing
