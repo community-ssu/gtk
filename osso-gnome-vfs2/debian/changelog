@@ -1,10 +1,9 @@
 osso-gnome-vfs2 (2.16.3-1osso17) unstable; urgency=low
 
-  * UNRELEASED
   * Fix a daemon crash for "mkdir"
-  * Tweak the way we get volume names
+  * Fixes: NB#54827, Renaming MMC updated only after reboot
 
- -- Richard Hult <richard@imendio.com>  Fri, 25 May 2007 14:12:45 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 25 May 2007 15:37:00 +0200
 
 osso-gnome-vfs2 (2.16.3-1osso16) unstable; urgency=low
 
