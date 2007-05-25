@@ -806,8 +806,7 @@ gtk_menu_shell_enter_notify (GtkWidget        *widget,
 	   !_gtk_menu_item_is_selectable (menu_item)))
 	return TRUE;
       
-      if ((menu_item->parent == widget) &&
-	  (menu_shell->active_menu_item != menu_item) &&
+      if (menu_item->parent == widget &&
 	  GTK_IS_MENU_ITEM (menu_item))
 	{
 	  if (menu_shell->ignore_enter)
@@ -826,7 +825,7 @@ gtk_menu_shell_enter_notify (GtkWidget        *widget,
                * entering a menu item where we wouldn't want to show
                * its submenu.
                */
-              if ((event->state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON2_MASK)) &&
+              if ((event->state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) &&
                   GTK_MENU_ITEM (menu_item)->submenu != NULL &&
                   !GTK_WIDGET_VISIBLE (GTK_MENU_ITEM (menu_item)->submenu))
                 {
