@@ -510,22 +510,40 @@ unescape_string (const char *escaped)
   return result;
 }
 
+static char *
+translate_special_name (char *name)
+{
+  if (name && name[0] == '~' && name[1] != '\0')
+    {
+      char *trans = _(name + 1);
+      if (trans != name + 1)
+	{
+	  g_free (name);
+	  name = g_strdup (trans);
+	}
+    }
+
+  return name;
+}
+
 gchar *
 _hildon_file_system_create_file_name (GtkFileSystem *fs,
                                       const GtkFilePath *path,
                                       HildonFileSystemSpecialLocation *location,
                                       GtkFileInfo *info)
 {
-  if (location) {
-    char *name;
-    name = hildon_file_system_special_location_get_display_name(location, fs);
-    if (name) return name;
-  }
+  char *name = NULL;
 
-  if (info)
-    return g_strdup(gtk_file_info_get_display_name(info));
+  if (location)
+    name = hildon_file_system_special_location_get_display_name (location, fs);
 
-  return unescape_string (get_custom_root_name (path));
+  if (name == NULL && info)
+    name = g_strdup (gtk_file_info_get_display_name (info));
+
+  if (name == NULL)
+    name = unescape_string (get_custom_root_name (path));
+
+  return translate_special_name (name);
 }
 
 gchar *
