@@ -1,3 +1,13 @@
+hildon-theme-plankton (4.8.1-1) unstable; urgency=low
+
+  * New graphics for task navigator.
+
+  * Fixes: NB#54573 The "Next" button in Accounts setup : service applet remains dimmed always
+  * Fixes: NB#54844 The next and previous button is not dimmed in the...
+  * Fixes: NB#58035 Input panel is not visible clearly when the background image is...
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 15 May 2007 16:25:50 +0300
+
 hildon-theme-plankton (4.8.0-1) unstable; urgency=low
   
   * Applet graphics

@@ -1,3 +1,13 @@
+2007-05-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[4.8.1-1 release]
+
+	* COPYING:
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* debian/copyright: Updating.
+
 2007-05-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: Removed
