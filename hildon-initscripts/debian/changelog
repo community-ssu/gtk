@@ -1,3 +1,11 @@
+hildon-initscripts (1.12-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fix to run-standalone.sh not to split arguments on spaces. Patch from
+    Tuukka Tolvanen. Fixes: NB#53159
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 25 May 2007 18:03:05 +0300
+
 hildon-initscripts (1.11-1) unstable; urgency=low
 
   * hn-hung-app-handler -> hd-hung-app-handler. Fixes: NB#54574
