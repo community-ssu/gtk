@@ -1,5 +1,17 @@
 2007-05-25  Moises Martinez  <moises.martinez@nokia.com>
 
+	* configure.ac: Added HAVE_XTEST condition for libhildondesktop
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- Send additional fake press/release event for overriding the
+	grabbing.
+	* configure.ac        (working copy)
+	* data/Makefile.am:
+	* data/install_sbapplet.sh:
+	- Added helper script for installing statusbar applets and to be used
+	in postinst .deb scripts
+
+2007-05-25  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-switcher-menu.c:
 	- Highlight next application when menu is opened and home key is
 	pressed. Fixes: NB#57666

@@ -17,4 +17,6 @@ applications_menu_DATA = applications.menu
 hildondesktopstartup_SCRIPTS = \
         hildon-desktop.sh
 
+bin_SCRIPTS = install_sbapplet.sh
+
 CLEANFILES = *~

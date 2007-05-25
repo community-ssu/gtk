@@ -875,8 +875,6 @@ hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuIt
   g_list_free (children);				  
 }	
 
-	
-
 GtkMenuItem *
 hildon_desktop_popup_menu_get_selected_item (HildonDesktopPopupMenu *menu)
 {

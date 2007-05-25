@@ -199,6 +199,7 @@ AC_SUBST(XLIBS_ERROR_LIBS)
 PKG_CHECK_MODULES(XTEST, xtst)
 AC_SUBST(XTEST_LIBS)
 AC_SUBST(XTEST_CFLAGS)
+AC_DEFINE(HAVE_XTEST, [], [Whether XTest is present])
 
 #+++++++++++++++++++
 # Directories setup
