@@ -1,6 +1,5 @@
 hildon-initscripts (1.12-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fix to run-standalone.sh not to split arguments on spaces. Patch from
     Tuukka Tolvanen. Fixes: NB#53159
 
