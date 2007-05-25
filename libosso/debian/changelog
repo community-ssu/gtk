@@ -1,3 +1,10 @@
+libosso (2.9-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added dbus_bus_release_name call to osso_deinitialize. Fixes: NB#58518
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 25 May 2007 15:34:43 +0300
+
 libosso (2.8-1) unstable; urgency=low
 
   * Moved to the new org.freedesktop.Notifications API. Affects

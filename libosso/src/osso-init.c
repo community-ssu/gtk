@@ -560,6 +560,7 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
         dbus_connection_remove_filter(conn, _muali_filter_session, osso);
         dbus_connection_remove_filter(conn, _muali_filter_system, osso);
     }
+    dbus_bus_release_name(conn, osso->service, NULL);
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif
