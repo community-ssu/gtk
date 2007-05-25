@@ -6,7 +6,7 @@
 ####################################################
 style "osso-internetsearch-applet"
 {
-  HildonDesktopHomeItem::background-borders = { 18, 18, 18, 18 }
+  HildonDesktopHomeItem::background-borders = { 12, 92, 0, 0 }
   bg_pixmap[PRELIGHT] = "../images/qgn_plat_home_search_bg_alpha.png"
 
   engine "sapwood"
@@ -15,7 +15,7 @@ style "osso-internetsearch-applet"
         {
           function = BOX
           file     = "../images/qgn_plat_home_search_bg.png"
-          border   = { 18, 18, 18, 18 }
+          border   = { 12, 92, 0, 0 }
         }
     }
 }
@@ -37,3 +37,4 @@ style "osso-internetsearch-applet-button"
 }
 
 widget_class "*.IsPlugin.GtkHBox.GtkButton" style "osso-internetsearch-applet-button"
+widget_class "*.IsPlugin.GtkAlignment.GtkHBox.GtkButton" style "osso-internetsearch-applet-button"

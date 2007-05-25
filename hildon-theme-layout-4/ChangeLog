@@ -1,3 +1,9 @@
+2007-05-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/ossointernetsearchapplet:
+	- fixed border values.
+	- added theming of buttons in alignment.
+
 2007-05-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.8.1-1 release]
