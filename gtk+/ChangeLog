@@ -1,5 +1,16 @@
 2007-05-25  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/gtkmenushell.c (gtk_menu_shell_class_init): add settings
+	property gtk-menu-popup-click-time to replace the hardcoded
+	MENU_SHELL_TIMEOUT of 500ms.
+
+	(gtk_menu_shell_button_release): use the new setting instead of
+	the 500ms. Additionally special-case a setting of 0 which always
+	keeps the menu open on its opening click unless an item was
+	activated.
+
+2007-05-25  Michael Natterer  <mitch@imendio.com>
+
 	* gtk/gtkmenushell.c (gtk_menu_shell_enter_notify): really fix
 	enter-notify on already selected menu items.
 
