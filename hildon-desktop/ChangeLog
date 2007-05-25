@@ -1,3 +1,10 @@
+2007-05-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-panel-window.c:
+	- add _style_set to load a background picture
+	- add _realize to call _style_set initially
+	- paint the background picture in the expose handler
+
 2007-05-24  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: 

@@ -206,7 +206,7 @@ hildon_desktop_home_item_resize_type_get_type (void)
   static GType etype = 0;
   if (etype == 0)
     {
-    
+
       static const GEnumValue values[] = {
           { HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE,
             "HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE",
@@ -1592,7 +1592,7 @@ hildon_desktop_home_item_key_press_event (GtkWidget *widget,
 
   if (GTK_WIDGET_CLASS (parent_class)->key_press_event)
     return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
-    
+
   return FALSE;
 }
 
@@ -1608,7 +1608,7 @@ hildon_desktop_home_item_key_release_event (GtkWidget *widget,
 
   if (GTK_WIDGET_CLASS (parent_class)->key_release_event)
     return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, event);
-    
+
   return FALSE;
 }
 
@@ -1634,7 +1634,7 @@ hildon_desktop_home_item_get_layout_mode (HildonDesktopHomeItem *applet)
   g_return_val_if_fail (applet, FALSE);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  
+
   return priv->layout_mode;
 }
 
@@ -1646,7 +1646,7 @@ hildon_desktop_home_item_set_layout_mode (HildonDesktopHomeItem *applet,
   g_return_if_fail (applet);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  
+
   if (priv->layout_mode != layout_mode)
     {
       g_object_notify (G_OBJECT (applet), "layout-mode");
@@ -1665,9 +1665,9 @@ hildon_desktop_home_item_get_resize_type (HildonDesktopHomeItem *applet)
 {
   HildonDesktopHomeItemPriv      *priv;
   g_return_val_if_fail (applet, FALSE);
-  
+
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  
+
   return priv->resize_type;
 }
 
@@ -1679,7 +1679,7 @@ hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
   g_return_if_fail (applet);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-          
+
   if (priv->resize_type != resize_type)
     {
       g_object_notify (G_OBJECT (applet), "resize-type");
@@ -1694,9 +1694,9 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet)
   GtkWindow                 *window;
   GtkWidget                 *item = NULL;
   g_return_val_if_fail (applet, NULL);
-  
+
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  
+
   window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (applet)));
 
   g_signal_emit_by_name (applet, "settings", window, &item);
