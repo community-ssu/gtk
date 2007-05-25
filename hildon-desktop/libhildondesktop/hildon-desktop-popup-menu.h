@@ -78,8 +78,14 @@ hildon_desktop_popup_menu_select_first_item (HildonDesktopPopupMenu *menu);
 void
 hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
 
-const GtkMenuItem *
+GtkMenuItem *
 hildon_desktop_popup_menu_get_selected_item (HildonDesktopPopupMenu *menu);
+
+void 
+hildon_desktop_popup_menu_select_next_item (HildonDesktopPopupMenu *menu);
+
+void 
+hildon_desktop_popup_menu_select_prev_item (HildonDesktopPopupMenu *menu);
 
 void   
 hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu);

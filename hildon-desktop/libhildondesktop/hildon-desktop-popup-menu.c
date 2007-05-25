@@ -130,10 +130,10 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
   widget_class->motion_notify_event  = hildon_desktop_popup_menu_motion_notify;
   widget_class->button_release_event = hildon_desktop_popup_menu_release_event;
   widget_class->key_press_event      = hildon_desktop_popup_menu_key_press_event;
-
+  
   widget_class->size_request = hildon_desktop_popup_menu_size_request;
   widget_class->size_allocate = hildon_desktop_popup_menu_size_allocate;
-  
+
   g_type_class_add_private (object_class, sizeof (HildonDesktopPopupMenuPrivate));
 
   signals[SIGNAL_POPUP_RESIZE] =
@@ -556,7 +556,8 @@ hildon_desktop_popup_menu_key_press_event (GtkWidget   *widget,
         gtk_item_select   (GTK_ITEM (item->data));
 	menu->priv->selected_item = GTK_MENU_ITEM (item->data);
 
-	hildon_desktop_menu_check_scroll_item (menu, GTK_SCROLL_STEP_UP);
+	if (menu->priv->controls_on)
+  	  hildon_desktop_menu_check_scroll_item (menu, GTK_SCROLL_STEP_UP);
 	
 	break;
       }
@@ -579,7 +580,8 @@ hildon_desktop_popup_menu_key_press_event (GtkWidget   *widget,
         gtk_item_select   (GTK_ITEM (item->data));
 	menu->priv->selected_item = GTK_MENU_ITEM (item->data);
 
-	hildon_desktop_menu_check_scroll_item (menu, GTK_SCROLL_STEP_DOWN);
+	if (menu->priv->controls_on)
+	  hildon_desktop_menu_check_scroll_item (menu, GTK_SCROLL_STEP_DOWN);
 	
 	break;
       }
@@ -684,9 +686,9 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
       g_signal_emit_by_name (menu, "popup-menu-resize");
 	    
       gtk_widget_queue_resize (GTK_WIDGET (menu));    
-      gtk_widget_queue_resize (parent); 
+      gtk_widget_queue_resize (parent);
     }
-
+    
     if (GTK_WIDGET_REALIZED (parent))
       gdk_window_resize (parent->window,
 		         req.width,
@@ -697,6 +699,47 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
 
   g_list_free (children);
 }	
+
+static void 
+hildon_desktop_popup_menu_select_next_prev_item (HildonDesktopPopupMenu *menu, gboolean next)
+{
+  GList *children, *item, *l;
+  GtkMenuItem *previous_selected_item;
+  
+  if (!menu->priv->selected_item)
+    return;	  
+
+  previous_selected_item = menu->priv->selected_item;
+
+  children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
+
+  if (children)
+  {
+    l = item = g_list_find (children, menu->priv->selected_item);
+
+    while (l)
+    {
+      if (l != item)
+      {
+        if (l->data && !GTK_IS_SEPARATOR_MENU_ITEM (l->data) && GTK_IS_MENU_ITEM (l->data))
+        {
+          hildon_desktop_popup_menu_select_item (menu, GTK_MENU_ITEM (l->data));
+	  break;
+        }		
+      }	      
+
+      if (next)
+        l = l->next;
+      else
+	l = l->prev;      
+    }	    
+
+    if (previous_selected_item == menu->priv->selected_item) /* TODO: This only cover one case. */
+      hildon_desktop_popup_menu_select_first_item (menu);    /* It doesn't take into account the direction */
+	    
+    g_list_free (children);
+  }	  
+}
 
 void
 hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item)
@@ -832,11 +875,25 @@ hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuIt
   g_list_free (children);				  
 }	
 
-const GtkMenuItem *
+	
+
+GtkMenuItem *
 hildon_desktop_popup_menu_get_selected_item (HildonDesktopPopupMenu *menu)
 {
   return menu->priv->selected_item;
 }
+
+void 
+hildon_desktop_popup_menu_select_next_item (HildonDesktopPopupMenu *menu)
+{
+  hildon_desktop_popup_menu_select_next_prev_item (menu, TRUE);
+}	
+
+void 
+hildon_desktop_popup_menu_select_prev_item (HildonDesktopPopupMenu *menu)
+{
+  hildon_desktop_popup_menu_select_next_prev_item (menu, FALSE); 
+}	
 
 void   
 hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu)
@@ -846,6 +903,9 @@ hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu)
  
   if (!HILDON_DESKTOP_IS_POPUP_MENU (menu))
     return;
+
+  if (!menu->priv->controls_on)
+    return;	  
  
   if (menu->priv->selected_item)
   {    	  

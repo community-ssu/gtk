@@ -1,3 +1,15 @@
+2007-05-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c:
+	- Highlight next application when menu is opened and home key is
+	pressed. Fixes: NB#57666
+	- Select highlighted application when menu opened and long home key
+	press.
+	* libhildondesktop/hildon-desktop-popup-menu.[ch]:
+	- Added methods to select previous/next item.
+	- _get_selected_item is not const any longer.
+	- Fixed misbehaviors when scrolling and the controls are off.
+
 2007-05-25  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-panel-window.c:

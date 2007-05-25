@@ -281,6 +281,8 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
   {
     hildon_desktop_popup_window_popdown (window);
 
+    switcher->priv->is_open = FALSE;
+
     if (event->keyval == GDK_Escape)
     {
       /* pass focus to the last active application */
@@ -741,6 +743,8 @@ hd_switcher_menu_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher
     hildon_desktop_popup_window_popdown
       (switcher->priv->popup_window);
 
+  switcher->priv->is_open = FALSE;
+  
   gtk_toggle_button_set_active
     (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 }	
@@ -830,9 +834,13 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
      gtk_widget_set_sensitive (switcher->priv->toggle_button, FALSE);
      
      if (switcher->priv->is_open)
+     {	     
        hildon_desktop_popup_window_popdown 
          (switcher->priv->popup_window);	       
-
+ 
+       switcher->priv->is_open = FALSE;
+     }
+     
      gtk_toggle_button_set_active 
        (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
   }
@@ -1000,9 +1008,16 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button)))
   {
     hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
+    switcher->priv->is_open = FALSE;
     return;
-  }    
-	
+  }   
+
+  if (switcher->priv->is_open)
+  {	  
+    hildon_desktop_popup_menu_select_next_item (switcher->priv->menu_applications);
+    g_debug ("selecting next item");
+  }
+    
   hildon_desktop_popup_window_popup 
    (switcher->priv->popup_window,
     hd_switcher_menu_position_func,
@@ -1455,7 +1470,8 @@ hd_switcher_menu_long_press_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
   {
     hildon_desktop_popup_menu_activate_item 
       (switcher->priv->menu_applications, 
-       GTK_MENU_ITEM (switcher->priv->active_menu_item));
+       hildon_desktop_popup_menu_get_selected_item 
+         (switcher->priv->menu_applications));
   }
   else
     hd_wm_top_desktop ();
