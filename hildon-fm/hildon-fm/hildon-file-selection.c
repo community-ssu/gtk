@@ -45,6 +45,8 @@
 #include <stdlib.h>
 #include <libintl.h>
 
+#include <dbus/dbus.h>
+
 #include "hildon-file-selection.h"
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-defines.h>
@@ -2918,6 +2920,53 @@ static void hildon_file_selection_setup_dnd_view(HildonFileSelection *
 }
 
 static void
+trigger_repair (const char *device)
+{
+  DBusConnection *conn;
+  DBusMessage *message;
+  dbus_bool_t ret;
+
+  conn = dbus_bus_get (DBUS_BUS_SYSTEM, NULL);
+  if (conn == NULL)
+    {
+      ULOG_ERR_F("dbus_bus_get failed");
+      return;
+    }
+  
+  message = dbus_message_new_method_call ("com.nokia.ke_recv",
+					  "/com/nokia/ke_recv/repair_card",
+					  "com.nokia.ke_recv",
+					  "repair_card");
+  if (message == NULL)
+    {
+      ULOG_ERR_F("dbus_message_new_method_call failed");
+      return;
+    }
+
+  ret = dbus_message_append_args (message,
+				  DBUS_TYPE_STRING, device,
+				  DBUS_TYPE_STRING, "", /* label */
+				  DBUS_TYPE_INVALID);
+
+  if (!ret)
+    {
+      ULOG_ERR_F("dbus_message_append_args failed");
+      dbus_message_unref(message);
+      return;
+    }
+
+  if (!dbus_connection_send(conn, message, NULL))
+    {
+      ULOG_ERR_F("dbus_connection_send failed");
+      dbus_message_unref(message);
+      return;
+    }
+  
+  dbus_connection_flush(conn);
+  dbus_message_unref(message);
+}
+
+static void
 repair_button_clicked (GtkWidget *button, HildonFileSelection *self)
 {
   HildonFileSelectionPrivate *priv = self->priv;
@@ -2928,17 +2977,20 @@ repair_button_clicked (GtkWidget *button, HildonFileSelection *self)
 
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
     {
-      char *uri, *extra;
+      char *uri, *device;
 
       gtk_tree_model_get (model, &iter,
 			  HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
-			  HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO, &extra,
+			  HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO, &device,
 			  -1);
 
-      fprintf (stderr, "REPAIR %s %s\n", uri, extra);
+      fprintf (stderr, "REPAIR %s %s\n", uri, device);
 
+      if (device)
+	trigger_repair (device);
+	
       g_free (uri);
-      g_free (extra);
+      g_free (device);
     }
 }
 
