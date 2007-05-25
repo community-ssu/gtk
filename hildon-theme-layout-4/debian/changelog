@@ -1,3 +1,34 @@
+hildon-theme-layout-4 (0.8.1-1) unstable; urgency=low
+
+  * Fixing the license to CC Attribution-ShareAlike 2.5
+  * Removed arrows from RSS reader
+  * Fixed borders for media player
+
+  * Mostly fixed in the past, but mentioning here:
+  * Fixes: NB#54155 GtkTreeview: Select, left/right keys does not work properly
+  * Fixes: NB#53229 Long tap on increment/decrement icon in the number editor does not perform a key repeat
+  * Fixes: NB#55104 Shadowed radio button in focus
+  * Fixes: NB#54094 Play button out-of-focus
+  * Fixes: NB#55620 The lines are missing in the border around stop and previous buttons.
+  * Fixes: NB#57366 New theming for rss-feed-reader-applet
+  * Fixes: NB#47412 GtkNotebook tab label bg image does not scale
+  * Fixes: NB#54152 Time picker: Arrows in time picker are not visible 
+  * Fixes: NB#54280 A checkbox appears in Select dialog (ACC-WIZ002)
+  * Fixes: NB#54159 GtkRadiobutton: Selected state of radio button is not visible
+  * Fixes: NB#54158 GtkCheckbox: Checked state of check box is not visible.
+  * Fixes: NB#48317 Tabs on the left side of Notebook widget are without theme.
+  * Fixes: NB#54916 For some Device language 'Cancel' button is not visible
+  * Fixes: NB#55099 Shadowed label at the right side of check box in focus
+  * Fixes: NB#54145 Hildon Calendar popup: The month label is truncated in the lower part.
+  * Fixes: NB#54146 Hilon Calendar popup:The changes in active month/year are not shown
+  * Fixes: NB#54164 Hildon calender popup: Sliding stylus to another does not move focus to it 
+  * Fixes: NB#54923 menu key inactive on open application menu
+  * Fixes: NB#55294 In Date and time dialog 'Select home city' button get invisible after changing Time
+  * Fixes: NB#58046 Scrolling using scrollbars is very slow
+  * Implemented: NR#148224
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 25 May 2007 11:14:02 +0300
+
 hildon-theme-layout-4 (0.8.0-1) unstable; urgency=low
 
   * Adding a bunch of new logical colours

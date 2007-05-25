@@ -1,3 +1,15 @@
+2007-05-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.8.1-1 release]
+
+	* AUTHORS:
+	* COPYING:
+	* NEWS:
+	* README:
+	* configure.ac:
+	* debian/changelog:
+	* debian/copyright: Updating. 
+
 2007-05-24  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtksettings.rc: revert gtk-timeout-repeat

@@ -1,3 +1,9 @@
+[0.8.1-1]
+* Fixing the license to CC Attribution-ShareAlike 2.5
+* Removed arrows from RSS reader
+* Fixed borders for media player
+* Input method fixes
+
 [0.8.0-1]
 * Adding a bunch of new logical colours
 * Updated input method theming   
