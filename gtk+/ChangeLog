@@ -1,3 +1,8 @@
+2007-05-25  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenushell.c (gtk_menu_shell_enter_notify): really fix
+	enter-notify on already selected menu items.
+
 2007-05-24  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenushell.c (gtk_menu_shell_enter_notify): open submenus
