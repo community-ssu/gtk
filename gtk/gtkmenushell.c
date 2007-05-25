@@ -43,8 +43,6 @@
 #include "gtkintl.h"
 #include "gtkalias.h"
 
-#define MENU_SHELL_TIMEOUT   500
-
 #define PACK_DIRECTION(m)                                 \
    (GTK_IS_MENU_BAR (m)                                   \
      ? gtk_menu_bar_get_pack_direction (GTK_MENU_BAR (m)) \
@@ -357,6 +355,14 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 							 TRUE,
 							 GTK_PARAM_READWRITE));
 
+  gtk_settings_install_property (g_param_spec_int ("gtk-menu-popup-click-time",
+                                                   P_("Popup click time"),
+						   P_("Maximum time allowed (in milliseconds) between button press and release for them to be considered part of a popup action instead of a (menu item) select action. 0 always considers the corresponding button release part of the popup click and always keeps the menu open unless an item was activated."),
+						   0,
+						   G_MAXINT,
+						   500,
+						   GTK_PARAM_READWRITE));
+
   g_type_class_add_private (object_class, sizeof (GtkMenuShellPrivate));
 }
 
@@ -638,6 +644,7 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
     {
       GtkWidget *menu_item;
       gboolean   deactivate = TRUE;
+      gint       popup_click_time;
 
       if (menu_shell->button && (event->button != menu_shell->button))
 	{
@@ -649,7 +656,12 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
       menu_shell->button = 0;
       menu_item = gtk_menu_shell_get_item (menu_shell, (GdkEvent*) event);
 
-      if ((event->time - menu_shell->activate_time) > MENU_SHELL_TIMEOUT)
+      g_object_get (gtk_widget_get_settings (widget),
+                    "gtk-menu-popup-click-time", &popup_click_time,
+                    NULL);
+
+      if (popup_click_time == 0 ||
+          (event->time - menu_shell->activate_time) > popup_click_time)
         {
           if (menu_item && (menu_shell->active_menu_item == menu_item) &&
               _gtk_menu_item_is_selectable (menu_item))
@@ -730,6 +742,16 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
             {
               deactivate = FALSE;
             }
+
+          /*  popup-click-time = 0 causes the menu to always stay open on
+           *  its opening click, unless an item was activated.
+           */
+          if (!menu_item && popup_click_time == 0 &&
+              menu_shell->activate_time != 0)
+            {
+              menu_shell->activate_time = 0;
+              deactivate = FALSE;
+             }
         }
       else /* a very fast press-release */
         {
