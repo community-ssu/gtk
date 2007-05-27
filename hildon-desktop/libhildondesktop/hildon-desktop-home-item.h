@@ -92,7 +92,6 @@ struct _HildonDesktopHomeItemClass {
 
   GdkPixbuf                     *close_button;
   GdkPixbuf                     *resize_handle;
-  GdkPixbuf                     *drag_handle;
 
 };
 

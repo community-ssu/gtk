@@ -943,8 +943,6 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
       pixbuf = NULL;
     }
 
-  g_debug ("Loaded %s for alpha mask", mask_file_name);
-
   if (pixbuf)
     {
       gchar                        *data;

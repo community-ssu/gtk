@@ -42,14 +42,16 @@
 #endif
 
 #define APPLET_RESIZE_HANDLE_ICON   "qgn_home_layoutmode_resize"
-#define APPLET_RESIZE_HANDLE_WIDTH  40
-#define APPLET_RESIZE_HANDLE_HEIGHT 40
+#define APPLET_RESIZE_HANDLE_WIDTH                      36
+#define APPLET_RESIZE_HANDLE_HEIGHT                     36
+#define APPLET_VERTICAL_RESIZE_HANDLE_WIDTH             50
+#define APPLET_VERTICAL_RESIZE_HANDLE_HEIGHT            36
+#define APPLET_HORIZONTAL_RESIZE_HANDLE_WIDTH           36
+#define APPLET_HORIZONTAL_RESIZE_HANDLE_HEIGHT          50
+
 #define APPLET_CLOSE_BUTTON_ICON    "qgn_home_layoutmode_close"
 #define APPLET_CLOSE_BUTTON_WIDTH   26
 #define APPLET_CLOSE_BUTTON_HEIGHT  26
-#define APPLET_DRAG_HANDLE_ICON     "qgn_list_presence_invisible"
-#define APPLET_DRAG_HANDLE_WIDTH    26
-#define APPLET_DRAG_HANDLE_HEIGHT   26
 
 #define GRID_SIZE                   10
 
@@ -60,7 +62,7 @@
   (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_DESKTOP_TYPE_HOME_ITEM, HildonDesktopHomeItemPriv));
 
 
-typedef enum 
+typedef enum
 {
   HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL = 0,
   HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING,
@@ -87,8 +89,7 @@ typedef struct HildonDesktopHomeItemPriv_
   GdkWindow    *close_button_window;
   GdkPixbuf    *resize_handle;
   GdkWindow    *resize_handle_window;
-  GdkPixbuf    *drag_handle;
-  GdkWindow    *drag_handle_window;
+  gint          resize_handle_width, resize_handle_height;
 
   GdkWindow    *event_window;
 
@@ -139,7 +140,9 @@ static GdkWindow *
 hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
                                              GdkPixbuf *icon,
                                              gint x,
-                                             gint y);
+                                             gint y,
+                                             gint width,
+                                             gint height);
 
 static gboolean
 hildon_desktop_home_item_button_press_event (GtkWidget *applet,
@@ -447,33 +450,6 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
       error = NULL;
     }
 
-  applet_class->resize_handle =
-      gtk_icon_theme_load_icon (icon_theme,
-                                APPLET_RESIZE_HANDLE_ICON,
-                                APPLET_RESIZE_HANDLE_WIDTH,
-                                GTK_ICON_LOOKUP_NO_SVG,
-                                &error);
-  if (error)
-    {
-      g_warning ("Could not load resize handle icon: %s", error->message);
-      applet_class->resize_handle = NULL;
-      g_error_free (error);
-      error = NULL;
-    }
-
-  applet_class->drag_handle =
-      gtk_icon_theme_load_icon (icon_theme,
-                                APPLET_DRAG_HANDLE_ICON,
-                                APPLET_DRAG_HANDLE_WIDTH,
-                                GTK_ICON_LOOKUP_NO_SVG,
-                                &error);
-  if (error)
-    {
-      g_warning ("Could not load drag handle icon: %s", error->message);
-      applet_class->drag_handle = NULL;
-      g_error_free (error);
-      error = NULL;
-    }
 }
 
 static void
@@ -494,18 +470,6 @@ hildon_desktop_home_item_init (HildonDesktopHomeItem * self)
     {
       g_object_ref (klass->close_button);
       priv->close_button = klass->close_button;
-    }
-
-  if (klass->resize_handle)
-    {
-      g_object_ref (klass->resize_handle);
-      priv->resize_handle = klass->resize_handle;
-    }
-
-  if (klass->drag_handle)
-    {
-      g_object_ref (klass->drag_handle);
-      priv->drag_handle = klass->drag_handle;
     }
 
   gtk_widget_add_events (GTK_WIDGET (self), GDK_VISIBILITY_NOTIFY_MASK);
@@ -667,43 +631,48 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
 
       gdk_window_set_user_data (widget->window, widget);
 
-#if 0
-      gtk_style_set_background (widget->style,
-                                widget->window,
-                                GTK_STATE_NORMAL);
-#endif
-
-
-      if (0)
-/*      if (!priv->layout_mode_sucks)*/
-        {
-          /* When layout mode is cool, we have an event window
-           * on top of everything to catch the clicks */
-          attributes.wclass = GDK_INPUT_ONLY;
-          attributes_mask = GDK_WA_X | GDK_WA_Y;
-          priv->event_window =  gdk_window_new (widget->window,
-                                                &attributes,
-                                                attributes_mask);
-          gdk_window_set_user_data (priv->event_window, widget);
-        }
-
       if (priv->layout_mode_sucks)
         {
-#if 0
-          priv->drag_handle_window =
-              hildon_desktop_home_item_create_icon_window (HILDON_DESKTOP_HOME_ITEM (widget),
-                                                     priv->drag_handle,
-                                                     0,
-                                                     0);
-#endif
+          if (priv->resize_handle)
+            {
+              priv->resize_handle_width  =
+                  gdk_pixbuf_get_width  (priv->resize_handle);
+              priv->resize_handle_height =
+                  gdk_pixbuf_get_height (priv->resize_handle);
+            }
+          else
+            {
+              switch (priv->resize_type)
+                {
+                  case HILDON_DESKTOP_HOME_ITEM_RESIZE_HORIZONTAL:
+                      priv->resize_handle_width =
+                          APPLET_HORIZONTAL_RESIZE_HANDLE_WIDTH;
+                      priv->resize_handle_height =
+                          APPLET_HORIZONTAL_RESIZE_HANDLE_HEIGHT;
+                      break;
+                  case HILDON_DESKTOP_HOME_ITEM_RESIZE_VERTICAL:
+                      priv->resize_handle_width =
+                          APPLET_VERTICAL_RESIZE_HANDLE_WIDTH;
+                      priv->resize_handle_height =
+                          APPLET_VERTICAL_RESIZE_HANDLE_HEIGHT;
+                      break;
+                  default:
+                      priv->resize_handle_width =
+                          APPLET_RESIZE_HANDLE_WIDTH;
+                      priv->resize_handle_height = APPLET_RESIZE_HANDLE_HEIGHT;
+                      break;
+                }
+            }
 
-          if (priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
-            priv->resize_handle_window =
-                hildon_desktop_home_item_create_icon_window
-                    (HILDON_DESKTOP_HOME_ITEM (widget),
-                     priv->resize_handle,
-                     widget->allocation.width - APPLET_RESIZE_HANDLE_WIDTH,
-                     widget->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT);
+          priv->resize_handle_window =
+              hildon_desktop_home_item_create_icon_window
+              (HILDON_DESKTOP_HOME_ITEM (widget),
+               priv->resize_handle,
+               widget->allocation.width  - priv->resize_handle_width,
+               widget->allocation.height - priv->resize_handle_height,
+               priv->resize_handle_width,
+               priv->resize_handle_height
+              );
 
           gdk_window_set_events (widget->window,
                                  gdk_window_get_events(widget->window) |
@@ -763,11 +732,6 @@ hildon_desktop_home_item_map (GtkWidget *widget)
    * on top */
   if (GDK_IS_WINDOW (priv->event_window))
     gdk_window_show (priv->event_window);
-
-  if (priv->drag_handle_window)
-    gdk_window_raise (priv->drag_handle_window);
-
-
 }
 
 static void
@@ -955,9 +919,9 @@ hildon_desktop_home_item_size_allocate (GtkWidget *widget,
       if (GDK_IS_WINDOW (priv->resize_handle_window))
         gdk_window_move (priv->resize_handle_window,
                          allocation->width
-                         - APPLET_RESIZE_HANDLE_WIDTH,
+                         - priv->resize_handle_width,
                          allocation->height
-                         - APPLET_RESIZE_HANDLE_HEIGHT);
+                         - priv->resize_handle_height);
 
       if (GDK_IS_WINDOW (widget->window))
         gdk_window_move_resize (widget->window,
@@ -1006,34 +970,27 @@ static GdkWindow *
 hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
                                              GdkPixbuf *icon,
                                              gint x,
-                                             gint y)
+                                             gint y,
+                                             gint width,
+                                             gint height)
 {
   HildonDesktopHomeItemPriv      *priv;
   GdkWindowAttr              attributes;
   gint                       attributes_mask;
-  GdkBitmap                 *bitmask = NULL;
-  GdkPixmap                 *pixmap = NULL;
   GdkWindow                 *window;
   GtkWidget                 *w;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
   w = GTK_WIDGET (applet);
 
-  attributes.width = gdk_pixbuf_get_width (icon);
-  attributes.height = gdk_pixbuf_get_height (icon);
+  attributes.width  = width;
+  attributes.height = height;
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.event_mask = 0;
   attributes.visual = gtk_widget_get_visual (w);
   attributes.colormap = gtk_widget_get_colormap (w);
-  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.wclass = icon?GDK_INPUT_OUTPUT:GDK_INPUT_ONLY;
   attributes_mask = GDK_WA_VISUAL | GDK_WA_COLORMAP;
-
-  gdk_pixbuf_render_pixmap_and_mask_for_colormap (icon,
-                                                  attributes.colormap,
-                                                  &pixmap,
-                                                  &bitmask,
-                                                  127);
-
 
   window = gdk_window_new (w->window,
                            &attributes,
@@ -1046,20 +1003,33 @@ hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
 
   gdk_window_set_user_data (window, w);
   gdk_window_move (window, x, y);
-
-  if (pixmap)
+  if (icon)
     {
-      gdk_window_set_back_pixmap (window, pixmap, FALSE);
-      g_object_unref (pixmap);
-    }
+      GdkBitmap                 *bitmask = NULL;
+      GdkPixmap                 *pixmap = NULL;
 
-  if (bitmask)
-    {
-      gdk_window_shape_combine_mask (window,
-                                     bitmask,
-                                     0,
-                                     0);
-      g_object_unref (bitmask);
+      gdk_pixbuf_render_pixmap_and_mask_for_colormap (icon,
+                                                      attributes.colormap,
+                                                      &pixmap,
+                                                      &bitmask,
+                                                      127);
+
+
+
+      if (pixmap)
+        {
+          gdk_window_set_back_pixmap (window, pixmap, FALSE);
+          g_object_unref (pixmap);
+        }
+
+      if (bitmask)
+        {
+          gdk_window_shape_combine_mask (window,
+                                         bitmask,
+                                         0,
+                                         0);
+          g_object_unref (bitmask);
+        }
     }
 
   gdk_window_show (window);
@@ -1089,8 +1059,6 @@ window_event_filter (GdkXEvent *xevent,
           gdk_window_raise (priv->close_button_window);
       if (priv->resize_handle_window)
         gdk_window_raise (priv->resize_handle_window);
-      if (priv->drag_handle_window)
-        gdk_window_raise (priv->drag_handle_window);
 
       if (!priv->layout_mode_sucks && GTK_IS_WIDGET (GTK_BIN (applet)->child))
         {
@@ -1136,21 +1104,25 @@ hildon_desktop_home_item_layout_mode_start (HildonDesktopHomeItem *applet)
 
   if (priv->close_button)
     {
-      priv->close_button_window = hildon_desktop_home_item_create_icon_window 
+      priv->close_button_window = hildon_desktop_home_item_create_icon_window
           (applet,
            priv->close_button,
            HILDON_MARGIN_DEFAULT,
-           HILDON_MARGIN_DEFAULT);
+           HILDON_MARGIN_DEFAULT,
+           gdk_pixbuf_get_width (priv->close_button),
+           gdk_pixbuf_get_height (priv->close_button));
     }
 
   if (priv->resize_handle &&
       priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
     {
-      priv->resize_handle_window = hildon_desktop_home_item_create_icon_window 
+      priv->resize_handle_window = hildon_desktop_home_item_create_icon_window
           (applet,
            priv->resize_handle,
            widget->allocation.width - APPLET_RESIZE_HANDLE_WIDTH,
-           widget->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT);
+           widget->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT,
+           gdk_pixbuf_get_width (priv->resize_handle),
+           gdk_pixbuf_get_height (priv->resize_handle));
     }
 
   if (GTK_IS_WIDGET (GTK_BIN (applet)->child))
@@ -1675,15 +1647,61 @@ void
 hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
                                           HildonDesktopHomeItemResizeType resize_type)
 {
-  HildonDesktopHomeItemPriv      *priv;
+  HildonDesktopHomeItemPriv    *priv;
+  GtkWidget                    *widget;
   g_return_if_fail (applet);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  widget = GTK_WIDGET (applet);
 
   if (priv->resize_type != resize_type)
     {
       g_object_notify (G_OBJECT (applet), "resize-type");
       priv->resize_type = resize_type;
+
+      if (GTK_WIDGET_REALIZED (widget) &&
+          priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
+        {
+          gint icon_width, icon_height;
+
+          if (GDK_IS_WINDOW (priv->resize_handle_window))
+              gdk_window_destroy (priv->resize_handle_window);
+
+          if (priv->resize_handle)
+            {
+              icon_width  = gdk_pixbuf_get_width  (priv->resize_handle);
+              icon_height = gdk_pixbuf_get_height (priv->resize_handle);
+            }
+          else
+            {
+              switch (priv->resize_type)
+                {
+                  case HILDON_DESKTOP_HOME_ITEM_RESIZE_HORIZONTAL:
+                      icon_width  = APPLET_HORIZONTAL_RESIZE_HANDLE_WIDTH;
+                      icon_height = APPLET_HORIZONTAL_RESIZE_HANDLE_HEIGHT;
+                      break;
+                  case HILDON_DESKTOP_HOME_ITEM_RESIZE_VERTICAL:
+                      icon_width  = APPLET_VERTICAL_RESIZE_HANDLE_WIDTH;
+                      icon_height = APPLET_VERTICAL_RESIZE_HANDLE_HEIGHT;
+                      break;
+                  default:
+                      icon_width  = APPLET_RESIZE_HANDLE_WIDTH;
+                      icon_height = APPLET_RESIZE_HANDLE_HEIGHT;
+                      break;
+                }
+            }
+
+          priv->resize_handle_window =
+              hildon_desktop_home_item_create_icon_window
+              (applet,
+               priv->resize_handle,
+               widget->allocation.width  - icon_width,
+               widget->allocation.height - icon_height,
+               icon_width,
+               icon_height
+              );
+        }
+
     }
 }
 
