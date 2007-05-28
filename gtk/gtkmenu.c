@@ -55,6 +55,10 @@
 
 #define MENU_ITEM_CLASS(w)   GTK_MENU_ITEM_GET_CLASS (w)
 
+#ifdef MAEMO_CHANGES
+#define SCROLL_DELAY_FACTOR 5    /* Scroll repeat multiplier */
+#endif /* MAEMO_CHANGES */
+
 #define DEFAULT_POPUP_DELAY    225
 #define DEFAULT_POPDOWN_DELAY  1000
 
@@ -3484,6 +3488,11 @@ gtk_menu_scroll_timeout_initial (gpointer data)
                 "gtk-timeout-repeat", &timeout,
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
+#ifdef MAEMO_CHANGES
+  /* as we scroll by item, use the multiplier or we'll go way too fast */
+  if (touchscreen_mode)
+    timeout *= SCROLL_DELAY_FACTOR;
+#endif /* MAEMO_CHANGES */
 
   gtk_menu_do_timeout_scroll (menu, touchscreen_mode);
 
@@ -3503,7 +3512,11 @@ gtk_menu_start_scrolling (GtkMenu *menu)
   gboolean touchscreen_mode;
 
   g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
+#ifdef MAEMO_CHANGES
+                "gtk-timeout-initial", &timeout,
+#else  /* !MAEMO_CHANGES */
                 "gtk-timeout-repeat", &timeout,
+#endif /* !MAEMO_CHANGES */
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
 
