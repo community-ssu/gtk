@@ -675,6 +675,8 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 
   gtk_widget_set_size_request (GTK_WIDGET (popup_window), 650, 480);
 
+  hildon_desktop_popup_window_attach_widget (popup_window, button->priv->button);
+  
   button->priv->menu_categories =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
 		  		    	     "item-height", 68,

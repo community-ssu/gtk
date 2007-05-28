@@ -694,6 +694,10 @@ hn_others_button_create_menu (HNOthersButton *button)
     gtk_widget_destroy (GTK_WIDGET (TASKNAVIGATOR_ITEM (button)->menu));
     g_debug ("done.");
   }
+
+  gtk_menu_attach_to_widget (GTK_MENU (menu),
+		  	     button->priv->button,
+			     NULL); 
     
   TASKNAVIGATOR_ITEM (button)->menu = GTK_MENU (menu);
 
