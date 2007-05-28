@@ -1335,13 +1335,13 @@ if test "x$gdktarget" = "xx11"; then
   fi
 
   if $have_randr ; then
-     AC_DEFINE(HAVE_RANDR, 1, Have the Xrandr extension library)
+     AC_DEFINE(HAVE_RANDR, 1, [Have the Xrandr extension library])
   fi
        
   # Checks for Xcursor library
   
   if $PKG_CONFIG --exists xcursor ; then
-    AC_DEFINE(HAVE_XCURSOR, 1, Have the Xcursor library)
+    AC_DEFINE(HAVE_XCURSOR, 1, [Have the Xcursor library])
     
     X_PACKAGES="$X_PACKAGES xcursor"
   fi
@@ -1349,11 +1349,19 @@ if test "x$gdktarget" = "xx11"; then
   # Checks for XFixes extension
   
   if $PKG_CONFIG --exists xfixes ; then
-    AC_DEFINE(HAVE_XFIXES, 1, Have the XFIXES X extension)
+    AC_DEFINE(HAVE_XFIXES, 1, [Have the XFIXES X extension])
     
     X_PACKAGES="$X_PACKAGES xfixes"
     GTK_PACKAGES_FOR_X="$GTK_PACKAGES_FOR_X xfixes"
   fi
+  
+  if $PKG_CONFIG --exists xtst ; then
+    AC_DEFINE(HAVE_XTST, 1, [Have the XTST X extension])
+    
+    X_PACKAGES="$X_PACKAGES xtst"
+    GTK_PACKAGES_FOR_X="$GTK_PACKAGES_FOR_X xtst"
+  fi
+
 
   if $have_base_x_pc ; then
     GDK_EXTRA_LIBS="$x_extra_libs"
