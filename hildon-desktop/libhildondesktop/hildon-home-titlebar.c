@@ -137,6 +137,7 @@ titlebar_menu_deactivate_cb (GtkWidget *widget,
   titlebar->priv->menu_popup_status = FALSE;
 }
 
+#if 0
 static void
 titlebar_menu_detach (GtkWidget *widget,
                       GtkMenu   *menu)
@@ -145,6 +146,7 @@ titlebar_menu_detach (GtkWidget *widget,
 
   titlebar->priv->menu = NULL;
 }
+#endif
 
 static void
 titlebar_menu_position_func (GtkMenu  *menu,
@@ -484,9 +486,11 @@ hildon_home_titlebar_set_menu (HildonHomeTitlebar *titlebar,
 
   priv->menu = menu;
 
+#if 0
   gtk_menu_attach_to_widget (GTK_MENU (priv->menu),
                              GTK_WIDGET (titlebar),
                              titlebar_menu_detach);
+#endif
   gtk_widget_set_name (menu, HH_TITLEBAR_MENU_WIDGET_NAME);
   g_signal_connect (menu, "deactivate",
                     G_CALLBACK (titlebar_menu_deactivate_cb),

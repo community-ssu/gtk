@@ -1,6 +1,13 @@
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
+	- emit "layout-changed" when applets are really added to the area
+	* src/hd-home-window.c:
+	- use "layout-changed" to know when to save the layout
+
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
 	- do not add the padding to the layout saved
 	- disconnect the various handlers attached to the children
 	when they are removed

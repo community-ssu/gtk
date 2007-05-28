@@ -478,7 +478,7 @@ hd_home_window_constructor (GType                   gtype,
 
   if (priv->layout_mode_sucks)
     {
-      g_signal_connect_swapped (area, "applet-change-end",
+      g_signal_connect_swapped (area, "layout-changed",
                                 G_CALLBACK (hd_home_window_area_changed),
                                 window);
     }
@@ -1358,6 +1358,7 @@ hd_home_window_area_changed (HDHomeWindow *window)
   HDHomeWindowPrivate  *priv;
 
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  g_debug ("layout changed, saving");
   if (!priv->save_area_timeout)
     priv->save_area_timeout = g_timeout_add (SAVE_TIMEOUT,
                                              (GSourceFunc)

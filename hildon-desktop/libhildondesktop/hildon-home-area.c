@@ -750,7 +750,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
   if (priv->batch_add)
     {
       priv->to_add = g_list_append (priv->to_add, applet);
-      g_signal_emit_by_name (area, "layout-changed");
       return;
     }
 
@@ -773,6 +772,8 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
         {
           gtk_fixed_put (GTK_FIXED (area), applet, 0, 0);
         }
+
+      g_signal_emit_by_name (area, "layout-changed");
 
       if (priv->layout_mode)
         hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
@@ -1684,8 +1685,8 @@ hildon_home_area_batch_add (HildonHomeArea *area)
             {
               GdkRectangle     *layout = create_rectangle (r->x,
                                                            r->y,
-                                                           -1,
-                                                           -1);
+                                                           req.width,
+                                                           req.height);
               GdkRectangle     *padded_layout = g_new (GdkRectangle, 1);
 
               g_hash_table_insert (priv->layout, g_strdup (name), layout);
@@ -1693,12 +1694,10 @@ hildon_home_area_batch_add (HildonHomeArea *area)
 
               *padded_layout = *layout;
 
-              padded_layout->width  = req.width;
               if (padded_layout->x + padded_layout->width <
                   area_rectangle->width)
                 padded_layout->width += priv->applet_padding;
 
-              padded_layout->height = req.height;
               if (padded_layout->y + padded_layout->height <
                   area_rectangle->height)
                 padded_layout->height += priv->applet_padding;
