@@ -1,3 +1,13 @@
+2007-05-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmenushell.c: use the XTest extension to emit button press/release
+	events from the GtkMenuShell handlers. With this it will appear as if the
+	menu didn't have a grab, and the user will be able to do things like opening
+	a menu when there's already a menu opened with just one click.
+	See https://projects.maemo.org/bugzilla/show_bug.cgi?id=58347 for more details.
+
+	Fixes: NB#58347
+
 2007-05-25  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenushell.c (gtk_menu_shell_class_init): add settings
