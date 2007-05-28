@@ -1,3 +1,23 @@
+hildon-home-webshortcut (1:1.9.2-1) sardine; urgency=low
+
+  * plugin/hhwsloader.c:
+  - track errors on gdk_pixbuf_loader_close, which allows to detect
+  troncated images
+  - treat GDK_PIXBUF_ERROR_FAILED as corrupted images
+
+  * plugin/hildon-home-webshortcut.c:
+  - add file dialog filter back, removed by accident
+
+  * plugin/hildon-home-webshortcut.c:
+  - made non-resizable
+  - changed size
+  - added _expose handler to avoid using a GtkFrame
+
+  * debian/copyright: changed copyright holder from "Nokia Oyj" to
+  "Nokia Corporation".
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 28 May 2007 17:58:59 +0300
+
 hildon-home-webshortcut (1:1.9.1-1) sardine; urgency=low
 
   * plugin/hildon-home-webshortcut.c: Ported from osso-ic to
