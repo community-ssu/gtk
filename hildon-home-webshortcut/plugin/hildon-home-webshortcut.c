@@ -58,8 +58,8 @@
 #define HHWS_GCONF_IAP          "/apps/osso/apps/hhws/iap"
 #define HHWS_GCONF_URI          "/apps/osso/apps/hhws/uri"
 
-#define HILDON_HOME_WS_WIDTH            290
-#define HILDON_HOME_WS_HEIGHT           134
+#define HILDON_HOME_WS_WIDTH            300
+#define HILDON_HOME_WS_HEIGHT           100
 #define HILDON_HOME_WS_MINIMUM_WIDTH    120
 #define HILDON_HOME_WS_MINIMUM_HEIGHT   60
 #define HILDON_HOME_WS_ENV_HOME "HOME"
@@ -547,6 +547,45 @@ hhws_button_release (GtkWidget         *widget,
                                                                      event);
 }
 
+static gboolean
+hhws_expose (GtkWidget         *widget,
+             GdkEventExpose    *event)
+{
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      gint x, y;
+
+      if (GTK_WIDGET_NO_WINDOW (widget))
+        {
+          x = widget->allocation.x;
+          y = widget->allocation.y;
+        }
+      else
+        {
+          x = 0;
+          y = 0;
+        }
+
+      gtk_paint_box (widget->style,
+                     widget->window,
+                     GTK_STATE_NORMAL,
+                     GTK_SHADOW_NONE,
+                     &event->area,
+                     widget,
+                     NULL,
+                     x,
+                     y,
+                     widget->allocation.width,
+                     widget->allocation.height
+                    );
+
+      return GTK_WIDGET_CLASS (hhws_parent_class)->expose_event (widget,
+                                                                 event);
+    }
+
+  return FALSE;
+}
+
 static void
 hhws_reload_pixbuf (Hhws *hhws)
 {
@@ -659,7 +698,6 @@ static void
 hhws_init (Hhws *hhws)
 {
   HhwsPrivate  *priv;
-  GtkWidget    *frame;
   GtkWidget    *alignment;
   gchar        *cache_file = NULL;
 
@@ -685,8 +723,8 @@ hhws_init (Hhws *hhws)
   priv->gconf_client = gconf_client_get_default ();
   hhws_load_configuration (hhws);
 
-  gtk_widget_set_size_request (GTK_WIDGET (hhws), 
-                               HILDON_HOME_WS_WIDTH, 
+  gtk_widget_set_size_request (GTK_WIDGET (hhws),
+                               HILDON_HOME_WS_WIDTH,
                                HILDON_HOME_WS_HEIGHT);
 
   priv->image = gtk_image_new();
@@ -694,10 +732,6 @@ hhws_init (Hhws *hhws)
   g_signal_connect_swapped (priv->image, "size-allocate",
                             G_CALLBACK (hhws_image_size_allocate),
                             hhws);
-
-  frame = gtk_frame_new (NULL/*label*/);
-  gtk_widget_set_name (frame, "osso-speeddial"/*FIXME give it its own name*/);
-  gtk_container_set_border_width (GTK_CONTAINER (frame), 0);
 
   alignment = gtk_alignment_new (0.5,
                                  0.5,
@@ -707,12 +741,10 @@ hhws_init (Hhws *hhws)
   gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 15, 15, 15, 15);
 
   gtk_container_add (GTK_CONTAINER (alignment), priv->image);
-  gtk_container_add (GTK_CONTAINER (frame), alignment);
-  gtk_container_add (GTK_CONTAINER (hhws), frame);
+  gtk_container_add (GTK_CONTAINER (hhws), alignment);
 
   gtk_widget_show (priv->image);
   gtk_widget_show (alignment);
-  gtk_widget_show (frame);
 
   priv->csm = hhws_create_csm (hhws);
 
@@ -722,9 +754,11 @@ hhws_init (Hhws *hhws)
                                  0 /* flags, deprecated */);
 
   g_object_set (hhws,
-                "resize-type",          HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH,
+                "resize-type",          HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE,
+#if 0
                 "minimum-width",        HILDON_HOME_WS_MINIMUM_WIDTH,
                 "minimum-height",       HILDON_HOME_WS_MINIMUM_HEIGHT,
+#endif
                 NULL);
 }
 
@@ -743,6 +777,7 @@ hhws_class_init (HhwsClass *klass)
 
   widget_class->button_press_event   = hhws_button_press;
   widget_class->button_release_event = hhws_button_release;
+  widget_class->expose_event         = hhws_expose;
 
   object_class->destroy = hhws_destroy;
 
