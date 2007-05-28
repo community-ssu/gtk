@@ -518,17 +518,23 @@ hd_panel_window_cadd (GtkContainer *container,
   if (position == 0)
   {
     gtk_widget_set_name (widget, HD_PANEL_WINDOW_BUTTON_NAME_1);
-    gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_1);
+
+    if (GTK_BIN (widget)->child)
+      gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_1);
   }
   else if ((position % 2) != 0)
   {
     gtk_widget_set_name (widget, HD_PANEL_WINDOW_BUTTON_NAME_2);
-    gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_2);
+
+    if (GTK_BIN (widget)->child)
+      gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_2);
   }
   else
   {
     gtk_widget_set_name (widget, HD_PANEL_WINDOW_BUTTON_NAME_MIDDLE);
-    gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_MIDDLE);
+
+    if (GTK_BIN (widget)->child)
+      gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_BUTTON_NAME_MIDDLE);
   }
 }
 

@@ -26,6 +26,7 @@ hildon_desktop_CPPFLAGS = \
 	-DHD_DESKTOP_MODULE_PATH=\"$(hildondesktoplibdir)\"                \
 	-DHD_DESKTOP_BACKGROUNDS_PATH=\"$(hildondesktopbackgroundsdir)\"   \
 	-DHD_PLUGIN_LOADER_MODULES_PATH=\"$(hildonpluginloaderlibdir)\"    \
+	-DHD_UI_POLICY_MODULES_PATH=\"$(hildonuipolicylibdir)\"            \
 	-DHD_PLUGIN_LOADER_LEGACY_HOME_MODULE_PATH=\"$(hildonhomelibdir)\" \
 	-DHD_PLUGIN_LOADER_LEGACY_STATUSBAR_MODULE_PATH=\"$(hildonstatusbarlibdir)\" \
 	-DHD_PLUGIN_LOADER_LEGACY_NAVIGATOR_MODULE_PATH=\"$(hildonnavigatorlibdir)\"
@@ -46,6 +47,8 @@ hildon_desktop_LDADD = \
 	$(top_srcdir)/libhildonwm/libhildonwm.la
 
 PLUGIN_MANAGER_SOURCES  = \
+	hd-ui-policy.c              \
+	hd-ui-policy.h              \
 	hd-plugin-manager.c         \
 	hd-plugin-manager.h         \
 	hd-plugin-loader-factory.c  \

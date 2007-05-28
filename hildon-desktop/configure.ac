@@ -237,6 +237,9 @@ AC_SUBST(hildoncpdesktopentrydir)
 hildonpluginloaderlibdir=${hildondesktoplibdir}/loaders
 AC_SUBST(hildonpluginloaderlibdir)
 
+hildonuipolicylibdir=${hildondesktoplibdir}/policies
+AC_SUBST(hildonuipolicylibdir)
+
 hildondesktopstartupdir=${sysconfdir}/osso-af-init
 AC_SUBST(hildondesktopstartupdir)
 
@@ -272,4 +275,5 @@ data/app-switcher.desktop
 data/others-button.desktop 
 data/applications-menu.desktop 
 data/switcher-menu.desktop
+policies/Makefile
 ])

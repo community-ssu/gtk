@@ -1,3 +1,3 @@
-SUBDIRS = data libhildonwm libhildondesktop background-manager src
+SUBDIRS = data libhildonwm libhildondesktop background-manager src policies
 
 CLEANFILES = *~

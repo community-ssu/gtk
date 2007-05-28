@@ -5,6 +5,7 @@ X-Position-Y=0
 X-Size-Width=480
 X-Size-Height=80
 X-Orientation=left
+X-UI-Policy=libtasknavigatorpolicy.so
 X-Config-File=tasknavigator.conf
 X-Plugin-Dir=@hildonnavigatordesktopentrydir@
 

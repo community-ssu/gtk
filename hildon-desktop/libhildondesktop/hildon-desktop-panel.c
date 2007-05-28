@@ -367,8 +367,10 @@ hildon_desktop_panel_real_add_button (HildonDesktopPanel *panel, GtkWidget *widg
   else
     height = HILDON_DESKTOP_PANEL_WIDGET_DEFAULT_HEIGHT;
 
-  gtk_widget_set_size_request (widget, width, height); 
-  gtk_widget_set_size_request (GTK_BIN (widget)->child, width, height);
+  gtk_widget_set_size_request (widget, width, height);
+  
+  if (GTK_BIN (widget)->child) 
+    gtk_widget_set_size_request (GTK_BIN (widget)->child, width, height);
   
   if (HILDON_DESKTOP_IS_PANEL_ITEM (widget))
   {

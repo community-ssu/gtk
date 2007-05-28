@@ -31,6 +31,7 @@
 #include <glib-object.h>
 
 #include "hd-plugin-manager.h"
+#include "hd-ui-policy.h"
 #include "hd-plugin-loader.h"
 #include "hd-plugin-loader-factory.h"
 
@@ -44,7 +45,7 @@ struct _HDPluginManagerPrivate
   GObject *factory;
 };
 
-static void 
+static gboolean 
 hd_plugin_manager_load_plugin (HDPluginManager *pm, 
                                const gchar     *plugin_path, 
                                GtkContainer    *container)
@@ -53,16 +54,16 @@ hd_plugin_manager_load_plugin (HDPluginManager *pm,
   GList *plugins, *iter;
   GError *error = NULL;
 
-  g_return_if_fail (pm != NULL);
-  g_return_if_fail (HD_IS_PLUGIN_MANAGER (pm));
-  g_return_if_fail (plugin_path != NULL);
-  g_return_if_fail (container != NULL);
-  g_return_if_fail (GTK_IS_CONTAINER (container));
+  g_return_val_if_fail (pm != NULL, FALSE);
+  g_return_val_if_fail (HD_IS_PLUGIN_MANAGER (pm), FALSE);
+  g_return_val_if_fail (plugin_path != NULL, FALSE);
+  g_return_val_if_fail (container != NULL, FALSE);
+  g_return_val_if_fail (GTK_IS_CONTAINER (container), FALSE);
 
   if (!g_file_test (plugin_path, G_FILE_TEST_EXISTS))
   {
     g_warning ("Plugin desktop file not found, ignoring plugin");
-    return;
+    return FALSE;
   }
 
   loader = hd_plugin_loader_factory_create (HD_PLUGIN_LOADER_FACTORY (pm->priv->factory), 
@@ -71,7 +72,7 @@ hd_plugin_manager_load_plugin (HDPluginManager *pm,
   if (!loader)
   {
     g_warning ("Error loading plugin loader");
-    return;
+    return FALSE;
   }
 
   plugins = hd_plugin_loader_load (loader, &error);
@@ -81,7 +82,7 @@ hd_plugin_manager_load_plugin (HDPluginManager *pm,
     g_warning ("Error loading plugin: %s", error->message);
     g_error_free (error);
 
-    return;
+    return FALSE;
   }
 
   for (iter = plugins; iter; iter = g_list_next (iter))
@@ -95,6 +96,8 @@ hd_plugin_manager_load_plugin (HDPluginManager *pm,
     gtk_widget_show (widget);
     gtk_container_add (container, widget);
   }
+
+  return TRUE;
 }
 
 static gint
@@ -108,24 +111,6 @@ hd_plugin_manager_find_by_id (gconstpointer a, gconstpointer b)
                 NULL);
 
   if (!g_ascii_strcasecmp (id, b))
-    result = 0;
-
-  g_free (id);
-
-  return result;
-}
-
-static gint
-hd_plugin_manager_find_by_plugin (gconstpointer a, gconstpointer b)
-{
-  gint result = -1;
-  gchar *id = NULL;
-
-  g_object_get (G_OBJECT (b),
-                "id", &id,
-                NULL);
-
-  if (!g_ascii_strcasecmp (a, id))
     result = 0;
 
   g_free (id);
@@ -178,58 +163,147 @@ hd_plugin_manager_new ()
   return pm;
 }
 
+static void
+append_to_list (gpointer data, gpointer user_data)
+{
+  GList **list = (GList **) user_data;
+  gchar *plugin_id = (gchar *) data;
+
+  *list = g_list_append (*list, g_strdup (plugin_id));
+}
+
+static void
+hd_plugin_manager_handle_plugin_failure (HDPluginManager *pm,
+					 GtkContainer    *container,
+				  	 HDUIPolicy      *policy,
+				  	 gint             position)
+{
+  gchar *plugin_id = hd_ui_policy_get_default_item (policy, position);
+
+  if (plugin_id == NULL)
+    return;
+  
+  if (!hd_plugin_manager_load_plugin (pm, 
+      		    		      plugin_id, 
+      				      container))
+  {
+    HildonDesktopItem *f_plugin = 
+    	hd_ui_policy_get_failure_item (policy, position);
+
+    if (f_plugin != NULL)
+    {
+      g_object_set (G_OBJECT (f_plugin),
+                    "id", g_strdup_printf ("default-plugin-%d", position),
+                    NULL);
+
+      gtk_widget_show (GTK_WIDGET (f_plugin));
+      gtk_container_add (container, GTK_WIDGET (f_plugin));
+    }
+  }
+
+  g_free (plugin_id);
+}
+
 void
 hd_plugin_manager_load (HDPluginManager *pm, 
                         GList           *plugin_list, 
-                        GtkContainer    *container)
+                        GtkContainer    *container,
+			HDUIPolicy      *policy)
 {
-  GList *iter;
+  GList *f_plugin_list = NULL;
+  GList *iter; 
+  gint position = 0;
+  
+  if (policy != NULL)
+    f_plugin_list = hd_ui_policy_filter_plugin_list (policy, plugin_list);
+
+  if (f_plugin_list == NULL)
+    g_list_foreach (plugin_list, append_to_list, &f_plugin_list);
 
   g_return_if_fail (GTK_IS_CONTAINER (container));
 
-  for (iter = plugin_list; iter; iter = g_list_next (iter))
+  for (iter = f_plugin_list; iter; iter = g_list_next (iter))
   {
-    hd_plugin_manager_load_plugin (pm, (const gchar *) iter->data, container);
+    if (!hd_plugin_manager_load_plugin (pm, 
+			    		(const gchar *) iter->data, 
+					container) && policy != NULL)
+    {
+      hd_plugin_manager_handle_plugin_failure (pm, container, policy, position);
+    }
+
+    position++;
   }
+
+  g_list_foreach (f_plugin_list, (GFunc) g_free, NULL);
+  g_list_free (f_plugin_list);
 }
 
 void
 hd_plugin_manager_sync (HDPluginManager *pm, 
                         GList           *plugin_list, 
-                        GtkContainer    *container)
+                        GtkContainer    *container,
+			HDUIPolicy      *policy)
 {
   GList *children, *iter;
-
+  GList *f_plugin_list = NULL;
+  gint position = 0;
+  
   g_return_if_fail (GTK_IS_CONTAINER (container));
+
+  if (policy != NULL)
+    f_plugin_list = hd_ui_policy_filter_plugin_list (policy, plugin_list);
+ 
+  if (f_plugin_list == NULL)
+    g_list_foreach (plugin_list, append_to_list, &f_plugin_list);
 
   children = gtk_container_get_children (container);
 
+  for (iter = children; iter; iter = g_list_next (iter))
+  {
+    g_object_ref (iter->data);
+    gtk_container_remove (container, GTK_WIDGET (iter->data));
+  }
+
   /* Add plugins to container if they are not already loaded */
-  for (iter = plugin_list; iter; iter = g_list_next (iter))
+  for (iter = f_plugin_list; iter; iter = g_list_next (iter))
   {
     GList *found = g_list_find_custom (children, 
                                        iter->data,
                                        hd_plugin_manager_find_by_id);
 
-    if (!found)
+    if (found)
     {
-      hd_plugin_manager_load_plugin (pm, (const gchar *) iter->data, container);
+      if (g_file_test ((const gchar *) iter->data, G_FILE_TEST_EXISTS))
+      {
+	gtk_widget_show (GTK_WIDGET (found->data));
+        gtk_container_add (container, GTK_WIDGET (found->data));
+        children = g_list_remove_link (children, found);
+      }
+      else
+      {
+        hd_plugin_manager_handle_plugin_failure (pm, container, policy, position);
+      }
     }
+    else
+    {
+      if (!hd_plugin_manager_load_plugin (pm, 
+			      		  (const gchar *) iter->data, 
+					  container))
+      {
+        hd_plugin_manager_handle_plugin_failure (pm, container, policy, position);
+      }
+    }
+
+    position++;
   }
 
-  /* Remove plugins from container if they are not o 
-     from list */
+  /* Destroy plugins that are not used anymore */
   for (iter = children; iter; iter = g_list_next (iter))
   {
-    GList *found = g_list_find_custom (plugin_list, 
-                                       iter->data, 
-                                       hd_plugin_manager_find_by_plugin);
-
-    if (!found)
-    {
-      gtk_widget_destroy (GTK_WIDGET (iter->data));
-    }
+    gtk_widget_destroy (GTK_WIDGET (iter->data));
   }
 
+  g_list_foreach (f_plugin_list, (GFunc) g_free, NULL);
+  g_list_free (f_plugin_list);
   g_list_free (children);
 }

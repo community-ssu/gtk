@@ -32,6 +32,7 @@
 #define HD_DESKTOP_CONFIG_KEY_SIZE_HEIGHT   "X-Size-Height"
 #define HD_DESKTOP_CONFIG_KEY_ORIENTATION   "X-Orientation"
 #define HD_DESKTOP_CONFIG_KEY_CONFIG_FILE   "X-Config-File"
+#define HD_DESKTOP_CONFIG_KEY_UI_POLICY     "X-UI-Policy"
 #define HD_DESKTOP_CONFIG_KEY_PLUGIN_DIR    "X-Plugin-Dir"
 
 #define HD_DESKTOP_CONFIG_KEY_PADDING_TOP       "X-Padding-Top"

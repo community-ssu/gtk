@@ -1,3 +1,27 @@
+2007-05-28  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	Implementation of UI policy infrastructure to define specific
+	behaviors on desktop containers.
+
+	* src/hd-desktop.c: cleanup of code for keeping track of changes in
+	the plugin directory. Several coding style fixes. Added UI policy
+	bits in the plugin manager calls and desktop configuration file.
+	* src/hd-config.h: new optional desktop configuration file 
+	key "X-UI-Policy".
+	* src/hd-ui-policy.[ch]: new UI policy object which loads 
+	container-specific implementations from dynamic modules.
+	* src/hd-panel-window.c: check for child before setting size requests
+	in Hildon Desktop items.
+	* src/hd-plugin-manager.[ch]: added UI policy handling on load and
+	sync methods. Correctly sync container configuration file and loaded
+	plugins by taking into account the defined order.
+	* configure.ac, src/Makefile.am: added UI policy directory
+	definitions. Added hd-ui-policy.[ch] and policies/* to the build.
+	* policies/Makefile.am, policies/tasknavigator-policy.c: Task
+	Navigator UI policy.
+	* data/desktop.conf.in: added X-UI-Policy to tasknavigator
+	configuration.
+
 2007-05-28  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: Attach to toggle button.

@@ -29,6 +29,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "hd-ui-policy.h"
+
 G_BEGIN_DECLS
 
 typedef struct _HDPluginManager HDPluginManager;
@@ -60,11 +62,13 @@ GObject*   hd_plugin_manager_new        (void);
 
 void       hd_plugin_manager_load       (HDPluginManager *pm,
                                          GList           *plugin_list, 
-                                         GtkContainer    *container);
+                                         GtkContainer    *container,
+					 HDUIPolicy      *policy);
 
 void       hd_plugin_manager_sync       (HDPluginManager *pm,
                                          GList           *plugin_list, 
-                                         GtkContainer    *container);
+                                         GtkContainer    *container,
+					 HDUIPolicy      *policy);
 
 G_END_DECLS
 

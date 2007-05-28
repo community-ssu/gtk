@@ -49,6 +49,7 @@
 #include "hd-select-plugins-dialog.h"
 #include "hd-config.h"
 #include "hd-plugin-manager.h"
+#include "hd-ui-policy.h"
 #include "hd-home-window.h"
 #include "hd-panel-window.h"
 #include "hd-panel-window-dialog.h"
@@ -77,6 +78,7 @@ typedef struct
   gchar                  *plugin_dir;
   GtkWidget              *container;
   HDDesktop              *desktop;
+  HDUIPolicy             *policy;
   GnomeVFSMonitorHandle  *plugin_dir_monitor;
 } HDDesktopContainerInfo;
 
@@ -183,25 +185,6 @@ hd_desktop_launch_banner_close (GtkWidget *parent,
   g_free (info);
 }
 
-
-static gint
-hd_desktop_find_by_id (gconstpointer a, gconstpointer b)
-{
-  gint result = -1;
-  gchar *id = NULL;
-
-  g_object_get (G_OBJECT (a),
-                "id", &id,
-                NULL);
-
-  if (!g_ascii_strcasecmp (id, b))
-    result = 0;
-
-  g_free (id);
-
-  return result;
-}
-
 static gchar *
 hd_desktop_get_conf_file_path (const gchar *config_file)
 {
@@ -276,14 +259,14 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
   {
     g_key_file_set_string (keyfile,
                            (gchar *) iter->data,
-                           "", 
-                           "");
+                           "foo", 
+                           "bar");
 
     /* No way to add only a group without keys. We need to 
        remove the empty key */
     g_key_file_remove_key (keyfile,
                            (gchar *) iter->data,
-                            "",
+                            "foo",
                             &error);
 
     if (error)
@@ -381,7 +364,8 @@ hd_desktop_container_load (HildonDesktopWindow *window, gpointer user_data)
 
   hd_plugin_manager_sync (HD_PLUGIN_MANAGER (priv->pm), 
                           plugin_list, 
-                          window->container);
+                          window->container,
+			  info->policy);
 
   g_list_foreach (plugin_list, (GFunc) g_free , NULL);
   g_list_free (plugin_list); 
@@ -440,7 +424,8 @@ hd_desktop_select_plugins (HildonDesktopWindow *window, gpointer user_data)
   {
     hd_plugin_manager_sync (HD_PLUGIN_MANAGER (priv->pm),
                             selected_plugins,
-                            window->container);
+                            window->container,
+			    info->policy);
   }
 
   g_list_foreach (selected_plugins, (GFunc) g_free , NULL);
@@ -498,8 +483,8 @@ hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
-    /* Disabling desktop conf file monitoing to avoid crashes for now */
 #if 0
+    /* Disabling desktop conf file monitoing to avoid crashes for now */
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
@@ -520,7 +505,8 @@ hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
       hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
                               plugin_list, 
-                              HILDON_DESKTOP_WINDOW (info->container)->container);
+                              HILDON_DESKTOP_WINDOW (info->container)->container,
+			      info->policy);
 
       g_free (config_file);
       g_list_foreach (plugin_list, (GFunc) g_free , NULL);
@@ -551,8 +537,8 @@ hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
-    /* Disabling desktop conf file monitoing to avoid crashes for now */
 #if 0
+    /* Disabling desktop conf file monitoing to avoid crashes for now */
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
@@ -573,7 +559,8 @@ hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
       hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
                               plugin_list, 
-                              HILDON_DESKTOP_WINDOW (info->container)->container);
+                              HILDON_DESKTOP_WINDOW (info->container)->container,
+			      info->policy);
 
       g_free (config_file);
       g_list_foreach (plugin_list, (GFunc) g_free , NULL);
@@ -591,59 +578,40 @@ hd_desktop_plugin_dir_changed (GnomeVFSMonitorHandle *handle,
                                GnomeVFSMonitorEventType event_type,
                                HDDesktopContainerInfo *info)
 {
-  GDir *dir;
-  GError *error = NULL;
-  GList *plugin_list = NULL, *remove_list, *iter;
-  const gchar *filename;
+  GList *plugin_list = NULL, *children, *iter;
+  gboolean update = FALSE;
+
+  if (event_type != GNOME_VFS_MONITOR_EVENT_DELETED &&
+      event_type != GNOME_VFS_MONITOR_EVENT_CREATED)
+    return;
+
+  if (event_type == GNOME_VFS_MONITOR_EVENT_CREATED)
+    update = TRUE;
   
-  remove_list = gtk_container_get_children (
+  children = gtk_container_get_children (
                   HILDON_DESKTOP_WINDOW (info->container)->container);
 
-  dir = g_dir_open (info->plugin_dir, 0, &error);
-
-  if (!dir)
+  for (iter = children; iter; iter = g_list_next (iter))
   {
-    g_warning ("Error reading plugin directory: %s", error->message);
-    g_error_free (error);
-
-    return;
-  }
-
-  /* Iterate through available plugins and check if the loaded plugins
-     are still there.  */
-  while ((filename = g_dir_read_name (dir)))
-  {
-    GList *found = NULL;
-    gchar *desktop_path = NULL;
+    GObject *plugin = (GObject *) iter->data;
+    gchar *plugin_id;
     
-    desktop_path = g_build_filename (info->plugin_dir, filename, NULL);
+    g_object_get (plugin,
+		  "id", &plugin_id,
+		  NULL);
 
-    found = g_list_find_custom (remove_list, 
-                                desktop_path,
-                                hd_desktop_find_by_id);
-
-    if (found)
+    if (g_file_test (plugin_id, G_FILE_TEST_EXISTS))
     {
-      plugin_list = g_list_append (plugin_list, desktop_path);
-      remove_list = g_list_remove (remove_list, found->data);
+      plugin_list = g_list_append (plugin_list, plugin_id);
+    }
+    else
+    {
+      update = TRUE;
     }
   }
- 
-  /* Destroy all loaded plugins which are not available anymore */
-  for (iter = remove_list; iter; iter = g_list_next (iter))
-  {
-    gtk_widget_destroy (iter->data);
-  }
 
-  /* Save the current plugin list if needed */
-  if (remove_list)
-  {
+  if (update)
     hd_desktop_plugin_list_to_conf (plugin_list, info->config_file);
-  } 
-
-  g_list_foreach (plugin_list, (GFunc) g_free , NULL);
-  g_list_free (plugin_list);
-  g_list_free (remove_list);
 }
 
 static void 
@@ -707,11 +675,43 @@ hd_desktop_load_containers (HDDesktop *desktop)
   for (i = 0; groups[i]; i++)
   {
     HDDesktopContainerInfo *info = NULL;
+    HDUIPolicy *policy = NULL;
     GList *plugin_list = NULL;
     gchar *type, *container_config, *container_config_file, *plugin_dir;
-
+    gchar *policy_module;
+    
     error = NULL;
     
+    policy_module = g_key_file_get_string (keyfile, 
+                                           groups[i], 
+                                           HD_DESKTOP_CONFIG_KEY_UI_POLICY,
+                                           &error);
+
+    if (error)
+    {
+      g_free (policy_module);
+
+      g_error_free (error);
+      error = NULL;
+    }
+    else 
+    {
+      gchar *policy_module_path = g_build_filename (HD_UI_POLICY_MODULES_PATH,
+		      				    policy_module,
+						    NULL);
+
+      if (g_file_test (policy_module_path, G_FILE_TEST_EXISTS))
+      {
+        policy = hd_ui_policy_new (policy_module_path);
+      }
+      else
+      {
+        g_warning ("Container's UI policy module doesn't exist. Not applying policy then.");
+      }
+
+      g_free (policy_module_path);
+    }
+
     container_config_file = g_key_file_get_string (keyfile, 
                                                    groups[i], 
                                                    HD_DESKTOP_CONFIG_KEY_CONFIG_FILE,
@@ -737,6 +737,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
       g_free (container_config);
       g_free (container_config_file);
+      g_free (policy_module);
 
       continue;
     }
@@ -754,6 +755,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
       g_free (plugin_dir);
       g_free (container_config);
       g_free (container_config_file);
+      g_free (policy_module);
 
       g_error_free (error);
 
@@ -774,6 +776,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
       g_free (plugin_dir);
       g_free (container_config);
       g_free (container_config_file);
+      g_free (policy_module);
 
       g_error_free (error);
 
@@ -857,6 +860,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
         g_free (plugin_dir);
         g_free (container_config);
         g_free (container_config_file);
+        g_free (policy_module);
 
         g_error_free (error);
 
@@ -877,6 +881,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
         g_free (plugin_dir);
         g_free (container_config);
         g_free (container_config_file);
+        g_free (policy_module);
 
         g_error_free (error);
 
@@ -897,6 +902,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
         g_free (plugin_dir);
         g_free (container_config);
         g_free (container_config_file);
+        g_free (policy_module);
 
         g_error_free (error);
 
@@ -917,6 +923,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
         g_free (plugin_dir);
         g_free (container_config);
         g_free (container_config_file);
+        g_free (policy_module);
 
         g_error_free (error);
 
@@ -938,6 +945,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
         g_free (plugin_dir);
         g_free (container_config);
         g_free (container_config_file);
+        g_free (policy_module);
 
         g_error_free (error);
 
@@ -993,12 +1001,14 @@ hd_desktop_load_containers (HDDesktop *desktop)
       g_free (type);
       g_free (container_config);
       g_free (container_config_file);
+      g_free (policy_module);
       continue;
     }
 
     info->config_file = g_strdup (container_config_file);
     info->plugin_dir = g_strdup (plugin_dir);
     info->desktop = desktop;
+    info->policy = policy;
     
     g_signal_connect (G_OBJECT (info->container), 
                       "select-plugins",
@@ -1026,7 +1036,8 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
     hd_plugin_manager_load (HD_PLUGIN_MANAGER (priv->pm), 
                             plugin_list, 
-                            HILDON_DESKTOP_WINDOW (info->container)->container);
+                            HILDON_DESKTOP_WINDOW (info->container)->container,
+			    info->policy);
 
     gtk_widget_show (info->container);
 
