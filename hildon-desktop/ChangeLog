@@ -1,3 +1,11 @@
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
+	- don't set the sensitivity of the layout mode menu item when
+	not used
+	* libhildondesktop/hildon-home-window.c:
+	- fixed a typo in property IDs assignment
+
 2007-05-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-home-item.[ch]:

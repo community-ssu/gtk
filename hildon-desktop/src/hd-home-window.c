@@ -1396,7 +1396,8 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
       /* if no applets are set we disable the layout_mode item
        * and the settings item.
        */
-      gtk_widget_set_sensitive (priv->layout_mode_item, FALSE);
+      if (!priv->layout_mode_sucks)
+        gtk_widget_set_sensitive (priv->layout_mode_item, FALSE);
       gtk_widget_set_sensitive (priv->settings_item, FALSE);
       return;
     }
@@ -1420,7 +1421,8 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
         }
     }
 
-  gtk_widget_set_sensitive (priv->layout_mode_item, TRUE);
+  if (!priv->layout_mode_sucks)
+    gtk_widget_set_sensitive (priv->layout_mode_item, TRUE);
   gtk_widget_set_sensitive (priv->settings_item, settings_item_active);
   g_list_free (items);
 }

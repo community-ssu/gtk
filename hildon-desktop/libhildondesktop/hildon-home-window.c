@@ -358,7 +358,7 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
                                 G_PARAM_READWRITE);
 
   g_object_class_install_property (gobject_class,
-                                   PROP_WORK_AREA,
+                                   PROP_MENU,
                                    pspec);
 
   /* Overriden from GtkWindow */
