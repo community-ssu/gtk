@@ -1,9 +1,14 @@
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-titlebar.c:
+	- attach the menu to the titlebar
+
 2007-05-28  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-others-button.c:
 	* src/hd-applications-menu.c:
 	- Attached to proper widgets.
-	
+
 2007-05-28  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	Implementation of UI policy infrastructure to define specific
