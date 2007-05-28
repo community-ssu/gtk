@@ -130,7 +130,6 @@ hildon_home_window_set_property (GObject      *gobject,
 
                   gtk_widget_push_composite_child ();
 
-                  priv->titlebar = hildon_home_titlebar_new ();
                   g_object_ref (priv->titlebar);
                   gtk_object_sink (GTK_OBJECT (priv->titlebar));
                   gtk_widget_set_parent (priv->titlebar,
