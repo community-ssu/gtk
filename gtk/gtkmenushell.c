@@ -43,6 +43,11 @@
 #include "gtkintl.h"
 #include "gtkalias.h"
 
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+#include <X11/extensions/XTest.h>
+#include "x11/gdkx.h"
+#endif
+
 #define PACK_DIRECTION(m)                                 \
    (GTK_IS_MENU_BAR (m)                                   \
      ? gtk_menu_bar_get_pack_direction (GTK_MENU_BAR (m)) \
@@ -590,12 +595,23 @@ gtk_menu_shell_button_press (GtkWidget      *widget,
     }
   else
     {
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+      GdkDisplay *display = gtk_widget_get_display (widget);
+#endif
+
       widget = gtk_get_event_widget ((GdkEvent*) event);
       if (widget == GTK_WIDGET (menu_shell))
 	{
 	  gtk_menu_shell_deactivate (menu_shell);
 	  g_signal_emit (menu_shell, menu_shell_signals[SELECTION_DONE], 0);
 	}
+
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+      XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
+                            event->button,
+                            TRUE,
+                            0);
+#endif
     }
 
   if (menu_item && _gtk_menu_item_is_selectable (menu_item) &&
@@ -768,8 +784,19 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
 
       if (deactivate)
         {
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+          GdkDisplay *display = gtk_widget_get_display (widget);
+#endif
+
           gtk_menu_shell_deactivate (menu_shell);
           g_signal_emit (menu_shell, menu_shell_signals[SELECTION_DONE], 0);
+
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+          XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
+                                event->button,
+                                FALSE,
+                                0);
+#endif
         }
 
       priv->activated_submenu = FALSE;
