@@ -1,6 +1,4 @@
-gtk+2.0 (2:2.10.12-0osso3) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.10.12-0osso3) unstable; urgency=low
 
   * debian/control.in:
   * debian/control: Bump glib Build-Depends to 2.12.12-1osso2 due to
@@ -18,6 +16,9 @@ gtk+2.0 (2:2.10.12-0osso3) UNRELEASED; urgency=low
     Fixes: NB##50640
   * Allow Maemo specific hooks after widget construction by calling
     them from GObjectClass.constructed.
+  * Use SCROLL_DELAY_FACTOR (5) in GtkMenu to slow down the scrolling
+    and use gtk-timeout-initial rather than gtk-timeout-repeat to not
+    start the scrolling so quickly.
   * Misc fixes to GtkMenuShell.
 
  -- Xan Lopez <xan.lopez@nokia.com>  Mon, 28 May 2007 15:09:06 +0300
