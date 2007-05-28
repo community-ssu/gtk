@@ -75,11 +75,6 @@ HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void);
 /* Returns TRUE, if async queries have finished */
 gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self);
 
-/* Communication with tasknavigator for displaying possible
-   banner while making blocking calls */
-void _hildon_file_system_prepare_banner(guint *timeout_id);
-void _hildon_file_system_cancel_banner(guint *timeout_id);
-
 G_END_DECLS
 
 #endif

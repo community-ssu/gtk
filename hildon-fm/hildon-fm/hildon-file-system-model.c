@@ -114,7 +114,6 @@ struct _HildonFileSystemModelPrivate {
        them immediately after composed image is ready */
     GdkPixbuf *expanded_emblem, *collapsed_emblem;
     guint timeout_id;
-    guint banner_timeout_id;
 
     /* Properties */
     gchar *backend_name;
@@ -574,11 +573,9 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
     /* Unix backend can fail to set children to NULL if it encounters error */
     {
       GSList *children = NULL;
-      guint *banner_id = &(CAST_GET_PRIVATE(model)->banner_timeout_id);
       time_t current_time = time(NULL);
 
       g_clear_error(&model_node->error);
-      _hildon_file_system_prepare_banner(banner_id);
 
       /* List children do not work reliably with bluetooth connections. It can
          still succeed, even though the connection has died already. This
@@ -1825,8 +1822,6 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
             return NULL;
         }
     }
-
-    _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
 
     if (parent_folder) {
         GError *error = NULL;
@@ -3119,7 +3114,6 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
       {
         gboolean success;
 
-        _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
         success = link_file_folder(node, model_node->path);
 
         model_node->accessed = TRUE;
