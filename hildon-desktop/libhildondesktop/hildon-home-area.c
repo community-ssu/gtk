@@ -60,6 +60,7 @@ typedef struct
   Picture       alpha_mask;
   Picture       alpha_mask_unscaled;
   gint          background_width, background_height;
+  gulong        realize_handler, style_set_handler, size_allocate_handler;
 } ChildData;
 #endif
 
@@ -789,15 +790,18 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
       gtk_container_child_set (area, applet,
                                "child-data", child_data,
                                NULL);
-      g_signal_connect_after (applet, "realize",
-                              G_CALLBACK (hildon_home_area_child_realize),
-                              area);
-      g_signal_connect_after (applet, "style-set",
-                              G_CALLBACK (hildon_home_area_child_style_set),
-                              area);
-      g_signal_connect (applet, "size-allocate",
-                        G_CALLBACK (hildon_home_area_child_size_allocate),
-                        area);
+      child_data->realize_handler =
+          g_signal_connect_after (applet, "realize",
+                                  G_CALLBACK (hildon_home_area_child_realize),
+                                  area);
+      child_data->style_set_handler =
+          g_signal_connect_after (applet, "style-set",
+                                  G_CALLBACK (hildon_home_area_child_style_set),
+                                  area);
+      child_data->size_allocate_handler =
+          g_signal_connect (applet, "size-allocate",
+                            G_CALLBACK (hildon_home_area_child_size_allocate),
+                            area);
 
       if (GTK_WIDGET_REALIZED (applet))
         {
@@ -1682,31 +1686,36 @@ hildon_home_area_batch_add (HildonHomeArea *area)
                                                            r->y,
                                                            -1,
                                                            -1);
+              GdkRectangle     *padded_layout = g_new (GdkRectangle, 1);
 
               g_hash_table_insert (priv->layout, g_strdup (name), layout);
               gtk_container_add (GTK_CONTAINER (area), w);
 
-              layout->width  = req.width;
-              if (layout->x + layout->width < area_rectangle->width)
-                layout->width += priv->applet_padding;
+              *padded_layout = *layout;
 
-              layout->height = req.height;
-              if (layout->y + layout->height < area_rectangle->height)
-                layout->height += priv->applet_padding;
+              padded_layout->width  = req.width;
+              if (padded_layout->x + padded_layout->width <
+                  area_rectangle->width)
+                padded_layout->width += priv->applet_padding;
 
-              if (layout->x)
+              padded_layout->height = req.height;
+              if (padded_layout->y + padded_layout->height <
+                  area_rectangle->height)
+                padded_layout->height += priv->applet_padding;
+
+              if (padded_layout->x)
                 {
-                  layout->x -= priv->applet_padding;
-                  layout->width += priv->applet_padding;
+                  padded_layout->x -= priv->applet_padding;
+                  padded_layout->width += priv->applet_padding;
                 }
 
-              if (layout->y)
+              if (padded_layout->y)
                 {
-                  layout->y-= priv->applet_padding;
-                  layout->height += priv->applet_padding;
+                  padded_layout->y-= priv->applet_padding;
+                  padded_layout->height += priv->applet_padding;
                 }
 
-              substract_rectangle_from_region (region, layout);
+              substract_rectangle_from_region (region, padded_layout);
               region = g_list_sort (region, (GCompareFunc)sort_rectangles);
 
               break;
@@ -1760,9 +1769,20 @@ hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
                                "child-data", &child_data,
                                NULL);
 
-      priv->children_data = g_list_remove (priv->children_data, child_data);
+      if (child_data)
+        {
 
-      child_data_free (child_data);
+          g_signal_handler_disconnect (applet,
+                                       child_data->realize_handler);
+          g_signal_handler_disconnect (applet,
+                                       child_data->style_set_handler);
+          g_signal_handler_disconnect (applet,
+                                       child_data->size_allocate_handler);
+
+          priv->children_data = g_list_remove (priv->children_data, child_data);
+
+          child_data_free (child_data);
+        }
     }
 #endif
 

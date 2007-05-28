@@ -1,3 +1,10 @@
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- do not add the padding to the layout saved
+	- disconnect the various handlers attached to the children
+	when they are removed
+
 2007-05-28  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-button.c: Yet another attachment.
