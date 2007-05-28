@@ -1,3 +1,8 @@
+2007-05-28  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonvolumebar.rc: Fixing the mute button focus drawing for
+	volumebars. Fixes NB#54525.
+
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/hildonwebshortcut.rc:

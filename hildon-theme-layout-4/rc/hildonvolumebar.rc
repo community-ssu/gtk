@@ -183,13 +183,6 @@ style "osso-volumebar-horizontal-mutebutton"
     image
     {
       function = FOCUS
-      state = INSENSITIVE
-      file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_disabled_pressed.png"
-    }
-    image
-    {
-      function = FOCUS
-      file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_pressed.png"
     }
   }
 }
@@ -363,16 +356,9 @@ style "osso-volumebar-vertical-mutebutton"
       shadow = IN
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png"
     }
-    image
+   image
     {
       function = FOCUS
-      state = INSENSITIVE
-      file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_disabled_pressed.png"
-    }
-    image
-    {
-      function = FOCUS
-      file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png"
     }
   }
 }
