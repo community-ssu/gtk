@@ -6,14 +6,7 @@ module_LTLIBRARIES = libhail_hildonfm.la
 
 libhail_hildonfm_la_SOURCES =			\
 	hail-hildon-fm.c \
-	hailfileselection.c
-	
-#TODO
-#	hailcolorchooser.c
-
-#libhailincludedir=$(includedir)/hail-1.0/hail
-
-libhail_hildonfm_private_h_sources =		\
+	hailfileselection.c \
 	hail-hildon-fm.h \
 	hailfileselection.h
 

@@ -18,14 +18,7 @@ libhail_hildonlibs_la_SOURCES =			\
 	hailrangeeditor.c \
 	hailcolorbutton.c \
 	hailwindow.c \
-	hailcodedialog.c
-	
-#TODO
-#	hailcolorchooser.c
-
-#libhailincludedir=$(includedir)/hail-1.0/hail
-
-libhail_hildonlibs_private_h_sources =		\
+	hailcodedialog.c \
 	hail-hildon-libs.h \
 	hailcaption.h \
 	hailfindtoolbar.h \
@@ -39,7 +32,17 @@ libhail_hildonlibs_private_h_sources =		\
 	hailrangeeditor.h \
 	hailcolorbutton.h \
 	hailwindow.h \
-	hailcodedialog.h
+	hailcodedialog.h \
+	hailappview.h \
+	hailcolorselector.h \
+	hailgrid.h \
+	hailgriditem.h
+
+
+#TODO
+#	hailcolorchooser.c
+
+#libhailincludedir=$(includedir)/hail-1.0/hail
 
 
 #	hailcolorchooser.h 
@@ -55,6 +58,7 @@ hail_public_h_sources =
 
 INCLUDES = \
 	-I$(top_srcdir)		 \
+	-I$(top_srcdir)/hail/hail-hildon-libs \
 	-DVERSION=\"$(VERSION)\" \
 	@DEP_CFLAGS@
 

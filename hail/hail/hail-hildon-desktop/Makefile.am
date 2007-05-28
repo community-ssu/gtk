@@ -15,9 +15,7 @@ libhail_hildondesktop_la_SOURCES =		\
 	haildesktoppanelwindow.c		\
 	hailtogglebutton.c			\
 	hailhomearea.c				\
-	hailhometitlebar.c
-	
-libhail_hildondesktop_private_h_sources =	\
+	hailhometitlebar.c			\
 	hail-hildon-desktop.h			\
 	hailimagemenuitem.h			\
 	haildesktopitem.h			\

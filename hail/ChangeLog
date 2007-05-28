@@ -1,3 +1,18 @@
+2007-05-28  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hail/hail-hildon-desktop/Makefile.am:
+	(hail_home_window_get_n_children), (hail_home_window_ref_child):
+	* hail/hail-hildon-fm/Makefile.am:
+	* hail/hail-hildon-libs/Makefile.am:
+	* po/POTFILES.in:
+	* ut/Makefile.am: Fix make distcheck. Notice that for running it under
+	sb you need:
+	SBOX_REDIRECT_IGNORE=/usr/bin/pkg-config PKG_CONFIG=/usr/bin/pkg-config ./configure --enable-gtk-doc=yes
+	SBOX_REDIRECT_IGNORE=/usr/bin/pkg-config PKG_CONFIG=/usr/bin/pkg-config make distcheck
+	* hail/hail-hildon-desktop/hailhomewindow.c: Comment out some code
+	because of API change in HildonHomeWindow. Need to be fixed as soon as
+	the titlebar is exported as a property.
+
 2007-04-25  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* hail/hail-hildon-desktop/*:

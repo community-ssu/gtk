@@ -169,10 +169,14 @@ hail_home_window_get_n_children (AtkObject *obj)
   /* any children from the parent */
   n_children = ATK_OBJECT_CLASS (parent_class)->get_n_children (obj);
 
+#if 0  /* FIXME: API Change on HildonHome */
   if (hildon_home_window_get_titlebar (HILDON_HOME_WINDOW (widget)))
     {
       n_children++;
     }
+#elseif
+  n_children++;
+#endif
 
   return n_children;
 }
@@ -211,6 +215,7 @@ hail_home_window_ref_child (AtkObject *obj,
     }
   else
     {
+#if 0  /* FIXME: API Change on HildonHome */
       /* the HildonHomeTitleBar widget */
       GtkWidget *titlebar =
         hildon_home_window_get_titlebar (HILDON_HOME_WINDOW (widget));
@@ -220,6 +225,7 @@ hail_home_window_ref_child (AtkObject *obj,
           accessible = gtk_widget_get_accessible (titlebar);
 	  g_object_ref (accessible);
         }
+#endif
     }
 
   return accessible;
