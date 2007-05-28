@@ -1,6 +1,11 @@
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* plugin/hildon-home-webshortcut.c:
+	- add file dialog filter back, removed by accident
+
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.c:
 	- made non-resizable
 	- changed size
 	- added _expose handler to avoid using a GtkFrame

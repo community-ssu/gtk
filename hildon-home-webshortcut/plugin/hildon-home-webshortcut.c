@@ -280,10 +280,8 @@ hhws_select_file_dialog (Hhws *hhws)
   gtk_file_filter_add_mime_type (mime_type_filter, "image/bmp");
   gtk_file_filter_add_mime_type (mime_type_filter, "image/tiff");
   gtk_file_filter_add_mime_type (mime_type_filter, "sketch/png");
-#if 0
   gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog),
                                mime_type_filter);
-#endif
 
   dir = hhws_get_user_image_dir ();
   if (!gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), dir))
