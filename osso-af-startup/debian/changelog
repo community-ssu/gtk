@@ -1,3 +1,11 @@
+osso-af-startup (1.42-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Setting the OOM killer protection more intelligently in af-services.
+    (Related to NB#52080.)
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 28 May 2007 17:29:11 +0300
+
 osso-af-startup (1.41-1) unstable; urgency=low
 
   * Added sourcing of sdl.defs. (Related to NB#54725)

@@ -2,7 +2,7 @@
 #
 # This file is part of osso-af-startup.
 #
-# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+# Copyright (C) 2004-2007 Nokia Corporation. All rights reserved.
 #
 # Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 #
@@ -21,8 +21,29 @@
 # 02110-1301 USA
 
 # Exclude some UIDs from memory allocation denial.
-# 30000 is messagebus, 30001 could be used by Matchbox
-echo "30000 30001 30002 30003" > /proc/sys/vm/lowmem_allowed_uids
+getuid()
+{
+  echo `cat /etc/passwd | grep "^$1" | awk -F ':' '{print $3}'`
+}
+
+# ensure these UIDs are protected for backwards compatibility
+TMP_UIDS="30000 30001 30002 30003"
+
+# ensure these users are protected
+for n in messagebus systemui haldaemon; do
+  TMP_UIDS="$TMP_UIDS `getuid $n`"
+done
+
+UIDS=""
+for n in $TMP_UIDS; do
+  echo $UIDS | grep $n > /dev/null
+  if [ $? != 0 ]; then
+    UIDS="$UIDS $n"
+  fi
+done
+
+echo "Protecting UIDs $UIDS from the memory allocation denial."
+echo $UIDS > /proc/sys/vm/lowmem_allowed_uids
 
 # activate lowmem module
 echo 92 > /proc/sys/vm/lowmem_deny_watermark
