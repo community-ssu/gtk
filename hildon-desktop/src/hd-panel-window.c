@@ -101,7 +101,7 @@ hd_panel_window_style_set (GtkWidget   *widget,
       priv->background_picture = None;
     }
 
-  filename = widget->style->rc_style->bg_pixmap_name[GTK_STATE_PRELIGHT];
+  filename = widget->style->rc_style->bg_pixmap_name[GTK_STATE_NORMAL];
 
   if (!filename)
     return;
