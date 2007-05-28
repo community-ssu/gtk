@@ -6,8 +6,8 @@
 ####################################################
 style "osso-speeddial"
 {
-  HildonDesktopHomeItem::background-borders = { 25, 25, 25, 25 }
-  bg_pixmap[PRELIGHT] = "../images/qgn_plat_gene_applet_bg_alpha.png"
+  HildonDesktopHomeItem::background-borders = { 36, 36, 36, 36 }
+  bg_pixmap[PRELIGHT] = "../images/qgn_plat_speedcontact_applet_bg_alpha.png"
   xthickness = 0
   ythickness = 0
 
@@ -16,8 +16,8 @@ style "osso-speeddial"
       image
         {
           function = SHADOW
-          file     = "../images/qgn_plat_gene_applet_bg.png"
-          border   = { 25, 25, 25, 25 }
+          file     = "../images/qgn_plat_speedcontact_applet_bg.png"
+          border   = { 36, 36, 36, 36 }
           shaped   = TRUE
         }
     }
