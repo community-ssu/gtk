@@ -1,3 +1,12 @@
+libhildonfm (1:1.9.26) unstable; urgency=low
+
+  * Do not use the banner escort service of the Task Navigator.  It is
+    gone.
+  * Implemented localizable folder names.
+  * Fixes: NB#N58259.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 25 May 2007 17:02:33 +0300
+
 libhildonfm (1:1.9.25) unstable; urgency=low
 
   * Return device path as the "extra info" for GnomeVFS volumes and

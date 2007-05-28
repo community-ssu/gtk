@@ -1,3 +1,13 @@
+2007-05-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.26
+	
+	* hildon-fm/hildon-file-system-settings.h,
+	hildon-fm/hildon-file-system-settings.c,
+	hildon-fm/hildon-file-system-model.c:
+	(_hildon_file_system_prepare_banner,
+	_hildon_file_system_cancel_banner): Removed.  Removed all calls.
+
 2007-05-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-private.c (translate_special_name): New.
