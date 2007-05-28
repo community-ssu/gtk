@@ -1,3 +1,11 @@
+2007-05-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c: add SCROLL_DELAY_FACTOR
+	(gtk_menu_scroll_timeout_initial): in touchscreen use the delay factor
+	to slow scroll by item down to reasonable speed
+	(gtk_menu_start_scrolling): use gtk-timeout-initial rather than
+	gtk-timeout-repeat to not start scrolling so quickly
+
 2007-05-28  Xan Lopez  <xan.lopez@nokia.com>
 	
 	Merge from upstream, Fixes: NB#53826
