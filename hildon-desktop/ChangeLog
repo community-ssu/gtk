@@ -1,5 +1,10 @@
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-window.c:
+	- add "titlebar" property so it can be accessed for a11n
+
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c:
 	- emit "layout-changed" when applets are really added to the area
 	* src/hd-home-window.c:

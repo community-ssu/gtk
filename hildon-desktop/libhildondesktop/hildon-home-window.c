@@ -73,7 +73,8 @@ enum
 
   PROP_WORK_AREA,
   PROP_TITLE,
-  PROP_MENU
+  PROP_MENU,
+  PROP_TITLEBAR
 };
 
 static void
@@ -112,11 +113,35 @@ hildon_home_window_set_property (GObject      *gobject,
                                               g_value_get_pointer (value));
           break;
       case PROP_TITLE:
-          g_debug ("Setting title %s", g_value_get_string (value));
           g_object_set (priv->titlebar,
                         "title", g_value_get_string (value),
                         NULL);
           break;
+      case PROP_TITLEBAR:
+            {
+              GtkWidget *titlebar = GTK_WIDGET (g_value_get_object (value));
+
+              if (GTK_IS_WIDGET (titlebar))
+                {
+                  if (priv->titlebar)
+                    g_object_unref (priv->titlebar);
+
+                  priv->titlebar = titlebar;
+
+                  gtk_widget_push_composite_child ();
+
+                  priv->titlebar = hildon_home_titlebar_new ();
+                  g_object_ref (priv->titlebar);
+                  gtk_object_sink (GTK_OBJECT (priv->titlebar));
+                  gtk_widget_set_parent (priv->titlebar,
+                                         GTK_WIDGET (gobject));
+                  gtk_widget_show (priv->titlebar);
+
+                  gtk_widget_pop_composite_child ();
+                }
+            }
+          break;
+
       default:
           G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
           break;
@@ -154,6 +179,10 @@ hildon_home_window_get_property (GObject    *gobject,
                             NULL);
               g_value_set_string (value, title);
             }
+          break;
+
+      case PROP_TITLEBAR:
+          g_value_set_object (value, priv->titlebar);
           break;
 
       default:
@@ -349,6 +378,16 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
 
   g_object_class_install_property (gobject_class,
                                    PROP_WORK_AREA,
+                                   pspec);
+
+  pspec =  g_param_spec_object ("titlebar",
+                                "Titlebar",
+                                "Titlebar widget",
+                                GTK_TYPE_WIDGET,
+                                G_PARAM_READWRITE);
+
+  g_object_class_install_property (gobject_class,
+                                   PROP_TITLEBAR,
                                    pspec);
 
   pspec =  g_param_spec_object ("menu",
