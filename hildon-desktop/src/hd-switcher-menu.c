@@ -430,6 +430,9 @@ hd_switcher_menu_constructor (GType gtype,
   switcher->priv->popup_window =
     HILDON_DESKTOP_POPUP_WINDOW 
       (hildon_desktop_popup_window_new (1,GTK_ORIENTATION_HORIZONTAL,HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM));	     
+
+  hildon_desktop_popup_window_attach_widget
+    (switcher->priv->popup_window, button);	  
   
   switcher->priv->notifications_window = 
     hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 0);

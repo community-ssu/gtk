@@ -1,3 +1,11 @@
+2007-05-28  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: Attach to toggle button.
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Added method for attaching widget.
+	- Send fake key when popping-down the menu and the pointer is not on
+	the attached widget.
+
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:

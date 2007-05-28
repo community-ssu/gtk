@@ -91,17 +91,12 @@ static gboolean hildon_desktop_popup_window_composited_leave_notify (GtkWidget *
 						     		     GdkEventCrossing *event,
 						     		     HildonDesktopPopupWindow *popup);
 
-static gboolean hildon_desktop_popup_window_composited_button_press (GtkWidget *widget,
-		                                                     GdkEventButton *event,
-	                                                             HildonDesktopPopupWindow *popup);
-
 static gboolean hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
 		                                                       GdkEventButton *event,
 	                                                               HildonDesktopPopupWindow *popup);
 
 static gboolean popup_grab_on_window (GdkWindow *window, guint32 activate_time, gboolean grab_keyboard);
 
-static gboolean hildon_desktop_popup_window_button_press_event (GtkWidget *widget, GdkEventButton *event);
 static gboolean hildon_desktop_popup_window_button_release_event (GtkWidget *widget, GdkEventButton *event);
 #ifdef HAVE_XTEST
 static void hildon_desktop_popup_menu_fake_button_event (GdkEventButton *event, gboolean press);
@@ -171,7 +166,6 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
 
   widget_class->motion_notify_event     = hildon_desktop_popup_window_motion_notify;
   widget_class->leave_notify_event      = hildon_desktop_popup_window_leave_notify;
-  widget_class->button_press_event      = hildon_desktop_popup_window_button_press_event;
   widget_class->button_release_event    = hildon_desktop_popup_window_button_release_event;
   widget_class->key_press_event 	= hildon_desktop_popup_window_key_press_event;
 	  
@@ -274,11 +268,6 @@ hildon_desktop_popup_window_constructor (GType gtype,
     gtk_window_set_type_hint (GTK_WINDOW (popup->priv->extra_panes[i]),
 		    	      GDK_WINDOW_TYPE_HINT_MENU);
 
-    g_signal_connect (popup->priv->extra_panes[i],
-		      "button-press-event",
-		      G_CALLBACK (hildon_desktop_popup_window_composited_button_press),
-		      (gpointer)popup);
-    
     g_signal_connect (popup->priv->extra_panes[i],
 		      "button-release-event",
 		      G_CALLBACK (hildon_desktop_popup_window_composited_button_release),
@@ -603,20 +592,6 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 }
 
 static gboolean
-hildon_desktop_popup_window_composited_button_press (GtkWidget *widget,
-                                                     GdkEventButton *event,
-                                                     HildonDesktopPopupWindow *popup)
-{
-  if (!event)
-    return FALSE;
-#ifdef HAVE_XTEST
-  hildon_desktop_popup_menu_fake_button_event (event, TRUE);
-#endif
-
-  return TRUE;
-}
-
-static gboolean
 hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
                                                        GdkEventButton *event,
                                                        HildonDesktopPopupWindow *popup)
@@ -665,25 +640,25 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
 
   /* Event outside of popup or in button area, close in clean way */
   if (!in_panes_area || in_window_area)
+  {	  
     hildon_desktop_popup_window_popdown (popup);
-
 #ifdef HAVE_XTEST
-  hildon_desktop_popup_menu_fake_button_event (event, FALSE);
+    if (popup->priv->attached_widget)
+    {	    
+      gtk_widget_get_pointer (popup->priv->attached_widget, &x, &y);
+
+      w = popup->priv->attached_widget->allocation.width;
+      h = popup->priv->attached_widget->allocation.height;
+      
+      if ((x < 0) || (x > w) || (y < 0) || (y > h))
+      {	      
+        hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
+        hildon_desktop_popup_menu_fake_button_event (event, FALSE);
+      }
+    }
 #endif
-  return TRUE;
-}
-
-static gboolean
-hildon_desktop_popup_window_button_press_event (GtkWidget *widget,
-                                                GdkEventButton *event)
-{
-  if (!event)
-    return FALSE;
-
-#ifdef HAVE_XTEST
-  hildon_desktop_popup_menu_fake_button_event (event, TRUE);
-#endif  
-
+  }
+  
   return TRUE;
 }
 
@@ -724,11 +699,24 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
 
   /* Event outside of popup or in button area, close in clean way */
   if (!in_panes_area || in_window_area)
+  {	  
     hildon_desktop_popup_window_popdown (popup);
-
 #ifdef HAVE_XTEST
-  hildon_desktop_popup_menu_fake_button_event (event, FALSE);
+    if (popup->priv->attached_widget)
+    {	    
+      gtk_widget_get_pointer (popup->priv->attached_widget, &x, &y);
+
+      w = popup->priv->attached_widget->allocation.width;
+      h = popup->priv->attached_widget->allocation.height;
+      
+      if ((x < 0) || (x > w) || (y < 0) || (y > h))
+      {	      
+        hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
+        hildon_desktop_popup_menu_fake_button_event (event, FALSE);
+      }
+    }
 #endif
+  }
   return TRUE;
 }
 
@@ -1006,6 +994,14 @@ hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint 
       popup->priv->have_xgrab = FALSE;	
     }	    
   }
+}	
+
+void 
+hildon_desktop_popup_window_attach_widget (HildonDesktopPopupWindow *popup, GtkWidget *widget)
+{
+  g_return_if_fail (widget && GTK_IS_WIDGET (widget));
+
+  popup->priv->attached_widget = widget;
 }	
 
 void 

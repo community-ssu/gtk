@@ -87,6 +87,9 @@ void
 hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint pane);
 
 void 
+hildon_desktop_popup_window_attach_widget (HildonDesktopPopupWindow *popup, GtkWidget *widget);
+
+void 
 hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 				   HDPopupWindowPositionFunc func,
 				   gpointer                  func_data,
