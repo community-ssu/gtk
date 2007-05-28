@@ -1,5 +1,14 @@
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
+	* rc/hildonwebshortcut.rc:
+	- added
+	- use qgn_plat_webshortcut_applet_bg.png as background and alpha
+	mask
+	* rc/gtkrc.maemo_af_desktop.rc:
+	- include hildonwebshortcut.rc
+
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
 	* rc/ossospeeddial.rc: Changed background name and border values
 
 2007-05-28  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
