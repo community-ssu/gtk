@@ -410,7 +410,7 @@ hhws_loader_load (HhwsLoader *l)
   mmc_mount_point = g_getenv (HHWS_LOADER_ENV_MMC_MOUNTPOINT);
   mmc_mount_point_uri = g_strdup_printf ("file://%s", mmc_mount_point);
   mmc_internal_mount_point = g_getenv (HHWS_LOADER_ENV_INTERNAL_MMC_MOUNTPOINT);
-  mmc_internal_mount_point_uri = 
+  mmc_internal_mount_point_uri =
       g_strdup_printf ("file://%s", mmc_internal_mount_point);
 
   if (mmc_mount_point &&
@@ -425,16 +425,15 @@ hhws_loader_load (HhwsLoader *l)
                                HHWS_LOADER_ERROR_MMC_OPEN,
                                "MMC cover is open");
           g_signal_emit_by_name (l, "loading-failed", error);
-          g_error_free (error);
           goto cleanup;
         }
     }
-  
+
   if (mmc_internal_mount_point && 
       (g_str_has_prefix (priv->uri, mmc_internal_mount_point) ||
        g_str_has_prefix (priv->uri, mmc_internal_mount_point_uri)))
     on_internal_mmc = TRUE;
-  
+
   g_free (mmc_mount_point_uri);
   g_free (mmc_internal_mount_point_uri);
 
@@ -451,10 +450,9 @@ hhws_loader_load (HhwsLoader *l)
                            HHWS_LOADER_ERROR_OPEN_FAILED,
                            gnome_vfs_result_to_string (result));
       g_signal_emit_by_name (l, "loading-failed", error);
-      g_error_free (error);
       goto cleanup;
     }
-  
+
   if (!local && priv->tmp_file)
     {
       cache_result = gnome_vfs_create (&cache_handle,
@@ -472,7 +470,7 @@ hhws_loader_load (HhwsLoader *l)
   /* Setting up a memory watchdog */
   if (osso_mem_saw_enable (3 << 20, 32767, hhws_loader_oom_cb, (void *)&oom))
       oom = TRUE;
-  
+
   loader = gdk_pixbuf_loader_new ();
 
   while (!oom && result != GNOME_VFS_ERROR_EOF)
@@ -487,12 +485,12 @@ hhws_loader_load (HhwsLoader *l)
                                    HHWS_LOADER_ERROR_MMC_OPEN,
                                    "MMC cover is open");
               g_signal_emit_by_name (l, "loading-failed", error);
-              g_error_free (error);
-              gdk_pixbuf_loader_close (loader, NULL);
+              g_clear_error (&error);
+              gdk_pixbuf_loader_close (loader, &error);
               goto cleanup;
             }
         }
-      
+
       result = gnome_vfs_read (handle, buffer, BUF_SIZE, &bytes_read);
 
       switch (result)
@@ -506,11 +504,10 @@ hhws_loader_load (HhwsLoader *l)
                     g_signal_emit_by_name (l,
                                            "loading-failed",
                                            loader_error);
-                    g_error_free (loader_error);
-                    gdk_pixbuf_loader_close (loader, NULL);
+                    gdk_pixbuf_loader_close (loader, &error);
                     goto cleanup;
                   }
-                
+
                 if (cache_handle)
                   {
                     cache_result =
@@ -533,13 +530,19 @@ hhws_loader_load (HhwsLoader *l)
                                      HHWS_LOADER_ERROR_OPEN_FAILED,
                                      gnome_vfs_result_to_string (result));
                 g_signal_emit_by_name (l, "loading-failed", error);
-                g_error_free (error);
-                gdk_pixbuf_loader_close (loader, NULL);
+                g_clear_error (&error);
+                gdk_pixbuf_loader_close (loader, &error);
                 goto cleanup;
         }
     }
 
-  gdk_pixbuf_loader_close (loader, NULL);
+  gdk_pixbuf_loader_close (loader, &error);
+
+  if (error)
+    {
+      g_signal_emit_by_name (l, "loading-failed", error);
+      goto cleanup;
+    }
 
   if (oom)
     {
@@ -547,8 +550,7 @@ hhws_loader_load (HhwsLoader *l)
                            HHWS_LOADER_ERROR_MEMORY,
                            "out of memory");
       g_signal_emit_by_name (l, "loading-failed", error);
-      g_error_free (error);
-      
+
       goto cleanup;
     }
 
@@ -561,8 +563,7 @@ hhws_loader_load (HhwsLoader *l)
                            HHWS_LOADER_ERROR_CORRUPTED,
                            "image file was corrupted");
       g_signal_emit_by_name (l, "loading-failed", error);
-      g_error_free (error);
-      
+
       goto cleanup;
     }
 
@@ -584,7 +585,7 @@ hhws_loader_load (HhwsLoader *l)
               priv->image_name = hhws_url_to_filename (priv->uri);
               g_free (priv->uri);
               priv->uri = g_strdup (priv->cache_file);
-              
+
             }
         }
     }
@@ -603,6 +604,9 @@ cleanup:
 
   if (cache_handle)
     gnome_vfs_close (cache_handle);
+
+  if (error)
+    g_error_free (error);
 }
 
 static gboolean
@@ -610,7 +614,7 @@ hhws_loader_unload (HhwsLoader *loader)
 {
   HhwsLoaderPriv *priv;
   g_return_val_if_fail (loader, FALSE);
-  
+
   priv = HHWS_LOADER_GET_PRIVATE (loader);
 
   if (priv->pixbuf)
@@ -631,15 +635,15 @@ hhws_loader_uri_changed (HhwsLoader *l)
   GdkPixbuf *old_pixbuf;
   gchar *old_image_name;
   g_return_if_fail (l);
-  
+
   priv = HHWS_LOADER_GET_PRIVATE (l);
-  
+
   if (!priv->uri)
     {
       g_warning ("URI reset to NULL");
       return;
     }
-  
+
   old_pixbuf = priv->pixbuf;
   if (old_pixbuf)
     gdk_pixbuf_ref (old_pixbuf);

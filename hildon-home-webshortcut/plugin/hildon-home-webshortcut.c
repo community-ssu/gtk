@@ -175,6 +175,9 @@ hhws_loader_error_cb (HhwsLoader *loader,
           case GDK_PIXBUF_ERROR_CORRUPT_IMAGE:
               text = HHWS_CORRUPTED_FILE;
               break;
+          case GDK_PIXBUF_ERROR_FAILED: /* seems to happen with some jpg */
+              text = HHWS_CORRUPTED_FILE;
+              break;
           case GDK_PIXBUF_ERROR_UNKNOWN_TYPE:
               text = HHWS_NOT_SUPPORTED;
               break;

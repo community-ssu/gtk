@@ -1,5 +1,12 @@
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
+	* plugin/hhwsloader.c:
+	- track errors on gdk_pixbuf_loader_close, which allows to detect
+	troncated images
+	- treat GDK_PIXBUF_ERROR_FAILED as corrupted images
+
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
 	* plugin/hildon-home-webshortcut.c:
 	- add file dialog filter back, removed by accident
 
