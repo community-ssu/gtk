@@ -282,3 +282,10 @@ style "osso-navigator-small-button4-pressed"
 }
 
 widget "*.hildon-navigator-small-button4-pressed" style "osso-navigator-small-button4-pressed"
+
+style "hildon-navigator"
+{
+  bg_pixmap[NORMAL] = "../images/qgn_plat_task_navigation_background.png"
+}
+
+class "HDPanelWindow" style "hildon-navigator"

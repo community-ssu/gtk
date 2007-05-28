@@ -1,3 +1,7 @@
+2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/hildonnavigator.rc: Added background for the task navigator
+
 2007-05-28  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonvolumebar.rc: Fixing the mute button focus drawing for
