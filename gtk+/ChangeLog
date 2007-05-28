@@ -1,4 +1,13 @@
 2007-05-28  Xan Lopez  <xan.lopez@nokia.com>
+	
+	Merge from upstream, Fixes: #NB53826
+
+        2007-05-25  Xan Lopez  <xan@gnome.org>
+
+        * gtk/gtkaction.c: (gtk_action_set_short_label):
+        Use private->data->short_label to update the proxies. (#440780)
+
+2007-05-28  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenushell.c: use the XTest extension to emit button press/release
 	events from the GtkMenuShell handlers. With this it will appear as if the
