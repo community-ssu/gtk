@@ -13,7 +13,7 @@
 	events from the GtkMenuShell handlers. With this it will appear as if the
 	menu didn't have a grab, and the user will be able to do things like opening
 	a menu when there's already a menu opened with just one click.
-	See https://projects.maemo.org/bugzilla/show_bug.cgi?id=58347 for more details.
+	See NB#58347 for more details.
 
 	Fixes: NB#58347
 
