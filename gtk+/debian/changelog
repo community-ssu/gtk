@@ -6,8 +6,21 @@ gtk+2.0 (2:2.10.12-0osso3) UNRELEASED; urgency=low
   * debian/control: Bump glib Build-Depends to 2.12.12-1osso2 due to
     introduction of GObjectClass.constructed.
     Add libxtst-dev as build dependency.
+  * Fix gtk_action_set_short_label to use always the short_label, Fixes:
+    NB#53826
+  * Emit synthetized press/release button events from GtkMenuShell on
+    deactivation. Fixes: NB#58347
+  * Back out _gtk_menu_shell_set_first_click() and its logic.
+    Fixes: NB#57827, NB#57787, NB#5777
+  * Remove duplicate call to _gdk_event_button_generate() in
+     gdk/x11/gdkinput-x11.c:_gdk_input_common_other_event()
+  * Add implementation of DragDestInterface to GtkTreeModelFilter.
+    Fixes: NB##50640
+  * Allow Maemo specific hooks after widget construction by calling
+    them from GObjectClass.constructed.
+  * Misc fixes to GtkMenuShell.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 24 May 2007 17:50:23 +0300
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 28 May 2007 15:09:06 +0300
 
 gtk+2.0 (2:2.10.12-0osso2) unstable; urgency=low
 
