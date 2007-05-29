@@ -1,3 +1,146 @@
+hildon-desktop (0.0.15-1) sardine; urgency=low
+
+  * added build-dep on libxdamage-dev and libxcomposite-dev
+
+  * libhildonwm/hd-wm.c:
+  - Launch application-starting signal whenever a dummy watchable app is
+  created or the first window for an existing watchable app is created.
+  Fixes: NB#53974
+  * libhildonwm/hd-wm-watchable-app.c:
+  - If application is dummy watchable app name is localized
+  "Application" (to be defined yet though)
+
+  * src/hd-home-window.c: Do not cancel the layout mode when
+  ESC is pressed if the layout mode sucks
+
+  * src/hd-panel-window.c:
+  - paint the background and the children even if the composite
+  extension is not available
+
+  * src/hd-desktop.c: read new configuration key "X-Is-Ordered" to
+  define plugin manager behavior when syncing.
+  * src/hd-plugin-manager.[ch]: make the plugin manager aware if the
+  the order of plugin list should be kept or not when syncinc.
+  * src/hd-config.h: new key desktop configuration key "X-Is-Ordered".
+  * data/desktop.conf.in: mark Home as non-ordered and Statusbar and
+  Task Navigator as ordered.
+
+  * src/hd-home-window.c: don't redirect the window here
+  * src/hd-panel-window.c:
+  - redirect the home window
+  - only track the desktop window if XComposite is available
+  in the server
+
+  * src/hd-applications-menu.c: change the keyboard navigation behavior
+  so that categories are activated when using up and down arrows. Focus
+  is only grabed by applications pane on menu is popup.
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]: added method for
+  deselecting menu items.
+
+  * src/hd-select-plugins-dialog.c: show vertical scrollbar when the
+  list of plugins is longer than the space available. Fixes: NB#53976
+
+  * src/hd-panel-window.c: use the NORMAL state to fetch the
+  background, not PRELIGHT
+
+  * libhildondesktop/hildon-home-window.c:
+  - add "titlebar" property so it can be accessed for a11n
+
+  * libhildondesktop/hildon-home-area.c:
+  - emit "layout-changed" when applets are really added to the area
+  * src/hd-home-window.c:
+  - use "layout-changed" to know when to save the layout
+
+  * libhildondesktop/hildon-home-area.c:
+  - do not add the padding to the layout saved
+  - disconnect the various handlers attached to the children
+  when they are removed
+
+  * src/hn-app-button.c: Yet another attachment.
+
+  * libhildondesktop/hildon-home-titlebar.c:
+  - attach the menu to the titlebar
+
+  * src/hn-others-button.c:
+  * src/hd-applications-menu.c:
+  - Attached to proper widgets.
+
+  Implementation of UI policy infrastructure to define specific
+  behaviors on desktop containers. Fixes: NB#54033 and NB#54035
+
+  * src/hd-desktop.c: cleanup of code for keeping track of changes in
+  the plugin directory. Several coding style fixes. Added UI policy
+  bits in the plugin manager calls and desktop configuration file.
+  * src/hd-config.h: new optional desktop configuration file
+  key "X-UI-Policy".
+  * src/hd-ui-policy.[ch]: new UI policy object which loads
+  container-specific implementations from dynamic modules.
+  * src/hd-panel-window.c: check for child before setting size requests
+  in Hildon Desktop items.
+  * src/hd-plugin-manager.[ch]: added UI policy handling on load and
+  sync methods. Correctly sync container configuration file and loaded
+  plugins by taking into account the defined order.
+  * configure.ac, src/Makefile.am: added UI policy directory
+  definitions. Added hd-ui-policy.[ch] and policies/* to the build.
+  * policies/Makefile.am, policies/tasknavigator-policy.c: Task
+  Navigator UI policy.
+  * data/desktop.conf.in: added X-UI-Policy to tasknavigator
+  configuration.
+
+  * src/hd-switcher-menu.c: Attach to toggle button.
+  * libhildondesktop/hildon-desktop-popup-window.[ch]:
+  - Added method for attaching widget.
+  - Send fake key when popping-down the menu and the pointer is not on
+  the attached widget.
+
+  * src/hd-home-window.c:
+  - don't set the sensitivity of the layout mode menu item when
+  not used
+  * libhildondesktop/hildon-home-window.c:
+  - fixed a typo in property IDs assignment
+
+  * libhildondesktop/hildon-desktop-home-item.[ch]:
+  - removed default resize handle.
+  - if no resize handle provided, use an INPUT_ONLY window
+  - have different size for the resize handle depending on the
+  resize type
+
+  * data/home-layout.conf: internet search applet's default height
+  is now 50 px
+
+  * configure.ac: Added HAVE_XTEST condition for libhildondesktop
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Send additional fake press/release event for overriding the
+  grabbing.
+  * configure.ac        (working copy)
+  * data/Makefile.am:
+  * data/install_sbapplet.sh:
+  - Added helper script for installing statusbar applets and to be used
+  in postinst .deb scripts
+
+  * src/hd-switcher-menu.c:
+  - Highlight next application when menu is opened and home key is
+  pressed. Fixes: NB#57666
+  - Select highlighted application when menu opened and long home key
+  press.
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]:
+  - Added methods to select previous/next item.
+  - _get_selected_item is not const any longer.
+  - Fixed misbehaviors when scrolling and the controls are off.
+
+  * src/hd-panel-window.c:
+  - add _style_set to load a background picture
+  - add _realize to call _style_set initially
+  - paint the background picture in the expose handler
+
+  * src/hd-switcher-menu.c:
+  - Select right application item. Fixes:  NB#57669
+
+  * src/hd-switcher-menu.c: Fixed "switcher area highlighted when tapped
+  on it with no applications opened". Fixes: NB#58320
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 29 May 2007 18:10:48 +0300
+
 hildon-desktop (0.0.14-2) sardine; urgency=low
 
   * src/hd-switcher-menu.c: Fixed behavior I just introduced. 
