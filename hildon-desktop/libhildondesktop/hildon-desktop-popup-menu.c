@@ -831,6 +831,18 @@ hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem
   g_list_free (children);
 } 
 
+void 
+hildon_desktop_popup_menu_deselect_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item)
+{
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+
+  if (menu->priv->selected_item == item)
+  {
+    gtk_item_deselect (GTK_ITEM (item));
+    menu->priv->selected_item = NULL;
+  }
+} 
+
 void
 hildon_desktop_popup_menu_select_first_item (HildonDesktopPopupMenu *menu)
 {

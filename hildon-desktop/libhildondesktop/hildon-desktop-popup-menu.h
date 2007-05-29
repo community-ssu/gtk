@@ -72,6 +72,9 @@ hildon_desktop_popup_menu_get_children (HildonDesktopPopupMenu *menu);
 void
 hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
 
+void
+hildon_desktop_popup_menu_deselect_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
+
 void 
 hildon_desktop_popup_menu_select_first_item (HildonDesktopPopupMenu *menu);
 
