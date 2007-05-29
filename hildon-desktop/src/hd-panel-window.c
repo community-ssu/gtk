@@ -448,6 +448,10 @@ hd_panel_window_desktop_window_changed (HDPanelWindow *window)
       if (format == None)
         return;
 
+      XCompositeRedirectWindow (GDK_DISPLAY (),
+                                desktop_window,
+                                CompositeRedirectAutomatic);
+
       priv->home_picture = XRenderCreatePicture (GDK_DISPLAY (),
                                                  desktop_window,
                                                  format,
@@ -473,7 +477,7 @@ hd_panel_window_desktop_window_changed (HDPanelWindow *window)
 #endif
 
 static void
-hd_panel_window_set_style (HDPanelWindow *window, 
+hd_panel_window_set_style (HDPanelWindow *window,
                            HildonDesktopPanelWindowOrientation orientation)
 {
   switch (orientation)
@@ -562,21 +566,21 @@ hd_panel_window_constructor (GType gtype,
   hd_panel_window_set_style (HD_PANEL_WINDOW (object), orientation);
 
   gtk_widget_set_app_paintable (GTK_WIDGET (object), TRUE);
-  
+
   return object;
 }
- 
+
 static void
 hd_panel_window_class_init (HDPanelWindowClass *klass)
 {
   GObjectClass *object_class;
   GtkWidgetClass *widget_class;
   HildonDesktopPanelWindowClass *panel_window_class;
-  
+
   object_class = G_OBJECT_CLASS (klass);
   widget_class = GTK_WIDGET_CLASS (klass);
   panel_window_class = HILDON_DESKTOP_PANEL_WINDOW_CLASS (klass);
-  
+
   object_class->constructor = hd_panel_window_constructor;
   panel_window_class->orientation_changed = hd_panel_window_orientation_changed;
 
@@ -617,13 +621,16 @@ static void
 hd_panel_window_init (HDPanelWindow *window)
 {
 #ifdef HAVE_X_COMPOSITE
-  HDWM *wm;
+  if (HD_PANEL_WINDOW_GET_CLASS (window)->composite)
+    {
+      HDWM *wm;
 
-  wm = hd_wm_get_singleton ();
+      wm = hd_wm_get_singleton ();
 
-  g_signal_connect_swapped (wm, "notify::desktop-window",
-                            G_CALLBACK (hd_panel_window_desktop_window_changed),
-                            window);
+      g_signal_connect_swapped (wm, "notify::desktop-window",
+                                G_CALLBACK (hd_panel_window_desktop_window_changed),
+                                window);
+    }
 
   window->priv = HD_PANEL_WINDOW_GET_PRIVATE (window);
 #endif

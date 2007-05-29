@@ -1,3 +1,11 @@
+2007-05-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c: don't redirect the window here
+	* src/hd-panel-window.c:
+	- redirect the home window
+	- only track the desktop window if XComposite is available
+	in the server
+
 2007-05-29  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c: change the keyboard navigation behavior

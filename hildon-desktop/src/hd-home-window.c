@@ -30,11 +30,6 @@
 #include <hildon/hildon-help.h>
 #endif
 
-#ifdef HAVE_X_COMPOSITE
-#include <X11/extensions/Xrender.h>
-#include <X11/extensions/Xcomposite.h>
-#endif
-
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
 #endif
@@ -711,12 +706,6 @@ hd_home_window_realize (GtkWidget *widget)
 
   GTK_WIDGET_CLASS (hd_home_window_parent_class)->realize (widget);
 
-#ifdef HAVE_X_COMPOSITE
-  XCompositeRedirectWindow (GDK_DISPLAY (),
-                            GDK_WINDOW_XID (widget->window),
-                            CompositeRedirectAutomatic);
-#endif
-
   wm = hd_wm_get_singleton ();
   g_object_set (wm,
                 "desktop-window", (gint)GDK_WINDOW_XID (widget->window),
@@ -728,11 +717,6 @@ static void
 hd_home_window_unrealize (GtkWidget *widget)
 {
   HDWM *wm;
-#ifdef HAVE_X_COMPOSITE
-  XCompositeUnredirectWindow (GDK_DISPLAY (),
-                              GDK_WINDOW_XID (widget->window),
-                              CompositeRedirectAutomatic);
-#endif
 
   wm = hd_wm_get_singleton ();
   g_object_set (wm,
