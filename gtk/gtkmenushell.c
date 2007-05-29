@@ -543,6 +543,53 @@ _gtk_menu_shell_activate (GtkMenuShell *menu_shell)
     }
 }
 
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
+
+static void
+_gtk_menu_shell_fake_button_events (GtkWidget *widget,
+                                    guint button,
+                                    gboolean send_press,
+                                    gboolean send_release)
+{
+  GdkDisplay *display;
+  gint x, y;
+  GtkWidget *attached_widget;
+
+  display = gtk_widget_get_display (widget);
+
+  attached_widget = gtk_menu_get_attach_widget (GTK_MENU (widget));
+
+  /* Blacklist GtkWindow to disable this functionality in HildonWindow,
+     as there is no reliable way of detecting the click on the window
+     decoration */
+  if (attached_widget && !GTK_IS_WINDOW (attached_widget))
+    {
+      /* Do not generate the events if the click is inside our
+         attach widget. This allows the user to close a menu
+         clicking on it parent for example */
+      gtk_widget_get_pointer (attached_widget, &x, &y);
+          
+      if ((x < 0) || (x > attached_widget->allocation.width) ||
+          (y < 0) || (y > attached_widget->allocation.height))
+        {
+
+          if (send_press)
+            XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
+                                  button,
+                                  TRUE,
+                                  0);
+
+          if (send_release)
+            XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
+                                  button,
+                                  FALSE,
+                                  0);
+        }
+    }
+}
+
+#endif
+
 static gint
 gtk_menu_shell_button_press (GtkWidget      *widget,
 			     GdkEventButton *event)
@@ -595,23 +642,18 @@ gtk_menu_shell_button_press (GtkWidget      *widget,
     }
   else
     {
-#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
-      GdkDisplay *display = gtk_widget_get_display (widget);
-#endif
-
       widget = gtk_get_event_widget ((GdkEvent*) event);
       if (widget == GTK_WIDGET (menu_shell))
 	{
 	  gtk_menu_shell_deactivate (menu_shell);
 	  g_signal_emit (menu_shell, menu_shell_signals[SELECTION_DONE], 0);
-	}
 
 #if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
-      XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
-                            event->button,
-                            TRUE,
-                            0);
+          _gtk_menu_shell_fake_button_events (widget, event->button, TRUE, FALSE);
 #endif
+
+	}
+
     }
 
   if (menu_item && _gtk_menu_item_is_selectable (menu_item) &&
@@ -784,18 +826,11 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
 
       if (deactivate)
         {
-#if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
-          GdkDisplay *display = gtk_widget_get_display (widget);
-#endif
-
           gtk_menu_shell_deactivate (menu_shell);
           g_signal_emit (menu_shell, menu_shell_signals[SELECTION_DONE], 0);
 
 #if defined(MAEMO_CHANGES) && defined(HAVE_XTST)
-          XTestFakeButtonEvent (gdk_x11_display_get_xdisplay (display),
-                                event->button,
-                                FALSE,
-                                0);
+          _gtk_menu_shell_fake_button_events (widget, event->button, TRUE, TRUE);
 #endif
         }
 

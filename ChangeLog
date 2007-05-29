@@ -1,3 +1,13 @@
+2007-05-29  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmenushell.c (_gtk_menu_shell_fake_button_events): do not
+	generate the fake events if the click is inside our attached widget.
+	This way the user can close a menu clicking on its parent (if it's
+	attached). We blacklist menus attached to a GtkWindow to avoid this
+	functionality in HildonWindow, as there is no reliable way (AFAIK) of
+	detecting a click on the window decoration area that acts as a MenuBar.
+	Also, consolidate the logic in one function.	
+
 2007-05-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c: add SCROLL_DELAY_FACTOR
