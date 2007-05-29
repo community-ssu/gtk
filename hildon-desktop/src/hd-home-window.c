@@ -842,13 +842,17 @@ static gboolean
 hd_home_window_key_press_event (GtkWidget *widget,
                                 GdkEventKey *event)
 {
+  HDHomeWindowPrivate  *priv;
+  priv = HD_HOME_WINDOW_GET_PRIVATE (widget);
+
   switch (event->keyval)
     {
       case HILDON_HARDKEY_MENU:
           hildon_home_window_toggle_menu (HILDON_HOME_WINDOW (widget));
           break;
       case HILDON_HARDKEY_ESC:
-          hd_home_window_cancel_layout (HD_HOME_WINDOW (widget));
+          if (!priv->layout_mode_sucks)
+            hd_home_window_cancel_layout (HD_HOME_WINDOW (widget));
 
           break;
       default:
