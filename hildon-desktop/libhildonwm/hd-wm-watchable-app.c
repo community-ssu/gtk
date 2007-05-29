@@ -127,8 +127,8 @@ hd_wm_watchable_app_new_dummy (void)
     }
 
   app->icon_name  = g_strdup("qgn_list_gene_default_app"); 
-  app->app_name   = g_strdup("?");
-  app->class_name = g_strdup("?");
+  app->app_name   = g_strdup(_("Application"));
+  app->class_name = g_strdup(_("Application"));
 
   HDWM_APP_SET_FLAG (app, HDWM_APP_DUMMY);
   

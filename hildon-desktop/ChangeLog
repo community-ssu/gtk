@@ -1,3 +1,13 @@
+2007-05-29  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	- Launch application-starting signal whenever a dummy watchable app is
+	created or the first window for an existing watchable app is created.
+	Fixes: NB#53974
+	* libhildonwm/hd-wm-watchable-app.c:
+	- If application is dummy watchable app name is localized
+	"Application" (to be defined yet though)
+
 2007-05-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c: Do not cancel the layout mode when

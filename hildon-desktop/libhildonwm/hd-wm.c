@@ -554,6 +554,9 @@ out:
   if (class_hint.res_name)
     XFree(class_hint.res_name);
 
+  if (!hd_wm_watchable_app_has_any_windows (app))
+    g_signal_emit_by_name (hdwm, "application-starting", app);
+	  
   return app;
 }
 
