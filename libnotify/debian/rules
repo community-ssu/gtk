@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+DEB_TAR_SRCDIR = libnotify-0.4.4
+
+include /usr/share/cdbs/1/rules/tarball.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/class/gnome.mk
+include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+
+DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-O1 -Wl,--as-needed"
+
+#DEB_DH_MAKESHLIBS_ARGS_libnotify0 := -V 'libnotify'
