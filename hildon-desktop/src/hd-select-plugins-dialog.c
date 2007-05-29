@@ -238,6 +238,7 @@ hd_select_plugins_dialog_run (GList           *loaded_plugins,
   GtkWidget *treeview;
   GtkCellRenderer *cell_renderer;
   GtkListStore *plugin_list;
+  GtkRequisition req;
   gint response;
 
   plugin_list = hd_select_plugins_dialog_get_store (loaded_plugins, 
@@ -275,7 +276,8 @@ hd_select_plugins_dialog_run (GList           *loaded_plugins,
 
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollwindow),
                                   GTK_POLICY_NEVER,
-                                  GTK_POLICY_NEVER);
+                                  GTK_POLICY_AUTOMATIC);
+
 
   treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (plugin_list));
 
@@ -308,6 +310,9 @@ hd_select_plugins_dialog_run (GList           *loaded_plugins,
 
   gtk_container_add (GTK_CONTAINER (scrollwindow), treeview);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), scrollwindow);
+
+  gtk_widget_size_request (treeview, &req); 
+  gtk_widget_set_size_request (scrollwindow, -1, req.height + 4);
 
   gtk_widget_show_all (GTK_DIALOG (dialog)->vbox);
 

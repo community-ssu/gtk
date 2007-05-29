@@ -1,3 +1,8 @@
+2007-05-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-select-plugins-dialog.c: show vertical scrollbar when the
+	list of plugins is longer than the space available. Fixes: NB#53976
+
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-panel-window.c: use the NORMAL state to fetch the
