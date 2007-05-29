@@ -242,7 +242,8 @@ void
 hd_plugin_manager_sync (HDPluginManager *pm, 
                         GList           *plugin_list, 
                         GtkContainer    *container,
-			HDUIPolicy      *policy)
+			HDUIPolicy      *policy,
+			gboolean         keep_order)
 {
   GList *children, *iter;
   GList *f_plugin_list = NULL;
@@ -258,7 +259,9 @@ hd_plugin_manager_sync (HDPluginManager *pm,
 
   children = gtk_container_get_children (container);
 
-  for (iter = children; iter; iter = g_list_next (iter))
+  /* If keeping the order, we need to temporaly remove the loaded
+     plugins from the container. */
+  for (iter = children; keep_order && iter; iter = g_list_next (iter))
   {
     g_object_ref (iter->data);
     gtk_container_remove (container, GTK_WIDGET (iter->data));
@@ -275,11 +278,14 @@ hd_plugin_manager_sync (HDPluginManager *pm,
     {
       if (g_file_test ((const gchar *) iter->data, G_FILE_TEST_EXISTS))
       {
-	gtk_widget_show (GTK_WIDGET (found->data));
-        gtk_container_add (container, GTK_WIDGET (found->data));
+	if (keep_order)
+        {
+	  gtk_widget_show (GTK_WIDGET (found->data));
+          gtk_container_add (container, GTK_WIDGET (found->data));
+	}
         children = g_list_remove_link (children, found);
       }
-      else
+      else if (policy != NULL)
       {
         hd_plugin_manager_handle_plugin_failure (pm, container, policy, position);
       }
@@ -288,7 +294,7 @@ hd_plugin_manager_sync (HDPluginManager *pm,
     {
       if (!hd_plugin_manager_load_plugin (pm, 
 			      		  (const gchar *) iter->data, 
-					  container))
+					  container) && policy != NULL)
       {
         hd_plugin_manager_handle_plugin_failure (pm, container, policy, position);
       }

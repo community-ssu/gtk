@@ -1,3 +1,13 @@
+2007-05-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: read new configuration key "X-Is-Ordered" to
+	define plugin manager behavior when syncing.
+	* src/hd-plugin-manager.[ch]: make the plugin manager aware if the
+	the order of plugin list should be kept or not when syncinc.
+	* src/hd-config.h: new key desktop configuration key "X-Is-Ordered".
+	* data/desktop.conf.in: mark Home as non-ordered and Statusbar and
+	Task Navigator as ordered.
+
 2007-05-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c: don't redirect the window here

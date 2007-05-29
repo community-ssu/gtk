@@ -79,6 +79,7 @@ typedef struct
   GtkWidget              *container;
   HDDesktop              *desktop;
   HDUIPolicy             *policy;
+  gboolean                is_ordered;
   GnomeVFSMonitorHandle  *plugin_dir_monitor;
 } HDDesktopContainerInfo;
 
@@ -365,7 +366,8 @@ hd_desktop_container_load (HildonDesktopWindow *window, gpointer user_data)
   hd_plugin_manager_sync (HD_PLUGIN_MANAGER (priv->pm), 
                           plugin_list, 
                           window->container,
-			  info->policy);
+			  info->policy,
+			  info->is_ordered);
 
   g_list_foreach (plugin_list, (GFunc) g_free , NULL);
   g_list_free (plugin_list); 
@@ -425,7 +427,8 @@ hd_desktop_select_plugins (HildonDesktopWindow *window, gpointer user_data)
     hd_plugin_manager_sync (HD_PLUGIN_MANAGER (priv->pm),
                             selected_plugins,
                             window->container,
-			    info->policy);
+			    info->policy,
+			    info->is_ordered);
   }
 
   g_list_foreach (selected_plugins, (GFunc) g_free , NULL);
@@ -506,7 +509,8 @@ hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
       hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
                               plugin_list, 
                               HILDON_DESKTOP_WINDOW (info->container)->container,
-			      info->policy);
+			      info->policy,
+			      info->is_ordered);
 
       g_free (config_file);
       g_list_foreach (plugin_list, (GFunc) g_free , NULL);
@@ -560,7 +564,8 @@ hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
       hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
                               plugin_list, 
                               HILDON_DESKTOP_WINDOW (info->container)->container,
-			      info->policy);
+			      info->policy,
+			      info->is_ordered);
 
       g_free (config_file);
       g_list_foreach (plugin_list, (GFunc) g_free , NULL);
@@ -679,8 +684,21 @@ hd_desktop_load_containers (HDDesktop *desktop)
     GList *plugin_list = NULL;
     gchar *type, *container_config, *container_config_file, *plugin_dir;
     gchar *policy_module;
+    gboolean is_ordered;
     
     error = NULL;
+
+    is_ordered = g_key_file_get_boolean (keyfile, 
+                                         groups[i], 
+                                         HD_DESKTOP_CONFIG_KEY_IS_ORDERED,
+                                         &error);
+
+    if (error)
+    {
+      is_ordered = TRUE;
+      g_error_free (error);
+      error = NULL;
+    }
     
     policy_module = g_key_file_get_string (keyfile, 
                                            groups[i], 
@@ -1009,7 +1027,8 @@ hd_desktop_load_containers (HDDesktop *desktop)
     info->plugin_dir = g_strdup (plugin_dir);
     info->desktop = desktop;
     info->policy = policy;
-    
+    info->is_ordered = is_ordered;
+ 
     g_signal_connect (G_OBJECT (info->container), 
                       "select-plugins",
                       G_CALLBACK (hd_desktop_select_plugins),

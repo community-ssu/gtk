@@ -68,7 +68,8 @@ void       hd_plugin_manager_load       (HDPluginManager *pm,
 void       hd_plugin_manager_sync       (HDPluginManager *pm,
                                          GList           *plugin_list, 
                                          GtkContainer    *container,
-					 HDUIPolicy      *policy);
+					 HDUIPolicy      *policy,
+					 gboolean         keep_order);
 
 G_END_DECLS
 
