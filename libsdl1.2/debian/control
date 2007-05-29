@@ -7,7 +7,7 @@ Standards-Version: 3.6.0
 Package: libsdl1.2-dev
 Section: devel
 Architecture: any
-Depends: libsdl1.2 (= ${Source-Version}), xlibs-dev
+Depends: libsdl1.2 (= ${Source-Version}), xlibs-dev, libxext-dev
 Description: Development files for libsdl
  Development headers and static libraries for libsdl.
 
