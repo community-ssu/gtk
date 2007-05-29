@@ -1,0 +1,58 @@
+Source: libnotify
+Priority: optional
+Maintainer: Lucas Rocha <lucas.rocha@nokia.com>
+Build-Depends: gnome-pkg-tools, cdbs (>= 0.4.23-1.1), debhelper (>= 4.2.21), libgtk2.0-dev (>= 2.6), libglib2.0-dev (>= 2.6), libdbus-glib-1-dev (>= 0.35), libpopt-dev
+Standards-Version: 3.7.2
+Section: libs
+
+Package: libnotify-dev
+Section: libdevel
+Architecture: any
+Depends: libnotify1 (= ${Source-Version}), libdbus-glib-1-dev (>= 0.35), libgtk2.0-dev (>= 2.6), libglib2.0-dev (>= 2.6)
+Description: sends desktop notifications to a notification daemon
+ A library that sends desktop notifications to a notification daemon, as
+ defined in the Desktop Notifications spec. These notifications can be
+ used to inform the user about an event or display some form of
+ information without getting in the user's way.
+ .
+ This package contains the include files and static library.
+
+Package: libnotify1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Recommends: notification-daemon
+Description: sends desktop notifications to a notification daemon
+ A library that sends desktop notifications to a notification daemon, as
+ defined in the Desktop Notifications spec. These notifications can be
+ used to inform the user about an event or display some form of
+ information without getting in the user's way.
+ . 
+ This package contains the shared library. To actually display the
+ notifications, you need to install the package notification-daemon.
+
+Package: libnotify-bin
+Section: utils
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: sends desktop notifications to a notification daemon
+ A library that sends desktop notifications to a notification daemon, as
+ defined in the Desktop Notifications spec. These notifications can be
+ used to inform the user about an event or display some form of
+ information without getting in the user's way.
+ . 
+ This package contains the binary which sends the notification.
+
+Package: libnotify-doc
+Section: doc
+Architecture: all
+Depends: ${shlibs:Depends}
+Suggests: devhelp
+Description: sends desktop notifications to a notification daemon
+ A library that sends desktop notifications to a notification daemon, as
+ defined in the Desktop Notifications spec. These notifications can be
+ used to inform the user about an event or display some form of
+ information without getting in the user's way.
+ .
+ This package contains the documentation for libnotify1 in
+ /usr/share/gtk-doc/html/libnotify .
