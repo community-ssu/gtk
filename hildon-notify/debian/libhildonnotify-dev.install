@@ -1,0 +1,4 @@
+usr/lib/libhildonnotify.a
+usr/lib/libhildonnotify.so
+usr/lib/pkgconfig/hildon-notify.pc
+usr/include/hildon-notify

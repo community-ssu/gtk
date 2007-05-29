@@ -1,0 +1,27 @@
+Source: hildon-notify
+Priority: optional
+Maintainer: Lucas Rocha <lucas.rocha@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libnotify-dev, pkg-config 
+Standards-Version: 3.6.1
+
+Package: libhildonnotify-dev
+Section: devel
+Architecture: all 
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonnotify0 (= ${Source-Version}), libnotify-dev
+Description: libhildonnotify development files
+  Development headers and static libraries for libhildonnotify 
+
+Package: libhildonnotify0-dbg
+Section: devel
+Architecture: all
+Depends: libhildonnotify0 (=${Source-Version})
+Description: libhildonnotify debug symbols
+  Debugging symbols for libhildonnotify0
+ 
+Package: libhildonnotify0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: libhildonnotify shared library
+  libnotify wrapper which adds support for D-Bus callbacks in 
+  notification actions

@@ -1,0 +1,2 @@
+hilton-notify is a libnotify wrapper library which adds support for D-Bus callbacks for
+notifications and some helper functions.

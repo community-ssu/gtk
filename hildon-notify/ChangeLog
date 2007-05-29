@@ -1,0 +1,37 @@
+2007-05-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: Release 0.0.1
+
+2007-05-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hildon-notification.[ch]: now get_notifications method for now. 
+	Cast "persistent" notification hint properly. Fix assertion on
+	hildon_notification_helper_show method.
+
+2007-05-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hildon-notification.c: added parameter to
+	hildon_notification_show_helper to define a notification id for
+	possible replacement.
+	* src/control: fixed typos on package descriptions.
+
+2007-05-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/control: added libhildonnotify0 debugging package.
+
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/*: fixed a bunch of tiny bugs.
+
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/*: rename packages from hildon-notify* to libhildonnotify*
+	for consistency. 
+
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/*: added debian packaging bits.
+
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* Initial import.
