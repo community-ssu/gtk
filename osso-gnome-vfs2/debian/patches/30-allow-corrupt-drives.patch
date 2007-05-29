@@ -1,0 +1,10 @@
+--- libgnomevfs/gnome-vfs-hal-mounts.c-unmod	2007-05-29 18:17:17.000000000 +0200
++++ libgnomevfs/gnome-vfs-hal-mounts.c	2007-05-29 18:17:20.000000000 +0200
+@@ -669,6 +669,7 @@ _hal_volume_policy_check (GnomeVFSVolume
+ 	/* needs to be a mountable filesystem OR contain crypto bits OR audio disc OR blank disc */
+ 	if (! ((libhal_volume_get_fsusage (hal_volume) == LIBHAL_VOLUME_USAGE_MOUNTABLE_FILESYSTEM) ||
+ 	       (libhal_volume_get_fsusage (hal_volume) == LIBHAL_VOLUME_USAGE_CRYPTO) ||
++	       (libhal_volume_get_fsusage (hal_volume) == LIBHAL_VOLUME_USAGE_UNKNOWN) ||
+ 	       libhal_volume_disc_has_audio (hal_volume) ||
+ 	       libhal_volume_disc_is_blank (hal_volume)))
+ 		goto out;
