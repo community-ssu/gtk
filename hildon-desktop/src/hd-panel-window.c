@@ -288,35 +288,33 @@ hd_panel_window_expose (GtkWidget *widget,
   if (GTK_WIDGET_DRAWABLE (widget))
   {
     HDPanelWindowPrivate       *priv = HD_PANEL_WINDOW (widget)->priv;
+    GdkDrawable *drawable;
+    gint x_offset, y_offset;
+    gint x, y;
+    Picture picture;
+    GdkVisual *visual;
+    XRenderPictFormat *format;
+    XRenderPictureAttributes pa = {0};
+
+    gtk_window_get_position (GTK_WINDOW (widget), &x, &y);
+
+    gdk_window_get_internal_paint_info (widget->window,
+                                        &drawable,
+                                        &x_offset,
+                                        &y_offset);
+
+    visual = gdk_drawable_get_visual (drawable);
+
+    format = XRenderFindVisualFormat (GDK_DISPLAY (),
+                                      GDK_VISUAL_XVISUAL (visual));
+
+    picture = XRenderCreatePicture (GDK_DISPLAY (),
+                                    GDK_DRAWABLE_XID (drawable),
+                                    format,
+                                    0,
+                                    &pa);
 
     if (priv->home_picture != None)
-    {
-      GdkDrawable *drawable;
-      gint x_offset, y_offset;
-      gint x, y;
-      Picture picture;
-      GdkVisual *visual;
-      XRenderPictFormat *format;
-      XRenderPictureAttributes pa = {0};
-
-      gtk_window_get_position (GTK_WINDOW (widget), &x, &y);
-
-      gdk_window_get_internal_paint_info (widget->window,
-                                          &drawable,
-                                          &x_offset,
-                                          &y_offset);
-
-      visual = gdk_drawable_get_visual (drawable);
-
-      format = XRenderFindVisualFormat (GDK_DISPLAY (),
-                                        GDK_VISUAL_XVISUAL (visual));
-
-      picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                      GDK_DRAWABLE_XID (drawable),
-                                      format,
-                                      0,
-                                      &pa);
-
       XRenderComposite (GDK_DISPLAY (),
                         PictOpSrc,
                         priv->home_picture,
@@ -329,30 +327,29 @@ hd_panel_window_expose (GtkWidget *widget,
                         event->area.width,
                         event->area.height);
 
-      if (priv->background_picture != None)
-        XRenderComposite (GDK_DISPLAY (),
-                          PictOpOver,
-                          priv->background_picture,
-                          priv->background_mask,
-                          picture,
-                          x + event->area.x, y + event->area.y,
-                          x + event->area.x, y + event->area.y,
-                          event->area.x - x_offset,
-                          event->area.y - y_offset,
-                          event->area.width,
-                          event->area.height);
+    if (priv->background_picture != None)
+      XRenderComposite (GDK_DISPLAY (),
+                        PictOpOver,
+                        priv->background_picture,
+                        priv->background_mask,
+                        picture,
+                        x + event->area.x, y + event->area.y,
+                        x + event->area.x, y + event->area.y,
+                        event->area.x - x_offset,
+                        event->area.y - y_offset,
+                        event->area.width,
+                        event->area.height);
 
 
-      XRenderFreePicture (GDK_DISPLAY (),
-                          picture);
+    XRenderFreePicture (GDK_DISPLAY (),
+                        picture);
 
-      return GTK_WIDGET_CLASS (hd_panel_window_parent_class)->
-          expose_event (widget, event);
+    return GTK_WIDGET_CLASS (hd_panel_window_parent_class)->
+        expose_event (widget, event);
 
-    }
   }
 
-  return FALSE;
+return FALSE;
 }
 
 static GdkFilterReturn
