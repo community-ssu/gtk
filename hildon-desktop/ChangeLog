@@ -45,7 +45,7 @@
 2007-05-28  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	Implementation of UI policy infrastructure to define specific
-	behaviors on desktop containers.
+	behaviors on desktop containers. Fixes: NB#54033 and NB#54035
 
 	* src/hd-desktop.c: cleanup of code for keeping track of changes in
 	the plugin directory. Several coding style fixes. Added UI policy
