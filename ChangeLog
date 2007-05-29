@@ -1,3 +1,8 @@
+2007-05-29  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkenums.h (enum): remove extra new lines to shut up
+	glib-mkenums.
+
 2007-05-29  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkwindow.c (gtk_window_key_press_event): fix another small
