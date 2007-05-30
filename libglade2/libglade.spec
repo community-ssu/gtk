@@ -1,6 +1,6 @@
 Summary: libglade library
 Name: libglade
-Version: 2.4.0
+Version: 2.6.0
 Release: 1
 Copyright: LGPL
 Group: System Environment/Libraries
@@ -67,7 +67,6 @@ CATALOG=/etc/xml/catalog
 
 %doc AUTHORS ChangeLog NEWS README COPYING
 %{_prefix}/lib/lib*.so.*
-%{_prefix}/lib/libglade/2.0/*
 %{_prefix}/share/xml/libglade/glade-2.0.dtd
 
 %files devel

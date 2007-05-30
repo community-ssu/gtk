@@ -1,3 +1,185 @@
+2007-05-30  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com
+
+	* */*: Updated to 2.6.0 upstream release.
+	
+	* configure.in: Disable python and xml-catalog
+	
+2006-07-11  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* glade/glade-xml.c: (glade_xml_init),
+	(glade_xml_set_value_from_string): Fix warnings from GCC:
+	glade-xml.c: In function 'glade_xml_set_value_from_string':
+	glade-xml.c:1519: warning: implicit declaration of function 'gtk_object_sink'
+	by using non-deprecated API instead. Closes bug #341857.
+
+2006-03-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* glade/glade-gtk.c (entry_set_invisible_char): Correctly handle
+	non-ASCII characters.  (#321119, Tim Evans)
+
+2006-01-04  Tor Lillqvist  <tml@novell.com>
+
+	* glade/glade-init.c (DllMain, replace_prefix, get_libdir): Add
+	the normal mechanism for run-time lookup of installation prefix
+	and libdir on Win32.
+
+	* glade/Makefile.am: Pass also $prefix as GLADE_PREFIX to the
+	compilation for the benefit of the above.
+
+2005-12-20  Tor Lillqvist  <tml@novell.com>
+
+	* glade/glade-parser.c (glade_parser_parse_file): On Win32,
+	convert the file name from the GLib file name encoding (UTF-8) to
+	the system codepage encoding that libxml uses. (Alternatively, we
+	could use GMappedFile and parse the xml from memory, but this
+	brings up the (unlikely) possibility that two threads are reading
+	the same glade file at the same time, and we would thus have to
+	use locking, drats.)
+
+2005-08-28  Tor Lillqvist  <tml@novell.com>
+
+	* libglade-zip.in: Include also documentation in the developer
+	zipfile.
+
+2005-02-28  Tor Lillqvist  <tml@novell.com>
+
+	* libglade-zip.in: New file, for building zipfile-based Win32
+	distribution.
+
+	* Makefile.am
+	* configure.in: Distribute it, expand it.
+
+2005-02-11  James Henstridge  <james@jamesh.id.au>
+
+	* glade/Makefile.am (LTVERSION): bump libtool version number.
+
+	* configure.in: bump version number.
+
+	* NEWS: add 2.5.1 news items.
+
+	* glade/glade-gtk.c (toolbar_build_children): revert the handling
+	of old toolbars to the pre-2.4.1 behaviour, with the exception of
+	the "active" handling for radio buttons.
+	(_glade_init_gtk_widgets): use the GtkDialog buil_children
+	implementation for GtkFileChooserDialog.  Fixes bug #160264.
+
+2004-11-29  James Henstridge  <james@jamesh.id.au>
+
+	* configure.in: require ATK 1.9.0
+
+	* glade/glade-xml.c: remove the add_relation() helper function,
+	and use atk_relation_set_add_relation_by_type() instead.
+
+	* NEWS: add news items.
+
+	* glade/glade-xml.c (add_relation): apply Padraig O'brian's patch
+	to fix up AtkRelation creation.  Fixes bug #158708.
+
+2004-05-19  Daniel Elstner  <daniel.elstner@gmx.net>
+
+	* glade/glade-gtk.c (combo_box_entry_find_internal_child): New
+	function that exposes GtkComboBoxEntry's child GtkEntry widget as
+	internal-child "entry".
+	(_glade_init_gtk_widgets): Add glade_standard_build_children and
+	combo_box_entry_find_internal_child to the glade_register_widget()
+	call for GTK_TYPE_COMBO_BOX_ENTRY.
+
+2004-11-11  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-parser.c (glade_parser_start_element): Apply Damon's
+	changes to ignore the comments attribute on various elements.
+	This is also from bug #154806.
+
+	* glade/glade-parser.c (handle_atk_action): translate the action
+	description.  Fixes bug #154804.
+
+	* glade-2.0.dtd (property): add comments attribute.
+	(atkproperty): add translatable, context and
+	comments attributes.
+	(atkaction): add note that description is translated.  Patch from
+	Damon Chaplin on bug #154806.
+
+2004-11-09  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-gtk.c (toolbar_build_children): fix a few errors in
+	the conversion of old style toolbar items.
+
+	* Makefile.am (install-data-local, uninstall-local): fix up rules
+	so that they aren't run if the XML catalog isn't found.  They
+	still ignore errors though.
+
+	* acconfig.h, acinclude.m4: remove, since they aren't needed
+	anymore.
+
+	* configure.in: update to use AM_PATH_PYTHON, and use
+	JH_PATH_XML_CATALOG to check for location on XML catalog (this
+	adds a --with-xml-catalog argument, which solves a few bugs).
+
+	* m4/jh_xml_catalog.m4: new file containing macro to check for XML
+	catalog.
+
+	* autogen.sh (have_autoconf): require Automake 1.9 or 1.8, include
+	m4/ subdirectory.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
+	GtkWidget type values, but don't throw an error if the named
+	widget doesn't exist yet.
+	(glade_standard_build_widget): only defer the widget prop if
+	glade_xml_set_value_from_string() didn't succeed.  Should fix bug
+	#123618 and #152063.
+
+	* glade/glade-parser.c: change some occurrences of "0" to "NULL".
+	Based on patch from Kjartan (bug #150039).
+
+	* test-libglade.c (main): remove deprecated gtk_signal_connect()
+	call.
+
+	* glade/glade-xml.c (glade_xml_set_value_from_string): handle
+	G_TYPE_STRV boxed types, using newline separators.
+
+2004-11-08  James Henstridge  <james@jamesh.id.au>
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): add
+	GtkFileChooserDialog.  Fixes bug #137592.
+
+	* libglade-convert.in (WidgetDef.ChildDef.dump): encode property
+	value in UTF-8.
+	(WidgetDef.dump): same here.
+
+	* glade/glade-parser.c (widget_info_free): free the atk actions
+	and relations.  Should fix bug #125042.
+
+	* libglade-convert.in (fixup_as_type): add code to convert x/y
+	properties of GtkFixed children to child properties.  Fixes bug
+	#155708 and #82986.
+
+	* glade/glade-gtk.c (toolbar_build_children): update to use newer
+	toolbar APIs even for older glade files.
+	(set_tooltip): use gtk_tool_item_set_tooltip() to set the tooltip
+	on GtkToolItems instead of gtk_tooltips_set_tip().
+	(toolbar_build_children): call gtk_tool_item_set_tooltip() to set
+	the tip on tool items in the compatibility code.
+
+Sat Oct 23 23:56:14 2004  Jonathan Blandford  <jrb@redhat.com>
+
+	* glade/glade-gtk.c (_glade_init_gtk_widgets): add
+	GtkFileChooserButton, GtkIconView, GtkAboutDialog, and
+	GtkMenuToolButton
+
+	* configure.in: Add dependency on GTK+-2.5
+
+2004-09-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* glade/glade-gtk.c (menu_item_set_use_stock): Make accelerators
+	work in stock menu items.  (#140328)
+
+2004-07-09  Daniel Elstner  <daniel.elstner@gmx.net>
+
+	* glade/glade-gtk.c (toolbar_build_children): Use the new
+	gtk_toolbar_insert() instead of gtk_toolbar_append_widget()
+	to append GtkToolItem objects. (bug #142761)
+
+
 2006-08-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.in: Added AM_MAINTAINER_MODE in order to prevent our

@@ -44,20 +44,20 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/libglade-2.0-uninstalled.pc.in \
 	$(srcdir)/libglade-2.0.pc.in $(srcdir)/libglade-convert.in \
-	$(srcdir)/libglade.spec.in $(top_srcdir)/configure ABOUT-NLS \
-	AUTHORS COPYING ChangeLog INSTALL NEWS acconfig.h config.guess \
-	config.sub depcomp install-sh ltmain.sh missing mkinstalldirs
+	$(srcdir)/libglade-zip.in $(srcdir)/libglade.spec.in \
+	$(top_srcdir)/configure ABOUT-NLS AUTHORS COPYING ChangeLog \
+	INSTALL NEWS config.guess config.sub depcomp install-sh \
+	ltmain.sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = libglade.spec libglade-2.0.pc \
+CONFIG_CLEAN_FILES = libglade.spec libglade-zip libglade-2.0.pc \
 	libglade-2.0-uninstalled.pc libglade-convert
 PROGRAMS = $(noinst_PROGRAMS)
 am_test_libglade_OBJECTS = test-libglade.$(OBJEXT)
@@ -145,6 +145,8 @@ GTK_DOC_USE_LIBTOOL_TRUE = @GTK_DOC_USE_LIBTOOL_TRUE@
 GTK_LIBS = @GTK_LIBS@
 HAVE_PYTHON_FALSE = @HAVE_PYTHON_FALSE@
 HAVE_PYTHON_TRUE = @HAVE_PYTHON_TRUE@
+HAVE_XMLCATALOG_FALSE = @HAVE_XMLCATALOG_FALSE@
+HAVE_XMLCATALOG_TRUE = @HAVE_XMLCATALOG_TRUE@
 HTML_DIR = @HTML_DIR@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -184,7 +186,6 @@ POFILES = @POFILES@
 POSUB = @POSUB@
 PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
-PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -244,7 +245,6 @@ test_libglade_LDADD = glade/libglade-2.0.la $(LIBGLADE_LIBS)
 test_libglade_SOURCES = test-libglade.c
 
 # handling of the XML catalog
-XMLCATALOG = /etc/xml/catalog
 xmldir = $(datadir)/xml/libglade
 xml_DATA = glade-2.0.dtd
 EXTRA_DIST = \
@@ -252,6 +252,7 @@ EXTRA_DIST = \
   glade-2.0.dtd \
   libglade.spec.in \
   libglade.spec \
+  libglade-zip.in \
   libglade-2.0.pc.in \
   libglade-2.0-uninstalled.pc.in \
   libglade-convert.in \
@@ -308,7 +309,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) $(top_srcdir)/acconfig.h
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	cd $(top_srcdir) && $(AUTOHEADER)
 	rm -f stamp-h1
 	touch $@
@@ -316,6 +317,8 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) $(top_srcdir
 distclean-hdr:
 	-rm -f config.h stamp-h1
 libglade.spec: $(top_builddir)/config.status $(srcdir)/libglade.spec.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+libglade-zip: $(top_builddir)/config.status $(srcdir)/libglade-zip.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 libglade-2.0.pc: $(top_builddir)/config.status $(srcdir)/libglade-2.0.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -800,10 +803,10 @@ uninstall-info: uninstall-info-recursive
 	uninstall-pkgconfigDATA uninstall-xmlDATA
 
 
-install-data-local:
-	-xmlcatalog --noout --add "system" "http://glade.gnome.org/glade-2.0.dtd" $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
-uninstall-local:
-	-xmlcatalog --noout --del $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
+@HAVE_XMLCATALOG_TRUE@install-data-local:
+@HAVE_XMLCATALOG_TRUE@	-$(XMLCATALOG) --noout --add "system" "http://glade.gnome.org/glade-2.0.dtd" $(xmldir)/glade-2.0.dtd $(XML_CATALOG_FILE)
+@HAVE_XMLCATALOG_TRUE@uninstall-local:
+@HAVE_XMLCATALOG_TRUE@	-$(XMLCATALOG) --noout --del $(xmldir)/glade-2.0.dtd $(XML_CATALOG_FILE)
 
 #small hack to get distcheck to work
 clean-local:

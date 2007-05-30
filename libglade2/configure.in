@@ -2,17 +2,21 @@
 AC_PREREQ(2.52)
 
 m4_define([required_libxml_version], [2.4.10])
-m4_define([required_glib_version],   [2.4.0])
-m4_define([required_atk_version],    [1.0.0])
-m4_define([required_gtk_version],    [2.4.0])
+m4_define([required_glib_version],   [2.5.0])
+m4_define([required_atk_version],    [1.9.0])
+m4_define([required_gtk_version],    [2.5.0])
 
-AC_INIT([libglade], [2.4.0],
+AC_INIT([libglade], [2.6.0],
         [http://bugzilla.gnome.org/enter_bug.cgi?product=libglade])
 
 AC_CONFIG_SRCDIR([test-libglade.c])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER([config.h])
+
+# make sure $ACLOCAL_FLAGS are used during a rebuild.
+AC_SUBST([ACLOCAL_AMFLAGS], ["-I $ac_macro_dir \${ACLOCAL_FLAGS}"])
 
 AM_MAINTAINER_MODE
 
@@ -54,8 +58,6 @@ PKG_CHECK_MODULES(LIBGLADE, [dnl
   atk >= required_atk_version dnl
   gtk+-2.0 >= required_gtk_version dnl
   glib-2.0 >= required_glib_version])
-AC_SUBST(LIBGLADE_LIBS)
-AC_SUBST(LIBGLADE_CFLAGS)
 
 AC_MSG_CHECKING([for native Win32])
 case "$host" in
@@ -120,8 +122,7 @@ GTK_DOC_CHECK(1.0)
 
 dnl gettext stuff ... there is no message catalog for libglade -- libglade
 dnl provides translation for the XML files it reads in.
-GETTEXT_PACKAGE=libglade-2.0
-AC_SUBST(GETTEXT_PACKAGE)
+AC_SUBST(GETTEXT_PACKAGE, libglade-2.0)
 
 ALL_LINGUAS=""
 AM_GLIB_GNU_GETTEXT
@@ -133,21 +134,12 @@ AH_TOP(
 AH_BOTTOM(
 [#endif /* GLADE_CONFIG_H */])
 
-dnl check for a copy of python >= 2.0 with the xml.parsers.expat module.
-AC_MSG_CHECKING([for Python >= 2.0 with expat support])
-JH_PYTHON_CHECK(
-(2,0,0),
-[try:
-    import xml.parsers.expat
-except ImportError:
-    sys.exit(1)],
-[AC_MSG_RESULT([$PYTHON])
-have_python=true],
-[AC_MSG_RESULT([not found.])
-have_python=false])
-
+have_python=false
 AM_CONDITIONAL(HAVE_PYTHON, $have_python)
-AC_SUBST(PYTHON)
+
+# check for XML catalog
+have_xmlcatalog=false
+AM_CONDITIONAL(HAVE_XMLCATALOG, $have_xmlcatalog)
 
 dnl add debugging options ...
 changequote(,)dnl
@@ -164,25 +156,24 @@ if test "x$GCC" = xyes; then
 fi
 changequote([,])dnl
 
-dnl hack to get aclocal to use the ACLOCAL_FLAGS env var
-ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
-AC_SUBST(ACLOCAL_AMFLAGS)
-
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 libglade.spec
+libglade-zip
 glade/Makefile
 doc/Makefile
 doc/version.xml
 tests/Makefile
 libglade-2.0.pc
 libglade-2.0-uninstalled.pc
-libglade-convert
 ])
+AC_CONFIG_FILES([libglade-convert], [chmod +x libglade-convert])
+
+AC_OUTPUT
 
 rm -f po/po2tbl.sed
 
-if test -z "$jh_cv_path_python"; then
+if ! $have_python; then
   echo "*****************************************************"
   echo "  A usable version of python was not found, so the"
   echo "  libglade-convert program was not installed.  This"

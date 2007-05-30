@@ -1,18 +1,22 @@
-<?xml version="1.0"?>
+<?xml version="1.0" standalone="no"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
 <refentry id="libglade-Libglade-Initialisation">
 <refmeta>
-<refentrytitle>Libglade Initialisation</refentrytitle>
+<refentrytitle id="top_of_page">Libglade Initialisation</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>LIBGLADE Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>Libglade Initialisation</refname><refpurpose>Routines used to initialise libglade.</refpurpose>
+<refname>Libglade Initialisation</refname>
+<refpurpose>Routines used to initialise libglade.</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
@@ -34,8 +38,8 @@
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 These routines are used to initialise libglade, and to load addon modules
 that recognise extra widget sets.  The <filename>glade_init</filename>
@@ -45,10 +49,10 @@ extra modules.
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="glade-init"/>glade_init ()</title>
+<title><anchor id="glade-init" role="function"/>glade_init ()</title>
 <indexterm><primary>glade_init</primary></indexterm><programlisting><link linkend="void">void</link>        glade_init                      (void);</programlisting>
 <para>
 It used to be necessary to call <link linkend="glade-init"><function>glade_init()</function></link> before creating
@@ -59,7 +63,7 @@ not cause any problems though.</para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="glade-require"/>glade_require ()</title>
+<title><anchor id="glade-require" role="function"/>glade_require ()</title>
 <indexterm><primary>glade_require</primary></indexterm><programlisting><link linkend="void">void</link>        glade_require                   (const <link linkend="gchar">gchar</link> *library);</programlisting>
 <para>
 Ensure that a required library is available.  If it is not already
@@ -73,7 +77,7 @@ contains the handlers for that library.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-provide"/>glade_provide ()</title>
+<title><anchor id="glade-provide" role="function"/>glade_provide ()</title>
 <indexterm><primary>glade_provide</primary></indexterm><programlisting><link linkend="void">void</link>        glade_provide                   (const <link linkend="gchar">gchar</link> *library);</programlisting>
 <para>
 This function should be called by a module to assert that it

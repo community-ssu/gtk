@@ -262,7 +262,7 @@ static inline void
 handle_atk_action(GladeParseState *state, const xmlChar **attrs)
 {
     gint i;
-    GladeAtkActionInfo info = { 0 };
+    GladeAtkActionInfo info = { NULL };
 
     flush_properties(state);
 
@@ -270,7 +270,8 @@ handle_atk_action(GladeParseState *state, const xmlChar **attrs)
 	if (!strcmp(attrs[i], "action_name"))
 	    info.action_name = alloc_string(state->interface, attrs[i+1]);
 	else if (!strcmp(attrs[i], "description"))
-	    info.description = alloc_string(state->interface, attrs[i+1]);
+	    info.description = alloc_string(state->interface,
+				    dgettext(state->domain, attrs[i+1]));
 	else
 	    g_warning("unknown attribute `%s' for <action>.", attrs[i]);
     }
@@ -288,7 +289,7 @@ static inline void
 handle_atk_relation(GladeParseState *state, const xmlChar **attrs)
 {
     gint i;
-    GladeAtkRelationInfo info = { 0 };
+    GladeAtkRelationInfo info = { NULL };
 
     flush_properties(state);
 
@@ -313,7 +314,7 @@ handle_atk_relation(GladeParseState *state, const xmlChar **attrs)
 static inline void
 handle_signal(GladeParseState *state, const xmlChar **attrs)
 {
-    GladeSignalInfo info = { 0 };
+    GladeSignalInfo info = { NULL };
     gint i;
 
     flush_properties(state);
@@ -591,6 +592,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
 		    bad_agent = strcmp(attrs[i], "libglade") != 0;
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -647,6 +650,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->translate_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "context"))
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <atkproperty>.",
 			      attrs[i]);
@@ -800,6 +805,8 @@ glade_parser_start_element(GladeParseState *state,
 		    state->context_prop = !strcmp(attrs[i+1], "yes");
 		else if (!strcmp(attrs[i], "agent"))
 		    bad_agent = strcmp(attrs[i], "libglade") != 0;
+		else if (!strcmp(attrs[i], "comments"))
+		    /* Do nothing. */;
 		else
 		    g_warning("unknown attribute `%s' for <property>.",
 			      attrs[i]);
@@ -1093,30 +1100,30 @@ glade_parser_fatal_error(GladeParseState *state, const char *msg, ...)
 }
 
 static xmlSAXHandler glade_parser = {
-    0, /* internalSubset */
-    0, /* isStandalone */
-    0, /* hasInternalSubset */
-    0, /* hasExternalSubset */
-    0, /* resolveEntity */
-    (getEntitySAXFunc)glade_parser_get_entity, /* getEntity */
-    0, /* entityDecl */
-    0, /* notationDecl */
-    0, /* attributeDecl */
-    0, /* elementDecl */
-    0, /* unparsedEntityDecl */
-    0, /* setDocumentLocator */
+    (internalSubsetSAXFunc)NULL,                       /* internalSubset */
+    (isStandaloneSAXFunc)NULL,                         /* isStandalone */
+    (hasInternalSubsetSAXFunc)NULL,                    /* hasInternalSubset */
+    (hasExternalSubsetSAXFunc)NULL,                    /* hasExternalSubset */
+    (resolveEntitySAXFunc)NULL,                        /* resolveEntity */
+    (getEntitySAXFunc)glade_parser_get_entity,         /* getEntity */
+    (entityDeclSAXFunc)NULL,                           /* entityDecl */
+    (notationDeclSAXFunc)NULL,                         /* notationDecl */
+    (attributeDeclSAXFunc)NULL,                        /* attributeDecl */
+    (elementDeclSAXFunc)NULL,                          /* elementDecl */
+    (unparsedEntityDeclSAXFunc)NULL,                   /* unparsedEntityDecl */
+    (setDocumentLocatorSAXFunc)NULL,                   /* setDocumentLocator */
     (startDocumentSAXFunc)glade_parser_start_document, /* startDocument */
-    (endDocumentSAXFunc)glade_parser_end_document, /* endDocument */
-    (startElementSAXFunc)glade_parser_start_element, /* startElement */
-    (endElementSAXFunc)glade_parser_end_element, /* endElement */
-    0, /* reference */
-    (charactersSAXFunc)glade_parser_characters, /* characters */
-    0, /* ignorableWhitespace */
-    0, /* processingInstruction */
-    (commentSAXFunc)0, /* comment */
-    (warningSAXFunc)glade_parser_warning, /* warning */
-    (errorSAXFunc)glade_parser_error, /* error */
-    (fatalErrorSAXFunc)glade_parser_fatal_error, /* fatalError */
+    (endDocumentSAXFunc)glade_parser_end_document,     /* endDocument */
+    (startElementSAXFunc)glade_parser_start_element,   /* startElement */
+    (endElementSAXFunc)glade_parser_end_element,       /* endElement */
+    (referenceSAXFunc)NULL,                            /* reference */
+    (charactersSAXFunc)glade_parser_characters,        /* characters */
+    (ignorableWhitespaceSAXFunc)NULL,               /* ignorableWhitespace */
+    (processingInstructionSAXFunc)NULL,             /* processingInstruction */
+    (commentSAXFunc)NULL,                              /* comment */
+    (warningSAXFunc)glade_parser_warning,              /* warning */
+    (errorSAXFunc)glade_parser_error,                  /* error */
+    (fatalErrorSAXFunc)glade_parser_fatal_error,       /* fatalError */
 };
 
 static void
@@ -1129,6 +1136,8 @@ widget_info_free(GladeWidgetInfo *info)
     g_free(info->properties);
     g_free(info->atk_props);
     g_free(info->signals);
+    g_free(info->atk_actions);
+    g_free(info->relations);
     g_free(info->accels);
 
     for (i = 0; i < info->n_children; i++) {
@@ -1185,7 +1194,11 @@ glade_interface_destroy(GladeInterface *interface)
 GladeInterface *
 glade_parser_parse_file(const gchar *file, const gchar *domain)
 {
+#ifdef G_OS_WIN32
+    gchar *cp_file;
+#endif
     GladeParseState state = { 0 };
+    int rc;
 
     if (!g_file_test(file, G_FILE_TEST_IS_REGULAR)) {
 	g_warning("could not find glade file '%s'", file);
@@ -1198,7 +1211,22 @@ glade_parser_parse_file(const gchar *file, const gchar *domain)
     else
 	state.domain = textdomain(NULL);
 
-    if (xmlSAXUserParseFile(&glade_parser, &state, file) < 0) {
+#ifdef G_OS_WIN32
+    cp_file = g_win32_locale_filename_from_utf8(file);
+
+    if (cp_file == NULL) {
+	g_warning("could not get system codepage name of '%s'", file);
+	return NULL;
+    }
+
+    rc = xmlSAXUserParseFile(&glade_parser, &state, cp_file);
+
+    g_free (cp_file);
+#else
+    rc = xmlSAXUserParseFile(&glade_parser, &state, file);
+#endif
+
+    if (rc < 0) {
 	g_warning("document not well formed");
 	if (state.interface)
 	    glade_interface_destroy (state.interface);

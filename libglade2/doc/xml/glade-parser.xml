@@ -1,32 +1,36 @@
-<?xml version="1.0"?>
+<?xml version="1.0" standalone="no"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
 <refentry id="libglade-Libglade-SAX-Parser">
 <refmeta>
-<refentrytitle>Libglade SAX Parser</refentrytitle>
+<refentrytitle id="top_of_page">Libglade SAX Parser</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>LIBGLADE Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>Libglade SAX Parser</refname><refpurpose>Declarations and routines for accessing the SAX based parser.</refpurpose>
+<refname>Libglade SAX Parser</refname>
+<refpurpose>Declarations and routines for accessing the SAX based parser.</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
 #include &lt;glade/glade-parser.h&gt;
 
 
-struct      <link linkend="GladeInterface">GladeInterface</link>;
-struct      <link linkend="GladeWidgetInfo">GladeWidgetInfo</link>;
-struct      <link linkend="GladeChildInfo">GladeChildInfo</link>;
-struct      <link linkend="GladeProperty">GladeProperty</link>;
-struct      <link linkend="GladeSignalInfo">GladeSignalInfo</link>;
-struct      <link linkend="GladeAccelInfo">GladeAccelInfo</link>;
-struct      <link linkend="GladeAtkActionInfo">GladeAtkActionInfo</link>;
-struct      <link linkend="GladeAtkRelationInfo">GladeAtkRelationInfo</link>;
+            <link linkend="GladeInterface">GladeInterface</link>;
+            <link linkend="GladeWidgetInfo">GladeWidgetInfo</link>;
+            <link linkend="GladeChildInfo">GladeChildInfo</link>;
+            <link linkend="GladeProperty">GladeProperty</link>;
+            <link linkend="GladeSignalInfo">GladeSignalInfo</link>;
+            <link linkend="GladeAccelInfo">GladeAccelInfo</link>;
+            <link linkend="GladeAtkActionInfo">GladeAtkActionInfo</link>;
+            <link linkend="GladeAtkRelationInfo">GladeAtkRelationInfo</link>;
 
 <link linkend="GladeInterface">GladeInterface</link>* <link linkend="glade-parser-parse-file">glade_parser_parse_file</link>     (const <link linkend="gchar">gchar</link> *file,
                                              const <link linkend="gchar">gchar</link> *domain);
@@ -47,8 +51,8 @@ struct      <link linkend="GladeAtkRelationInfo">GladeAtkRelationInfo</link>;
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 The structures described here are the output of libglade's XML parser.
 These structures are really only useful for people who are extending
@@ -61,12 +65,11 @@ these functions and structures.
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="GladeInterface"/>struct GladeInterface</title>
-<indexterm><primary>GladeInterface</primary></indexterm><programlisting>struct GladeInterface {
-
+<title><anchor id="GladeInterface" role="struct"/>GladeInterface</title>
+<indexterm><primary>GladeInterface</primary></indexterm><programlisting>typedef struct {
     gchar **requires;
     guint n_requires;
 
@@ -76,15 +79,14 @@ these functions and structures.
     GHashTable *names;
 
     GHashTable *strings;
-};
+} GladeInterface;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeWidgetInfo"/>struct GladeWidgetInfo</title>
-<indexterm><primary>GladeWidgetInfo</primary></indexterm><programlisting>struct GladeWidgetInfo {
-
+<title><anchor id="GladeWidgetInfo" role="struct"/>GladeWidgetInfo</title>
+<indexterm><primary>GladeWidgetInfo</primary></indexterm><programlisting>typedef struct {
     GladeWidgetInfo *parent;
 
     gchar *classname;
@@ -110,85 +112,79 @@ these functions and structures.
 
     GladeChildInfo *children;
     guint n_children;
-};
+} GladeWidgetInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeChildInfo"/>struct GladeChildInfo</title>
-<indexterm><primary>GladeChildInfo</primary></indexterm><programlisting>struct GladeChildInfo {
-
+<title><anchor id="GladeChildInfo" role="struct"/>GladeChildInfo</title>
+<indexterm><primary>GladeChildInfo</primary></indexterm><programlisting>typedef struct {
     GladeProperty *properties;
     guint n_properties;
 
     GladeWidgetInfo *child;
     gchar *internal_child;
-};
+} GladeChildInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeProperty"/>struct GladeProperty</title>
-<indexterm><primary>GladeProperty</primary></indexterm><programlisting>struct GladeProperty {
-
+<title><anchor id="GladeProperty" role="struct"/>GladeProperty</title>
+<indexterm><primary>GladeProperty</primary></indexterm><programlisting>typedef struct {
     gchar *name;
     gchar *value;
-};
+} GladeProperty;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeSignalInfo"/>struct GladeSignalInfo</title>
-<indexterm><primary>GladeSignalInfo</primary></indexterm><programlisting>struct GladeSignalInfo {
-
+<title><anchor id="GladeSignalInfo" role="struct"/>GladeSignalInfo</title>
+<indexterm><primary>GladeSignalInfo</primary></indexterm><programlisting>typedef struct {
     gchar *name;
     gchar *handler;
     gchar *object; /* NULL if this isn't a connect_object signal */
     guint after : 1;
-};
+} GladeSignalInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeAccelInfo"/>struct GladeAccelInfo</title>
-<indexterm><primary>GladeAccelInfo</primary></indexterm><programlisting>struct GladeAccelInfo {
-
+<title><anchor id="GladeAccelInfo" role="struct"/>GladeAccelInfo</title>
+<indexterm><primary>GladeAccelInfo</primary></indexterm><programlisting>typedef struct {
     guint key;
     GdkModifierType modifiers;
     gchar *signal;
-};
+} GladeAccelInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeAtkActionInfo"/>struct GladeAtkActionInfo</title>
-<indexterm><primary>GladeAtkActionInfo</primary></indexterm><programlisting>struct GladeAtkActionInfo {
-
+<title><anchor id="GladeAtkActionInfo" role="struct"/>GladeAtkActionInfo</title>
+<indexterm><primary>GladeAtkActionInfo</primary></indexterm><programlisting>typedef struct {
     gchar *action_name;
     gchar *description;
-};
+} GladeAtkActionInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="GladeAtkRelationInfo"/>struct GladeAtkRelationInfo</title>
-<indexterm><primary>GladeAtkRelationInfo</primary></indexterm><programlisting>struct GladeAtkRelationInfo {
-
+<title><anchor id="GladeAtkRelationInfo" role="struct"/>GladeAtkRelationInfo</title>
+<indexterm><primary>GladeAtkRelationInfo</primary></indexterm><programlisting>typedef struct {
     gchar *target;
     gchar *type;
-};
+} GladeAtkRelationInfo;
 </programlisting>
 <para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="glade-parser-parse-file"/>glade_parser_parse_file ()</title>
+<title><anchor id="glade-parser-parse-file" role="function"/>glade_parser_parse_file ()</title>
 <indexterm><primary>glade_parser_parse_file</primary></indexterm><programlisting><link linkend="GladeInterface">GladeInterface</link>* glade_parser_parse_file     (const <link linkend="gchar">gchar</link> *file,
                                              const <link linkend="gchar">gchar</link> *domain);</programlisting>
 <para>
@@ -208,11 +204,11 @@ should go through the GladeXML interfaces.</para>
 <varlistentry><term><parameter>domain</parameter>&nbsp;:</term>
 <listitem><simpara> the translation domain for the XML file.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the GladeInterface structure for the XML file.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the GladeInterface structure for the XML file.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-parser-parse-buffer"/>glade_parser_parse_buffer ()</title>
+<title><anchor id="glade-parser-parse-buffer" role="function"/>glade_parser_parse_buffer ()</title>
 <indexterm><primary>glade_parser_parse_buffer</primary></indexterm><programlisting><link linkend="GladeInterface">GladeInterface</link>* glade_parser_parse_buffer   (const <link linkend="gchar">gchar</link> *buffer,
                                              <link linkend="gint">gint</link> len,
                                              const <link linkend="gchar">gchar</link> *domain);</programlisting>
@@ -236,11 +232,11 @@ should go through the GladeXML interfaces.</para>
 <varlistentry><term><parameter>domain</parameter>&nbsp;:</term>
 <listitem><simpara> the translation domain for the XML file.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the GladeInterface structure for the XML buffer.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the GladeInterface structure for the XML buffer.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-interface-destroy"/>glade_interface_destroy ()</title>
+<title><anchor id="glade-interface-destroy" role="function"/>glade_interface_destroy ()</title>
 <indexterm><primary>glade_interface_destroy</primary></indexterm><programlisting><link linkend="void">void</link>        glade_interface_destroy         (<link linkend="GladeInterface">GladeInterface</link> *interface);</programlisting>
 <para>
 Frees a GladeInterface structure.</para>
@@ -252,7 +248,7 @@ Frees a GladeInterface structure.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-interface-dump"/>glade_interface_dump ()</title>
+<title><anchor id="glade-interface-dump" role="function"/>glade_interface_dump ()</title>
 <indexterm><primary>glade_interface_dump</primary></indexterm><programlisting><link linkend="void">void</link>        glade_interface_dump            (<link linkend="GladeInterface">GladeInterface</link> *interface,
                                              const <link linkend="gchar">gchar</link> *filename);</programlisting>
 <para>

@@ -1,3 +1,23 @@
+libglade-2.6.0: 12-July-2006
+	- Win32 portability fixes (Tor)
+	- Compiler warning fixes (Kjartan)
+	- Fixes for ASCII characters in entries (Matthias)
+
+libglade-2.5.1: 11-February-2005
+        - Fix toolbar breakage from the 2.4.1/2.5.0 releases.
+        - Fix handling of GtkFileChooserDialog internal children.
+
+libglade-2.5.0: 29-November-2004
+	- Add support for GtkFileChooserButton, GtkIconView,
+	  GtkAboutDialog and GtkMenuToolButton.
+	- Register GtkFileChooserDialog correctly.
+	- Fix a number of bugs in the libglade-convert utility.
+	- Fix some memory leaks in the XML parsing code.
+	- Handle tooltips on GtkToolItems properly, and get rid of uses of
+	  the old toolbar API.
+	- Fix some bugs in setting up ATK relations.
+	- Various other bug fixes (see ChangeLog).
+
 libglade-2.4.0: 17-May-2004
 	- Stable release.
 

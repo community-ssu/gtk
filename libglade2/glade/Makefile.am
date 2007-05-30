@@ -7,7 +7,7 @@
 #   change to C+1:0:0
 # - If the interface is the same as the previous version, change to C:R+1:A
 
-LTVERSION = 0:4:0
+LTVERSION = 0:7:0
 
 if OS_WIN32
 export_symbols = -export-symbols glade.def
@@ -30,6 +30,7 @@ INCLUDES = \
   -I$(top_srcdir) \
   $(LIBGLADE_CFLAGS) \
   -DGLADE_LIBDIR=\""$(libdir)"\" \
+  -DGLADE_PREFIX=\""$(prefix)"\" \
   -DG_DISABLE_DEPRECATED \
   -DGDK_DISABLE_DEPRECATED \
   -DGDK_PIXBUF_DISABLE_DEPRECATED \

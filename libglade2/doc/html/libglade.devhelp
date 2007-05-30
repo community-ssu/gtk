@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
 <book xmlns="http://www.devhelp.net/book" title="Libglade Reference Manual" link="index.html" author="James Henstridge" name="libglade">
   <chapters>
     <sub name="Libglade Programming Notes" link="libglade-notes.html">
@@ -23,8 +24,8 @@
     <function name="glade_init ()" link="libglade-Libglade-Initialisation.html#glade-init"/>
     <function name="glade_require ()" link="libglade-Libglade-Initialisation.html#glade-require"/>
     <function name="glade_provide ()" link="libglade-Libglade-Initialisation.html#glade-provide"/>
-    <function name="struct GladeXML" link="GladeXML.html#GladeXML-struct"/>
-    <function name="struct GladeXMLClass" link="GladeXML.html#GladeXMLClass"/>
+    <function name="GladeXML" link="GladeXML.html#GladeXML-struct"/>
+    <function name="GladeXMLClass" link="GladeXML.html#GladeXMLClass"/>
     <function name="glade_xml_new ()" link="GladeXML.html#glade-xml-new"/>
     <function name="glade_xml_new_from_buffer ()" link="GladeXML.html#glade-xml-new-from-buffer"/>
     <function name="glade_xml_construct ()" link="GladeXML.html#glade-xml-construct"/>
@@ -40,14 +41,14 @@
     <function name="glade_xml_signal_autoconnect_full ()" link="GladeXML.html#glade-xml-signal-autoconnect-full"/>
     <function name="GladeXMLCustomWidgetHandler ()" link="GladeXML.html#GladeXMLCustomWidgetHandler"/>
     <function name="glade_set_custom_handler ()" link="GladeXML.html#glade-set-custom-handler"/>
-    <function name="struct GladeInterface" link="libglade-Libglade-SAX-Parser.html#GladeInterface"/>
-    <function name="struct GladeWidgetInfo" link="libglade-Libglade-SAX-Parser.html#GladeWidgetInfo"/>
-    <function name="struct GladeChildInfo" link="libglade-Libglade-SAX-Parser.html#GladeChildInfo"/>
-    <function name="struct GladeProperty" link="libglade-Libglade-SAX-Parser.html#GladeProperty"/>
-    <function name="struct GladeSignalInfo" link="libglade-Libglade-SAX-Parser.html#GladeSignalInfo"/>
-    <function name="struct GladeAccelInfo" link="libglade-Libglade-SAX-Parser.html#GladeAccelInfo"/>
-    <function name="struct GladeAtkActionInfo" link="libglade-Libglade-SAX-Parser.html#GladeAtkActionInfo"/>
-    <function name="struct GladeAtkRelationInfo" link="libglade-Libglade-SAX-Parser.html#GladeAtkRelationInfo"/>
+    <function name="GladeInterface" link="libglade-Libglade-SAX-Parser.html#GladeInterface"/>
+    <function name="GladeWidgetInfo" link="libglade-Libglade-SAX-Parser.html#GladeWidgetInfo"/>
+    <function name="GladeChildInfo" link="libglade-Libglade-SAX-Parser.html#GladeChildInfo"/>
+    <function name="GladeProperty" link="libglade-Libglade-SAX-Parser.html#GladeProperty"/>
+    <function name="GladeSignalInfo" link="libglade-Libglade-SAX-Parser.html#GladeSignalInfo"/>
+    <function name="GladeAccelInfo" link="libglade-Libglade-SAX-Parser.html#GladeAccelInfo"/>
+    <function name="GladeAtkActionInfo" link="libglade-Libglade-SAX-Parser.html#GladeAtkActionInfo"/>
+    <function name="GladeAtkRelationInfo" link="libglade-Libglade-SAX-Parser.html#GladeAtkRelationInfo"/>
     <function name="glade_parser_parse_file ()" link="libglade-Libglade-SAX-Parser.html#glade-parser-parse-file"/>
     <function name="glade_parser_parse_buffer ()" link="libglade-Libglade-SAX-Parser.html#glade-parser-parse-buffer"/>
     <function name="glade_interface_destroy ()" link="libglade-Libglade-SAX-Parser.html#glade-interface-destroy"/>
@@ -71,6 +72,6 @@
     <function name="glade_xml_set_value_from_string ()" link="libglade-Libglade-Build.html#glade-xml-set-value-from-string"/>
     <function name="glade_xml_set_toplevel ()" link="libglade-Libglade-Build.html#glade-xml-set-toplevel"/>
     <function name="glade_xml_ensure_accel ()" link="libglade-Libglade-Build.html#glade-xml-ensure-accel"/>
-    <function name="GLADE_MODULE_CHECK_INIT" link="libglade-Libglade-Build.html#GLADE-MODULE-CHECK-INIT-CAPS"/>
+    <function name="GLADE_MODULE_CHECK_INIT" link="libglade-Libglade-Build.html#GLADE-MODULE-CHECK-INIT:CAPS"/>
   </functions>
 </book>

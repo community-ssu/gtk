@@ -1,4 +1,10 @@
-libglade2 (1:2.4.0-1osso2) unstable; urgency=low
+libglade2 (1:2.6.0-1osso1) unstable; urgency=low
+
+  * Updated to upstream 2.6.0
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Wed,  30 May 2007 12:05:32 +0300
+
+llibglade2 (1:2.4.0-1osso2) unstable; urgency=low
 
   * Added AM_MAINTAINER_MODE to configure.in
 

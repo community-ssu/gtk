@@ -25,6 +25,9 @@ automatically connect as many handlers up as it can that way.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT GladeXML ##### -->
 <para>
 
@@ -50,8 +53,6 @@ automatically connect as many handlers up as it can that way.
 @root: 
 @domain: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@filename: 
 
 
 <!-- ##### FUNCTION glade_xml_new_from_buffer ##### -->
@@ -76,9 +77,6 @@ automatically connect as many handlers up as it can that way.
 @root: 
 @domain: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@filename: 
-@xml: 
 
 
 <!-- ##### FUNCTION glade_xml_signal_connect ##### -->
@@ -89,9 +87,6 @@ automatically connect as many handlers up as it can that way.
 @self: 
 @handlername: 
 @func: 
-<!-- # Unused Parameters # -->
-@signalname: 
-@xml: 
 
 
 <!-- ##### FUNCTION glade_xml_signal_connect_data ##### -->
@@ -111,8 +106,6 @@ automatically connect as many handlers up as it can that way.
 </para>
 
 @self: 
-<!-- # Unused Parameters # -->
-@xml: 
 
 
 <!-- ##### FUNCTION glade_xml_get_widget ##### -->
@@ -123,8 +116,6 @@ automatically connect as many handlers up as it can that way.
 @self: 
 @name: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@xml: 
 
 
 <!-- ##### FUNCTION glade_xml_get_widget_prefix ##### -->

@@ -1,34 +1,97 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Libglade SAX Parser</title><meta name="generator" content="DocBook XSL Stylesheets V1.61.2"><meta name="generator" content="GTK-Doc V1.2 (XML mode)"><link rel="stylesheet" href="style.css" type="text/css"><link rel="home" href="index.html" title="Libglade Reference Manual"><link rel="up" href="libglade-lib.html" title="Part I. Libglade Library Reference"><link rel="previous" href="GladeXML.html" title="GladeXML"><link rel="next" href="libglade-Libglade-Build.html" title="Libglade Build"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table class="navigation" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle"><td><a accesskey="p" href="GladeXML.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td><td><a accesskey="u" href="libglade-lib.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td><td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td><th width="100%" align="center">Libglade Reference Manual</th><td><a accesskey="n" href="libglade-Libglade-Build.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td></tr></table><div class="refentry" lang="en"><a name="libglade-Libglade-SAX-Parser"></a><div class="titlepage"><div></div><div></div></div><div class="refnamediv"><h2><span class="refentrytitle">Libglade SAX Parser</span></h2><p>Libglade SAX Parser &#8212; Declarations and routines for accessing the SAX based parser.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><pre class="synopsis">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Libglade SAX Parser</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="Libglade Reference Manual">
+<link rel="up" href="libglade-lib.html" title="Part&#160;I.&#160;Libglade Library Reference">
+<link rel="prev" href="GladeXML.html" title="GladeXML">
+<link rel="next" href="libglade-Libglade-Build.html" title="Libglade Build">
+<meta name="generator" content="GTK-Doc V1.6 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="libglade-notes.html" title="Libglade Programming Notes">
+<link rel="chapter" href="libglade-dtd.html" title="Glade 2.0 File Format">
+<link rel="part" href="libglade-lib.html" title="Part&#160;I.&#160;Libglade Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GladeXML.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libglade-lib.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Libglade Reference Manual</th>
+<td><a accesskey="n" href="libglade-Libglade-Build.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#top_of_page" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#desc" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="libglade-Libglade-SAX-Parser"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="top_of_page"></a>Libglade SAX Parser</span></h2>
+<p>Libglade SAX Parser &#8212; Declarations and routines for accessing the SAX based parser.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
 
 #include &lt;glade/glade-parser.h&gt;
 
 
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeWidgetInfo">GladeWidgetInfo</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeChildInfo">GladeChildInfo</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeProperty">GladeProperty</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeSignalInfo">GladeSignalInfo</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeAccelInfo">GladeAccelInfo</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeAtkActionInfo">GladeAtkActionInfo</a>;
-struct      <a href="libglade-Libglade-SAX-Parser.html#GladeAtkRelationInfo">GladeAtkRelationInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeWidgetInfo">GladeWidgetInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeChildInfo">GladeChildInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeProperty">GladeProperty</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeSignalInfo">GladeSignalInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeAccelInfo">GladeAccelInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeAtkActionInfo">GladeAtkActionInfo</a>;
+            <a href="libglade-Libglade-SAX-Parser.html#GladeAtkRelationInfo">GladeAtkRelationInfo</a>;
 
-<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* <a href="libglade-Libglade-SAX-Parser.html#glade-parser-parse-file">glade_parser_parse_file</a>     (const gchar *file,
-                                             const gchar *domain);
-<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* <a href="libglade-Libglade-SAX-Parser.html#glade-parser-parse-buffer">glade_parser_parse_buffer</a>   (const gchar *buffer,
-                                             gint len,
-                                             const gchar *domain);
+<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* <a href="libglade-Libglade-SAX-Parser.html#glade-parser-parse-file">glade_parser_parse_file</a>     (const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *file,
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *domain);
+<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* <a href="libglade-Libglade-SAX-Parser.html#glade-parser-parse-buffer">glade_parser_parse_buffer</a>   (const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *buffer,
+                                             <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> len,
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *domain);
 void        <a href="libglade-Libglade-SAX-Parser.html#glade-interface-destroy">glade_interface_destroy</a>         (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface);
 void        <a href="libglade-Libglade-SAX-Parser.html#glade-interface-dump">glade_interface_dump</a>            (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface,
-                                             const gchar *filename);
-</pre></div><div class="refsect1" lang="en"><h2>Description</h2><p>
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *filename);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="desc"></a><h2>Description</h2>
+<p>
 The structures described here are the output of libglade's XML parser.
 These structures are really only useful for people who are extending
 libglade to handle other widget sets, but it could also be useful for
 other applications that need to read glade XML files.
-</p><p>If you only wish to use libglade, you don't need to worry about
+</p>
+<p>If you only wish to use libglade, you don't need to worry about
 these functions and structures.
-</p></div><div class="refsect1" lang="en"><h2>Details</h2><div class="refsect2" lang="en"><h3><a name="GladeInterface"></a>struct GladeInterface</h3><a class="indexterm" name="id2591688"></a><pre class="programlisting">struct GladeInterface {
-
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="details"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id2974308"></a><h3>
+<a name="GladeInterface"></a>GladeInterface</h3>
+<a class="indexterm" name="id2974319"></a><pre class="programlisting">typedef struct {
     gchar **requires;
     guint n_requires;
 
@@ -38,11 +101,17 @@ these functions and structures.
     GHashTable *names;
 
     GHashTable *strings;
-};
-</pre><p>
+} GladeInterface;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeWidgetInfo"></a>struct GladeWidgetInfo</h3><a class="indexterm" name="id2591709"></a><pre class="programlisting">struct GladeWidgetInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2974338"></a><h3>
+<a name="GladeWidgetInfo"></a>GladeWidgetInfo</h3>
+<a class="indexterm" name="id2974350"></a><pre class="programlisting">typedef struct {
     GladeWidgetInfo *parent;
 
     gchar *classname;
@@ -68,92 +137,248 @@ these functions and structures.
 
     GladeChildInfo *children;
     guint n_children;
-};
-</pre><p>
+} GladeWidgetInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeChildInfo"></a>struct GladeChildInfo</h3><a class="indexterm" name="id2591736"></a><pre class="programlisting">struct GladeChildInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2974374"></a><h3>
+<a name="GladeChildInfo"></a>GladeChildInfo</h3>
+<a class="indexterm" name="id2974387"></a><pre class="programlisting">typedef struct {
     GladeProperty *properties;
     guint n_properties;
 
     GladeWidgetInfo *child;
     gchar *internal_child;
-};
-</pre><p>
+} GladeChildInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeProperty"></a>struct GladeProperty</h3><a class="indexterm" name="id2591756"></a><pre class="programlisting">struct GladeProperty {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2974405"></a><h3>
+<a name="GladeProperty"></a>GladeProperty</h3>
+<a class="indexterm" name="id2974417"></a><pre class="programlisting">typedef struct {
     gchar *name;
     gchar *value;
-};
-</pre><p>
+} GladeProperty;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeSignalInfo"></a>struct GladeSignalInfo</h3><a class="indexterm" name="id2591775"></a><pre class="programlisting">struct GladeSignalInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2974434"></a><h3>
+<a name="GladeSignalInfo"></a>GladeSignalInfo</h3>
+<a class="indexterm" name="id2974446"></a><pre class="programlisting">typedef struct {
     gchar *name;
     gchar *handler;
     gchar *object; /* NULL if this isn't a connect_object signal */
     guint after : 1;
-};
-</pre><p>
+} GladeSignalInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeAccelInfo"></a>struct GladeAccelInfo</h3><a class="indexterm" name="id2591796"></a><pre class="programlisting">struct GladeAccelInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2995287"></a><h3>
+<a name="GladeAccelInfo"></a>GladeAccelInfo</h3>
+<a class="indexterm" name="id2995300"></a><pre class="programlisting">typedef struct {
     guint key;
     GdkModifierType modifiers;
     gchar *signal;
-};
-</pre><p>
+} GladeAccelInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeAtkActionInfo"></a>struct GladeAtkActionInfo</h3><a class="indexterm" name="id2591816"></a><pre class="programlisting">struct GladeAtkActionInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2995317"></a><h3>
+<a name="GladeAtkActionInfo"></a>GladeAtkActionInfo</h3>
+<a class="indexterm" name="id2995330"></a><pre class="programlisting">typedef struct {
     gchar *action_name;
     gchar *description;
-};
-</pre><p>
+} GladeAtkActionInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="GladeAtkRelationInfo"></a>struct GladeAtkRelationInfo</h3><a class="indexterm" name="id2614160"></a><pre class="programlisting">struct GladeAtkRelationInfo {
-
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2995347"></a><h3>
+<a name="GladeAtkRelationInfo"></a>GladeAtkRelationInfo</h3>
+<a class="indexterm" name="id2995358"></a><pre class="programlisting">typedef struct {
     gchar *target;
     gchar *type;
-};
-</pre><p>
+} GladeAtkRelationInfo;
+</pre>
+<p>
 
-</p></div><hr><div class="refsect2" lang="en"><h3><a name="glade-parser-parse-file"></a>glade_parser_parse_file ()</h3><a class="indexterm" name="id2614180"></a><pre class="programlisting"><a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* glade_parser_parse_file     (const gchar *file,
-                                             const gchar *domain);</pre><p>
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2995374"></a><h3>
+<a name="glade-parser-parse-file"></a>glade_parser_parse_file ()</h3>
+<a class="indexterm" name="id2995386"></a><pre class="programlisting"><a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* glade_parser_parse_file     (const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *file,
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *domain);</pre>
+<p>
 This function parses a Glade XML interface file to a GladeInterface
 object (which is libglade's internal representation of the
 interface data).
-</p><p>
+</p>
+<p>
 Generally, user code won't need to call this function.  Instead, it
-should go through the GladeXML interfaces.</p><p>
+should go through the GladeXML interfaces.</p>
+<p>
 
-</p><div class="variablelist"><table border="0"><col align="left" valign="top"><tbody><tr><td><span class="term"><i class="parameter"><tt>file</tt></i> :</span></td><td> the filename of the glade XML file.
-</td></tr><tr><td><span class="term"><i class="parameter"><tt>domain</tt></i> :</span></td><td> the translation domain for the XML file.
-</td></tr><tr><td><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></td><td> the GladeInterface structure for the XML file.
-</td></tr></tbody></table></div></div><hr><div class="refsect2" lang="en"><h3><a name="glade-parser-parse-buffer"></a>glade_parser_parse_buffer ()</h3><a class="indexterm" name="id2614260"></a><pre class="programlisting"><a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* glade_parser_parse_buffer   (const gchar *buffer,
-                                             gint len,
-                                             const gchar *domain);</pre><p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>file</code></em>&#160;:</span></td>
+<td> the filename of the glade XML file.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>domain</code></em>&#160;:</span></td>
+<td> the translation domain for the XML file.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the GladeInterface structure for the XML file.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2995474"></a><h3>
+<a name="glade-parser-parse-buffer"></a>glade_parser_parse_buffer ()</h3>
+<a class="indexterm" name="id2995485"></a><pre class="programlisting"><a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a>* glade_parser_parse_buffer   (const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *buffer,
+                                             <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gint"
+>gint</a> len,
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *domain);</pre>
+<p>
 This function is similar to glade_parser_parse_file, except that it
 parses XML data from a buffer in memory.  This could be used to
 embed an interface into the executable, for instance.
-</p><p>
+</p>
+<p>
 Generally, user code won't need to call this function.  Instead, it
-should go through the GladeXML interfaces.</p><p>
+should go through the GladeXML interfaces.</p>
+<p>
 
-</p><div class="variablelist"><table border="0"><col align="left" valign="top"><tbody><tr><td><span class="term"><i class="parameter"><tt>buffer</tt></i> :</span></td><td> a buffer in memory containing XML data.
-</td></tr><tr><td><span class="term"><i class="parameter"><tt>len</tt></i> :</span></td><td> the length of <i class="parameter"><tt>buffer</tt></i>.
-</td></tr><tr><td><span class="term"><i class="parameter"><tt>domain</tt></i> :</span></td><td> the translation domain for the XML file.
-</td></tr><tr><td><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></td><td> the GladeInterface structure for the XML buffer.
-</td></tr></tbody></table></div></div><hr><div class="refsect2" lang="en"><h3><a name="glade-interface-destroy"></a>glade_interface_destroy ()</h3><a class="indexterm" name="id2614362"></a><pre class="programlisting">void        glade_interface_destroy         (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface);</pre><p>
-Frees a GladeInterface structure.</p><p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> a buffer in memory containing XML data.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>len</code></em>&#160;:</span></td>
+<td> the length of <em class="parameter"><code>buffer</code></em>.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>domain</code></em>&#160;:</span></td>
+<td> the translation domain for the XML file.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the GladeInterface structure for the XML buffer.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2980929"></a><h3>
+<a name="glade-interface-destroy"></a>glade_interface_destroy ()</h3>
+<a class="indexterm" name="id2980941"></a><pre class="programlisting">void        glade_interface_destroy         (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface);</pre>
+<p>
+Frees a GladeInterface structure.</p>
+<p>
 
-</p><div class="variablelist"><table border="0"><col align="left" valign="top"><tbody><tr><td><span class="term"><i class="parameter"><tt>interface</tt></i> :</span></td><td> the GladeInterface structure.
-</td></tr></tbody></table></div></div><hr><div class="refsect2" lang="en"><h3><a name="glade-interface-dump"></a>glade_interface_dump ()</h3><a class="indexterm" name="id2591847"></a><pre class="programlisting">void        glade_interface_dump            (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface,
-                                             const gchar *filename);</pre><p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td>
+<span class="term"><em class="parameter"><code>interface</code></em>&#160;:</span></td>
+<td> the GladeInterface structure.
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2980990"></a><h3>
+<a name="glade-interface-dump"></a>glade_interface_dump ()</h3>
+<a class="indexterm" name="id2981001"></a><pre class="programlisting">void        glade_interface_dump            (<a href="libglade-Libglade-SAX-Parser.html#GladeInterface">GladeInterface</a> *interface,
+                                             const <a
+href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gchar"
+>gchar</a> *filename);</pre>
+<p>
 This function dumps the contents of a GladeInterface into a file as
-XML.  It is intended mainly as a debugging tool.</p><p>
+XML.  It is intended mainly as a debugging tool.</p>
+<p>
 
-</p><div class="variablelist"><table border="0"><col align="left" valign="top"><tbody><tr><td><span class="term"><i class="parameter"><tt>interface</tt></i> :</span></td><td> the GladeInterface
-</td></tr><tr><td><span class="term"><i class="parameter"><tt>filename</tt></i> :</span></td><td> the filename to write the interface data to.
-</td></tr></tbody></table></div></div></div></div><table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="0"><tr valign="middle"><td align="left"><a accesskey="p" href="GladeXML.html"><b>&lt;&lt; GladeXML</b></a></td><td align="right"><a accesskey="n" href="libglade-Libglade-Build.html"><b>Libglade Build &gt;&gt;</b></a></td></tr></table></body></html>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>interface</code></em>&#160;:</span></td>
+<td> the GladeInterface
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>filename</code></em>&#160;:</span></td>
+<td> the filename to write the interface data to.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

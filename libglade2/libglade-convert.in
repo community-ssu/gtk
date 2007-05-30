@@ -131,7 +131,8 @@ class WidgetDef:
                     if name[:3] == 'cxx':
                         attrs += ' agent="glademm"'
                     print '%s    <property name="%s"%s>%s</property>' % \
-                          (indent, name, attrs, self.properties[name])
+                          (indent, name, attrs,
+                           self.properties[name].encode('utf-8'))
                 print '%s  </packing>' % indent
             print '%s</child>' % indent
 
@@ -154,7 +155,7 @@ class WidgetDef:
             if name[:3] == 'cxx':
                 attrs += ' agent="glademm"'
             print '%s  <property name="%s"%s>%s</property>' % \
-                  (indent, name, attrs, self.properties[name])
+                  (indent, name, attrs, self.properties[name].encode('utf-8'))
             want_newline = 1
         if want_newline and (self.signals or self.accels or self.children):
             print
@@ -670,6 +671,16 @@ def fixup_as_type(widget, type):
             else: # Gtk+ has some wierd defaults here clobber them
                 childdef['y_options'] = ''
 
+    # fixup GtkFixed child packing options
+    if type == 'GtkFixed':
+        for childdef in widget.children:
+            if childdef.widget.has_prop ('x'):
+                childdef['x'] = childdef.widget['x']
+                del childdef.widget['x']
+            if childdef.widget.has_prop ('y'):
+                childdef['y'] = childdef.widget['y']
+                del childdef.widget['y']
+
     # fixup GtkNotebook child tab widgets.
     if type == 'GtkNotebook':
         for childdef in widget.children:
@@ -1160,7 +1171,7 @@ def handle_file(filename):
         fixup_widget(widgetdef)
         check_widget(widgetdef, requireslist)
 
-    print '<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->'
+    print '<?xml version="1.0" standalone="no"?> <!--*- mode: nxml -*-->'
     print '<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd" >'
     print
     print '<glade-interface>'

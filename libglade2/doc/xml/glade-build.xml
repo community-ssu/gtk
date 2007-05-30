@@ -1,18 +1,22 @@
-<?xml version="1.0"?>
+<?xml version="1.0" standalone="no"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
 <refentry id="libglade-Libglade-Build">
 <refmeta>
-<refentrytitle>Libglade Build</refentrytitle>
+<refentrytitle id="top_of_page">Libglade Build</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>LIBGLADE Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>Libglade Build</refname><refpurpose>Routines used by widget building routines</refpurpose>
+<refname>Libglade Build</refname>
+<refpurpose>Routines used by widget building routines</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
@@ -80,7 +84,7 @@
                                              <link linkend="GtkWindow">GtkWindow</link> *window);
 <link linkend="GtkAccelGroup">GtkAccelGroup</link>* <link linkend="glade-xml-ensure-accel">glade_xml_ensure_accel</link>       (<link linkend="GladeXML">GladeXML</link> *xml);
 
-#define     <link linkend="GLADE-MODULE-CHECK-INIT-CAPS">GLADE_MODULE_CHECK_INIT</link>
+#define     <link linkend="GLADE-MODULE-CHECK-INIT:CAPS">GLADE_MODULE_CHECK_INIT</link>
 
 </synopsis>
 </refsynopsisdiv>
@@ -93,18 +97,18 @@
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 These functions are used by the routines that are responsible for building
 the actual widgets from the XML node data structures.
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="GladeNewFunc"/>GladeNewFunc ()</title>
+<title><anchor id="GladeNewFunc" role="function"/>GladeNewFunc ()</title>
 <indexterm><primary>GladeNewFunc</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  (*GladeNewFunc)                 (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GType">GType</link> widget_type,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
@@ -125,11 +129,11 @@ this is handled by glade_xml_build_widget, which calls these functions.</para>
 <varlistentry><term><parameter>info</parameter>&nbsp;:</term>
 <listitem><simpara> the GladeWidgetInfo structure for this widget.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the new widget.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the new widget.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="GladeBuildChildrenFunc"/>GladeBuildChildrenFunc ()</title>
+<title><anchor id="GladeBuildChildrenFunc" role="function"/>GladeBuildChildrenFunc ()</title>
 <indexterm><primary>GladeBuildChildrenFunc</primary></indexterm><programlisting><link linkend="void">void</link>        (*GladeBuildChildrenFunc)       (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GtkWidget">GtkWidget</link> *parent,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
@@ -151,7 +155,7 @@ glade_xml_build_widget should be called.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="GladeFindInternalChildFunc"/>GladeFindInternalChildFunc ()</title>
+<title><anchor id="GladeFindInternalChildFunc" role="function"/>GladeFindInternalChildFunc ()</title>
 <indexterm><primary>GladeFindInternalChildFunc</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  (*GladeFindInternalChildFunc)   (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GtkWidget">GtkWidget</link> *parent,
                                              const <link linkend="gchar">gchar</link> *childname);</programlisting>
@@ -182,11 +186,11 @@ name passed in as the third argument.</para>
 <varlistentry><term><parameter>childname</parameter>&nbsp;:</term>
 <listitem><simpara> the name of the internal child
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the named internal child.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the named internal child.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-build-widget"/>glade_xml_build_widget ()</title>
+<title><anchor id="glade-xml-build-widget" role="function"/>glade_xml_build_widget ()</title>
 <indexterm><primary>glade_xml_build_widget</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  glade_xml_build_widget          (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
 <para>
@@ -210,11 +214,11 @@ them to the widget in the appropriate way.  Finally it returns the widget.</para
 <varlistentry><term><parameter>info</parameter>&nbsp;:</term>
 <listitem><simpara> the GladeWidgetInfo structure for the widget.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the newly created widget.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the newly created widget.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-handle-internal-child"/>glade_xml_handle_internal_child ()</title>
+<title><anchor id="glade-xml-handle-internal-child" role="function"/>glade_xml_handle_internal_child ()</title>
 <indexterm><primary>glade_xml_handle_internal_child</primary></indexterm><programlisting><link linkend="void">void</link>        glade_xml_handle_internal_child (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GtkWidget">GtkWidget</link> *parent,
                                              <link linkend="GladeChildInfo">GladeChildInfo</link> *child_info);</programlisting>
@@ -238,7 +242,7 @@ next child.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-set-common-params"/>glade_xml_set_common_params ()</title>
+<title><anchor id="glade-xml-set-common-params" role="function"/>glade_xml_set_common_params ()</title>
 <indexterm><primary>glade_xml_set_common_params</primary></indexterm><programlisting><link linkend="void">void</link>        glade_xml_set_common_params     (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GtkWidget">GtkWidget</link> *widget,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
@@ -262,7 +266,7 @@ setting up toolbar buttons and the like.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-register-widget"/>glade_register_widget ()</title>
+<title><anchor id="glade-register-widget" role="function"/>glade_register_widget ()</title>
 <indexterm><primary>glade_register_widget</primary></indexterm><programlisting><link linkend="void">void</link>        glade_register_widget           (<link linkend="GType">GType</link> type,
                                              <link linkend="GladeNewFunc">GladeNewFunc</link> new_func,
                                              <link linkend="GladeBuildChildrenFunc">GladeBuildChildrenFunc</link> build_children,
@@ -293,7 +297,7 @@ This function is mainly useful for addon widget modules for libglade
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-standard-build-widget"/>glade_standard_build_widget ()</title>
+<title><anchor id="glade-standard-build-widget" role="function"/>glade_standard_build_widget ()</title>
 <indexterm><primary>glade_standard_build_widget</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  glade_standard_build_widget     (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GType">GType</link> widget_type,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
@@ -314,11 +318,11 @@ types, thus reducing the ammount of work needed to wrap a library.</para>
 <varlistentry><term><parameter>info</parameter>&nbsp;:</term>
 <listitem><simpara> the GladeWidgetInfo structure.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the constructed widget.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the constructed widget.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-handle-widget-prop"/>glade_xml_handle_widget_prop ()</title>
+<title><anchor id="glade-xml-handle-widget-prop" role="function"/>glade_xml_handle_widget_prop ()</title>
 <indexterm><primary>glade_xml_handle_widget_prop</primary></indexterm><programlisting><link linkend="void">void</link>        glade_xml_handle_widget_prop    (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GtkWidget">GtkWidget</link> *widget,
                                              const <link linkend="gchar">gchar</link> *prop_name,
@@ -351,7 +355,7 @@ the widget is constructed.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-standard-build-children"/>glade_standard_build_children ()</title>
+<title><anchor id="glade-standard-build-children" role="function"/>glade_standard_build_children ()</title>
 <indexterm><primary>glade_standard_build_children</primary></indexterm><programlisting><link linkend="void">void</link>        glade_standard_build_children   (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GtkWidget">GtkWidget</link> *parent,
                                              <link linkend="GladeWidgetInfo">GladeWidgetInfo</link> *info);</programlisting>
@@ -379,7 +383,7 @@ properties interfaces.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-set-packing-property"/>glade_xml_set_packing_property ()</title>
+<title><anchor id="glade-xml-set-packing-property" role="function"/>glade_xml_set_packing_property ()</title>
 <indexterm><primary>glade_xml_set_packing_property</primary></indexterm><programlisting><link linkend="void">void</link>        glade_xml_set_packing_property  (<link linkend="GladeXML">GladeXML</link> *self,
                                              <link linkend="GtkWidget">GtkWidget</link> *parent,
                                              <link linkend="GtkWidget">GtkWidget</link> *child,
@@ -408,7 +412,7 @@ This sets the packing property on container <parameter>parent</parameter> of wid
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="GladeApplyCustomPropFunc"/>GladeApplyCustomPropFunc ()</title>
+<title><anchor id="GladeApplyCustomPropFunc" role="function"/>GladeApplyCustomPropFunc ()</title>
 <indexterm><primary>GladeApplyCustomPropFunc</primary></indexterm><programlisting><link linkend="void">void</link>        (*GladeApplyCustomPropFunc)     (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GtkWidget">GtkWidget</link> *widget,
                                              const <link linkend="gchar">gchar</link> *propname,
@@ -433,7 +437,7 @@ This prototype is used for custom property handlers registered with
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-register-custom-prop"/>glade_register_custom_prop ()</title>
+<title><anchor id="glade-register-custom-prop" role="function"/>glade_register_custom_prop ()</title>
 <indexterm><primary>glade_register_custom_prop</primary></indexterm><programlisting><link linkend="void">void</link>        glade_register_custom_prop      (<link linkend="GType">GType</link> type,
                                              const <link linkend="gchar">gchar</link> *prop_name,
                                              <link linkend="GladeApplyCustomPropFunc">GladeApplyCustomPropFunc</link> apply_prop);</programlisting>
@@ -456,7 +460,7 @@ handlers will apply for the GType <parameter>type</parameter> and all its descen
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-relative-file"/>glade_xml_relative_file ()</title>
+<title><anchor id="glade-xml-relative-file" role="function"/>glade_xml_relative_file ()</title>
 <indexterm><primary>glade_xml_relative_file</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*      glade_xml_relative_file         (<link linkend="GladeXML">GladeXML</link> *self,
                                              const <link linkend="gchar">gchar</link> *filename);</programlisting>
 <para>
@@ -472,11 +476,11 @@ filename is returned.</para>
 <varlistentry><term><parameter>filename</parameter>&nbsp;:</term>
 <listitem><simpara> the filename.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the filename.  The result must be g_free'd.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the filename.  The result must be g_free'd.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-enum-from-string"/>glade_enum_from_string ()</title>
+<title><anchor id="glade-enum-from-string" role="function"/>glade_enum_from_string ()</title>
 <indexterm><primary>glade_enum_from_string</primary></indexterm><programlisting><link linkend="gint">gint</link>        glade_enum_from_string          (<link linkend="GType">GType</link> type,
                                              const <link linkend="char">char</link> *string);</programlisting>
 <para>
@@ -493,12 +497,12 @@ the widget.</para>
 <varlistentry><term><parameter>string</parameter>&nbsp;:</term>
 <listitem><simpara> the string representation of the enum value.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the integer value for this enumeration, or 0 if it couldn't be
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the integer value for this enumeration, or 0 if it couldn't be
 found.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-flags-from-string"/>glade_flags_from_string ()</title>
+<title><anchor id="glade-flags-from-string" role="function"/>glade_flags_from_string ()</title>
 <indexterm><primary>glade_flags_from_string</primary></indexterm><programlisting><link linkend="guint">guint</link>       glade_flags_from_string         (<link linkend="GType">GType</link> type,
                                              const <link linkend="char">char</link> *string);</programlisting>
 <para>
@@ -516,11 +520,11 @@ nicknames for various flags separated by '|'.</para>
 <varlistentry><term><parameter>string</parameter>&nbsp;:</term>
 <listitem><simpara> the string representation of the flags value.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the integer value for this flags string
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the integer value for this flags string
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-set-value-from-string"/>glade_xml_set_value_from_string ()</title>
+<title><anchor id="glade-xml-set-value-from-string" role="function"/>glade_xml_set_value_from_string ()</title>
 <indexterm><primary>glade_xml_set_value_from_string</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    glade_xml_set_value_from_string (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GParamSpec">GParamSpec</link> *pspec,
                                              const <link linkend="gchar">gchar</link> *string,
@@ -550,11 +554,11 @@ still to come.</para>
 <varlistentry><term><parameter>value</parameter>&nbsp;:</term>
 <listitem><simpara> the GValue to store the result in.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> <literal>TRUE</literal> on success.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> on success.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-set-toplevel"/>glade_xml_set_toplevel ()</title>
+<title><anchor id="glade-xml-set-toplevel" role="function"/>glade_xml_set_toplevel ()</title>
 <indexterm><primary>glade_xml_set_toplevel</primary></indexterm><programlisting><link linkend="void">void</link>        glade_xml_set_toplevel          (<link linkend="GladeXML">GladeXML</link> *xml,
                                              <link linkend="GtkWindow">GtkWindow</link> *window);</programlisting>
 <para>
@@ -572,7 +576,7 @@ be bound to the correct window, but could have other uses.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="glade-xml-ensure-accel"/>glade_xml_ensure_accel ()</title>
+<title><anchor id="glade-xml-ensure-accel" role="function"/>glade_xml_ensure_accel ()</title>
 <indexterm><primary>glade_xml_ensure_accel</primary></indexterm><programlisting><link linkend="GtkAccelGroup">GtkAccelGroup</link>* glade_xml_ensure_accel       (<link linkend="GladeXML">GladeXML</link> *xml);</programlisting>
 <para>
 This function is used to get the current GtkAccelGroup.  If there isn't
@@ -584,11 +588,11 @@ a toplevel has been set).</para>
 <varlistentry><term><parameter>xml</parameter>&nbsp;:</term>
 <listitem><simpara> the GladeXML object.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis> :</term><listitem><simpara> the current GtkAccelGroup.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the current GtkAccelGroup.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="GLADE-MODULE-CHECK-INIT-CAPS"/>GLADE_MODULE_CHECK_INIT</title>
+<title><anchor id="GLADE-MODULE-CHECK-INIT:CAPS" role="macro"/>GLADE_MODULE_CHECK_INIT</title>
 <indexterm><primary>GLADE_MODULE_CHECK_INIT</primary></indexterm><programlisting>#define     GLADE_MODULE_CHECK_INIT</programlisting>
 <para>
 This macro will insert a suitable version check function into a

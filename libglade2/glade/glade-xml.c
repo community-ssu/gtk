@@ -121,8 +121,7 @@ glade_xml_init (GladeXML *self)
     priv->tree = NULL;
     priv->tooltips = gtk_tooltips_new();
     gtk_tooltips_enable(priv->tooltips);
-    g_object_ref(priv->tooltips);
-    gtk_object_sink(GTK_OBJECT(priv->tooltips));
+    g_object_ref_sink(priv->tooltips);
     priv->name_hash = g_hash_table_new(g_str_hash, g_str_equal);
     priv->signals = g_hash_table_new(g_str_hash, g_str_equal);
     priv->toplevel = NULL;
@@ -277,7 +276,7 @@ autoconnect_foreach(const char *signal_handler, GList *signals,
 {
     GCallback func;
 
-    if (!g_module_symbol(allsymbols, signal_handler, (gpointer *)&func))
+    if (!g_module_symbol(allsymbols, signal_handler, (gpointer)&func))
 	g_warning("could not find signal handler '%s'.", signal_handler);
     else
 	for (; signals != NULL; signals = signals->next) {
@@ -368,8 +367,8 @@ autoconnect_full_foreach(const char *signal_handler, GList *signals,
  * @object: the object to connect the signal to.
  * @signal_name: the name of the signal.
  * @signal_data: the string value of the signal data given in the XML file.
- * @connect_object: non NULL if gtk_signal_connect_object should be used.
- * @after: TRUE if the connection should be made with gtk_signal_connect_after.
+ * @connect_object: non NULL if g_signal_connect_object should be used.
+ * @after: TRUE if the connection should be made with g_signal_connect_after.
  * @user_data: the user data argument.
  *
  * This is the signature of a function used to connect signals.  It is used
@@ -776,34 +775,6 @@ glade_xml_add_atk_actions(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
     }
 }
 
-/* helper function for adding relations */
-static void
-add_relation(AtkRelationSet *relations, AtkRelationType relation_type,
-	     AtkObject *target_accessible)
-{
-    AtkRelation *relation;
-
-    relation = atk_relation_set_get_relation_by_type (relations,
-						      relation_type);
-    if (relation) {
-	/* add new target accessible to relation */
-	GPtrArray* target_array = atk_relation_get_target (relation);
-	guint i;
-
-	/* first check if target occurs in array ... */
-	for (i = 0; i < target_array->len; i++)
-	    if (g_ptr_array_index(target_array, i) == target_accessible)
-		return;
-	g_object_ref(target_accessible);
-	g_ptr_array_add (target_array, target_accessible);
-    } else {
-	/* the relation hasn't been created yet ... */
-	relation = atk_relation_new(&target_accessible, 1, relation_type);
-	atk_relation_set_add (relations, relation);
-	g_object_unref(relation);
-    }
-}
-
 /* this is a private function */
 static void
 glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
@@ -829,7 +800,8 @@ glade_xml_add_atk_relations(GladeXML *xml, GtkWidget *w, GladeWidgetInfo *info)
 
 	    target_accessible = gtk_widget_get_accessible (target_widget);
 
-	    add_relation(relations, relation_type, target_accessible);
+	    atk_relation_set_add_relation_by_type (relations, relation_type,
+						   target_accessible);
 	} else {
 	    GladeDeferredProperty *dprop = g_new(GladeDeferredProperty, 1);
 
@@ -1468,7 +1440,7 @@ glade_xml_set_value_from_string (GladeXML *xml,
 				 GValue *value)
 {
     GType prop_type;
-    gboolean ret = TRUE;
+    gboolean ret = TRUE, showerr = TRUE;
 
     prop_type = G_PARAM_SPEC_VALUE_TYPE(pspec);
     g_value_init(value, prop_type);
@@ -1524,6 +1496,9 @@ glade_xml_set_value_from_string (GladeXML *xml,
 		g_warning ("could not parse colour name `%s'", string);
 		ret = FALSE;
 	    }
+	} else if (G_VALUE_HOLDS(value, G_TYPE_STRV)) {
+	    char **vector = g_strsplit (string, "\n", 0);
+	    g_value_take_boxed (value, vector);
 	} else
 	    ret = FALSE;
 	break;
@@ -1541,7 +1516,8 @@ glade_xml_set_value_from_string (GladeXML *xml,
 	    adj->page_size = g_strtod(ptr, &ptr);
 
 	    g_value_set_object(value, adj);
-	    gtk_object_sink(GTK_OBJECT(adj));
+	    g_object_ref_sink(adj);
+	    g_object_unref(adj);
 	} else if (G_VALUE_HOLDS(value, GDK_TYPE_PIXBUF)) {
 	    gchar *filename;
 	    GError *error = NULL;
@@ -1558,6 +1534,16 @@ glade_xml_set_value_from_string (GladeXML *xml,
 		ret = FALSE;
 	    }
 	    g_free(filename);
+	} else if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+		   g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	    GtkWidget *widget = g_hash_table_lookup(xml->priv->name_hash,
+						    string);
+	    if (widget) {
+		g_value_set_object(value, widget);
+	    } else {
+		ret = FALSE;
+		showerr = FALSE;
+	    }
 	} else
 	    ret = FALSE;
 	break;
@@ -1567,8 +1553,10 @@ glade_xml_set_value_from_string (GladeXML *xml,
     }
 
     if (!ret) {
-	g_warning("could not convert string to type `%s' for property `%s'",
-		  g_type_name(prop_type), pspec->name);
+	if (showerr)
+	    g_warning("could not convert string to type "
+		      "`%s' for property `%s'",
+		      g_type_name(prop_type), pspec->name);
 	g_value_unset(value);
     }
     return ret;
@@ -1647,25 +1635,17 @@ glade_standard_build_widget(GladeXML *xml, GType widget_type,
 	    continue;
 	}
 
-	/* this should catch all properties wanting a GtkWidget
-         * subclass.  We also look for types that could hold a
-         * GtkWidget in order to catch things like the
-         * GtkAccelLabel::accel_object property.  Since we don't do
-         * any handling of GObject or GtkObject directly in
-         * glade_xml_set_value_from_string, this shouldn't be a
-         * problem. */
-	if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
-	    g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
-	    deferred_props = g_list_prepend(deferred_props,
-					    &info->properties[i]);
-	    continue;
-	}
-
 	if (glade_xml_set_value_from_string(xml, pspec,
 					    info->properties[i].value,
 					    &param.value)) {
 	    param.name = info->properties[i].name;
 	    g_array_append_val(props_array, param);
+	} else if (g_type_is_a(GTK_TYPE_WIDGET, G_PARAM_SPEC_VALUE_TYPE(pspec)) ||
+		   g_type_is_a(G_PARAM_SPEC_VALUE_TYPE(pspec), GTK_TYPE_WIDGET)) {
+	    /* if the pspec could hold a widget, then try to handle it
+	     * later */
+	    deferred_props = g_list_prepend(deferred_props,
+					    &info->properties[i]);
 	}
     }
     widget = g_object_newv(widget_type, props_array->len,
@@ -2072,8 +2052,9 @@ glade_xml_set_common_params(GladeXML *self, GtkWidget *widget,
 		{
 		    AtkObject *target = gtk_widget_get_accessible(widget);
 
-		    add_relation(dprop->d.rel.relation_set,
-				 dprop->d.rel.relation_type, target);
+		    atk_relation_set_add_relation_by_type
+			(dprop->d.rel.relation_set,
+			 dprop->d.rel.relation_type, target);
 		    g_object_unref(dprop->d.rel.relation_set);
 		}
 		break;

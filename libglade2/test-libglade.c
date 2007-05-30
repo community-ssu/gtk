@@ -112,8 +112,8 @@ main (int argc, char **argv)
 	    GtkWidget *win, *frame;
 
 	    win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	    gtk_signal_connect(GTK_OBJECT(win), "destroy",
-			       GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
+	    g_signal_connect(win, "destroy",
+			     G_CALLBACK(gtk_main_quit), NULL);
 	    gtk_container_set_border_width(GTK_CONTAINER(win), 5);
 	    frame = gtk_frame_new(NULL);
 	    gtk_container_set_border_width(GTK_CONTAINER(frame), 5);

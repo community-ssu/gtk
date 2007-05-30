@@ -15,6 +15,9 @@ the actual widgets from the XML node data structures.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### USER_FUNCTION GladeNewFunc ##### -->
 <para>
 
@@ -24,8 +27,6 @@ the actual widgets from the XML node data structures.
 @widget_type: 
 @info: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@node: 
 
 
 <!-- ##### USER_FUNCTION GladeBuildChildrenFunc ##### -->
@@ -36,10 +37,6 @@ the actual widgets from the XML node data structures.
 @xml: 
 @parent: 
 @info: 
-<!-- # Unused Parameters # -->
-@longname: 
-@w: 
-@node: 
 
 
 <!-- ##### USER_FUNCTION GladeFindInternalChildFunc ##### -->
@@ -61,10 +58,6 @@ the actual widgets from the XML node data structures.
 @self: 
 @info: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@parent_long: 
-@node: 
-@xml: 
 
 
 <!-- ##### FUNCTION glade_xml_handle_internal_child ##### -->
@@ -85,10 +78,6 @@ the actual widgets from the XML node data structures.
 @self: 
 @widget: 
 @info: 
-<!-- # Unused Parameters # -->
-@parent_long: 
-@node: 
-@widget_class: 
 
 
 <!-- ##### FUNCTION glade_register_widget ##### -->
@@ -100,8 +89,6 @@ the actual widgets from the XML node data structures.
 @new_func: 
 @build_children: 
 @find_internal_child: 
-<!-- # Unused Parameters # -->
-@new: 
 
 
 <!-- ##### FUNCTION glade_standard_build_widget ##### -->
@@ -134,10 +121,6 @@ the actual widgets from the XML node data structures.
 @self: 
 @parent: 
 @info: 
-<!-- # Unused Parameters # -->
-@w: 
-@longname: 
-@node: 
 
 
 <!-- ##### FUNCTION glade_xml_set_packing_property ##### -->
@@ -222,8 +205,6 @@ the actual widgets from the XML node data structures.
 
 @xml: 
 @window: 
-<!-- # Unused Parameters # -->
-@info: 
 
 
 <!-- ##### FUNCTION glade_xml_ensure_accel ##### -->

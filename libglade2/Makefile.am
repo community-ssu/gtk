@@ -19,15 +19,15 @@ test_libglade_SOURCES = test-libglade.c
 
 # handling of the XML catalog
 
-XMLCATALOG = /etc/xml/catalog
-
 xmldir = $(datadir)/xml/libglade
 xml_DATA = glade-2.0.dtd
 
+if HAVE_XMLCATALOG
 install-data-local:
-	-xmlcatalog --noout --add "system" "http://glade.gnome.org/glade-2.0.dtd" $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
+	-$(XMLCATALOG) --noout --add "system" "http://glade.gnome.org/glade-2.0.dtd" $(xmldir)/glade-2.0.dtd $(XML_CATALOG_FILE)
 uninstall-local:
-	-xmlcatalog --noout --del $(xmldir)/glade-2.0.dtd $(XMLCATALOG)
+	-$(XMLCATALOG) --noout --del $(xmldir)/glade-2.0.dtd $(XML_CATALOG_FILE)
+endif
 
 #small hack to get distcheck to work
 clean-local:
@@ -38,6 +38,7 @@ EXTRA_DIST = \
   glade-2.0.dtd \
   libglade.spec.in \
   libglade.spec \
+  libglade-zip.in \
   libglade-2.0.pc.in \
   libglade-2.0-uninstalled.pc.in \
   libglade-convert.in \

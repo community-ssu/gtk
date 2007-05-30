@@ -42,6 +42,87 @@ static const  GDebugKey libglade_debug_keys[] = {
 static const guint libglade_ndebug_keys = G_N_ELEMENTS(libglade_debug_keys);
 #endif
 
+#ifdef G_OS_WIN32
+
+#include <windows.h>
+
+static HMODULE hmodule;
+G_LOCK_DEFINE_STATIC (mutex);
+
+/* DllMain used to tuck away the DLL's HMODULE */
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+	 DWORD     fdwReason,
+	 LPVOID    lpvReserved)
+{
+	switch (fdwReason) {
+	case DLL_PROCESS_ATTACH:
+		hmodule = hinstDLL;
+		break;
+	}
+	return TRUE;
+}
+
+static char *
+replace_prefix (const char *runtime_prefix,
+		const char *configure_time_path)
+{
+	if (runtime_prefix &&
+	    strncmp (configure_time_path, GLADE_PREFIX "/", strlen (GLADE_PREFIX) + 1) == 0) {
+		return g_strconcat (runtime_prefix,
+				    configure_time_path + strlen (GLADE_PREFIX),
+				    NULL);
+	} else
+		return g_strdup (configure_time_path);
+}
+
+static const char *
+get_libdir (void)
+{
+    static const char *libdir = NULL;
+    char *prefix = NULL;
+
+    G_LOCK (mutex);
+    if (libdir != NULL) {
+	G_UNLOCK (mutex);
+	return libdir;
+    }
+
+
+    if (GetVersion () < 0x80000000) {
+	wchar_t wcbfr[1000];
+
+	if (GetModuleFileNameW (hmodule, wcbfr,
+				G_N_ELEMENTS (wcbfr))) {
+	    prefix = g_utf16_to_utf8 (wcbfr, -1, NULL, NULL, NULL);
+	}
+    } else {
+	char cpbfr[1000];
+	if (GetModuleFileNameA (hmodule, cpbfr, G_N_ELEMENTS (cpbfr)))
+	    prefix = g_locale_to_utf8 (cpbfr, -1, NULL, NULL, NULL);
+    }
+
+    if (prefix != NULL) {
+	char *p = strrchr (prefix, '\\');
+	if (p != NULL)
+	    *p = '\0';
+	
+	p = strrchr (prefix, '\\');
+	if (p && (g_ascii_strcasecmp (p + 1, "bin") == 0))
+	    *p = '\0';
+    }
+		
+    libdir = replace_prefix (prefix, GLADE_LIBDIR);
+
+    G_UNLOCK (mutex);
+
+    return libdir;
+}
+
+#undef GLADE_LIBDIR
+#define GLADE_LIBDIR get_libdir ()
+
+#endif
 
 void _glade_init_gtk_widgets (void);
 
