@@ -554,9 +554,13 @@ out:
   if (class_hint.res_name)
     XFree(class_hint.res_name);
 
-  if (!hd_wm_watchable_app_has_any_windows (app))
+  if (app && 
+      !hd_wm_watchable_app_has_any_windows (app) && 
+      !hd_wm_watchable_app_is_dummy (app))
+  {	  
     g_signal_emit_by_name (hdwm, "application-starting", app);
-	  
+  }
+
   return app;
 }
 
@@ -2132,8 +2136,14 @@ hd_wm_process_x_client_list (HDWM *hdwm)
 	  hd_wm_watched_window_props_sync (win, HD_WM_SYNC_HILDON_VIEW_LIST);
 
 	  if (hd_wm_watchable_app_is_dummy (app))
+          {		  
             g_warning("Application %s did not provide valid .desktop file",
                       hd_wm_watched_window_get_name(win));
+
+	    hd_wm_watchable_app_dummy_set_name (app, hd_wm_watched_window_get_name(win));
+
+	    g_signal_emit_by_name (hdwm, "application-starting", app);
+	  }
 
 	  HDEntryInfo *info;
 

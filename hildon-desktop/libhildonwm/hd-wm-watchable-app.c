@@ -127,8 +127,8 @@ hd_wm_watchable_app_new_dummy (void)
     }
 
   app->icon_name  = g_strdup("qgn_list_gene_default_app"); 
-  app->app_name   = g_strdup(_("Application"));
-  app->class_name = g_strdup(_("Application"));
+  app->app_name   = g_strdup("?");
+  app->class_name = g_strdup("?");
 
   HDWM_APP_SET_FLAG (app, HDWM_APP_DUMMY);
   
@@ -442,6 +442,19 @@ hd_wm_watchable_app_get_exec (HDWMWatchableApp *app)
 {
   return app->exec_name;
 }
+
+void 
+hd_wm_watchable_app_dummy_set_name (HDWMWatchableApp *app, const gchar *name)
+{
+  if (!hd_wm_watchable_app_is_dummy (app))
+    return;
+
+  g_free (app->app_name);
+  g_free (app->class_name);
+    
+  app->app_name   = g_strdup (name);
+  app->class_name = g_strdup (name);
+}	
 
 const gchar*
 hd_wm_watchable_app_get_name (HDWMWatchableApp *app)

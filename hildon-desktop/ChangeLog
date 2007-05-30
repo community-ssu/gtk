@@ -1,3 +1,10 @@
+2007-05-30  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	- send signal for launch banner when application has a proper name.
+	* libhildonwm/hd-wm-watchable-app.[ch]:
+	- Added method to change name of dummy HDWMWatchableApp
+	
 2007-05-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.15
@@ -152,7 +159,7 @@
 	* libhildondesktop/hildon-desktop-popup-window.c:
 	- Send additional fake press/release event for overriding the
 	grabbing.
-	* configure.ac        (working copy)
+	* configure.ac 
 	* data/Makefile.am:
 	* data/install_sbapplet.sh:
 	- Added helper script for installing statusbar applets and to be used

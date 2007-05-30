@@ -78,6 +78,17 @@ const gchar*
 hd_wm_watchable_app_get_exec (HDWMWatchableApp *app);
 
 /** 
+ * Set the name field set manually of an HDWMWatchableApp instance.
+ * If HDWMWatchableApp is not dummy it does nothing.
+ * 
+ * @param app HDWMWatchableApp instance
+ * 
+ * @return name field value
+ */
+void 
+hd_wm_watchable_app_dummy_set_name (HDWMWatchableApp *app, const gchar *name);
+
+/** 
  * Get the name field set via .desktop file of an HDWMWatchableApp instance. 
  * You should not free the result.
  * 
