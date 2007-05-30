@@ -1,10 +1,15 @@
+2007-05-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- reset the child's window as "shaped" after a change of style
+
 2007-05-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm.c:
 	- send signal for launch banner when application has a proper name.
 	* libhildonwm/hd-wm-watchable-app.[ch]:
 	- Added method to change name of dummy HDWMWatchableApp
-	
+
 2007-05-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.15

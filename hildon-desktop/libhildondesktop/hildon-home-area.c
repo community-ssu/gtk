@@ -872,6 +872,10 @@ hildon_home_area_child_style_set (GtkWidget            *child,
   if (!old_style)
     return;
 
+  /* HACK: Pretend the child shaped so GDK does not add the
+   * child to the parent's clip list (see #412882) */
+  ((GdkWindowObject *)child->window)->shaped = TRUE;
+
   gtk_container_child_get (GTK_CONTAINER (area), child,
                            "child-data", &child_data,
                            NULL);

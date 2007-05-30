@@ -122,6 +122,13 @@ hd_panel_window_style_set (GtkWidget   *widget,
   alpha = gdk_pixbuf_get_has_alpha (pixbuf);
   rowstride = gdk_pixbuf_get_rowstride (pixbuf);
 
+  g_debug ("Loaded: %s, %ix%i, rowstride: %i, alpha: %i",
+           filename,
+           pw,
+           ph,
+           rowstride,
+           alpha);
+
   pixmap = XCreatePixmap (GDK_DISPLAY (),
                           GDK_WINDOW_XID (widget->window),
                           pw,
@@ -628,6 +635,8 @@ hd_panel_window_init (HDPanelWindow *window)
                                 G_CALLBACK (hd_panel_window_desktop_window_changed),
                                 window);
     }
+
+/*  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE); */
 
   window->priv = HD_PANEL_WINDOW_GET_PRIVATE (window);
 #endif
