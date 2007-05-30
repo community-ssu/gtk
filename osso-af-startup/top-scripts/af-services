@@ -21,22 +21,7 @@
 # 02110-1301 USA
 
 # Exclude some UIDs from memory allocation denial.
-
-# ensure these users are protected
-TMP_UIDS=$(awk -F: '/^(messagebus|systemui|haldaemon)/{printf " " $3}' \
-           < /etc/passwd)
-
-# ensure these UIDs are protected for backwards compatibility
-TMP_UIDS="30000 30001 30002 30003 $TMP_UIDS"
-
-UIDS=""
-for n in $TMP_UIDS; do
-  echo $UIDS | grep $n > /dev/null
-  if [ $? != 0 ]; then
-    UIDS="$UIDS $n"
-  fi
-done
-
+UIDS=`getent passwd haldaemon systemui messagebus | cut -d: -f3`
 echo "Protecting UIDs $UIDS from the memory allocation denial."
 echo $UIDS > /proc/sys/vm/lowmem_allowed_uids
 
