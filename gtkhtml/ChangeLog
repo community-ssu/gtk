@@ -1,3 +1,8 @@
+2007-05-30  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+  * UNRELEASED
+  * Added patch to remove instances where libart_lgpl headers are being included
+
 2007-05-09  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Added API to programmatically set a link as visited

@@ -1,0 +1,33 @@
+diff -ru gtkhtml-3.13.91/src/htmlobject.h gtkhtml-3.13.91-remove-libart/src/htmlobject.h
+--- gtkhtml-3.13.91/src/htmlobject.h	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91-remove-libart/src/htmlobject.h	2007-05-30 23:03:10.000000000 +0300
+@@ -24,7 +24,6 @@
+ #ifndef _HTMLOBJECT_H_
+ #define _HTMLOBJECT_H_
+ 
+-#include <libart_lgpl/art_rect.h>
+ #include <gdk/gdktypes.h>
+ #include "htmltypes.h"
+ #include "htmlenums.h"
+diff -ru gtkhtml-3.13.91/src/htmlplainpainter.c gtkhtml-3.13.91-remove-libart/src/htmlplainpainter.c
+--- gtkhtml-3.13.91/src/htmlplainpainter.c	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91-remove-libart/src/htmlplainpainter.c	2007-05-30 23:02:58.000000000 +0300
+@@ -22,7 +22,6 @@
+ #include <config.h>
+ #include <string.h>
+ #include <stdlib.h>
+-#include <libart_lgpl/art_rect.h>
+ 
+ #include "htmlentity.h"
+ #include "htmlgdkpainter.h"
+diff -ru gtkhtml-3.13.91/src/htmltablecell.c gtkhtml-3.13.91-remove-libart/src/htmltablecell.c
+--- gtkhtml-3.13.91/src/htmltablecell.c	2007-02-09 21:54:58.000000000 +0200
++++ gtkhtml-3.13.91-remove-libart/src/htmltablecell.c	2007-05-30 23:03:26.000000000 +0300
+@@ -23,7 +23,6 @@
+ 
+ #include <config.h>
+ #include <glib.h>
+-#include <libart_lgpl/art_rect.h>
+ #include <string.h>
+ #include "htmlcluev.h"
+ #include "htmlengine-edit.h"

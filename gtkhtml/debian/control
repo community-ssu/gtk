@@ -2,7 +2,7 @@ Source: gtkhtml
 Section: libs
 Priority: optional
 Maintainer: Jakub Pavelek <jakub.pavelek@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libart-2.0-2, libart-2.0-dev, libgtk2.0-dev (>= 2:2.10), libgconf2-dev, intltool
+Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2:2.10), libgconf2-dev, intltool
 Standards-Version: 3.6.0
 
 Package: gtkhtml-dev

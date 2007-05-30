@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-3osso10) unstable; urgency=low
+
+  * UNRELEASED
+  * Added patch to remove instances where libart_lgpl headers are being included
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Wed, 30 May 2007 23:10:13 +0300
+
 gtkhtml (3.9.1-3osso9) unstable; urgency=low
 
   * Added API for programmatically setting a link as visited

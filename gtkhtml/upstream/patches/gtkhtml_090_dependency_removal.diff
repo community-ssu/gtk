@@ -1,12 +1,24 @@
-# Remove GNOME dependencies
-#
-# Copyright (C) 2006 - 2007 Nokia Corporation.
-# This file is distributed under the terms of GNU LGPL license, either version 2
-# of the License, or (at your option) any later version.
-#
-diff -ru gtkhtml-3.13.91/config.h.in gtkhtml-3.13.91.mod7/config.h.in
+diff -ru gtkhtml-3.13.91/Makefile.am gtkhtml-3.13.91-dependency-removal/Makefile.am
+--- gtkhtml-3.13.91/Makefile.am	2007-01-03 17:20:03.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/Makefile.am	2007-05-14 19:18:24.000000000 +0300
+@@ -1,9 +1,8 @@
+-SUBDIRS =					\
+-	a11y					\
+-	src					\
+-	components				\
+-	art					\
+-	po
++SUBDIRS =                                 \
++	$(A11Y_DIR)                             \
++	src                                     \
++	$(EDITOR_DIR)                           \
++	art
+ 
+ CLEANFILES =					\
+ 	po/.intltool-merge-cache
+diff -ru gtkhtml-3.13.91/config.h.in gtkhtml-3.13.91-dependency-removal/config.h.in
 --- gtkhtml-3.13.91/config.h.in	2007-02-12 14:01:17.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/config.h.in	2007-02-15 16:34:40.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/config.h.in	2007-05-14 19:18:24.000000000 +0300
 @@ -25,6 +25,8 @@
  #undef GTKHTML_RELEASE_STRING
  #undef HAVE_OLD_SOUP
@@ -16,9 +28,9 @@ diff -ru gtkhtml-3.13.91/config.h.in gtkhtml-3.13.91.mod7/config.h.in
  
  /* Editor API Version */
  #undef EDITOR_API_VERSION
-diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91.mod7/configure.in
+diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91-dependency-removal/configure.in
 --- gtkhtml-3.13.91/configure.in	2007-02-12 13:55:17.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/configure.in	2007-02-15 16:42:51.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/configure.in	2007-05-14 19:19:25.000000000 +0300
 @@ -5,6 +5,8 @@
  
  PACKAGE=gtkhtml
@@ -123,7 +135,7 @@ diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91.mod7/configure.in
 +
 +dnl libglade only needed on windows?
 +dnl GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES libglade-2.0 >= 2.0.0"
-+GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES gtk+-2.0 >= 2.10.0 gconf-2.0 libart-2.0 >= 2.3.0"
++GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES gtk+-2.0 >= 2.10.0 gconf-2.0"
  PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
  AC_SUBST(GTKHTML_CFLAGS)
  AC_SUBST(GTKHTML_LIBS)
@@ -201,27 +213,104 @@ diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91.mod7/configure.in
 +
  	Editor component type:		${GNOME_GTKHTML_EDITOR_TYPE}
  "
-diff -ru gtkhtml-3.13.91/Makefile.am gtkhtml-3.13.91.mod7/Makefile.am
---- gtkhtml-3.13.91/Makefile.am	2007-01-03 17:20:03.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/Makefile.am	2007-02-16 14:10:52.000000000 +0200
-@@ -1,9 +1,8 @@
--SUBDIRS =					\
--	a11y					\
--	src					\
--	components				\
--	art					\
--	po
-+SUBDIRS =                                 \
-+	$(A11Y_DIR)                             \
-+	src                                     \
-+	$(EDITOR_DIR)                           \
-+	art
+diff -ru gtkhtml-3.13.91/src/Makefile.am gtkhtml-3.13.91-dependency-removal/src/Makefile.am
+--- gtkhtml-3.13.91/src/Makefile.am	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/Makefile.am	2007-05-14 19:18:24.000000000 +0300
+@@ -207,7 +207,7 @@
+ 	$(NULL)
  
- CLEANFILES =					\
- 	po/.intltool-merge-cache
-diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod7/src/gtkhtml.c
---- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-15 16:09:48.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/gtkhtml.c	2007-02-15 17:27:50.000000000 +0200
+ libgtkhtml_3_8_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
+-libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
++libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) $(A11Y_LA) $(GAIL_LIBS) $(REGEX_LIBS)
+ 
+ dist-hook:
+ 	mkdir $(distdir)/tests
+@@ -217,8 +217,12 @@
+ if HAVE_SOUP
+ test_programs = testgtkhtml
+ endif
+-#noinst_PROGRAMS = $(test_programs) gtest test-suite test-stress
+-noinst_PROGRAMS = gtest test-suite test-stress
++
++if HAVE_PRINTING
++gnome_test_programs = gtest test-suite test-stress
++endif
++
++noinst_PROGRAMS = $(test_programs) $(gnome_test_programs)
+ 
+ 
+ testgtkhtml_SOURCES = 		\
+diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.c gtkhtml-3.13.91-dependency-removal/src/gtkhtml-embedded.c
+--- gtkhtml-3.13.91/src/gtkhtml-embedded.c	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/gtkhtml-embedded.c	2007-05-14 19:18:24.000000000 +0300
+@@ -22,7 +22,9 @@
+  */
+ 
+ #include <config.h>
++#ifndef DISABLE_GNOME
+ #include <gnome.h>
++#endif /* ndef DISABLE_GNOME */
+ 
+ #include "gtkhtml-embedded.h"
+ #include "htmlengine.h"
+@@ -120,7 +122,9 @@
+ 	gtk_html_embedded_changed(GTK_HTML_EMBEDDED(container));
+ }
+ 
++#ifndef DISABLE_PRINTING
+ typedef void (*draw_print_signal)(GtkObject *, gpointer, gpointer);
++#endif /* ndef DISABLE_PRINTING */
+ typedef void (*draw_gdk_signal)(GtkObject *, gpointer, gpointer, gint, gint, gpointer);
+ 
+ static void 
+@@ -189,7 +193,7 @@
+ 			      draw_gdk_signal_marshaller, G_TYPE_NONE, 4,
+ 			      G_TYPE_POINTER, G_TYPE_POINTER,
+ 			      G_TYPE_INT, G_TYPE_INT);
+-	
++#ifndef DISABLE_PRINTING
+ 	signals [DRAW_PRINT] = 
+ 		g_signal_new ("draw_print",
+ 			      G_TYPE_FROM_CLASS (object_class),
+@@ -199,7 +203,7 @@
+ 			      g_cclosure_marshal_VOID__POINTER,
+ 			      G_TYPE_NONE, 1,
+ 			      G_TYPE_POINTER);
+-	
++#endif /* ndef DISABLE_PRINTING */
+ 	gobject_class->finalize = gtk_html_embedded_finalize;
+ 
+ 	widget_class->size_request = gtk_html_embedded_size_request;
+diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.h gtkhtml-3.13.91-dependency-removal/src/gtkhtml-embedded.h
+--- gtkhtml-3.13.91/src/gtkhtml-embedded.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/gtkhtml-embedded.h	2007-05-14 19:18:24.000000000 +0300
+@@ -56,7 +56,9 @@
+         void (*changed)(GtkHTMLEmbedded *);
+         void (*draw_gdk)(GtkHTMLEmbedded *, GdkPixmap *, GdkGC *,
+                          gint, gint);
++#ifndef DISABLE_PRINTING
+         void (*draw_print)(GtkHTMLEmbedded *, GtkPrintContext *);
++#endif /* ndef DISABLE_PRINTING */
+ };
+ 
+ /* FIXME: There needs to be a way for embedded objects in forms to encode
+diff -ru gtkhtml-3.13.91/src/gtkhtml-types.h gtkhtml-3.13.91-dependency-removal/src/gtkhtml-types.h
+--- gtkhtml-3.13.91/src/gtkhtml-types.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/gtkhtml-types.h	2007-05-14 19:18:24.000000000 +0300
+@@ -51,8 +51,8 @@
+ 					      const gchar *data,
+ 					      size_t       len,
+ 					      gpointer     user_data);
+-
++#ifndef DISABLE_PRINTING
+ typedef void (*GtkHTMLPrintCallback) (GtkHTML *html, GtkPrintContext *print_context,
+ 				      gdouble x, gdouble y, gdouble width, gdouble height, gpointer user_data);
+-
++#endif /* ndef DISABLE_PRINTING */
+ #endif
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91-dependency-removal/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-05-14 19:17:46.000000000 +0300
++++ gtkhtml-3.13.91-dependency-removal/src/gtkhtml.c	2007-05-14 19:18:24.000000000 +0300
 @@ -30,9 +30,14 @@
  #include <glib/gi18n-lib.h>
  #include <string.h>
@@ -299,63 +388,9 @@ diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod7/src/gtkhtml.c
  gboolean
  gtk_html_has_undo (GtkHTML *html)
  {
-diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.c gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.c
---- gtkhtml-3.13.91/src/gtkhtml-embedded.c	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.c	2007-02-15 17:37:10.000000000 +0200
-@@ -22,7 +22,9 @@
-  */
- 
- #include <config.h>
-+#ifndef DISABLE_GNOME
- #include <gnome.h>
-+#endif /* ndef DISABLE_GNOME */
- 
- #include "gtkhtml-embedded.h"
- #include "htmlengine.h"
-@@ -120,7 +122,9 @@
- 	gtk_html_embedded_changed(GTK_HTML_EMBEDDED(container));
- }
- 
-+#ifndef DISABLE_PRINTING
- typedef void (*draw_print_signal)(GtkObject *, gpointer, gpointer);
-+#endif /* ndef DISABLE_PRINTING */
- typedef void (*draw_gdk_signal)(GtkObject *, gpointer, gpointer, gint, gint, gpointer);
- 
- static void 
-@@ -189,7 +193,7 @@
- 			      draw_gdk_signal_marshaller, G_TYPE_NONE, 4,
- 			      G_TYPE_POINTER, G_TYPE_POINTER,
- 			      G_TYPE_INT, G_TYPE_INT);
--	
-+#ifndef DISABLE_PRINTING
- 	signals [DRAW_PRINT] = 
- 		g_signal_new ("draw_print",
- 			      G_TYPE_FROM_CLASS (object_class),
-@@ -199,7 +203,7 @@
- 			      g_cclosure_marshal_VOID__POINTER,
- 			      G_TYPE_NONE, 1,
- 			      G_TYPE_POINTER);
--	
-+#endif /* ndef DISABLE_PRINTING */
- 	gobject_class->finalize = gtk_html_embedded_finalize;
- 
- 	widget_class->size_request = gtk_html_embedded_size_request;
-diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.h gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.h
---- gtkhtml-3.13.91/src/gtkhtml-embedded.h	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.h	2007-02-15 17:39:15.000000000 +0200
-@@ -56,7 +56,9 @@
-         void (*changed)(GtkHTMLEmbedded *);
-         void (*draw_gdk)(GtkHTMLEmbedded *, GdkPixmap *, GdkGC *,
-                          gint, gint);
-+#ifndef DISABLE_PRINTING
-         void (*draw_print)(GtkHTMLEmbedded *, GtkPrintContext *);
-+#endif /* ndef DISABLE_PRINTING */
- };
- 
- /* FIXME: There needs to be a way for embedded objects in forms to encode
-diff -ru gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91.mod7/src/gtkhtml.h
+diff -ru gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91-dependency-removal/src/gtkhtml.h
 --- gtkhtml-3.13.91/src/gtkhtml.h	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/gtkhtml.h	2007-02-15 17:42:33.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/gtkhtml.h	2007-05-14 19:18:24.000000000 +0300
 @@ -212,7 +212,7 @@
  void                       gtk_html_set_animate                   (GtkHTML                   *html,
  								   gboolean                   animate);
@@ -374,48 +409,9 @@ diff -ru gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91.mod7/src/gtkhtml.h
  /* Title.  */
  const gchar               *gtk_html_get_title                     (GtkHTML                   *html);
  void                       gtk_html_set_title                     (GtkHTML                   *html, const char *title);
-diff -ru gtkhtml-3.13.91/src/gtkhtml-types.h gtkhtml-3.13.91.mod7/src/gtkhtml-types.h
---- gtkhtml-3.13.91/src/gtkhtml-types.h	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/gtkhtml-types.h	2007-02-15 17:46:37.000000000 +0200
-@@ -51,8 +51,8 @@
- 					      const gchar *data,
- 					      size_t       len,
- 					      gpointer     user_data);
--
-+#ifndef DISABLE_PRINTING
- typedef void (*GtkHTMLPrintCallback) (GtkHTML *html, GtkPrintContext *print_context,
- 				      gdouble x, gdouble y, gdouble width, gdouble height, gpointer user_data);
--
-+#endif /* ndef DISABLE_PRINTING */
- #endif
-diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod7/src/htmlengine.c
---- gtkhtml-3.13.91/src/htmlengine.c	2007-02-15 16:18:27.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlengine.c	2007-02-15 17:52:01.000000000 +0200
-@@ -56,7 +56,9 @@
- #include "htmlengine-edit-movement.h"
- #include "htmlengine-edit-cut-and-paste.h"
- #include "htmlengine-edit-selection-updater.h"
-+#ifndef DISABLE_PRINTING
- #include "htmlengine-print.h"
-+#endif /* ndef DISABLE_PRINTING */
- #include "htmlcolor.h"
- #include "htmlinterval.h"
- #include "htmlobject.h"
-@@ -4195,9 +4197,9 @@
- 
- 	engine->search_info = NULL;
- 	engine->need_spell_check = FALSE;
--
-+#ifndef DISABLE_PRINTING
- 	html_engine_print_set_min_split_index (engine, .75);
--
-+#endif /* ndef DISABLE_PRINTING */
- 	engine->block = FALSE;
- 	engine->block_images = FALSE;
- 	engine->save_data = FALSE;
-diff -ru gtkhtml-3.13.91/src/htmlengine-print.c gtkhtml-3.13.91.mod7/src/htmlengine-print.c
+diff -ru gtkhtml-3.13.91/src/htmlengine-print.c gtkhtml-3.13.91-dependency-removal/src/htmlengine-print.c
 --- gtkhtml-3.13.91/src/htmlengine-print.c	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlengine-print.c	2007-02-15 17:55:49.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlengine-print.c	2007-05-14 19:18:24.000000000 +0300
 @@ -20,6 +20,9 @@
  */
  
@@ -432,9 +428,9 @@ diff -ru gtkhtml-3.13.91/src/htmlengine-print.c gtkhtml-3.13.91.mod7/src/htmleng
  }
 +
 +#endif /* ndef DISABLE_PRINTING */
-diff -ru gtkhtml-3.13.91/src/htmlengine-print.h gtkhtml-3.13.91.mod7/src/htmlengine-print.h
+diff -ru gtkhtml-3.13.91/src/htmlengine-print.h gtkhtml-3.13.91-dependency-removal/src/htmlengine-print.h
 --- gtkhtml-3.13.91/src/htmlengine-print.h	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlengine-print.h	2007-02-15 18:02:44.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlengine-print.h	2007-05-14 19:18:24.000000000 +0300
 @@ -22,6 +22,8 @@
  #ifndef _HTMLENGINE_PRINT_H
  #define _HTMLENGINE_PRINT_H
@@ -450,9 +446,73 @@ diff -ru gtkhtml-3.13.91/src/htmlengine-print.h gtkhtml-3.13.91.mod7/src/htmleng
  					     gdouble               idx);
 +#endif /* ndef DISABLE_PRINTING */
  #endif
-diff -ru gtkhtml-3.13.91/src/htmlframe.c gtkhtml-3.13.91.mod7/src/htmlframe.c
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91-dependency-removal/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-05-14 19:17:46.000000000 +0300
++++ gtkhtml-3.13.91-dependency-removal/src/htmlengine.c	2007-05-14 19:18:24.000000000 +0300
+@@ -56,7 +56,9 @@
+ #include "htmlengine-edit-movement.h"
+ #include "htmlengine-edit-cut-and-paste.h"
+ #include "htmlengine-edit-selection-updater.h"
++#ifndef DISABLE_PRINTING
+ #include "htmlengine-print.h"
++#endif /* ndef DISABLE_PRINTING */
+ #include "htmlcolor.h"
+ #include "htmlinterval.h"
+ #include "htmlobject.h"
+@@ -4194,9 +4196,9 @@
+ 
+ 	engine->search_info = NULL;
+ 	engine->need_spell_check = FALSE;
+-
++#ifndef DISABLE_PRINTING
+ 	html_engine_print_set_min_split_index (engine, .75);
+-
++#endif /* ndef DISABLE_PRINTING */
+ 	engine->block = FALSE;
+ 	engine->block_images = FALSE;
+ 	engine->save_data = FALSE;
+diff -ru gtkhtml-3.13.91/src/htmlengine.c.orig gtkhtml-3.13.91-dependency-removal/src/htmlengine.c.orig
+--- gtkhtml-3.13.91/src/htmlengine.c.orig	2007-05-14 19:17:46.000000000 +0300
++++ gtkhtml-3.13.91-dependency-removal/src/htmlengine.c.orig	2007-05-14 19:17:46.000000000 +0300
+@@ -6219,9 +6219,9 @@
+ html_engine_focus (HTMLEngine *e, GtkDirectionType dir)
+ {
+ 	if (e->clue && (dir == GTK_DIR_TAB_FORWARD || dir == GTK_DIR_TAB_BACKWARD)) {
+-		HTMLObject *cur;
+-		HTMLObject *focus_object;
+-		gint offset;
++		HTMLObject *cur = NULL;
++		HTMLObject *focus_object = NULL;
++		gint offset = 0;
+ 
+ 		focus_object = html_engine_get_focus_object (e, &offset);
+ 		if (focus_object && html_object_is_embedded (focus_object)
+@@ -6232,9 +6232,22 @@
+ 		if (focus_object)
+ 			cur = move_focus_object (focus_object, &offset, e, dir);
+ 		else
++		{
+ 			cur = dir == GTK_DIR_TAB_FORWARD
+ 				? html_object_get_head_leaf (e->clue)
+ 				: html_object_get_tail_leaf (e->clue);
++			if (HTML_IS_TEXT (cur))
++			{
++				if (dir == GTK_DIR_TAB_FORWARD)
++					html_text_first_link_offset (HTML_TEXT (cur), &offset);
++				else
++					html_text_last_link_offset (HTML_TEXT (cur), &offset);
++			}
++			else
++				offset = (dir == GTK_DIR_TAB_FORWARD)
++					? 0
++					: html_object_get_length (cur);
++		}
+ 
+ 		while (cur) {
+ 			/* printf ("try child %p\n", cur); */
+diff -ru gtkhtml-3.13.91/src/htmlframe.c gtkhtml-3.13.91-dependency-removal/src/htmlframe.c
 --- gtkhtml-3.13.91/src/htmlframe.c	2007-01-03 17:19:57.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlframe.c	2007-02-15 18:13:35.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlframe.c	2007-05-14 19:18:24.000000000 +0300
 @@ -167,7 +167,7 @@
  	HTMLFrame   *frame  = HTML_FRAME (o);
  	HTMLEngine   *e       = GTK_HTML (frame->html)->engine;
@@ -489,9 +549,9 @@ diff -ru gtkhtml-3.13.91/src/htmlframe.c gtkhtml-3.13.91.mod7/src/htmlframe.c
  }
  
  static void
-diff -ru gtkhtml-3.13.91/src/htmliframe.c gtkhtml-3.13.91.mod7/src/htmliframe.c
+diff -ru gtkhtml-3.13.91/src/htmliframe.c gtkhtml-3.13.91-dependency-removal/src/htmliframe.c
 --- gtkhtml-3.13.91/src/htmliframe.c	2007-02-09 21:54:58.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmliframe.c	2007-02-15 18:21:32.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmliframe.c	2007-05-14 19:18:24.000000000 +0300
 @@ -166,6 +166,7 @@
        gint width, gint height,
        gint tx, gint ty)
@@ -528,9 +588,9 @@ diff -ru gtkhtml-3.13.91/src/htmliframe.c gtkhtml-3.13.91.mod7/src/htmliframe.c
  }
  
  static void
-diff -ru gtkhtml-3.13.91/src/htmlimage.c gtkhtml-3.13.91.mod7/src/htmlimage.c
+diff -ru gtkhtml-3.13.91/src/htmlimage.c gtkhtml-3.13.91-dependency-removal/src/htmlimage.c
 --- gtkhtml-3.13.91/src/htmlimage.c	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlimage.c	2007-02-15 18:26:30.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlimage.c	2007-05-14 19:18:24.000000000 +0300
 @@ -391,10 +391,10 @@
  		e = html_object_engine (HTML_OBJECT (image), GTK_HTML (painter->widget)->engine);
  	else
@@ -544,9 +604,9 @@ diff -ru gtkhtml-3.13.91/src/htmlimage.c gtkhtml-3.13.91.mod7/src/htmlimage.c
  	p = HTML_GDK_PAINTER (painter);
  	/* printf ("draw_image_focus\n"); */
  
-diff -ru gtkhtml-3.13.91/src/htmlprinter.c gtkhtml-3.13.91.mod7/src/htmlprinter.c
+diff -ru gtkhtml-3.13.91/src/htmlprinter.c gtkhtml-3.13.91-dependency-removal/src/htmlprinter.c
 --- gtkhtml-3.13.91/src/htmlprinter.c	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlprinter.c	2007-02-15 18:31:57.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlprinter.c	2007-05-14 19:18:24.000000000 +0300
 @@ -20,6 +20,9 @@
  */
  
@@ -563,9 +623,9 @@ diff -ru gtkhtml-3.13.91/src/htmlprinter.c gtkhtml-3.13.91.mod7/src/htmlprinter.
  }
 +
 +#endif /* ndef DISABLE_PRINTING */
-diff -ru gtkhtml-3.13.91/src/htmlprinter.h gtkhtml-3.13.91.mod7/src/htmlprinter.h
+diff -ru gtkhtml-3.13.91/src/htmlprinter.h gtkhtml-3.13.91-dependency-removal/src/htmlprinter.h
 --- gtkhtml-3.13.91/src/htmlprinter.h	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmlprinter.h	2007-02-15 18:33:15.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmlprinter.h	2007-05-14 19:18:24.000000000 +0300
 @@ -25,6 +25,8 @@
  #include <gtk/gtk.h>
  #include "htmlpainter.h"
@@ -581,9 +641,9 @@ diff -ru gtkhtml-3.13.91/src/htmlprinter.h gtkhtml-3.13.91.mod7/src/htmlprinter.
  
 +#endif /* ndef DISABLE_PRINTING */
  #endif /* _HTMLPRINTER_H */
-diff -ru gtkhtml-3.13.91/src/htmltextslave.c gtkhtml-3.13.91.mod7/src/htmltextslave.c
+diff -ru gtkhtml-3.13.91/src/htmltextslave.c gtkhtml-3.13.91-dependency-removal/src/htmltextslave.c
 --- gtkhtml-3.13.91/src/htmltextslave.c	2007-02-09 21:54:58.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmltextslave.c	2007-02-15 18:41:39.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmltextslave.c	2007-05-14 19:18:24.000000000 +0300
 @@ -862,10 +862,10 @@
  		e = html_object_engine (HTML_OBJECT (slave->owner), GTK_HTML (painter->widget)->engine);
  	else
@@ -597,9 +657,9 @@ diff -ru gtkhtml-3.13.91/src/htmltextslave.c gtkhtml-3.13.91.mod7/src/htmltextsl
  	p = HTML_GDK_PAINTER (painter);
  	/* printf ("draw_text_focus\n"); */
  
-diff -ru gtkhtml-3.13.91/src/htmltokenizer.c gtkhtml-3.13.91.mod7/src/htmltokenizer.c
+diff -ru gtkhtml-3.13.91/src/htmltokenizer.c gtkhtml-3.13.91-dependency-removal/src/htmltokenizer.c
 --- gtkhtml-3.13.91/src/htmltokenizer.c	2007-01-03 17:19:57.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/htmltokenizer.c	2007-02-15 18:44:33.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/htmltokenizer.c	2007-05-14 19:18:24.000000000 +0300
 @@ -26,7 +26,9 @@
  #include <config.h>
  #include <ctype.h>
@@ -623,39 +683,12 @@ diff -ru gtkhtml-3.13.91/src/htmltokenizer.c gtkhtml-3.13.91.mod7/src/htmltokeni
  
  	if (!html_tokenizer_type) {
  		static const GTypeInfo html_tokenizer_info = {
-diff -ru gtkhtml-3.13.91/src/libgtkhtml.pc.in gtkhtml-3.13.91.mod7/src/libgtkhtml.pc.in
+diff -ru gtkhtml-3.13.91/src/libgtkhtml.pc.in gtkhtml-3.13.91-dependency-removal/src/libgtkhtml.pc.in
 --- gtkhtml-3.13.91/src/libgtkhtml.pc.in	2007-01-03 17:19:57.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/libgtkhtml.pc.in	2007-02-15 18:48:22.000000000 +0200
++++ gtkhtml-3.13.91-dependency-removal/src/libgtkhtml.pc.in	2007-05-14 19:18:24.000000000 +0300
 @@ -10,4 +10,4 @@
  Requires: @GTKHTML_MODULES@
  Version: @VERSION@
  Libs: -L${libdir} -lgtkhtml-@GTKHTML_API_VERSION@
 -Cflags: -I${includedir}/libgtkhtml-@GTKHTML_API_VERSION@
 +Cflags: -I${includedir}/libgtkhtml-@GTKHTML_API_VERSION@ @PC_CFLAGS@
-diff -ru gtkhtml-3.13.91/src/Makefile.am gtkhtml-3.13.91.mod7/src/Makefile.am
---- gtkhtml-3.13.91/src/Makefile.am	2007-02-12 08:57:38.000000000 +0200
-+++ gtkhtml-3.13.91.mod7/src/Makefile.am	2007-02-15 18:52:33.000000000 +0200
-@@ -207,7 +207,7 @@
- 	$(NULL)
- 
- libgtkhtml_3_8_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
--libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
-+libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) $(A11Y_LA) $(GAIL_LIBS) $(REGEX_LIBS)
- 
- dist-hook:
- 	mkdir $(distdir)/tests
-@@ -217,8 +217,12 @@
- if HAVE_SOUP
- test_programs = testgtkhtml
- endif
--#noinst_PROGRAMS = $(test_programs) gtest test-suite test-stress
--noinst_PROGRAMS = gtest test-suite test-stress
-+
-+if HAVE_PRINTING
-+gnome_test_programs = gtest test-suite test-stress
-+endif
-+
-+noinst_PROGRAMS = $(test_programs) $(gnome_test_programs)
- 
- 
- testgtkhtml_SOURCES = 		\
