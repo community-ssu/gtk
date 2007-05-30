@@ -1,3 +1,7 @@
+2007-05-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/ossorssfeedreader.rc: Fixed border values
+
 2007-05-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/hildonnavigator.rc: Added background for the task navigator
