@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso19) unstable; urgency=low
+
+  * Use the slot_name property that HAL provides to identity the MMC cards
+
+ -- Richard Hult <richard@imendio.com>  Fri,  1 Jun 2007 14:29:53 +0200
+
 osso-gnome-vfs2 (2.16.3-1osso18) unstable; urgency=low
 
   * Allow corrupt/unformatted drives

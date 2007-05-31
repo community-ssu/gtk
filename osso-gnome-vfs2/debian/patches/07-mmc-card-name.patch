@@ -1,6 +1,6 @@
 Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
 ===================================================================
---- libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(revision 11765)
+--- libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(revision 11974)
 +++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(arbetskopia)
 @@ -841,6 +841,14 @@ static char *
  make_volume_name_from_path_and_fs (const char *mount_path, const char *fs_type)
@@ -9,7 +9,7 @@ Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
 +
 +	/* Maemo patch. */
 +	char *tmp;
-+	tmp = _gnome_vfs_filesystem_get_label_for_mmc (mount_path);
++	tmp = _gnome_vfs_filesystem_get_label_for_mount_point (mount_path);
 +	if (tmp) {
 +		return tmp;
 +	}
@@ -19,9 +19,9 @@ Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
  		return g_strdup (_("Root Volume"));
 Index: libgnomevfs/gnome-vfs-filesystem-type.c
 ===================================================================
---- libgnomevfs/gnome-vfs-filesystem-type.c	(revision 11765)
+--- libgnomevfs/gnome-vfs-filesystem-type.c	(revision 11974)
 +++ libgnomevfs/gnome-vfs-filesystem-type.c	(arbetskopia)
-@@ -127,3 +127,115 @@ _gnome_vfs_filesystem_use_trash (const c
+@@ -127,3 +127,137 @@ _gnome_vfs_filesystem_use_trash (const c
  	
  	return FALSE;
  }
@@ -120,17 +120,39 @@ Index: libgnomevfs/gnome-vfs-filesystem-type.c
 +}
 +
 +char *
-+_gnome_vfs_filesystem_get_label_for_mmc (const char *mount_path)
++_gnome_vfs_filesystem_get_label_for_mount_point (const char *mount_point)
 +{
 +	const char *mmc_mount;
 +
++	if (!mount_point) {
++		return NULL;
++	}
++
 +	mmc_mount = g_getenv ("MMC_MOUNTPOINT");
-+	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
++	if (mmc_mount && g_str_has_prefix (mount_point, mmc_mount)) {
++		return get_mmc_name (FALSE);
++	}
++
++       mmc_mount = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
++       if (mmc_mount && g_str_has_prefix (mount_point, mmc_mount)) {
++               return get_mmc_name (TRUE);
++       }
++
++       return NULL;
++}
++
++char *
++_gnome_vfs_filesystem_get_label_for_slot_name (const char *slot_name)
++{
++	if (!slot_name) {
++		return NULL;
++	}
++	
++	if (strcmp (slot_name, "external") == 0) {
 +		return get_mmc_name (FALSE);
 +	}
 + 
-+	mmc_mount = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
-+	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
++	if (strcmp (slot_name, "internal") == 0) {
 +		return get_mmc_name (TRUE);
 +	}
 +	
@@ -139,46 +161,88 @@ Index: libgnomevfs/gnome-vfs-filesystem-type.c
 +/* End of maemo patch */
 Index: libgnomevfs/gnome-vfs-filesystem-type.h
 ===================================================================
---- libgnomevfs/gnome-vfs-filesystem-type.h	(revision 11765)
+--- libgnomevfs/gnome-vfs-filesystem-type.h	(revision 11974)
 +++ libgnomevfs/gnome-vfs-filesystem-type.h	(arbetskopia)
-@@ -28,5 +28,6 @@
+@@ -28,5 +28,7 @@
  
  char *   _gnome_vfs_filesystem_volume_name (const char *fs_type);
  gboolean _gnome_vfs_filesystem_use_trash   (const char *fs_type);
-+char *   _gnome_vfs_filesystem_get_label_for_mmc (const char *mount_path);
++char *   _gnome_vfs_filesystem_get_label_for_mount_point (const char *mount_point);
++char *   _gnome_vfs_filesystem_get_label_for_slot_name (const char *slot_name);
  
  #endif /* GNOME_VFS_FILESYSTEM_TYPE_H */
 Index: libgnomevfs/gnome-vfs-hal-mounts.c
 ===================================================================
---- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 11765)
+--- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 11974)
 +++ libgnomevfs/gnome-vfs-hal-mounts.c	(arbetskopia)
-@@ -327,6 +327,17 @@ _hal_drive_policy_get_display_name (Gnom
+@@ -314,6 +314,47 @@ out:
+ 	}
+ }
+ 
++static char *
++get_mmc_volume_label (GnomeVFSVolumeMonitorDaemon *volume_monitor_daemon,
++		      LibHalDrive *hal_drive)
++{
++	char *parent_udi;
++	char *host_udi;
++	char *slot_name;
++	char *name;
++
++	parent_udi = libhal_device_get_property_string (volume_monitor_daemon->hal_ctx,
++							libhal_drive_get_udi (hal_drive),
++							"info.parent",
++							NULL);
++	if (!parent_udi) {
++		return NULL;
++	}
++
++	host_udi = libhal_device_get_property_string (volume_monitor_daemon->hal_ctx,
++						      parent_udi,
++						      "info.parent",
++						      NULL);
++	libhal_free_string (parent_udi);
++	if (!host_udi) {
++		return NULL;
++	}
++
++	slot_name = libhal_device_get_property_string (volume_monitor_daemon->hal_ctx,
++						       host_udi,
++						       "mmc_host.slot_name",
++						       NULL);
++	libhal_free_string (host_udi);
++	if (!slot_name) {
++		return NULL;
++	}
++	
++	name = _gnome_vfs_filesystem_get_label_for_slot_name (slot_name);
++	libhal_free_string (slot_name);
++	
++	return name;
++}
++
+ /*------------------------------------------------------------------------*/
+ /* hal_volume may be NULL */
+ static char *
+@@ -327,6 +368,10 @@ _hal_drive_policy_get_display_name (Gnom
  	char *vm_name;
  	gboolean may_prepend_external;
  
-+	if (hal_volume) {
-+		const char *mountpoint;
-+
-+		mountpoint = libhal_volume_get_mount_point (hal_volume);
-+		if (mountpoint) {
-+			name = _gnome_vfs_filesystem_get_label_for_mmc (mountpoint);
-+			if (name) {
-+				goto out;
-+			}
-+		}
++	name = get_mmc_volume_label (volume_monitor_daemon, hal_drive);
++	if (name) {
++		return name;
 +	}
  
  	name = NULL;
  	may_prepend_external = FALSE;
-@@ -484,7 +495,10 @@ _hal_volume_policy_get_display_name (Gno
+@@ -484,6 +529,11 @@ _hal_volume_policy_get_display_name (Gno
  	char *name;
  	char *size_str;
  
--	name = NULL;
-+	name = _gnome_vfs_filesystem_get_label_for_mmc (libhal_volume_get_mount_point (hal_volume));
++	name = get_mmc_volume_label (volume_monitor_daemon, hal_drive);
 +	if (name) {
-+		goto out;
++		return name;
 +	}
++
+ 	name = NULL;
  
  	drive_type = libhal_drive_get_type (hal_drive);
- 	volume_label = libhal_volume_get_label (hal_volume);
