@@ -1488,6 +1488,9 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
 {
   GdkPixbuf *icon = NULL;
   gchar *summary = NULL, *body = NULL;
+  const gchar *category = NULL;
+  GHashTable *hints;
+  GValue *hint;
   guint id;
   GtkWidget *menu_item;
  
@@ -1504,8 +1507,19 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
 		      HD_NM_COL_ICON, &icon,
 		      HD_NM_COL_SUMMARY, &summary,
 		      HD_NM_COL_BODY, &body,
+		      HD_NM_COL_HINTS, &hints,
 		      -1);
 
+  hint = g_hash_table_lookup (hints, "category");
+
+  if (hint)
+  {	  
+    category = g_value_get_string (hint);
+
+    if (g_str_equal (category, "system.note.dialog"))
+      goto out;	  
+  }
+  
   if (switcher->priv->last_iter_added == NULL)
     hd_switcher_menu_notification_deleted_cb 
       (HILDON_DESKTOP_NOTIFICATION_MANAGER (tree_model), id, switcher);	    
@@ -1525,10 +1539,13 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   hildon_desktop_popup_menu_add_item
     (switcher->priv->menu_notifications, 
      GTK_MENU_ITEM (gtk_separator_menu_item_new ()));	 
-    	    
+out:    	    
   switcher->priv->last_iter_added = NULL;
 
   hd_switcher_menu_check_content (switcher);
+
+  g_free (summary);
+  g_free (body);
 }
 
 static void 
