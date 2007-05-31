@@ -30,7 +30,6 @@
 #include "hildon-home-area.h"
 #include "hildon-desktop-marshalers.h"
 
-#include <gtk/gtkfixed.h>
 #include <gtk/gtkicontheme.h>
 
 #include <X11/extensions/Xrender.h>
@@ -1218,7 +1217,7 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
   HildonDesktopHomeItemPriv *priv;
   gint                  x_applet, y_applet;
   GdkModifierType       mod;
-  GtkWidget            *fixed;
+  GtkWidget            *area;
   GtkWidget            *widget;
   gboolean              used_to_overlap;
 
@@ -1229,17 +1228,17 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
 
-  fixed = widget->parent;
+  area = widget->parent;
 
-  gdk_window_get_pointer (fixed->window, &x_applet, &y_applet, &mod);
+  gdk_window_get_pointer (area->window, &x_applet, &y_applet, &mod);
 
   if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_MOVING)
     {
       /* The Fixed has no window, thus the coordinates are relative to the
        * home's main window */
 
-      x_applet -= fixed->allocation.x;
-      y_applet -= fixed->allocation.y;
+      x_applet -= area->allocation.x;
+      y_applet -= area->allocation.y;
 
       x_applet -= priv->x_offset;
       y_applet -= priv->y_offset;
@@ -1250,20 +1249,24 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
       if (y_applet < 0)
         y_applet = 0;
 
-      if (x_applet + widget->allocation.width > fixed->allocation.width)
-        x_applet =  fixed->allocation.width -
+      if (x_applet + widget->allocation.width > area->allocation.width)
+        x_applet =  area->allocation.width -
             widget->allocation.width;
 
-      if (y_applet + widget->allocation.height > fixed->allocation.height)
-        y_applet =  fixed->allocation.height - widget->allocation.height;
+      if (y_applet + widget->allocation.height > area->allocation.height)
+        y_applet =  area->allocation.height - widget->allocation.height;
 
-      if (x_applet != widget->allocation.x - fixed->allocation.x)
-        priv->delta_x = x_applet - widget->allocation.x + fixed->allocation.x;
+      if (x_applet != widget->allocation.x - area->allocation.x)
+        priv->delta_x = x_applet - widget->allocation.x + area->allocation.x;
 
-      if (y_applet != widget->allocation.y - fixed->allocation.y)
-        priv->delta_y = y_applet - widget->allocation.y + fixed->allocation.y;
+      if (y_applet != widget->allocation.y - area->allocation.y)
+        priv->delta_y = y_applet - widget->allocation.y + area->allocation.y;
 
-      gtk_fixed_move (GTK_FIXED (fixed), widget, x_applet, y_applet);
+      hildon_home_area_move (HILDON_HOME_AREA (area),
+                             widget,
+                             x_applet,
+                             y_applet);
+
     }
   else /* Resizing */
     {
@@ -1288,13 +1291,13 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
         height = priv->minimum_height;
 
       if (widget->allocation.x + width >
-          fixed->allocation.x + fixed->allocation.width)
-        width = fixed->allocation.x + fixed->allocation.width
+          area->allocation.x + area->allocation.width)
+        width = area->allocation.x + area->allocation.width
                 - widget->allocation.x;
 
       if (widget->allocation.y + height >
-          fixed->allocation.y + fixed->allocation.height)
-        height = fixed->allocation.y + fixed->allocation.height
+          area->allocation.y + area->allocation.height)
+        height = area->allocation.y + area->allocation.height
                  - widget->allocation.y;
 
       if (width != widget->allocation.width)
@@ -1353,7 +1356,7 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
   widget = GTK_WIDGET (applet);
   parent = widget->parent;
 
-  if (!GTK_IS_FIXED (parent))
+  if (!HILDON_IS_HOME_AREA (parent))
     return;
 
   x = widget->allocation.x - parent->allocation.x;
@@ -1377,7 +1380,9 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
                        parent->allocation.height))
                 y_grid += GRID_SIZE;
 
-              gtk_fixed_move (GTK_FIXED (parent), widget, x_grid, y_grid);
+             hildon_home_area_move (HILDON_HOME_AREA (parent),
+                                    widget,
+                                    x_grid, y_grid);
             }
 
           break;

@@ -25,7 +25,7 @@
 #ifndef __HILDON_HOME_AREA_H__
 #define __HILDON_HOME_AREA_H__
 
-#include <gtk/gtkfixed.h>
+#include <gtk/gtkcontainer.h>
 
 G_BEGIN_DECLS
 
@@ -44,13 +44,13 @@ G_BEGIN_DECLS
 
 typedef struct _HildonHomeArea
 {
-  GtkFixed          parent;
+  GtkContainer          parent;
 
 } HildonHomeArea;
 
 typedef struct _HildonHomeAreaClass
 {
-  GtkFixedClass     parent_class;
+  GtkContainerClass     parent_class;
 
   void (* layout_mode_start)    (HildonHomeArea *area);
   void (* layout_mode_started)  (HildonHomeArea *area);
@@ -68,6 +68,7 @@ typedef struct _HildonHomeAreaClass
   gboolean                      composite;
 
 } HildonHomeAreaClass;
+
 
 GType       hildon_home_area_get_type           (void);
 
@@ -91,6 +92,16 @@ gboolean    hildon_home_area_get_overlaps       (HildonHomeArea *area);
 
 void        hildon_home_area_set_batch_add      (HildonHomeArea *area,
                                                  gboolean batch_add);
+
+void        hildon_home_area_put                (HildonHomeArea *area,
+                                                 GtkWidget      *child,
+                                                 gint            x,
+                                                 gint            y);
+
+void        hildon_home_area_move               (HildonHomeArea *area,
+                                                 GtkWidget      *child,
+                                                 gint            x,
+                                                 gint            y);
 
 
 G_END_DECLS

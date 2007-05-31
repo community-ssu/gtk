@@ -45,14 +45,18 @@ enum
   PROP_SNAP_TO_GRID,
   PROP_APPLET_PADDING,
   PROP_APPLET_DEFAULT_ALPHA,
+  PROP_CHILD_X,
+  PROP_CHILD_Y,
   PROP_CHILD_DATA
 
 };
 
-#ifdef HAVE_X_COMPOSITE
 typedef struct
 {
   GtkWidget    *widget;
+  gint          x;
+  gint          y;
+#ifdef HAVE_X_COMPOSITE
   GtkAllocation old_allocation;
   Window        window;
   Damage        damage;
@@ -61,8 +65,8 @@ typedef struct
   Picture       alpha_mask_unscaled;
   gint          background_width, background_height;
   gulong        realize_handler, style_set_handler, size_allocate_handler;
-} ChildData;
 #endif
+} ChildData;
 
 typedef struct HildonHomeAreaPriv_
 {
@@ -121,6 +125,12 @@ static void
 hildon_home_area_remove (GtkContainer *area, GtkWidget *applet);
 
 static void
+hildon_home_area_forall (GtkContainer  *container,
+                         gboolean       include_internals,
+                         GtkCallback    callback,
+                         gpointer       user_data);
+
+static void
 hildon_home_area_set_property (GObject      *object,
                                guint         property_id,
                                const GValue *value,
@@ -131,19 +141,6 @@ hildon_home_area_get_property (GObject      *object,
                                guint         property_id,
                                GValue *value,
                                GParamSpec   *pspec);
-
-#ifdef HAVE_X_COMPOSITE
-
-static void
-hildon_home_area_realize (GtkWidget *widget);
-
-static void
-hildon_home_area_unrealize (GtkWidget *widget);
-
-static gboolean
-hildon_home_area_expose (GtkWidget      *widget,
-                         GdkEventExpose *event);
-
 static void
 hildon_home_area_set_child_property (GtkContainer    *container,
                                      GtkWidget       *child,
@@ -157,6 +154,26 @@ hildon_home_area_get_child_property (GtkContainer    *container,
                                      guint            property_id,
                                      GValue          *value,
                                      GParamSpec      *pspec);
+
+static void
+hildon_home_area_size_request (GtkWidget       *widget,
+                               GtkRequisition  *request);
+
+static void
+hildon_home_area_size_allocate (GtkWidget      *widget,
+                                GtkAllocation  *allocation);
+
+#ifdef HAVE_X_COMPOSITE
+
+static void
+hildon_home_area_realize (GtkWidget *widget);
+
+static void
+hildon_home_area_unrealize (GtkWidget *widget);
+
+static gboolean
+hildon_home_area_expose (GtkWidget      *widget,
+                         GdkEventExpose *event);
 
 static void
 hildon_home_area_create_child_data (HildonHomeArea     *area,
@@ -192,10 +209,10 @@ hildon_home_area_finalize (GObject *object);
 
 
 
-#ifdef HAVE_X_COMPOSITE
 static void
 child_data_free (ChildData *child_data)
 {
+#ifdef HAVE_X_COMPOSITE
   if (child_data->alpha_mask != None &&
       child_data->alpha_mask != child_data->alpha_mask_unscaled)
     XRenderFreePicture (GDK_DISPLAY (), child_data->alpha_mask);
@@ -208,11 +225,11 @@ child_data_free (ChildData *child_data)
 
   if (child_data->damage)
     XDamageDestroy (GDK_DISPLAY (), child_data->damage);
+#endif
 
   g_free (child_data);
 
 }
-#endif
 
 GType
 hildon_home_area_get_type (void)
@@ -234,7 +251,7 @@ hildon_home_area_get_type (void)
           (GInstanceInitFunc) hildon_home_area_init,
         };
 
-      area_type = g_type_register_static (GTK_TYPE_FIXED,
+      area_type = g_type_register_static (GTK_TYPE_CONTAINER,
                                           "HildonHomeArea",
                                           &area_info,0);
   }
@@ -287,6 +304,9 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
   klass->layout_changed    = hildon_home_area_layout_changed;
   klass->applet_added      = hildon_home_area_applet_added;
 
+  widget_class->size_allocate = hildon_home_area_size_allocate;
+  widget_class->size_request  = hildon_home_area_size_request;
+
 #ifdef HAVE_X_COMPOSITE
   if (klass->composite)
     {
@@ -296,13 +316,11 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
     }
 #endif
 
-  container_class->add    = hildon_home_area_add;
-  container_class->remove = hildon_home_area_remove;
-
-#ifdef HAVE_X_COMPOSITE
+  container_class->add                = hildon_home_area_add;
+  container_class->remove             = hildon_home_area_remove;
   container_class->set_child_property = hildon_home_area_set_child_property;
   container_class->get_child_property = hildon_home_area_get_child_property;
-#endif
+  container_class->forall             = hildon_home_area_forall;
 
   object_class->set_property = hildon_home_area_set_property;
   object_class->get_property = hildon_home_area_get_property;
@@ -450,7 +468,6 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                                    PROP_APPLET_DEFAULT_ALPHA,
                                    pspec);
 
-#ifdef HAVE_X_COMPOSITE
   pspec = g_param_spec_pointer ("child-data",
                                 "Child data",
                                 "Data used for compositing",
@@ -459,14 +476,37 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
   gtk_container_class_install_child_property (container_class,
                                               PROP_CHILD_DATA,
                                               pspec);
-#endif
+
+  pspec = g_param_spec_int ("x",
+                            "x",
+                            "X coordinate",
+                            0,
+                            G_MAXINT,
+                            0,
+                            G_PARAM_READWRITE);
+
+  gtk_container_class_install_child_property (container_class,
+                                              PROP_CHILD_X,
+                                              pspec);
+
+  pspec = g_param_spec_int ("y",
+                            "y",
+                            "Y coordinate",
+                            0,
+                            G_MAXINT,
+                            0,
+                            G_PARAM_READWRITE);
+
+  gtk_container_class_install_child_property (container_class,
+                                              PROP_CHILD_Y,
+                                              pspec);
 
 }
 
 static void
 hildon_home_area_init (HildonHomeArea *area)
 {
-  gtk_fixed_set_has_window (GTK_FIXED (area), FALSE);
+  GTK_WIDGET_SET_FLAGS (area, GTK_NO_WINDOW);
 }
 
 static void
@@ -552,7 +592,6 @@ hildon_home_area_get_property (GObject      *object,
     }
 }
 
-#ifdef HAVE_X_COMPOSITE
 static gint
 find_by_widget (ChildData *data, GtkWidget *widget)
 {
@@ -588,19 +627,35 @@ hildon_home_area_set_child_property (GtkContainer    *container,
   HildonHomeAreaPriv   *priv = HILDON_HOME_AREA_GET_PRIVATE (area);
   ChildData            *child_data;
 
+  child_data = hildon_home_area_get_child_data (area, child);
+
   switch (property_id)
     {
       case PROP_CHILD_DATA:
-          child_data = hildon_home_area_get_child_data (area, child);
           if (child_data)
             {
-              priv->children_data = 
+              priv->children_data =
                   g_list_remove (priv->children_data, child_data);
               g_free (child_data);
             }
-          priv->children_data = 
+          priv->children_data =
               g_list_append (priv->children_data, g_value_get_pointer (value));
           break;
+      case PROP_CHILD_X:
+          if (!child_data) return;
+
+          hildon_home_area_move (HILDON_HOME_AREA (container),
+                                 child,
+                                 g_value_get_int (value),
+                                 child_data->y);
+          break;
+      case PROP_CHILD_Y:
+          if (!child_data) return;
+
+          hildon_home_area_move (HILDON_HOME_AREA (container),
+                                 child,
+                                 child_data->x,
+                                 g_value_get_int (value));
       default:
           GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container,
                                                         property_id,
@@ -620,12 +675,22 @@ hildon_home_area_get_child_property (GtkContainer    *container,
   HildonHomeArea       *area = HILDON_HOME_AREA (container);
   ChildData            *child_data;
 
+  child_data = hildon_home_area_get_child_data (area, child);
+
+  g_return_if_fail (child_data);
+
   switch (property_id)
     {
       case PROP_CHILD_DATA:
-          child_data = hildon_home_area_get_child_data (area, child);
           g_value_set_pointer (value, child_data);
           break;
+      case PROP_CHILD_X:
+          g_value_set_int (value, child_data->x);
+          break;
+      case PROP_CHILD_Y:
+          g_value_set_int (value, child_data->y);
+          break;
+
       default:
           GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container,
                                                         property_id,
@@ -633,6 +698,93 @@ hildon_home_area_get_child_property (GtkContainer    *container,
           break;
     }
 }
+
+/* Largely copied from GtkFixed */
+static void
+hildon_home_area_size_request (GtkWidget       *widget,
+                               GtkRequisition  *requisition)
+{
+  HildonHomeAreaPriv   *priv = HILDON_HOME_AREA_GET_PRIVATE (widget);
+  GList                *children;
+  GtkRequisition        child_requisition = {0};
+  ChildData            *child;
+
+  requisition->width = 0;
+  requisition->height = 0;
+
+  children = priv->children_data;
+  while (children)
+    {
+      child = children->data;
+      children = children->next;
+
+      if (GTK_WIDGET_VISIBLE (child->widget))
+        {
+          gtk_widget_size_request (child->widget, &child_requisition);
+
+          requisition->height = MAX (requisition->height,
+                                     child->y +
+                                     child_requisition.height);
+          requisition->width = MAX (requisition->width,
+                                    child->x +
+                                    child_requisition.width);
+        }
+    }
+
+  requisition->height += GTK_CONTAINER (widget)->border_width * 2;
+  requisition->width  += GTK_CONTAINER (widget)->border_width * 2;
+
+}
+
+static void
+hildon_home_area_allocate_child (HildonHomeArea        *area,
+                                 ChildData             *child)
+{
+  if (GTK_WIDGET_VISIBLE (child->widget))
+    {
+      GtkWidget        *widget = GTK_WIDGET (area);
+      GtkAllocation     child_allocation;
+      GtkRequisition    child_requisition;
+      guint16           border_width;
+
+      border_width = GTK_CONTAINER (area)->border_width;
+
+      gtk_widget_get_child_requisition (child->widget, &child_requisition);
+      child_allocation.x = widget->allocation.x + child->x + border_width;
+      child_allocation.y = widget->allocation.y + child->y + border_width;
+
+      child_allocation.width = child_requisition.width;
+      child_allocation.height = child_requisition.height;
+
+      gtk_widget_size_allocate (child->widget, &child_allocation);
+    }
+}
+
+
+/* Largely copied from GtkFixed */
+static void
+hildon_home_area_size_allocate (GtkWidget      *widget,
+                                GtkAllocation  *allocation)
+{
+  HildonHomeAreaPriv   *priv = HILDON_HOME_AREA_GET_PRIVATE (widget);
+  GList                *children;
+
+  widget->allocation = *allocation;
+
+  children = priv->children_data;
+  while (children)
+    {
+      ChildData        *child = children->data;
+      children = children->next;
+
+      hildon_home_area_allocate_child (HILDON_HOME_AREA (widget),
+                                       child);
+
+    }
+
+}
+
+#ifdef HAVE_X_COMPOSITE
 
 static void
 hildon_home_area_realize (GtkWidget *widget)
@@ -737,9 +889,6 @@ static void
 hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 {
   HildonHomeAreaPriv   *priv;
-#ifdef HAVE_X_COMPOSITE
-  ChildData            *child_data;
-#endif
   g_return_if_fail (area);
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
@@ -763,14 +912,16 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 
       if (rect)
         {
-          gtk_fixed_put (GTK_FIXED (area), applet, rect->x, rect->y);
+          hildon_home_area_put (HILDON_HOME_AREA (area),
+                                applet,
+                                rect->x, rect->y);
           if (rect->width > 0 && rect->height > 0)
             gtk_widget_set_size_request (applet, rect->width, rect->height);
         }
 
       else
         {
-          gtk_fixed_put (GTK_FIXED (area), applet, 0, 0);
+          hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0);
         }
 
       g_signal_emit_by_name (area, "layout-changed");
@@ -780,68 +931,45 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
                                             TRUE);
     }
 
-#ifdef HAVE_X_COMPOSITE
-  if (HILDON_HOME_AREA_GET_CLASS (area)->composite)
+
+}
+
+static void
+hildon_home_area_forall (GtkContainer  *container,
+                         gboolean       include_internals,
+                         GtkCallback    callback,
+                         gpointer       user_data)
+{
+  HildonHomeAreaPriv   *priv;
+  GList                *i;
+
+  priv = HILDON_HOME_AREA_GET_PRIVATE (container);
+
+  i = priv->children_data;
+  while (i)
     {
+      ChildData        *child = i->data;
 
-
-      child_data = g_new0 (ChildData, 1);
-      child_data->widget = applet;
-
-      gtk_container_child_set (area, applet,
-                               "child-data", child_data,
-                               NULL);
-      child_data->realize_handler =
-          g_signal_connect_after (applet, "realize",
-                                  G_CALLBACK (hildon_home_area_child_realize),
-                                  area);
-      child_data->style_set_handler =
-          g_signal_connect_after (applet, "style-set",
-                                  G_CALLBACK (hildon_home_area_child_style_set),
-                                  area);
-      child_data->size_allocate_handler =
-          g_signal_connect (applet, "size-allocate",
-                            G_CALLBACK (hildon_home_area_child_size_allocate),
-                            area);
-
-      if (GTK_WIDGET_REALIZED (applet))
-        {
-          hildon_home_area_create_child_data (HILDON_HOME_AREA (area), applet);
-          hildon_home_area_child_style_set (applet,
-                                            applet->style,
-                                            HILDON_HOME_AREA (area));
-
-          /* HACK: pretend the child is shaped to avoid GDK removing it
-           * from the parent's clip (see #412882) */
-          ((GdkWindowObject *)applet->window)->shaped = TRUE;
-        }
+      i = i->next;
+      callback (child->widget, user_data);
     }
-#endif
-
 }
 
 #ifdef HAVE_X_COMPOSITE
 static void
-hildon_home_area_child_compose (GtkWidget *child,
+hildon_home_area_child_compose (ChildData *child_data,
                                 HildonHomeArea *area,
                                 gboolean alpha)
 {
   HildonHomeAreaPriv   *priv;
-  ChildData            *child_data;
   GtkAllocation        *alloc;
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
-  gtk_container_child_get (GTK_CONTAINER (area), child,
-                           "child-data", &child_data,
-                           NULL);
-
-  g_return_if_fail (child_data);
-
   if (child_data->picture == None)
     return;
 
-  alloc = &(child->allocation);
+  alloc = &(child_data->widget->allocation);
 
   XRenderComposite (GDK_DISPLAY (),
                     (alpha)?PictOpOver:PictOpSrc,
@@ -1254,18 +1382,17 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
 }
 
 static gint
-find_by_window (GtkWidget *widget, Window *w)
+find_by_window (ChildData *data, Window *w)
 {
-  return !(widget->window && 
-           GDK_WINDOW_XID (widget->window) == *w);
+  return !(data->window == *w);
 }
 
 static void
-child_is_dragged (GtkWidget *child, gboolean *is_dragged)
+child_is_dragged (ChildData *child, gboolean *is_dragged)
 {
   gint  state;
 
-  g_object_get (child,
+  g_object_get (child->widget,
                 "state", &state,
                 NULL);
   if (!*is_dragged && state)
@@ -1282,7 +1409,6 @@ hildon_home_area_expose (GtkWidget *widget,
 
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      GList                    *children;
       XRectangle                rectangle;
       XserverRegion             region;
       GdkDrawable              *drawable;
@@ -1342,19 +1468,20 @@ hildon_home_area_expose (GtkWidget *widget,
           return FALSE;
         }
 
-      children = gtk_container_get_children (GTK_CONTAINER (widget));
-      g_list_foreach (children, (GFunc)child_is_dragged, &is_dragged);
+      g_list_foreach (priv->children_data,
+                      (GFunc)child_is_dragged,
+                      &is_dragged);
 
       for (i = 0; i < n_children; i++)
         {
           GList        *l = NULL;
 
-          l = g_list_find_custom (children,
+          l = g_list_find_custom (priv->children_data,
                                   &wchildren[i],
                                   (GCompareFunc)find_by_window);
 
           if (l)
-            hildon_home_area_child_compose (GTK_WIDGET (l->data),
+            hildon_home_area_child_compose (l->data,
                                             HILDON_HOME_AREA (widget),
                                             !is_dragged);
         }
@@ -1363,8 +1490,6 @@ hildon_home_area_expose (GtkWidget *widget,
 
       XFixesDestroyRegion (GDK_DISPLAY (), region);
       XRenderFreePicture (GDK_DISPLAY (), priv->picture);
-
-      g_list_free (children);
     }
 
   return TRUE;
@@ -1753,9 +1878,8 @@ static void
 hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
 {
   HildonHomeAreaPriv   *priv;
-#ifdef HAVE_X_COMPOSITE
   ChildData            *child_data;
-#endif
+
   g_return_if_fail (area);
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
@@ -1764,9 +1888,6 @@ hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
       g_signal_emit_by_name (area, "layout-changed");
     }
 
-#ifdef HAVE_X_COMPOSITE
-  if (HILDON_HOME_AREA_GET_CLASS (area)->composite)
-    {
 
       gtk_container_child_get (area, applet,
                                "child-data", &child_data,
@@ -1775,19 +1896,22 @@ hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
       if (child_data)
         {
 
-          g_signal_handler_disconnect (applet,
-                                       child_data->realize_handler);
-          g_signal_handler_disconnect (applet,
-                                       child_data->style_set_handler);
-          g_signal_handler_disconnect (applet,
-                                       child_data->size_allocate_handler);
+#ifdef HAVE_X_COMPOSITE
+          if (HILDON_HOME_AREA_GET_CLASS (area)->composite)
+            {
+              g_signal_handler_disconnect (applet,
+                                           child_data->realize_handler);
+              g_signal_handler_disconnect (applet,
+                                           child_data->style_set_handler);
+              g_signal_handler_disconnect (applet,
+                                           child_data->size_allocate_handler);
+            }
+#endif
 
           priv->children_data = g_list_remove (priv->children_data, child_data);
 
           child_data_free (child_data);
         }
-    }
-#endif
 
   if (GTK_CONTAINER_CLASS (parent_class)->remove)
     GTK_CONTAINER_CLASS (parent_class)->remove (area, applet);
@@ -2110,3 +2234,87 @@ hildon_home_area_set_batch_add (HildonHomeArea *area, gboolean batch_add)
 
   priv->batch_add = batch_add;
 }
+
+void
+hildon_home_area_put (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
+{
+  ChildData  *child_data;
+
+  g_return_if_fail (HILDON_IS_HOME_AREA (area) && GTK_IS_WIDGET (widget));
+
+  gtk_widget_set_parent (widget, GTK_WIDGET (area));
+
+  child_data = g_new0 (ChildData, 1);
+  child_data->widget = widget;
+  child_data->x = x;
+  child_data->y = y;
+
+  gtk_container_child_set (GTK_CONTAINER (area), widget,
+                           "child-data", child_data,
+                           NULL);
+
+#ifdef HAVE_X_COMPOSITE
+  if (HILDON_HOME_AREA_GET_CLASS (area)->composite)
+    {
+      child_data->realize_handler =
+          g_signal_connect_after (widget, "realize",
+                                  G_CALLBACK (hildon_home_area_child_realize),
+                                  area);
+      child_data->style_set_handler =
+          g_signal_connect_after (widget, "style-set",
+                                  G_CALLBACK (hildon_home_area_child_style_set),
+                                  area);
+      child_data->size_allocate_handler =
+          g_signal_connect (widget, "size-allocate",
+                            G_CALLBACK (hildon_home_area_child_size_allocate),
+                            area);
+
+      if (GTK_WIDGET_REALIZED (widget))
+        {
+          hildon_home_area_create_child_data (HILDON_HOME_AREA (area), widget);
+          hildon_home_area_child_style_set (widget,
+                                            widget->style,
+                                            HILDON_HOME_AREA (area));
+
+          /* HACK: pretend the child is shaped to avoid GDK removing it
+           * from the parent's clip (see #412882) */
+          ((GdkWindowObject *)widget->window)->shaped = TRUE;
+        }
+    }
+#endif
+}
+
+void
+hildon_home_area_move (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
+{
+  ChildData *data;
+
+  g_return_if_fail (HILDON_IS_HOME_AREA (area) && GTK_IS_WIDGET (widget) &&
+                    widget->parent == GTK_WIDGET (area));
+
+  data = hildon_home_area_get_child_data (area, widget);
+
+  g_return_if_fail (data);
+
+  if (GTK_WIDGET_VISIBLE (area) && GTK_WIDGET_VISIBLE (widget))
+    {
+      GdkRectangle invalid = {data->x + GTK_WIDGET (area)->allocation.x,
+                              data->y + GTK_WIDGET (area)->allocation.y,
+                              widget->allocation.width,
+                              widget->allocation.height};
+
+      gdk_window_invalidate_rect (widget->window, &invalid, TRUE);
+
+      invalid.x = x + GTK_WIDGET (area)->allocation.x;
+      invalid.y = y + GTK_WIDGET (area)->allocation.y;
+
+      gdk_window_invalidate_rect (widget->window, &invalid, TRUE);
+    }
+
+  data->x = x;
+  data->y = y;
+
+  hildon_home_area_allocate_child (area, data);
+
+}
+

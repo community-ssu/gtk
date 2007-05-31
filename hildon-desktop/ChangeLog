@@ -1,3 +1,12 @@
+2007-05-31  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-area.[ch]:
+	- inherit from Container instead of Fixed
+	- implement _size_allocate, _size_request, _forall
+	- added _put and _move
+	* hildon-desktop-home-item.c:
+	- change accordingly
+
 2007-05-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: 
