@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.27~unreleased) unstable; urgency=low
+
+  * Fixes: NB#33701.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 31 May 2007 13:16:31 +0300
+
 libhildonfm (1:1.9.26) unstable; urgency=low
 
   * Do not use the banner escort service of the Task Navigator.  It is
