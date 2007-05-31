@@ -1,3 +1,9 @@
+pango1.0 (1.16.4-1osso2) unstable; urgency=low
+
+  * Fix packaging to not include .la files
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 31 May 2007 15:48:02 +0200
+
 pango1.0 (1.16.4-1osso1) unstable; urgency=low
 
   * new upstream release

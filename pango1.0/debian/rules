@@ -211,12 +211,12 @@ $(STAMP_DIR)/install-test-stamp:
 
 install-shared: build-shared install-test
 	$(MAKE) -C $(BUILD_SHARED_DIR) install \
-		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname) \
+		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname)-tmp \
 		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
 
 install-static: build-static install-test
 	$(MAKE) -C $(BUILD_STATIC_DIR) install \
-		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname)
+		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname)-tmp
 
 install-udeb: build-udeb install-test
 	$(MAKE) -C $(BUILD_UDEB_DIR) install \
@@ -249,9 +249,9 @@ install: install-shared
 		       $(CURDIR)/debian/libpango$(apiver)-common/usr/sbin/
 
 	# clean the unnecessary files up
-	rm -rf debian/libpango$(apiver)-$(soname)/usr/share/gtk-doc
+	rm -rf debian/libpango$(apiver)-$(soname)-tmp/usr/share/gtk-doc
 
-	dh_movefiles --sourcedir=debian/libpango$(apiver)-$(soname) -Nlibpango$(apiver)-udeb
+	dh_movefiles --sourcedir=debian/libpango$(apiver)-$(soname)-tmp -Nlibpango$(apiver)-udeb
 	-find $(CURDIR)/debian/ -type d -empty ! -regex '.*/var.*' -prune | xargs rmdir -p 2>&1 > /dev/null
 
 	# don't ship pango.modules and pangox.aliases
@@ -314,7 +314,7 @@ binary-arch: build install
 	dh_installinfo -a
 	dh_installchangelogs $(BUILD_DIR)/ChangeLog
 
-	dh_strip -a --dbg-package=libpango$(apiver)-$(soname)
+	dh_strip -a --dbg-package=libpango$(apiver)-$(soname)-tmp
 
 	dh_compress -a -Xindex.sgml
 	dh_fixperms -a
