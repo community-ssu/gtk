@@ -1,3 +1,9 @@
+gail (1.18.0-osso6) unstable; urgency=low
+
+  * Removed .la files
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 31 May 2007 16:41:31 +0100
+
 gail (1.18.0-osso5) unstable; urgency=low
 
   * Fix some more packaging errors from lintian.
