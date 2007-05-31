@@ -20,5 +20,7 @@ libhildonpluginsettings_la_LIBADD = \
 			       $(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
 			       $(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS)
 
-libhildonpluginsettings_la_SOURCES = 
+libhildonpluginsettings_la_SOURCES = \
+	hildon-plugin-config-parser.h \
+	hildon-plugin-config-parser.c
 

@@ -1,5 +1,11 @@
 2007-05-31  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hildon-plugin-config-parser.[ch]:
+	- Added first implementation.
+	* src/Makefile.am: updated.
+
+2007-05-31  Moises Martinez  <moises.martinez@nokia.com>
+
 	* ./*:
 	* src/*:
 	- Added initial skeleton.
