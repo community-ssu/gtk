@@ -1,3 +1,9 @@
+2007-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_position_menu): Switch submenu
+	opening direction only if there's more space in the new direction to
+	reduce overlapping. (#441863, NB#50636)
+
 2007-05-29  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkenums.h (enum): remove extra new lines to shut up
