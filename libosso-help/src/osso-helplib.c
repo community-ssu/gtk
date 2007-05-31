@@ -33,7 +33,7 @@
 /*---=== Public API ===---*/
 
 /*---( doc in header )---*/
-extern
+extern G_GNUC_DEPRECATED
 osso_return_t ossohelp_show( osso_context_t* osso,
                              const char* help_id,
                              guint flags )
@@ -72,6 +72,7 @@ link_warning(ossohelp_show, "warning: ossohelp_show has been deprecated in favou
 */
 
 /*---( docs in header )---*/
+G_GNUC_DEPRECATED
 gboolean ossohelp_dialog_help_enable( GtkDialog *dialog, 
                                       const gchar *topic,
                                       osso_context_t *osso )

@@ -35,6 +35,7 @@
 
 /*--- Public interface (for any applications) ---*/
 
+G_GNUC_DEPRECATED
 enum {
     OSSO_HELP_SHOW_DIALOG= 0x01,
     OSSO_HELP_SHOW_JUSTASK= 0x02,
@@ -67,6 +68,7 @@ enum {
             <br>#OSSO_INVALID   Param not formally right (NULL, or bad ID
                                 format)
 */
+G_GNUC_DEPRECATED
 osso_return_t ossohelp_show( osso_context_t *osso,
                              const gchar *topic_id,
                              guint flags );
@@ -93,6 +95,7 @@ osso_return_t ossohelp_show( osso_context_t *osso,
   @return TRUE if the help topic existed, and '?' enabled
           <br>FALSE if the topic ID is not found in this system.
 */
+G_GNUC_DEPRECATED
 gboolean ossohelp_dialog_help_enable( GtkDialog *dialog, 
                                       const gchar *topic,
                                       osso_context_t *osso );
