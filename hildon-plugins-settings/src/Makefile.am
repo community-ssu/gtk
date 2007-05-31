@@ -1,0 +1,24 @@
+CFLAGS_LAUNCHER  = -shared
+LDFLAGS_LAUNCHER = -shared -export-dynamic
+
+INCLUDES = \
+	$(CP_CFLAGS) $(OSSO_CFLAGS) $(GCONF_CFLAGS) \
+        $(LIBOSSOHELP_CFLAGS) \
+        $(LIBHILDONMENU_CFLAGS) \
+	-DLOCALEDIR=\"$(localedir)\" \
+	-DPREFIXDIR=\"$(prefix)\" \
+	$$(xml2-config --cflags)
+
+
+LDFLAGS = -module -avoid-version
+
+desktopentry_DATA = hildon-plugins-settings.desktop
+
+pluginlib_LTLIBRARIES = libhildonpluginsettings.la
+
+libhildonpluginsettings_la_LIBADD = \
+			       $(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
+			       $(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS)
+
+libhildonpluginsettings_la_SOURCES = 
+
