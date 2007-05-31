@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "hildon-file-system-voldev.h"
 #include "hildon-file-system-settings.h"
@@ -164,17 +165,26 @@ find_volume (const char *uri)
 }
 
 static void
-capitalize_ascii_string (gchar *str)
+capitalize_and_remove_trailing_spaces (gchar *str)
 {
+  /* STR must not consist of only whitespace.
+   */
+
+  gchar *last_non_space;
+
   if (*str)
     {
+      last_non_space = str;
       *str = g_ascii_toupper (*str);
       str++;
       while (*str)
         {
           *str = g_ascii_tolower (*str);
+	  if (!isspace (*str))
+	    last_non_space = str;
           str++;
         }
+      *(last_non_space+1) = '\0';
     }
 }
 
@@ -196,7 +206,7 @@ beautify_mmc_name (char *name, gboolean internal)
       name = g_strdup (name);
     }
   else
-    capitalize_ascii_string (name);
+    capitalize_and_remove_trailing_spaces (name);
 
   return name;
 }
