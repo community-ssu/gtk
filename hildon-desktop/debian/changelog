@@ -1,3 +1,36 @@
+hildon-desktop (0.0.16-1) sardine; urgency=low
+
+  * src/hd-panel-window.c:
+  - added configure-event handler to track window geometry
+  - attach the picture to the drawable so it can be used
+  by child widgets drawing on the same window
+  * src/hildon-toggle-button.c:
+  - check if the drawable already has a Picture attached
+  and use it if available
+
+  * hildon-home-area.c:
+  - do not recompute the alpha mask when resizing
+
+  * hildon-home-area.[ch]:
+  - inherit from Container instead of Fixed
+  - implement _size_allocate, _size_request, _forall
+  - added _put and _move
+  * hildon-desktop-home-item.c:
+  - change accordingly
+
+  * src/hd-switcher-menu.c: 
+  - Filter info notes notifications. Fixes: NB#59110
+
+  * libhildondesktop/hildon-home-area.c:
+  - reset the child's window as "shaped" after a change of style
+
+  * libhildonwm/hd-wm.c:
+  - send signal for launch banner when application has a proper name.
+  * libhildonwm/hd-wm-watchable-app.[ch]:
+  - Added method to change name of dummy HDWMWatchableApp
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  1 Jun 2007 13:28:13 +0300
+
 hildon-desktop (0.0.15-1) sardine; urgency=low
 
   * added build-dep on libxdamage-dev and libxcomposite-dev

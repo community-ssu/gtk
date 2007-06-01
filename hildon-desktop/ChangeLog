@@ -1,5 +1,9 @@
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.16
+
+2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-panel-window.c:
 	- added configure-event handler to track window geometry
 	- attach the picture to the drawable so it can be used
