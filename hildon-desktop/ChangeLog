@@ -1,5 +1,10 @@
 2007-05-31  Johan Bilien  <johan.bilien@nokia.com>
 
+	* hildon-home-area.c:
+	- do not recompute the alpha mask when resizing
+
+2007-05-31  Johan Bilien  <johan.bilien@nokia.com>
+
 	* hildon-home-area.[ch]:
 	- inherit from Container instead of Fixed
 	- implement _size_allocate, _size_request, _forall

@@ -1018,18 +1018,23 @@ hildon_home_area_child_size_allocate (GtkWidget        *child,
                                       GtkAllocation    *allocation,
                                       HildonHomeArea   *area)
 {
-  ChildData *data;
+  ChildData    *data;
+  gint          state = 0;
+
+  g_object_get (child,
+                "state", &state,
+                NULL);
 
   gtk_container_child_get (GTK_CONTAINER (area), child,
                            "child-data", &data,
                            NULL);
 
-  if (data->old_allocation.width  != allocation->width ||
-      data->old_allocation.height != allocation->height)
+  if (state == 0 && /* not moving or resizing */
+      (data->old_allocation.width  != allocation->width ||
+       data->old_allocation.height != allocation->height))
     hildon_home_area_child_build_alpha_mask (area, child);
 
   data->old_allocation = *allocation;
-
 
 }
 
@@ -2317,4 +2322,3 @@ hildon_home_area_move (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
   hildon_home_area_allocate_child (area, data);
 
 }
-
