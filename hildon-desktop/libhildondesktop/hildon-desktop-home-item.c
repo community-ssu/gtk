@@ -410,7 +410,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                              "state of the applet",
                              -1,
                              G_MAXINT,
-                             -1,
+                             0,
                              G_PARAM_READABLE);
 
   g_object_class_install_property (object_class,
@@ -772,6 +772,7 @@ hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
       g_source_remove (priv->timeout);
       priv->timeout = 0;
       priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
+      g_object_notify (G_OBJECT (widget), "state");
 
       gdk_pointer_ungrab (GDK_CURRENT_TIME);
 
@@ -1491,6 +1492,7 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
           priv->y_offset = event->y;
           priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_MOVING;
         }
+      g_object_notify (G_OBJECT (w), "state");
 
       priv->timeout = g_timeout_add (DRAG_UPDATE_TIMEOUT,
                                      (GSourceFunc)
@@ -1533,6 +1535,7 @@ hildon_desktop_home_item_button_release_event (GtkWidget *applet,
       g_source_remove (priv->timeout);
       priv->timeout = 0;
       priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
+      g_object_notify (G_OBJECT (applet), "state");
 
       gdk_pointer_ungrab (event->time);
 
