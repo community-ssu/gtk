@@ -1,4 +1,4 @@
-osso-gnome-vfs2 (2.16.3-1osso19) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso20) unstable; urgency=low
 
   * Use the slot_name property that HAL provides to identity the MMC cards
   * Make the daemon/client more robust against restarted daemon
