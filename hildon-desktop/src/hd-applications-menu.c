@@ -610,11 +610,15 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
     }
     else if (level > 0)
     {
+#if 0
       /* Application */
       menu_item = gtk_image_menu_item_new_with_label (
                                 (item_text_domain && *item_text_domain) ?
                                 dgettext(item_text_domain, item_name) : _(item_name));
-
+#else
+      menu_item = gtk_menu_item_new ();
+#endif
+      
       GTK_WIDGET_SET_FLAGS (menu_item, GTK_CAN_FOCUS);
 
       gtk_widget_set_name (GTK_WIDGET (menu_item), HD_APPS_MENU_APP_MENU_ITEM_NAME);
@@ -625,12 +629,41 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
       		              MENU_ITEM_ICON_SIZE);
       }
 
+      if (item_icon)
+      {
+#if 0
       /* FIXME: disable icons on application while we don't fix the 
        * crash related to toggle area sizing in the menu items. */
-      if (!item_icon)
-      {
         gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (menu_item),
             		               gtk_image_new_from_pixbuf (item_icon));
+#else
+        GtkWidget *hbox, *image, *label;
+	
+	hbox = gtk_hbox_new (FALSE, 0);
+
+	image = gtk_image_new_from_pixbuf (item_icon);
+	
+	gtk_box_pack_start (GTK_BOX (hbox),
+			    image, 
+			    FALSE, 
+			    FALSE, 
+			    15);
+
+        label = gtk_label_new ((item_text_domain && *item_text_domain) ?
+			        dgettext(item_text_domain, item_name) : _(item_name)), 
+
+        gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	
+	gtk_box_pack_start (GTK_BOX (hbox),
+			    label,
+			    TRUE, 
+			    TRUE, 
+			    0);
+
+	gtk_container_add (GTK_CONTAINER (menu_item), hbox);
+
+	gtk_widget_show_all (hbox);
+#endif
       }
 
       g_object_set_data_full (G_OBJECT (menu_item),
