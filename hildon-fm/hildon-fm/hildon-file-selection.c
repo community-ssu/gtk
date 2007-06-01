@@ -2925,6 +2925,7 @@ trigger_repair (const char *device)
   DBusConnection *conn;
   DBusMessage *message;
   dbus_bool_t ret;
+  const char *empty_string = "";
 
   conn = dbus_bus_get (DBUS_BUS_SYSTEM, NULL);
   if (conn == NULL)
@@ -2944,8 +2945,8 @@ trigger_repair (const char *device)
     }
 
   ret = dbus_message_append_args (message,
-				  DBUS_TYPE_STRING, device,
-				  DBUS_TYPE_STRING, "", /* label */
+				  DBUS_TYPE_STRING, &device,
+				  DBUS_TYPE_STRING, &empty_string, /* label */
 				  DBUS_TYPE_INVALID);
 
   if (!ret)
