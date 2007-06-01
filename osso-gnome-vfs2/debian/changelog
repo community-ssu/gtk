@@ -2,7 +2,7 @@ osso-gnome-vfs2 (2.16.3-1osso19) unstable; urgency=low
 
   * Use the slot_name property that HAL provides to identity the MMC cards
   * Make the daemon/client more robust against restarted daemon
-  * Also allow even more corrupt (or empty) MMC cards
+  * Fixes: NB#59112, Unformatted internal memory card does not appear in
 
  -- Richard Hult <richard@imendio.com>  Fri,  1 Jun 2007 14:29:53 +0200
 
