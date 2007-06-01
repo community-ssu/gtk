@@ -68,6 +68,8 @@ struct _HDPanelWindowPrivate
 
   Picture       background_picture;
   Picture       background_mask;
+
+  gint          x, y, width, height;
 };
 
 
@@ -297,13 +299,11 @@ hd_panel_window_expose (GtkWidget *widget,
     HDPanelWindowPrivate       *priv = HD_PANEL_WINDOW (widget)->priv;
     GdkDrawable *drawable;
     gint x_offset, y_offset;
-    gint x, y;
     Picture picture;
     GdkVisual *visual;
     XRenderPictFormat *format;
     XRenderPictureAttributes pa = {0};
-
-    gtk_window_get_position (GTK_WINDOW (widget), &x, &y);
+    gboolean result;
 
     gdk_window_get_internal_paint_info (widget->window,
                                         &drawable,
@@ -321,14 +321,17 @@ hd_panel_window_expose (GtkWidget *widget,
                                     0,
                                     &pa);
 
+    g_object_set_data (G_OBJECT (drawable),
+                       "picture", GINT_TO_POINTER (picture));
+
     if (priv->home_picture != None)
       XRenderComposite (GDK_DISPLAY (),
                         PictOpSrc,
                         priv->home_picture,
                         None,
                         picture,
-                        x + event->area.x, y + event->area.y,
-                        x + event->area.x, y + event->area.y,
+                        priv->x + event->area.x, priv->y + event->area.y,
+                        priv->x + event->area.x, priv->y + event->area.y,
                         event->area.x - x_offset,
                         event->area.y - y_offset,
                         event->area.width,
@@ -340,23 +343,41 @@ hd_panel_window_expose (GtkWidget *widget,
                         priv->background_picture,
                         priv->background_mask,
                         picture,
-                        x + event->area.x, y + event->area.y,
-                        x + event->area.x, y + event->area.y,
+                        priv->x + event->area.x, priv->y + event->area.y,
+                        priv->x + event->area.x, priv->y + event->area.y,
                         event->area.x - x_offset,
                         event->area.y - y_offset,
                         event->area.width,
                         event->area.height);
 
+    result = GTK_WIDGET_CLASS (hd_panel_window_parent_class)->
+        expose_event (widget, event);
 
     XRenderFreePicture (GDK_DISPLAY (),
                         picture);
 
-    return GTK_WIDGET_CLASS (hd_panel_window_parent_class)->
-        expose_event (widget, event);
+    g_object_set_data (G_OBJECT (drawable),
+                       "picture", GINT_TO_POINTER (None));
+
+    return result;
 
   }
 
 return FALSE;
+}
+
+static gboolean
+hd_panel_window_configure (GtkWidget           *widget,
+                           GdkEventConfigure   *event)
+{
+  HDPanelWindowPrivate *priv = HD_PANEL_WINDOW_GET_PRIVATE (widget);
+
+  priv->x = event->x;
+  priv->y = event->y;
+  priv->width = event->width;
+  priv->height = event->height;
+
+  return FALSE;
 }
 
 static GdkFilterReturn
@@ -366,28 +387,51 @@ hd_panel_window_home_window_filter (GdkXEvent          *xevent,
 {
   XEvent               *e = xevent;
   HDPanelWindowClass   *klass;
+  HDPanelWindowPrivate *priv;
 
   klass = HD_PANEL_WINDOW_GET_CLASS (window);
+  priv  = HD_PANEL_WINDOW_GET_PRIVATE (window);
 
   if (!GTK_WIDGET_REALIZED (GTK_WIDGET (window)))
     return GDK_FILTER_CONTINUE;
 
   if (e->type == klass->xdamage_event_base + XDamageNotify)
     {
-      XDamageNotifyEvent *ev = xevent;
-      GdkRectangle rect;
-      XserverRegion parts;
+      XserverRegion             parts;
+      XDamageNotifyEvent       *ev = xevent;
+      XRectangle               *rects;
+      guint                     i, n_rect;
 
-      rect.x = ev->area.x;
-      rect.y = ev->area.y;
-      rect.width = ev->area.width;
-      rect.height = ev->area.height;
+      parts = XFixesCreateRegion (GDK_DISPLAY (), 0, 0);
 
-      parts = XFixesCreateRegion (GDK_DISPLAY (), &ev->area, 1);
       XDamageSubtract (GDK_DISPLAY (), ev->damage, None, parts);
-      XFixesDestroyRegion (GDK_DISPLAY (), parts);
 
-      gdk_window_invalidate_rect (GTK_WIDGET (window)->window, &rect, FALSE);
+      rects = XFixesFetchRegion (GDK_DISPLAY (),
+                                 parts,
+                                 &n_rect);
+
+      XFixesDestroyRegion (GDK_DISPLAY (),
+                           parts);
+
+      for (i = 0; i < n_rect; i++)
+        {
+          if (priv->x + priv->width >= rects[i].x       &&
+              priv->x <= rects[i].x + rects[i].width   &&
+              priv->y + priv->height >= rects[i].y      &&
+              priv->y <= rects[i].y + rects[i].height)
+
+           {
+             GdkRectangle rect;
+
+             rect.x = rects[i].x;
+             rect.y = rects[i].y;
+             rect.width = rects[i].width;
+             rect.height = rects[i].height;
+             gdk_window_invalidate_rect (GTK_WIDGET (window)->window,
+                                         &rect,
+                                         TRUE);
+           }
+        }
     }
 
   return GDK_FILTER_CONTINUE;
@@ -593,9 +637,10 @@ hd_panel_window_class_init (HDPanelWindowClass *klass)
     gint damage_error, composite_error;
     gint composite_event_base;
 
-    widget_class->expose_event = hd_panel_window_expose;
-    widget_class->style_set    = hd_panel_window_style_set;
-    widget_class->realize      = hd_panel_window_realize;
+    widget_class->expose_event          = hd_panel_window_expose;
+    widget_class->style_set             = hd_panel_window_style_set;
+    widget_class->realize               = hd_panel_window_realize;
+    widget_class->configure_event       = hd_panel_window_configure;
 
     if (XDamageQueryExtension (GDK_DISPLAY (),
                                &klass->xdamage_event_base,
@@ -636,7 +681,10 @@ hd_panel_window_init (HDPanelWindow *window)
                                 window);
     }
 
-/*  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE); */
+#if 0
+  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
+  gtk_widget_set_double_buffered (GTK_WIDGET (window), FALSE);
+#endif
 
   window->priv = HD_PANEL_WINDOW_GET_PRIVATE (window);
 #endif

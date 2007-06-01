@@ -1,3 +1,13 @@
+2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-panel-window.c:
+	- added configure-event handler to track window geometry
+	- attach the picture to the drawable so it can be used
+	by child widgets drawing on the same window
+	* src/hildon-toggle-button.c:
+	- check if the drawable already has a Picture attached
+	and use it if available
+
 2007-05-31  Johan Bilien  <johan.bilien@nokia.com>
 
 	* hildon-home-area.c:

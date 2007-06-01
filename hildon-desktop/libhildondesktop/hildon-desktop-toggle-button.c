@@ -92,9 +92,10 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
       GdkDrawable                      *drawable;
       GdkVisual                        *visual;
       gint                              x_offset, y_offset;
-      Picture                           picture;
+      Picture                           picture = None;
       XRenderPictFormat                *format;
       XRenderPictureAttributes          pa = {0};
+      gboolean                          picture_is_ours = FALSE;
 
       button = GTK_BUTTON (widget);
       priv = HILDON_DESKTOP_TOGGLE_BUTTON (widget)->priv;
@@ -112,11 +113,18 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
       if (format == None)
         return FALSE;
 
-      picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                      GDK_DRAWABLE_XID (drawable),
-                                      format,
-                                      0,
-                                      &pa);
+      picture = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawable),
+                                                    "picture"));
+
+      if (picture == None)
+        {
+          picture_is_ours = TRUE;
+          picture = XRenderCreatePicture (GDK_DISPLAY (),
+                                          GDK_DRAWABLE_XID (drawable),
+                                          format,
+                                          0,
+                                          &pa);
+        }
 
       if (priv->pressed_picture != None  && button->depressed)
         XRenderComposite (GDK_DISPLAY (),
@@ -140,8 +148,9 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
                           event->area.x - x_offset, event->area.y - y_offset,
                           event->area.width, event->area.height);
 
-      XRenderFreePicture (GDK_DISPLAY (),
-                          picture);
+      if (picture_is_ours)
+        XRenderFreePicture (GDK_DISPLAY (),
+                            picture);
 
       return GTK_WIDGET_CLASS (hildon_desktop_toggle_button_parent_class)->
                 expose_event (widget, event);
