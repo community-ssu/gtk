@@ -44,10 +44,10 @@ G_BEGIN_DECLS
 #define HH_MENU_EDIT_LAYOUT         _MAD("home_me_edit_layout")
 #define HH_MENU_TOOLS               _MAD("home_me_tools")
 
-#define HH_MENU_SET_BACKGROUND      _MAD("home_me_tools_set_background")
-#define HH_MENU_PERSONALISATION     _MAD("home_me_tools_personalisation")
-#define HH_MENU_CALIBRATION         _MAD("home_me_tools_screen_calibration")
-#define HH_MENU_HELP                _MAD("home_me_tools_help")
+#define HH_MENU_SET_BACKGROUND      _MAD("home_me_set_background")
+#define HH_MENU_PERSONALISATION     _MAD("home_me_set_theme")
+#define HH_MENU_CALIBRATION         _MAD("home_me_screen_calibration")
+#define HH_MENU_HELP                _MAD("home_me_help")
 
 #define HH_MENU_LAYOUT_TITLE        _MAD("home_ti_layout_mode")
 
