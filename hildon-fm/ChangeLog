@@ -1,3 +1,14 @@
+2007-05-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (trigger_repair): Pass address
+	of pointers to dbus_message_append_args as required, not pointers
+	themselves.  How unobvious.
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(capitalize_and_remove_trailing_spaces, beautify_mmc_name): New.
+	(hildon_file_system_voldev_volumes_changed): Use them to hack the
+	display name of memory cards (N33701).
+
 2007-05-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.26
