@@ -1,3 +1,11 @@
+2007-06-01  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/om-dbus.c (send_disconnect_if_first): Make the
+	BDA check case insensitive in case we get called with a different
+	variant. Improves behavior when restarting the daemon.
+
+	* configure.in: Bump version.
+
 2007-02-15  Richard Hult  <richard@imendio.com>
 
 	* obex-module/src/om-dbus.c (connection_free): Close the private

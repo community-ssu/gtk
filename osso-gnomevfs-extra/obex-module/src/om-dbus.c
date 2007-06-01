@@ -176,24 +176,29 @@ send_disconnect (Connection *conn, const gchar *str, const gchar *profile)
 static gboolean 
 send_disconnect_if_first (Connection *conn, const gchar *str, const gchar *profile)
 {
+	gchar *lower;
+	
 	G_LOCK (used_devs);
 
 	if (!used_devs) {
 		used_devs = g_hash_table_new (g_str_hash, g_str_equal);
 	}
 
-	if (g_hash_table_lookup (used_devs, str)) {
+	lower = g_ascii_strdown (str, -1);
+	if (g_hash_table_lookup (used_devs, lower)) {
+		g_free (lower);
 		d(g_printerr ("obex: %s has already been used, don't disconnect.\n", str));
 		G_UNLOCK (used_devs);
 		return FALSE;
 	}
 
-	g_hash_table_insert (used_devs, g_strdup (str), GINT_TO_POINTER (TRUE));
+	d(g_printerr ("obex: %s has not been used yet, disconnect.\n", lower));
+
+	/* The hash table takes ownership of lower here. */
+	g_hash_table_insert (used_devs, lower, GINT_TO_POINTER (TRUE));
 
 	G_UNLOCK (used_devs);
 
-	d(g_printerr ("obex: %s has not been used yet, disconnect.\n", str));
-	
 	send_disconnect (conn, str, profile);
 
 	return TRUE;

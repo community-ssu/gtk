@@ -1,3 +1,9 @@
+osso-gnomevfs-extra (1.9.4-1) unstable; urgency=low
+
+  * Improve robustness when restarting the daemon
+
+ -- Richard Hult <richard@imendio.com>  Fri,  1 Jun 2007 13:30:26 +0200
+
 osso-gnomevfs-extra (1.9.3-1) unstable; urgency=low
 
   * Remove old module conf file when installing
@@ -21,7 +27,6 @@ osso-gnomevfs-extra (1.9.1-1) unstable; urgency=low
 
 osso-gnomevfs-extra (1.9.0-1) unstable; urgency=low
 
-  * UNRELEASED
   * Start new development branch
 
  -- Richard Hult <richard@imendio.com>  Thu, 21 Dec 2006 09:49:20 +0100
