@@ -39,7 +39,40 @@ execute (osso_context_t *osso,
   GError *error = NULL;
   gint ret;
 
+  GtkCellRenderer   *renderer_text = gtk_cell_renderer_text_new();
+  GtkTreeViewColumn *text_column;
 
+  GtkWidget *dialog = gtk_dialog_new ();
+  HildonPluginConfigParser *cp = 
+    HILDON_PLUGIN_CONFIG_PARSER 
+      (hildon_plugin_config_parser_new ("/usr/share/applications/hildon-navigator","/tmp/hello.tmp"));
+
+  hildon_plugin_config_parser_set_keys (cp,
+		  			"Name", G_TYPE_STRING,
+					"Icon", GDK_TYPE_PIXBUF,
+					"Mandatory", G_TYPE_BOOLEAN,
+					NULL);
+
+  hildon_plugin_config_parser_load (cp,&error);
+
+  if (!error)
+  {	  
+    GtkWidget *tw = gtk_tree_view_new_with_model (cp->tm);
+
+    text_column = 
+      gtk_tree_view_column_new_with_attributes
+        (NULL, renderer_text, "text", 2, NULL);
+
+    gtk_tree_view_append_column(GTK_TREE_VIEW (tw), text_column);
+
+    gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+		       tw);
+    gtk_widget_show (tw);
+  }
+
+  gtk_widget_show (dialog);
+
+  ret = gtk_dialog_run (GTK_DIALOG (dialog));
 
   if (ret == GTK_RESPONSE_OK)
     return OSSO_OK;

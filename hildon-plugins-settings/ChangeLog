@@ -1,5 +1,12 @@
 2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
 
+	* +++ src/hildon-plugin-config-parser.[ch]:
+	- Fixed several bugs to get it built and working.
+	* src/hildon-plugin-settings.c:
+	- Testing the plugin. Not real implementation.
+
+2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hildon-plugin-config-parser.[ch]:
 	- Implemented reading of desktop files to model.
 	* src/hildon-plugin-config-settings.c:

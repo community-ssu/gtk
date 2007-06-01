@@ -25,9 +25,11 @@
 
 #ifndef __HILDON_PLUGIN_CONFIG_PARSER_H__
 #define __HILDON_PLUGIN_CONFIG_PARSER_H__
+
+#include <gtk/gtktreemodel.h>
 #include <gtk/gtkliststore.h>
 
-BEGIN_DECLS
+G_BEGIN_DECLS
 
 typedef struct _HildonPluginConfigParser HildonPluginConfigParser;
 typedef struct _HildonPluginConfigParserClass HildonPluginConfigParserClass;
@@ -76,6 +78,6 @@ hildon_plugin_config_parser_load (HildonPluginConfigParser *parser, GError **err
 gboolean 
 hildon_plugin_config_parser_save (HildonPluginConfigParser *parser, GError **error);
 
-END_DECLS
+G_END_DECLS
 
-#endif/*__HILDON_PLUGIN_CONFIG_PARSER_H__
+#endif/*__HILDON_PLUGIN_CONFIG_PARSER_H__*/
