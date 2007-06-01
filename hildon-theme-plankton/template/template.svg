@@ -7178,7 +7178,7 @@
        xlink:href="#linearGradient9227"
        id="linearGradient9045"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(-1,0,0,1,-90,-80)"
+       gradientTransform="matrix(-0.7917676,0,0,1,655.05569,-80)"
        x1="-3271"
        y1="185"
        x2="-3421"
@@ -7214,8 +7214,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="5588.8044"
-     inkscape:cy="503.37695"
+     inkscape:cx="3908.8044"
+     inkscape:cy="422.87695"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      width="8000px"
@@ -7304,7 +7304,8 @@
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="Component Area Legend"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
        style="opacity:1;color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#d3d7cf;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        id="rect8759"
@@ -12880,7 +12881,9 @@
        sodipodi:nodetypes="ccccccccccccccc"
        id="path8835"
        d="M 5178.3125,81 C 5173.7074,81 5170,87.707369 5170,92.3125 L 5170,127.6875 C 5170,132.29262 5173.7074,136 5178.3125,136 L 5250.0625,150 L 5250.0625,136 L 5250,136 L 5250,97.3125 C 5250,92.70738 5253.7074,89 5258.3125,89 L 5564.8125,89 C 5585.4617,89 5576.8299,135.99999 5596.5,136 C 5689.6667,136 5868.5001,136 5868.5001,136 C 5889.5536,136 5893.1276,130.00934 5893.1276,116.625 C 5893.1276,116.625 5893.1268,81 5893.1268,81 L 5178.3125,81 z"
-       style="opacity:0.625;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter8877)" />
+       style="opacity:0.625;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter8877)"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="opacity:1;color:#000000;fill:url(#linearGradient9060);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="M 5250,83 L 5250,96.3125 C 5250,91.70738 5253.7074,88 5258.3125,88 L 5564.8125,88 C 5585.4617,88 5576.8299,134.99999 5596.5,135 C 5689.6667,135 5874.6251,135 5874.6251,135 C 5883.4786,135 5891.0212,129.25316 5891.0212,117.97794 C 5891.0212,117.97794 5891.0212,83 5891.0212,83 L 5250,83 z"
@@ -22748,7 +22751,7 @@
        y="83"
        x="3488"
        height="75"
-       width="413"
+       width="327"
        id="rect9043"
        style="opacity:1;color:#000000;fill:url(#linearGradient9045);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
