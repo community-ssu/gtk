@@ -1,3 +1,13 @@
+hildon-theme-plankton (4.8.2-1) unstable; urgency=low
+
+  * New wallpaper.
+  * Updated glitch in statusbar
+
+  * Fixes: NB#57955 Hildon theme Plankton-4.7.0-1: license issues
+  * Fixes: NB#59038 Plankton theme has wrong background image size (too small)
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 01 Jun 2007 17:56:56 +0300
+
 hildon-theme-plankton (4.8.1-1) unstable; urgency=low
 
   * New graphics for task navigator.
