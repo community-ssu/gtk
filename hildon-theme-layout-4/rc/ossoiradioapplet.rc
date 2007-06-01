@@ -8,7 +8,7 @@ style "osso-iradio-applet"
 {
   xthickness = 0
   ythickness = 0
-  HildonDesktopHomeItem::background-borders = { 30, 140, 54, 54 }
+  HildonDesktopHomeItem::background-borders = { 0, 0, 0, 0 }
   bg_pixmap[PRELIGHT] = "../images/qgn_plat_radio_applet_bg_alpha.png"
 
   engine "sapwood"
@@ -17,7 +17,6 @@ style "osso-iradio-applet"
         {
           function = SHADOW
           file     = "../images/qgn_plat_radio_applet_bg.png"
-          border   = { 30, 140, 54, 54 }
           shaped = TRUE
         }
     }
