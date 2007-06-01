@@ -1,0 +1,56 @@
+Index: daemon/vfs-daemon.c
+===================================================================
+--- daemon/vfs-daemon.c	(revision 11974)
++++ daemon/vfs-daemon.c	(arbetskopia)
+@@ -562,6 +562,14 @@ daemon_handle_monitor_cancel (DBusConnec
+ 		return;
+ 	}
+ 
++	if (!monitors) {
++		/* Ignore this silently, can happen if the daemon is restarted
++		 * and the monitor hash isn't setup yet.
++		 */
++		dbus_util_reply_result (conn, message, GNOME_VFS_OK);
++		return;
++	}
++	
+ 	handle = g_hash_table_lookup (monitors, GINT_TO_POINTER (id));
+ 	if (handle) {
+ 		result = gnome_vfs_monitor_cancel (handle->vfs_handle);
+Index: libgnomevfs/gnome-vfs-daemon-method.c
+===================================================================
+--- libgnomevfs/gnome-vfs-daemon-method.c	(revision 11974)
++++ libgnomevfs/gnome-vfs-daemon-method.c	(arbetskopia)
+@@ -587,7 +587,7 @@ execute_operation (const gchar      *met
+ 		   ...)
+ {
+ 	DBusMessage *message;
+-	DBusMessage *reply;
++	DBusMessage *reply = NULL;
+ 	va_list      var_args;
+ 	gint32       cancellation_id;
+ 	DBusError    error;
+@@ -632,14 +632,17 @@ execute_operation (const gchar      *met
+ 
+ 	dbus_message_unref (message);
+ 	
+-	while (!dbus_pending_call_get_completed (pending_call) &&
+-	       dbus_connection_read_write_dispatch (connection->connection, -1))
+-		;
++	if (pending_call) {
++		while (!dbus_pending_call_get_completed (pending_call) &&
++		       dbus_connection_read_write_dispatch (connection->connection, -1))
++			;
+ 
+-	reply = dbus_pending_call_steal_reply (pending_call);
++		if (dbus_pending_call_get_completed (pending_call))
++			reply = dbus_pending_call_steal_reply (pending_call);
++
++		dbus_pending_call_unref (pending_call);
++	}
+ 
+-	dbus_pending_call_unref (pending_call);
+-	
+ 	if (cancellation_id != -1) {
+ 		cancellation_id_free (cancellation_id, context);
+ 	}
