@@ -1,3 +1,8 @@
+2007-06-01  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c: cleanup the scrolling
+	code and fixed the viewport sizing to match the expected layout.
+
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-l10n.h: fixed localisation strings

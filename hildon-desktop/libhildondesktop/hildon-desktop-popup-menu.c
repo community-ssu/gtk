@@ -429,13 +429,12 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
 static void 
 hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *menu)
 {
-  gdouble position;
-  gint delta = menu->priv->item_height + 16; /*FIXME: Check items aside the menu item */
-  GtkAdjustment *adj = 
-    gtk_viewport_get_vadjustment 
-      (GTK_VIEWPORT (menu->priv->viewport));
   GtkRequisition req;
-  gdouble upper_hack;
+  GtkAdjustment *adj;
+  gdouble position;
+  gint delta = menu->priv->item_height;
+ 
+  adj = gtk_viewport_get_vadjustment (GTK_VIEWPORT (menu->priv->viewport));
 
   if (widget == menu->priv->scroll_up)
     delta *= -1;
@@ -447,18 +446,16 @@ hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *
   if (parent)
   {		  
     gtk_widget_size_request (parent, &req);
-  	  
-    upper_hack = adj->upper - (req.height - menu->priv->item_height);
-
-    if ((gint)(position + (gdouble)delta) <= upper_hack)
-      gtk_adjustment_set_value (adj, position + (gdouble)delta); 	
+ 
+    if ((gint) (position + (gdouble) delta) <= adj->upper - adj->page_size)
+      gtk_adjustment_set_value (adj, position + (gdouble) delta); 
     else
-      gtk_adjustment_set_value (adj, upper_hack);	    
+      gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
 
-    /* NOTE: Don't remove this
-     * g_debug ("min: %lf max: %lf current: %lf upper_hack: %lf", adj->lower,adj->upper, adj->value, upper_hack);*/
+    /* NOTE: Don't remove this 
+    g_debug ("min: %lf max: %lf current: %lf", adj->lower,adj->upper, adj->value);*/
   }
-}	
+}
 
 static gboolean 
 hildon_desktop_popup_menu_release_event (GtkWidget      *widget,
@@ -661,7 +658,7 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
   {
     hildon_desktop_popup_menu_show_controls (menu);	  
     gtk_widget_set_size_request 
-       (menu->priv->viewport, -1, screen_height - menu->priv->item_height); /*d_height - menu->priv->item_height);*/
+       (menu->priv->viewport, -1, screen_height - menu->priv->item_height - 4); /*d_height - menu->priv->item_height);*/
   }
   else
   {
