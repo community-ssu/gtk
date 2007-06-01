@@ -22,5 +22,6 @@ libhildonpluginsettings_la_LIBADD = \
 
 libhildonpluginsettings_la_SOURCES = \
 	hildon-plugin-config-parser.h \
-	hildon-plugin-config-parser.c
+	hildon-plugin-config-parser.c \
+	hildon-plugin-settings.c
 

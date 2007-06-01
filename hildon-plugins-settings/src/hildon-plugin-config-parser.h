@@ -44,7 +44,7 @@ struct _HildonPluginConfigParser
   GObject	parent;
 
   GtkTreeModel  *tm;
-  GList		*keys;
+  GHashTable    *keys;
 
   HildonPluginConfigParserPrivate *priv;
 };

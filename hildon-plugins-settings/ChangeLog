@@ -1,3 +1,12 @@
+2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-config-parser.[ch]:
+	- Implemented reading of desktop files to model.
+	* src/hildon-plugin-config-settings.c:
+	- Initial import of control panel interface.
+	* src/hildon-plugin-config-settings-dialog.[ch]:
+	- Initial import of GtkDialog child class.
+
 2007-05-31  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-config-parser.[ch]:
