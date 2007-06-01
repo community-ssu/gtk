@@ -1,25 +1,5 @@
-####################################################  
-# GTK COMBO BOX (ComboBox and ComboBoxEntry)
-#
-# Copyright 2004, 2005, 2006, 2007 Nokia Oyj
-#
-# This file has the themeing of comboboxes.
-#
-# The combobox only allows selection, not edition,
-# is named GtkComboBox and is actually just one big 
-# GtkButton that has text inside it. Therefore one 
-# image per state is enough for it.  
-#
-# The combobox version that allows editing of the text
-# is named GtkComboBoxEntry and consists of two parts:
-# A GtkButton and GtkEntry. These have to be themed
-# separately.
-#
-# Additionally, when a combobox is in a toolbar,
-# it will use different graphics that show the arrow
-# pointing upwards.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-combobox-base" {
 

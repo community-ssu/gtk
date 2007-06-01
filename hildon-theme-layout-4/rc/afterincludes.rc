@@ -1,10 +1,5 @@
-
-##################
-# STUFF DONE AFTER INCLUDES
-#
-# This sets these styles if no other style 
-# has been already set.
-##################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 widget "*osso-SystemFont" style "osso-SystemFont"
 widget "*osso-EmpSystemFont" style "osso-EmpSystemFont"

@@ -1,10 +1,5 @@
-####################################################
-# OSSO Real Time Communication theming
-#
-# Copyright 2006 Nokia Oyj
-#
-#
-####################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-rtc-button"
 {

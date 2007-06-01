@@ -1,9 +1,6 @@
-####################################################
-# HILDON WEBSHORTCUT
-#
-# Copyright 2007 Nokia Oyj
-#
-####################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
+
 style "hildon-webshortcut"
 {
   HildonDesktopHomeItem::background-borders = { 0, 0, 0, 0 }

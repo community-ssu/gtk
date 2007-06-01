@@ -1,18 +1,5 @@
-#################################################### 
-# GTK CHECKBUTTON
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# TODO : Check whether the focus is needed.
-#
-# This file has the themeing of check buttons.
-# The shadow IN or OUT state specifies whether
-# the check box is actually checked.
-#
-# Shadow ETCHED_IN state is used for indeterminate
-# check box state.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-checkbutton"
 {

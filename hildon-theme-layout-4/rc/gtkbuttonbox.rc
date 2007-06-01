@@ -1,10 +1,5 @@
-#################################################### 
-# GTK HORIZONTAL BUTTON BOX
-#
-# Following style is for switching on hildon theming
-# for GtkHButtonBox. 
-# Assign this style to all GtkHbuttonBoxes 
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-hbuttonbox" {
 

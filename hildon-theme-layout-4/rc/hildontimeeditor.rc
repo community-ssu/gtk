@@ -1,12 +1,5 @@
-#################################################### 
-# HILDON TIME EDITOR
-#
-# Copyright 2005 Nokia Oyj
-#
-# This disables default button graphics from
-# the time editor button.
-#
-####################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-time-editor-button"
 {

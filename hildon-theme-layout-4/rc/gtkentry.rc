@@ -1,11 +1,5 @@
-#################################################### 
-# GTK ENTRY (Single line editor)
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# The GtkEntry (single line editor) is themed here.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-entry" {
 

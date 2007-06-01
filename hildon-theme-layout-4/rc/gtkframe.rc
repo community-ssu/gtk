@@ -1,13 +1,5 @@
-####################################################  
-# GTK FRAME
-#
-# Copyright 2005 Nokia Oyj
-#
-# This file has the themeing of frames.
-# Normal gtk doesn't have themeable, graphical frames
-# so this modification was done to allow it.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-frame"
 {

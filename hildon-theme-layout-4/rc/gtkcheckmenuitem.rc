@@ -1,16 +1,5 @@
-#################################################### 
-# GTK CHECKMENUITEM
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# This file has the themeing of menu check marks
-# and the radio buttons when the property 
-# draw-as-radio is set. The radio button drawing is
-# also inherited to the GtkRadioMenuItem.
-# The shadow IN or OUT state specifies whether
-# the check box is actually checked.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-menucheck"
 {

@@ -1,9 +1,6 @@
-####################################################  
-# OSSO INTERNET SEARCH APPLET
-#
-# Copyright 2005, 2006, 2007 Nokia Oyj
-#
-####################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
+
 style "osso-internetsearch-applet"
 {
   HildonDesktopHomeItem::background-borders = { 12, 92, 0, 0 }

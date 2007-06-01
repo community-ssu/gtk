@@ -1,43 +1,5 @@
-# OSSO WIDGET LOOK PROBLEMS
-# 
-# - Gtk scales _images_ instead of _widgets_ being scaled according
-#   to image size.  Widgets are scaled according layout and the internal
-#   widget layout/size is according to hardcoded widget code.
-#   If you don't let images to be stretched, they might be clipped
-#   (e.g. checkbox) or drawn partly outside parent widget (e.g. arrows).
-# - Style definitions are theme engine specific.
-# - Focus is always shown on the editable part of the widget,
-#   not on the label beside the editable part.  On menus also
-#   the arrow is highlighted.
-#
-#
-# OSSO WIDGET PROBLEMS
-#
-# - Menubar widget has to be made into a menu itself.
-# - Different button styles and different look for buttons
-#   when there are several buttons in a row.
-#
-#
-# POSITIVE SIDE
-#
-# - Lots of widgets.
-# - Can use any images (any style).
-# - Color can be changed also for images if one uses
-#   grayscale images (recolorable attribute).
-# - Anything can have focus and everything is keyboard navigatable,
-#   keyboard bindings are changable.
-# - Accessibility framework (untested).
-# - Input methods (untested).
-#
-# TODO
-# - Scale the arrow images to such size that you can tell
-#   Gtk not to scale them.
-#
-# When creating a new style, include a "osso-" -prefix to it.
-#
-##################################################
-# Default draw and background color settings
-##################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-default"
 {

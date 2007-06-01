@@ -1,29 +1,5 @@
-#################################################### 
-# GTK MENU (Menu)
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# The Menu is themed here. This file only themes
-# the menu frames. The menu items and their
-# variations are themed in separate *menuitem 
-# rc files.
-#
-# There is possibility to have 3 different menu
-# frame graphics depending on the situtation :
-#  - Application menu. This may have sharp upper
-#    corners to show that
-#
-#
-# In osso menus look a bit different depending on 
-# how they were activated. We need three different
-# styles for GtkMenu widget
-# o One with no osso specific theming (failsafe)
-# o One with rectangular upper corners
-# o One with round corners
-#
-# TODO: 
-# Styles are not using right images yet!
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-menu" {
 

@@ -1,5 +1,6 @@
-#
-# Adding all non-maemo_af_desktop widgets into maemo_af_desktop 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
+
 include "base.rc"
 
 # Adding maemo_af_desktop specific widgets 
@@ -7,10 +8,6 @@ include "hildonhome.rc"
 include "hildonnavigator.rc"
 include "hildonnavigatorpopuplist.rc"
 include "hildonstatusbar.rc"
-
-##################
-# THESE HAVE MISSING IMAGES BUT ARE HERE BECAUSE OF STYLE PROPERTIES
-##################
 
 # Home applets
 include "ossoclock.rc"

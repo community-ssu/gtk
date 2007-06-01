@@ -1,11 +1,5 @@
-#################################################### 
-# GTK FILE CHOOSER BUTTON
-#
-# Copyright 2006 Nokia Oyj
-#
-# The GtkFileChooserButton is themed here
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-filechooserbutton" {
 

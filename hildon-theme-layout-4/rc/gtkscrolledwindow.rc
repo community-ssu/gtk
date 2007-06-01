@@ -1,6 +1,5 @@
-#######################################
-# GtkScrolledWindow
-#######################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-scrolledwindow"
 {

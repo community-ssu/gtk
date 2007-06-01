@@ -1,16 +1,5 @@
-#################################################### 
-# GTK NOTEBOOK (Multipage stuff)
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# BOX_GAP functions is used to draw the image for
-# the opened page frame. This has two possible
-# detail fields - "notebook" and "notebook_show_arrow".
-# The "notebook" is used when the arrows to cycle
-# through the tabs are not present and
-# "notebook_show_arrow" is used when they are present.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 # Tabbed windows
 style "osso-notebook"

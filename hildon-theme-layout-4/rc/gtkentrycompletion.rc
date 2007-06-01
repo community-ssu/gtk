@@ -1,11 +1,5 @@
-#################################################### 
-# GTK ENTRY COMPLETION
-#
-# Copyright 2006 Nokia Oyj
-#
-# The GtkEntryCompletion is themed here
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-completion-frame"
 {

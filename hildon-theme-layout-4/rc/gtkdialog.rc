@@ -1,17 +1,5 @@
-#################################################### 
-# GTK DIALOG
-#
-# Copyright 2004,2005 Nokia Oyj
-#
-# Theming instructions for GtkDialog -widget
-#
-# The outer border/frame graphics are themed in matchbox
-# theme files located in ../matchbox/
-#
-# Only change is setting the button spacing to 5
-# pixels.
-#
-#################################################### 
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
 
 style "osso-multipage-dialog" {
   xthickness = 12

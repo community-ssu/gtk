@@ -1,12 +1,5 @@
-#################################################### 
-# HILDON DATE EDITOR
-#
-# Copyright 2006 Nokia Oyj
-#
-# This disables default button graphics from
-# the date editor button.
-#
-####################################################
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
 style "osso-date-editor-button"
 {

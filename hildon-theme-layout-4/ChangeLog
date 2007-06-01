@@ -1,5 +1,11 @@
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* COPYING: Adding fully Creative Commons Attribution-ShareAlike 2.5 license.
+
+	* ./: Adding refferences to license in all source files.
+
+2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* rc/ossoiradioapplet.rc: Fixed border values
 
 2007-05-30  Johan Bilien  <johan.bilien@nokia.com>
