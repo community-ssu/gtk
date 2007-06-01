@@ -28,10 +28,14 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include <glib/gi18n.h>
+
 #define HP_DESKTOP_GROUP "Desktop Entry"
+#define HP_PREDEFINED_COLS 3
 
 #define HILDON_PLUGIN_CONFIG_PARSER_GET_PRIVATE(object) \
 	                (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_PLUGIN_TYPE_CONFIG_PARSER, HildonPluginConfigParserPrivate))
+
 
 G_DEFINE_TYPE (HildonPluginConfigParser, hildon_plugin_config_parser, G_TYPE_OBJECT);
 
@@ -60,12 +64,15 @@ struct _HildonPluginConfigParserPrivate
   
   gchar *path_to_read;
   gchar *path_to_save;
+
+  GtkIconTheme *icon_theme;
 };
 
 enum
 {
   HP_COL_DESKTOP_FILE,
-  HP_COL_CHECKBOX
+  HP_COL_CHECKBOX,
+  HP_COL_POSITION
 };  
 
 static void hildon_plugin_config_parser_get_property    (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
@@ -93,7 +100,9 @@ hildon_plugin_config_parser_init (HildonPluginConfigParser *parser)
   parser->keys = g_hash_table_new_full (g_str_hash,
 		  			g_str_equal,
 					g_free,
-					NULL);
+					g_free);
+
+  parser->priv->icon_theme = gtk_icon_theme_get_default ();
 }
 
 static void 
@@ -187,21 +196,22 @@ static void
 hildon_plugin_config_parser_finalize (GObject *object)
 {
   HildonPluginConfigParser *parser = HILDON_PLUGIN_CONFIG_PARSER (object);
-
+/*
   if (parser->tm)
     gtk_widget_destroy (GTK_WIDGET (parser->tm));
-
-  if (parser->keys)
-  {
-    /*g_list_foreach (parser->priv->keys,
-		    (GFunc)g_free,
-		    NULL);*/
-
+*/
+  if (parser->priv->keys)
     g_list_free (parser->priv->keys);
-  }	  
+ 
+  if (parser->priv->keys_types)
+    g_list_free (parser->priv->keys_types);
+
+  g_hash_table_destroy (parser->keys);
 
   g_free (parser->priv->path_to_read);
   g_free (parser->priv->path_to_save); 
+
+  G_OBJECT_CLASS (hildon_plugin_config_parser_parent_class)->finalize (object);
 }	
 
 static GQuark
@@ -211,21 +221,18 @@ hildon_plugin_config_parser_error_quark (void)
 }
 
 static GdkPixbuf *
-hildon_plugin_config_parser_get_icon (HildonPluginConfigParser *parser, const gchar *icon_name)
+hildon_plugin_config_parser_get_icon (HildonPluginConfigParser *parser, 
+				      const gchar *icon_name,
+				      gint icon_size)
 {
-  GtkIconTheme *icon_theme;
   GdkPixbuf *pixbuf = NULL;
   GError *error = NULL;
 
-  gint icon_size = 32; /* FIXME: NOOOOOOOO! */
-
   if (icon_name)
   {
-    icon_theme = gtk_icon_theme_get_default ();
-
     pixbuf = 
       gtk_icon_theme_load_icon 
-        (icon_theme,
+        (parser->priv->icon_theme,
          icon_name,
          icon_size,
          GTK_ICON_LOOKUP_NO_SVG, &error);
@@ -239,11 +246,11 @@ hildon_plugin_config_parser_get_icon (HildonPluginConfigParser *parser, const gc
      g_error_free(error);
      error = NULL;
    }
-   else
-   {	   
-     g_warning("Error loading icon: no icon name\n");
-     pixbuf = NULL;
-   }
+ }
+ else
+ {	   
+   g_warning("Error loading icon: no icon name\n");
+   pixbuf = NULL;
  }
  
  return pixbuf;
@@ -258,6 +265,7 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
   GError *external_error = NULL;
   GtkTreeIter iter;
   GList *l;
+  gint *icon_sizes = NULL;
 
   if (!g_key_file_load_from_file 
         (keyfile,filename,G_KEY_FILE_NONE,&external_error))
@@ -274,111 +282,131 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
   gtk_list_store_append (GTK_LIST_STORE (parser->tm), &iter);
   gtk_list_store_set (GTK_LIST_STORE (parser->tm), &iter,
 		      HP_COL_DESKTOP_FILE, filename,
-		      HP_COL_CHECKBOX, FALSE, -1);
+		      HP_COL_CHECKBOX, FALSE,
+		      HP_COL_POSITION,0,
+		      -1);
 
   for (l = parser->priv->keys; l != NULL; l = g_list_next (l))
   {
-    gchar *_string = NULL;
-    gint _integer;
-    gboolean _boolean;
-    GdkPixbuf *_pixbuf = NULL;
+     gchar *_string = NULL;
+     gint _integer;
+     gboolean _boolean;
+     GdkPixbuf *_pixbuf = NULL;
 
-    GType *type = 
-      (GType *)g_hash_table_lookup (parser->keys, (gchar *)l->data);
+     GType *type = 
+       (GType *)g_hash_table_lookup (parser->keys, (gchar *)l->data);
 
-    if (!type)
-      continue;
+     if (!type)
+       continue;
   
-    if (*type == G_TYPE_STRING)
-    {	    
-	_string = 
-	  g_key_file_get_string 
+     if (*type == G_TYPE_STRING)
+     {	    
+       _string = 
+	 g_key_file_get_locale_string 
            (keyfile,
             HP_DESKTOP_GROUP,
 	    (gchar *)l->data,
+	    NULL,
 	    &external_error);
         
-        if (!external_error)
+       if (!external_error)
+       {
+         gtk_list_store_set 
+           (GTK_LIST_STORE (parser->tm), &iter,
+	    hildon_plugin_config_parser_get_key_id 
+	      (parser,(const gchar *)l->data)+HP_PREDEFINED_COLS,
+	    _(_string),
+	    -1);
+       }
+       else
+         g_free (_string);
+    }
+    else
+    if (*type == G_TYPE_INT)
+    {	   
+      _integer = 
+        g_key_file_get_integer 
+          (keyfile,
+           HP_DESKTOP_GROUP,
+           (gchar *)l->data,
+	   &external_error);
+       
+      if (!external_error)
+      {
+        gtk_list_store_set 
+          (GTK_LIST_STORE (parser->tm), &iter,
+	   hildon_plugin_config_parser_get_key_id 
+	     (parser,(const gchar *)l->data)+HP_PREDEFINED_COLS,
+	   &_integer,
+	   -1);
+      } 
+    }
+    else
+    if (*type == G_TYPE_BOOLEAN)
+    {	   
+      _boolean = 
+        g_key_file_get_boolean
+          (keyfile,
+           HP_DESKTOP_GROUP,
+	   (gchar *)l->data,
+	   &external_error);
+       
+      if (!external_error)
+      {
+        gtk_list_store_set 
+          (GTK_LIST_STORE (parser->tm), &iter,
+	   hildon_plugin_config_parser_get_key_id 
+	     (parser,(const gchar *)l->data)+HP_PREDEFINED_COLS,
+	   &_boolean,
+	   -1);
+      } 
+    }
+    else
+    if (*type == GDK_TYPE_PIXBUF)
+    {
+      _string =
+        g_key_file_get_string
+          (keyfile,
+           HP_DESKTOP_GROUP,
+           (gchar *)l->data,
+           &external_error);
+        
+      if (!external_error) 
+      {
+	gint icon_size;
+
+        icon_sizes = 
+          gtk_icon_theme_get_icon_sizes
+            (parser->priv->icon_theme, _string); 
+
+	if (icon_sizes)
+	  icon_size = (icon_sizes[0] > 0) ? icon_sizes[0] : 64;
+	else
+          icon_size = 64;		
+	      
+        _pixbuf = 
+  	  hildon_plugin_config_parser_get_icon (parser, _string, icon_size);
+
+	g_free (icon_sizes);
+        
+	if (!_pixbuf)
         {
-          gtk_list_store_set 
-            (GTK_LIST_STORE (parser->tm), &iter,
-	     hildon_plugin_config_parser_get_key_id (parser,(const gchar *)l->data)+2,
-	     _string,
-	    -1);g_debug ("String name %s id: %d",_string,hildon_plugin_config_parser_get_key_id (parser,(const gchar *)l->data)+2);
+          g_free (_string);		  
+          continue;
         }
-	else
-          g_free (_string);
-   }
-   else
-   if (*type == G_TYPE_INT)
-   {	   
-        _integer = 
-          g_key_file_get_integer 
-           (keyfile,
-            HP_DESKTOP_GROUP,
-            (gchar *)l->data,
-	    &external_error);
-       
-	if (!external_error)
-        {
-          gtk_list_store_set 
-            (GTK_LIST_STORE (parser->tm), &iter,
-	     hildon_plugin_config_parser_get_key_id (parser,(const gchar *)l->data)+2,
-	     &_integer,
-	    -1);
-        } 
-   }
-   else
-   if (*type == G_TYPE_BOOLEAN)
-   {	   
-	_boolean = 
-          g_key_file_get_boolean
-           (keyfile,
-            HP_DESKTOP_GROUP,
-	    (gchar *)l->data,
-	    &external_error);
-       
-	if (!external_error)
-        {
-          gtk_list_store_set 
-            (GTK_LIST_STORE (parser->tm), &iter,
-	     hildon_plugin_config_parser_get_key_id (parser,(const gchar *)l->data)+2,
-	     &_boolean,
-	    -1);
-        } 
-   }
-   else
-   if (*type == GDK_TYPE_PIXBUF)
-   {
-   	_string =
-          g_key_file_get_string
-           (keyfile,
-            HP_DESKTOP_GROUP,
-            (gchar *)l->data,
-            &external_error);
 
-        
-	if (!external_error) 
-        {
-  	  _pixbuf = hildon_plugin_config_parser_get_icon (parser, _string);
-
-	  if (!_pixbuf)
-          {
-            g_free (_string);		  
-            continue;
-	  }
-
-          gtk_list_store_set 
-            (GTK_LIST_STORE (parser->tm), &iter,
-	     hildon_plugin_config_parser_get_key_id (parser,(const gchar *)l->data)+2,
-	     _pixbuf,
-	    -1);
-        }	
-	else
-	  g_free (_string);
-   } 
-   else 
-     g_warning ("OOOPS I couldn't guess type");
+        gtk_list_store_set 
+          (GTK_LIST_STORE (parser->tm), &iter,
+           hildon_plugin_config_parser_get_key_id 
+	     (parser,(const gchar *)l->data)+HP_PREDEFINED_COLS,
+           _pixbuf,
+	   -1);
+      }	
+      else
+        g_free (_string);
+    }  
+    else 
+      g_warning ("OOOPS I couldn't guess type");
    
     if (external_error)
     {
@@ -438,7 +466,7 @@ hildon_plugin_config_parser_set_keys (HildonPluginConfigParser *parser, ...)
       *type = key_type;
 	    
       g_hash_table_insert (parser->keys,
-		      	   last_key,
+		      	   g_strdup (last_key),
 			   type);
 
       parser->priv->keys_types = 
@@ -484,10 +512,11 @@ hildon_plugin_config_parser_load (HildonPluginConfigParser *parser,
   if (parser->tm)
     gtk_widget_destroy (GTK_WIDGET (parser->tm));
 
-  _keys = g_new0 (GType,parser->priv->n_keys+1);
+  _keys = g_new0 (GType,parser->priv->n_keys+HP_PREDEFINED_COLS);
 
   _keys [i++] = G_TYPE_STRING; /* Desktop file name */
   _keys [i++] = G_TYPE_BOOLEAN; /* Checkbox */
+  _keys [i++] = G_TYPE_INT; /* position */
 
   for (l = parser->priv->keys_types;
        l != NULL || i < parser->priv->n_keys;

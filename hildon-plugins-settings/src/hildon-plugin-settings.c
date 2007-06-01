@@ -39,13 +39,20 @@ execute (osso_context_t *osso,
   GError *error = NULL;
   gint ret;
 
+  GtkCellRenderer   *renderer_pb   = gtk_cell_renderer_pixbuf_new();
   GtkCellRenderer   *renderer_text = gtk_cell_renderer_text_new();
   GtkTreeViewColumn *text_column;
+  GtkTreeViewColumn *pixbuf_column;
 
   GtkWidget *dialog = gtk_dialog_new ();
+
+  gtk_dialog_add_button (GTK_DIALOG (dialog),
+		  	 "Ok",
+			 GTK_RESPONSE_OK);
+  
   HildonPluginConfigParser *cp = 
     HILDON_PLUGIN_CONFIG_PARSER 
-      (hildon_plugin_config_parser_new ("/usr/share/applications/hildon-navigator","/tmp/hello.tmp"));
+      (hildon_plugin_config_parser_new ("/usr/share/applications/hildon-status-bar","/tmp/hello.tmp"));
 
   hildon_plugin_config_parser_set_keys (cp,
 		  			"Name", G_TYPE_STRING,
@@ -61,8 +68,13 @@ execute (osso_context_t *osso,
 
     text_column = 
       gtk_tree_view_column_new_with_attributes
-        (NULL, renderer_text, "text", 2, NULL);
+        (NULL, renderer_text, "text", 3, NULL);
 
+    pixbuf_column = 
+      gtk_tree_view_column_new_with_attributes
+        (NULL, renderer_pb,"pixbuf", 4, NULL);
+    
+    gtk_tree_view_append_column(GTK_TREE_VIEW (tw), pixbuf_column);
     gtk_tree_view_append_column(GTK_TREE_VIEW (tw), text_column);
 
     gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
@@ -75,7 +87,11 @@ execute (osso_context_t *osso,
   ret = gtk_dialog_run (GTK_DIALOG (dialog));
 
   if (ret == GTK_RESPONSE_OK)
+  {
+    g_object_unref (G_OBJECT (cp));	  
+    gtk_widget_destroy (dialog);
     return OSSO_OK;
+  }
     
   return OSSO_ERROR;  
 }

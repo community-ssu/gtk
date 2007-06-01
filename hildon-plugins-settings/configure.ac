@@ -81,5 +81,6 @@ AC_SUBST(localedir)
 
 AC_OUTPUT(Makefile \
 	  src/Makefile \
-	  data/hildon-plugins-settings.desktop)
+	  data/hildon-plugins-settings.desktop \
+	  data/Makefile)
 

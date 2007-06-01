@@ -12,7 +12,6 @@ INCLUDES = \
 
 LDFLAGS = -module -avoid-version
 
-desktopentry_DATA = hildon-plugins-settings.desktop
 
 pluginlib_LTLIBRARIES = libhildonpluginsettings.la
 

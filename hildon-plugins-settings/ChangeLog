@@ -1,5 +1,17 @@
 2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
 
+	* configure.ac: Updated.
+	* src/hildon-plugin-config-parser.c:
+	- Several bugfixes.
+	- Added position field.
+	* src/hildon-plugin-settings.c:
+	- It is still a unit test.
+	* src/Makefile.am: Updated
+	* data/hildon-plugins-settings.desktop.in: Filled
+	* data/Makefile.am: Added
+
+2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
+
 	* +++ src/hildon-plugin-config-parser.[ch]:
 	- Fixed several bugs to get it built and working.
 	* src/hildon-plugin-settings.c:
