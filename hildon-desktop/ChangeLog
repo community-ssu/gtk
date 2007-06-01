@@ -1,3 +1,8 @@
+2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- Fixed building problem when no composite enabled.
+
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:

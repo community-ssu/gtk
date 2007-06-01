@@ -2265,8 +2265,9 @@ hildon_home_area_put (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
   child_data->widget = widget;
   child_data->x = x;
   child_data->y = y;
+#ifdef HAVE_X_COMPOSITE  
   child_data->state = state;
-
+#endif
   gtk_container_child_set (GTK_CONTAINER (area), widget,
                            "child-data", child_data,
                            NULL);
