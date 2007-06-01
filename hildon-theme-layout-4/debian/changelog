@@ -1,3 +1,15 @@
+hildon-theme-layout-4 (0.8.2-1) unstable; urgency=low
+
+  * Adding full Creative-Commons license text.
+
+  * Fixes: NB#54525 HildonVVolumebar: Unmute in call handling view for an ongoing call is not removing the slash on mute button
+  * Fixes: NB#23066 Horizontal separator is alignes wrong
+  * Fixes: NB#57971 Task navigator area is shown white
+  * Fixes: NB#46967 Cursor in the Internet seach applet became 'bold' on re-loading and re-sizing the applet
+  * Fixes: NB#58892 RSS rader applet theming
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 01 Jun 2007 16:34:36 +0300
+
 hildon-theme-layout-4 (0.8.1-1) unstable; urgency=low
 
   * Fixing the license to CC Attribution-ShareAlike 2.5

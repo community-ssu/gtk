@@ -1,3 +1,11 @@
+2007-06-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.8.2-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Updating.
+
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* COPYING: Adding fully Creative Commons Attribution-ShareAlike 2.5 license.
