@@ -1,3 +1,9 @@
+2007-06-04  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_propagate_state): apply patch from
+	http://bugzilla.gnome.org/show_bug.cgi?id=435840 to fix inconsitency
+	in the SAVED_STATE of a widget hierarchy that arises in some situations.
+
 2007-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenuitem.c (gtk_menu_item_position_menu): Switch submenu
