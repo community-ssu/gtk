@@ -1,3 +1,10 @@
+libosso (2.10-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fixed launch banner to use the new freedesktop.org API. Fixes: NB#55804
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon,  4 Jun 2007 10:18:00 +0300
+
 libosso (2.9-1) unstable; urgency=low
 
   * Added dbus_bus_release_name call to osso_deinitialize. Fixes: NB#58518

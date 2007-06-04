@@ -4,7 +4,7 @@
  * 
  * This file is part of libosso
  *
- * Copyright (C) 2005-2006 Nokia Corporation. All rights reserved.
+ * Copyright (C) 2005-2007 Nokia Corporation. All rights reserved.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -23,7 +23,7 @@
  * 02110-1301 USA
  */
 
-#define TASK_NAV_SERVICE "com.nokia.tasknav"
+#define TASK_NAV_SERVICE "com.nokia.hildon-desktop"
 /* NOTICE: Keep these in sync with values in
  * hildon-navigator/windowmanager.c! */
 #define APP_LAUNCH_BANNER_METHOD_INTERFACE \
@@ -213,11 +213,11 @@ _rpc_run_with_argfill (osso_context_t *osso, DBusConnection *conn,
         dbus_message_unref(msg);
         if (b) {
 
-	    /* Tell TaskNavigator to show "launch banner" */
+	    /* Tell hildon-desktop to show the launch banner */
 	    msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
 			    APP_LAUNCH_BANNER_METHOD_PATH,
 			    APP_LAUNCH_BANNER_METHOD_INTERFACE,
-			    APP_LAUNCH_BANNER_METHOD );
+			    APP_LAUNCH_BANNER_METHOD);
    
 	    if (msg != NULL) {
                 dbus_message_append_args(msg, DBUS_TYPE_STRING, &service,
