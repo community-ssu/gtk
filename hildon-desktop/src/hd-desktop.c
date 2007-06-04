@@ -309,6 +309,7 @@ hd_desktop_plugin_list_from_conf (const gchar *config_file)
 {
   GKeyFile *keyfile;
   gchar **groups;
+  gboolean is_to_load = TRUE;
   GList *plugin_list = NULL;
   GError *error = NULL;
   gint i;
@@ -326,7 +327,7 @@ hd_desktop_plugin_list_from_conf (const gchar *config_file)
   {
     g_warning ("Error loading container configuration file %s: %s", config_file, error->message);
     g_error_free (error);
-
+    
     return NULL;
   }
 
@@ -334,7 +335,20 @@ hd_desktop_plugin_list_from_conf (const gchar *config_file)
 
   for (i = 0; groups[i]; i++)
   {
-    plugin_list = g_list_append (plugin_list, groups[i]);
+    is_to_load = g_key_file_get_boolean (keyfile,
+		    			 groups[i],
+					 HD_DESKTOP_CONFIG_KEY_LOAD,
+					 &error);
+
+    if (error)
+    {
+      is_to_load = TRUE;
+      g_error_free (error);
+      error = NULL;
+    }      
+
+    if (is_to_load)    
+      plugin_list = g_list_append (plugin_list, groups[i]);
   }
 
   g_free (groups);
