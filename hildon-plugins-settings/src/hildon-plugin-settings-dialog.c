@@ -62,6 +62,11 @@
 #define HD_DESKTOP_CONFIG_USER_PATH ".osso/hildon-desktop"
 #define HD_DESKTOP_CONFIG_PATH "/etc/hildon-desktop"
 
+#define HPSD_ENABLE_HOME_FILTER FALSE
+
+#define HPSD_RESPONSE_UP GTK_RESPONSE_YES
+#define HPSD_RESPONSE_DOWN GTK_RESPONSE_NO
+
 #define HILDON_PLUGIN_SETTINGS_DIALOG_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_PLUGIN_TYPE_SETTINGS_DIALOG, HildonPluginSettingsDialogPrivate))
 
@@ -71,15 +76,16 @@ typedef struct
 {
   gchar *name;
   HildonPluginConfigParser *parser;
+  GtkTreeView *tw;
+  GtkTreeModel *filter;
 }
 HPSDTab;
 
 struct _HildonPluginSettingsDialogPrivate
 {
   GList *tabs;
-	
-  GtkTreeModelFilter *sb_filter;
-  GtkTreeModelFilter *tn_filter;
+
+  GtkWidget *notebook;  
 };
 
 static GObject *hildon_plugin_settings_dialog_constructor (GType gtype,
@@ -97,6 +103,12 @@ static gboolean hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsD
 
 static void hildon_plugin_settings_dialog_tab_free (HPSDTab *tab);
 
+static void hildon_plugin_settings_dialog_response_cb (GtkDialog *dialog, gint response_id, gpointer data);
+
+static void hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
+		                           		       gchar *path,
+					                       GtkTreeModel *tm);
+
 static void 
 hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
 {
@@ -105,9 +117,6 @@ hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
   settings->sbtm = 
   settings->tntm = NULL;	  
   
-  settings->priv->sb_filter =
-  settings->priv->tn_filter = NULL;	  
-
   settings->priv->tabs = NULL;
 }
 
@@ -135,7 +144,6 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   GtkDialog *dialog;
   GtkWidget *button_up, 
 	    *button_down, 
-	    *notebook,
 	    *scrolled_window;
   GList *l;
 
@@ -165,18 +173,23 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   button_down =
     gtk_dialog_add_button (dialog,
 	  		   "Up",
-	       		   GTK_RESPONSE_APPLY);
+	       		   HPSD_RESPONSE_DOWN);
 
   button_up =
     gtk_dialog_add_button (dialog,
 	 		   "Down",
-	       		   GTK_RESPONSE_APPLY);
+	       		   HPSD_RESPONSE_UP);
 
   gtk_dialog_add_button (dialog,
 			 HPSD_CANCEL,
 		       	 GTK_RESPONSE_CANCEL);
 
-  notebook = gtk_notebook_new ();
+  g_signal_connect (dialog, 
+		    "response",
+                    G_CALLBACK (hildon_plugin_settings_dialog_response_cb),
+		    NULL);
+
+  settings->priv->notebook = gtk_notebook_new ();
 
   hildon_plugin_settings_parse_desktop_conf (settings);
 
@@ -185,6 +198,7 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
     GtkWidget *tw;
     gchar *path_to_save;
     gchar *basename;
+    HPSDTab *tab = (HPSDTab *)l->data;
 	  
     scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 
@@ -200,17 +214,19 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
       g_error_free (error); 
     }
     else
-      tw = gtk_tree_view_new_with_model (((HPSDTab *)l->data)->parser->tm);
+      tw = gtk_tree_view_new_with_model (tab->parser->tm);
+
+    tab->tw = GTK_TREE_VIEW (tw);
 
     hildon_plugin_settings_dialog_fill_treeview (settings, GTK_TREE_VIEW (tw));
 
     gtk_container_add (GTK_CONTAINER (scrolled_window), tw);
 
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+    gtk_notebook_append_page (GTK_NOTEBOOK (settings->priv->notebook),
                               scrolled_window,
-                              gtk_label_new (((HPSDTab *)l->data)->name));
+                              gtk_label_new (tab->name));
 
-    g_object_get (G_OBJECT (((HPSDTab *)l->data)->parser), 
+    g_object_get (G_OBJECT (tab->parser), 
 		  "filename", &path_to_save,
 		  NULL);
 
@@ -230,7 +246,7 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
     {
       GError *error_comparing = NULL;	    
       hildon_plugin_config_parser_compare_with 
-        (((HPSDTab *)l->data)->parser, path_to_save, &error_comparing);
+        (tab->parser, path_to_save, &error_comparing);
 
       if (error_comparing)
       {
@@ -240,8 +256,8 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
     }
   }
   
-  gtk_container_add (GTK_CONTAINER (dialog->vbox), notebook);
-  gtk_widget_show_all (notebook); 
+  gtk_container_add (GTK_CONTAINER (dialog->vbox), settings->priv->notebook);
+  gtk_widget_show_all (settings->priv->notebook); 
 
   gtk_widget_pop_composite_child ();
   
@@ -259,6 +275,73 @@ hildon_plugin_settings_dialog_finalize (GObject *object)
 		  NULL);
 
   g_list_free (settings->priv->tabs);
+}	
+
+static void 
+hildon_plugin_settings_dialog_response_cb (GtkDialog *dialog, gint response_id, gpointer data)
+{
+  HildonPluginSettingsDialog *settings =
+    HILDON_PLUGIN_SETTINGS_DIALOG (dialog);
+
+  if (response_id == HPSD_RESPONSE_UP || response_id == HPSD_RESPONSE_DOWN)
+  {
+    g_signal_stop_emission_by_name(dialog, "response");
+
+    GtkWidget *sw =
+      gtk_notebook_get_nth_page (GTK_NOTEBOOK (settings->priv->notebook),
+                                 gtk_notebook_get_current_page (GTK_NOTEBOOK (settings->priv->notebook)));
+
+    if (GTK_IS_SCROLLED_WINDOW (sw))
+    {
+      GtkTreeView *tw = GTK_TREE_VIEW (GTK_BIN (sw)->child);
+      GtkTreeModel *model;
+      GtkTreeSelection *selection;
+      GtkTreePath *path;
+      GtkTreeIter iter,_iter;
+      GtkTreeIter next,_next;
+
+      model = gtk_tree_view_get_model (tw);
+
+      selection = gtk_tree_view_get_selection (tw);
+
+      if (!selection)
+        return;
+
+      if (!gtk_tree_selection_get_selected (selection,&model,&iter))
+        return;
+
+      path = gtk_tree_model_get_path (model,&iter);
+
+      if (response_id == HPSD_RESPONSE_DOWN)
+        gtk_tree_path_prev (path);
+      else
+        gtk_tree_path_next (path);
+
+      if (gtk_tree_model_get_iter (model, &next, path))
+      {
+        if (GTK_IS_TREE_MODEL_FILTER (model))
+        {
+          gtk_tree_model_filter_convert_iter_to_child_iter
+            (GTK_TREE_MODEL_FILTER (model), &_iter, &iter);
+
+          gtk_tree_model_filter_convert_iter_to_child_iter
+            (GTK_TREE_MODEL_FILTER (model), &_next,&next);
+
+          gtk_list_store_swap
+            (GTK_LIST_STORE (gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model))),
+             &_next, &_iter);
+        }
+        else
+          gtk_list_store_swap (GTK_LIST_STORE (model), &next, &iter);
+
+        gtk_tree_selection_unselect_all (selection);
+        gtk_tree_selection_select_path (selection, path);
+	gtk_tree_view_scroll_to_cell (tw, path, NULL, FALSE, 1.0, 0);
+      }
+
+      gtk_tree_path_free(path);
+    }
+  }
 }	
 
 static void 
@@ -318,6 +401,11 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_toggle);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_text);
   /*gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_button);*/
+
+  g_signal_connect (G_OBJECT(renderer_toggle), 
+		    "toggled",
+		    G_CALLBACK (hildon_plugin_settings_dialog_renderer_toggled_cb),
+		    gtk_tree_view_get_model (tw));
 }	
 
 static gboolean 
@@ -397,7 +485,7 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
     if (!plugin_dir || 
 	!type || 
 	!config_file ||
-        g_str_equal (type,HD_CONTAINER_TYPE_HOME))
+        (g_str_equal (type,HD_CONTAINER_TYPE_HOME) && HPSD_ENABLE_HOME_FILTER))
     {
       goto cleanup;
     }
@@ -411,6 +499,8 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
          (plugin_dir,g_build_filename (g_get_home_dir (),
 				       HD_DESKTOP_CONFIG_USER_PATH,
 				       config_file)));
+    tab->tw = NULL;
+    tab->filter = NULL;
 
     hildon_plugin_config_parser_set_keys (tab->parser,
 					  "Name", G_TYPE_STRING,
@@ -439,6 +529,56 @@ hildon_plugin_settings_dialog_tab_free (HPSDTab *tab)
   g_object_unref (tab->parser);
 }
 
+static gint 
+hildon_plugin_settings_dialog_compare_tab (gconstpointer a,
+					   gconstpointer b)
+{
+  const HPSDTab *tab1;
+  const gchar *name;
+
+  tab1 = (const HPSDTab *)a;
+  name = (const gchar *)b;  
+
+  if (g_str_equal (tab1->name, name))
+    return 0;
+   
+  return 1;
+}
+
+static void 
+hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
+                           		           gchar *path,
+					           GtkTreeModel *tm)
+{
+  GtkTreeIter iter;
+  gboolean selected;
+
+  if (!gtk_tree_model_get_iter_from_string (tm, &iter, path))
+    return;
+
+  gtk_tree_model_get (tm, &iter, 
+		      HP_COL_CHECKBOX, &selected, 
+		      -1);
+
+  if (GTK_IS_TREE_MODEL_FILTER (tm))
+  {
+    GtkTreeIter real_iter;
+	  
+    gtk_tree_model_filter_convert_iter_to_child_iter
+        (GTK_TREE_MODEL_FILTER (tm),&real_iter,&iter);
+
+    gtk_list_store_set (GTK_LIST_STORE (tm), &real_iter,
+                      HP_COL_CHECKBOX, !selected,
+                      -1);
+  }
+  else
+  {  
+    gtk_list_store_set (GTK_LIST_STORE (tm), &iter,
+                        HP_COL_CHECKBOX, !selected,
+		        -1);
+  }
+}
+
 GtkWidget *
 hildon_plugin_settings_dialog_new (void)
 {
@@ -447,3 +587,86 @@ hildon_plugin_settings_dialog_new (void)
       (g_object_new (HILDON_PLUGIN_TYPE_SETTINGS_DIALOG,NULL));
 }
 
+GtkTreeModel *
+hildon_plugin_settings_dialog_set_visibility_filter (HildonPluginSettingsDialog *settings,
+					             const gchar *container_name,
+					             GtkTreeModelFilterVisibleFunc visible_func,
+					             gpointer data,
+						     GtkDestroyNotify destroy)
+{
+  GtkTreeModel *filter;
+  GList *container_tab = NULL;
+
+
+  container_tab = 
+    g_list_find_custom (settings->priv->tabs,
+   		        container_name,
+			(GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+
+  if (!container_tab)
+    return NULL;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  if (!tab->filter)
+  {	  
+    filter = gtk_tree_model_filter_new (tab->parser->tm, NULL);
+    tab->filter = filter;
+  }
+  else
+    filter = tab->filter;	  
+
+  gtk_tree_model_filter_set_visible_func 
+    (GTK_TREE_MODEL_FILTER (filter),
+     visible_func,
+     data,
+     destroy);
+
+  gtk_tree_view_set_model (tab->tw, filter);
+     
+  return filter; 
+}
+
+GtkTreeModel *
+hildon_plugin_settings_dialog_set_modify_filter (HildonPluginSettingsDialog *settings,
+					         const gchar *container_name,
+						 gint n_columns,
+						 GType *types,
+					         GtkTreeModelFilterModifyFunc modify_func,
+						 gpointer data,
+						 GtkDestroyNotify destroy)
+{
+  GtkTreeModel *filter;
+  GList *container_tab = NULL;
+
+
+  container_tab = 
+    g_list_find_custom (settings->priv->tabs,
+   		        container_name,
+			(GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+
+  if (!container_tab)
+    return NULL;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  if (!tab->filter)
+  {	  
+    filter = gtk_tree_model_filter_new (tab->parser->tm, NULL);
+    tab->filter = filter;
+  }
+  else
+    filter = tab->filter;	  
+
+  gtk_tree_model_filter_set_modify_func 
+    (GTK_TREE_MODEL_FILTER (filter),
+     n_columns,
+     types,
+     modify_func,
+     data,
+     destroy);
+
+  gtk_tree_view_set_model (tab->tw, filter);
+     
+  return filter; 
+}

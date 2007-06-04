@@ -28,6 +28,7 @@
 
 #include <gtk/gtkdialog.h>
 #include <gtk/gtktreemodel.h>
+#include <gtk/gtktreemodelfilter.h>
 
 G_BEGIN_DECLS
 
@@ -63,6 +64,22 @@ hildon_plugin_settings_dialog_get_type (void);
 
 GtkWidget *
 hildon_plugin_settings_dialog_new (void);
+
+GtkTreeModel *
+hildon_plugin_settings_dialog_set_visibility_filter (HildonPluginSettingsDialog *settings,
+					             const gchar *container_name,
+					             GtkTreeModelFilterVisibleFunc visible_func,
+					             gpointer data,
+						     GtkDestroyNotify destroy);
+
+GtkTreeModel *
+hildon_plugin_settings_dialog_set_modify_filter (HildonPluginSettingsDialog *settings,
+                                                 const gchar *container_name,
+                                                 gint n_columns,
+                                                 GType *types,
+                                                 GtkTreeModelFilterModifyFunc modify_func,
+                                                 gpointer data,
+                                                 GtkDestroyNotify destroy);
 
 G_END_DECLS
 

@@ -1,5 +1,14 @@
 2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hildon-plugin-settings-dialog.[ch]:
+	- Added support for adding GtkTreeModelFilters
+	* src/hildon-plugin-config-parser.c:
+	- Implemented and fixed order of plugins.
+	* src/hildon-plugin-settings.c:
+	- Test with an external TreeModelFilter
+
+2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hildon-plugin-settings.c: Exit if Cancel.
 
 2007-06-04  Moises Martinez  <moises.martinez@nokia.com>

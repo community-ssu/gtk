@@ -31,6 +31,25 @@
 #include <libintl.h>
 #define _(a) dgettext(PACKAGE, a)
 
+static gboolean
+filter_is_visible (GtkTreeModel *model,
+                   GtkTreeIter *iter,
+                   gpointer data)
+{
+  gchar *name;
+
+  gtk_tree_model_get (model,
+                      iter,
+                      0,
+                      &name,
+                      -1);
+
+  if (g_str_equal (name,"/usr/share/applications/hildon-navigator/hildon-task-navigator-bookmarks.desktop"))
+    return FALSE;	  
+
+  return TRUE;
+}
+
 osso_return_t 
 execute (osso_context_t *osso,
 	 gpointer user_data,
@@ -39,6 +58,13 @@ execute (osso_context_t *osso,
   gint ret;
 
   GtkWidget *dialog = hildon_plugin_settings_dialog_new ();
+
+  hildon_plugin_settings_dialog_set_visibility_filter
+    (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+     "Tasknavigator",
+    filter_is_visible,
+    NULL,
+    NULL);    
 
   gtk_widget_show (dialog);
 

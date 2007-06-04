@@ -90,6 +90,8 @@ static GQuark hildon_plugin_config_parser_error_quark (void);
 
 static HPCPData *hildon_plugin_config_parser_new_data (guint position, gboolean loaded);
 
+static void hildon_plugin_config_parser_sort_model (HildonPluginConfigParser *parser);
+
 static void 
 hildon_plugin_config_parser_init (HildonPluginConfigParser *parser)
 {
@@ -441,8 +443,6 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
    
     if (external_error)
     {
-      g_warning ("Error reading .desktop file: %s",external_error->message);
-
       g_error_free (external_error);
       external_error = NULL;
     }
@@ -452,6 +452,77 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
   
   return TRUE;
 }
+
+static void 
+hildon_plugin_config_parser_sort_model (HildonPluginConfigParser *parser)
+{
+  gboolean swapped = FALSE;
+  gint position=0, _position=0;
+  GtkTreeIter iter;
+
+  if (!gtk_tree_model_get_iter_first (parser->tm, &iter))
+    return;
+
+  do
+  {
+    gtk_tree_model_get (parser->tm, &iter,
+                         HP_COL_POSITION, &position,
+                         -1);
+
+    GtkTreePath *path =
+      gtk_tree_model_get_path (parser->tm,&iter);
+
+    if (!path) 
+      return;
+
+    GtkTreeIter _iter;
+
+    if (!gtk_tree_model_get_iter_first (parser->tm, &_iter))
+      return;
+
+    do 
+    {
+      GtkTreePath *_path =
+        gtk_tree_model_get_path (parser->tm, &_iter);
+
+      if (!_path)
+        return;
+
+      if (!gtk_tree_path_compare (path,_path))
+        continue;
+      else 
+      {
+        gtk_tree_model_get (parser->tm, &_iter,
+                            HP_COL_POSITION, &_position,
+                            -1);
+
+       if (!position && !_position) 
+         continue;
+
+       if (gtk_tree_path_compare (path, _path) < 0) 
+       {
+         if (position > _position)
+         {
+           gtk_list_store_swap (GTK_LIST_STORE (parser->tm),
+				&iter, &_iter);
+	   swapped = TRUE;
+         }
+       }
+     }
+
+     if (_path)
+       gtk_tree_path_free (_path);
+   } 
+   while (gtk_tree_model_iter_next (parser->tm, &_iter));
+
+   if (path)
+     gtk_tree_path_free (path);
+ } 
+ while (gtk_tree_model_iter_next (parser->tm, &iter));
+
+ if (swapped == TRUE)
+   hildon_plugin_config_parser_sort_model (parser);
+}	
 
 GObject * 
 hildon_plugin_config_parser_new (const gchar *path, const gchar *path_to_save)
@@ -644,7 +715,7 @@ hildon_plugin_config_parser_save (HildonPluginConfigParser *parser,
 			HP_COL_CHECKBOX,
 			&loaded,
 			-1);
-
+    
     g_key_file_set_boolean (keyfile,
 		      	    desktop_file,
 			    HD_DESKTOP_CONFIG_KEY_LOAD,
@@ -652,7 +723,7 @@ hildon_plugin_config_parser_save (HildonPluginConfigParser *parser,
 
     g_free (desktop_file);			
   }
-  while (gtk_tree_model_iter_next (parser->tm, &iter));
+  while (gtk_tree_model_iter_next (parser->tm,&iter));
 
   keyfile_data = g_key_file_to_data (keyfile,
 		  		     &length,
@@ -758,14 +829,11 @@ hildon_plugin_config_parser_compare_with (HildonPluginConfigParser *parser,
       is_to_load = TRUE;
     }
 
-    if (is_to_load)    
-    {	  
-      HPCPData *data = hildon_plugin_config_parser_new_data (i,TRUE);
+    HPCPData *data = hildon_plugin_config_parser_new_data (i,is_to_load);
 	  
-      g_hash_table_replace (parser->priv->keys_loaded,
-			    g_strdup (groups[i]),
-			    data);
-    }
+    g_hash_table_replace (parser->priv->keys_loaded,
+			  g_strdup (groups[i]),
+			  data);
   }
 
   if (gtk_tree_model_get_iter_first (parser->tm, &iter))
@@ -784,12 +852,12 @@ hildon_plugin_config_parser_compare_with (HildonPluginConfigParser *parser,
       data = g_hash_table_lookup (parser->priv->keys_loaded,
 				  desktop_file);
 
-      if (data && data->loaded)
+      if (data)
       {
         gtk_list_store_set (GTK_LIST_STORE (parser->tm),
 			    &iter,
 			    HP_COL_CHECKBOX,
-			    TRUE,
+			    data->loaded,
 			    HP_COL_POSITION,
 			    data->position,
 			    -1);			    
@@ -802,6 +870,8 @@ hildon_plugin_config_parser_compare_with (HildonPluginConfigParser *parser,
   }
 
   g_strfreev (groups);
+
+  hildon_plugin_config_parser_sort_model (parser);
 	
   return TRUE;
 }
