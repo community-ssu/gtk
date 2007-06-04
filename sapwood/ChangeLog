@@ -1,3 +1,9 @@
+2007-05-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* src/sapwood-draw.c (check_child_position, check_buttonbox_child_position):
+	use GTK_WIDGET_DRAWABLE instead of GTK_WIDGET_VISIBLE to check if a widget
+	is currently visible in the screen.
+
 2007-04-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* === Release 2.91.4 ===

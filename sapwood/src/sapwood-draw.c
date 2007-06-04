@@ -160,7 +160,7 @@ check_child_position (GtkWidget      *child,
     {
       GtkWidget *widget = l->data;
 
-      if (!GTK_WIDGET_VISIBLE (widget))
+      if (!GTK_WIDGET_DRAWABLE (widget))
 	continue;
       
       /* XXX Should we consider the lower right corner instead, for
@@ -205,7 +205,7 @@ check_buttonbox_child_position (GtkWidget *child, ThemeMatchData *match_data)
       GtkBoxChild *child_info = l->data;
       GtkWidget *widget = child_info->widget;
 
-      if (child_info->is_secondary == secondary && GTK_WIDGET_VISIBLE (widget))
+      if (child_info->is_secondary == secondary && GTK_WIDGET_DRAWABLE (widget))
 	children = g_list_prepend (children, widget);
     }
 
