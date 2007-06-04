@@ -1,5 +1,7 @@
 2007-06-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.9.28
+	
 	* hildon-fm/hildon-file-chooser-dialog.h,
 	hildon-fm/hildon-file-chooser-dialog.c
 	(hildon_file_chooser_dialog_get_extension,
