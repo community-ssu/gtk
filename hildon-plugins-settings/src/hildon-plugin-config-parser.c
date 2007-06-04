@@ -30,8 +30,11 @@
 
 #include <glib/gi18n.h>
 
+#include <hildon-desktop/hd-config.h>
+
 #define HP_DESKTOP_GROUP "Desktop Entry"
 #define HP_PREDEFINED_COLS 3
+
 
 #define HILDON_PLUGIN_CONFIG_PARSER_GET_PRIVATE(object) \
 	                (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_PLUGIN_TYPE_CONFIG_PARSER, HildonPluginConfigParserPrivate))
@@ -43,7 +46,7 @@ typedef enum
 {
   HILDON_PLUGIN_CONFIG_PARSER_ERROR_UNKNOWN = 0,
   HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOKEYS,
-  HILDON_PLUGIN_CONFIG_PARSER_ERROR_PATHNOEXIST,
+  HILDON_PLUGIN_CONFIG_PARSER_ERROR_PATHNOEXISTS,
   HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOFILESINPATH,
   HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOPATHTOSAVE
 }
@@ -66,14 +69,17 @@ struct _HildonPluginConfigParserPrivate
   gchar *path_to_save;
 
   GtkIconTheme *icon_theme;
+
+  GHashTable  *keys_loaded;
 };
 
-enum
+
+typedef struct
 {
-  HP_COL_DESKTOP_FILE,
-  HP_COL_CHECKBOX,
-  HP_COL_POSITION
-};  
+  guint position;
+  gboolean loaded;
+}
+HPCPData;
 
 static void hildon_plugin_config_parser_get_property    (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void hildon_plugin_config_parser_set_property    (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
@@ -81,6 +87,8 @@ static void hildon_plugin_config_parser_set_property    (GObject *object, guint 
 static void hildon_plugin_config_parser_finalize (GObject *object);
 
 static GQuark hildon_plugin_config_parser_error_quark (void);
+
+static HPCPData *hildon_plugin_config_parser_new_data (guint position, gboolean loaded);
 
 static void 
 hildon_plugin_config_parser_init (HildonPluginConfigParser *parser)
@@ -101,6 +109,11 @@ hildon_plugin_config_parser_init (HildonPluginConfigParser *parser)
 		  			g_str_equal,
 					g_free,
 					g_free);
+
+  parser->priv->keys_loaded = g_hash_table_new_full (g_str_hash,
+		  				     g_str_equal,
+						     g_free,
+						     g_free);
 
   parser->priv->icon_theme = gtk_icon_theme_get_default ();
 }
@@ -207,6 +220,7 @@ hildon_plugin_config_parser_finalize (GObject *object)
     g_list_free (parser->priv->keys_types);
 
   g_hash_table_destroy (parser->keys);
+  g_hash_table_destroy (parser->priv->keys_loaded);
 
   g_free (parser->priv->path_to_read);
   g_free (parser->priv->path_to_save); 
@@ -218,6 +232,17 @@ static GQuark
 hildon_plugin_config_parser_error_quark (void)
 {
   return g_quark_from_static_string ("hildon-plugin-config-parser-error-quark");
+}
+
+static HPCPData *
+hildon_plugin_config_parser_new_data (guint position, gboolean loaded)
+{
+  HPCPData *data = g_new (HPCPData,1);
+
+  data->position = position;
+  data->loaded   = loaded;
+
+  return data;
 }
 
 static GdkPixbuf *
@@ -285,6 +310,12 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
 		      HP_COL_CHECKBOX, FALSE,
 		      HP_COL_POSITION,0,
 		      -1);
+
+  HPCPData *data = hildon_plugin_config_parser_new_data (0,FALSE);
+
+  g_hash_table_insert (parser->priv->keys_loaded, 
+		       g_strdup (filename),
+		       data);
 
   for (l = parser->priv->keys; l != NULL; l = g_list_next (l))
   {
@@ -532,7 +563,7 @@ hildon_plugin_config_parser_load (HildonPluginConfigParser *parser,
   {
     g_set_error (error,
                  hildon_plugin_config_parser_error_quark (),
-		 HILDON_PLUGIN_CONFIG_PARSER_ERROR_PATHNOEXIST,
+		 HILDON_PLUGIN_CONFIG_PARSER_ERROR_PATHNOEXISTS,
 		 external_error->message);
 
     g_error_free (external_error);
@@ -572,6 +603,12 @@ gboolean
 hildon_plugin_config_parser_save (HildonPluginConfigParser *parser, 
 				  GError **error)
 {
+  GKeyFile *keyfile;
+  gchar *keyfile_data;
+  GtkTreeIter iter;
+  gsize length;
+  GError *external_error = NULL;
+
   if (!parser->priv->keys)
   {
     g_set_error (error,
@@ -592,7 +629,180 @@ hildon_plugin_config_parser_save (HildonPluginConfigParser *parser,
     return FALSE;
   }
 
+  keyfile = g_key_file_new ();
+
+  gtk_tree_model_get_iter_first (parser->tm, &iter);
+
+  do
+  {
+    gchar *desktop_file;
+    gboolean loaded;
+
+    gtk_tree_model_get (parser->tm, &iter,
+			HP_COL_DESKTOP_FILE,
+			&desktop_file,
+			HP_COL_CHECKBOX,
+			&loaded,
+			-1);
+
+    g_key_file_set_boolean (keyfile,
+		      	    desktop_file,
+			    HD_DESKTOP_CONFIG_KEY_LOAD,
+			    loaded);
+
+    g_free (desktop_file);			
+  }
+  while (gtk_tree_model_iter_next (parser->tm, &iter));
+
+  keyfile_data = g_key_file_to_data (keyfile,
+		  		     &length,
+				     &external_error);
+
+  if (external_error || keyfile_data == NULL)
+  {
+    g_set_error (error,
+                 hildon_plugin_config_parser_error_quark (),
+                 HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOKEYS,
+                 external_error->message);
+
+    g_key_file_free (keyfile);
+    g_error_free (external_error); 
+
+    return FALSE; 
+  }	  
+
+  g_file_set_contents (parser->priv->path_to_save,
+		       keyfile_data,
+		       length,
+		       &external_error);
+
+  if (external_error)
+  {
+    g_set_error (error,
+                 hildon_plugin_config_parser_error_quark (),
+                 HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOPATHTOSAVE,
+                 external_error->message);
+
+    g_key_file_free (keyfile);
+    g_error_free (external_error);
+
+    return FALSE;
+  }
+
+  g_key_file_free (keyfile);
+
   return TRUE;
 }
 
+gboolean 
+hildon_plugin_config_parser_compare_with (HildonPluginConfigParser *parser,
+					  const gchar *filename,
+					  GError **error)
+{
+  GKeyFile *keyfile;
+  GError *external_error = NULL;
+  gsize n_groups;
+  gchar **groups;
+  register int i;
+  GtkTreeIter iter;
+
+  if (!filename || !g_file_test (filename, G_FILE_TEST_EXISTS))
+  {
+    g_set_error (error,
+                 hildon_plugin_config_parser_error_quark (),
+                 HILDON_PLUGIN_CONFIG_PARSER_ERROR_PATHNOEXISTS,
+                 "You need to set a valid filename to be compared with the model");
+
+    return FALSE;
+  }	  
+
+  keyfile = g_key_file_new ();
+
+  if (!g_key_file_load_from_file
+        (keyfile,filename,G_KEY_FILE_NONE,&external_error))
+  {
+    g_set_error (error,
+                 hildon_plugin_config_parser_error_quark (),
+                 HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOKEYS,
+                 external_error->message);
+
+    g_error_free (external_error);
+    return FALSE;
+  }
+
+  groups = g_key_file_get_groups (keyfile,
+				  &n_groups);
+
+  if (!groups)
+  {
+    g_set_error (error,
+                 hildon_plugin_config_parser_error_quark (),
+                 HILDON_PLUGIN_CONFIG_PARSER_ERROR_NOKEYS,
+		 "I couldn't find valid groups in the file");
+    return FALSE;
+  }
+
+  for (i=0; i < n_groups && groups[i]; i++)
+  {
+    GError *error_key = NULL;
+    gboolean is_to_load = TRUE;
+	  
+    is_to_load = g_key_file_get_boolean (keyfile,
+		 	   	    	 groups[i],
+			    		 HD_DESKTOP_CONFIG_KEY_LOAD,
+			    		 &error_key);
+
+    if (error_key)
+    {
+      g_error_free (error_key);
+      is_to_load = TRUE;
+    }
+
+    if (is_to_load)    
+    {	  
+      HPCPData *data = hildon_plugin_config_parser_new_data (i,TRUE);
+	  
+      g_hash_table_replace (parser->priv->keys_loaded,
+			    g_strdup (groups[i]),
+			    data);
+    }
+  }
+
+  if (gtk_tree_model_get_iter_first (parser->tm, &iter))
+  {
+    do
+    {
+      gchar *desktop_file = NULL;
+      HPCPData *data = NULL;
+
+      gtk_tree_model_get (parser->tm,
+			  &iter,
+			  HP_COL_DESKTOP_FILE,
+			  &desktop_file,
+			  -1);
+
+      data = g_hash_table_lookup (parser->priv->keys_loaded,
+				  desktop_file);
+
+      if (data && data->loaded)
+      {
+        gtk_list_store_set (GTK_LIST_STORE (parser->tm),
+			    &iter,
+			    HP_COL_CHECKBOX,
+			    TRUE,
+			    HP_COL_POSITION,
+			    data->position,
+			    -1);			    
+      }
+
+      if (desktop_file)
+	g_free (desktop_file);
+    }
+    while (gtk_tree_model_iter_next (parser->tm, &iter));
+  }
+
+  g_strfreev (groups);
+	
+  return TRUE;
+}
 

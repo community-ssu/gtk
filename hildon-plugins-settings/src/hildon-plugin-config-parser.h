@@ -35,6 +35,14 @@ typedef struct _HildonPluginConfigParser HildonPluginConfigParser;
 typedef struct _HildonPluginConfigParserClass HildonPluginConfigParserClass;
 typedef struct _HildonPluginConfigParserPrivate HildonPluginConfigParserPrivate;
 
+typedef enum
+{
+  HP_COL_DESKTOP_FILE,
+  HP_COL_CHECKBOX,
+  HP_COL_POSITION
+}
+HildonPluginConfigParserCols;  
+
 #define HILDON_PLUGIN_TYPE_CONFIG_PARSER ( hildon_plugin_config_parser_get_type() )
 #define HILDON_PLUGIN_CONFIG_PARSER(obj) (GTK_CHECK_CAST (obj, HILDON_PLUGIN_TYPE_CONFIG_PARSER, HildonPluginConfigParser))
 #define HILDON_PLUGIN_CONFIG_PARSER_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), HILDON_PLUGIN_TYPE_CONFIG_PARSER, HildonPluginConfigParserClass))
@@ -77,6 +85,9 @@ hildon_plugin_config_parser_load (HildonPluginConfigParser *parser, GError **err
 
 gboolean 
 hildon_plugin_config_parser_save (HildonPluginConfigParser *parser, GError **error);
+
+gboolean 
+hildon_plugin_config_parser_compare_with (HildonPluginConfigParser *parser, const gchar *filename, GError **error);
 
 G_END_DECLS
 

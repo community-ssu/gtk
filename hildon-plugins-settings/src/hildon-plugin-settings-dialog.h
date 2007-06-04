@@ -23,3 +23,47 @@
  *
  */
 
+#ifndef __HILDON_PLUGIN_SETTINGS_DIALOG_H__
+#define __HILDON_PLUGIN_SETTINGS_DIALOG_H__
+
+#include <gtk/gtkdialog.h>
+#include <gtk/gtktreemodel.h>
+
+G_BEGIN_DECLS
+
+typedef struct _HildonPluginSettingsDialog HildonPluginSettingsDialog;
+typedef struct _HildonPluginSettingsDialogClass HildonPluginSettingsDialogClass;
+typedef struct _HildonPluginSettingsDialogPrivate HildonPluginSettingsDialogPrivate;
+
+#define HILDON_PLUGIN_TYPE_SETTINGS_DIALOG ( hildon_plugin_settings_dialog_get_type() )
+#define HILDON_PLUGIN_SETTINGS_DIALOG(obj) (GTK_CHECK_CAST (obj, HILDON_PLUGIN_TYPE_SETTINGS_DIALOG, HildonPluginSettingsDialog))
+#define HILDON_PLUGIN_SETTINGS_DIALOG_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), HILDON_PLUGIN_TYPE_SETTINGS_DIALOG, HildonPluginSettingsDialogClass))
+#define HILDON_PLUGIN_IS_SETTINGS_DIALOG(obj) (GTK_CHECK_TYPE (obj, HILDON_PLUGIN_TYPE_SETTINGS_DIALOG))
+#define HILDON_PLUGIN_IS_SETTINGS_DIALOG_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), HILDON_PLUGIN_TYPE_SETTINGS_DIALOG))
+
+struct _HildonPluginSettingsDialog
+{
+  GtkDialog parent;
+
+  GtkTreeModel *sbtm;
+  GtkTreeModel *tntm;
+
+  HildonPluginSettingsDialogPrivate *priv;
+};
+
+struct _HildonPluginSettingsDialogClass
+{
+  GtkDialogClass parent_class;
+
+  /* */
+};
+
+GType 
+hildon_plugin_settings_dialog_get_type (void);
+
+GtkWidget *
+hildon_plugin_settings_dialog_new (void);
+
+G_END_DECLS
+
+#endif/*__HILDON_PLUGIN_SETTINGS_DIALOG_H__*/

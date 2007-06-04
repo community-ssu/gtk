@@ -26,7 +26,7 @@
 #include <hildon-cp-plugin/hildon-cp-plugin-interface.h>
 #include <gtk/gtk.h>
 
-#include "hildon-plugin-config-parser.h"
+#include "hildon-plugin-settings-dialog.h"
 
 #include <libintl.h>
 #define _(a) dgettext(PACKAGE, a)
@@ -36,51 +36,9 @@ execute (osso_context_t *osso,
 	 gpointer user_data,
 	 gboolean user_activated)
 {
-  GError *error = NULL;
   gint ret;
 
-  GtkCellRenderer   *renderer_pb   = gtk_cell_renderer_pixbuf_new();
-  GtkCellRenderer   *renderer_text = gtk_cell_renderer_text_new();
-  GtkTreeViewColumn *text_column;
-  GtkTreeViewColumn *pixbuf_column;
-
-  GtkWidget *dialog = gtk_dialog_new ();
-
-  gtk_dialog_add_button (GTK_DIALOG (dialog),
-		  	 "Ok",
-			 GTK_RESPONSE_OK);
-  
-  HildonPluginConfigParser *cp = 
-    HILDON_PLUGIN_CONFIG_PARSER 
-      (hildon_plugin_config_parser_new ("/usr/share/applications/hildon-status-bar","/tmp/hello.tmp"));
-
-  hildon_plugin_config_parser_set_keys (cp,
-		  			"Name", G_TYPE_STRING,
-					"Icon", GDK_TYPE_PIXBUF,
-					"Mandatory", G_TYPE_BOOLEAN,
-					NULL);
-
-  hildon_plugin_config_parser_load (cp,&error);
-
-  if (!error)
-  {	  
-    GtkWidget *tw = gtk_tree_view_new_with_model (cp->tm);
-
-    text_column = 
-      gtk_tree_view_column_new_with_attributes
-        (NULL, renderer_text, "text", 3, NULL);
-
-    pixbuf_column = 
-      gtk_tree_view_column_new_with_attributes
-        (NULL, renderer_pb,"pixbuf", 4, NULL);
-    
-    gtk_tree_view_append_column(GTK_TREE_VIEW (tw), pixbuf_column);
-    gtk_tree_view_append_column(GTK_TREE_VIEW (tw), text_column);
-
-    gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-		       tw);
-    gtk_widget_show (tw);
-  }
+  GtkWidget *dialog = hildon_plugin_settings_dialog_new ();
 
   gtk_widget_show (dialog);
 
@@ -88,7 +46,6 @@ execute (osso_context_t *osso,
 
   if (ret == GTK_RESPONSE_OK)
   {
-    g_object_unref (G_OBJECT (cp));	  
     gtk_widget_destroy (dialog);
     return OSSO_OK;
   }
