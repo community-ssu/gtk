@@ -1,3 +1,13 @@
+2007-06-04  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-panel-window.c:
+	- Fixed the leak of XRectangle
+	* libhildondesktop/hildon-home-area.c:
+	- Fixed the leak of a GtkBorder
+	* libhildondesktop/hildon-desktop-home-item.c:
+	- Reset the delta values on button_press to avoid
+	snapping to grid if the applet has not moved
+
 2007-06-01  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:

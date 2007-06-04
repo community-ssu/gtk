@@ -757,6 +757,7 @@ hildon_home_area_allocate_child (HildonHomeArea        *area,
       border_width = GTK_CONTAINER (area)->border_width;
 
       gtk_widget_get_child_requisition (child->widget, &child_requisition);
+
       child_allocation.x = widget->allocation.x + child->x + border_width;
       child_allocation.y = widget->allocation.y + child->y + border_width;
 
@@ -1201,10 +1202,6 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
   if (!GTK_WIDGET_REALIZED (child))
     return;
 
-  gtk_widget_style_get (child,
-                        "background-borders", &borders,
-                        NULL);
-
   gtk_container_child_get (GTK_CONTAINER (area), child,
                            "child-data", &child_data,
                            NULL);
@@ -1221,6 +1218,10 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
 
   child_data->alpha_mask = None;
 
+  gtk_widget_style_get (child,
+                        "background-borders", &borders,
+                        NULL);
+
   if (borders && child_data->alpha_mask_unscaled)
     {
       Pixmap                    p;
@@ -1233,7 +1234,10 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
       h = child->allocation.height;
 
       if (w < 0 || h < 0)
-        return;
+        {
+          g_free (borders);
+          return;
+        }
 
       center_w = w - borders->left - borders->right;
       center_h = h - borders->top  - borders->bottom;
@@ -1244,6 +1248,7 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
       if (scenter_h < 0 || scenter_w < 0)
         {
           g_warning ("Invalid border values, alpha mask will not be applied");
+          g_free (borders);
           return;
         }
 

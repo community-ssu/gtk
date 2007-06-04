@@ -432,6 +432,8 @@ hd_panel_window_home_window_filter (GdkXEvent          *xevent,
                                          TRUE);
            }
         }
+
+      XFree (rects);
     }
 
   return GDK_FILTER_CONTINUE;

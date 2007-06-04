@@ -810,44 +810,6 @@ hildon_desktop_home_item_expose (GtkWidget *w, GdkEventExpose *event)
   if (GTK_WIDGET_CLASS (parent_class)->expose_event)
     GTK_WIDGET_CLASS (parent_class)->expose_event (w, event);
 
-  if (0)
-  {
-    GdkDrawable                *drawable;
-    gint                        x_offset, y_offset;
-    XRenderColor                color = {0};
-    XRenderPictFormat          *format;
-    XRenderPictureAttributes    pa;
-    XRectangle                  rect;
-    Picture                     picture;
-
-    gdk_window_get_internal_paint_info (w->window,
-                                        &drawable,
-                                        &x_offset,
-                                        &y_offset);
-
-    format = XRenderFindVisualFormat (GDK_DISPLAY(),
-                                        GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (drawable)));
-
-    pa.subwindow_mode = IncludeInferiors;
-
-    picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                    GDK_DRAWABLE_XID (drawable),
-                                    format,
-                                    CPSubwindowMode,
-                                    &pa);
-
-    rect.x = rect.y = 0;
-    rect.width = w->allocation.width;
-    rect.height = w->allocation.height;
-
-    XRenderFillRectangles (GDK_DISPLAY (),
-                           PictOpSrc,
-                           picture,
-                           &color,
-                           &rect,
-                           1);
-  }
-
   if (w->parent && (priv->layout_mode || priv->layout_mode_sucks))
     {
       /* Draw the rectangle around */
@@ -1146,10 +1108,10 @@ hildon_desktop_home_item_layout_mode_end (HildonDesktopHomeItem *applet)
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
   widget = GTK_WIDGET (applet);
-  
+
   if (priv->layout_mode_sucks)
     return;
-  
+
   priv->layout_mode = FALSE;
 
   if (priv->close_button_window)
@@ -1467,6 +1429,8 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
                         event->time);
 
       priv->old_allocation = w->allocation;
+      priv->delta_x = 0;
+      priv->delta_y = 0;
 
       if (event->window == priv->resize_handle_window)
         {

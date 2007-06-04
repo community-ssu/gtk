@@ -9,6 +9,7 @@ Package: hildon-desktop
 Section: x11
 Architecture: any
 Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, maemo-af-desktop-l10n-mr | maemo-af-desktop-l10n-mr0
+Conflicts: maemo-af-desktop (<< 3.0.0), maemo-af-desktop-config
 Description: Desktop environment for embedded devices
   Hildon Desktop is a desktop environment for embedded devices. It
   is based on the GNOME platform
