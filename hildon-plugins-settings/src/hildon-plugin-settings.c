@@ -46,10 +46,11 @@ execute (osso_context_t *osso,
 
   if (ret == GTK_RESPONSE_OK)
   {
-    gtk_widget_destroy (dialog);
     return OSSO_OK;
   }
     
-  return OSSO_ERROR;  
+  gtk_widget_destroy (dialog);
+    
+  return OSSO_OK;  
 }
 

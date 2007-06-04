@@ -1,5 +1,9 @@
 2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hildon-plugin-settings.c: Exit if Cancel.
+
+2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
+
 	* configure.ac: Look for hildon-desktop headers.
 	* src/hildon-plugin-settings-dialog.[ch]:
 	- First implementation of dialog.
