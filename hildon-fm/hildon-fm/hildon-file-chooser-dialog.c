@@ -2198,6 +2198,44 @@ hildon_file_chooser_dialog_add_extensions_combo (HildonFileChooserDialog *self,
 }
 
 /**
+ * hildon_file_chooser_dialog_get_extension
+ * @self: dialog widget
+ *
+ * Return the extension of the current filename.
+ * 
+ * Return value: the current extension as a newly allocated string
+ */
+gchar *
+hildon_file_chooser_dialog_get_extension (HildonFileChooserDialog *self)
+{
+  HildonFileChooserDialogPrivate *priv = self->priv;
+
+  if (priv->ext_name)
+    return g_strdup (priv->ext_name + 1);
+  else
+    return NULL;
+}
+
+/**
+ * hildon_file_chooser_dialog_set_extension
+ * @self: dialog widget
+ * @extension: the new extension
+ *
+ * Set the extension of the current filename.
+ */
+void
+hildon_file_chooser_dialog_set_extension (HildonFileChooserDialog *self,
+					  gchar *extension)
+{
+  HildonFileChooserDialogPrivate *priv = self->priv;
+
+  g_free (priv->ext_name);
+  priv->ext_name = g_strconcat (".", extension, NULL);
+  hildon_file_chooser_dialog_do_autonaming (priv);
+  sync_extensions_combo (priv);
+}
+
+/**
  * hildon_file_chooser_dialog_set_safe_folder:
  * @self: a #HildonFileChooserDialog widget.
  * @local_path: a path to safe folder.

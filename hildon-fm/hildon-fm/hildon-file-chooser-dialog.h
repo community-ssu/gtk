@@ -87,29 +87,18 @@ gchar *hildon_file_chooser_dialog_get_safe_folder_uri(
 void     hildon_file_chooser_dialog_set_show_upnp (HildonFileChooserDialog *self, gboolean value);
 gboolean hildon_file_chooser_dialog_get_show_upnp (HildonFileChooserDialog *self);
 
-/* Add WIDGET to the dialog, below the "Name" and "Location" fields.
-   When WIDGET is a HildonCaption, care is taken that the labels line
-   up with existing HildonCaptions.
-*/
 void hildon_file_chooser_dialog_add_extra (HildonFileChooserDialog *self,
 					   GtkWidget *widget);
 
-/* Create and add a combo box widget with a list of file extensions.
-   This combobox will track and modify the extension of the current
-   filename, it is not a filter.
-
-   EXTENSIONS should be a vector of strings, terminated by NULL.  The
-   strings in it are the extensions, without a leading '.'.
-
-   EXT_NAMES, when non-NULL, is a vector parallel to EXTENSIONS that
-   determines the names of the extensions to use in the UI.  When
-   EXT_NAMES is NULL, the exentions themselved are used as the names.
-*/
 GtkWidget *
 hildon_file_chooser_dialog_add_extensions_combo (HildonFileChooserDialog *self,
 						 char **extensions,
 						 char **ext_names);
 
+gchar *hildon_file_chooser_dialog_get_extension (HildonFileChooserDialog *self);
+void hildon_file_chooser_dialog_set_extension (HildonFileChooserDialog *self,
+					       gchar *extension);
+					  
 /* 
 
     Note! Other functionality is provided by GtkFileChooser interface. See:
