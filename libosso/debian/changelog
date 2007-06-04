@@ -1,6 +1,5 @@
 libosso (2.10-1) unstable; urgency=low
 
-  * UNRELEASED
   * Removed deprecated launch banner code.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Jun 2007 10:53:52 +0300
