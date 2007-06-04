@@ -1,3 +1,16 @@
+2007-06-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-chooser-dialog.h (sync_extensions_combo,
+	extension_changed,
+	hildon_file_chooser_dialog_add_extensions_combo): New.
+
+2007-06-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.h,
+	hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_add_extra): New.
+
 2007-05-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-selection.c (trigger_repair): Pass address

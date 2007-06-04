@@ -70,6 +70,7 @@
 #define FILE_SELECTION_WIDTH_TOTAL 590  /* Width for full filetree (both
                                            content and navigation pane) */
 
+static void sync_extensions_combo (HildonFileChooserDialogPrivate *priv);
 
 #define HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE (hildon_file_chooser_dialog_selection_mode_get_type())
 static GType
@@ -110,11 +111,13 @@ struct _HildonFileChooserDialogPrivate {
     GtkWidget *cancel_button;
     HildonFileSelection *filetree;
     HildonFileSystemModel *model;
+    GtkSizeGroup *caption_size_group;
     GtkWidget *caption_control_name;
     GtkWidget *caption_control_location;
     GtkWidget *label_location;
     GtkWidget *entry_name;
     GtkWidget *hbox_location, *image_location, *title_location;
+    GtkWidget *extensions_combo;
     GtkFileChooserAction action;
     GtkWidget *popup;
     GtkWidget *multiple_label, *hbox_items;
@@ -531,6 +534,7 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
             g_free(priv->ext_name);
             priv->ext_name = g_strdup(dot);
             *dot = '\0';
+	    sync_extensions_combo (priv);
       }
   }
 
@@ -1583,6 +1587,8 @@ static void hildon_file_chooser_dialog_finalize(GObject * obj)
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(obj)->priv;
 
+    g_object_unref(priv->caption_size_group);
+
     g_free(priv->stub_name);
     g_free(priv->ext_name);
 
@@ -1793,6 +1799,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
                                     HildonFileChooserDialogPrivate);
 
     size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+    priv->caption_size_group = size_group;
     priv->filters = NULL;
     priv->autonaming_enabled = TRUE;
     priv->should_show_folder_button = TRUE;
@@ -1853,7 +1860,6 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     gtk_box_pack_start(GTK_BOX(priv->caption_control_location), eventbox, TRUE, TRUE, 0);
     gtk_size_group_add_widget(size_group, priv->label_location);
     gtk_size_group_add_widget(size_group, label_items);
-    g_object_unref(size_group);
 
     priv->popup = gtk_menu_new();
     shell = GTK_MENU_SHELL(priv->popup);
@@ -2033,6 +2039,162 @@ GtkWidget *hildon_file_chooser_dialog_new_with_properties(GtkWindow *
         gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
 
     return dialog;
+}
+
+/**
+ * hildon_file_chooser_dialog_add_extra:
+ * @self: dialog widget
+ * @widget: widget to add
+ *
+ * Add @widget to the dialog, below the "Name" and "Location" fields.
+ * When @widget is a #HildonCaption, care is taken that the labels line
+ * up with existing HildonCaptions.
+ */
+void
+hildon_file_chooser_dialog_add_extra (HildonFileChooserDialog *self,
+				      GtkWidget *widget)
+{
+  HildonFileChooserDialogPrivate *priv = self->priv;
+
+  /* XXX - HildonCaption widgets seem to need special treatment when
+           setting their size groups...
+  */
+  if (HILDON_IS_CAPTION (widget))
+    hildon_caption_set_size_group (HILDON_CAPTION (widget), 
+				   priv->caption_size_group);
+  else
+    gtk_size_group_add_widget (priv->caption_size_group, widget);
+
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(self)->vbox), widget,
+		      FALSE, TRUE, 0);
+}
+
+static void
+sync_extensions_combo (HildonFileChooserDialogPrivate *priv)
+{
+  if (priv->ext_name && priv->extensions_combo)
+    {
+      GtkTreeModel *model;
+      GtkTreeIter iter;
+      gboolean valid;
+      int i;
+
+      model = gtk_combo_box_get_model (GTK_COMBO_BOX (priv->extensions_combo));
+
+      i = 0;
+      valid = gtk_tree_model_get_iter_first (model, &iter);
+      while (valid)
+	{
+	  gchar *ext;
+	  gtk_tree_model_get (model, &iter, 1, &ext, -1);
+	  if (strcmp (ext, priv->ext_name + 1) == 0)
+	    {
+	      gtk_combo_box_set_active (GTK_COMBO_BOX (priv->extensions_combo),
+					i);
+	      g_free (ext);
+	      break;
+	    }
+
+	  g_free (ext);
+	  i++;
+	  valid = gtk_tree_model_iter_next (model, &iter); 
+	}
+    }
+}
+
+static void
+extension_changed (GtkComboBox *widget, gpointer data)
+{
+  gchar *ext;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  HildonFileChooserDialogPrivate *priv = 
+    HILDON_FILE_CHOOSER_DIALOG (data)->priv;
+
+  model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+  gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
+  gtk_tree_model_get (model, &iter, 1, &ext, -1);
+  
+  g_free (priv->ext_name);
+  priv->ext_name = g_strconcat (".", ext, NULL);
+  hildon_file_chooser_dialog_do_autonaming (priv);
+
+  g_free (ext);
+}
+
+/**
+ * hildon_file_chooser_dialog_add_extensions_combo:
+ * @self: dialog widget
+ * @extensions: extensions to offer
+ * @ext_names: names of the extensions to show in the UI
+ *
+ * Create and add a combo box widget with a list of file extensions.
+ * This combobox will track and modify the extension of the current
+ * filename; it is not a filter.
+ *
+ * @extensions should be a vector of strings, terminated by #NULL.  The
+ * strings in it are the extensions, without a leading '.'.
+ *
+ * @ext_names, when non-#NULL, is a vector parallel to @extensions
+ * that determines the names of the extensions to use in the UI.  When
+ * @ext_names is NULL, the extensions themselves are used as the
+ * names.
+ */
+
+GtkWidget *
+hildon_file_chooser_dialog_add_extensions_combo (HildonFileChooserDialog *self,
+						 char **extensions,
+						 char **ext_names)
+{
+  GtkTreeIter      iter;
+  GtkListStore    *model;
+  GtkCellRenderer *renderer;
+  GtkWidget       *caption;
+  GtkWidget       *combo;
+  gint            i = 0;
+
+  g_return_val_if_fail (self->priv->extensions_combo == NULL, NULL);
+    
+  model = GTK_LIST_STORE (gtk_list_store_new (2,
+					      G_TYPE_STRING,
+					      G_TYPE_STRING));
+  combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL (model));
+  self->priv->extensions_combo = combo;
+
+  for (i = 0; extensions[i]; i++)
+    {
+      gtk_list_store_append (model, &iter);
+      gtk_list_store_set (model, &iter,
+			  0, ext_names? ext_names[i] : extensions[i],
+			  1, extensions[i],
+			  -1);
+    }
+
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo),
+			      renderer, TRUE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combo),
+				  renderer, "text", 0, NULL);
+
+  g_object_unref(model);
+
+  g_signal_connect (G_OBJECT (combo), "changed",
+		    G_CALLBACK (extension_changed), self);
+
+  caption = hildon_caption_new (NULL,
+				_("sfil_fi_save_object_dialog_type"),
+				combo, NULL,
+				HILDON_CAPTION_OPTIONAL);
+
+  hildon_file_chooser_dialog_add_extra (self, caption);
+  
+  gtk_widget_show (combo);
+  gtk_widget_show (caption);
+  
+  sync_extensions_combo (self->priv);
+
+  return combo;
 }
 
 /**
