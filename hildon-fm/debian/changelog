@@ -1,5 +1,7 @@
-libhildonfm (1:1.9.27~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.27) unstable; urgency=low
 
+  * Added API for extending the "Save As" variant of the
+    HildonFileChooserDialog.
   * Fixes: NB#33701.
   
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 31 May 2007 13:16:31 +0300
