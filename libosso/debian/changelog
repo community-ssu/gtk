@@ -1,8 +1,9 @@
 libosso (2.10-1) unstable; urgency=low
 
-  * Fixed launch banner to use the new freedesktop.org API. Fixes: NB#55804
+  * Corrected D-Bus service name for the launch banner service.
+    Fixes: NB#55804
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon,  4 Jun 2007 10:18:00 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Jun 2007 10:53:52 +0300
 
 libosso (2.9-1) unstable; urgency=low
 
