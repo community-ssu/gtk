@@ -23,16 +23,6 @@
  * 02110-1301 USA
  */
 
-#define TASK_NAV_SERVICE "com.nokia.hildon-desktop"
-/* NOTICE: Keep these in sync with values in
- * hildon-navigator/windowmanager.c! */
-#define APP_LAUNCH_BANNER_METHOD_INTERFACE \
-            "com.nokia.tasknav.app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD_PATH \
-            "/com/nokia/tasknav/app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD "app_launch_banner"
-
-
 #include "osso-internal.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -212,26 +202,6 @@ _rpc_run_with_argfill (osso_context_t *osso, DBusConnection *conn,
 	b = dbus_connection_send(conn, msg, NULL);
         dbus_message_unref(msg);
         if (b) {
-
-	    /* Tell hildon-desktop to show the launch banner */
-	    msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
-			    APP_LAUNCH_BANNER_METHOD_PATH,
-			    APP_LAUNCH_BANNER_METHOD_INTERFACE,
-			    APP_LAUNCH_BANNER_METHOD);
-   
-	    if (msg != NULL) {
-                dbus_message_append_args(msg, DBUS_TYPE_STRING, &service,
-                                         DBUS_TYPE_INVALID);
-
-                b = dbus_connection_send(conn, msg, NULL);
-                if (!b) {
-                    ULOG_WARN_F("dbus_connection_send failed");
-                }
-                dbus_message_unref(msg);
-	    }
-            else {
-                ULOG_WARN_F("dbus_message_new_method_call failed");
-            }
             return OSSO_OK;
         }
         else {
@@ -274,27 +244,6 @@ _rpc_run_with_argfill (osso_context_t *osso, DBusConnection *conn,
 		_get_arg(&iter, retval);
 	    
 		dbus_message_unref(reply);
-	
-		/* Tell TaskNavigator to show "launch banner" */
-		msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
-				APP_LAUNCH_BANNER_METHOD_PATH,
-				APP_LAUNCH_BANNER_METHOD_INTERFACE,
-				APP_LAUNCH_BANNER_METHOD );
-
-		if (msg != NULL) {
-                    dbus_message_append_args(msg, DBUS_TYPE_STRING,
-                                             &service, DBUS_TYPE_INVALID);
-
-                    b = dbus_connection_send(conn, msg, NULL);
-
-                    if (!b) {
-                        ULOG_WARN_F("dbus_connection_send failed");
-                    }
-                    dbus_message_unref(msg);
-		}
-                else {
-                    ULOG_WARN_F("dbus_message_new_method_call failed");
-                }
                 return OSSO_OK;
 	      default:
                 ULOG_WARN_F("got unknown message type as reply");
@@ -429,28 +378,6 @@ osso_return_t osso_rpc_async_run_with_argfill (osso_context_t *osso,
             rpc = NULL;
         }
 	dbus_message_unref(msg);
-
-	/* Tell TaskNavigator to show "launch banner" */
-	msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
-                        APP_LAUNCH_BANNER_METHOD_PATH,
-                        APP_LAUNCH_BANNER_METHOD_INTERFACE,
-                        APP_LAUNCH_BANNER_METHOD );
-
-	if (msg != NULL) {
-            dbus_message_append_args(msg, DBUS_TYPE_STRING, &service,
-                                     DBUS_TYPE_INVALID);
-
-            succ = dbus_connection_send(osso->conn, msg, NULL);
-
-            if (!succ) {
-                ULOG_WARN_F("dbus_connection_send failed");
-            }
-            dbus_message_unref(msg);
-	}
-        else {
-            ULOG_WARN_F("dbus_message_new_method_call failed");
-        }
-
 	return OSSO_OK;
     }
     else {
