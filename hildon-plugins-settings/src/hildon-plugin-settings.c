@@ -46,7 +46,6 @@ execute (osso_context_t *osso,
 
   if (ret == GTK_RESPONSE_OK)
   {
-    return OSSO_OK;
   }
     
   gtk_widget_destroy (dialog);
