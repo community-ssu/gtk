@@ -24,6 +24,7 @@
  */
 
 #include "hildon-plugin-config-parser.h"
+#include "hildon-plugin-module-settings.h"
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -325,6 +326,7 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
      gint _integer;
      gboolean _boolean;
      GdkPixbuf *_pixbuf = NULL;
+     GObject *_module_settings = NULL;
 
      GType *type = 
        (GType *)g_hash_table_lookup (parser->keys, (gchar *)l->data);
@@ -439,6 +441,31 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
         g_free (_string);
     }  
     else 
+    if (*type == HILDON_PLUGIN_TYPE_MODULE_SETTINGS)
+    {
+      _string =
+        g_key_file_get_string
+          (keyfile,
+           HP_DESKTOP_GROUP,
+           (gchar *)l->data,
+           &external_error);
+
+      if (!external_error)
+      { 
+	_module_settings = 
+          hildon_plugin_module_settings_new (_string);
+        
+	gtk_list_store_set
+          (GTK_LIST_STORE (parser->tm), &iter,
+           hildon_plugin_config_parser_get_key_id
+             (parser,(const gchar *)l->data)+HP_PREDEFINED_COLS,
+           _module_settings,
+           -1);
+
+        g_free (_string);
+      }	    
+    }
+    else    
       g_warning ("OOOPS I couldn't guess type");
    
     if (external_error)

@@ -25,6 +25,8 @@
 
 #include "hildon-plugin-settings-dialog.h"
 #include "hildon-plugin-config-parser.h"
+#include "hildon-plugin-cell-renderer-button.h"
+#include "hildon-plugin-module-settings.h"
 
 #include <gtk/gtktreemodelfilter.h>
 #include <gtk/gtktreeview.h>
@@ -78,6 +80,7 @@ typedef struct
   HildonPluginConfigParser *parser;
   GtkTreeView *tw;
   GtkTreeModel *filter;
+  gboolean is_sorted;
 }
 HPSDTab;
 
@@ -86,6 +89,9 @@ struct _HildonPluginSettingsDialogPrivate
   GList *tabs;
 
   GtkWidget *notebook;  
+
+  GtkWidget *button_up;
+  GtkWidget *button_down;
 };
 
 static GObject *hildon_plugin_settings_dialog_constructor (GType gtype,
@@ -108,6 +114,11 @@ static void hildon_plugin_settings_dialog_response_cb (GtkDialog *dialog, gint r
 static void hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
 		                           		       gchar *path,
 					                       GtkTreeModel *tm);
+
+static void hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
+								GtkNotebookPage *nb_page,
+								guint page,
+								HildonPluginSettingsDialog *settings);
 
 static void 
 hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
@@ -180,6 +191,9 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
 	 		   "Down",
 	       		   HPSD_RESPONSE_UP);
 
+  settings->priv->button_up   = button_up;
+  settings->priv->button_down = button_down;
+
   gtk_dialog_add_button (dialog,
 			 HPSD_CANCEL,
 		       	 GTK_RESPONSE_CANCEL);
@@ -190,6 +204,11 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
 		    NULL);
 
   settings->priv->notebook = gtk_notebook_new ();
+
+  g_signal_connect (settings->priv->notebook,
+		    "switch-page",
+		    G_CALLBACK (hildon_desktop_plugin_settings_dialog_switch_nb_cb),
+		    (gpointer)settings);
 
   hildon_plugin_settings_parse_desktop_conf (settings);
 
@@ -275,6 +294,8 @@ hildon_plugin_settings_dialog_finalize (GObject *object)
 		  NULL);
 
   g_list_free (settings->priv->tabs);
+
+  G_OBJECT_CLASS (hildon_plugin_settings_dialog_parent_class)->finalize (object);
 }	
 
 static void 
@@ -375,7 +396,7 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
   GtkCellRenderer *renderer_pixbuf = gtk_cell_renderer_pixbuf_new (),
                   *renderer_toggle = gtk_cell_renderer_toggle_new (),
                   *renderer_text   = gtk_cell_renderer_text_new (),
-                  *renderer_button = NULL;
+                  *renderer_button = hildon_plugin_cell_renderer_button_new ();
 
   GtkTreeViewColumn *column_pb,
                     *column_toggle,
@@ -394,13 +415,14 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
     gtk_tree_view_column_new_with_attributes
       (NULL, renderer_text, "text", 3, NULL);
 
-  renderer_button = NULL; /*TODO: NOTE: To make compiler happy */
-  column_button = NULL;
+  column_button = 
+    gtk_tree_view_column_new_with_attributes
+      (NULL, renderer_button, "plugin-module", 6, NULL);    
 
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_pb);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_toggle);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_text);
-  /*gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_button);*/
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_button);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_toggle);
 
   g_signal_connect (G_OBJECT(renderer_toggle), 
 		    "toggled",
@@ -414,10 +436,11 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
   GKeyFile *keyfile;
   gchar *config_file_path;
   gchar **panels;
+  const gchar *home = g_get_home_dir ();
   gsize n_panels;
   register gint i;
 
-  config_file_path = g_build_filename (g_get_home_dir (),
+  config_file_path = g_build_filename (home,
                                        HD_DESKTOP_CONFIG_USER_PATH,
                                        HP_CONFIG_DESKTOP,
                                        NULL);
@@ -459,10 +482,13 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
 
   for (i=0; i < n_panels; i++)
   {
+    GError *error = NULL;
     HPSDTab *tab;
     gchar *config_file = NULL,
 	  *plugin_dir = NULL,
-	  *type = NULL;
+	  *type = NULL,
+	  *path_to_save = NULL;
+    gboolean is_sorted = TRUE;
 
     plugin_dir = 
       g_key_file_get_string (keyfile,
@@ -481,7 +507,18 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
                              panels[i],
                              HD_DESKTOP_CONFIG_KEY_CONFIG_FILE,
                              NULL);
-     
+
+    is_sorted =
+      g_key_file_get_boolean (keyfile,
+		      	      panels[i],
+	  		      HD_DESKTOP_CONFIG_KEY_IS_ORDERED,
+			      &error);
+    if (error)
+    {
+      is_sorted = TRUE;
+      g_error_free (error);
+    }      
+    
     if (!plugin_dir || 
 	!type || 
 	!config_file ||
@@ -490,22 +527,29 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
       goto cleanup;
     }
 
-    tab = g_new0 (HPSDTab,1);
+    path_to_save = g_build_filename (home,
+		    		     HD_DESKTOP_CONFIG_USER_PATH,
+				     config_file,
+				     NULL);
 
+    tab = g_new0 (HPSDTab,1);
+    
     tab->name = g_strdup (panels[i]);
     tab->parser = 
      HILDON_PLUGIN_CONFIG_PARSER 
-      (hildon_plugin_config_parser_new 
-         (plugin_dir,g_build_filename (g_get_home_dir (),
-				       HD_DESKTOP_CONFIG_USER_PATH,
-				       config_file)));
+      (hildon_plugin_config_parser_new (plugin_dir,path_to_save));
+	 
     tab->tw = NULL;
     tab->filter = NULL;
+    tab->is_sorted = is_sorted;
+
+    g_free (path_to_save);
 
     hildon_plugin_config_parser_set_keys (tab->parser,
 					  "Name", G_TYPE_STRING,
 					  "Icon", GDK_TYPE_PIXBUF,
 					  "Mandatory", G_TYPE_BOOLEAN,
+					  "X-Settings", HILDON_PLUGIN_TYPE_MODULE_SETTINGS,
 					  NULL);
 
     settings->priv->tabs = g_list_append (settings->priv->tabs, tab);
@@ -545,6 +589,22 @@ hildon_plugin_settings_dialog_compare_tab (gconstpointer a,
   return 1;
 }
 
+static gint 
+hildon_plugin_settings_dialog_compare_tab_tw (gconstpointer a,
+					      gconstpointer b)
+{
+  const HPSDTab *tab;
+  const GtkTreeView *tw;
+
+  tab = (const HPSDTab *)a;
+  tw  = (const GtkTreeView *)b;
+  
+  if (tab->tw == tw)
+    return 0;
+   
+  return 1;
+}
+
 static void 
 hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
                            		           gchar *path,
@@ -576,6 +636,35 @@ hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_r
     gtk_list_store_set (GTK_LIST_STORE (tm), &iter,
                         HP_COL_CHECKBOX, !selected,
 		        -1);
+  }
+}
+
+static void 
+hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
+						    GtkNotebookPage *nb_page,
+						    guint page,
+						    HildonPluginSettingsDialog *settings)
+{
+  GtkWidget *sw =
+      gtk_notebook_get_nth_page (GTK_NOTEBOOK (settings->priv->notebook),page);
+                                
+  if (GTK_IS_SCROLLED_WINDOW (sw))
+  {
+    GtkTreeView *tw = GTK_TREE_VIEW (GTK_BIN (sw)->child);
+    GList *container_tab = NULL;
+
+    container_tab = 
+      g_list_find_custom (settings->priv->tabs,
+			  tw,
+			  (GCompareFunc)hildon_plugin_settings_dialog_compare_tab_tw);
+
+    if (!container_tab)
+      return; 
+			  
+    HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+    gtk_widget_set_sensitive (settings->priv->button_up, tab->is_sorted);
+    gtk_widget_set_sensitive (settings->priv->button_down, tab->is_sorted);
   }
 }
 

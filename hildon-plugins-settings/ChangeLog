@@ -1,3 +1,18 @@
+2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* configure.ac:
+	- Added libhildondesktop headers.
+	* src/hildon-plugin-module-settings.[ch]:
+	- Wrapper around possible settings for a HildonDesktopItem
+	* src/hildon-plugin-cell-renderer-button.[ch]:
+	- Implemented CellRendererButton
+	* src/hildon-plugin-settings-dialog.c:
+	- Added new CellRendererButton.
+	- Added key "X-Settings" to parser.
+	* src/hildon-plugin-config-parser.c:
+	- It knows what to do when a HildonPluginModuleSettings is set.
+	* src/Makefile.am: Added new stuff
+
 2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-settings-dialog.[ch]:

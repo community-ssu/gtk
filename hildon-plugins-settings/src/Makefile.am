@@ -6,6 +6,7 @@ INCLUDES = \
         $(LIBOSSOHELP_CFLAGS) \
         $(LIBHILDONMENU_CFLAGS) \
 	$(HILDONDESKTOP_CFLAGS) \
+	$(LIBHILDONDESKTOP_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DPREFIXDIR=\"$(prefix)\" \
 	$$(xml2-config --cflags)
@@ -23,6 +24,10 @@ libhildonpluginsettings_la_LIBADD = \
 libhildonpluginsettings_la_SOURCES = \
 	hildon-plugin-config-parser.h \
 	hildon-plugin-config-parser.c \
+	hildon-plugin-module-settings.h \
+	hildon-plugin-module-settings.c \
+	hildon-plugin-cell-renderer-button.h \
+	hildon-plugin-cell-renderer-button.c \
 	hildon-plugin-settings-dialog.h \
 	hildon-plugin-settings-dialog.c \
 	hildon-plugin-settings.c
