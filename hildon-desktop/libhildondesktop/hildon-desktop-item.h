@@ -70,7 +70,7 @@ const gchar*  hildon_desktop_item_get_name    (HildonDesktopItem *item);
 gint          hildon_desktop_item_find_by_id  (HildonDesktopItem *item,
                                                const gchar *id);
 
-typedef GtkWidget  *(*HildonDesktopItemSettingsDialog) (HildonDesktopItem *item);
+typedef GtkWidget  *(*HildonDesktopItemSettingsDialog) (void);
 
 G_END_DECLS
 
