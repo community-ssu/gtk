@@ -30,6 +30,8 @@
 
 G_BEGIN_DECLS
 
+#define HILDON_DESKTOP_ITEM_SETTINGS_SYMBOL "hildon_desktop_item_get_settings"
+
 typedef struct _HildonDesktopItem HildonDesktopItem; 
 typedef struct _HildonDesktopItemClass HildonDesktopItemClass;
 
