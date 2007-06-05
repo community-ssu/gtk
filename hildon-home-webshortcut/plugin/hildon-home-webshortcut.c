@@ -522,7 +522,8 @@ hhws_button_release (GtkWidget         *widget,
   Hhws             *hhws = HHWS (widget);
   HhwsPrivate      *priv = hhws->priv;
 
-  if (priv->click_x != event->x_root || priv->click_y != event->y_root)
+  if ((ABS (priv->click_x - event->x_root)  > 15.0 )  ||
+      (ABS (priv->click_y - event->y_root)) > 15.0)
     {
       return GTK_WIDGET_CLASS (hhws_parent_class)->button_release_event (widget,
                                                                          event);
