@@ -174,7 +174,8 @@ start)
     # Give Backup a chance to finish restoring task
     if [ -f $HOME/.osso-backup/last-restore.xml ]; then
       if [ -x $AF_INIT_DIR/osso-backup-finish-restore.sh ]; then
-        $AF_INIT_DIR/osso-backup-finish-restore.sh
+        touch /tmp/run-osso-backup-finish-restore
+        # $AF_INIT_DIR/osso-backup-finish-restore.sh
       fi
     fi
   fi

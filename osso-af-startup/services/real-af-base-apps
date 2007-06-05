@@ -28,6 +28,11 @@ start)
   # boost desktop startup
   sleep 9
 
+  if [ -f /tmp/run-osso-backup-finish-restore ]; then
+    $AF_INIT_DIR/osso-backup-finish-restore.sh
+    rm -f /tmp/run-osso-backup-finish-restore
+  fi
+
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT start
   fi

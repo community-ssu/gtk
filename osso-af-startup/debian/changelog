@@ -3,8 +3,10 @@ osso-af-startup (1.42-1) unstable; urgency=low
   * UNRELEASED
   * Setting the OOM killer protection more intelligently in af-services.
     (Related to NB#52080.)
+  * Moved the restore finalisation script to be run later. (Related to
+    NB#54498.)
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 28 May 2007 17:29:11 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 05 Jun 2007 15:19:39 +0300
 
 osso-af-startup (1.41-1) unstable; urgency=low
 
