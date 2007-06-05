@@ -1,5 +1,9 @@
 2007-06-05  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 0.1.11
+
+2007-06-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* applet_manager.conf: Replaced webshortcut with promo-applet
 
 2007-04-26  Johan Bilien <johan.bilien@nokia.com>
