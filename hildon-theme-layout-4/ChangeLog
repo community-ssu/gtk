@@ -1,3 +1,8 @@
+2007-06-05 Tapani Palli <tapani.palli@nokia.com>
+
+	* data/theme.xml: finetune frame animation rectangle coordinates for
+	plankton theme
+
 2007-06-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/ossoclock.rc: Fixed background name and border values

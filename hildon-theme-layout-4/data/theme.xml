@@ -9,8 +9,8 @@
 <color id="lowlightcol" def="#000000" />
 
 <!-- frame animations, src and dst rectangle coordinate values -->
-<frame-animation id="close" src="400 0 400 480" dst="780 30 1 1"/>
-<frame-animation id="minimize" src="80 0 720 480" dst="0 270 80 210"/>
+<frame-animation id="close" src="400 0 400 480" dst="774 30 1 1"/>
+<frame-animation id="minimize" src="80 0 720 480" dst="0 240 80 240"/>
 <frame-animation id="maximize" src="40 450 0 0" dst="80 0 720 480" />
 
 <!-- Fonts, alternate fonts can be listed seperated by a '|'   
