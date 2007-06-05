@@ -1,5 +1,13 @@
 2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildondesktop/hildon-desktop-item.h:
+	- Fixed prototype.
+	* libhildondesktop/hildon-desktop-panel.[ch]:
+	- Added method to refresh information of possible status bar items
+	inside panel containers
+
+2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
 	- Added implementation of container remove that just decreases items
 	counter.

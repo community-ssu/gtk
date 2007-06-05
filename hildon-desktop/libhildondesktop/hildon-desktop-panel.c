@@ -25,6 +25,7 @@
 
 #include "hildon-desktop-panel.h"
 #include "hildon-desktop-panel-item.h"
+#include "statusbar-item.h"
 
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvbox.h>
@@ -83,7 +84,6 @@ void hildon_desktop_panel_real_add_button (HildonDesktopPanel *panel,
 					   GtkWidget *widget);
 
 static GtkWidgetClass *hildon_desktop_panel_get_widget_class (HildonDesktopPanel *panel);
-
 
 static void 
 hildon_desktop_panel_class_init (HildonDesktopPanelClass *panel_class)
@@ -395,11 +395,8 @@ void
 hildon_desktop_panel_set_orientation (HildonDesktopPanel *panel, GtkOrientation orientation)
 {
   g_return_if_fail (panel && HILDON_DESKTOP_IS_PANEL (panel));
-#ifndef PERFORMANCE
-  g_object_set (G_OBJECT (panel),"orientation",orientation,NULL);
-#else
+  
   panel->orient = orientation;
-#endif
 
   gtk_widget_queue_resize (GTK_WIDGET (panel));
 }
@@ -408,29 +405,35 @@ GtkOrientation
 hildon_desktop_panel_get_orientation (HildonDesktopPanel *panel)
 {
   g_assert (panel && HILDON_DESKTOP_IS_PANEL (panel));
-#ifndef PERFORMANCE
-  GtkOrientation orientation;
-  
-  g_object_get (G_OBJECT (panel), "orientation", &orientation,NULL);
-
-  return orientation;
-#else
- return panel->orient;
-#endif
+ 
+  return panel->orient;
 }
 
 void 
 hildon_desktop_panel_flip (HildonDesktopPanel *panel)
 {
   g_return_if_fail (panel && HILDON_DESKTOP_IS_PANEL (panel));
-#ifndef PERFORMANCE
-  GtkOrientation orientation;
 
-  g_object_get (G_OBJECT (panel), "orientation", &orientation, NULL);
-  g_object_set (G_OBJECT (panel), "orientation", !orientation, NULL);
-#else
-  panel->orient = !priv->orient;
-#endif
+  panel->orient = !panel->orient;
 
   gtk_widget_queue_resize (GTK_WIDGET (panel));
 }
+
+void 
+hildon_desktop_panel_refresh_items_status (HildonDesktopPanel *panel)
+{
+  GList *children = NULL, *l;
+
+  g_return_if_fail (panel && HILDON_DESKTOP_IS_PANEL (panel));
+ 
+  children = gtk_container_get_children (GTK_CONTAINER (panel));
+
+  for (l = children; l != NULL; l = g_list_next (l))
+  {	  
+    if (STATUSBAR_IS_ITEM (l->data))
+      g_object_notify (G_OBJECT (l->data), "condition");	     
+  }
+
+  g_list_free (children);
+}	
+

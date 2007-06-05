@@ -82,6 +82,8 @@ GtkOrientation  hildon_desktop_panel_get_orientation  (HildonDesktopPanel *panel
 
 void            hildon_desktop_panel_flip             (HildonDesktopPanel *panel);
 
+void		hildon_desktop_panel_refresh_items_status   (HildonDesktopPanel *panel);
+
 G_END_DECLS
 
 #endif /* __HILDON_DESKTOP_PANEL_H__ */ 
