@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.12-0osso4) unstable; urgency=low
+
+  * Switch submenu opening direction only if the opposite direction has
+    more space than the current one. Fixes: NB#50636
+  * Fix inconsistency in SAVED_STATE of a widget hierarchy in some situations.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  5 Jun 2007 14:21:34 +0300
+
 gtk+2.0 (2:2.10.12-0osso3) unstable; urgency=low
 
   * debian/control.in:
