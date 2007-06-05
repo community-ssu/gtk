@@ -1,6 +1,5 @@
 osso-af-startup (1.42-1) unstable; urgency=low
 
-  * UNRELEASED
   * Setting the OOM killer protection more intelligently in af-services.
     (Related to NB#52080.)
   * Moved the restore finalisation script to be run later. (Related to
