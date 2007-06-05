@@ -103,6 +103,8 @@ static void hildon_desktop_panel_expandable_set_property       (GObject *object,
 
 static void hildon_desktop_panel_expandable_cadd (GtkContainer *container, GtkWidget *widget);
 
+static void hildon_desktop_panel_expandable_cremove (GtkContainer *container, GtkWidget *widget);
+
 static void hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget *widget);
 
 static GObject *hildon_desktop_panel_expandable_constructor (GType gtype,guint n_params,GObjectConstructParam *params);
@@ -139,7 +141,8 @@ hildon_desktop_panel_expandable_class_init (HildonDesktopPanelExpandableClass *p
 
   hildon_panel_class->add_button = hildon_desktop_panel_expandable_add_button;
 
-  container_class->add = hildon_desktop_panel_expandable_cadd;
+  container_class->add    = hildon_desktop_panel_expandable_cadd;
+  container_class->remove = hildon_desktop_panel_expandable_cremove;
 
   object_class->constructor  = hildon_desktop_panel_expandable_constructor;
   object_class->finalize     = hildon_desktop_panel_expandable_finalize;
@@ -368,6 +371,18 @@ hildon_desktop_panel_expandable_cadd (GtkContainer *container, GtkWidget *widget
   g_return_if_fail (HILDON_DESKTOP_IS_PANEL_EXPANDABLE (container));
 
   hildon_desktop_panel_expandable_add_button (HILDON_DESKTOP_PANEL (container), widget);
+}
+
+static void 
+hildon_desktop_panel_expandable_cremove (GtkContainer *container, GtkWidget *widget)
+{
+  HildonDesktopPanelExpandable *panel;
+
+  GTK_CONTAINER_CLASS (hildon_desktop_panel_expandable_parent_class)->remove (container, widget);
+
+  panel = HILDON_DESKTOP_PANEL_EXPANDABLE (container);
+
+  panel->priv->n_items--; 
 }
 
 static void 

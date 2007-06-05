@@ -1,3 +1,9 @@
+2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Added implementation of container remove that just decreases items
+	counter.
+
 2007-06-04  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c:
