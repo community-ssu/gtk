@@ -1,3 +1,10 @@
+hildon-home-webshortcut (1:1.9.3-1) sardine; urgency=low
+
+  * plugin/hildon-home-webshortcut.c:
+  - do not launch the browser if the stylus moved by more than 15px
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  5 Jun 2007 17:13:31 +0300
+
 hildon-home-webshortcut (1:1.9.2-1) sardine; urgency=low
 
   * plugin/hhwsloader.c:
