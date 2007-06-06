@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=Hildon Plugins Settings
+Comment=Plugins Settings for Hildon Desktop
+Exec=/usr/bin/hildon-plugin-settings
+Icon=qgn_list_cntlpane
+X-Icon-path=/usr/share/pixmaps/
+X-Window-Icon=tn-bookmarks-link
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable

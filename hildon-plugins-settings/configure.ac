@@ -29,6 +29,15 @@ AC_SUBST(X_CFLAGS)
 
 AC_HEADER_STDC
 
+#++++++++++++
+# i18n setup
+#++++++++++++
+
+ALL_LINGUAS="en_GB"
+AC_SUBST(ALL_LINGUAS)
+AM_GLIB_GNU_GETTEXT
+AC_DEFINE(GETTEXT_PACKAGE, ["osso-applet-tasknavigator"], [Package name for gettext])
+
 if test foobar${hildon_use_debug} = foobaryes 
 then
     CFLAGS="$CFLAGS -ggdb -O0 -DDEBUG"
@@ -68,10 +77,6 @@ PKG_CHECK_MODULES(CP,hildon-control-panel >= 0.8.3)
 AC_SUBST(CP_LIBS)
 AC_SUBST(CP_CFLAGS)
 
-PKG_CHECK_MODULES(LIBOSSOHELP, libossohelp >= 0.0.4)
-AC_SUBST(LIBOSSOHELP_LIBS)
-AC_SUBST(LIBOSSOHELP_CFLAGS)
-
 PKG_CHECK_MODULES(LIBHILDONMENU, libhildonmenu >= 0.0.1 )
 AC_SUBST(LIBHILDONMENU_LIBS)
 AC_SUBST(LIBHILDONMENU_CFLAGS)
@@ -84,6 +89,8 @@ pluginlibdir=`pkg-config hildon-control-panel --variable=pluginlibdir`
 AC_SUBST(pluginlibdir)
 desktopentrydir=`pkg-config hildon-control-panel --variable=plugindesktopentrydir`
 AC_SUBST(desktopentrydir)
+desktopbinentrydir=`pkg-config osso-af-settings --variable=desktopentrydir`
+AC_SUBST(desktopbinentrydir)
 
 PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`
@@ -92,5 +99,6 @@ AC_SUBST(localedir)
 AC_OUTPUT(Makefile \
 	  src/Makefile \
 	  data/hildon-plugins-settings.desktop \
+	  data/hildon-plugin-settings-bin.desktop \
 	  data/Makefile)
 

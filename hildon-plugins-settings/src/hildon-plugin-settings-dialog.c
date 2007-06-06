@@ -23,6 +23,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "hildon-plugin-settings-dialog.h"
 #include "hildon-plugin-config-parser.h"
 #include "hildon-plugin-cell-renderer-button.h"
@@ -31,16 +35,17 @@
 #include <gtk/gtktreemodelfilter.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include <hildon-desktop/hd-config.h>
 
-#define HPSD_OK "Ok"
-#define HPSD_CANCEL "Cancel"
+#define HPSD_OK _("tncpa_bv_tnsb_ok")
+#define HPSD_CANCEL _("tncpa_bv_tnsb_cancel")
 
 #define HPSD_TAB_SB "Statusbar"
 #define HPSD_TAB_TN "Task Navigator"
 
-#define HPSD_TITLE "Plugin's Settings"
+#define HPSD_TITLE _("tncpa_ti_tnsb_title") 
 
 #ifndef HP_PATH_TN
 #define HP_PATH_TN "/usr/share/applications/hildon-navigator"
@@ -146,6 +151,10 @@ hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
   settings->priv->type = HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG;
 
   settings->priv->hide_home = TRUE;
+
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+  textdomain (GETTEXT_PACKAGE);
 }
 
 static void 

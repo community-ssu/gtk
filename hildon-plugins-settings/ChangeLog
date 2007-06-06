@@ -1,5 +1,16 @@
 2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hildon-plugin-settings-dialog.c:
+	- Added support for localization.
+	* configure.ac: 
+	- Added localization
+	- Updated *.in files
+	* data/hildon-plugin-settings-bin.desktop.in: Added for standalone
+	application.
+	* debian/*: Added debian packaging.
+
+2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hildon-plugin-settings-dialog.c: Fixed toggling checkboxes when
 	using a TreeModelFilter.
 	* src/hildon-plugin-settings.c: Added visibility_filter for

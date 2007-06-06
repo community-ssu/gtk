@@ -1,0 +1,19 @@
+Source: hildon-plugins-settings
+Section: x11
+Priority: optional
+Maintainer: unknown <moises.martinez@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libosso-dev (>= 0.9.19), osso-af-settings, hildon-control-panel-dev, hildon-desktop (>= 0.0.16), libhildondesktop (>= 0.0.16), libhildon1-dev, libhildonmenu0-dev
+Standards-Version: 3.6.1
+
+Package: hildon-plugins-settings-cpa
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, osso-applet-tasknavigator-l10n-mr | osso-applet-tasknavigator-l10n-mr0, hildon-control-panel
+Conflicts: hildon-control-panel-navigatorapplet
+Description: Hildon Control Panel's Task navigator & Statusbar applet plugin
+ Hildon Control Panel applet to configure the Hildon Desktop's panels.
+
+Package: hildon-plugins-settings-bin
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, osso-applet-tasknavigator-l10n-mr | osso-applet-tasknavigator-l10n-mr0
+Description: Hildon Desktop's Plugins Settings
+ Hildon Control Panel applet to configure the Hildon Desktop's plugins.
