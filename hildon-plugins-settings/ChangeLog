@@ -1,4 +1,13 @@
-2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
+
+	* configure.ac: Added hildon-1 for standalone application.
+	* src/hildon-plugin-settings-dialog.[ch]:
+	- Make Ok & Cancel buttons plubic.
+	* src/Makefile.am: Added hildon-1 for standalone application.
+	* src/hildon-plugin-settings-main.c:
+	- Use a HildonWindow a reparent GtkDialog content to it.
+
+2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-cell-renderer-button.c:
 	- Fixed some special cases.

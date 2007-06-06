@@ -49,8 +49,8 @@ struct _HildonPluginSettingsDialog
 {
   GtkDialog parent;
 
-  GtkTreeModel *sbtm;
-  GtkTreeModel *tntm;
+  GtkWidget *button_ok;
+  GtkWidget *button_cancel;
 
   HildonPluginSettingsDialogPrivate *priv;
 };

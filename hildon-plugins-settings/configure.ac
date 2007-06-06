@@ -76,6 +76,10 @@ PKG_CHECK_MODULES(LIBHILDONMENU, libhildonmenu >= 0.0.1 )
 AC_SUBST(LIBHILDONMENU_LIBS)
 AC_SUBST(LIBHILDONMENU_CFLAGS)
 
+PKG_CHECK_MODULES(LIBHILDONMENU, hildon-1)
+AC_SUBST(LIBHILDON_LIBS)
+AC_SUBST(LIBHILDON_CFLAGS)
+
 pluginlibdir=`pkg-config hildon-control-panel --variable=pluginlibdir`
 AC_SUBST(pluginlibdir)
 desktopentrydir=`pkg-config hildon-control-panel --variable=plugindesktopentrydir`

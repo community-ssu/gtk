@@ -24,27 +24,44 @@
  */
 
 #include <gtk/gtkmain.h>
+#include <hildon/hildon-window.h>
 #include "hildon-plugin-settings-dialog.h"
+
+static void 
+_exit (GtkWidget *widget, gpointer data)
+{
+  gtk_main_quit ();
+}	
 
 int 
 main (int argc, char **argv)
 {
-  GtkWidget *dialog;
+  GtkWidget *dialog, *window;
 	
   gtk_init (&argc, &argv);
+
+  window = hildon_window_new ();
   
   dialog = GTK_WIDGET (g_object_new (HILDON_PLUGIN_TYPE_SETTINGS_DIALOG,
 			  	     "window-type", HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW,
 				     "hide-home", FALSE,
 				     NULL));
 
-  gtk_widget_show (dialog);
+  gtk_widget_realize (dialog);
 
-  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_reparent (GTK_BIN (dialog)->child, window);
+
+  gtk_button_set_label (GTK_BUTTON (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_ok), "Apply");
+  gtk_button_set_label (GTK_BUTTON (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_ok), "Exit");
+ 
+  g_signal_connect_after (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_cancel,
+		          "clicked",
+			  G_CALLBACK (_exit),
+			  NULL);
+
+  gtk_widget_show (window);
 
   gtk_main ();	
-
-  gtk_widget_destroy (dialog);
 
   return 0;
 }	

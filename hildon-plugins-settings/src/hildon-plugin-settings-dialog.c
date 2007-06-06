@@ -141,9 +141,6 @@ hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
 {
   settings->priv = HILDON_PLUGIN_SETTINGS_DIALOG_GET_PRIVATE (settings);
 
-  settings->sbtm = 
-  settings->tntm = NULL;	  
-  
   settings->priv->tabs = NULL;
 
   settings->priv->type = HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG;
@@ -223,7 +220,8 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
 
   gtk_widget_push_composite_child ();
 
-  gtk_dialog_add_button (dialog,
+  settings->button_ok =
+    gtk_dialog_add_button (dialog,
 		  	 HPSD_OK,
 			 GTK_RESPONSE_OK);
 
@@ -240,9 +238,10 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   settings->priv->button_up   = button_up;
   settings->priv->button_down = button_down;
 
-  gtk_dialog_add_button (dialog,
-			 HPSD_CANCEL,
-		       	 GTK_RESPONSE_CANCEL);
+  settings->button_cancel =
+    gtk_dialog_add_button (dialog,
+			   HPSD_CANCEL,
+		       	   GTK_RESPONSE_CANCEL);
 
   g_signal_connect (dialog, 
 		    "response",

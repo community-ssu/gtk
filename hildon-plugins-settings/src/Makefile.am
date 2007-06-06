@@ -29,14 +29,14 @@ HILDON_PLUGIN_SOURCES = \
 pluginlib_LTLIBRARIES = libhildonpluginsettings.la
 
 
-libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES)
+libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES) $(LIBHILDON_CFLAGS)
 
 libhildonpluginsettings_la_LIBADD = \
 	$(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
 	$(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS)
 
 libhildonpluginsettings_la_SOURCES = \
-	$(HILDON_PLUGIN_SOURCES)				     
+	$(HILDON_PLUGIN_SOURCES) \
 	hildon-plugin-settings.c
 
 bin_PROGRAMS = hildon-plugin-settings
@@ -45,7 +45,7 @@ hildon_plugin_settings_CPPFLAGS = $(INCLUDES)
 
 hildon_plugin_settings_LDADD = \
 	$(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
-        $(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS)
+        $(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS) $(LIBHILDON_LIBS)
 
 hildon_plugin_settings_SOURCES = \
 	$(HILDON_PLUGIN_SOURCES) \
