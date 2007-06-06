@@ -1,5 +1,13 @@
 2007-06-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- do not call the parent's style_set, which resets the background
+	to white
+	- fixed detection of unchanged style.
+	Fixes: NB#53975
+
+2007-06-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-plugin-loader-legacy.c, src/hd-plugin-loader-factory.c:
 	- load the applet with G_MODULE_BIND_LOCAL to avoid conflict
 	of symbols. Patch courtesy of Santtu Lakkala.

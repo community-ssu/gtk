@@ -779,27 +779,32 @@ hd_home_window_style_set (GtkWidget *widget, GtkStyle *old_style)
   window = HD_HOME_WINDOW (widget);
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
 
-  if (GTK_WIDGET_CLASS (hd_home_window_parent_class)->style_set)
-    GTK_WIDGET_CLASS (hd_home_window_parent_class)->style_set (widget,
-                                                               old_style);
   north_border = hd_home_window_get_pixmap_name (window,
                                                  HD_HOME_WINDOW_STYLE_NORTH_BORDER);
 
   west_border  = hd_home_window_get_pixmap_name (window,
                                                  HD_HOME_WINDOW_STYLE_WEST_BORDER);
 
+  g_debug ("style set with %s, %s", north_border, west_border);
+
 
   /* avoid resetting the background when the window is exposed for the
    * first time
    */
   if (!old_style ||
-      !(north_border && g_str_equal (priv->north_border, north_border)) ||
-      !(west_border && g_str_equal (priv->west_border, west_border)))
+      (north_border && !g_str_equal (priv->north_border, north_border)) ||
+      (west_border  && !g_str_equal (priv->west_border, west_border)))
     {
       if (north_border)
-        priv->north_border = g_strdup (north_border);
+        {
+          g_free (priv->north_border);
+          priv->north_border = g_strdup (north_border);
+        }
       if (west_border)
-        priv->west_border  = g_strdup (west_border);
+        {
+          g_free (priv->west_border);
+          priv->west_border  = g_strdup (west_border);
+        }
 
       if (priv->background)
         {
@@ -836,6 +841,7 @@ hd_home_window_style_set (GtkWidget *widget, GtkStyle *old_style)
             }
         }
     }
+
 }
 
 static gboolean
