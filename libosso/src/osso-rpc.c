@@ -1289,7 +1289,8 @@ muali_error_t _muali_send_helper(muali_context_t *context,
         _osso_callback_data_t *cb_data;
         DBusMessage *msg;
         DBusConnection *conn;
-        int msg_serial = 0, handler_id;
+        unsigned int msg_serial = 0;
+	int handler_id;
 
         if (context == NULL) {
                 return MUALI_ERROR_INVALID;

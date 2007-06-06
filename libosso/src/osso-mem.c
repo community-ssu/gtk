@@ -35,6 +35,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <syslog.h>
+#include <inttypes.h>
 
 #include "osso-mem.h"
 
@@ -481,8 +482,9 @@ int osso_mem_saw_enable(size_t threshold,
       saw_max_block_size = watchblock;
       saw_user_context   = context;
       /* Always dumping memory information (workaround for thumbnailer) */
-      syslog(LOG_CRIT, "osso_mem %u = %u + %u + %u - %u", saw_max_heap_size,
-             mi.arena, mi.hblkhd, current.usable, threshold);
+      syslog(LOG_CRIT, "osso_mem %zd = %u + %u + %zd - %zd",
+	     saw_max_heap_size, mi.arena, mi.hblkhd, current.usable, 
+	     threshold);
 
       if(saw_malloc_hook != __malloc_hook)
       {

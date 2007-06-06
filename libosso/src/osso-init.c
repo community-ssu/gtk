@@ -4,7 +4,7 @@
  * 
  * This file is part of libosso
  *
- * Copyright (C) 2005-2006 Nokia Corporation. All rights reserved.
+ * Copyright (C) 2005-2007 Nokia Corporation. All rights reserved.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -874,7 +874,7 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
                          * supposed to be unique). Add it to list to remove
                          * it later safely outside this loop. */
                         rm_list = g_slist_prepend(rm_list,
-                                      (gpointer)handler->handler_id);
+                                      GINT_TO_POINTER(handler->handler_id));
 
                         list = g_slist_next(list);
                         continue;
@@ -929,7 +929,7 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
         rm_list_p = rm_list;
         do {
             gboolean ret;
-            int handler_id = (int)rm_list_p->data;
+            int handler_id = GPOINTER_TO_INT(rm_list_p->data);
 
             assert(handler_id != 0);
             ret = _muali_unset_handler(muali, handler_id);
@@ -1141,7 +1141,7 @@ _muali_set_handler(_muali_context_t *context,
     elem->call_once_per_handler_id = call_once_per_handler_id;
     /* other members are not used and left zero */
 
-    old = g_hash_table_lookup(context->id_hash, (gconstpointer)handler_id);
+    old = g_hash_table_lookup(context->id_hash, GINT_TO_POINTER(handler_id));
     if (old != NULL) {
         ULOG_DEBUG_F("registering another handler for id %d", handler_id);
 
@@ -1163,7 +1163,7 @@ _muali_set_handler(_muali_context_t *context,
 
         new_elem->handlers = g_slist_append(NULL, elem);
 
-        g_hash_table_insert(context->id_hash, (gconstpointer)handler_id,
+        g_hash_table_insert(context->id_hash, GINT_TO_POINTER(handler_id),
                             new_elem);
     }
 
@@ -1211,7 +1211,7 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
     GSList *list;
 
     ULOG_DEBUG_F("context=%p", context);
-    elem = g_hash_table_lookup(context->id_hash, (gconstpointer)handler_id);
+    elem = g_hash_table_lookup(context->id_hash, GINT_TO_POINTER(handler_id));
     if (elem == NULL) {
         ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
         return FALSE;
@@ -1267,7 +1267,7 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
         list = g_slist_next(list);
     }
 
-    if (!g_hash_table_remove(context->id_hash, (gconstpointer)handler_id)) {
+    if (!g_hash_table_remove(context->id_hash, GINT_TO_POINTER(handler_id))) {
         ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
         assert(0); /* this is a bug */
     }

@@ -1,15 +1,5 @@
 SUBDIRS = src ut
 
-EXTRA_DIST = \
-	debian/changelog \
-	debian/control \
-	debian/copyright \
-	debian/libosso-dev.install \
-	debian/libosso-dbus-conf.install \
-	debian/libosso1.install \
-	debian/libosso1-dbg.install \
-	debian/rules
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libosso.pc
 
