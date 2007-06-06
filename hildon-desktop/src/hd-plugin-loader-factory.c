@@ -127,7 +127,8 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
       GModule *module;
       gchar *libpath = g_build_filename (HD_PLUGIN_LOADER_MODULES_PATH, name, NULL);
 
-      module = g_module_open (libpath, G_MODULE_BIND_LAZY);
+      module = g_module_open (libpath,
+                              G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
 
       if (module != NULL)
       {

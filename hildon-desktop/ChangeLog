@@ -1,3 +1,10 @@
+2007-06-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c, src/hd-plugin-loader-factory.c:
+	- load the applet with G_MODULE_BIND_LOCAL to avoid conflict
+	of symbols. Patch courtesy of Santtu Lakkala.
+	Fixes: NB#59641
+
 2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-item.h:

@@ -291,7 +291,9 @@ hd_plugin_loader_legacy_open_module (HDPluginLoaderLegacy *loader,
     g_free (module_file);
   }
 
-  priv->module = g_module_open (module_path, 0);
+  priv->module = g_module_open (module_path,
+                                G_MODULE_BIND_LAZY |
+                                G_MODULE_BIND_LOCAL);
   g_free (module_path);
 
   if (!priv->module)
