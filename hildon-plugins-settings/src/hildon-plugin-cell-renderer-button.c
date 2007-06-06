@@ -345,12 +345,11 @@ hildon_plugin_paint_button (GtkStyle *style,
 
   if (state == GTK_STATE_ACTIVE)
   { 
-    gtk_paint_box (style, window,
-                   GTK_STATE_INSENSITIVE, 
-		   GTK_SHADOW_ETCHED_IN, 
-		   expose_area, 
-		   widget, "button",
-                   x, y, width, height);
+    gtk_paint_focus (style, window,
+                     GTK_STATE_ACTIVE, 
+		     expose_area, 
+		     widget, "button",
+                     x, y, width, height);
   }
   
   if (state == GTK_STATE_SELECTED)

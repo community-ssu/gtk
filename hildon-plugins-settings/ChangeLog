@@ -1,5 +1,10 @@
 2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
 
+	 * src/hildon-plugin-cell-renderer-button.c:
+	 - Fixed style when pressed.
+
+2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+
 	* configure.ac:
 	- Added libhildondesktop headers.
 	* src/hildon-plugin-module-settings.[ch]:
