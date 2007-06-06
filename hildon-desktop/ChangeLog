@@ -1,5 +1,11 @@
 2007-06-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-pixbuf-anim-blinker.c:
+	- protect against negative values for alpha.
+	Fixes: NB#53501
+
+2007-06-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c:
 	- do not call the parent's style_set, which resets the background
 	to white

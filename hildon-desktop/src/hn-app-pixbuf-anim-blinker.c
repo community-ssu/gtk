@@ -315,6 +315,7 @@ get_pixbuf (GdkPixbufAnimationIter *anim_iter)
 	/* Use period * 2 and 512 so that alpha pulses down as well as up */
 	alpha = MIN (((elapsed % (period*2)) * 511) / (period*2), 511);
 	if (alpha > 255) alpha = 511-alpha;
+        if (alpha < 0) alpha = 0;
 	gdk_pixbuf_composite (iter->hn_app_pixbuf_anim_blinker->pixbuf,
 		iter->hn_app_pixbuf_anim_blinker->blended,
 		0, 0,
