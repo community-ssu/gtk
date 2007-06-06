@@ -455,7 +455,7 @@ hildon_plugin_cell_renderer_button_activate (GtkCellRenderer      *cell,
 
   path = gtk_tree_path_new_from_string (path_string);
   
-  if (cellbutton->priv->clickable)
+  if (cellbutton->priv->clickable && cellbutton->priv->plugin_module)
   {
     GtkWidget *settings_dialog;
 	  

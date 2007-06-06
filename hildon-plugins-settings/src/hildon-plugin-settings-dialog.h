@@ -30,6 +30,9 @@
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtktreemodelfilter.h>
 
+#define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG TRUE
+#define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW FALSE
+
 G_BEGIN_DECLS
 
 typedef struct _HildonPluginSettingsDialog HildonPluginSettingsDialog;

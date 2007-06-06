@@ -64,8 +64,6 @@
 #define HD_DESKTOP_CONFIG_USER_PATH ".osso/hildon-desktop"
 #define HD_DESKTOP_CONFIG_PATH "/etc/hildon-desktop"
 
-#define HPSD_ENABLE_HOME_FILTER FALSE
-
 #define HPSD_RESPONSE_UP GTK_RESPONSE_YES
 #define HPSD_RESPONSE_DOWN GTK_RESPONSE_NO
 
@@ -92,6 +90,15 @@ struct _HildonPluginSettingsDialogPrivate
 
   GtkWidget *button_up;
   GtkWidget *button_down;
+
+  gboolean type;
+  gboolean hide_home;
+};
+
+enum
+{
+  PROP_WINDOW_TYPE=1,
+  PROP_HIDE_HOME
 };
 
 static GObject *hildon_plugin_settings_dialog_constructor (GType gtype,
@@ -100,6 +107,15 @@ static GObject *hildon_plugin_settings_dialog_constructor (GType gtype,
 
 static void hildon_plugin_settings_dialog_finalize (GObject *object);
 
+static void hildon_plugin_settings_dialog_set_property (GObject *object,
+							guint prop_id,
+                                            		const GValue *value,
+                                            		GParamSpec *pspec);
+
+static void hildon_plugin_settings_dialog_get_property (GObject *object,
+							guint prop_id,
+							GValue *value,
+							GParamSpec *pspec);
 
 static void hildon_plugin_settings_dialog_response (GtkDialog *dialog, gint response_id);
 
@@ -129,6 +145,10 @@ hildon_plugin_settings_dialog_init (HildonPluginSettingsDialog *settings)
   settings->tntm = NULL;	  
   
   settings->priv->tabs = NULL;
+
+  settings->priv->type = HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG;
+
+  settings->priv->hide_home = TRUE;
 }
 
 static void 
@@ -139,10 +159,28 @@ hildon_plugin_settings_dialog_class_init (HildonPluginSettingsDialogClass *setti
 
   object_class->constructor = hildon_plugin_settings_dialog_constructor;
   object_class->finalize    = hildon_plugin_settings_dialog_finalize;
+  
+  object_class->set_property = hildon_plugin_settings_dialog_set_property;
+  object_class->get_property = hildon_plugin_settings_dialog_get_property;
 
   dialog_class->response    = hildon_plugin_settings_dialog_response;
-  
+
   g_type_class_add_private (object_class, sizeof (HildonPluginSettingsDialogPrivate));
+
+  g_object_class_install_property (object_class,
+                                   PROP_WINDOW_TYPE,
+                                   g_param_spec_boolean ("window-type",
+                                                         "window-type",
+                                                         "Type of the settings dialog window",
+                                                         HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG,
+                                                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+                                   PROP_HIDE_HOME,
+                                   g_param_spec_boolean ("hide-home",
+                                                         "hide-home",
+                                                         "Hide our beloved home",
+                                                         TRUE,
+                                                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
 
 }
 
@@ -168,9 +206,17 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   dialog = GTK_DIALOG (object);
   settings = HILDON_PLUGIN_SETTINGS_DIALOG (object);
 
+  if (settings->priv->type == HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW)
+  {	  
+    gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_NORMAL);
+  }
+  else 
+  {
+    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+    gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+  }
+  
   gtk_window_set_title (GTK_WINDOW (dialog), HPSD_TITLE);
-  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
-  gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   gtk_dialog_set_has_separator (dialog, FALSE);
 
   gtk_widget_set_size_request (GTK_WIDGET (dialog), -1, 300);
@@ -297,6 +343,58 @@ hildon_plugin_settings_dialog_finalize (GObject *object)
 
   G_OBJECT_CLASS (hildon_plugin_settings_dialog_parent_class)->finalize (object);
 }	
+
+static void
+hildon_plugin_settings_dialog_set_property (GObject *object,
+                                            guint prop_id,
+                                            const GValue *value,
+                                            GParamSpec *pspec)
+{
+  HildonPluginSettingsDialog *settings;
+
+  settings = HILDON_PLUGIN_SETTINGS_DIALOG (object);
+
+  switch (prop_id)
+  {
+    case PROP_WINDOW_TYPE:
+      settings->priv->type = g_value_get_boolean (value);
+      break;
+
+    case PROP_HIDE_HOME:
+      settings->priv->hide_home = g_value_get_boolean (value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }
+}
+
+static void
+hildon_plugin_settings_dialog_get_property (GObject *object,
+                                            guint prop_id,
+                                            GValue *value,
+                                            GParamSpec *pspec)
+{
+  HildonPluginSettingsDialog *settings;
+
+  settings = HILDON_PLUGIN_SETTINGS_DIALOG (object);
+
+  switch (prop_id)
+  {
+    case PROP_WINDOW_TYPE:
+      g_value_set_boolean (value, settings->priv->type);
+      break;
+
+    case PROP_HIDE_HOME:
+      g_value_set_boolean (value, settings->priv->hide_home);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }
+}
 
 static void 
 hildon_plugin_settings_dialog_response_cb (GtkDialog *dialog, gint response_id, gpointer data)
@@ -522,7 +620,7 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
     if (!plugin_dir || 
 	!type || 
 	!config_file ||
-        (g_str_equal (type,HD_CONTAINER_TYPE_HOME) && HPSD_ENABLE_HOME_FILTER))
+        (g_str_equal (type,HD_CONTAINER_TYPE_HOME) && settings->priv->hide_home))
     {
       goto cleanup;
     }

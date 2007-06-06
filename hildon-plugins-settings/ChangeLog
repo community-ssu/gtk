@@ -1,7 +1,19 @@
 2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
 
-	 * src/hildon-plugin-cell-renderer-button.c:
-	 - Fixed style when pressed.
+	* src/hildon-plugin-cell-renderer-button.c:
+	- Fixed some special cases.
+	* src/hildon-plugin-settings-dialog.[ch]: Added property to be shown
+	as a normal GtkWindow.
+	* src/Makefile.am: Added src/hildon-plugin-module-settings-main.c to
+	be built as a standalone binary.
+	* src/hildon-plugin-module-settings.c:
+	* src/hildon-plugin-module-settings-main.c:
+	- Added standalone binary
+
+2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-cell-renderer-button.c:
+	- Fixed style when pressed.
 
 2007-06-05  Moises Martinez  <moises.martinez@nokia.com>
 

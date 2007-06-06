@@ -213,12 +213,9 @@ hildon_plugin_module_settings_new (const gchar *path)
 
 GtkWidget *
 hildon_plugin_module_settings_get_dialog (HildonPluginModuleSettings *module)
-{
-  g_assert (HILDON_PLUGIN_IS_MODULE_SETTINGS (module));
+{	  	
 
-  if (module->priv->settings_func)
-    return module->priv->settings_func ();
-  else
+  if (!module || !HILDON_PLUGIN_IS_MODULE_SETTINGS (module) || !module->priv->settings_func)
   {
     GtkWidget *dialog = gtk_dialog_new ();    
 
@@ -236,5 +233,7 @@ hildon_plugin_module_settings_get_dialog (HildonPluginModuleSettings *module)
     /*TODO: Return a stock GtkDialog */
     return dialog;
   }    
+    
+  return module->priv->settings_func ();
 }
 
