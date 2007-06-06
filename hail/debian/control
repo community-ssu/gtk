@@ -1,10 +1,10 @@
 Source: hail
 Priority: optional
 Maintainer: Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, outo, libhildon1-dev (>= 1.0.3-1),  libhildonfm2-dev (>= 1:1.9.18), libgtk2.0-dev (>= 2:2.10.6-0osso14), libgail-dev (>= 1.8.11-1)
+Build-Depends: debhelper (>= 4.0.0), pkg-config, outo, libhildon1-dev (>= 1.0.3-1),  libhildonfm2-dev (>= 1:1.9.18), libgtk2.0-dev (>= 2:2.10.6-0osso14), libgail-dev (>= 1.8.11-1), hildon-desktop-dev, gtk-doc-tools
 Standards-Version: 3.6.1
 
-Package: hail1
+Package: libhail-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Hildon Accessibility Implementation Library
