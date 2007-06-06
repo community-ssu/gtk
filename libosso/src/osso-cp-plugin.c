@@ -101,7 +101,7 @@ try_plugin (osso_context_t *osso, const char *dir, const char *file)
   if (handle)
     return handle;
 
-  handle = dlopen (libname, RTLD_LAZY | RTLD_GLOBAL);
+  handle = dlopen (libname, RTLD_LAZY | RTLD_LOCAL);
   if (handle == NULL)
     {
       ULOG_ERR_F("Unable to load library '%s': %s", libname, dlerror());

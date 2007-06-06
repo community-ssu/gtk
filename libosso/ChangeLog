@@ -1,3 +1,10 @@
+2007-06-05  Johan Bilien <johan.bilien@nokia.com>
+
+	* src/osso-cp-plugin.c:
+	- use RTLD_LOCAL in dlopen to avoid conflict of symbols
+	in opened plugins, now that we keep the plugins resident.
+	Fixes: NB#59489
+
 2007-03-28  Johan Bilien <johan.bilien@nokia.com>
 
 	* src/osso-internal.h: replaced GArray *cp_plugins with
