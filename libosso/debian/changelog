@@ -1,6 +1,5 @@
 libosso (2.11-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed problem in plugin dlopen code. Fixes: NB#59489
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 06 Jun 2007 10:06:44 +0300
