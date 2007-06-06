@@ -1,5 +1,12 @@
 2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
+	* debian/*: updated.
+  	* configure.ac: 
+	* src/Makefile.am:
+	- Removed libhildonmenu	
+
+2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hildon-plugin-settings-dialog.c:
 	- Added support for localization.
 	* configure.ac: 

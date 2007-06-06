@@ -3,7 +3,6 @@ LDFLAGS_LAUNCHER = -shared -export-dynamic
 
 INCLUDES = \
 	$(CP_CFLAGS) $(OSSO_CFLAGS) $(GCONF_CFLAGS) \
-        $(LIBHILDONMENU_CFLAGS) \
 	$(HILDONDESKTOP_CFLAGS) \
 	$(LIBHILDONDESKTOP_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
@@ -12,8 +11,7 @@ INCLUDES = \
 
 
 LDFLAGS = -module -avoid-version
-HILDON_PLUGIN_LDADDS = $(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
-	 	       $(LIBHILDONMENU_LIBS)
+HILDON_PLUGIN_LDADDS = $(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS)
 
 HILDON_PLUGIN_SOURCES = \
 	hildon-plugin-config-parser.h \
@@ -44,7 +42,7 @@ hildon_plugin_settings_CPPFLAGS = $(INCLUDES)
 
 hildon_plugin_settings_LDADD = \
 	$(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
-        $(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS) $(LIBHILDON_LIBS)
+        $(LIBHILDON_LIBS)
 
 hildon_plugin_settings_SOURCES = \
 	$(HILDON_PLUGIN_SOURCES) \
