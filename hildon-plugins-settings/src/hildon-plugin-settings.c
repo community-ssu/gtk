@@ -31,8 +31,13 @@
 #include <libintl.h>
 #define _(a) dgettext(PACKAGE, a)
 
+/* HARDCODE_PARTY */
+/* Plugins to not be shown */
+#define HP_APPLICATION_SWITCHER "/usr/share/applications/hildon-navigator/app-switcher.desktop"
+#define HP_SWITCHER_MENU "/usr/share/applications/hildon-navigator/switcher-menu.desktop"
+
 static gboolean
-filter_is_visible (GtkTreeModel *model,
+_tn_visibility_filter (GtkTreeModel *model,
                    GtkTreeIter *iter,
                    gpointer data)
 {
@@ -44,7 +49,8 @@ filter_is_visible (GtkTreeModel *model,
                       &name,
                       -1);
 
-  if (g_str_equal (name,"/usr/share/applications/hildon-navigator/hildon-task-navigator-bookmarks.desktop"))
+  if (g_str_equal (name,HP_APPLICATION_SWITCHER) ||
+      g_str_equal (name,HP_SWITCHER_MENU))
     return FALSE;	  
 
   return TRUE;
@@ -62,7 +68,7 @@ execute (osso_context_t *osso,
   hildon_plugin_settings_dialog_set_visibility_filter
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
      "Tasknavigator",
-    filter_is_visible,
+    _tn_visibility_filter,
     NULL,
     NULL);    
 

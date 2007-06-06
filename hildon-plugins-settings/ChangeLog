@@ -1,5 +1,12 @@
 2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hildon-plugin-settings-dialog.c: Fixed toggling checkboxes when
+	using a TreeModelFilter.
+	* src/hildon-plugin-settings.c: Added visibility_filter for
+	Tasknavigator.
+
+2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
+
 	* configure.ac: Added hildon-1 for standalone application.
 	* src/hildon-plugin-settings-dialog.[ch]:
 	- Make Ok & Cancel buttons plubic.

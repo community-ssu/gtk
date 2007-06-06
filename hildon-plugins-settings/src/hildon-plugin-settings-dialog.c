@@ -129,7 +129,7 @@ static void hildon_plugin_settings_dialog_response_cb (GtkDialog *dialog, gint r
 
 static void hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
 		                           		       gchar *path,
-					                       GtkTreeModel *tm);
+					                       GtkTreeView *tw);
 
 static void hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
 								GtkNotebookPage *nb_page,
@@ -524,7 +524,7 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
   g_signal_connect (G_OBJECT(renderer_toggle), 
 		    "toggled",
 		    G_CALLBACK (hildon_plugin_settings_dialog_renderer_toggled_cb),
-		    gtk_tree_view_get_model (tw));
+		    (gpointer)tw);
 }	
 
 static gboolean 
@@ -647,6 +647,7 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
 					  "Icon", GDK_TYPE_PIXBUF,
 					  "Mandatory", G_TYPE_BOOLEAN,
 					  "X-Settings", HILDON_PLUGIN_TYPE_MODULE_SETTINGS,
+					  "Category", G_TYPE_STRING,
 					  NULL);
 
     settings->priv->tabs = g_list_append (settings->priv->tabs, tab);
@@ -705,28 +706,30 @@ hildon_plugin_settings_dialog_compare_tab_tw (gconstpointer a,
 static void 
 hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_renderer,
                            		           gchar *path,
-					           GtkTreeModel *tm)
+					           GtkTreeView *tw)
 {
   GtkTreeIter iter;
   gboolean selected;
-
+  GtkTreeModel *tm = gtk_tree_view_get_model (tw);
+  
   if (!gtk_tree_model_get_iter_from_string (tm, &iter, path))
     return;
-
+  
   gtk_tree_model_get (tm, &iter, 
 		      HP_COL_CHECKBOX, &selected, 
 		      -1);
-
+  
   if (GTK_IS_TREE_MODEL_FILTER (tm))
   {
     GtkTreeIter real_iter;
-	  
+    
     gtk_tree_model_filter_convert_iter_to_child_iter
         (GTK_TREE_MODEL_FILTER (tm),&real_iter,&iter);
 
-    gtk_list_store_set (GTK_LIST_STORE (tm), &real_iter,
-                      HP_COL_CHECKBOX, !selected,
-                      -1);
+    gtk_list_store_set 
+      (GTK_LIST_STORE (gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER(tm))), &real_iter,
+       HP_COL_CHECKBOX, !selected,
+       -1);
   }
   else
   {  
@@ -856,3 +859,4 @@ hildon_plugin_settings_dialog_set_modify_filter (HildonPluginSettingsDialog *set
      
   return filter; 
 }
+
