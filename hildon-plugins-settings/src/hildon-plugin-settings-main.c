@@ -52,7 +52,7 @@ main (int argc, char **argv)
   gtk_widget_reparent (GTK_BIN (dialog)->child, window);
 
   gtk_button_set_label (GTK_BUTTON (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_ok), "Apply");
-  gtk_button_set_label (GTK_BUTTON (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_ok), "Exit");
+  gtk_button_set_label (GTK_BUTTON (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_cancel), "Exit");
  
   g_signal_connect_after (HILDON_PLUGIN_SETTINGS_DIALOG (dialog)->button_cancel,
 		          "clicked",
