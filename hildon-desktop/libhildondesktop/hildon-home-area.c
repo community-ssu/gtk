@@ -37,7 +37,8 @@
 #endif
 
 #include <errno.h>
-#include <string.h> /* malloc */
+#include <string.h>
+#include <stdlib.h> /* malloc */
 
 enum
 {
