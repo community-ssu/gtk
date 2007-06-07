@@ -1,3 +1,91 @@
+hildon-desktop (0.0.17-1) sardine; urgency=low
+
+  * policies/tasknavigator-policy.c,
+    data/tasknavigator.conf.in:
+  - replaced others-button with applications-menu
+  * data/applications.menu:
+  - uncommented the new layout, removed the old one
+
+  * libhildondesktop/hildon-home-area.c:
+  - do not call the parent_class remove handler, because it
+  generates a non-implemented warning.
+
+  * policies/tasknavigator-policy.c:
+  - In case of failure Add a HildonDesktopToggleButton inside the
+  TaskNavigatorItem.
+
+  * libhildondesktop/hildon-desktop-picture.[ch]:
+  - added
+  - helpers for creating XRender Pictures from pixbufs or pixmaps
+  * libhildondesktop/hildon-home-area.c,
+    libhildondesktop/hildon-desktop-toggle-button.c,
+    src/hd-panel-window.c:
+  - use these helpers
+
+  * libhildondesktop/hildon-home-area.c: Added stdlib.h
+
+  * src/hd-pixbuf-anim-blinker.c:
+  - protect against negative values for alpha.
+  Fixes: NB#53501
+
+  * src/hd-home-window.c:
+  - do not call the parent's style_set, which resets the background
+  to white
+  - fixed detection of unchanged style.
+  Fixes: NB#53975
+
+  * src/hd-plugin-loader-legacy.c, src/hd-plugin-loader-factory.c:
+  - load the applet with G_MODULE_BIND_LOCAL to avoid conflict
+  of symbols. Patch courtesy of Santtu Lakkala.
+  Fixes: NB#59641
+
+  * libhildondesktop/hildon-desktop-item.h:
+  - Added define
+
+  * libhildondesktop/hildon-desktop-item.h:
+  - Fixed prototype.
+  * libhildondesktop/hildon-desktop-panel.[ch]:
+  - Added method to refresh information of possible status bar items
+  inside panel containers
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Added implementation of container remove that just decreases items
+  counter.
+
+  * src/hd-desktop.c:
+  * src/hd-config.h:
+  - Added additional and optional key X-Load to known whether a plugin
+  is to be loaded or not.
+  * libhildondesktop/hildon-desktop-item.h:
+  - Added prototype.
+
+  * src/hd-panel-window.c:
+  - Fixed the leak of XRectangle
+  * libhildondesktop/hildon-home-area.c:
+  - Fixed the leak of a GtkBorder
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - Reset the delta values on button_press to avoid
+  snapping to grid if the applet has not moved
+
+  * libhildondesktop/hildon-home-area.c:
+  - Fixed building problem when no composite enabled.
+
+  * libhildondesktop/hildon-home-area.c:
+  - track changes in the applets' state rather than check it each time
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - send proper "notify" when the state changes
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: cleanup the scrolling
+  code and fixed the viewport sizing to match the expected layout.
+
+  * src/hd-home-l10n.h: fixed localisation strings
+
+  * src/hd-applications-menu.c: provided alternative menu items to
+  make the menu work properly while we don't fix the nasty popup menu
+  bug.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  7 Jun 2007 17:28:37 +0300
+
 hildon-desktop (0.0.16-2) sardine; urgency=low
 
   * restored conflict with maemo-af-deskop[-config]

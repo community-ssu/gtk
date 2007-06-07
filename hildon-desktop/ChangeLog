@@ -1,5 +1,9 @@
 2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.17
+
+2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
+
 	* policies/tasknavigator-policy.c,
 	  data/tasknavigator.conf.in:
 	- replaced others-button with applications-menu
