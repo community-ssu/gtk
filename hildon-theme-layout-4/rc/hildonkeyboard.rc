@@ -510,20 +510,24 @@ style "osso-input-method-fkb-tab" {
   engine "sapwood" {
     image {
         function = BOX
-	shadow   = IN
-	detail   = "buttondefault"
-	file     = "../images/qgn_plat_inputmet_thumb_tab_selected.png"
-	border   = { 20, 20, 0, 0 }
+        shadow   = IN
+        file     = "../images/qgn_plat_inputmet_thumb_tab_selected.png"
+        border   = { 20, 20, 0, 0 }
     }
     image {
-	function = BOX
-	detail   = "buttondefault"
-	file     = "../images/qgn_plat_inputmet_thumb_tab_normal.png"
-	border   = { 20, 20, 0, 0 }
+        function = BOX
+        file     = "../images/qgn_plat_inputmet_thumb_tab_normal.png"
+        border   = { 20, 20, 0, 0 }
     }
   }
 }
 widget "*.osso-im-fkb-tab" style "osso-input-method-fkb-tab"
+
+style "osso-input-method-fkb-tab-label" = "osso-logical-colors" {
+  font_name = "Nokia Sans 24"
+  fg[NORMAL] = @VKBButtonTextColor
+}
+widget "*.osso-im-fkb-tab.*" style "osso-input-method-fkb-tab-label"
 
 #finger keyboard common buttons
 style "osso-input-method-fkb-common-button" {
@@ -680,6 +684,17 @@ widget "*osso-im-fkb-accent-key" style "osso-input-method-fkb-accent-key"
 style "hildon-input-method-wc-frame" = "osso-logical-colors"
 {
     bg[NORMAL] = @WCFrameColor
+
+    engine "sapwood"
+    {
+        image 
+        { 
+          function = FLAT_BOX
+          detail = "eventbox" 
+          file = "../images/qgn_plat_inputmet_special_key_background.png" 
+          border = { 10, 10, 0, 0 } 
+        }
+    }
 }
 widget "*.hildon-input-method-wc-frame" style "hildon-input-method-wc-frame"
 
@@ -698,22 +713,22 @@ style "hildon-input-method-wc-finger-candidates"
         {
             function = BOX
             state = NORMAL
-            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
-            border = { 5, 5, 5, 5 }
+            file = "../images/qgn_plat_inputmet_button_key_special_normal.png"
+            border = { 10, 10, 0, 0 }
         }
         image
         {
             function = BOX
             state = PRELIGHT
-            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
-            border = { 5, 5, 5, 5 }
+            file = "../images/qgn_plat_inputmet_button_key_special_normal.png"
+            border = { 10, 10, 0, 0 }
         }
         image
         {
             function = BOX
             state = ACTIVE
-            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_pressed.png"
-            border = { 5, 5, 5, 5 }
+            file = "../images/qgn_plat_inputmet_button_key_special_pressed.png"
+            border = { 10, 10, 0, 0 }
         }
     }
 }

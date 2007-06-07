@@ -1,3 +1,10 @@
+2007-06-07  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* rc/hildonkeyboard.c:
+	- Fix FKB tabs not being themed, use a larger font
+	- Apply background pixmap to wc frame
+	- Use proper unique pixmaps for the finger sized candidate buttons
+
 2007-06-05 Tapani Palli <tapani.palli@nokia.com>
 
 	* data/theme.xml: finetune frame animation rectangle coordinates for
