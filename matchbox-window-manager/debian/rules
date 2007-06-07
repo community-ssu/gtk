@@ -13,7 +13,7 @@ SOURCE_DIR=matchbox-window-manager
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-EXTRA_FLAGS = --enable-alt-input-wins --disable-xrm --enable-xsync
+EXTRA_FLAGS = --enable-alt-input-wins --disable-xrm --enable-xsync --enable-frameanimation
 
 CFLAGS = -Wall -g
 
@@ -32,7 +32,7 @@ config.status: $(SOURCE_DIR)/configure
 	dh_testdir
 
 	# Add here commands to configure the package.
-	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure $(EXTRA_FLAGS) --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-alt-input-wins --disable-xrm --enable-xsync --enable-frameanimation
+	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure $(EXTRA_FLAGS) --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 $(SOURCE_DIR)/configure:
 	tar -jxf snapshot/matchbox-window-manager*.tar.bz2
