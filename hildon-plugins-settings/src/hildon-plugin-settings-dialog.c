@@ -47,13 +47,6 @@
 
 #define HPSD_TITLE _("tncpa_ti_tnsb_title") 
 
-#ifndef HP_PATH_TN
-#define HP_PATH_TN "/usr/share/applications/hildon-navigator"
-#endif
-
-#ifndef HP_PATH_SB
-#define HP_PATH_SB "/usr/share/applications/hildon-status-bar"
-#endif
 
 /* TODO: FIXME: 
  * This should read /etc/hildon-desktop/desktop.conf and look for panels 
@@ -785,6 +778,17 @@ hildon_plugin_settings_dialog_new (void)
       (g_object_new (HILDON_PLUGIN_TYPE_SETTINGS_DIALOG,NULL));
 }
 
+GList *
+hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *settings)
+{
+  GList *names = NULL, *l;
+  
+  for (l = settings->priv->tabs; l != NULL ; l = g_list_next (l))
+     names = g_list_append (names, ((HPSDTab *)l->data)->name);
+
+  return names;
+}
+
 GtkTreeModel *
 hildon_plugin_settings_dialog_set_visibility_filter (HildonPluginSettingsDialog *settings,
 					             const gchar *container_name,
@@ -867,5 +871,46 @@ hildon_plugin_settings_dialog_set_modify_filter (HildonPluginSettingsDialog *set
   gtk_tree_view_set_model (tab->tw, filter);
      
   return filter; 
+}
+
+void
+hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *settings,
+						  HildonPluginSettingsDialogColumn column,
+						  const gchar *container_name,
+                                                  GtkTreeCellDataFunc func,
+                                                  gpointer func_data,
+                                                  GtkDestroyNotify destroy)
+{
+  GList *container_tab = NULL;
+
+  container_tab =
+    g_list_find_custom (settings->priv->tabs,
+                        container_name,
+                        (GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+
+  if (!container_tab)
+    return;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  GtkTreeViewColumn *twcolumn = gtk_tree_view_get_column (tab->tw, column);
+
+  if (!twcolumn)
+    return;
+
+  GList *renderers = gtk_tree_view_column_get_cell_renderers (twcolumn);
+
+  /* We only have a cell renderer per column */
+
+  if (!renderers)
+    return;
+
+  gtk_tree_view_column_set_cell_data_func (twcolumn,
+					   GTK_CELL_RENDERER (renderers->data),
+					   func,
+					   func_data,
+					   destroy);
+
+  g_list_free (renderers);
 }
 

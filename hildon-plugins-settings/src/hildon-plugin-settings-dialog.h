@@ -29,9 +29,18 @@
 #include <gtk/gtkdialog.h>
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtktreemodelfilter.h>
+#include <gtk/gtk.h> /* <--- Funny hem? :) */
 
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG TRUE
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW FALSE
+
+typedef enum
+{
+  HPSD_COLUMN_PB,
+  HPSD_COLUMN_TXT,
+  HPSD_COLUMN_TOGGLE=3
+}
+HildonPluginSettingsDialogColumn;
 
 G_BEGIN_DECLS
 
@@ -68,6 +77,9 @@ hildon_plugin_settings_dialog_get_type (void);
 GtkWidget *
 hildon_plugin_settings_dialog_new (void);
 
+GList *
+hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *settings);
+
 GtkTreeModel *
 hildon_plugin_settings_dialog_set_visibility_filter (HildonPluginSettingsDialog *settings,
 					             const gchar *container_name,
@@ -83,6 +95,14 @@ hildon_plugin_settings_dialog_set_modify_filter (HildonPluginSettingsDialog *set
                                                  GtkTreeModelFilterModifyFunc modify_func,
                                                  gpointer data,
                                                  GtkDestroyNotify destroy);
+
+void
+hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *settings,
+						  HildonPluginSettingsDialogColumn column,
+                                                  const gchar *container_name,
+                                                  GtkTreeCellDataFunc func,
+                                                  gpointer func_data,
+                                                  GtkDestroyNotify destroy);
 
 G_END_DECLS
 

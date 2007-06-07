@@ -1,3 +1,10 @@
+2007-06-07  Moises Martinez  <moises.martinez@nokia.com>
+
+	* debian/control: Fixed some deps
+	* src/hildon-plugin-settings-dialog.[ch]:
+	- Added method to set GtkTreeCellDataFunc to specific containers.
+	- Get list of containers' name.
+
 2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
 	* debian/*: updated.
