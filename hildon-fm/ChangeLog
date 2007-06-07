@@ -1,3 +1,9 @@
+2007-06-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_get_folder): Set file_system of handle so
+	that cancelling works (N59441).
+
 2007-06-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.28
