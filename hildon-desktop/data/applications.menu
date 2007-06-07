@@ -10,7 +10,6 @@
   <DefaultAppDirs/>
   <DefaultDirectoryDirs/>
   
-  <!--
   // My selection submenu 
   <Menu>
     <Name>tana_fi_my_selection</Name>
@@ -77,83 +76,5 @@
       <Filename>osso_lmarbles.desktop</Filename>
     </Include>
   </Menu>
-  -->
-
-  <!-- Favourites -->
-  <Include>
-    <Filename>mp_ui.desktop</Filename>
-    <Filename>osso_rss_feed_reader.desktop</Filename>
-    <Filename>image-viewer.desktop</Filename>
-    <Filename>filemanager.desktop</Filename>
-  </Include>
-
-  <Separator/>
-  
-  <!-- Web submenu -->
-  <Menu>
-    <Name>tana_fi_web</Name>
-    <Include>
-      <Filename>browser.desktop</Filename>
-      <Filename>bookmark.desktop</Filename>
-    </Include>
-  </Menu>
-  
-  <!-- Contact submenu -->
-  <Menu>
-    <Name>tana_fi_contact</Name>
-    <Include>
-      <Filename>osso-addressbook.desktop</Filename>
-      <Filename>modest.desktop</Filename>
-      <Filename>voip-ui.desktop</Filename>
-      <Filename>chat-ui.desktop</Filename>
-    </Include>
-  </Menu>
-  
-  <!-- Utilities submenu -->
-  <Menu>
-    <Name>tana_fi_utilities</Name>
-    <Include>
-      <Filename>osso_calculator.desktop</Filename>
-      <Filename>osso_worldclock.desktop</Filename>
-      <Filename>osso_notes.desktop</Filename>
-      <Filename>osso_pdfviewer.desktop</Filename>
-      <Filename>osso_sketch.desktop</Filename>
-    </Include>
-  </Menu>
- 
-  <!-- Games submenu -->
-  <Menu>
-    <Name>tana_fi_games</Name>
-    <Include>
-      <Filename>chess_startup.desktop</Filename>
-      <Filename>maemoblocks.desktop</Filename>
-      <Filename>mahjong_startup.desktop</Filename>
-      <Filename>osso_lmarbles.desktop</Filename>
-    </Include>
-  </Menu>
-
-  <!-- Tools submenu -->
-  <Menu>
-    <Name>tana_fi_tools</Name>
-    <Include>
-      <Filename>hildon-application-manager.desktop</Filename>
-      <Filename>osso-backup.desktop</Filename>
-      <Filename>hildon-control-panel.desktop</Filename>
-      <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
-      <Filename>hwr-teacher.desktop</Filename>
-    </Include>
-  </Menu>
- 
-  <!-- Extras submenu -->
-  <Menu>
-    <Name>tana_fi_extras</Name>
-  </Menu>
-
-  <Separator/>
-
-  <Include>
-    <Filename>osso-global-search.desktop</Filename>
-    <Filename>osso_help.desktop</Filename>
-  </Include>
 
 </Menu>

@@ -35,7 +35,7 @@
 
 #define HD_TN_BROWSER_PLUGIN       "hildon-task-navigator-bookmarks.desktop"
 #define HD_TN_CONTACT_PLUGIN       "osso-contact-plugin.desktop"
-#define HD_TN_APPS_MENU_PLUGIN     "others-button.desktop"
+#define HD_TN_APPS_MENU_PLUGIN     "applications-menu.desktop"
 #define HD_TN_APP_SWITCHER_PLUGIN  "app-switcher.desktop"
 #define HD_TN_SWITCHER_MENU_PLUGIN "switcher-menu.desktop"
 

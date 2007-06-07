@@ -1,5 +1,13 @@
 2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
 
+	* policies/tasknavigator-policy.c,
+	  data/tasknavigator.conf.in:
+	- replaced others-button with applications-menu
+	* data/applications.menu:
+	- uncommented the new layout, removed the old one
+
+2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c:
 	- do not call the parent_class remove handler, because it
 	generates a non-implemented warning.
