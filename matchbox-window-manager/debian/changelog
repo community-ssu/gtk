@@ -1,3 +1,15 @@
+matchbox-window-manager (2:1.2-osso4) unstable; urgency=low
+
+  * structs.h, mbtheme.c : read frame-animation properties from theme
+  * configure.ac : put frame-animation behind configure switch
+  * main_client.c : use animations from wm->config
+  * structs.h, ewmh.c, toolbar_client_alt.c : implement _NET_INPUT_AREAS
+    (bug #333 in o-hand bugzilla)
+  * client_common.c : pass time and button in _MB_GRAB_TRANSFER message,
+    (bug #1465 in maemo bugzilla)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 10 May 2007 13:21:03 +0300
+
 matchbox-window-manager (2:1.2-osso3) unstable; urgency=low
 
   * debian/rules : run autogen.sh before build
