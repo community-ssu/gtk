@@ -1810,9 +1810,6 @@ hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
 
           child_data_free (child_data);
         }
-
-  if (GTK_CONTAINER_CLASS (parent_class)->remove)
-    GTK_CONTAINER_CLASS (parent_class)->remove (area, applet);
 }
 
 /* Public functions */
