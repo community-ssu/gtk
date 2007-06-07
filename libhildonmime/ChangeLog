@@ -1,3 +1,8 @@
+2007-06-07  Richard Hult  <richard@imendio.com>
+
+	* docs/hildon-uri-open-rev-1.txt:
+	* docs/hildon-uri-open-rev-2.txt: Fix docs.
+
 2007-05-04  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.9.5.

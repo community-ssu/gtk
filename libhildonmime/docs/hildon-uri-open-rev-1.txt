@@ -1,9 +1,9 @@
-The hildon_uri_* API, pre-OSSO 1.1
-==================================
+The hildon_uri_* API, rev 1
+===========================
 
 This document describes the first revision of the hildon_uri_* API
-that was added in IT-2007. It has been revised and expanded in OSSO
-1.1, see hildon-uri-open-rev-2.txt for information about that.
+that was added in IT-2007. It has been revised and expanded in rev 2,
+see hildon-uri-open-rev-2.txt for information about that.
 
 The API brings functionality for actions to be performed basen on the
 scheme in the URI, such as "http" or "callto". There can be one or
