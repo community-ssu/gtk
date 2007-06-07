@@ -1,11 +1,16 @@
 libosso (2.12-1) unstable; urgency=low
 
   * UNRELEASED
-  * Partially applied a patch from Debian guys.
-  * Removed debian/libosso-dbus-conf.conffiles.
-  * Applied more Debian fixes to debian/rules.
+  * Partially applied a patch from Debian guys. Fixes: MB#1517
+    - Removed debian/libosso-dbus-conf.conffiles.
+    - Fixes to debian/rules.
+    - Fixes to debian/control
+    - Added reference to LGPL license to debian/copyright
+    - Fixes to Makefile.am
+    - Fixes for AMD64 to osso-mem.c
+    - Minor fix to osso-rpc.c
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed,  6 Jun 2007 20:42:22 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 07 Jun 2007 10:47:42 +0300
 
 libosso (2.11-1) unstable; urgency=low
 
