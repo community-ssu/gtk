@@ -77,6 +77,13 @@ hildon_notification_set_persistent (HildonNotification *n, gboolean persistent)
 		                     "persistent", (guchar) persistent);
 }
 
+void 
+hildon_notification_set_sound (HildonNotification *n, const gchar *sound_file)
+{
+  notify_notification_set_hint_string (NOTIFY_NOTIFICATION (n), 
+		                       "sound-file", sound_file);
+}
+
 static void
 hildon_notification_action (NotifyNotification *n, 
 		            gchar *action_id, 

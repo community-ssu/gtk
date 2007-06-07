@@ -63,6 +63,9 @@ HildonNotification   *hildon_notification_new                (const gchar       
 void                  hildon_notification_set_persistent     (HildonNotification *n,
 		                                              gboolean            persistent);
 
+void                  hildon_notification_set_sound          (HildonNotification *n,
+		                                              const gchar        *sound_file);
+
 void                  hildon_notification_add_dbus_action    (HildonNotification *n, 
 	  	                                              const gchar        *action_id,
 					                      const gchar        *action_label,
