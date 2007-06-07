@@ -2,22 +2,48 @@ Source: libosso
 Section: x11
 Priority: optional
 Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libdbus-glib-1-dev (>=0.61-osso18), libglib2.0-dev, doxygen, mce-dev (>= 1.5.6)
+Build-Depends: debhelper (>= 4.0.0),
+               libdbus-glib-1-dev (>= 0.61-osso18),
+               libglib2.0-dev,
+               doxygen,
+               mce-dev
 Standards-Version: 3.6.0
 
 Package: libosso-dev
 Section: devel
 Architecture: any
-Depends: libosso1 (= ${Source-Version}), libdbus-glib-1-dev
-Description: Libosso development files
- Libosso header files for development.
+Depends: libosso1 (= ${Source-Version}),
+         libdbus-glib-1-dev
+Description: Basic library for maemo applications - development files
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the development files.
 
 Package: libosso1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, libosso-dbus-conf
-Description: Libosso library
- Libosso contains D-Bus-related functionality for Maemo applications.
+Depends: ${shlibs:Depends},
+         libosso-dbus-conf
+Description: Basic library for maemo applications - shared library
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the shared library.
 
 Package: libosso-test
 Section: libs
@@ -25,9 +51,21 @@ Priority: optional
 Architecture: any
 Conflicts: libosso0 (<< 0.8.6-1)
 Replaces: libosso0 (<< 0.8.6-1)
-Depends: libosso1 (= ${Source-Version}), libdbus-glib-1-dev, outo
-Description: Libosso unit tests
- Libosso unit tests stuff.
+Depends: libosso1 (= ${Source-Version}),
+         libdbus-glib-1-dev,
+         outo
+Description: Basic library for maemo applications - unit tests
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the unit tests.
 
 Package: libosso-dbus-conf
 Section: base
@@ -35,18 +73,48 @@ Priority: optional
 Conflicts: libosso0 (<< 0.8.6-1)
 Replaces: libosso0 (<< 0.8.6-1)
 Architecture: all
-Description: Libosso D-Bus configuration settings for Scratchbox.
- Libosso D-Bus configuration settings for Scratchbox environment.
+Description: Basic library for maemo applications - Scratchbox D-Bus configuration
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the D-Bus configuration settings for Scratchbox.
 
 Package: libosso1-dbg
 Section: libs
 Architecture: any
 Depends: libosso1 (= ${Source-Version})
-Description: Libosso library debug info
- Debug symbols and stuff for the Libosso library.
+Description: Basic library for maemo applications - detached debug symbols
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the detached debug symbols.
 
 Package: libosso1-doc
 Section: doc
-Architecture: any
-Description: Libosso API documentation
- Libosso API documentation.
+Architecture: all
+Description: Basic library for maemo applications - documentation
+ Libosso is the basic library containing required and helpful functions
+ for maemo applications. One of Libosso's main features is RPC (Remote
+ Procedure Calls) services (as it "wraps" D-Bus). In addition, Libosso
+ provides access to low-level hardware functions, such as turning on (or
+ keeping on) the display, autosaving, state saving and system time.
+ .
+ All maemo-compliant applications must use Libosso to respond coherently
+ to system changes and signals, such as the battery low, pre-shutdown
+ and state saving signals.
+ .
+ This package contains the documentation.

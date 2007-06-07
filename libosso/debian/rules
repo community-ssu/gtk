@@ -11,71 +11,59 @@
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-
-CFLAGS = -Wall -g -ansi -Werror -Wshadow -D_GNU_SOURCE
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
+CFLAGS += -Wall -g -ansi -Werror -Wshadow -D_GNU_SOURCE
+CFLAGS += -O$(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),0,2)
 # Use soft-float and thumb mode if it is enabled.
-ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
-        CFLAGS += -mthumb
-endif
+CFLAGS += $(if $(findstring thumb,$(DEB_BUILD_OPTIONS)),-mthumb)
 
-# shared library versions, option 1
-version=2.0.5
-major=2
-# option 2, assuming the library is created as src/.libs/libfoo.so.2.0.5 or so
-#version=`ls src/.libs/lib*.so.* | \
-# awk '{if (match($$0,/[0-9]+\.[0-9]+\.[0-9]+$$/)) print substr($$0,RSTART)}'`
-#major=`ls src/.libs/lib*.so.* | \
-# awk '{if (match($$0,/\.so\.[0-9]+$$/)) print substr($$0,RSTART+4)}'`
+configure_flags := \
+	--prefix=/usr \
+	--mandir=\$${prefix}/share/man \
+	--infodir=\$${prefix}/share/info \
+	--disable-dependency-tracking \
+	--disable-gtk-doc \
+	--sysconfdir=/etc \
+	--disable-maintainer-mode
+
+ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+	configure_flags += --build=$(DEB_BUILD_GNU_TYPE)
+else
+	configure_flags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
 
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --disable-dependency-tracking --disable-gtk-doc --sysconfdir=/etc 
+	CFLAGS="$(CFLAGS)" ./configure $(configure_flags)
 
 build: build-stamp
 build-stamp:  config.status
 	dh_testdir
-
 	# Add here commands to compile the package.
 	$(MAKE)
 	$(MAKE) doxygen
-
-	touch build-stamp
+	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
-
+	rm -f build-stamp
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
-	dh_clean 
+	-test -r /usr/share/misc/config.sub && test -r config.sub && \
+		cp -f /usr/share/misc/config.sub config.sub
+	-test -r /usr/share/misc/config.guess && test -r config.guess && \
+		cp -f /usr/share/misc/config.guess config.guess
+	dh_clean
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_clean -k
 	dh_installdirs
-
-	# Add here commands to install the package into debian/build
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/build
-	rm -f $(CURDIR)/debian/build/usr/lib/outo/*.*a
+	# Add here commands to install the package into debian/tmp
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+#	rm -f $(CURDIR)/debian/build/usr/lib/outo/*.*a
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -85,9 +73,9 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
+	dh_installchangelogs
 	dh_installdocs
-	dh_install --sourcedir=debian/build -v
+	dh_install --sourcedir=debian/tmp -v
 	dh_installman
 	dh_link
 	dh_strip --dbg-package=libosso1
@@ -101,4 +89,4 @@ binary-arch: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 
+.PHONY: build clean binary-indep binary-arch binary install

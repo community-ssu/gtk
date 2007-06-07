@@ -2,6 +2,8 @@ libosso (2.12-1) unstable; urgency=low
 
   * UNRELEASED
   * Partially applied a patch from Debian guys.
+  * Removed debian/libosso-dbus-conf.conffiles.
+  * Applied more Debian fixes to debian/rules.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed,  6 Jun 2007 20:42:22 +0300
 
