@@ -288,6 +288,8 @@ hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
   root_folder->root = HILDON_FILE_SYSTEM_ROOT (location);
   g_object_ref (location);
 
+  handle->file_system = filesystem;
+
   clos->handle = handle;
   clos->root_folder = root_folder;
   clos->callback = callback;
