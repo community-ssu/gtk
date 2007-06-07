@@ -32,7 +32,7 @@ config.status: $(SOURCE_DIR)/configure
 	dh_testdir
 
 	# Add here commands to configure the package.
-	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure $(EXTRA_FLAGS) --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure $(EXTRA_FLAGS) --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-alt-input-wins --disable-xrm --enable-xsync --enable-frameanimation
 
 $(SOURCE_DIR)/configure:
 	tar -jxf snapshot/matchbox-window-manager*.tar.bz2
