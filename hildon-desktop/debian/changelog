@@ -1,3 +1,9 @@
+hildon-desktop (1:0.0.17-1) sardine; urgency=low
+
+  * updated epoch :(
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  7 Jun 2007 17:37:30 +0300
+
 hildon-desktop (0.0.17-1) sardine; urgency=low
 
   * policies/tasknavigator-policy.c,
