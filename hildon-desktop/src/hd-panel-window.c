@@ -34,13 +34,11 @@
 #include "hd-panel-window.h"
 
 #ifdef HAVE_X_COMPOSITE
-#include <X11/extensions/Xrender.h>
+#include <libhildondesktop/hildon-desktop-picture.h>
 #include <X11/extensions/Xdamage.h>
 #include <X11/extensions/Xcomposite.h>
 
 #include <gdk/gdkx.h>
-
-#include <stdlib.h> /*malloc*/
 
 #include <libhildonwm/hd-wm.h>
 #endif
@@ -79,28 +77,23 @@ hd_panel_window_style_set (GtkWidget   *widget,
 {
   HDPanelWindowPrivate         *priv = HD_PANEL_WINDOW (widget)->priv;
   const gchar                  *filename;
-  XRenderPictFormat            *format;
-  XRenderPictureAttributes      pa;
-  GdkPixbuf                    *pixbuf = NULL;
-  XImage                       *image = NULL, *mask_image = NULL;
-  Pixmap                        pixmap = None, mask_pixmap = None;
-  GC                            gc;
-  XGCValues                     gc_values = {0};
-  guchar                       *p = NULL, *line = NULL, *endofline, *end;
-  char                         *data = NULL, *mask_data = NULL, *d, *md;
-  GError                       *error = NULL;
-  gint                          pw, ph, rowstride;
-  gboolean                      alpha;
 
   if (!GTK_WIDGET_REALIZED (widget) ||
       !widget->style || !widget->style->rc_style)
     return;
 
-  if (priv->background_picture)
+  if (priv->background_picture != None)
     {
       XRenderFreePicture (GDK_DISPLAY (),
                           priv->background_picture);
       priv->background_picture = None;
+    }
+
+  if (priv->background_mask != None)
+    {
+      XRenderFreePicture (GDK_DISPLAY (),
+                          priv->background_mask);
+      priv->background_mask = None;
     }
 
   filename = widget->style->rc_style->bg_pixmap_name[GTK_STATE_NORMAL];
@@ -108,178 +101,10 @@ hd_panel_window_style_set (GtkWidget   *widget,
   if (!filename)
     return;
 
-  pixbuf = gdk_pixbuf_new_from_file (filename, &error);
-
-  if (error)
-    {
-      g_warning ("Could not load background image: %s",
-                 error->message);
-      g_error_free (error);
-      return;
-    }
-
-
-  pw = gdk_pixbuf_get_width  (pixbuf);
-  ph = gdk_pixbuf_get_height (pixbuf);
-  alpha = gdk_pixbuf_get_has_alpha (pixbuf);
-  rowstride = gdk_pixbuf_get_rowstride (pixbuf);
-
-  g_debug ("Loaded: %s, %ix%i, rowstride: %i, alpha: %i",
-           filename,
-           pw,
-           ph,
-           rowstride,
-           alpha);
-
-  pixmap = XCreatePixmap (GDK_DISPLAY (),
-                          GDK_WINDOW_XID (widget->window),
-                          pw,
-                          ph,
-                          32);
-
-  if (alpha)
-    mask_pixmap = XCreatePixmap (GDK_DISPLAY (),
-                                 GDK_WINDOW_XID (widget->window),
-                                 pw,
-                                 ph,
-                                 8);
-
-  /* Use malloc here because it is freed by Xlib */
-  data      = (gchar *) malloc (pw*ph*4);
-
-  image = XCreateImage (GDK_DISPLAY (),
-                        None,
-                        32,         /* depth */
-                        ZPixmap,
-                        0,         /* offset */
-                        data,
-                        pw,
-                        ph,
-                        8,
-                        pw * 4);
-
-    if (alpha)
-    {
-      mask_data = (gchar*) malloc (pw*ph);
-      mask_image = XCreateImage (GDK_DISPLAY (),
-                                 None,
-                                 8,         /* depth */
-                                 ZPixmap,
-                                 0,         /* offset */
-                                 mask_data,
-                                 pw,
-                                 ph,
-                                 8,
-                                 pw);
-    }
-
-  p = gdk_pixbuf_get_pixels (pixbuf);
-  md = mask_data;
-  d  = data;
-  end = p + rowstride*ph;
-
-  for (line = p; line < end ; line += rowstride)
-    {
-      p = line;
-      endofline = p + (alpha?4:3) * pw;
-
-      for (p = line; p < endofline; p += (alpha?4:3), md++, d+=4)
-        {
-
-#define r ((guint32)(*(p)))
-#define g ((guint32)(*(p+1)))
-#define b ((guint32)(*(p+2)))
-#define a (*(p+3))
-          guint32 pixel =
-              ((r << 16) & 0x00FF0000  ) |
-              ((g << 8)  & 0x0000FF00) |
-              ((b)       & 0x000000FF );
-
-          pixel |= 0xFF000000;
-
-          *((guint32 *)d) = pixel;
-
-          if (alpha)
-            *md = a;
-        }
-#undef r
-#undef g
-#undef b
-#undef a
-
-    }
-
-
-  gc = XCreateGC (GDK_DISPLAY (),
-                  pixmap,
-                  0,
-                  &gc_values);
-
-  XPutImage (GDK_DISPLAY (),
-             pixmap,
-             gc,
-             image,
-             0, 0,
-             0, 0,
-             pw, ph);
-
-  XFreeGC (GDK_DISPLAY (), gc);
-  XDestroyImage (image);
-
-  if (alpha)
-    {
-      gc = XCreateGC (GDK_DISPLAY (),
-                      mask_pixmap,
-                      0,
-                      &gc_values);
-
-      XPutImage (GDK_DISPLAY (),
-                 mask_pixmap,
-                 gc,
-                 mask_image,
-                 0, 0,
-                 0, 0,
-                 pw, ph);
-
-      XFreeGC (GDK_DISPLAY (), gc);
-      XDestroyImage (mask_image);
-    }
-
-
-  g_object_unref (pixbuf);
-
-  format = XRenderFindStandardFormat (GDK_DISPLAY(),
-                                      PictStandardARGB32);
-
-  pa.repeat = True;
-  priv->background_picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                                   pixmap,
-                                                   format,
-                                                   CPRepeat,
-                                                   &pa);
-
-  if (alpha)
-    {
-      format = XRenderFindStandardFormat (GDK_DISPLAY(),
-                                          PictStandardA8);
-
-      priv->background_mask = XRenderCreatePicture (GDK_DISPLAY (),
-                                                    mask_pixmap,
-                                                    format,
-                                                    CPRepeat,
-                                                    &pa);
-    }
-
-
-  XFreePixmap (GDK_DISPLAY (),
-               pixmap);
-
-  if (alpha)
-    {
-      XFreePixmap (GDK_DISPLAY (),
-                   mask_pixmap);
-    }
-
+  hildon_desktop_picture_and_mask_from_file (filename,
+                                             &priv->background_picture,
+                                             &priv->background_mask,
+                                             NULL, NULL);
 }
 
 static void
@@ -300,9 +125,6 @@ hd_panel_window_expose (GtkWidget *widget,
     GdkDrawable *drawable;
     gint x_offset, y_offset;
     Picture picture;
-    GdkVisual *visual;
-    XRenderPictFormat *format;
-    XRenderPictureAttributes pa = {0};
     gboolean result;
 
     gdk_window_get_internal_paint_info (widget->window,
@@ -310,16 +132,7 @@ hd_panel_window_expose (GtkWidget *widget,
                                         &x_offset,
                                         &y_offset);
 
-    visual = gdk_drawable_get_visual (drawable);
-
-    format = XRenderFindVisualFormat (GDK_DISPLAY (),
-                                      GDK_VISUAL_XVISUAL (visual));
-
-    picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                    GDK_DRAWABLE_XID (drawable),
-                                    format,
-                                    0,
-                                    &pa);
+    picture = hildon_desktop_picture_from_drawable (drawable);
 
     g_object_set_data (G_OBJECT (drawable),
                        "picture", GINT_TO_POINTER (picture));
@@ -363,7 +176,7 @@ hd_panel_window_expose (GtkWidget *widget,
 
   }
 
-return FALSE;
+  return FALSE;
 }
 
 static gboolean
@@ -475,46 +288,30 @@ hd_panel_window_desktop_window_changed (HDPanelWindow *window)
 
   if (desktop_window != None)
     {
-      XRenderPictureAttributes  pa = {0};
-      XRenderPictFormat        *format;
-      XWindowAttributes         wa = {0};
-      Status                    s;
-
       gdk_error_trap_push ();
-      s = XGetWindowAttributes (GDK_DISPLAY (),
-                                desktop_window,
-                                &wa);
-
-      if (gdk_error_trap_pop () || s == 0)
-        {
-          g_warning ("Could not retrieve window attributes for the desktop "
-                     "window");
-          return;
-        }
-
-      format = XRenderFindVisualFormat (GDK_DISPLAY (),
-                                        wa.visual);
-
-      if (format == None)
-        return;
 
       XCompositeRedirectWindow (GDK_DISPLAY (),
                                 desktop_window,
                                 CompositeRedirectAutomatic);
 
-      priv->home_picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                                 desktop_window,
-                                                 format,
-                                                 0,
-                                                 &pa);
-
       priv->home_damage = XDamageCreate (GDK_DISPLAY (),
                                          desktop_window,
                                          XDamageReportNonEmpty);
 
+      if (gdk_error_trap_pop ())
+        {
+          g_warning ("Could not redirect the desktop "
+                     "window");
+          return;
+        }
+
       priv->home_gwindow = gdk_window_foreign_new (desktop_window);
+
       if (GDK_IS_WINDOW (priv->home_gwindow))
         {
+          priv->home_picture =
+              hildon_desktop_picture_from_drawable (priv->home_gwindow);
+
           gdk_window_add_filter (priv->home_gwindow,
                                  (GdkFilterFunc)
                                  hd_panel_window_home_window_filter,
@@ -682,11 +479,6 @@ hd_panel_window_init (HDPanelWindow *window)
                                 G_CALLBACK (hd_panel_window_desktop_window_changed),
                                 window);
     }
-
-#if 0
-  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
-  gtk_widget_set_double_buffered (GTK_WIDGET (window), FALSE);
-#endif
 
   window->priv = HD_PANEL_WINDOW_GET_PRIVATE (window);
 #endif

@@ -1,3 +1,13 @@
+2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-picture.[ch]:
+	- added
+	- helpers for creating XRender Pictures from pixbufs or pixmaps
+	* libhildondesktop/hildon-home-area.c,
+	  libhildondesktop/hildon-desktop-toggle-button.c,
+	  src/hd-panel-window.c:
+	- use these helpers
+
 2007-06-06  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c: Added stdlib.h

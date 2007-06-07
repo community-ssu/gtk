@@ -34,6 +34,8 @@
 #include <X11/extensions/Xcomposite.h>
 #include <X11/extensions/Xdamage.h>
 #include <X11/extensions/Xrender.h>
+
+#include <libhildondesktop/hildon-desktop-picture.h>
 #endif
 
 #include <errno.h>
@@ -1051,15 +1053,7 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
                                                   GtkWidget            *child)
 {
   HildonHomeAreaPriv           *priv;
-  GdkPixbuf                    *pixbuf = NULL;
-  GC                            gc;
-  XGCValues                     gc_values;
-  XRenderPictureAttributes      pa;
-  XRenderPictFormat            *format;
-  XImage                       *image;
-  Pixmap                        pixmap;
   ChildData                    *child_data;
-  GError                       *error = NULL;
   const gchar                  *mask_file_name = NULL;
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
@@ -1079,116 +1073,14 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
 
   mask_file_name = child->style->rc_style->bg_pixmap_name[GTK_STATE_PRELIGHT];
 
-  if (mask_file_name)
-    {
-      pixbuf = gdk_pixbuf_new_from_file (mask_file_name,
-                                         &error);
-    }
+  if (!mask_file_name)
+    return;
 
-  if (error)
-    {
-      g_warning ("Could not open alpha mask from style: %s", error->message);
-      g_error_free (error);
-
-      pixbuf = NULL;
-    }
-
-  if (pixbuf)
-    {
-      gchar                        *data;
-      guchar                       *pixbuf_data;
-      guint                         i;
-      gint                          pw, ph;
-
-      child_data->background_width = pw = gdk_pixbuf_get_width (pixbuf);
-      child_data->background_height = ph = gdk_pixbuf_get_height (pixbuf);
-
-      pixmap = XCreatePixmap (GDK_DISPLAY (),
-                              GDK_WINDOW_XID (GTK_WIDGET (area)->window),
-                              pw,
-                              ph,
-                              8);
-
-      /* Use malloc here because it is freed by Xlib */
-      data = (gchar *) malloc (pw*ph);
-
-      image = XCreateImage (GDK_DISPLAY (),
-                            None,
-                            8,         /* depth */
-                            ZPixmap,
-                            0,         /* offset */
-                            data,
-                            pw,
-                            ph,
-                            8,
-                            pw);
-
-      pixbuf_data = gdk_pixbuf_get_pixels (pixbuf);
-
-      for (i = 0; i < pw * ph; i++)
-        {
-          data[i] = pixbuf_data[4*i + 3];
-        }
-
-      gc = XCreateGC (GDK_DISPLAY (),
-                      pixmap,
-                      0,
-                      &gc_values);
-
-      XPutImage (GDK_DISPLAY (),
-                 pixmap,
-                 gc,
-                 image,
-                 0, 0,
-                 0, 0,
-                 pw, ph);
-
-      XFreeGC (GDK_DISPLAY (), gc);
-      XDestroyImage (image);
-      g_object_unref (pixbuf);
-    }
-  else
-    {
-      pixmap = XCreatePixmap (GDK_DISPLAY (),
-                              GDK_WINDOW_XID (GTK_WIDGET (area)->window),
-                              1,
-                              1,
-                              8);
-    }
-
-  if (pixmap == None)
-    {
-      g_warning ("Could not create pixmap for alpha_channel");
-      return;
-    }
-
-  format = XRenderFindStandardFormat (GDK_DISPLAY (),
-                                      PictStandardA8);
-
-  pa.repeat = True;
-  child_data->alpha_mask_unscaled = XRenderCreatePicture (GDK_DISPLAY (),
-                                                          pixmap,
-                                                          format,
-                                                          CPRepeat,
-                                                          &pa);
-
-  if (!pixbuf)
-    {
-      XRenderColor c = {0};
-
-/*      c.alpha = priv->default_alpha * 0xffff;*/
-      c.alpha = 0xFFFF;
-
-      XRenderFillRectangle (GDK_DISPLAY (),
-                            PictOpSrc,
-                            child_data->alpha_mask_unscaled,
-                            &c,
-                            0, 0, 1, 1);
-
-      child_data->alpha_mask_unscaled = None;
-    }
-
-  XFreePixmap (GDK_DISPLAY (), pixmap);
+  hildon_desktop_picture_and_mask_from_file (mask_file_name,
+                                             NULL,
+                                             &child_data->alpha_mask_unscaled,
+                                             &child_data->background_width,
+                                             &child_data->background_height);
 
 }
 
@@ -1433,8 +1325,6 @@ hildon_home_area_expose (GtkWidget *widget,
       XRectangle                rectangle;
       XserverRegion             region;
       GdkDrawable              *drawable;
-      XRenderPictFormat        *format;
-      XRenderPictureAttributes  pa;
       Window                   *wchildren, root, parent;
       int                       n_children, i;
 
@@ -1448,16 +1338,7 @@ hildon_home_area_expose (GtkWidget *widget,
       rectangle.width = event->area.width;
       rectangle.height = event->area.height;
 
-      format = XRenderFindVisualFormat (GDK_DISPLAY(),
-                                        GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (drawable)));
-
-      pa.subwindow_mode = IncludeInferiors;
-
-      priv->picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                            GDK_DRAWABLE_XID (drawable),
-                                            format,
-                                            CPSubwindowMode,
-                                            &pa);
+      priv->picture = hildon_desktop_picture_from_drawable (drawable);
 
       region = XFixesCreateRegion (GDK_DISPLAY (),
                                    &rectangle,

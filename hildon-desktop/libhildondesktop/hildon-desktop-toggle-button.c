@@ -26,15 +26,12 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_X_COMPOSITE
-#include <X11/extensions/Xrender.h>
-#include <gdk/gdkx.h>
-#include <stdlib.h> /* malloc */
-#endif
-
 #include "hildon-desktop-toggle-button.h"
 
 #ifdef HAVE_X_COMPOSITE
+
+#include <libhildondesktop/hildon-desktop-picture.h>
+#include <gdk/gdkx.h>
 static gboolean hildon_desktop_toggle_button_expose (GtkWidget         *widget,
                                                      GdkEventExpose    *event);
 static void hildon_desktop_toggle_button_style_set (GtkWidget  *widget,
@@ -93,8 +90,6 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
       GdkVisual                        *visual;
       gint                              x_offset, y_offset;
       Picture                           picture = None;
-      XRenderPictFormat                *format;
-      XRenderPictureAttributes          pa = {0};
       gboolean                          picture_is_ours = FALSE;
 
       button = GTK_BUTTON (widget);
@@ -107,23 +102,13 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
 
       visual = gdk_drawable_get_visual (drawable);
 
-      format = XRenderFindVisualFormat (GDK_DISPLAY (),
-                                        GDK_VISUAL_XVISUAL (visual));
-
-      if (format == None)
-        return FALSE;
-
       picture = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawable),
                                                     "picture"));
 
       if (picture == None)
         {
           picture_is_ours = TRUE;
-          picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                          GDK_DRAWABLE_XID (drawable),
-                                          format,
-                                          0,
-                                          &pa);
+          picture = hildon_desktop_picture_from_drawable (drawable);
         }
 
       if (priv->pressed_picture != None  && button->depressed)
@@ -161,188 +146,6 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
 }
 
 static void
-load_picture (const gchar              *filename,
-              Window                    window,
-              Picture                  *picture,
-              Picture                  *mask)
-{
-  XRenderPictureAttributes      pa = {};
-  XRenderPictFormat            *format;
-  GdkPixbuf                    *pixbuf;
-  GError                       *error = NULL;
-  gboolean                      alpha;
-  XImage                       *image, *mask_image = NULL;
-  Pixmap                        pixmap, mask_pixmap = None;
-  GC                            gc;
-  XGCValues                     gc_values = {0};
-  gint                          pw, ph;
-  guchar                       *pdata;
-  gchar                        *data, *mask_data = NULL;
-  guint                         i;
-
-  *picture = *mask = None;
-
-  if (!filename)
-    return;
-
-  pixbuf = gdk_pixbuf_new_from_file (filename, &error);
-
-  if (error)
-    {
-      g_warning (error->message);
-      g_error_free (error);
-      return;
-    }
-
-  alpha = gdk_pixbuf_get_has_alpha (pixbuf);
-  pw    = gdk_pixbuf_get_width     (pixbuf);
-  ph    = gdk_pixbuf_get_height    (pixbuf);
-  pdata = gdk_pixbuf_get_pixels    (pixbuf);
-
-  g_debug ("loaded pixbuf %s: \n%ix%i alpha: %i", filename, pw, ph, alpha);
-
-  pixmap = XCreatePixmap (GDK_DISPLAY (),
-                          window,
-                          pw,
-                          ph,
-                          32);
-
-  if (alpha)
-    mask_pixmap = XCreatePixmap (GDK_DISPLAY (),
-                                 window,
-                                 pw,
-                                 ph,
-                                 8);
-
-  /* Use malloc here because it is freed by Xlib */
-  data      = (gchar *) malloc (pw*ph*4);
-
-  image = XCreateImage (GDK_DISPLAY (),
-                        None,
-                        32,
-                        ZPixmap,
-                        0,         /* offset */
-                        data,
-                        pw,
-                        ph,
-                        8,
-                        pw * 4);
-
-  format = XRenderFindStandardFormat (GDK_DISPLAY (),
-                                      PictStandardARGB32);
-
-  if (alpha)
-    {
-      mask_data = (gchar *) malloc (pw*ph);
-      mask_image = XCreateImage (GDK_DISPLAY (),
-                                 None,
-                                 8,         /* depth */
-                                 ZPixmap,
-                                 0,         /* offset */
-                                 mask_data,
-                                 pw,
-                                 ph,
-                                 8,
-                                 pw);
-    }
-
-    for (i = 0; i < pw * ph; i++)
-    {
-
-#define r ((guint32)(pdata[(alpha?4:3)*i]))
-#define g ((guint32)(pdata[(alpha?4:3)*i+1]))
-#define b ((guint32)(pdata[(alpha?4:3)*i+2]))
-#define a ((pdata[4*i+3]))
-      guint32 pixel =
-          ((r << 16)   & 0x00FF0000  ) |
-          ((g << 8)    & 0x0000FF00) |
-          ((b)         & 0x000000FF );
-
-
-#if 0
-      /* FIXME: Treat non-RGBA visuals  */
-      if (visual->depth == 32)
-        pixel |= ((a << 24) & 0xFF000000);
-#endif
-
-      ((guint32 *)data)[i] = pixel;
-
-      if (alpha)
-        mask_data[i] = a;
-#undef r
-#undef g
-#undef b
-#undef a
-
-    }
-
-    gc = XCreateGC (GDK_DISPLAY (),
-                    pixmap,
-                    0,
-                    &gc_values);
-
-    XPutImage (GDK_DISPLAY (),
-               pixmap,
-               gc,
-               image,
-               0, 0,
-               0, 0,
-               pw, ph);
-
-    XFreeGC (GDK_DISPLAY (), gc);
-    XDestroyImage (image);
-
-    if (alpha)
-      {
-        gc = XCreateGC (GDK_DISPLAY (),
-                        mask_pixmap,
-                        0,
-                        &gc_values);
-
-        XPutImage (GDK_DISPLAY (),
-                   mask_pixmap,
-                   gc,
-                   mask_image,
-                   0, 0,
-                   0, 0,
-                   pw, ph);
-
-        XFreeGC (GDK_DISPLAY (), gc);
-        XDestroyImage (mask_image);
-      }
-
-    g_object_unref (pixbuf);
-    pa.repeat = True;
-    *picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                     pixmap,
-                                     format,
-                                     CPRepeat,
-                                     &pa);
-
-    XFreePixmap (GDK_DISPLAY (),
-                 pixmap);
-
-    if (alpha)
-      {
-        XRenderPictFormat      *mask_format;
-
-        mask_format = XRenderFindStandardFormat (GDK_DISPLAY(),
-                                                 PictStandardA8);
-
-        *mask = XRenderCreatePicture (GDK_DISPLAY (),
-                                      mask_pixmap,
-                                      mask_format,
-                                      CPRepeat,
-                                      &pa);
-
-        XFreePixmap (GDK_DISPLAY (),
-                     mask_pixmap);
-
-      }
-
-}
-
-static void
 hildon_desktop_toggle_button_style_set (GtkWidget *widget, GtkStyle *old_style)
 {
   HildonDesktopToggleButtonPrivate     *priv =
@@ -366,11 +169,10 @@ hildon_desktop_toggle_button_style_set (GtkWidget *widget, GtkStyle *old_style)
       priv->focus_picture_mask = None;
     }
 
-  load_picture (widget->style->rc_style->bg_pixmap_name[GTK_STATE_PRELIGHT],
-                GDK_WINDOW_XID (widget->window),
-                &priv->focus_picture,
-                &priv->focus_picture_mask);
-
+  hildon_desktop_picture_and_mask_from_file (widget->style->rc_style->bg_pixmap_name[GTK_STATE_PRELIGHT],
+                                             &priv->focus_picture,
+                                             &priv->focus_picture_mask,
+                                             NULL, NULL);
 
   if (priv->pressed_picture != None)
     {
@@ -386,10 +188,10 @@ hildon_desktop_toggle_button_style_set (GtkWidget *widget, GtkStyle *old_style)
       priv->pressed_picture_mask = None;
     }
 
-  load_picture (widget->style->rc_style->bg_pixmap_name[GTK_STATE_ACTIVE],
-                GDK_WINDOW_XID (widget->window),
-                &priv->pressed_picture,
-                &priv->pressed_picture_mask);
+  hildon_desktop_picture_and_mask_from_file (widget->style->rc_style->bg_pixmap_name[GTK_STATE_ACTIVE],
+                                             &priv->pressed_picture,
+                                             &priv->pressed_picture_mask,
+                                             NULL, NULL);
 }
 
 static void
