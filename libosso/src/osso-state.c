@@ -213,7 +213,7 @@ _read_state_read_again:
 	    goto _get_state_ret1;
 	}
 	total_bytes += bytes_read;
-	p += bytes_read;
+	p = (char*)p + bytes_read;
     }while(total_bytes < state->state_size);
 
     if(total_bytes < state->state_size) {
@@ -339,7 +339,7 @@ _write_state_write_again:
 	    ret = OSSO_ERROR;
 	    break;
 	}
-	pt += bytes;
+	pt = (char*)pt + bytes;
 	total_bytes += bytes;
     }while(total_bytes < state->state_size);
 
