@@ -1,3 +1,9 @@
+2007-06-07  Moises Martinez  <moises.martinez@nokia.com>
+
+	* policies/tasknavigator-policy.c: 
+	- In case of failure Add a HildonDesktopToggleButton inside the
+	TaskNavigatorItem.
+
 2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-picture.[ch]:

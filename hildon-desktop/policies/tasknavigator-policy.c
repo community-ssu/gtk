@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <libhildondesktop/hildon-desktop-item.h>
 #include <libhildondesktop/tasknavigator-item.h>
+#include <libhildondesktop/hildon-desktop-toggle-button.h>
 
 #define HD_TN_BROWSER_PLUGIN       "hildon-task-navigator-bookmarks.desktop"
 #define HD_TN_CONTACT_PLUGIN       "osso-contact-plugin.desktop"
@@ -148,8 +149,14 @@ HildonDesktopItem *
 hd_ui_policy_module_get_failure_item (gint position)
 {
   GObject *tnitem;
+  GtkWidget *fake_button;
 
   tnitem = g_object_new (TASKNAVIGATOR_TYPE_ITEM, NULL);
+
+  fake_button = hildon_desktop_toggle_button_new ();
+
+  gtk_container_add (GTK_CONTAINER (tnitem), fake_button);
+  gtk_widget_show (fake_button);
 
   return HILDON_DESKTOP_ITEM (tnitem);
 }
