@@ -1,3 +1,13 @@
+2007-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (maybe_check_cursor_position): Remove special
+	active focus handling, only update 'shadow' for passive focus. Improves
+	handling cursor separately from selection.
+
+	* README
+	* demos/treeview.gtkrc
+	* demos/images/treeview-*: Updated
+	
 2007-05-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* src/sapwood-draw.c (check_child_position, check_buttonbox_child_position):

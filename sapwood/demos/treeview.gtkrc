@@ -2,29 +2,40 @@
 pixmap_path "images"
 style "treeview" {
   engine "sapwood" {
+    image { # passive focus for selection 
+      function = FLAT_BOX
+      state    = SELECTED
+      shadow   = OUT
+
+      file     = "treeview-selected.png"
+
+      overlay_file     = "treeview-passive.png"
+      overlay_border   = { 1, 1, 1, 1 }
+    }
     image { # selection
       function = FLAT_BOX
       state    = SELECTED
       file     = "treeview-selected.png"
     }
-    image { # passive focus
+
+    image { # normal row passive focus
       function = FLAT_BOX
-      state    = ACTIVE
       shadow   = OUT
-      file     = "treeview-passive.png"
-    }
-    image { # active focus
-      function = FLAT_BOX
-      state    = ACTIVE
-      file     = "treeview-active.png"
+
+      file     = "treeview-normal.png"
+
+      overlay_file     = "treeview-passive.png"
+      overlay_border   = { 1, 1, 1, 1 }
     }
     image { # normal row background (fallback)
       function = FLAT_BOX
       file     = "treeview-normal.png"
     }
 
-    image { # disable the default focus rectangle
+    image { # active focus
       function = FOCUS
+      file     = "treeview-active.png"
+      border   = { 1, 1, 1, 1 }
     }
   }
 }
@@ -56,7 +67,17 @@ style "treeview-with-row-endings" {
     #}
 
     # selection #######################################################
-    image {
+    image { # passive focus for selection 
+      function = FLAT_BOX
+      state    = SELECTED
+      shadow   = OUT
+
+      file     = "treeview-selected.png"
+
+      overlay_file     = "treeview-passive.png"
+      overlay_border   = { 1, 1, 1, 1 }
+    }
+    image { # selection
       function = FLAT_BOX
       state    = SELECTED
       file     = "treeview-selected.png"
@@ -68,46 +89,44 @@ style "treeview-with-row-endings" {
       shadow   = OUT
       file     = "treeview-passive.png"
     }
+    # normal row background (fallback) ################################
+    image { # normal row passive focus
+      function = FLAT_BOX
+      shadow   = OUT
+
+      file     = "treeview-normal.png"
+
+      overlay_file     = "treeview-passive.png"
+      overlay_border   = { 1, 1, 1, 1 }
+    }
+
     # active ##########################################################
     image {
-      function = FLAT_BOX
-      state    = ACTIVE
+      function = FOCUS
       detail   = "*_start"
 
       file     = "treeview-active-left.png"
       border   = { 2, 0, 2, 2 }
     }
     image {
-      function = FLAT_BOX
-      state    = ACTIVE
+      function = FOCUS
       detail   = "*_middle"
 
       file     = "treeview-active-middle.png"
       border   = { 0, 0, 1, 1 }
     }
     image {
-      function = FLAT_BOX
-      state    = ACTIVE
+      function = FOCUS
       detail   = "*_end"
 
       file     = "treeview-active-right.png"
       border   = { 0, 2, 2, 2 }
     }
     image {
-      function = FLAT_BOX
-      state    = ACTIVE
+      function = FOCUS
 
       file     = "treeview-active-alone.png"
       border   = { 2, 2, 2, 2 }
-    }
-    # normal row background (fallback) ################################
-    image {
-      function = FLAT_BOX
-      file     = "treeview-normal.png"
-    }
-
-    image { # disable the default focus rectangle
-      function = FOCUS
     }
   }
 }

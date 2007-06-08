@@ -852,22 +852,22 @@ maybe_check_cursor_position (GtkTreeView *treeview,
   if (!gdk_rectangle_intersect (&paint_rect, &cursor_rect, &paint_rect))
     return;
 
-  /* We're painting the cursor row background, so distinguish between active
-   * and passive focus. Knowing that GTK_STATE_ACTIVE and GTK_SHADOW_NONE are
-   * never used in treeview, it should be (more or less) safe to (ab)use them
-   * for active/passive focus.
-   *
-   * Active focus:
-   *   function = FLAT_BOX
-   *   state    = ACTIVE
-   *   shadow   = NONE
+  /* We're painting the cursor row background, so distinguish between focused
+   * and non-focused treeview so that we can paint the passive focus ring when
+   * non-focused. (gtk_paint_focus is used to paint the focus ring when focused.)
+   * Knowing that treeview always uses GTK_SHADOW_NONE, it should be (more or
+   * less) safe to (ab)use it for passive focus.
    *
    * Passive focus:
    *   function = FLAT_BOX
-   *   state    = ACTIVE
+   *   state    = SELECTED / NORMAL
    *   shadow   = OUT
+   *
+   * Selection / normal row:
+   *   function = FLAT_BOX
+   *   state    = SELECTED / NORMAL
+   *   shadow   = NONE
    */
-  match_data->state = GTK_STATE_ACTIVE;
   if (!GTK_WIDGET_HAS_FOCUS (treeview))
     match_data->shadow = GTK_SHADOW_OUT;
 }

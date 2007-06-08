@@ -449,10 +449,10 @@ Selected item background:
 
 GtkTreeView
 -----------
-Focus row background:
+Cursor row background, passive focus:
   function = FLAT_BOX
-  state    = ACTIVE
-  shadow   = NONE for active, OUT for passive focus
+  state    = SELECTED / NORMAL
+  shadow   = OUT
 
 See demos/treeview.gtkrc
 
