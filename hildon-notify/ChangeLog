@@ -1,4 +1,8 @@
-2007-05-10  Lucas Rocha  <lucas.rocha@nokia.com>
+2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: post release version bump.
+
+2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* configure.ac: Release 0.0.2
 
