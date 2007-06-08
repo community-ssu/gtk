@@ -3197,28 +3197,6 @@ gtk_entry_real_activate (GtkEntry *entry)
 	    gtk_window_activate_default (window);
 	}
     }
-#ifdef MAEMO_CHANGES
-  else
-    {
-      /* (VKBD) Enter (Enter, GDK_KP_Enter) should accept the field
-       * and move focus to the next editable field.
-       *
-       * If we get here it is often when the user has pressed Enter
-       * and no one handled the event. Another possibility is
-       * application emitting the "activate" signal (in)directly but
-       * that sould be rare.
-       *
-       * FIXME This should probably be removed as it changes the
-       * semantics slightly (be it here or in "key-press-event"
-       * handler) and is probably going to break something.  Though
-       * doing this in the default handler for "activate" should
-       * minimize the impact.  NB#34112
-       */
-      toplevel = gtk_widget_get_toplevel (widget);
-      if (GTK_IS_WINDOW (toplevel))
-        g_signal_emit_by_name (toplevel, "move-focus", GTK_DIR_TAB_FORWARD);
-    }
-#endif /* MAEMO_CHANGES */
 }
 
 static void
