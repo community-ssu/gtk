@@ -1,5 +1,9 @@
 2007-06-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonseekbar.rc: A few fixes for the HildonSeekBar theming.
+
+2007-06-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/ossomediaplayer.rc: Backporting the fix for mediaplayer tabs. Fixes
 	NB#59734.
 

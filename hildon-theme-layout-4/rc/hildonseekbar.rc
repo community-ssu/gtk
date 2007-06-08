@@ -52,53 +52,53 @@ style "osso-seekbar"
 		
                 image {
                         function = BOX
-                        detail = "trough_northwest"
+                        detail = "trough-lower"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_left_disabled.png"
                         border = { 4, 0, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream"
+                        detail = "trough-fill-level"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_disabled.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream_complete"
+                        detail = "trough-fill-level-full"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_disabled.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_southeast"
+                        detail = "trough-upper"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_right_disabled.png"
                         border = { 0, 4, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_northwest"
+                        detail = "trough-lower"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_left_normal.png"
                         border = { 4, 0, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream"
+                        detail = "trough-fill-level"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_normal.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream_complete"
+                        detail = "trough-fill-level-full"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_normal.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_southeast"
+                        detail = "trough-upper"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_right_normal.png"
                         border = { 0, 4, 0, 0 }
                 }
@@ -218,53 +218,53 @@ style "osso-seekbar-toolbar"
 
                 image {
                         function = BOX
-                        detail = "trough_northwest"
+                        detail = "trough-lower"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_disabled.png"
                         border = { 4, 0, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream"
+                        detail = "trough-fill-level"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_disabled.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream_completete"
+                        detail = "trough-fill-level-full"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_disabled.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_southeast"
+                        detail = "trough-upper"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_disabled.png"
                         border = { 0, 4, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_northwest"
+                        detail = "trough-lower"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_normal.png"
                         border = { 4, 0, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream"
+                        detail = "trough-fill-level"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_normal.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_stream_complete"
+                        detail = "trough-fill-level-full"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png"
                         border = { 0, 2, 0, 0 }
                 }
                 image {
                         function = BOX
-                        detail = "trough_southeast"
+                        detail = "trough-upper"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_normal.png"
                         border = { 0, 4, 0, 0 }
                 }
