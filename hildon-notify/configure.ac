@@ -1,4 +1,4 @@
-AC_INIT(hildon-notify, 0.0.1)
+AC_INIT(hildon-notify, 0.0.2)
 
 AM_INIT_AUTOMAKE
 

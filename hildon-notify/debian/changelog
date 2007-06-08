@@ -1,3 +1,9 @@
+hildon-notify (0.0.2-1) unstable; urgency=low
+
+  * Added method to define notification sound hint. 
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Fri,  8 Jun 2007 13:42:57 +0300
+
 hildon-notify (0.0.1-1) unstable; urgency=low
 
   * Initial Release.
