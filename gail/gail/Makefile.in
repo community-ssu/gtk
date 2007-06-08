@@ -53,12 +53,77 @@ moduleLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(module_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libgail_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__libgail_la_SOURCES_DIST = gail-private-macros.h gail.c \
+	gailadjustment.c gailarrow.c gailbooleancell.c \
+	gailbooleancellfactory.c gailbox.c gailbutton.c gailcalendar.c \
+	gailcell.c gailcellparent.c gailcheckmenuitem.c \
+	gailchecksubmenuitem.c gailclist.c gailclistcell.c gailcombo.c \
+	gailcombobox.c gailcontainer.c gailcontainercell.c gailentry.c \
+	gailexpander.c gailframe.c gailimage.c gailimagecell.c \
+	gailimagecellfactory.c gailitem.c gaillabel.c gaillist.c \
+	gailmenu.c gailmenushell.c gailmenuitem.c gailnotebook.c \
+	gailnotebookpage.c gailobject.c gailobjectfactory.c \
+	gailoptionmenu.c gailpaned.c gailpixmap.c gailprogressbar.c \
+	gailradiobutton.c gailradiomenuitem.c gailradiosubmenuitem.c \
+	gailrange.c gailrenderercell.c gailrenderercellfactory.c \
+	gailscale.c gailscrollbar.c gailscrolledwindow.c \
+	gailseparator.c gailspinbutton.c gailsubmenuitem.c \
+	gailstatusbar.c gailtextcell.c gailtextcellfactory.c \
+	gailtextview.c gailtogglebutton.c gailtoplevel.c \
+	gailtreeview.c gailutil.c gailwidget.c gailwindow.c \
+	gailcanvas.c gailcanvasgroup.c gailcanvasgroupfactory.c \
+	gailcanvasitem.c gailcanvasitemfactory.c gailcanvastext.c \
+	gailcanvastextfactory.c gailcanvaswidget.c \
+	gailcanvaswidgetfactory.c gailwidget.h gail.h gailadjustment.h \
+	gailarrow.h gailbooleancell.h gailbooleancellfactory.h \
+	gailbox.h gailbutton.h gailcalendar.h gailcell.h \
+	gailcellparent.h gailcheckmenuitem.h gailchecksubmenuitem.h \
+	gailclist.h gailclistcell.h gailcombo.h gailcombobox.h \
+	gailcontainercell.h gailcontainer.h gailentry.h gailexpander.h \
+	gailfactory.h gailframe.h gailimage.h gailimagecell.h \
+	gailimagecellfactory.h gailintl.h gailitem.h gaillabel.h \
+	gaillist.h gailmenu.h gailmenushell.h gailmenuitem.h \
+	gailnotebook.h gailnotebookpage.h gailobject.h \
+	gailobjectfactory.h gailoptionmenu.h gailpaned.h gailpixmap.h \
+	gailprogressbar.h gailradiobutton.h gailradiomenuitem.h \
+	gailradiosubmenuitem.h gailrange.h gailrenderercell.h \
+	gailrenderercellfactory.h gailscale.h gailscrollbar.h \
+	gailscrolledwindow.h gailseparator.h gailspinbutton.h \
+	gailsubmenuitem.h gailstatusbar.h gailtextcell.h \
+	gailtextcellfactory.h gailtextview.h gailtogglebutton.h \
+	gailtoplevel.h gailtreeview.h gailutil.h gailwindow.h \
+	gailcanvas.h gailcanvasgroup.h gailcanvasgroupfactory.h \
+	gailcanvasitem.h gailcanvasitemfactory.h gailcanvastext.h \
+	gailcanvastextfactory.h gailcanvaswidget.h \
+	gailcanvaswidgetfactory.h
 am__objects_1 = gail.lo gailadjustment.lo gailarrow.lo \
 	gailbooleancell.lo gailbooleancellfactory.lo gailbox.lo \
-	gailbutton.lo gailcalendar.lo
-am__objects_2 =
+	gailbutton.lo gailcalendar.lo gailcell.lo gailcellparent.lo \
+	gailcheckmenuitem.lo gailchecksubmenuitem.lo gailclist.lo \
+	gailclistcell.lo gailcombo.lo gailcombobox.lo gailcontainer.lo \
+	gailcontainercell.lo gailentry.lo gailexpander.lo gailframe.lo \
+	gailimage.lo gailimagecell.lo gailimagecellfactory.lo \
+	gailitem.lo gaillabel.lo gaillist.lo gailmenu.lo \
+	gailmenushell.lo gailmenuitem.lo gailnotebook.lo \
+	gailnotebookpage.lo gailobject.lo gailobjectfactory.lo \
+	gailoptionmenu.lo gailpaned.lo gailpixmap.lo \
+	gailprogressbar.lo gailradiobutton.lo gailradiomenuitem.lo \
+	gailradiosubmenuitem.lo gailrange.lo gailrenderercell.lo \
+	gailrenderercellfactory.lo gailscale.lo gailscrollbar.lo \
+	gailscrolledwindow.lo gailseparator.lo gailspinbutton.lo \
+	gailsubmenuitem.lo gailstatusbar.lo gailtextcell.lo \
+	gailtextcellfactory.lo gailtextview.lo gailtogglebutton.lo \
+	gailtoplevel.lo gailtreeview.lo gailutil.lo gailwidget.lo \
+	gailwindow.lo
+@ENABLE_GNOME_TRUE@am__objects_2 = gailcanvas.lo gailcanvasgroup.lo \
+@ENABLE_GNOME_TRUE@	gailcanvasgroupfactory.lo gailcanvasitem.lo \
+@ENABLE_GNOME_TRUE@	gailcanvasitemfactory.lo gailcanvastext.lo \
+@ENABLE_GNOME_TRUE@	gailcanvastextfactory.lo \
+@ENABLE_GNOME_TRUE@	gailcanvaswidget.lo \
+@ENABLE_GNOME_TRUE@	gailcanvaswidgetfactory.lo
+am__objects_3 =
 am_libgail_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_2)
+	$(am__objects_3) $(am__objects_3) $(am__objects_3)
 libgail_la_OBJECTS = $(am_libgail_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -69,7 +134,66 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gailbooleancell.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gailbooleancellfactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gailbox.Plo ./$(DEPDIR)/gailbutton.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/gailcalendar.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/gailcalendar.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvas.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvasgroup.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvasgroupfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvasitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvasitemfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvastext.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvastextfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvaswidget.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcanvaswidgetfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcellparent.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcheckmenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailchecksubmenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailclist.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailclistcell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcombo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcombobox.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcontainer.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailcontainercell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailentry.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailexpander.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailframe.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailimage.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailimagecell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailimagecellfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailitem.Plo ./$(DEPDIR)/gaillabel.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gaillist.Plo ./$(DEPDIR)/gailmenu.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailmenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailmenushell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailnotebook.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailnotebookpage.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailobject.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailobjectfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailoptionmenu.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailpaned.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailpixmap.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailprogressbar.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailradiobutton.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailradiomenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailradiosubmenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailrange.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailrenderercell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailrenderercellfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailscale.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailscrollbar.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailscrolledwindow.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailseparator.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailspinbutton.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailstatusbar.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailsubmenuitem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtextcell.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtextcellfactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtextview.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtogglebutton.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtoplevel.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailtreeview.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailutil.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailwidget.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gailwindow.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -79,7 +203,7 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgail_la_SOURCES)
-DIST_SOURCES = $(libgail_la_SOURCES)
+DIST_SOURCES = $(am__libgail_la_SOURCES_DIST)
 libgailincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(libgailinclude_HEADERS)
 ETAGS = etags
@@ -121,6 +245,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 ENABLE_GNOME = @ENABLE_GNOME@
+ENABLE_GNOME_FALSE = @ENABLE_GNOME_FALSE@
+ENABLE_GNOME_TRUE = @ENABLE_GNOME_TRUE@
 ENABLE_GTK_DOC_FALSE = @ENABLE_GTK_DOC_FALSE@
 ENABLE_GTK_DOC_TRUE = @ENABLE_GTK_DOC_TRUE@
 EXEEXT = @EXEEXT@
@@ -224,6 +350,18 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 @OS_WIN32_TRUE@no_undefined = -no-undefined
 module_LTLIBRARIES = libgail.la
+@ENABLE_GNOME_FALSE@gail_c_gnome_sources = 
+@ENABLE_GNOME_TRUE@gail_c_gnome_sources = \
+@ENABLE_GNOME_TRUE@        gailcanvas.c                    \
+@ENABLE_GNOME_TRUE@        gailcanvasgroup.c               \
+@ENABLE_GNOME_TRUE@        gailcanvasgroupfactory.c        \
+@ENABLE_GNOME_TRUE@        gailcanvasitem.c                \
+@ENABLE_GNOME_TRUE@        gailcanvasitemfactory.c         \
+@ENABLE_GNOME_TRUE@        gailcanvastext.c                \
+@ENABLE_GNOME_TRUE@        gailcanvastextfactory.c         \
+@ENABLE_GNOME_TRUE@        gailcanvaswidget.c              \
+@ENABLE_GNOME_TRUE@        gailcanvaswidgetfactory.c
+
 gail_c_sources = \
 	gail-private-macros.h		\
 	gail.c				\
@@ -234,7 +372,58 @@ gail_c_sources = \
 	gailbox.c			\
 	gailbutton.c			\
 	gailcalendar.c			\
-if ENABLE_GNOME
+	gailcell.c			\
+	gailcellparent.c		\
+	gailcheckmenuitem.c		\
+	gailchecksubmenuitem.c		\
+	gailclist.c			\
+	gailclistcell.c			\
+	gailcombo.c			\
+	gailcombobox.c			\
+	gailcontainer.c			\
+	gailcontainercell.c		\
+	gailentry.c			\
+	gailexpander.c			\
+	gailframe.c			\
+	gailimage.c			\
+	gailimagecell.c			\
+	gailimagecellfactory.c		\
+	gailitem.c			\
+	gaillabel.c			\
+	gaillist.c			\
+	gailmenu.c			\
+	gailmenushell.c			\
+	gailmenuitem.c			\
+	gailnotebook.c			\
+	gailnotebookpage.c		\
+	gailobject.c			\
+	gailobjectfactory.c		\
+	gailoptionmenu.c		\
+	gailpaned.c			\
+	gailpixmap.c			\
+	gailprogressbar.c		\
+	gailradiobutton.c		\
+	gailradiomenuitem.c		\
+	gailradiosubmenuitem.c		\
+	gailrange.c			\
+	gailrenderercell.c		\
+	gailrenderercellfactory.c	\
+	gailscale.c			\
+	gailscrollbar.c			\
+	gailscrolledwindow.c		\
+	gailseparator.c			\
+	gailspinbutton.c		\
+	gailsubmenuitem.c		\
+	gailstatusbar.c			\
+	gailtextcell.c			\
+	gailtextcellfactory.c		\
+	gailtextview.c			\
+	gailtogglebutton.c		\
+	gailtoplevel.c			\
+	gailtreeview.c			\
+	gailutil.c			\
+	gailwidget.c			\
+	gailwindow.c
 
 libgailincludedir = $(includedir)/gail-1.0/gail
 gail_private_h_sources = \
@@ -246,15 +435,81 @@ gail_private_h_sources = \
 	gailbox.h			\
 	gailbutton.h			\
 	gailcalendar.h			\
-if ENABLE_GNOME
+	gailcell.h			\
+	gailcellparent.h		\
+	gailcheckmenuitem.h		\
+	gailchecksubmenuitem.h		\
+	gailclist.h			\
+	gailclistcell.h			\
+	gailcombo.h			\
+	gailcombobox.h			\
+	gailcontainercell.h		\
+	gailcontainer.h			\
+	gailentry.h			\
+	gailexpander.h			\
+	gailfactory.h			\
+	gailframe.h			\
+	gailimage.h			\
+	gailimagecell.h			\
+	gailimagecellfactory.h		\
+	gailintl.h			\
+	gailitem.h			\
+	gaillabel.h			\
+	gaillist.h			\
+	gailmenu.h			\
+	gailmenushell.h			\
+	gailmenuitem.h			\
+	gailnotebook.h			\
+	gailnotebookpage.h		\
+	gailobject.h			\
+	gailobjectfactory.h		\
+	gailoptionmenu.h		\
+	gailpaned.h			\
+	gailpixmap.h			\
+	gailprogressbar.h		\
+	gailradiobutton.h		\
+	gailradiomenuitem.h		\
+	gailradiosubmenuitem.h		\
+	gailrange.h			\
+	gailrenderercell.h		\
+	gailrenderercellfactory.h	\
+	gailscale.h			\
+	gailscrollbar.h			\
+	gailscrolledwindow.h		\
+	gailseparator.h			\
+	gailspinbutton.h		\
+	gailsubmenuitem.h		\
+	gailstatusbar.h			\
+	gailtextcell.h			\
+	gailtextcellfactory.h		\
+	gailtextview.h			\
+	gailtogglebutton.h		\
+	gailtoplevel.h			\
+	gailtreeview.h			\
+	gailutil.h			\
+	gailwindow.h
 
 gail_public_h_sources = \
 	gailwidget.h
 
+@ENABLE_GNOME_FALSE@gail_private_gnome_h_sources = 
+@ENABLE_GNOME_TRUE@gail_private_gnome_h_sources = \
+@ENABLE_GNOME_TRUE@        gailcanvas.h                    \
+@ENABLE_GNOME_TRUE@        gailcanvasgroup.h               \
+@ENABLE_GNOME_TRUE@        gailcanvasgroupfactory.h        \
+@ENABLE_GNOME_TRUE@        gailcanvasitem.h                \
+@ENABLE_GNOME_TRUE@        gailcanvasitemfactory.h         \
+@ENABLE_GNOME_TRUE@        gailcanvastext.h                \
+@ENABLE_GNOME_TRUE@        gailcanvastextfactory.h         \
+@ENABLE_GNOME_TRUE@        gailcanvaswidget.h              \
+@ENABLE_GNOME_TRUE@        gailcanvaswidgetfactory.h
+
 libgail_la_SOURCES = \
 	$(gail_c_sources)		\
+	$(gail_c_gnome_sources)		\
 	$(gail_public_h_sources)	\
-	$(gail_private_h_sources)
+	$(gail_private_h_sources)	\
+	$(gail_private_gnome_h_sources)
 
 libgailinclude_HEADERS = \
 	$(gail_public_h_sources)
@@ -352,6 +607,67 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailbox.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailbutton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcalendar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvas.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvasgroup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvasgroupfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvasitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvasitemfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvastext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvastextfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvaswidget.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcanvaswidgetfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcellparent.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcheckmenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailchecksubmenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailclist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailclistcell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcombo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcombobox.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcontainer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailcontainercell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailentry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailexpander.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailframe.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailimage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailimagecell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailimagecellfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gaillabel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gaillist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailmenu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailmenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailmenushell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailnotebook.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailnotebookpage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailobject.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailobjectfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailoptionmenu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailpaned.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailpixmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailprogressbar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailradiobutton.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailradiomenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailradiosubmenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailrange.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailrenderercell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailrenderercellfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailscale.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailscrollbar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailscrolledwindow.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailseparator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailspinbutton.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailstatusbar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailsubmenuitem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtextcell.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtextcellfactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtextview.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtogglebutton.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtoplevel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailtreeview.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailutil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailwidget.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gailwindow.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -577,131 +893,6 @@ uninstall-am: uninstall-info-am uninstall-libgailincludeHEADERS \
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-libgailincludeHEADERS uninstall-moduleLTLIBRARIES
 
-	gailcanvas.c			\
-	gailcanvasgroup.c		\
-	gailcanvasgroupfactory.c	\
-	gailcanvasitem.c		\
-	gailcanvasitemfactory.c		\
-	gailcanvastext.c		\
-	gailcanvastextfactory.c		\
-	gailcanvaswidget.c		\
-	gailcanvaswidgetfactory.c	\
-endif
-	gailcell.c			\
-	gailcellparent.c		\
-	gailcheckmenuitem.c		\
-	gailchecksubmenuitem.c		\
-	gailclist.c			\
-	gailclistcell.c			\
-	gailcombo.c			\
-	gailcombobox.c			\
-	gailcontainer.c			\
-	gailcontainercell.c		\
-	gailentry.c			\
-	gailexpander.c			\
-	gailframe.c			\
-	gailimage.c			\
-	gailimagecell.c			\
-	gailimagecellfactory.c		\
-	gailitem.c			\
-	gaillabel.c			\
-	gaillist.c			\
-	gailmenu.c			\
-	gailmenushell.c			\
-	gailmenuitem.c			\
-	gailnotebook.c			\
-	gailnotebookpage.c		\
-	gailobject.c			\
-	gailobjectfactory.c		\
-	gailoptionmenu.c		\
-	gailpaned.c			\
-	gailpixmap.c			\
-	gailprogressbar.c		\
-	gailradiobutton.c		\
-	gailradiomenuitem.c		\
-	gailradiosubmenuitem.c		\
-	gailrange.c			\
-	gailrenderercell.c		\
-	gailrenderercellfactory.c	\
-	gailscale.c			\
-	gailscrollbar.c			\
-	gailscrolledwindow.c		\
-	gailseparator.c			\
-	gailspinbutton.c		\
-	gailsubmenuitem.c		\
-	gailstatusbar.c			\
-	gailtextcell.c			\
-	gailtextcellfactory.c		\
-	gailtextview.c			\
-	gailtogglebutton.c		\
-	gailtoplevel.c			\
-	gailtreeview.c			\
-	gailutil.c			\
-	gailwidget.c			\
-	gailwindow.c
-	gailcanvas.h			\
-	gailcanvasgroup.h		\
-	gailcanvasgroupfactory.h	\
-	gailcanvasitem.h		\
-	gailcanvasitemfactory.h		\
-	gailcanvastext.h		\
-	gailcanvastextfactory.h		\
-	gailcanvaswidget.h		\
-	gailcanvaswidgetfactory.h	\
-endif
-	gailcell.h			\
-	gailcellparent.h		\
-	gailcheckmenuitem.h		\
-	gailchecksubmenuitem.h		\
-	gailclist.h			\
-	gailclistcell.h			\
-	gailcombo.h			\
-	gailcombobox.h			\
-	gailcontainercell.h		\
-	gailcontainer.h			\
-	gailentry.h			\
-	gailexpander.h			\
-	gailfactory.h			\
-	gailframe.h			\
-	gailimage.h			\
-	gailimagecell.h			\
-	gailimagecellfactory.h		\
-	gailintl.h			\
-	gailitem.h			\
-	gaillabel.h			\
-	gaillist.h			\
-	gailmenu.h			\
-	gailmenushell.h			\
-	gailmenuitem.h			\
-	gailnotebook.h			\
-	gailnotebookpage.h		\
-	gailobject.h			\
-	gailobjectfactory.h		\
-	gailoptionmenu.h		\
-	gailpaned.h			\
-	gailpixmap.h			\
-	gailprogressbar.h		\
-	gailradiobutton.h		\
-	gailradiomenuitem.h		\
-	gailradiosubmenuitem.h		\
-	gailrange.h			\
-	gailrenderercell.h		\
-	gailrenderercellfactory.h	\
-	gailscale.h			\
-	gailscrollbar.h			\
-	gailscrolledwindow.h		\
-	gailseparator.h			\
-	gailspinbutton.h		\
-	gailsubmenuitem.h		\
-	gailstatusbar.h			\
-	gailtextcell.h			\
-	gailtextcellfactory.h		\
-	gailtextview.h			\
-	gailtogglebutton.h		\
-	gailtoplevel.h			\
-	gailtreeview.h			\
-	gailutil.h			\
-	gailwindow.h
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

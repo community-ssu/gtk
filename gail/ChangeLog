@@ -1,3 +1,19 @@
+2007-06-08  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* Makefile.in:
+	* config.guess:
+	* config.sub:
+	* configure:
+	* configure.in:
+	* docs/Makefile.in:
+	* docs/reference/Makefile.in:
+	* docs/reference/libgail-util/Makefile.in:
+	* gail/Makefile.am:
+	* gail/Makefile.in:
+	* gail/gailwidget.c:
+	* libgail-util/Makefile.in:
+	* tests/Makefile.in: Fix the ENABLE_GNOME cond.
+
 2007-03-12  Li Yuan  <li.yuan@sun.com>
 
 	* configure.in, NEWS: Up-revved to 1.18.0, for GNOME 2.18.

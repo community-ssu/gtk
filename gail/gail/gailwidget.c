@@ -21,7 +21,9 @@
 #include <gtk/gtk.h>
 #include "gailwidget.h"
 #include "gailnotebookpage.h"
+#ifdef ENABLE_GNOME
 #include "gailcanvaswidget.h"
+#endif
 #include "gail-private-macros.h"
 
 extern GtkWidget *focus_widget;

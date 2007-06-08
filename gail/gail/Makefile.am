@@ -4,6 +4,22 @@ endif
 
 module_LTLIBRARIES = libgail.la
 
+if ENABLE_GNOME
+gail_c_gnome_sources =			\
+        gailcanvas.c                    \
+        gailcanvasgroup.c               \
+        gailcanvasgroupfactory.c        \
+        gailcanvasitem.c                \
+        gailcanvasitemfactory.c         \
+        gailcanvastext.c                \
+        gailcanvastextfactory.c         \
+        gailcanvaswidget.c              \
+        gailcanvaswidgetfactory.c
+else
+gail_c_gnome_sources = 
+endif
+
+
 gail_c_sources =			\
 	gail-private-macros.h		\
 	gail.c				\
@@ -14,17 +30,6 @@ gail_c_sources =			\
 	gailbox.c			\
 	gailbutton.c			\
 	gailcalendar.c			\
-if ENABLE_GNOME
-	gailcanvas.c			\
-	gailcanvasgroup.c		\
-	gailcanvasgroupfactory.c	\
-	gailcanvasitem.c		\
-	gailcanvasitemfactory.c		\
-	gailcanvastext.c		\
-	gailcanvastextfactory.c		\
-	gailcanvaswidget.c		\
-	gailcanvaswidgetfactory.c	\
-endif
 	gailcell.c			\
 	gailcellparent.c		\
 	gailcheckmenuitem.c		\
@@ -89,17 +94,6 @@ gail_private_h_sources =		\
 	gailbox.h			\
 	gailbutton.h			\
 	gailcalendar.h			\
-if ENABLE_GNOME
-	gailcanvas.h			\
-	gailcanvasgroup.h		\
-	gailcanvasgroupfactory.h	\
-	gailcanvasitem.h		\
-	gailcanvasitemfactory.h		\
-	gailcanvastext.h		\
-	gailcanvastextfactory.h		\
-	gailcanvaswidget.h		\
-	gailcanvaswidgetfactory.h	\
-endif
 	gailcell.h			\
 	gailcellparent.h		\
 	gailcheckmenuitem.h		\
@@ -157,10 +151,31 @@ endif
 gail_public_h_sources =	\
 	gailwidget.h
 
+if ENABLE_GNOME
+gail_private_gnome_h_sources =          \
+        gailcanvas.h                    \
+        gailcanvasgroup.h               \
+        gailcanvasgroupfactory.h        \
+        gailcanvasitem.h                \
+        gailcanvasitemfactory.h         \
+        gailcanvastext.h                \
+        gailcanvastextfactory.h         \
+        gailcanvaswidget.h              \
+        gailcanvaswidgetfactory.h
+else
+gail_private_gnome_h_sources =
+endif
+
+
+
+
 libgail_la_SOURCES = 			\
 	$(gail_c_sources)		\
+	$(gail_c_gnome_sources)		\
 	$(gail_public_h_sources)	\
-	$(gail_private_h_sources)
+	$(gail_private_h_sources)	\
+	$(gail_private_gnome_h_sources)
+
 
 libgailinclude_HEADERS =		\
 	$(gail_public_h_sources)

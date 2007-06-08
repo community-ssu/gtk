@@ -463,7 +463,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot LT_CURRENT LT_REVISION LT_AGE LT_CURRENT_MINUS_AGE GETTEXT_PACKAGE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL OS_WIN32_TRUE OS_WIN32_FALSE ms_librarian MS_LIB_AVAILABLE_TRUE MS_LIB_AVAILABLE_FALSE HTML_DIR PKG_CONFIG ENABLE_GTK_DOC_TRUE ENABLE_GTK_DOC_FALSE GTK_DOC_USE_LIBTOOL_TRUE GTK_DOC_USE_LIBTOOL_FALSE DEPS_CFLAGS DEPS_LIBS USE_NLS MSGFMT GMSGFMT XGETTEXT CATALOGS CATOBJEXT DATADIRNAME GMOFILES INSTOBJEXT INTLLIBS PO_IN_DATADIR_TRUE PO_IN_DATADIR_FALSE POFILES POSUB MKINSTALLDIRS INET_LIBS DEP_CFLAGS DEP_LIBS ENABLE_GNOME LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot LT_CURRENT LT_REVISION LT_AGE LT_CURRENT_MINUS_AGE GETTEXT_PACKAGE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL OS_WIN32_TRUE OS_WIN32_FALSE ms_librarian MS_LIB_AVAILABLE_TRUE MS_LIB_AVAILABLE_FALSE HTML_DIR PKG_CONFIG ENABLE_GTK_DOC_TRUE ENABLE_GTK_DOC_FALSE GTK_DOC_USE_LIBTOOL_TRUE GTK_DOC_USE_LIBTOOL_FALSE ENABLE_GNOME_TRUE ENABLE_GNOME_FALSE DEPS_CFLAGS DEPS_LIBS USE_NLS MSGFMT GMSGFMT XGETTEXT CATALOGS CATOBJEXT DATADIRNAME GMOFILES INSTOBJEXT INTLLIBS PO_IN_DATADIR_TRUE PO_IN_DATADIR_FALSE POFILES POSUB MKINSTALLDIRS INET_LIBS DEP_CFLAGS DEP_LIBS ENABLE_GNOME LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -19504,6 +19504,16 @@ if test "x$ENABLE_GNOME" = "xyes"; then
 fi
 
 
+if test "x$ENABLE_GNOME" = "xyes"; then
+  ENABLE_GNOME_TRUE=
+  ENABLE_GNOME_FALSE='#'
+else
+  ENABLE_GNOME_TRUE='#'
+  ENABLE_GNOME_FALSE=
+fi
+
+
+
   succeeded=no
 
   if test -z "$PKG_CONFIG"; then
@@ -21952,6 +21962,13 @@ echo "$as_me: error: conditional \"ENABLE_GTK_DOC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${ENABLE_GNOME_TRUE}" && test -z "${ENABLE_GNOME_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"ENABLE_GNOME\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"ENABLE_GNOME\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
@@ -22581,6 +22598,8 @@ s,@ENABLE_GTK_DOC_TRUE@,$ENABLE_GTK_DOC_TRUE,;t t
 s,@ENABLE_GTK_DOC_FALSE@,$ENABLE_GTK_DOC_FALSE,;t t
 s,@GTK_DOC_USE_LIBTOOL_TRUE@,$GTK_DOC_USE_LIBTOOL_TRUE,;t t
 s,@GTK_DOC_USE_LIBTOOL_FALSE@,$GTK_DOC_USE_LIBTOOL_FALSE,;t t
+s,@ENABLE_GNOME_TRUE@,$ENABLE_GNOME_TRUE,;t t
+s,@ENABLE_GNOME_FALSE@,$ENABLE_GNOME_FALSE,;t t
 s,@DEPS_CFLAGS@,$DEPS_CFLAGS,;t t
 s,@DEPS_LIBS@,$DEPS_LIBS,;t t
 s,@USE_NLS@,$USE_NLS,;t t
