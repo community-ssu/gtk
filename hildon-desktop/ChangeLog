@@ -1,3 +1,13 @@
+2007-06-08  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-titlebar.c:
+	- added style_set to load the background as Picture
+	- added expose, to paint the background from the widget
+	- added realize, to call style_set the first time
+	* src/hd-home-background.c:
+	- disabled compositing of the titlebar as it is now down by
+	the widget on the fly
+
 2007-06-08  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-button.c: hd_wm_activate_window with toplevel GdkWindow

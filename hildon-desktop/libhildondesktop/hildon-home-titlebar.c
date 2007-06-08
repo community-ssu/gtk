@@ -35,6 +35,8 @@
 #include <gtk/gtkimage.h>
 #include <gtk/gtkmain.h>
 
+#include <gdk/gdkx.h>
+
 #ifdef HAVE_LIBHILDON
 #define ENABLE_UNSTABLE_API
 #include <hildon/hildon-helper.h>
@@ -45,6 +47,10 @@
 
 #include "hildon-home-titlebar.h"
 #include "hildon-home-window.h"
+
+#include <libhildondesktop/hildon-desktop-picture.h>
+
+#include <X11/extensions/Xfixes.h>
 
 #define HILDON_HOME_TITLEBAR_HEIGHT	60
 #define HILDON_HOME_TITLEBAR_MENU_LABEL_FONT  "osso-TitleFont"
@@ -84,6 +90,10 @@ struct _HildonHomeTitlebarPrivate
 
   guint menu_key_pressed : 1;
   guint menu_popup_status : 1;
+
+  Picture       background_picture;
+  Picture       background_mask;
+  gint          background_width, background_height;
 };
 
 enum
@@ -220,6 +230,122 @@ hildon_home_titlebar_button_release_event (GtkWidget       *widget,
 }
 
 static void
+hildon_home_titlebar_style_set (GtkWidget      *widget,
+                                GtkStyle       *old_style)
+{
+  HildonHomeTitlebarPrivate    *priv =
+      HILDON_HOME_TITLEBAR_GET_PRIVATE (widget);
+  const gchar  *filename;
+
+  GTK_WIDGET_CLASS (hildon_home_titlebar_parent_class)->style_set (widget,
+                                                                   old_style);
+
+  if (!GTK_IS_STYLE (widget->style) ||
+      !GTK_IS_RC_STYLE (widget->style->rc_style) ||
+      !widget->style->rc_style->bg_pixmap_name[GTK_STATE_NORMAL])
+    return;
+
+  if (priv->background_picture != None)
+    {
+      XRenderFreePicture (GDK_DISPLAY (), priv->background_picture);
+      priv->background_picture = None;
+    }
+
+  if (priv->background_mask != None)
+    {
+      XRenderFreePicture (GDK_DISPLAY (), priv->background_mask);
+      priv->background_mask = None;
+    }
+
+  filename = widget->style->rc_style->bg_pixmap_name[GTK_STATE_NORMAL];
+
+  if (!filename)
+    return;
+
+  if (!GTK_IS_STYLE (old_style) ||
+      !GTK_IS_RC_STYLE (old_style) ||
+      !old_style->rc_style->bg_pixmap_name ||
+      !g_str_equal (filename,
+                    old_style->rc_style->bg_pixmap_name[GTK_STATE_NORMAL]))
+    {
+      hildon_desktop_picture_and_mask_from_file (filename,
+                                                 &priv->background_picture,
+                                                 &priv->background_mask,
+                                                 &priv->background_width,
+                                                 &priv->background_height);
+    }
+
+}
+
+static void
+hildon_home_titlebar_realize (GtkWidget        *widget)
+{
+  GTK_WIDGET_CLASS (hildon_home_titlebar_parent_class)->realize (widget);
+  hildon_home_titlebar_style_set (widget, widget->style);
+}
+
+static gboolean
+hildon_home_titlebar_expose (GtkWidget         *widget,
+                             GdkEventExpose    *event)
+{
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      HildonHomeTitlebarPrivate    *priv =
+          HILDON_HOME_TITLEBAR_GET_PRIVATE (widget);
+      GdkDrawable      *drawable;
+      gint              x_offset, y_offset;
+      Picture           picture;
+      XRectangle        clip_rect;
+      XserverRegion     clip_region;
+
+      gdk_window_get_internal_paint_info (widget->window,
+                                          &drawable,
+                                          &x_offset, &y_offset);
+
+      picture = hildon_desktop_picture_from_drawable (drawable);
+
+      if (picture == None)
+        return FALSE;
+
+      clip_rect.x = event->area.x - x_offset;
+      clip_rect.y = event->area.y - y_offset;
+      clip_rect.width = event->area.width;
+      clip_rect.height = event->area.height;
+
+      clip_region = XFixesCreateRegion (GDK_DISPLAY (),
+                                        &clip_rect,
+                                        1);
+
+      XFixesSetPictureClipRegion (GDK_DISPLAY (),
+                                  picture,
+                                  0, 0,
+                                  clip_region);
+
+      if (priv->background_picture)
+        XRenderComposite (GDK_DISPLAY (),
+                          PictOpOver,
+                          priv->background_picture,
+                          priv->background_mask,
+                          picture,
+                          0, 0,
+                          0, 0,
+                          widget->allocation.x - x_offset,
+                          widget->allocation.y - y_offset,
+                          priv->background_width,
+                          priv->background_height);
+
+      XFixesDestroyRegion (GDK_DISPLAY (), clip_region);
+      XRenderFreePicture (GDK_DISPLAY (), picture);
+
+      return GTK_WIDGET_CLASS (hildon_home_titlebar_parent_class)->
+                               expose_event (widget, event);
+
+    }
+
+  return FALSE;
+}
+
+static void
 hildon_home_titlebar_set_property (GObject      *gobject,
                                    guint         prop_id,
                                    const GValue *value,
@@ -281,6 +407,9 @@ hildon_home_titlebar_class_init (HildonHomeTitlebarClass *klass)
 
   widget_class->button_press_event = hildon_home_titlebar_button_press_event;
   widget_class->button_release_event = hildon_home_titlebar_button_release_event;
+  widget_class->style_set = hildon_home_titlebar_style_set;
+  widget_class->expose_event = hildon_home_titlebar_expose;
+  widget_class->realize = hildon_home_titlebar_realize;
 
   pspec = g_param_spec_object ("menu",
                                "Menu",
