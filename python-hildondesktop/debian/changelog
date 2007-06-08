@@ -1,3 +1,11 @@
+python-hildondesktop (0.0.1-1) unstable; urgency=low
+
+  * Update HomeAre so that it inherits from GtkContainer instead 
+  of GtkFixed
+  * Several updates to match latest API changes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Fri,  8 Jun 2007 17:16:28 +0300
+
 python-hildondesktop (0.0.0-7) unstable; urgency=low
 
   * Removed save_position method from HomeItem.
