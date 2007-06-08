@@ -179,3 +179,144 @@ style "osso-mp-button-frame"
 
 widget "*.MplayerButtonFrame" style "osso-mp-button-frame"
 
+style "mediaplayer-tab-right" = "osso-window-background" {
+   engine "sapwood" {
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-top"
+		file = "../images/qgn_plat_toolbar_frame_top_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+        image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-bottom"
+		file = "../images/qgn_plat_toolbar_frame_bottom_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar"
+		file = "../images/qgn_plat_toolbar_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-top"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_top_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-middle"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_middle.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-bottom"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_bottom_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "findtoolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen_find.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen_right_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+   }
+}
+
+widget "MediaPlayerTabNowPlaying" style "mediaplayer-tab-right"
+
+style "mediaplayer-tab-left" = "osso-window-background" {
+    engine "sapwood" {
+	image {
+		function = BOX
+        	state = NORMAL
+		detail = "toolbar-frame-top"
+		file = "../images/qgn_plat_toolbar_frame_top_left_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-bottom"
+		file = "../images/qgn_plat_toolbar_frame_bottom_left_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar"
+		file = "../images/qgn_plat_toolbar_left_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-top"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_top_left_tab.png"
+        	border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-middle"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_middle.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-bottom"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_bottom_left_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "findtoolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen_find.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen_left_tab.png"
+		border = { 24, 198, 0, 0 }
+		stretch = TRUE
+	}
+   }
+}
+
+widget "MediaPlayerTabLibrary" style "mediaplayer-tab-left"
