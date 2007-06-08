@@ -1,3 +1,9 @@
+2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs,
+	libhildondesktop/hildondesktop.override: update HomeAre so that it
+	inherits from GtkContainer instead of GtkFixed.
+
 2007-05-18  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildondesktop.defs: update to match API changes.

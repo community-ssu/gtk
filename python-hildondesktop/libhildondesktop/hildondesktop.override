@@ -24,7 +24,7 @@ import gtk.Bin as PyGtkBin_Type
 import gtk.Box as PyGtkBox_Type 
 import gtk.Menu as PyGtkMenu_Type 
 import gtk.Window as PyGtkWindow_Type 
-import gtk.Fixed as PyGtkFixed_Type
+import gtk.Container as PyGtkContainer_Type
 import gtk.EventBox as PyGtkEventBox_Type
 import gtk.Widget as PyGtkWidget_Type
 import gtk.gdk.Screen as PyGdkScreen_Type

@@ -65,7 +65,7 @@
 
 (define-object HomeArea
   (in-module "HildonDesktop")
-  (parent "GtkFixed")
+  (parent "GtkContainer")
   (c-name "HildonHomeArea")
   (gtype-id "HILDON_TYPE_HOME_AREA")
 )

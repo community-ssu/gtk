@@ -320,5 +320,3 @@ hd_plugin_loader_module_get_instance (void)
 {
   return g_object_new (HD_TYPE_PLUGIN_LOADER_PYTHON,NULL);
 }
-
-
