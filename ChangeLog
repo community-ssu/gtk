@@ -1,3 +1,11 @@
+2007-06-08  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_real_activate): remove MAEMO_CHANGES code
+	to move-focus in TAB_FORWARD direction. This was supposed to move focus
+	to the next editable widget, but it's not working since we moved from 2.6.
+
+	We'll try to do it properly in the IM side now.
+
 2007-06-04  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_propagate_state): apply patch from
