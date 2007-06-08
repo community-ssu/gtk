@@ -56,6 +56,7 @@
 #define HD_PLUGIN_CONFIG_KEY_NAME           "Name"
 #define HD_PLUGIN_CONFIG_KEY_TYPE           "Type"
 #define HD_PLUGIN_CONFIG_KEY_PATH           "X-Path"
+#define HD_PLUGIN_CONFIG_KEY_MANDATORY      "Mandatory"
 
 #define HD_PLUGIN_CONFIG_KEY_HOME_APPLET    "X-home-applet"
 #define HD_PLUGIN_CONFIG_KEY_HOME_APPLET_RESIZABLE "X-home-applet-resizable"

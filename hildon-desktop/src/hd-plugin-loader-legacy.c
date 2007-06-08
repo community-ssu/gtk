@@ -640,6 +640,7 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
   gchar            *lib_name;
   gchar            *stripped;
   gchar            *entry_name;
+  gboolean	    mandatory;
   GKeyFile         *keyfile;
   struct SBSymbols symbols = {0};
   gpointer          module_data;
@@ -661,6 +662,18 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
       g_propagate_error (error, local_error);
       return NULL;
     }
+
+  mandatory = g_key_file_get_boolean (keyfile,
+		  		      HD_PLUGIN_CONFIG_GROUP,
+			      	      HD_PLUGIN_CONFIG_KEY_MANDATORY,
+				      &local_error);
+
+  if (local_error)
+    {
+      mandatory = FALSE;
+      g_error_free (local_error);
+      local_error = NULL;
+    }      
 
   /* Derive the plugin name from it's library file ... */
   stripped = g_strndup (lib_name + 3, strlen (lib_name) - 6);
@@ -692,7 +705,9 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
       return NULL;
     }
 
-  item = g_object_new (STATUSBAR_TYPE_ITEM, NULL);
+  item = g_object_new (STATUSBAR_TYPE_ITEM, 
+		       "mandatory", mandatory,
+		       NULL);
 
   module_data = symbols.initialize (item, &module_widget);
 

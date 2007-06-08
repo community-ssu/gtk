@@ -1,3 +1,16 @@
+2007-06-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-config.h: Added mandatory key
+	* src/hd-plugin-loader-legacy.c:
+	* src/hd-plugin-loader-default.c:
+	- Parse the mandatory key from plugin's .desktop file.
+	* libhildondesktop/hildon-desktop-item.[ch]:
+	- Added mandatory property.
+	* libhildondesktop/statusbar-item.[ch]:
+	- Removed mandatory property and move it out to HildonDesktopItem.
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Check out mandatory property in HildonDesktopItem not StatusbarItem.
+
 2007-06-07  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.17

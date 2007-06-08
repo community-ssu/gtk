@@ -41,7 +41,8 @@ enum
 {
   PROP_0,
   PROP_ID,
-  PROP_NAME
+  PROP_NAME,
+  PROP_MANDATORY
 };
 
 static gint desktop_signals[N_SIGNALS];
@@ -100,6 +101,14 @@ hildon_desktop_item_class_init (HildonDesktopItemClass *item_class)
                                                        "Name of the plugin, not widget",
                                                        "HildonDesktopItem",
                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+                                   PROP_MANDATORY,
+                                   g_param_spec_boolean("mandatory",
+					   		"mandatory",
+                                                        "plugin that cant'be destroyed",
+                                                        FALSE,
+                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
+
 }
 
 static void 
@@ -200,10 +209,16 @@ hildon_desktop_item_set_property (GObject *object,
       g_free (item->id);
       item->id = g_strdup (g_value_get_string (value));
       break;
+      
     case PROP_NAME:	   
       g_free (item->name);
       item->name     = g_strdup (g_value_get_string (value));
       break;
+
+    case PROP_MANDATORY:
+      item->mandatory = g_value_get_boolean (value);
+      break;
+      
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -227,9 +242,15 @@ hildon_desktop_item_get_property (GObject *object,
     case PROP_ID:
       g_value_set_string (value,item->id);
       break;
+      
     case PROP_NAME:
       g_value_set_string (value,item->name);
       break;
+ 
+    case PROP_MANDATORY:
+      g_value_set_boolean (value,item->mandatory);
+      break;
+      
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;						

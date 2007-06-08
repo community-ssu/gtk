@@ -48,6 +48,8 @@ struct _HildonDesktopItem
   gchar	       *id;
 
   gchar	       *name;
+
+  gboolean      mandatory;
   
   GdkRectangle  geometry;
 };

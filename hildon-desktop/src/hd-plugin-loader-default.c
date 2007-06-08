@@ -27,6 +27,7 @@
 #endif
 
 #include <libhildondesktop/hildon-desktop-plugin.h>
+#include <libhildondesktop/hildon-desktop-item.h>
 
 #include "hd-plugin-loader-default.h"
 #include "hd-config.h"
@@ -48,10 +49,11 @@ hd_plugin_loader_default_open_module (HDPluginLoaderDefault *loader,
   HDPluginLoaderDefaultPrivate *priv;
   HildonDesktopPlugin *plugin; 
   GKeyFile *keyfile;
-  GList *objects = NULL;
+  GList *objects = NULL, *l;
   GError *keyfile_error = NULL;
   gchar *module_file = NULL;
   gchar *module_path = NULL;
+  gboolean mandatory;
 
   g_return_val_if_fail (HD_IS_PLUGIN_LOADER_DEFAULT (loader), NULL);
 
@@ -70,6 +72,18 @@ hd_plugin_loader_default_open_module (HDPluginLoaderDefault *loader,
 
     return NULL;
   }
+
+  mandatory = g_key_file_get_boolean (keyfile,
+		  		      HD_PLUGIN_CONFIG_GROUP,
+				      HD_PLUGIN_CONFIG_KEY_MANDATORY,
+				      &keyfile_error);
+
+  if (keyfile_error)
+  {
+    mandatory = FALSE;
+    g_error_free (keyfile_error);
+    keyfile_error = NULL;
+  }    
 
   if (g_path_is_absolute (module_file))
   {
@@ -103,6 +117,10 @@ hd_plugin_loader_default_open_module (HDPluginLoaderDefault *loader,
   }  
 
   objects = hildon_desktop_plugin_get_objects (plugin);
+
+  for (l = objects; l != NULL; l = g_list_next (l))
+    if (HILDON_DESKTOP_IS_ITEM (l->data))
+      g_object_set (G_OBJECT (l->data), "mandatory", mandatory, NULL);	    
 
   g_type_module_unuse (G_TYPE_MODULE (plugin));
 

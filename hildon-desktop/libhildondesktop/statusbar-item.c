@@ -36,7 +36,6 @@ enum
 {
   SB_PROP_0,
   SB_PROP_CONDITION,
-  SB_PROP_MANDATORY
 };
 
 static gint statusbar_signals[SB_ITEM_SIGNALS];
@@ -101,13 +100,6 @@ statusbar_item_class_init (StatusbarItemClass *item_class)
 		     G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 
   g_object_class_install_property (object_class,
-                                   SB_PROP_MANDATORY,
-                                   g_param_spec_boolean("mandatory",
-					   		"mandatory",
-                                                        "plugin that cant'be destroyed",
-                                                        FALSE,
-                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
-  g_object_class_install_property (object_class,
                                    SB_PROP_CONDITION,
                                    g_param_spec_boolean("condition",
 					   		"condition",
@@ -142,9 +134,7 @@ statusbar_item_get_property (GObject *object, guint prop_id, GValue *value, GPar
     case SB_PROP_CONDITION:
       g_value_set_boolean (value,sbitem->condition);
       break;
-    case SB_PROP_MANDATORY:
-      g_value_set_boolean (value,sbitem->mandatory);
-      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -162,9 +152,7 @@ statusbar_item_set_property (GObject *object, guint prop_id, const GValue *value
       sbitem->condition = g_value_get_boolean (value);
       g_object_notify (object, "condition");
       break;
-    case SB_PROP_MANDATORY:
-      sbitem->mandatory = g_value_get_boolean (value);
-      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;

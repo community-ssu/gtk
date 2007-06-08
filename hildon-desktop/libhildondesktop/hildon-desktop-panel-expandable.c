@@ -665,7 +665,7 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
 
     if (STATUSBAR_IS_ITEM (l->data) && !STATUSBAR_ITEM (l->data)->condition)
       g_debug ("not unreffing");
-    else if (STATUSBAR_IS_ITEM (l->data) && STATUSBAR_ITEM (l->data)->mandatory)
+    else if (STATUSBAR_IS_ITEM (l->data) && HILDON_DESKTOP_ITEM (l->data)->mandatory)
       g_debug ("not unreffing");
     else
       g_object_unref (G_OBJECT (l->data));

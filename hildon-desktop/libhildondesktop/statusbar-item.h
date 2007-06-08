@@ -53,7 +53,6 @@ struct _StatusbarItem
 
     gint position;
     
-    gboolean mandatory;
     gboolean condition;
 };
 
