@@ -1,3 +1,13 @@
+sapwood 2.91.5 - 2007-06-08
+===========================
+
+Changes
+-------
+Fix 'position' handling to correctly check which widgets are visible.
+
+Improve handling cursor separately from selection.
+
+
 sapwood 2.91.4 - 2007-04-19
 ===========================
 

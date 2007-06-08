@@ -1,5 +1,9 @@
 2007-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* === Release 2.91.5 ===
+
+2007-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (maybe_check_cursor_position): Remove special
 	active focus handling, only update 'shadow' for passive focus. Improves
 	handling cursor separately from selection.
