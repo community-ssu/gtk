@@ -1508,7 +1508,20 @@ unlink_file_folder(GNode *node)
 
   if (model_node->get_folder_handle)
     {
-      gtk_file_system_cancel_operation (model_node->get_folder_handle);
+      GtkFileSystemHandle *handle = model_node->get_folder_handle;
+      if (handle->file_system)
+	gtk_file_system_cancel_operation (model_node->get_folder_handle);
+      else
+	{
+	  /* This is a special handle created by one of our special
+	     locations.  It is not associated with any GtkFileSystem
+	     and the operation can not be cancelled.  But since the
+	     node might be going away, we set the cancelled flag
+	     directly so that get_folder_callback does the right
+	     thing.
+	  */
+	  handle->cancelled = TRUE;
+	}
       model_node->get_folder_handle = NULL;
     }
 

@@ -288,7 +288,10 @@ hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
   root_folder->root = HILDON_FILE_SYSTEM_ROOT (location);
   g_object_ref (location);
 
-  handle->file_system = filesystem;
+  /* This tells the HildonFileSystemModel never to call
+     gtk_file_system_cancel_operation on this handle.
+  */
+  handle->file_system = NULL;
 
   clos->handle = handle;
   clos->root_folder = root_folder;
