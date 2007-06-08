@@ -73,6 +73,7 @@ void hildon_desktop_plugin_load (HildonDesktopPlugin *plugin)			 	\
 G_MODULE_EXPORT void hildon_desktop_plugin_unload (HildonDesktopPlugin *plugin); 	\
 void hildon_desktop_plugin_unload (HildonDesktopPlugin *plugin)			 	\
 {										 	\
+  (void) plugin;									\
 }
 
 #define HILDON_DESKTOP_PLUGIN_SYMBOLS_CODE(t_n, CODE_LOAD, CODE_UNLOAD)					 	\

@@ -1,3 +1,8 @@
+2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.h: added a tiny line of code to 
+	avoid certain build warnings in plugin macros.
+
 2007-06-08  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-config.h: Added mandatory key
