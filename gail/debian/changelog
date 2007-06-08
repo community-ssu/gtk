@@ -1,3 +1,9 @@
+gail (1.18.0-osso7) unstable; urgency=low
+
+  * New release including the fix for ENABLE_GNOME
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 8 Jun 2007 17:21:31 +0100
+
 gail (1.18.0-osso6) unstable; urgency=low
 
   * Removed .la files
