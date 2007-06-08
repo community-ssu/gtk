@@ -1,3 +1,12 @@
+2007-06-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_get_folder): Explicitly set file_system
+	of the handle to NULL.
+	* hildon-fm/hildon-file-system-model.c (unlink_file_folder): Do
+	not call gtk_file_system_cancel_operation when the file_system of
+	the handle is NULL, set the cancelled flag directly (N59441).
+
 2007-06-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-root.c
