@@ -801,6 +801,7 @@ hn_app_button_press_event (GtkWidget      *widget,
   GtkButton *button;
   GtkToggleButton *toggle_button;
   GtkToggleButton *tmp_button = NULL;
+  GtkWidget *toplevel_window;
   GSList *l;
   HDEntryInfo *info;
   
@@ -815,8 +816,10 @@ hn_app_button_press_event (GtkWidget      *widget,
   /* remember which button was used to press this button */
   HN_DBG("App button pressed using button %d", event->button);
 
+  toplevel_window = gtk_widget_get_toplevel (widget);
+
   hd_wm_activate_window (HD_TN_DEACTIVATE_KEY_FOCUS,
-		         gtk_widget_get_parent_window (widget));
+		         toplevel_window->window);
 
   if (event->button == APP_BUTTON_THUMBABLE)
     priv->is_thumbable = TRUE;

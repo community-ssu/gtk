@@ -1,3 +1,8 @@
+2007-06-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-button.c: hd_wm_activate_window with toplevel GdkWindow
+	not by using parent GtkWindow.
+
 2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-plugin.h: added a tiny line of code to 
