@@ -642,12 +642,9 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
                                               struct cb_data   *data)
 {
   GdkPixmap *pixmap;
-  
-  g_debug ("DBUS Callback");
 
   if (error)
     {
-      g_warning ("Error when setting background: %s", error->message);
       goto cleanup;
     }
 
@@ -656,7 +653,7 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
       g_warning ("No pixmap id returned");
       goto cleanup;
     }
-    
+
   pixmap = gdk_pixmap_foreign_new (pixmap_xid);
 
   if (pixmap)
@@ -676,10 +673,10 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
   else
     g_warning ("No such pixmap: %i", pixmap_xid);
 
+cleanup:
   if (data->callback)
     data->callback (data->background, pixmap_xid, error, data->user_data);
 
-cleanup:
   if (G_IS_OBJECT (data->background))
       g_object_unref (data->background);
   g_free (data);

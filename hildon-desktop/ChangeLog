@@ -1,5 +1,15 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background.c:
+	- call the callback even when an error occurred, so it can be
+	handled
+	* background-manager/background-manager.c:
+	- removed the "plain color fallback", no longer necessary
+	now that home draws its own titlebar
+	Fixes: NB#55272
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c:
 	- add a filter on the root window to track whether the home
 	window is topmost

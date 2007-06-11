@@ -835,7 +835,7 @@ background_manager_set_background (BackgroundManager   *manager,
                    window_xid);
       return FALSE;
     }
-  
+
   color.red   = red;
   color.blue  = blue;
   color.green = green;
@@ -843,22 +843,13 @@ background_manager_set_background (BackgroundManager   *manager,
   if (filename && filename[0])
     {
       image = load_image_from_uri (filename,
-                                   TRUE, 
+                                   TRUE,
                                    TRUE,
                                    &local_error);
       if (local_error)
         {
-          /* We will try to recover by using a plain color */
-          g_warning ("Error when loading uri %s: %s",
-                     filename,
-                     local_error->message);
-
-          g_clear_error (&local_error);
-          image = NULL;
-          /*
           g_propagate_error (error, local_error);
           return FALSE;
-          */
         }
     }
 
