@@ -64,8 +64,6 @@
 #define KILL_APPS_METHOD "kill_app"
 #define TASKNAV_GENERAL_PATH "/com/nokia/tasknav"
 #define TASKNAV_SERVICE_NAME "com.nokia.tasknav"
-#define TASKNAV_INSENSITIVE_INTERFACE "com.nokia.tasknav.tasknav_insensitive"
-#define TASKNAV_SENSITIVE_INTERFACE "com.nokia.tasknav.tasknav_sensitive"
 
 #define MCE_SERVICE          "com.nokia.mce"
 #define MCE_SIGNAL_INTERFACE "com.nokia.mce.signal"
@@ -565,79 +563,6 @@ out:
 }
 
 static DBusHandlerResult
-hd_wm_dbus_method_call_handler (DBusConnection *connection,
-				DBusMessage    *message,
-				void           *data)
-{
-  const gchar *path;
-  HDWM  *hdwm = HD_WM (data);
-
-  /* Catch APP_LAUNCH_BANNER_METHOD */
-  if (dbus_message_is_method_call (message,
-                                  APP_LAUNCH_BANNER_METHOD_INTERFACE,
-                                  APP_LAUNCH_BANNER_METHOD ) )
-  {
-    DBusError         error;
-    gchar            *service_name = NULL;
-    HDWMWatchableApp *app;
-
-    dbus_error_init (&error);
-
-    dbus_message_get_args (message,
-                          &error,
-                          DBUS_TYPE_STRING,
-                          &service_name,
-                          DBUS_TYPE_INVALID );
-
-    if (dbus_error_is_set (&error))
-    {
-      g_warning ("Error getting message args: %s\n", error.message);
-      dbus_error_free (&error);
-      return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
-
-    g_return_val_if_fail (service_name, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
-
-    g_debug ("Checking if service: '%s' is watchable", service_name);
-
-    /* Is this 'service' watchable ? */
-    if ((app = hd_wm_lookup_watchable_app_via_service (service_name)) != NULL)
-    {
-      if (hd_wm_watchable_app_has_startup_notify (app) &&
-         hdwm->priv->lowmem_banner_timeout >= 0 &&
-         !hd_wm_watchable_app_has_windows (app))
-      {
-        g_signal_emit_by_name (hdwm,
-                               "application-starting",
-                               app);
-      }
-    }
-  }
-
-
-  path = dbus_message_get_path(message);
-  if (path != NULL && g_str_equal(path, TASKNAV_GENERAL_PATH))
-  {
-    const gchar * interface = dbus_message_get_interface(message);
-    if (g_str_equal(interface, TASKNAV_SENSITIVE_INTERFACE))
-    {
-      g_debug ("%s: %d, set sensitiveness to tn to true",__FILE__,__LINE__);
-      /* hn_window_set_sensitive (tasknav,TRUE); */
-      return DBUS_HANDLER_RESULT_HANDLED;
-    }
-    else 
-    if (g_str_equal(interface, TASKNAV_INSENSITIVE_INTERFACE))
-    {
-      g_debug ("%s: %d, set sensitiveness to tn to false",__FILE__,__LINE__);
-      /* hn_window_set_sensitive (tasknav,TRUE); */
-      return DBUS_HANDLER_RESULT_HANDLED;
-    } 
-  }
-
-  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-}
-
-static DBusHandlerResult
 hd_wm_dbus_signal_handler (DBusConnection *conn, DBusMessage *msg, void *data)
 {
   if (dbus_message_is_signal(msg, MAEMO_LAUNCHER_SIGNAL_IFACE,
@@ -816,7 +741,6 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
   HDWM *hdwm;
   DBusConnection *connection,*sys_connection;
   DBusError       error,sys_error;
-  gchar          *match_rule = NULL;
   GdkKeymap      *keymap;
 
   object = G_OBJECT_CLASS (hd_wm_parent_class)->constructor (gtype, n_params, params);
@@ -852,32 +776,16 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
   }
   else
   {
-    match_rule = g_strdup_printf("interface='%s'", TASKNAV_INSENSITIVE_INTERFACE);
+    dbus_bus_add_match (connection, "type='signal', interface='"
+                        APPKILLER_SIGNAL_INTERFACE "'", NULL);
 
-    dbus_bus_add_match( connection, match_rule, NULL );
-    g_free (match_rule);
+    dbus_bus_add_match (connection, "type='signal', interface='"
+                        MAEMO_LAUNCHER_SIGNAL_IFACE "'", NULL);
 
-    match_rule = g_strdup_printf("type='signal', interface='%s'",APPKILLER_SIGNAL_INTERFACE);
-      
-    dbus_bus_add_match( connection, match_rule, NULL );
-    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
-    g_free(match_rule);
+    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler,
+                                hdwm, NULL);
 
-    match_rule = g_strdup_printf("interface='%s'", APP_LAUNCH_BANNER_METHOD_INTERFACE );
-
-    dbus_bus_add_match (connection, match_rule, NULL );
-
-    dbus_connection_add_filter (connection, hd_wm_dbus_method_call_handler, hdwm, NULL );
-    g_free(match_rule);
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'", MAEMO_LAUNCHER_SIGNAL_IFACE);
-
-    dbus_bus_add_match (connection, match_rule, NULL);
-    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
-    g_free(match_rule);
-
-    dbus_connection_flush(connection);
-
+    dbus_connection_flush (connection);
   }
 
   if (!sys_connection)

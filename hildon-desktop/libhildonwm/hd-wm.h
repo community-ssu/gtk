@@ -67,9 +67,6 @@
 
 /* DBus/Banner etc related defines
  */
-#define APP_LAUNCH_BANNER_METHOD_INTERFACE   "com.nokia.tasknav.app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD_PATH        "/com/nokia/tasknav/app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD             "app_launch_banner"
 #define APP_LAUNCH_BANNER_MSG_LOADING        "ckct_ib_application_loading"
 #define APP_LAUNCH_BANNER_MSG_RESUMING       "ckct_ib_application_resuming"
 #define APP_LAUNCH_BANNER_MSG_LOADING_FAILED "ckct_ib_application_loading_failed"

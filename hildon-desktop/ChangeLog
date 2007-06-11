@@ -1,3 +1,10 @@
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]:
+	- clean up D-Bus setup by removing unused handlers. Patch courtesy
+	of Kimmo Hämälainen
+	Fixes: NB#59789
+
 2007-06-08  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-titlebar.c:
