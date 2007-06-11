@@ -168,12 +168,40 @@ imagename_from_filename (const gchar *filename)
 {
   gchar *tmp;
   gchar *imagename;
+  gchar *last_dot, *c;
 
   tmp = g_filename_from_uri (filename, NULL, NULL);
+  g_debug ("Got filename %s", tmp);
   if (!tmp)
     tmp = g_strdup (filename);
 
   imagename = g_filename_display_basename (tmp);
+
+  g_debug ("Got imagename %s", imagename);
+
+  c = imagename;
+  last_dot = NULL;
+
+  while (*c)
+    {
+      if (*c == '.')
+        {
+          last_dot = c;
+        }
+
+      c++;
+    }
+
+  if(last_dot)
+    *last_dot = '\0';
+
+  /* We need a special case for our wonderful sketch program */
+  if (g_str_has_suffix (imagename, ".sketch"))
+    {
+      tmp = imagename;
+      imagename = g_strndup (tmp, strlen (tmp) - 7);
+      g_free (tmp);
+    }
 
   return imagename;
 }

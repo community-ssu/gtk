@@ -1,5 +1,11 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background-dialog.c:
+	- remove extension and .sketch from image name
+	Fixes: NB#56712
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background.c:
 	- call the callback even when an error occurred, so it can be
 	handled
