@@ -1854,7 +1854,6 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
     {
       case GTK_RESPONSE_OK:
           gtk_widget_hide (GTK_WIDGET(dialog));
-          g_debug ("BACKGROUND_OK");
           if (!hd_home_background_equal (priv->background,
                                          background))
             {
@@ -1864,7 +1863,7 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                    hd_home_window_set_background_timeout,
                                  window);
               hd_home_background_apply_async
-                  (background,
+                  (hd_home_background_copy (background),
                    GTK_WIDGET (window)->window,
                    workarea,
                    (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
@@ -1880,7 +1879,7 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                    hd_home_window_set_background_timeout,
                                  window);
               hd_home_background_apply_async
-                  (background,
+                  (hd_home_background_copy (background),
                    GTK_WIDGET (window)->window,
                    workarea,
                    (HDHomeBackgroundApplyCallback)background_apply_callback,
@@ -1912,6 +1911,8 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
       default:
           break;
     }
+
+  g_object_unref (background);
 }
 
 static void

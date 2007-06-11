@@ -683,6 +683,8 @@ hd_home_background_dialog_mode_changed (HDHomeBackgroundDialog *dialog)
 
   mode = gtk_combo_box_get_active (GTK_COMBO_BOX (priv->mode_combo));
 
+  g_debug ("Setting mode on dialog background to %i", mode);
+
   g_object_set (G_OBJECT (priv->background),
                 "mode", mode,
                 NULL);

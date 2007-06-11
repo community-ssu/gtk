@@ -1,5 +1,12 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- copy the background before applying, so further changes
+	in the dialog won't affect it.
+	Fixes: NB#57657
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background.c:
 	- default value for background modes is Centered.
 	Fixes: NB#57648
