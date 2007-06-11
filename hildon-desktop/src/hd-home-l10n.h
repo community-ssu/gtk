@@ -89,6 +89,9 @@ G_BEGIN_DECLS
 #define HH_SET_BG_MODE_STRETCHED  _MAD("home_va_set_backgr_stretched")
 #define HH_SET_BG_MODE_TILED      _MAD("home_va_set_backgr_tiled")
 
+/* cancel background loading note */
+#define HH_CANCEL_BG_TEXT         _MAD("home_nw_loading_image")
+
 /* generic notification dialogs */
 #define HH_LOW_MEMORY_TEXT          _KE_RECV("memr_ib_operation_disabled")
 #define HH_FLASH_FULL_TEXT          _KE_RECV("cerm_device_memory_full")

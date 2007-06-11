@@ -1,5 +1,13 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- add _cancel_note_show/hide to show the background loading progress
+	- show the note if the loading did not complete within 1s
+	- do not apply if the background if it was cancelled from the note.
+	Fixes: NB#54014
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-applications-menu.c:
 	- unprotect spawned processes from the OOM shield.
 	Fixes: NB#25830

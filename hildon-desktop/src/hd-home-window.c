@@ -114,6 +114,12 @@ struct _HDHomeWindowPrivate
 
   gboolean          selecting_applets;
   guint             save_area_timeout;
+
+  /* Cancelling the background loading */
+  GtkWidget        *cancel_note;
+  guint             background_loading_timeout;
+  guint             cancel_note_update_timeout;
+  gboolean          background_cancelled;
 };
 
 /* Properties */
@@ -273,6 +279,12 @@ hd_home_window_button1_clicked (HildonHomeWindow *window);
 
 static void
 hd_home_window_button2_clicked (HildonHomeWindow *window);
+
+static void
+hd_home_window_cancel_note_hide (HDHomeWindow *window);
+
+static void
+hd_home_window_cancel_note_show (HDHomeWindow *window);
 
 #if 0
 static void
@@ -638,6 +650,23 @@ background_apply_callback (HDHomeBackground *background,
   HDHomeWindowPrivate  *priv;
   g_debug ("Background applied!");
 
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+
+  if (priv->background_loading_timeout > 0)
+    {
+      g_source_remove (priv->background_loading_timeout);
+      priv->background_loading_timeout = 0;
+    }
+
+  if (priv->background_cancelled)
+    {
+      priv->background_cancelled = FALSE;
+      return;
+    }
+
+  if (GTK_IS_WIDGET (priv->cancel_note))
+    hd_home_window_cancel_note_hide (window);
+
   if (error)
     {
       g_warning ("Got error when apply background: %s",
@@ -647,8 +676,6 @@ background_apply_callback (HDHomeBackground *background,
 
   gdk_window_clear (GTK_WIDGET (window)->window);
   gtk_widget_queue_draw (GTK_WIDGET (window));
-
-  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
 
   if (background != priv->background)
     {
@@ -668,11 +695,16 @@ background_apply_and_save_callback (HDHomeBackground *background,
   HDHomeWindowPrivate  *priv;
   gchar                *conffile;
   GError               *save_error = NULL;
+  gboolean              background_cancelled;
+
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+
+  background_cancelled = priv->background_cancelled;
 
   background_apply_callback (background, pixmap_xid, error, window);
 
   /* Do not save if an error occurred */
-  if (error)
+  if (error || background_cancelled)
     return;
 
   conffile = g_build_path (G_DIR_SEPARATOR_S,
@@ -680,8 +712,6 @@ background_apply_and_save_callback (HDHomeBackground *background,
                            HD_DESKTOP_USER_PATH,
                            HD_HOME_BACKGROUND_CONF_FILE,
                            NULL);
-
-  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
 
   hd_home_background_save (priv->background,
                            conffile,
@@ -1669,6 +1699,17 @@ hd_home_window_accept_layout (HDHomeWindow *window)
   g_signal_emit_by_name (window, "layout-mode-accept");
 }
 
+static gboolean
+hd_home_window_set_background_timeout (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+
+  priv->background_loading_timeout = 0;
+
+  hd_home_window_cancel_note_show (window);
+  return FALSE;
+}
+
 static void
 hd_home_window_set_background_reponse (HDHomeWindow *window,
                                        gint response,
@@ -1690,33 +1731,54 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
           g_debug ("BACKGROUND_OK");
           if (!hd_home_background_equal (priv->background,
                                          background))
-            hd_home_background_apply_async 
-                (background,
-                 GTK_WIDGET (window)->window,
-                 workarea,
-                 (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
-               window);
+            {
+              priv->background_loading_timeout =
+                  g_timeout_add (1000,
+                                 (GSourceFunc)
+                                   hd_home_window_set_background_timeout,
+                                 window);
+              hd_home_background_apply_async
+                  (background,
+                   GTK_WIDGET (window)->window,
+                   workarea,
+                   (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
+                   window);
+            }
           g_object_unref (priv->previous_background);
           break;
       case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
-          hd_home_background_apply_async 
-              (background,
-               GTK_WIDGET (window)->window,
-               workarea,
-               (HDHomeBackgroundApplyCallback)background_apply_callback,
-               window);
+            {
+              priv->background_loading_timeout =
+                  g_timeout_add (1000,
+                                 (GSourceFunc)
+                                   hd_home_window_set_background_timeout,
+                                 window);
+              hd_home_background_apply_async
+                  (background,
+                   GTK_WIDGET (window)->window,
+                   workarea,
+                   (HDHomeBackgroundApplyCallback)background_apply_callback,
+                   window);
+            }
 
           break;
       case GTK_RESPONSE_CANCEL:
       case GTK_RESPONSE_DELETE_EVENT:
           if (!hd_home_background_equal (priv->background,
                                          priv->previous_background))
-            hd_home_background_apply_async 
-                (priv->previous_background,
-                 GTK_WIDGET (window)->window,
-                 workarea,
-                 (HDHomeBackgroundApplyCallback)background_apply_callback,
-                 window);
+            {
+              priv->background_loading_timeout =
+                  g_timeout_add (1000,
+                                 (GSourceFunc)
+                                   hd_home_window_set_background_timeout,
+                                 window);
+              hd_home_background_apply_async
+                  (priv->previous_background,
+                   GTK_WIDGET (window)->window,
+                   workarea,
+                   (HDHomeBackgroundApplyCallback)background_apply_callback,
+                   window);
+            }
 
           gtk_widget_hide (GTK_WIDGET (dialog));
           g_object_unref (priv->previous_background);
@@ -1788,6 +1850,88 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
 }
 #endif
 
+static void
+hd_home_window_cancel_note_hide (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+
+  if (priv->cancel_note_update_timeout > 0)
+    {
+      g_source_remove (priv->cancel_note_update_timeout);
+      priv->cancel_note_update_timeout = 0;
+    }
+
+  if (GTK_IS_WIDGET (priv->cancel_note))
+    {
+      gtk_widget_destroy (priv->cancel_note);
+      priv->cancel_note = NULL;
+    }
+}
+
+static void
+hd_home_window_cancel_note_response (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+
+  hd_home_window_cancel_note_hide (window);
+
+  priv->background_cancelled = TRUE;
+}
+
+static gboolean
+hd_home_window_cancel_note_update (GtkWidget *prog_bar)
+{
+  if (!GTK_IS_PROGRESS_BAR (prog_bar))
+    return FALSE;
+
+  gtk_progress_bar_pulse (GTK_PROGRESS_BAR (prog_bar));
+  return TRUE;
+}
+
+static void
+hd_home_window_cancel_note_show (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *label, *prog_bar;
+
+  if (priv->cancel_note)
+    return;
+
+  priv->cancel_note =
+      gtk_dialog_new_with_buttons ("",
+                                   NULL,
+                                   GTK_DIALOG_MODAL |
+                                     GTK_DIALOG_DESTROY_WITH_PARENT,
+                                   HH_SET_BG_CANCEL, GTK_RESPONSE_CANCEL,
+                                   NULL);
+
+  label = gtk_label_new (HH_CANCEL_BG_TEXT);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (priv->cancel_note)->vbox),
+                     label);
+
+  prog_bar = gtk_progress_bar_new ();
+  gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (prog_bar), 0.2);
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (prog_bar), 0.2);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (priv->cancel_note)->vbox),
+                     prog_bar);
+
+  priv->cancel_note_update_timeout =
+      g_timeout_add (500,
+                     (GSourceFunc)hd_home_window_cancel_note_update,
+                     prog_bar);
+
+  gtk_dialog_set_has_separator (GTK_DIALOG (priv->cancel_note), FALSE);
+
+  g_signal_connect_swapped (priv->cancel_note, "response",
+                            G_CALLBACK (hd_home_window_cancel_note_response),
+                            window);
+
+  gtk_widget_realize (priv->cancel_note);
+  gdk_window_set_decorations (priv->cancel_note->window,
+                              GDK_DECOR_BORDER);
+
+  gtk_widget_show_all (priv->cancel_note);
+}
 
 #if 0
 static void
