@@ -168,7 +168,7 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
                             "Background stretching mode",
                             BACKGROUND_CENTERED,
                             BACKGROUND_TILED,
-                            BACKGROUND_TILED,
+                            BACKGROUND_CENTERED,
                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
   g_object_class_install_property (object_class,
                                    PROP_MODE,

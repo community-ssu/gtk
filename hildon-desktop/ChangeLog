@@ -1,5 +1,11 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background.c:
+	- default value for background modes is Centered.
+	Fixes: NB#57648
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background-dialog.c:
 	- remove extension and .sketch from image name
 	Fixes: NB#56712
