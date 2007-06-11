@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include <string.h>
+#include <fcntl.h>
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -470,6 +471,8 @@ hd_applications_menu_activate_app (GtkMenuItem *item, HDApplicationsMenu *button
       {
         int priority;
         errno = 0;
+        gchar *oom_filename;
+        int fd;
 
         /* If the child process inherited desktop's high priority,
          * give child default priority */
@@ -479,6 +482,19 @@ hd_applications_menu_activate_app (GtkMenuItem *item, HDApplicationsMenu *button
         {
           setpriority (PRIO_PROCESS, child_pid, 0);
         }
+
+        /* Unprotect from OOM */
+        oom_filename = g_strdup_printf ("/proc/%i/oom_adj",
+                                        child_pid);
+        fd = open (oom_filename, O_WRONLY);
+        g_free (oom_filename);
+
+        if (fd >= 0)
+          {
+            write (fd, "0", sizeof (char));
+            close (fd);
+          }
+
       }
     }
     else

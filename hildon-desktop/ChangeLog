@@ -1,5 +1,11 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-applications-menu.c:
+	- unprotect spawned processes from the OOM shield.
+	Fixes: NB#25830
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildonwm/hd-wm.[ch]:
 	- clean up D-Bus setup by removing unused handlers. Patch courtesy
 	of Kimmo Hämälainen
