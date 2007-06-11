@@ -1,6 +1,12 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:
+	- add a filter on the root window to track whether the home
+	window is topmost
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
 	- register the lowmem signal from libosso and act accordingly
 	- register the hw_screen_off signal from libosso and act
 	accordingly (tell the applets they are in the background)

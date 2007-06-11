@@ -43,6 +43,8 @@
 #include <gtk/gtkcheckmenuitem.h>
 #include <gtk/gtkspinbutton.h>
 
+#include <X11/Xatom.h>
+
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-note.h>
@@ -729,10 +731,92 @@ background_apply_and_save_callback (HDHomeBackground *background,
 
 }
 
+static GdkFilterReturn
+hd_home_window_root_event_filter (GdkXEvent *xevent,
+                                  GdkEvent  *event,
+                                  gpointer   user_data)
+{
+  HDHomeWindow         *window = user_data;
+  static Atom           active_window_atom = 0;
+  static gboolean       home_is_topmost = TRUE;
+  XPropertyEvent       *prop = NULL;
+
+  if (((XEvent *) xevent)->type != PropertyNotify)
+    return GDK_FILTER_CONTINUE;
+
+  if (active_window_atom == 0)
+    {
+      active_window_atom = XInternAtom (GDK_DISPLAY (),
+                                        "_MB_CURRENT_APP_WINDOW",
+                                        False);
+
+    }
+
+  prop = (XPropertyEvent *) xevent;
+  if ((prop->window == GDK_ROOT_WINDOW ()) &&
+      (prop->atom == active_window_atom))
+    {
+      Atom real_type;
+      gint error_trap = 0;
+      int format, status;
+      unsigned long n_res, extra;
+      Window my_window;
+      union {
+        Window *win;
+        unsigned char *pointer;
+      } res;
+
+      gdk_error_trap_push ();
+
+      status = XGetWindowProperty (GDK_DISPLAY (),
+                                   GDK_ROOT_WINDOW (),
+                                   active_window_atom,
+                                   0L, G_MAXLONG,
+                                   False, XA_WINDOW, &real_type,
+                                   &format, &n_res,
+                                   &extra, (unsigned char **) &res.pointer);
+
+      gdk_error_trap_pop ();
+
+      if ((status != Success) || (real_type != XA_WINDOW) ||
+          (format != 32) || (n_res != 1) || (res.win == NULL) ||
+          (error_trap != 0))
+        {
+          return GDK_FILTER_CONTINUE;
+        }
+
+      my_window = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
+
+      if ((res.win[0] != my_window) &&
+          (home_is_topmost == TRUE))
+        {
+          home_is_topmost = FALSE;
+          g_signal_emit_by_name (G_OBJECT (window),
+                                 "background",
+                                 !home_is_topmost);
+        }
+      else if ((res.win[0] == my_window) && (home_is_topmost == FALSE))
+        {
+          home_is_topmost = TRUE;
+          g_signal_emit_by_name (G_OBJECT (window),
+                                 "background",
+                                 !home_is_topmost);
+        }
+
+
+      if (res.win)
+        XFree (res.win);
+
+    }
+
+  return GDK_FILTER_CONTINUE;
+}
+
 static void
 hd_home_window_realize (GtkWidget *widget)
 {
-  HDWM *wm;
+  HDWM         *wm;
+  GdkWindow    *root_window;
 
   GTK_WIDGET_CLASS (hd_home_window_parent_class)->realize (widget);
 
@@ -740,6 +824,12 @@ hd_home_window_realize (GtkWidget *widget)
   g_object_set (wm,
                 "desktop-window", (gint)GDK_WINDOW_XID (widget->window),
                 NULL);
+
+  root_window = gdk_get_default_root_window ();
+  gdk_window_set_events (root_window,
+                         gdk_window_get_events (root_window)
+                         | GDK_PROPERTY_CHANGE_MASK);
+  gdk_window_add_filter (root_window, hd_home_window_root_event_filter, widget);
 
 }
 
