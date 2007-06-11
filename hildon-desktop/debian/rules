@@ -129,6 +129,7 @@ binary-arch: build install
 	dh_strip --dbg-package="hildon-desktop" --dbg-package="libhildondesktop0" --dbg-package="libhildonwm0"
 	dh_compress
 	dh_fixperms
+	dh_installinit -- start 51 2 3 4 . stop 20 0 1 5 6 .
 #	dh_perl
 #	dh_python
 	dh_makeshlibs -V
