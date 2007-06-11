@@ -1,6 +1,14 @@
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:
+	- register the lowmem signal from libosso and act accordingly
+	- register the hw_screen_off signal from libosso and act
+	accordingly (tell the applets they are in the background)
+	Fixes: NB#54896
+
+2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
 	- add _cancel_note_show/hide to show the background loading progress
 	- show the note if the loading did not complete within 1s
 	- do not apply if the background if it was cancelled from the note.
@@ -36,7 +44,7 @@
 
 2007-06-08  Lucas Rocha  <lucas.rocha@nokia.com>
 
-	* libhildondesktop/hildon-desktop-plugin.h: added a tiny line of code to 
+	* libhildondesktop/hildon-desktop-plugin.h: added a tiny line of code to
 	avoid certain build warnings in plugin macros.
 
 2007-06-08  Moises Martinez  <moises.martinez@nokia.com>

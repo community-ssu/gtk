@@ -52,7 +52,7 @@ struct _HDHomeWindowClass
 
   void    (* background)        (HDHomeWindow *window, gboolean is_background);
   void    (* lowmem)            (HDHomeWindow *window, gboolean is_lowmem);
-  void    (* system_inactivity) (HDHomeWindow *window, gboolean is_inactive);
+  void    (* screen_off       ) (HDHomeWindow *window, gboolean is_off);
   void    (* layout_mode_accept)(HDHomeWindow *window);
   void    (* layout_mode_cancel)(HDHomeWindow *window);
   void    (* io_error)          (HDHomeWindow *window, GError *error);

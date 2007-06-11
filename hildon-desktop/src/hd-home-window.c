@@ -110,7 +110,7 @@ struct _HDHomeWindowPrivate
   HDHomeBackground *background;
   HDHomeBackground *previous_background;
 
-  gboolean          is_inactive;
+  gboolean          screen_is_off;
 
   gboolean          selecting_applets;
   guint             save_area_timeout;
@@ -250,8 +250,8 @@ hd_home_window_background (HDHomeWindow        *window,
                            gboolean             background);
 
 static void
-hd_home_window_system_inactivity (HDHomeWindow     *window,
-                                  gboolean              is_inactive);
+hd_home_window_screen_off (HDHomeWindow     *window,
+                           gboolean          is_off);
 
 static void
 hd_home_window_area_add (HDHomeWindow *window);
@@ -320,7 +320,7 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   window_class->layout_mode_accept = hd_home_window_layout_mode_accept;
   window_class->layout_mode_cancel = hd_home_window_layout_mode_cancel;
   window_class->background         = hd_home_window_background;
-  window_class->system_inactivity  = hd_home_window_system_inactivity;
+  window_class->screen_off         = hd_home_window_screen_off;
 
   pspec = g_param_spec_pointer ("osso-context",
                                 "Osso Context",
@@ -359,10 +359,10 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
                 1,
                 G_TYPE_BOOLEAN);
 
-  g_signal_new ("system-inactivity",
+  g_signal_new ("screen-off",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
-                G_STRUCT_OFFSET (HDHomeWindowClass, system_inactivity),
+                G_STRUCT_OFFSET (HDHomeWindowClass, screen_off),
                 NULL,
                 NULL,
                 g_cclosure_marshal_VOID__BOOLEAN,
@@ -1453,6 +1453,31 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
 }
 
 #ifdef HAVE_LIBOSSO
+
+static void
+hd_home_window_osso_lowmem_cb (osso_hw_state_t *state,
+                               gpointer         window)
+{
+  g_return_if_fail (state);
+
+  g_signal_emit_by_name (G_OBJECT (window),
+                         "lowmem",
+                         state->memory_low_ind);
+
+}
+
+static void
+hd_home_window_osso_display_state_cb (osso_display_state_t      state,
+                                      gpointer                  window)
+{
+  g_return_if_fail (state);
+
+  g_signal_emit_by_name (G_OBJECT (window),
+                         "screen-off",
+                         state == OSSO_DISPLAY_OFF);
+
+}
+
 static void
 hd_home_window_set_osso_context (HDHomeWindow *window,
                                  osso_context_t *osso_context)
@@ -1465,9 +1490,20 @@ hd_home_window_set_osso_context (HDHomeWindow *window,
 
   if (priv->osso_context != osso_context)
   {
+    osso_hw_state_t hs = { 0 };
+
     priv->osso_context = osso_context;
     g_object_notify (G_OBJECT (window), "osso-context");
 
+    osso_hw_set_display_event_cb (osso_context,
+                                  hd_home_window_osso_display_state_cb,
+                                  window);
+
+    hs.memory_low_ind = TRUE;
+    osso_hw_set_event_cb (osso_context,
+                          &hs,
+                          hd_home_window_osso_lowmem_cb,
+                          window);
   }
 }
 #endif
@@ -1594,7 +1630,7 @@ hd_home_window_background (HDHomeWindow    *window,
   area = GTK_BIN (window)->child;
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
-  if (!priv->is_inactive)
+  if (!priv->screen_is_off)
     {
 
       /* If we were in layout mode and went to background, we need
@@ -1616,8 +1652,8 @@ hd_home_window_background (HDHomeWindow    *window,
 }
 
 static void
-hd_home_window_system_inactivity (HDHomeWindow         *window,
-                                  gboolean              is_inactive)
+hd_home_window_screen_off (HDHomeWindow         *window,
+                           gboolean              is_off)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
   GtkWidget            *area;
@@ -1625,11 +1661,11 @@ hd_home_window_system_inactivity (HDHomeWindow         *window,
   area = GTK_BIN (window)->child;
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
-  priv->is_inactive = is_inactive;
+  priv->screen_is_off = is_off;
 
   gtk_container_foreach (GTK_CONTAINER (area),
                          (GtkCallback)hildon_desktop_home_item_set_is_background,
-                         (gpointer)is_inactive);
+                         (gpointer)is_off);
 
 }
 
@@ -1791,7 +1827,7 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
 static void
 hd_home_window_layout_mode_activate (HDHomeWindow *window)
 {
-  GtkWidget    *area = GTK_BIN (window)->child; 
+  GtkWidget    *area = GTK_BIN (window)->child;
 
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
