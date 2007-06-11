@@ -1,3 +1,8 @@
+2007-06-11  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/gtksettings.rc: Adding the gtk-entry-last-char-timeout that equals
+	600 for delayed asterix in password fields. Fixes NB#60153.
+
 2007-06-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonseekbar.rc: A few fixes for the HildonSeekBar theming.
