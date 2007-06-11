@@ -9,7 +9,7 @@
 gtk-file-chooser-backend = "gnome-vfs"
 
 # Are we using toolbar animation
-gtk-toolbar-animation = 0
+gtk-enable-animations = 0
 gtk-toolbar-style = GTK_TOOLBAR_ICONS
 
 # Keyboard navigation
