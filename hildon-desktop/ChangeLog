@@ -1,3 +1,8 @@
+2007-06-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: Call changed_stack_cb when removing an
+	application from applications menu. Fixes: NB#59599
+
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:

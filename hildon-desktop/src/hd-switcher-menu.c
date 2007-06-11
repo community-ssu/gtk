@@ -1198,7 +1198,9 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
     }
   }
 
-  g_list_free (children);  
+  g_list_free (children);
+
+  hd_switcher_menu_changed_stack_cb (switcher->hdwm, NULL, switcher);  
 
   hd_switcher_menu_check_content (switcher);
 }
