@@ -938,7 +938,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
         {
           hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0);
         }
-    }
 
       g_signal_emit_by_name (area, "layout-changed");
 
