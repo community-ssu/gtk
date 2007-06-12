@@ -1,3 +1,8 @@
+2007-06-12  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkiconview.c: backport patch from upstream bug #410815,
+	"Icon view gets confused when scaling down the pixbuf column".
+
 2007-06-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_real_activate): remove MAEMO_CHANGES code
