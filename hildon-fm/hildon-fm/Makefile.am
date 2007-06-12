@@ -25,8 +25,8 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-model.h		\
 	hildon-file-chooser-dialog.c		\
 	hildon-file-chooser-dialog.h		\
-	hildon-file-system-storage.dialog.h	\
-	hildon-file-system-storage.dialog.c	\
+	hildon-file-system-storage-dialog.h	\
+	hildon-file-system-storage-dialog.c	\
 	hildon-file-system-private.h		\
 	hildon-file-system-private.c		\
 	hildon-file-system-common.h		\
