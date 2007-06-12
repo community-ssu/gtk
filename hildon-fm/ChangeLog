@@ -1,3 +1,9 @@
+2007-06-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.h,
+	hildon-fm/hildon-file-system-storage-dialog.c: New.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
 2007-06-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-root.c
