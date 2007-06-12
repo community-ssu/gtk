@@ -1,3 +1,8 @@
+2007-06-12  Moises Martinez  <moises.martinez@nokia.com
+
+	* src/main.c: Fixed problem with thread initialization with glib.
+	Pointed out by Tommi.
+
 2007-06-12  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
