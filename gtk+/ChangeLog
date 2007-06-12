@@ -1,3 +1,8 @@
+2007-06-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkiconcachevalidator.c (check_image): Take MAEMO_CHANGES into
+	account when validating image flags since we've extended them.
+
 2007-06-12  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkiconview.c: backport patch from upstream bug #410815,
