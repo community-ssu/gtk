@@ -913,13 +913,17 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
       return;
     }
 
-  if (priv->layout && HILDON_DESKTOP_IS_HOME_ITEM (applet))
+  if (HILDON_DESKTOP_IS_HOME_ITEM (applet))
     {
-      GdkRectangle *rect;
-      const gchar *name = hildon_desktop_item_get_id (
-                                     HILDON_DESKTOP_ITEM (applet));
+      GdkRectangle *rect = NULL;
 
-      rect = g_hash_table_lookup (priv->layout, name);
+      if (priv->layout)
+        {
+          const gchar *name =
+              hildon_desktop_item_get_id (HILDON_DESKTOP_ITEM (applet));
+
+          rect = g_hash_table_lookup (priv->layout, name);
+        }
 
       if (rect)
         {
@@ -934,6 +938,7 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
         {
           hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0);
         }
+    }
 
       g_signal_emit_by_name (area, "layout-changed");
 

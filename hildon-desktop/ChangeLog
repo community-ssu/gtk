@@ -1,3 +1,13 @@
+2007-06-12  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- Allow add without layout
+
+2007-06-12  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-titlebar.c:
+	- reduced size of the menu button. Fixes: NB#58138
+
 2007-06-12  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-applications-menu.c:
@@ -30,7 +40,7 @@
 
 	* src/hd-home-background-dialog.c:
 	- remove extension and .sketch from image name
-	Fixes: NB#56712
+	Fixes: NB#56712, NB#54030
 
 2007-06-11  Johan Bilien  <johan.bilien@nokia.com>
 
