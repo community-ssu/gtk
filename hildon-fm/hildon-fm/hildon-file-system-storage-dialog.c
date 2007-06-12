@@ -647,6 +647,7 @@ file_system_storage_dialog_stats_collect_for_emails (GtkWidget *widget,
 
 	case URI_TYPE_FILE_SYSTEM:
 	case URI_TYPE_UNKNOWN:
+	default:
 		uri_str = g_build_path ("/",
 					g_get_home_dir (),
 					"apps",
@@ -935,6 +936,7 @@ file_system_storage_dialog_set_data (GtkWidget *widget)
                         size = priv->installed_app_size;
                         break;
                 case 8: 
+		default:
                         category_str = _("sfil_li_other_files");
                         size = priv->other_size;
                         break;
@@ -1074,6 +1076,7 @@ file_system_storage_dialog_update (GtkWidget *widget)
 		type_name = _("sfil_va_type_removable_memorycard");
 		break;
 	case URI_TYPE_UNKNOWN:
+	default:
 		type_icon_name = "qgn_list_filesys_removable_storage";
 		type_name = _("sfil_va_type_storage_other");
 		break;
