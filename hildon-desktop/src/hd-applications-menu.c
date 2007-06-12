@@ -753,7 +753,7 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
   
   popup_window =
     HILDON_DESKTOP_POPUP_WINDOW 
-      (hildon_desktop_popup_window_new (1, 
+      (hildon_desktop_popup_window_new (0, 
 					GTK_ORIENTATION_HORIZONTAL,
 					HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM));
 

@@ -213,7 +213,7 @@ hd_panel_window_home_window_filter (GdkXEvent          *xevent,
       XserverRegion             parts;
       XDamageNotifyEvent       *ev = xevent;
       XRectangle               *rects;
-      guint                     i, n_rect;
+      gint                     i, n_rect;
 
       parts = XFixesCreateRegion (GDK_DISPLAY (), 0, 0);
 

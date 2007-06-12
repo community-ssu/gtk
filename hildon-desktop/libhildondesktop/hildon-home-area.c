@@ -1326,7 +1326,7 @@ hildon_home_area_expose (GtkWidget *widget,
       XserverRegion             region;
       GdkDrawable              *drawable;
       Window                   *wchildren, root, parent;
-      int                       n_children, i;
+      guint                     n_children, i;
 
       gdk_window_get_internal_paint_info (widget->window,
                                           &drawable,

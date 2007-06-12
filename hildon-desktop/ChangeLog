@@ -1,3 +1,13 @@
+2007-06-12  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-applications-menu.c:
+	- It was creating the hildon_desktop_popup_window with "1" extra
+	window. Now is set to "0" extra windows.
+	* src/hd-panel-window.c:
+	- XFixesFetchRegion needs an int and gcc 4.1.2 is really picky
+	* libhildondesktop/hildon-home-area.c:
+	- XQueryTree needs an unsigned int and gcc 4.1.2 is really picky :)
+
 2007-06-11  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: Call changed_stack_cb when removing an
