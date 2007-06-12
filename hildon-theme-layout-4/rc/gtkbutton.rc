@@ -100,7 +100,7 @@ widget_class "*.GtkButton.GtkLabel" style "osso-ButtonFont"
 widget_class "*.GtkToggleButton.GtkLabel" style "osso-ButtonFont"
 
 #Style for Dialog buttons
-style "osso-dialogbutton" {
+style "osso-dialogbutton" = "osso-logical-colors" {
 
   # The spec specifies the padding for the button and label. Button
   # padding is specified in sapwoods. The following are for labels.
@@ -110,6 +110,17 @@ style "osso-dialogbutton" {
   # the button is 100 pixels. Use value 90 here since additional 10
   # pixels is added automagically somewhere in code
   GtkButton::minimum_width  = 90
+
+  fg[NORMAL] = @DialogButtonTextColor
+  fg[PRELIGHT] = @DialogButtonTextColor
+  fg[ACTIVE] = @DialogButtonTextColor
+  fg[SELECTED] = @DialogButtonTextColor
+  fg[INSENSITIVE] = @DialogButtonTextColor
+  text[NORMAL] = @DialogButtonTextColor
+  text[PRELIGHT] = @DialogButtonTextColor
+  text[ACTIVE] = @DialogButtonTextColor
+  text[SELECTED] = @DialogButtonTextColor
+  text[INSENSITIVE] = @DialogButtonTextColor
 
   engine "sapwood" {
 

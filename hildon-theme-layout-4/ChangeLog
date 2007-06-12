@@ -1,3 +1,17 @@
+2007-06-12  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Added 3 new logical colors:
+	DialogButtonTextColor=7942,568,30,16
+	PluginMenuTextColor=7942,583,30,16
+	HomeTitleTextColor=7942,598,30,16
+
+	* rc/themespecificgtk.rc: added here:
+        color["DialogButtonTextColor"]		= "@DialogButtonTextColor@"
+        color["PluginMenuTextColor"]		= "@PluginMenuTextColor@"
+        color["HomeTitleTextColor"]		= "@HomeTitleTextColor@"
+
+	* rc/gtkbutton.rc: added color def's here, inherited the color style.
+
 2007-06-11  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtksettings.rc: Disabling the gtk animations.

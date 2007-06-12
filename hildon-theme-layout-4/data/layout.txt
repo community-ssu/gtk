@@ -96,6 +96,12 @@ TaskSwitcherSeparatorColor=7942,508,30,16
 TaskSwitcherNotificationSeparatorColor=7942,523,30,16
 ThumbMenuSeparatorColor=7942,538,30,16
 
+#new for now
+DialogButtonTextColor=7942,568,30,16
+PluginMenuTextColor=7942,583,30,16
+HomeTitleTextColor=7942,598,30,16
+
+
 [Elements]
 qgn_plat_application_frame_bottom.png=3271,619,50,24
 qgn_plat_application_frame_left.png=3271,223,12,2
