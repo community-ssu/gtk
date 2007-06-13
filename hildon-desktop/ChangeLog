@@ -1,5 +1,11 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hn-others-button.c, src/hd-applications-menu.c: always copy the
+	system-wide menu definition to user directory to make sure restore
+	work. Fixes bug NB#42202.
+
+2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-switcher-menu.c: don't add a separator on the top of
 	application menu.
 

@@ -1067,8 +1067,7 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
   if (!g_file_test (conf_file, G_FILE_TEST_EXISTS))
     if (g_file_get_contents (SYSTEMWIDE_MENU_FILE, &file, NULL, NULL))
     {
-      g_debug ("I couldn't get contents");
-      g_file_set_contents (USER_MENU_FILE, file, -1, NULL);
+      g_file_set_contents (conf_file, file, -1, NULL);
     }
   
   g_free (file);
@@ -1089,36 +1088,32 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
 
   g_free (dir);
   
-  /* Watch user specific menu conf */
-  if (g_get_home_dir ())
-  {    
-    /* Have to get the directory from the path because the USER_MENU_FILE
-       define might contain directory (it does, in fact). */
-    dir = g_path_get_dirname (conf_file);
-    
-    g_mkdir (dir, 0755);
+  /* Have to get the directory from the path because the USER_MENU_FILE
+     define might contain directory (it does, in fact). */
+  dir = g_path_get_dirname (conf_file);
+  
+  g_mkdir (dir, 0755);
 
-    if (dir && *dir)
-    {
-      if (gnome_vfs_monitor_add (&button->priv->home_dir_monitor, 
-                                 dir,
-                                 GNOME_VFS_MONITOR_DIRECTORY,
-                                 (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,
-                                 button) != GNOME_VFS_OK)
-      {
-        g_warning ("Others_menu_initialize_menu: "
-      	           "failed setting monitor callback "
-      	           "for user specific menu conf." );
-      }
-    }
-    else
+  if (dir && *dir)
+  {
+    if (gnome_vfs_monitor_add (&button->priv->home_dir_monitor, 
+                               dir,
+                               GNOME_VFS_MONITOR_DIRECTORY,
+                               (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,
+                               button) != GNOME_VFS_OK)
     {
       g_warning ("Others_menu_initialize_menu: "
-    	         "failed to create directory '%s'", dir);
+    	         "failed setting monitor callback "
+    	         "for user specific menu conf." );
     }
-
-    g_free (dir);
   }
+  else
+  {
+    g_warning ("Others_menu_initialize_menu: "
+  	       "failed to create directory '%s'", dir);
+  }
+
+  g_free (dir);
       
   g_free (conf_file);
   
