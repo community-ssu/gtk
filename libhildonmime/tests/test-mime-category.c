@@ -50,6 +50,8 @@ main (int argc, char **argv)
 		g_print ("The category is '%s' (%d)\n", str, category);
 	}
 
+	gnome_vfs_shutdown ();
+
 	return 0;
 }
 

@@ -150,7 +150,7 @@ main (int argc, char **argv)
 	interface = argv[2];
 	path = argv[3];
 	method = argv[4];
-		
+
 	dbus_error_init (&error);
 
 	connection = dbus_bus_get (DBUS_BUS_SESSION, &error);

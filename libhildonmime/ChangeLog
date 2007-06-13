@@ -1,3 +1,14 @@
+2007-06-13  Martyn Russell  <martyn@imendio.com>
+
+	* tests/test-all.c: (main):
+	* tests/test-mime-category.c: (main):
+	* tests/test-mime-icon.c: (main):
+	* tests/test-mime-patterns.c: (test_no_mime_type):
+	* tests/test-mime-types.c: (main):
+	* tests/test-open.c: (main):
+	* tests/test-service.c: (main):
+	* tests/test-uri.c: (main): Make sure we init and shutdown GnomeVFS. 
+
 2007-06-07  Richard Hult  <richard@imendio.com>
 
 	* docs/hildon-uri-open-rev-1.txt:

@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD              "app_launch_banner"
 
 
-#define DEBUG_MSG(x) 
-/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); */
+/* #define DEBUG_MSG(x)  */
+#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); 
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -1791,56 +1791,56 @@ hildon_uri_is_default_action_by_uri (const gchar      *uri,
 		    action->scheme,
 		    default_action,
 		    default_action ? default_action->desktop_file : "",
-		    action->desktop_file))
-
-		if (default_action && 
-		    default_action->desktop_file && 
-		    action->desktop_file) {
-			gchar *desktop_file1;
-			gchar *desktop_file2;
-
-			/* Change all "/" to "-" since there may be some differences here */
-			desktop_file1 = g_strdup (default_action->desktop_file);
-			g_strdelimit (desktop_file1, G_DIR_SEPARATOR_S, '-');
-			desktop_file2 = g_strdup (action->desktop_file);
-			g_strdelimit (desktop_file2, G_DIR_SEPARATOR_S, '-');
-
-			/* Compare desktop files to know if this is the same
-			 * action as the default action.
-			 * 
-			 * We compare the desktop file and the method since
-			 * these two are what the dbus service will use to
-			 * identify what is done with the action. 
-			 */
-			if (default_action->name && action->name &&
-			    default_action->method && action->method &&
-			    strcmp (desktop_file1, desktop_file2) == 0 && 
-			    strcmp (default_action->name, action->name) == 0 && 
-			    strcmp (default_action->method, action->method) == 0) {
-				equal = TRUE;
-			}
+		    action->desktop_file));
 		
-			DEBUG_MSG (("URI: Checking desktop file is default:\n"
-				    "\tfile1:'%s'\n"
-				    "\tfile2:'%s'\n"
-				    "\tname1:'%s'\n"
-				    "\tname2:'%s'\n"
-				    "\tmethod1:'%s'\n"
-				    "\tmethod2:'%s'\n"
-				    "\tEQUAL = %s",
-				    desktop_file1, desktop_file2,
-				    default_action->name, action->name,
-				    default_action->method, action->method,
-				    equal ? "YES" : "NO"))
-
-				g_free (desktop_file1);
-			g_free (desktop_file2);
+	if (default_action && 
+	    default_action->desktop_file && 
+	    action->desktop_file) {
+		gchar *desktop_file1;
+		gchar *desktop_file2;
+		
+		/* Change all "/" to "-" since there may be some differences here */
+		desktop_file1 = g_strdup (default_action->desktop_file);
+		g_strdelimit (desktop_file1, G_DIR_SEPARATOR_S, '-');
+		desktop_file2 = g_strdup (action->desktop_file);
+		g_strdelimit (desktop_file2, G_DIR_SEPARATOR_S, '-');
+		
+		/* Compare desktop files to know if this is the same
+		 * action as the default action.
+		 * 
+		 * We compare the desktop file and the method since
+		 * these two are what the dbus service will use to
+		 * identify what is done with the action. 
+		 */
+		if (default_action->name && action->name &&
+		    default_action->method && action->method &&
+		    strcmp (desktop_file1, desktop_file2) == 0 && 
+		    strcmp (default_action->name, action->name) == 0 && 
+		    strcmp (default_action->method, action->method) == 0) {
+			equal = TRUE;
 		}
-
+		
+		DEBUG_MSG (("URI: Checking desktop file is default:\n"
+			    "\tfile1:'%s'\n"
+			    "\tfile2:'%s'\n"
+			    "\tname1:'%s'\n"
+			    "\tname2:'%s'\n"
+			    "\tmethod1:'%s'\n"
+			    "\tmethod2:'%s'\n"
+			    "\tEQUAL = %s",
+			    desktop_file1, desktop_file2,
+			    default_action->name, action->name,
+			    default_action->method, action->method,
+			    equal ? "YES" : "NO"))
+			
+			g_free (desktop_file1);
+		g_free (desktop_file2);
+	}
+	
 	if (default_action) {
 		hildon_uri_action_unref (default_action);
 	}
-
+	
 	return equal;
 }
 

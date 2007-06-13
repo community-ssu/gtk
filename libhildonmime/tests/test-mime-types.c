@@ -35,6 +35,8 @@ main (int argc, char** argv)
 		return 1;
 	}
 
+	gnome_vfs_init ();
+	
 	list = hildon_mime_application_get_mime_types (argv[1]);
 	if (list) {
 		g_print ("Supported mime types:\n");
@@ -46,5 +48,7 @@ main (int argc, char** argv)
 		g_print ("No supported mime types\n");
 	}
 	
+	gnome_vfs_shutdown ();
+
 	return 0;
 }

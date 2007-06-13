@@ -472,6 +472,8 @@ main (int argc, char **argv)
 		}
 	}
 
+	gnome_vfs_shutdown ();
+
 	return EXIT_SUCCESS;
 }
 

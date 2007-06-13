@@ -214,7 +214,7 @@ is_default_action (GSList      *actions,
 		   const gchar *action_name, 
 		   const gchar *uri)
 {
-	GSList        *l;
+	GSList          *l;
 	HildonURIAction *action;
 
 	/* NOTE: uri is only used for the new API calls */
@@ -339,11 +339,18 @@ test_system_default_actions (void)
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
 
-	uri_str = "http://www.nokia.com";
+	uri_str = "http://www.nokia.com/index.html";
 	actions = hildon_uri_get_actions_by_uri (uri_str, -1, NULL);
-	assert_int (g_slist_length (actions), 4);
+	assert_int (g_slist_length (actions), 3);
 
 	/* The default. */
+#if 0
+	{
+		HildonURIAction *action;
+		action = hildon_uri_get_default_action_by_uri (uri_str, NULL);
+		g_print ("*** default action is %p, %s\n", action, action ? hildon_uri_action_get_name (action):"");
+	}
+#endif
 	assert_bool (is_default_action (actions, "uri_link_open_link", uri_str));
 
 	/* Existing, non-default. */
@@ -606,6 +613,8 @@ main (int argc, char **argv)
 	GError   *error = NULL;
 	gboolean  ret;
 
+	gnome_vfs_init ();
+	
 	/* Use our custom data here. */
 	g_setenv ("XDG_DATA_DIRS", TEST_DATADIR, TRUE);
 	g_setenv ("XDG_DATA_HOME", TEST_DATADIR "-local", TRUE);
@@ -640,11 +649,6 @@ main (int argc, char **argv)
 		g_printerr ("Couldn't launch update-desktop-database: %s\n",
 			    error->message);
 		g_clear_error (&error);
-		return 1;
-	}
-
-	if (!gnome_vfs_init()) {
-		g_error ("Could not initialise GnomeVFS");
 		return 1;
 	}
 

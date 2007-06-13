@@ -32,6 +32,8 @@ test_no_mime_type (void)
 	const gchar *mimetype;
 	GSList      *list;
 
+	gnome_vfs_init ();
+	
 	mimetype = "doesntexistsmimetype/hgifff";
 
 	list = hildon_mime_patterns_get_for_mime_type (mimetype, &error);
@@ -49,6 +51,8 @@ test_no_mime_type (void)
 	g_slist_foreach (list, (GFunc) g_free, NULL);
 	g_slist_free (list);
 
+	gnome_vfs_shutdown ();
+	
 	return -1;
 }
 

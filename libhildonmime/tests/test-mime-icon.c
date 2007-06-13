@@ -38,6 +38,8 @@ main (int argc, char** argv)
 		return 1;
 	}
 
+	gnome_vfs_init ();
+	
 	file_info = NULL;
 	if (argc > 2) {
 		if (strcmp (argv[2], "dir") == 0) {
@@ -59,6 +61,8 @@ main (int argc, char** argv)
 	if (file_info) {
 		gnome_vfs_file_info_unref (file_info);
 	}
+
+	gnome_vfs_shutdown ();
 	
 	return 0;
 }
