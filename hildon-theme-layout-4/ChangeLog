@@ -1,3 +1,9 @@
+2007-06-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/gtkbutton.rc: Adding new style "osso-dialogbutton-text-color" so that
+	the actual dialog button colors get applied to GTkLabel inside the dialog
+	buttons.
+
 2007-06-12  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Added 3 new logical colors:
@@ -6,9 +12,9 @@
 	HomeTitleTextColor=7942,598,30,16
 
 	* rc/themespecificgtk.rc: added here:
-        color["DialogButtonTextColor"]		= "@DialogButtonTextColor@"
-        color["PluginMenuTextColor"]		= "@PluginMenuTextColor@"
-        color["HomeTitleTextColor"]		= "@HomeTitleTextColor@"
+	color["DialogButtonTextColor"]		= "@DialogButtonTextColor@"
+	color["PluginMenuTextColor"]		= "@PluginMenuTextColor@"	
+	color["HomeTitleTextColor"]		= "@HomeTitleTextColor@"
 
 	* rc/gtkbutton.rc: added color def's here, inherited the color style.
 
