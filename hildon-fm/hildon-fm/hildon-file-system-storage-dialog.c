@@ -727,7 +727,7 @@ file_system_storage_dialog_stats_get_apps_cb (GIOChannel   *source,
 				continue;
 			}
 		
-			bytes = atoi (cols[len]);
+			bytes = 1024 * atoi (cols[len]);
 			priv->installed_app_size += bytes;
 			priv->in_use_size += bytes;
 			g_strfreev (cols);
