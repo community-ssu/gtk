@@ -1,3 +1,9 @@
+libnotify (0.4.4-2) unstable; urgency=low
+
+  * Fixed some small issues on libnotify-dev.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 13 Jun 2007 16:01:49 +0300
+
 libnotify (0.4.4-1) unstable; urgency=low
 
   * New Upstream release. 
