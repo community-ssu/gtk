@@ -1078,7 +1078,7 @@ static void
 hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 {
   GList *children = NULL, *apps = NULL, *l;
-  GtkWidget *separator;
+  GtkWidget *separator = NULL;
 
   children =
     hildon_desktop_popup_menu_get_children (switcher->priv->menu_applications);
@@ -1138,10 +1138,13 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     }
 
     /* append the separator for this app*/
-    separator = gtk_separator_menu_item_new ();
+    if (l->next != NULL)
+    {
+      separator = gtk_separator_menu_item_new ();
 
-    hildon_desktop_popup_menu_add_item
-      (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
+      hildon_desktop_popup_menu_add_item
+        (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
+    }
   }
 
   g_list_free (apps);
@@ -1640,4 +1643,3 @@ hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
     while (gtk_tree_model_iter_next (nm, &iter));
   }	  
 }
-

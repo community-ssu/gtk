@@ -1,5 +1,10 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-switcher-menu.c: don't add a separator on the top of
+	application menu.
+
+2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-home-titlebar.c: change the titlebar text
 	color label to "HomeTitleTextColor".
 
