@@ -7,6 +7,7 @@
 
 	* gtk/gtkiconview.c: backport patch from upstream bug #410815,
 	"Icon view gets confused when scaling down the pixbuf column".
+	Fixes: NB#53970
 
 2007-06-08  Xan Lopez  <xan.lopez@nokia.com>
 
