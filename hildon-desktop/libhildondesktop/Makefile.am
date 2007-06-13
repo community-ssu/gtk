@@ -46,6 +46,7 @@ INCLUDES = \
 	$(XCOMPOSITE_CFLAGS)         \
 	$(XDAMAGE_CFLAGS)            \
 	-DLOCALEDIR=\"$(localedir)\" \
+	-DHILDON_DESKTOP_MENU_DIR=\"$(hildondesktopmenudir)\" \
 	-DHILDON_HOME_DESKTOP_ENTRY_DIR=\"$(hildonhomedesktopentrydir)\" \
 	-I$(top_srcdir)/libhildonwm
 

@@ -11,8 +11,7 @@ hildonnavigatordesktopentry_DATA = \
         applications-menu.desktop  \
 	switcher-menu.desktop
 
-applications_menudir = $(sysconfdir)/xdg/menus
-applications_menu_DATA = applications.menu
+hildondesktopmenu_DATA = applications.menu
 
 hildondesktopstartup_SCRIPTS = \
         hildon-desktop.sh

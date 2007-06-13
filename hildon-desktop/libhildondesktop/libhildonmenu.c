@@ -1025,7 +1025,7 @@ GtkTreeModel *get_menu_contents(void)
 	user_home_dir = getenv( "HOME" );
 
 	/* Build the user menu filename */
-	user_menu_conf_file = g_build_filename( user_home_dir, USER_MENU_FILE, NULL );
+	user_menu_conf_file = g_build_filename( user_home_dir, USER_MENU_DIR, MENU_FILE, NULL);
 	
 	/* If the user has her own menu file.. */
 	if ( g_file_test( user_menu_conf_file, G_FILE_TEST_EXISTS ) ) {
@@ -1037,7 +1037,7 @@ GtkTreeModel *get_menu_contents(void)
 				NULL, NULL, &content_iter, desktop_files);
 	} else {
 		/* Use the system-wide menu file */
-		read_menu_conf(SYSTEMWIDE_MENU_FILE, contents,
+		read_menu_conf(HILDON_DESKTOP_MENU_DIR "/" MENU_FILE, contents,
 				NULL, NULL, &content_iter, desktop_files);
 	}
 
@@ -1625,7 +1625,7 @@ gboolean set_menu_contents( GtkTreeModel *model )
 
 	user_home_dir = getenv( "HOME" );
 	user_menu_conf_file = g_build_filename(
-			user_home_dir, USER_MENU_FILE, NULL );
+			user_home_dir, USER_MENU_DIR, MENU_FILE, NULL );
 
 	/* Make sure we have the directory for user's menu file */
 	user_menu_dir = g_path_get_dirname( user_menu_conf_file );

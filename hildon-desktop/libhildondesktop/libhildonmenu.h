@@ -60,12 +60,10 @@ G_BEGIN_DECLS
 #define FAVOURITES_LOGICAL_STRING "tncpa_li_of_favourites"
 #define FAVOURITES_NAME  dgettext("osso-applet-tasknavigator", FAVOURITES_LOGICAL_STRING)
 
-/* Default systemwide menu */
-#define SYSTEMWIDE_MENU_FILE "/etc/xdg/menus/applications.menu"
-
 /* User specific menu. $HOME is prepended to this! */
-#define USER_MENU_FILE ".osso/menus/applications.menu"
+#define USER_MENU_DIR ".osso/menus"
 
+#define MENU_FILE "applications.menu"
 
 /* TreeModel items */
 enum {

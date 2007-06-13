@@ -24,6 +24,7 @@ hildon_desktop_CPPFLAGS = \
 	-DHD_DESKTOP_ENTRY_PATH=\"$(hildondesktopentrydir)\" 		   \
 	-DHD_DESKTOP_CONFIG_PATH=\"$(hildondesktopconfdir)\" 		   \
 	-DHD_DESKTOP_MODULE_PATH=\"$(hildondesktoplibdir)\"                \
+	-DHD_DESKTOP_MENU_PATH=\"$(hildondesktopmenudir)\"                 \
 	-DHD_DESKTOP_BACKGROUNDS_PATH=\"$(hildondesktopbackgroundsdir)\"   \
 	-DHD_PLUGIN_LOADER_MODULES_PATH=\"$(hildonpluginloaderlibdir)\"    \
 	-DHD_UI_POLICY_MODULES_PATH=\"$(hildonuipolicylibdir)\"            \

@@ -1061,22 +1061,19 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
   gchar	*file = NULL;
   gchar *conf_file;
 
-  conf_file = g_build_filename (g_get_home_dir (), USER_MENU_FILE, NULL);
- 
+  conf_file = g_build_filename (g_get_home_dir (), USER_MENU_DIR, MENU_FILE, NULL);
+
   /* We copy SYSTEMWIDE_MENU_FILE to always track the changes */
   if (!g_file_test (conf_file, G_FILE_TEST_EXISTS))
-    if (g_file_get_contents (SYSTEMWIDE_MENU_FILE, &file, NULL, NULL))
+    if (g_file_get_contents (HD_DESKTOP_MENU_PATH "/" MENU_FILE, &file, NULL, NULL))
     {
       g_file_set_contents (conf_file, file, -1, NULL);
     }
   
   g_free (file);
   
-  /* Watch systemwide menu conf */
-  dir = g_path_get_dirname (SYSTEMWIDE_MENU_FILE);
- 
   if (gnome_vfs_monitor_add (&button->priv->system_dir_monitor, 
-                             dir,
+                             HD_DESKTOP_MENU_PATH,
                              GNOME_VFS_MONITOR_DIRECTORY,
                              (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,
                              button) != GNOME_VFS_OK)
@@ -1085,8 +1082,6 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
       	       "failed setting monitor callback "
       	       "for systemwide menu conf." );
   }
-
-  g_free (dir);
   
   /* Have to get the directory from the path because the USER_MENU_FILE
      define might contain directory (it does, in fact). */

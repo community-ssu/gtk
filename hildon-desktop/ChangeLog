@@ -1,5 +1,12 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-applications-menu.c, src/hn-others-button.c, src/Makefile.am,
+	libhildondesktop/libhildonmenu.[ch], libhildondesktop/Makefile.am,
+	data/Makefile.am, configure.ac: do not hardcode the absolute path of
+	the menu definition file in libhildonmenu. 
+
+2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hn-others-button.c, src/hd-applications-menu.c: always copy the
 	system-wide menu definition to user directory to make sure restore
 	work. Fixes bug NB#42202.

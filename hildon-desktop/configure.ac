@@ -190,8 +190,6 @@ then
             [Whether libxcomposite is present on the system])
 fi
 
-
-
 PKG_CHECK_MODULES(XLIBS, x11)
 AC_SUBST(XLIBS_CFLAGS)
 AC_SUBST(XLIBS_ERROR_LIBS)
@@ -242,6 +240,9 @@ AC_SUBST(hildonuipolicylibdir)
 
 hildondesktopstartupdir=${sysconfdir}/osso-af-init
 AC_SUBST(hildondesktopstartupdir)
+
+hildondesktopmenudir=${sysconfdir}/xdg/menus
+AC_SUBST(hildondesktopmenudir)
 
 #++++++++++++++++++++
 # Background Manager 
