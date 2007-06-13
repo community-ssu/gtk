@@ -1,3 +1,11 @@
+2007-06-14  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* Added 3 new logical colors for dialog buttons:
+	
+	DialogButtonTextColor
+	DialogButtonTextPressedColor
+	DialogButtonTextDisabledColor
+
 2007-06-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/hildonbreadcrumbtrail.rc: fine tune border values for end graphics.

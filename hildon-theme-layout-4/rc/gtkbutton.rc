@@ -104,14 +104,15 @@ style "osso-dialogbutton-text-color" = "osso-color-themeing" {
 
     fg[NORMAL] = @DialogButtonTextColor
     fg[PRELIGHT] = @DialogButtonTextColor
-    fg[ACTIVE] = @DialogButtonTextColor
-    fg[SELECTED] = @DialogButtonTextColor
-    fg[INSENSITIVE] = @DialogButtonTextColor
+    fg[ACTIVE] = @DialogButtonTextPressedColor
+    fg[SELECTED] = @DialogButtonTextPressedColor
+    fg[INSENSITIVE] = @DialogButtonTextDisabledColor
     text[NORMAL] = @DialogButtonTextColor
     text[PRELIGHT] = @DialogButtonTextColor
-    text[ACTIVE] = @DialogButtonTextColor
-    text[SELECTED] = @DialogButtonTextColor
-    text[INSENSITIVE] = @DialogButtonTextColor
+    text[ACTIVE] = @DialogButtonTextPressedColor
+    text[SELECTED] = @DialogButtonTextPressedColor
+    text[INSENSITIVE] = @DialogButtonTextDisabledColor
+
 }
 
 #Style for Dialog buttons

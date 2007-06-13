@@ -97,9 +97,13 @@ TaskSwitcherNotificationSeparatorColor=7942,523,30,16
 ThumbMenuSeparatorColor=7942,538,30,16
 
 #new for now
-DialogButtonTextColor=7942,568,30,16
-PluginMenuTextColor=7942,583,30,16
-HomeTitleTextColor=7942,598,30,16
+PluginMenuTextColor=7942,568,30,16
+HomeTitleTextColor=7942,583,30,16
+
+#new colors for dialog buttons, various states
+DialogButtonTextColor=7942,598,30,16
+DialogButtonTextPressedColor=7942,613,30,16
+DialogButtonTextDisabledColor=7942,628,30,16
 
 
 [Elements]

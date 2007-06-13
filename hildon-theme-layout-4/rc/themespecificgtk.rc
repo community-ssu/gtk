@@ -94,9 +94,13 @@ style "osso-logical-colors" {
         color["TaskSwitcherNotificationSeparatorColor"]	= "@TaskSwitcherNotificationSeparatorColor@"
         color["ThumbMenuSeparatorColor"]		= "@ThumbMenuSeparatorColor@"
 
-        color["DialogButtonTextColor"]		= "@DialogButtonTextColor@"
         color["PluginMenuTextColor"]		= "@PluginMenuTextColor@"
         color["HomeTitleTextColor"]		= "@HomeTitleTextColor@"
+
+        color["DialogButtonTextColor"]		= "@DialogButtonTextColor@"
+        color["DialogButtonTextPressedColor"]		= "@DialogButtonTextPressedColor@"
+        color["DialogButtonTextDisabledColor"]		= "@DialogButtonTextDisabledColor@"
+
 }
 
 ##############################
