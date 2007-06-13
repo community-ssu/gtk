@@ -588,7 +588,8 @@ hildon_desktop_popup_menu_key_press_event (GtkWidget   *widget,
     return TRUE;
   }	  
   else
-  if (event->keyval == GDK_KP_Enter ||
+  if (event->keyval == GDK_Return   ||
+      event->keyval == GDK_KP_Enter ||
       event->keyval == GDK_ISO_Enter)
   {	  
     if (menu->priv->selected_item)

@@ -1,5 +1,10 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-menu.c: allow activating menu
+	items with GDK_Return.
+
+2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-applications-menu.c, src/hn-others-button.c, src/Makefile.am,
 	libhildondesktop/libhildonmenu.[ch], libhildondesktop/Makefile.am,
 	data/Makefile.am, configure.ac: do not hardcode the absolute path of
