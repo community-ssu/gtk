@@ -22,21 +22,25 @@
  */
 
 #include <config.h>
+
 #include <string.h>
+#include <stdlib.h>
 #include <errno.h> 
 #include <sys/statfs.h>
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
+
 #include <hildon/hildon.h>
 
 #include "hildon-file-system-storage-dialog.h"
 
 #define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_FILE_SYSTEM_STORAGE_DIALOG, HildonFileSystemStorageDialogPriv))
 
-#define ENABLE_DEBUGGING
+/*#define ENABLE_DEBUGGING*/
 
 #define KILOBYTE_FACTOR (1024.0)
 #define MEGABYTE_FACTOR (1024.0 * 1024.0)
@@ -51,7 +55,6 @@ struct _HildonFileSystemStorageDialogPriv {
         guint             file_count;
         guint             folder_count;
 
-        /* FIXME: we don't do installed app yet */
         GnomeVFSFileSize  email_size;
         GnomeVFSFileSize  image_size;
         GnomeVFSFileSize  video_size;
@@ -80,8 +83,6 @@ struct _HildonFileSystemStorageDialogPriv {
 
         GtkWidget        *label_read_only_stub;
         GtkWidget        *checkbutton_readonly;
-
-        /* Data widgets are generated */
 };
 
 typedef enum {
@@ -90,36 +91,43 @@ typedef enum {
 	URI_TYPE_EXTERNAL_MMC,
 	URI_TYPE_UNKNOWN
 } URIType;
-
-static void     hildon_file_system_storage_dialog_class_init           (HildonFileSystemStorageDialogClass *klass);
-static void     hildon_file_system_storage_dialog_init                 (HildonFileSystemStorageDialog      *widget);
-static void     file_system_storage_dialog_finalize                    (GObject                            *object);
-static void     file_system_storage_dialog_clear_data_container        (GtkWidget                          *widget);
-static void     file_system_storage_dialog_stats_clear                 (GtkWidget                          *widget);
-static gboolean file_system_storage_dialog_stats_collect               (GtkWidget                          *widget,
-									GnomeVFSURI                        *uri);
-static gboolean file_system_storage_dialog_stats_collect_for_disk      (const gchar                        *path,
-									GnomeVFSFileSize                   *total,
-									GnomeVFSFileSize                   *available);
-static void     file_system_storage_dialog_stats_collect_for_contacts  (GtkWidget                          *widget,
-									URIType                             type);
-static gboolean file_system_storage_dialog_stats_collect_for_emails_cb (const gchar                        *path,
-									GnomeVFSFileInfo                   *info,
-									gboolean                            recursing_loop,
-									GtkWidget                          *widget,
-									gboolean                           *recurse);
-static void     file_system_storage_dialog_stats_collect_for_emails    (GtkWidget                          *widget,
-									URIType                             type);
-static gchar *  file_system_storage_dialog_get_size_string             (guint                               bytes);
-static URIType  file_system_storage_dialog_get_type                    (const gchar                        *uri_str);
-static void     file_system_storage_dialog_set_no_data                 (GtkWidget                          *widget);
-static void     file_system_storage_dialog_set_data                    (GtkWidget                          *widget);
-static void     file_system_storage_dialog_update                      (GtkWidget                          *widget);
-static void     file_system_storage_dialog_monitor_cb                  (GnomeVFSMonitorHandle              *handle,
-									const gchar                        *monitor_uri,
-									const gchar                        *info_uri,
-									GnomeVFSMonitorEventType            event_type,
-									HildonFileSystemStorageDialog      *widget);
+static void     hildon_file_system_storage_dialog_class_init      (HildonFileSystemStorageDialogClass *klass);
+static void     hildon_file_system_storage_dialog_init            (HildonFileSystemStorageDialog      *widget);
+static void     file_system_storage_dialog_finalize               (GObject                            *object);
+static void     file_system_storage_dialog_clear_data_container   (GtkWidget                          *widget);
+static void     file_system_storage_dialog_stats_clear            (GtkWidget                          *widget);
+static gboolean file_system_storage_dialog_stats_collect          (GtkWidget                          *widget,
+								   GnomeVFSURI                        *uri);
+static gboolean file_system_storage_dialog_stats_get_disk         (const gchar                        *path,
+								   GnomeVFSFileSize                   *total,
+								   GnomeVFSFileSize                   *available);
+static void     file_system_storage_dialog_stats_get_contacts     (GtkWidget                          *widget,
+								   URIType                             type);
+static gboolean file_system_storage_dialog_stats_get_emails_cb    (const gchar                        *path,
+								   GnomeVFSFileInfo                   *info,
+								   gboolean                            recursing_loop,
+								   GtkWidget                          *widget,
+								   gboolean                           *recurse);
+static void     file_system_storage_dialog_stats_get_emails       (GtkWidget                          *widget,
+								   URIType                             type);
+static gboolean file_system_storage_dialog_stats_get_apps_cb      (GIOChannel                         *source,
+								   GIOCondition                        condition,
+								   GtkWidget                          *widget);
+static void     file_system_storage_dialog_stats_get_apps         (GtkWidget                          *widget,
+								   URIType                             type);
+static gchar *  file_system_storage_dialog_get_size_string        (GnomeVFSFileSize                    bytes);
+static void     file_system_storage_dialog_request_device_name_cb (DBusPendingCall                    *pending_call,
+								   gpointer                            user_data);
+static void     file_system_storage_dialog_request_device_name    (HildonFileSystemStorageDialog      *dialog);
+static URIType  file_system_storage_dialog_get_type               (const gchar                        *uri_str);
+static void     file_system_storage_dialog_set_no_data            (GtkWidget                          *widget);
+static void     file_system_storage_dialog_set_data               (GtkWidget                          *widget);
+static void     file_system_storage_dialog_update                 (GtkWidget                          *widget);
+static void     file_system_storage_dialog_monitor_cb             (GnomeVFSMonitorHandle              *handle,
+								   const gchar                        *monitor_uri,
+								   const gchar                        *info_uri,
+								   GnomeVFSMonitorEventType            event_type,
+								   HildonFileSystemStorageDialog      *widget);
 
 G_DEFINE_TYPE (HildonFileSystemStorageDialog, hildon_file_system_storage_dialog, GTK_TYPE_DIALOG)
 
@@ -401,10 +409,6 @@ file_system_storage_dialog_stats_clear (GtkWidget *widget)
         priv->other_size = 0;
 
         priv->in_use_size = 0;
-
-#ifdef ENABLE_DEBUGGING
-        g_print ("Stats reset\n");
-#endif
 }
 
 static gboolean
@@ -491,7 +495,7 @@ file_system_storage_dialog_stats_collect (GtkWidget   *widget,
 		gnome_vfs_uri_unref (child_uri);
 	}
 
-#ifdef ENABLE_DEBUGGING
+#if 0
         g_print ("Collecting stats for path: '%s' (%d files), "
                  "total size:%" GNOME_VFS_SIZE_FORMAT_STR ", "
                  "I:%" GNOME_VFS_SIZE_FORMAT_STR ", "
@@ -519,9 +523,9 @@ file_system_storage_dialog_stats_collect (GtkWidget   *widget,
 } 
 
 static gboolean
-file_system_storage_dialog_stats_collect_for_disk (const gchar      *path,
-						   GnomeVFSFileSize *total,
-						   GnomeVFSFileSize *available)
+file_system_storage_dialog_stats_get_disk (const gchar      *path,
+					   GnomeVFSFileSize *total,
+					   GnomeVFSFileSize *available)
 {
         struct statfs st;
 
@@ -549,8 +553,8 @@ file_system_storage_dialog_stats_collect_for_disk (const gchar      *path,
 }
 
 static void 
-file_system_storage_dialog_stats_collect_for_contacts (GtkWidget *widget, 
-						       URIType    type)
+file_system_storage_dialog_stats_get_contacts (GtkWidget *widget, 
+					       URIType    type)
 {
         HildonFileSystemStorageDialogPriv *priv;
 	GnomeVFSFileInfo                  *info;
@@ -568,8 +572,7 @@ file_system_storage_dialog_stats_collect_for_contacts (GtkWidget *widget,
 				    ".osso-email",
 				    "AddressBook.xml", 
 				    NULL);
-
-#ifdef ENABLE_DEBUGGING
+#if 0
 	g_print ("Collecting stats for contacts by URI type:%d using path: '%s'\n", type, uri_str);
 #endif
 
@@ -590,11 +593,11 @@ file_system_storage_dialog_stats_collect_for_contacts (GtkWidget *widget,
 }
 
 static gboolean
-file_system_storage_dialog_stats_collect_for_emails_cb (const gchar      *path,
-							GnomeVFSFileInfo *info,
-							gboolean          recursing_loop, 
-							GtkWidget        *widget,
-							gboolean         *recurse)
+file_system_storage_dialog_stats_get_emails_cb (const gchar      *path,
+						GnomeVFSFileInfo *info,
+						gboolean          recursing_loop, 
+						GtkWidget        *widget,
+						gboolean         *recurse)
 {
 	HildonFileSystemStorageDialogPriv *priv;
 
@@ -622,8 +625,8 @@ file_system_storage_dialog_stats_collect_for_emails_cb (const gchar      *path,
 }
 
 static void 
-file_system_storage_dialog_stats_collect_for_emails (GtkWidget *widget, 
-						     URIType    type)
+file_system_storage_dialog_stats_get_emails (GtkWidget *widget, 
+					     URIType    type)
 {
         HildonFileSystemStorageDialogPriv *priv;
 	gchar                             *uri_str;
@@ -666,13 +669,120 @@ file_system_storage_dialog_stats_collect_for_emails (GtkWidget *widget,
 				   GNOME_VFS_FILE_INFO_GET_MIME_TYPE,
 				   GNOME_VFS_DIRECTORY_VISIT_LOOPCHECK,
 				   (GnomeVFSDirectoryVisitFunc) 
-				   file_system_storage_dialog_stats_collect_for_emails_cb, 
+				   file_system_storage_dialog_stats_get_emails_cb, 
 				   widget);
 	g_free (uri_str);
 }
 
+static gboolean 
+file_system_storage_dialog_stats_get_apps_cb (GIOChannel   *source, 
+					      GIOCondition  condition, 
+					      GtkWidget    *widget)
+{
+	static GString *str = NULL;
+
+	if (!str) {
+		str = g_string_new ("");
+	}
+
+	if (condition & G_IO_IN) {
+		GIOStatus status;
+
+		
+		status = G_IO_STATUS_AGAIN;
+		while (status == G_IO_STATUS_AGAIN) {
+			gchar *input;
+			gsize  len;
+
+			status = g_io_channel_read_to_end (source, &input, &len, NULL);
+			if (len < 1) {
+				break;
+			}
+
+			str = g_string_append (str, input);
+			g_free (input);
+		}
+	}
+
+	if (condition & G_IO_HUP) {
+		HildonFileSystemStorageDialogPriv  *priv;
+		gchar                             **rows, **row;
+
+		priv = GET_PRIV (widget);
+
+		g_io_channel_shutdown (source, FALSE, NULL);
+		g_io_channel_unref (source);
+
+		/* Get install application stats */
+		rows = g_strsplit (str->str, "\n", -1);
+		for (row = rows; *row != NULL; row++) {
+			GnomeVFSFileSize   bytes;
+			gchar            **cols;
+			gint               len;
+
+			cols = g_strsplit (*row, "\t", -1);
+			len = g_strv_length (cols) - 1;
+
+			if (!cols || len < 0) {
+				continue;
+			}
+		
+			bytes = atoi (cols[len]);
+			priv->installed_app_size += bytes;
+			priv->in_use_size += bytes;
+			g_strfreev (cols);
+		}
+		
+		g_strfreev (rows);
+
+		file_system_storage_dialog_set_data (widget);
+
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static void     
+file_system_storage_dialog_stats_get_apps (GtkWidget *widget,
+					   URIType    type)
+{
+	GIOChannel *channel;
+	GPid        pid;
+	gchar      *argv[] = { "/usr/bin/maemo-list-user-packages", NULL };
+	gint        out;
+	gboolean    success;
+
+	if (type != URI_TYPE_FILE_SYSTEM &&
+	    type != URI_TYPE_UNKNOWN) {
+		return;
+	}
+
+	success = g_spawn_async_with_pipes (NULL, argv, NULL, 
+					    G_SPAWN_SEARCH_PATH, 
+					    NULL, NULL, 
+					    &pid, 
+					    NULL, &out, NULL, 
+					    NULL);
+	if (!success) {
+		g_warning ("Could not spawn command: '%s' to get list of applications", argv[0]);
+		return;
+	}
+
+	channel = g_io_channel_unix_new (out);
+	g_io_channel_set_flags (channel, G_IO_FLAG_NONBLOCK, NULL);
+	g_io_add_watch_full (channel, 
+			     G_PRIORITY_DEFAULT_IDLE, 
+			     G_IO_IN | G_IO_HUP, 
+			     (GIOFunc) 
+			     file_system_storage_dialog_stats_get_apps_cb, 
+			     widget, 
+			     NULL);
+}
+
 static void
-name_received_cb (DBusPendingCall *pending_call, gpointer user_data)
+file_system_storage_dialog_request_device_name_cb (DBusPendingCall *pending_call, 
+						   gpointer         user_data)
 {
         HildonFileSystemStorageDialog     *dialog = user_data;
         HildonFileSystemStorageDialogPriv *priv;
@@ -746,7 +856,7 @@ file_system_storage_dialog_request_device_name (HildonFileSystemStorageDialog *d
 
         if (dbus_connection_send_with_reply (conn, message, &priv->pending_call, -1)) {
                 dbus_pending_call_set_notify (priv->pending_call,
-                                              name_received_cb,
+                                              file_system_storage_dialog_request_device_name_cb,
                                               dialog, NULL);
         }
 
@@ -754,40 +864,37 @@ file_system_storage_dialog_request_device_name (HildonFileSystemStorageDialog *d
 }
 
 static gchar *
-file_system_storage_dialog_get_size_string (guint bytes)
+file_system_storage_dialog_get_size_string (GnomeVFSFileSize bytes)
 {
 	const gchar *str;
 	gdouble      size;
 
-        g_print ("%s %s\n", _("ckdg_va_properties_size_kb"), "ckdg_va_properties_size_kb");
-        g_print ("%s %s\n", _("ckdg_va_properties_size_1kb_99kb"), "ckdg_va_properties_size_1kb_99kb");
-        g_print ("%s %s\n", _("ckdg_va_properties_size_100kb_1mb"), "ckdg_va_properties_size_100kb_1mb");
-        g_print ("%s %s\n", _("ckdg_va_properties_size_1mb_10mb"), "ckdg_va_properties_size_1mb_10mb");
-        g_print ("%s %s\n", _("ckdg_va_properties_size_1gb_or_greater"), "ckdg_va_properties_size_1gb_or_greater");
-        
 	if (bytes < KILOBYTE_FACTOR) {
 		str = _("ckdg_va_properties_size_kb");
 		return g_strdup_printf (str, 1);
 	}
 
-	if (bytes >= (1 * KILOBYTE_FACTOR) &&
-	    bytes < (100 * KILOBYTE_FACTOR)) {
+	if (bytes >= 1 * KILOBYTE_FACTOR && bytes < 100 * KILOBYTE_FACTOR) {
 		size = bytes / KILOBYTE_FACTOR;
 		str =  _("ckdg_va_properties_size_1kb_99kb");
 		return g_strdup_printf (str, (int) size);
 	}
 
-	if (bytes >= (100 * KILOBYTE_FACTOR) &&
-	    bytes < (10 * MEGABYTE_FACTOR)) {
-		size = bytes / MEGABYTE_FACTOR;
+	if (bytes >= 100 * KILOBYTE_FACTOR && bytes < 1 * MEGABYTE_FACTOR) {
+		size = bytes / KILOBYTE_FACTOR;
 		str = _("ckdg_va_properties_size_100kb_1mb");
 		return g_strdup_printf (str, (int) size);
 	}
 
-	if (bytes >= (10 * MEGABYTE_FACTOR) &&
-	    bytes < (1 * GIGABYTE_FACTOR)) {
+	if (bytes >= 1 * MEGABYTE_FACTOR && bytes < 10 * MEGABYTE_FACTOR) {
 		size = bytes / MEGABYTE_FACTOR;
 		str = _("ckdg_va_properties_size_1mb_10mb");
+		return g_strdup_printf (str, size);
+	}
+
+	if (bytes >= 10 * MEGABYTE_FACTOR && bytes < 1 * GIGABYTE_FACTOR) {
+		size = bytes / MEGABYTE_FACTOR;
+		str = _("ckdg_va_properties_size_10mb_1gb");
 		return g_strdup_printf (str, size);
 	}
 
@@ -949,7 +1056,7 @@ file_system_storage_dialog_set_data (GtkWidget *widget)
                 }
 
                 str = file_system_storage_dialog_get_size_string (size);
-                
+
                 label_size = gtk_label_new (str);
                 gtk_widget_show (label_size);
                 gtk_table_attach (GTK_TABLE (table), label_size, 0, 1, col, col + 1,
@@ -1090,9 +1197,9 @@ file_system_storage_dialog_update (GtkWidget *widget)
         /* Set volume stats */
 	uri = gnome_vfs_uri_new (priv->uri_str);
 
-        if (file_system_storage_dialog_stats_collect_for_disk (gnome_vfs_uri_get_path (uri),
-							       &total_size,
-							       &available_size)) {
+        if (file_system_storage_dialog_stats_get_disk (gnome_vfs_uri_get_path (uri),
+						       &total_size,
+						       &available_size)) {
 		total = file_system_storage_dialog_get_size_string (total_size);
 		available = file_system_storage_dialog_get_size_string (available_size);
 		in_use = file_system_storage_dialog_get_size_string (total_size - available_size);
@@ -1108,8 +1215,9 @@ file_system_storage_dialog_update (GtkWidget *widget)
 
         /* Sort out file categories */
         file_system_storage_dialog_stats_collect (widget, uri);
-	file_system_storage_dialog_stats_collect_for_contacts (widget, type);
-	file_system_storage_dialog_stats_collect_for_emails (widget, type);
+	file_system_storage_dialog_stats_get_contacts (widget, type);
+	file_system_storage_dialog_stats_get_emails (widget, type);
+	file_system_storage_dialog_stats_get_apps (widget, type);
         file_system_storage_dialog_set_data (widget);
 
         /* Clean up */
@@ -1147,6 +1255,17 @@ file_system_storage_dialog_monitor_cb (GnomeVFSMonitorHandle         *handle,
 	g_free (str);
 }
 
+/**
+ * hildon_file_system_storage_dialog_new:
+ * @parent: A parent window or %NULL
+ * @uri_str: A URI on string form pointing to a storage root
+ *
+ * Creates a storage details dialog. An example of @uri_str is
+ * "file:///media/mmc1" or "file:///home/user/MyDocs". %NULL can be used if you
+ * want to set the URI later with hildon_file_system_storage_dialog_set_uri().
+ *
+ * Return value: The created dialog
+ **/
 GtkWidget *
 hildon_file_system_storage_dialog_new (GtkWindow   *parent,
 				       const gchar *uri_str)
@@ -1166,6 +1285,13 @@ hildon_file_system_storage_dialog_new (GtkWindow   *parent,
         return GTK_WIDGET (widget);
 }
 
+/**
+ * hildon_file_system_storage_dialog_set_uri:
+ * @widget: The HildonFileSystemStorageDialog dialog
+ * @uri_str: A URI on string form pointing to a storage root
+ * 
+ * Sets the storage URI for the dialog, and updates its contents.
+ **/
 void
 hildon_file_system_storage_dialog_set_uri (GtkWidget   *widget,
 					   const gchar *uri_str)
