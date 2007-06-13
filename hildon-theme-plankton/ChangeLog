@@ -4,6 +4,8 @@
 	glitches. Man, the stuff is getting complex and needs a bigger
 	overall revamp soon.. Made breadcrumb art a bit more pretty.
 
+	Added new logical colors too (for dialog buttons)
+	
 2007-06-12  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: added 3 new colors, fixed the alpha stuff

@@ -6338,16 +6338,6 @@
        y2="373.51825" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient8879"
-       id="linearGradient9044"
-       gradientUnits="userSpaceOnUse"
-       x1="1782"
-       y1="358.75"
-       x2="1782"
-       y2="417.00858"
-       gradientTransform="matrix(3.9629496,0,0,1.0256408,-5119.9389,-19.474219)" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient8298"
        id="linearGradient8889"
        gradientUnits="userSpaceOnUse"
@@ -6530,16 +6520,6 @@
        y1="339.79175"
        x2="364.40359"
        y2="379.4205" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient8879"
-       id="linearGradient8961"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(3.9629496,0,0,1.0512818,-5119.9388,51.051402)"
-       x1="1782"
-       y1="358.75"
-       x2="1782"
-       y2="417.00858" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient9494"
@@ -7245,16 +7225,6 @@
        y2="379.4205" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient8860"
-       id="linearGradient9089"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.9248124,0,0,0.1608465,1610.7182,385.55343)"
-       x1="364.40359"
-       y1="339.79175"
-       x2="364.40359"
-       y2="379.4205" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient8879"
        id="linearGradient9099"
        gradientUnits="userSpaceOnUse"
@@ -7295,10 +7265,10 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="1995.5082"
-     inkscape:cy="426.4534"
+     inkscape:cx="7995.5082"
+     inkscape:cy="425.9534"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer5"
      width="8000px"
      height="800px"
      showgrid="false"
@@ -9146,7 +9116,8 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Design"
-     style="opacity:1;display:inline">
+     style="opacity:1;display:inline"
+     sodipodi:insensitive="true">
     <rect
        style="opacity:1;fill:url(#linearGradient9139);fill-opacity:1;stroke:#888a85;stroke-width:0.89138192;stroke-opacity:1;display:inline"
        id="rect9103"
@@ -15818,7 +15789,7 @@
        rx="1.749437"
        ry="1.749437" />
     <rect
-       style="opacity:1;fill:url(#linearGradient9058);fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:inline;color:#000000;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible;overflow:visible;enable-background:accumulate"
+       style="opacity:1;color:#000000;fill:url(#linearGradient9058);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect9738"
        width="50.02557"
        height="108"
@@ -15861,7 +15832,7 @@
        height="108"
        width="50.02557"
        id="rect9786"
-       style="opacity:1;fill:url(#linearGradient9058);fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:inline;color:#000000;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;visibility:visible;overflow:visible;enable-background:accumulate" />
+       style="opacity:1;color:#000000;fill:url(#linearGradient9058);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        ry="3.9753742"
        rx="4.077075"
@@ -22724,8 +22695,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="colors"
-     style="opacity:1;display:inline"
-     sodipodi:insensitive="true">
+     style="opacity:1;display:inline">
     <flowRoot
        xml:space="preserve"
        id="flowRoot10142"
@@ -22820,16 +22790,18 @@
          id="flowPara8141">ThumbMenuSeparatorColor</flowPara><flowPara
          style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.29746699;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
          id="flowPara9036" /><flowPara
-         style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.29746699;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
-         id="flowPara9040"><flowSpan
-           style="letter-spacing:-0.499641"
-           id="flowSpan9046">Misc Colors:</flowSpan><flowSpan
-           style="font-weight:normal"
-           id="flowSpan9044"> DialogButtonTextColor</flowSpan></flowPara><flowPara
          style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.29746699;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
-         id="flowPara9048">PluginMenuTextColor</flowPara><flowPara
+         id="flowPara9048"><flowSpan
+   id="flowSpan9210"
+   style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:-0.499641;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono">Misc Colors: </flowSpan>PluginMenuTextColor</flowPara><flowPara
          style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.33962154;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
-         id="flowPara9050">(home screen) HomeTitleTextColor</flowPara></flowRoot>    <text
+         id="flowPara9050">(home screen) HomeTitleTextColor</flowPara><flowPara
+         style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.33962154;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
+         id="flowPara9216">DialogButtonTextColor</flowPara><flowPara
+         style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.33962154;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
+         id="flowPara9220">DialogButtonTextPressedColor</flowPara><flowPara
+         style="font-size:6.74473px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:150%;letter-spacing:0.33962154;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;font-family:Bitstream Vera Sans Mono"
+         id="flowPara9222">DialogButtonTextDisabledColor</flowPara></flowRoot>    <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
        x="7498.2031"
@@ -23537,7 +23509,7 @@
        style="opacity:1;fill:#c2a800;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline" />
     <path
        style="opacity:1;color:#000000;fill:#4e9a06;fill-opacity:1;fill-rule:nonzero;stroke:#a40000;stroke-width:1.00000024;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:url(#DistanceIn);marker-mid:none;marker-end:url(#DistanceOut);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       d="M 7936.5,1.5825764 L 7936.5,43.417341"
+       d="M 7936.5,1.4617255 L 7936.5,29.538164"
        id="path10222" />
     <rect
        ry="0"
@@ -23601,9 +23573,9 @@
        height="15"
        width="29.000002"
        id="rect9052"
-       style="opacity:1;fill:#555753;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline" />
+       style="opacity:1;fill:#16335d;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline;color:#000000;fill-rule:nonzero;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-dashoffset:0;visibility:visible;overflow:visible;enable-background:accumulate" />
     <rect
-       style="opacity:1;fill:#16335d;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline"
        id="rect9054"
        width="29.000002"
        height="15"
@@ -23619,7 +23591,25 @@
        height="15"
        width="29.000002"
        id="rect9056"
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline" />
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       id="rect9203"
+       width="29.000002"
+       height="15"
+       x="7942.5005"
+       y="613.5"
+       rx="0"
+       ry="0" />
+    <rect
+       style="opacity:1;fill:#d3d7cf;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       id="rect9208"
+       width="29.000002"
+       height="15"
+       x="7942.5005"
+       y="628.5"
+       rx="0"
+       ry="0" />
   </g>
   <g
      inkscape:groupmode="layer"
