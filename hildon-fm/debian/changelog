@@ -1,5 +1,6 @@
-libhildonfm (1:1.9.29~unreleased1) unstable; urgency=low
+libhildonfm (1:1.9.29) unstable; urgency=low
 
+  * Provide "Storage Details Dialog".
   * Fixes: NB#59441.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Jun 2007 16:35:49 +0300

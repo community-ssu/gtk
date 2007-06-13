@@ -1,3 +1,17 @@
+2007-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.29
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: Get size of
+	installed applications.  Document exported API.  Do not include
+	glib/gi18n.h, but do include hildon-file-common-private.h to pick
+	up the right definition of '_'.
+	(file_system_storage_dialog_stats_get_apps_cb): Installed-Size as
+	reported by maemo-list-user-packages is in units of 1024 bytes,
+	not bytes.
+	(file_system_storage_dialog_stats_get_disk): Avoid overflow when
+	multiplying with blocksize.
+
 2007-06-12  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-storage-dialog.h,
