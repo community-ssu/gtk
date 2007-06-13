@@ -933,7 +933,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
           if (rect->width > 0 && rect->height > 0)
             gtk_widget_set_size_request (applet, rect->width, rect->height);
         }
-
       else
         {
           hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0);
@@ -945,8 +944,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
         hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
                                             TRUE);
     }
-
-
 }
 
 static void
