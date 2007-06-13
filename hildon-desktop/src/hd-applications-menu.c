@@ -1124,6 +1124,19 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
       	       "failed setting monitor callback "
       	       "for .desktop directory." );
   }
+
+  /* Monitor the hildon .desktop directories, so we can regenerate the 
+   * menu when a new application is installed */
+  if (gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
+                             HD_DESKTOP_ENTRY_PATH "/hildon",
+                             GNOME_VFS_MONITOR_DIRECTORY,
+                             (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,
+                             button) != GNOME_VFS_OK)
+  {
+    g_warning ("Others_menu_initialize_menu: "
+      	       "failed setting monitor callback "
+      	       "for .desktop directory." );
+  }
 }
 
 void

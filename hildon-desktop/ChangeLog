@@ -1,5 +1,11 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hn-others-button.c, src/hd-applications-menu.c: keep track of changes 
+	in the standard	application directory and hildon-specific application 
+	directory to update the menu accordingly. Fixes bug NB#16392.
+
+2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-menu.c: allow activating menu
 	items with GDK_Return.
 
