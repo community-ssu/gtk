@@ -28,7 +28,6 @@
 #include <errno.h> 
 #include <sys/statfs.h>
 
-#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <dbus/dbus.h>
@@ -36,6 +35,7 @@
 
 #include <hildon/hildon.h>
 
+#include "hildon-file-common-private.h"
 #include "hildon-file-system-storage-dialog.h"
 
 #define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_FILE_SYSTEM_STORAGE_DIALOG, HildonFileSystemStorageDialogPriv))
@@ -531,11 +531,13 @@ file_system_storage_dialog_stats_get_disk (const gchar      *path,
 
         if (statfs (path, &st) == 0) {
                 if (total) {
-                        *total = st.f_bsize * st.f_blocks;
+                        *total = st.f_blocks;
+			*total *= st.f_bsize;
                 }
 
                 if (available) {
-                        *available = st.f_bsize * st.f_bfree;
+                        *available = st.f_bfree;
+			*available *= st.f_bsize;
                 }
 
                 return TRUE;
