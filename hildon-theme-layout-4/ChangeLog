@@ -1,3 +1,9 @@
+2007-06-13  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/hildonhome.rc:
+	- removed left bar, not used any more
+	- fixed theming of the titlebar
+
 2007-06-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkbutton.rc: Adding new style "osso-dialogbutton-text-color" so that

@@ -5,14 +5,8 @@
 # HILDON home
 #################################################### 
 
-
-style "osso-home-leftedge" {
-	bg_pixmap[NORMAL] = "../images/qgn_plat_home_border_left.png"
-}
-widget "HildonHomeLeftEdge" style "osso-home-leftedge"
-
 style "osso-home-titlebar-background" {
 	bg_pixmap[NORMAL] = "../images/qgn_plat_home_status_bar_background.png"
 }
-widget "HildonHomeTitleBar" style "osso-home-titlebar-background"
+class "HildonHomeTitlebar" style "osso-home-titlebar-background"
 
