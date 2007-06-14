@@ -1,5 +1,10 @@
 2007-06-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-applications-menu.c: move focus to applications pane when
+	tapping on a category on the left pane. Fixes bug NB#60548.
+
+2007-06-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-applications-menu.c: use GDK_Return, GDK_KP_Enter,
 	GDK_ISO_Enter to move focus to application pane. Fixes bug NB#60553.
 

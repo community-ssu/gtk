@@ -332,6 +332,18 @@ hd_applications_menu_key_press (GtkWidget *menu,
   return FALSE;
 }
 
+static gboolean 
+hd_applications_menu_button_release_category (GtkMenuItem *item, 
+					    GdkEventButton *event,
+					    HDApplicationsMenu *button)
+{
+  button->priv->focus_applications = TRUE;
+
+  gtk_menu_item_activate (item);
+
+  return TRUE;
+}
+
 static void
 hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *button)
 {
@@ -616,6 +628,11 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
       		              CATEGORY_SUB_ITEMS,
       		              sub_items, 
 			      (GDestroyNotify) hd_applications_menu_free_menu_items);
+
+      g_signal_connect (G_OBJECT (menu_item), 
+		        "button-release-event",
+      		        G_CALLBACK (hd_applications_menu_button_release_category),
+      		        button);
 
       g_signal_connect (G_OBJECT (menu_item), 
 		        "activate",
