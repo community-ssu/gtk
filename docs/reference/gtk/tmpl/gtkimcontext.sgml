@@ -196,6 +196,7 @@ to focus on the type of input that the application is expecting.
 @HILDON_GTK_INPUT_MODE_HEXA: hexadecimal characters; numbers 0-9, characters a-f, and A-F
 @HILDON_GTK_INPUT_MODE_TELE: telephone numbers; numbers 0-9, whitespace, and the characters "pwPW/().-+*#?,"
 @HILDON_GTK_INPUT_MODE_FULL: unrestricted entry mode, combination of the alpha, numeric and special modes.
+@HILDON_GTK_INPUT_MODE_MULTILINE: the client contains multiple lines of text or accepts linebreaks in the input.
 @HILDON_GTK_INPUT_MODE_INVISIBLE: do not echo or save the input in the IM when entering sensitive information such as passwords.
 @HILDON_GTK_INPUT_MODE_AUTOCAP: automatically capitalize the first letter at the start of a sentence.
 @HILDON_GTK_INPUT_MODE_DICTIONARY: enable predictive dictionaries and learning based on the input.
