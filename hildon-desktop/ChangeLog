@@ -13,7 +13,7 @@
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c: allow activating menu
-	items with GDK_Return.
+	items with GDK_Return. Fixes bug NB#60544.
 
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
