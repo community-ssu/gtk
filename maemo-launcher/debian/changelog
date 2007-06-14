@@ -3,6 +3,8 @@ maemo-launcher (0.22~-1) UNRELEASED; urgency=low
   * New Upstream Release.
   * Add new package maemo-launcher-dev and include the header file
     for the boosters and the pkgconfig file. (Fixes: NM#1027)
+  * Load the program binary after having adjusted the process priority and
+    oom_adj value. (Fixes: NB#59173)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Wed, 21 Feb 2007 14:41:33 +0200
 

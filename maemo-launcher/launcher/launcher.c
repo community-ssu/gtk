@@ -128,8 +128,6 @@ launch_process(prog_t *prog)
 {
   int cur_prio;
 
-  load_main(prog);
-
   /* Possibly restore process priority. */
   errno = 0;
   cur_prio = getpriority(PRIO_PROCESS, 0);
@@ -139,6 +137,8 @@ launch_process(prog_t *prog)
   /* Unprotect our worthless childs from the oom monster. */
   if (prog->prio >= 0)
     oom_unprotect();
+
+  load_main(prog);
 
   print_prog_env_argv(prog);
 
