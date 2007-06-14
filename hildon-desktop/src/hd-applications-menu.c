@@ -280,7 +280,10 @@ hd_applications_menu_key_press (GtkWidget *menu,
     
     return TRUE;
   }
-  else if (event->keyval == GDK_Right ||
+  else if (event->keyval == GDK_Return    ||
+	   event->keyval == GDK_KP_Enter  ||
+	   event->keyval == GDK_ISO_Enter ||
+	   event->keyval == GDK_Right     ||
            event->keyval == GDK_KP_Right)
   {
     if (hd_applications_menu_has_focus (button->priv->menu_categories))
