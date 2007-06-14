@@ -1,3 +1,8 @@
+2007-06-14  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: Updated with 3 new colors for dialog
+	button text to keep in sync with the layout.
+
 2007-05-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: Updated to layout (removed
