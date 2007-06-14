@@ -1,3 +1,7 @@
+2007-05-30  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* gtk/tmpl/gtkimcontext.sgml: Add HILDON_GTK_INPUT_MODE_MULTILINE
+
 2007-05-02  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.10.12 ===
