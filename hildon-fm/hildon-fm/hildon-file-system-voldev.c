@@ -242,22 +242,25 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
   /* XXX - GnomeVFS should provide the right icons and display names.
    */
 
-  if (strcmp (location->fixed_icon, "gnome-dev-removable-usb") == 0
-      || strcmp (location->fixed_icon, "gnome-dev-harddisk-usb") == 0)
-    location->fixed_icon = "qgn_list_filesys_removable_storage";
-  else if (strcmp (location->fixed_icon, "gnome-dev-removable") == 0
-	   || strcmp (location->fixed_icon, "gnome-dev-media-sdmmc") == 0)
+  if (location->fixed_icon)
     {
-      gboolean internal = 
-	g_str_has_prefix (location->basepath, "file:///media/mmc2");
-
-      if (internal)
-	location->fixed_icon = "qgn_list_gene_internal_memory_card";
-      else
-      	location->fixed_icon = "qgn_list_gene_removable_memory_card";
-
-      location->fixed_title = beautify_mmc_name (location->fixed_title,
-						 internal);
+      if (strcmp (location->fixed_icon, "gnome-dev-removable-usb") == 0
+	  || strcmp (location->fixed_icon, "gnome-dev-harddisk-usb") == 0)
+	location->fixed_icon = "qgn_list_filesys_removable_storage";
+      else if (strcmp (location->fixed_icon, "gnome-dev-removable") == 0
+	       || strcmp (location->fixed_icon, "gnome-dev-media-sdmmc") == 0)
+	{
+	  gboolean internal = 
+	    g_str_has_prefix (location->basepath, "file:///media/mmc2");
+	  
+	  if (internal)
+	    location->fixed_icon = "qgn_list_gene_internal_memory_card";
+	  else
+	    location->fixed_icon = "qgn_list_gene_removable_memory_card";
+	  
+	  location->fixed_title = beautify_mmc_name (location->fixed_title,
+						     internal);
+	}
     }
 
   g_signal_emit_by_name (location, "changed");

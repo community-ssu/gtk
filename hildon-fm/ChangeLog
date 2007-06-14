@@ -1,3 +1,9 @@
+2007-06-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Do not try to fixup
+	the icon when it is NULL.  Thanks to Carlos Garnacho!
+
 2007-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.29
