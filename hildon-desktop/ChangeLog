@@ -1,3 +1,9 @@
+2007-06-14  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Setting matchbox specific hints shouldn't rely on patched gtk.
+	Patch provided by Tommi Komulainen. Fixes: MB#1538
+
 2007-06-13  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hn-others-button.c, src/hd-applications-menu.c: keep track of changes 

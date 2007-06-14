@@ -62,16 +62,38 @@ static void hildon_desktop_panel_window_dialog_set_property (GObject *object, gu
 
 static void hildon_desktop_window_dialog_fullscreen_cb (HDWM *hdwm, gboolean fullscreen, gpointer _window);
 
+static void
+hildon_desktop_panel_window_dialog_realize (GtkWidget *widget)
+{
+  GdkDisplay *display = gtk_widget_get_display (widget);
+  Atom atoms[2];
+
+  GTK_WIDGET_CLASS (hildon_desktop_panel_window_dialog_parent_class)->realize (widget);
+
+  atoms[0] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE_DOCK_TITLEBAR");
+  atoms[1] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_DOCK_TITLEBAR_SHOW_ON_DESKTOP");
+
+  XChangeProperty (GDK_DISPLAY_XDISPLAY (display),
+		   GDK_WINDOW_XID (widget->window),
+		   gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE"),
+		   XA_ATOM, 32,
+		   PropModeReplace,
+		   (guchar*) atoms, 2);
+}
+
 static void 
 hildon_desktop_panel_window_dialog_class_init (HildonDesktopPanelWindowDialogClass *dskwindow_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (dskwindow_class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (dskwindow_class);
 
   g_type_class_add_private (dskwindow_class, sizeof (HildonDesktopPanelWindowDialogPrivate));
 
   object_class->constructor  = hildon_desktop_panel_window_dialog_constructor;
   object_class->set_property = hildon_desktop_panel_window_dialog_set_property;
   object_class->get_property = hildon_desktop_panel_window_dialog_get_property;
+
+  widget_class->realize = hildon_desktop_panel_window_dialog_realize;
 
   g_object_class_install_property (object_class,
  				   PROP_FULLSCREEN,
@@ -227,9 +249,6 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
   {
     if (window->priv->old_titlebar)
     {
-       Atom atoms[3];
-       Display *dpy;
-       Window  win;
        gint width, height;
 
        g_debug ("Using DOCK_TITLEBAR SHOW_ON_DESKTOP");
@@ -240,21 +259,8 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
        gtk_window_set_type_hint( GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DOCK);
 
        gtk_widget_realize (GTK_WIDGET (window));
-
-       g_object_set_data (G_OBJECT (GTK_WIDGET (window)->window),
-                          "_NET_WM_STATE", (gpointer)PropModeAppend);
        
-       dpy = GDK_DISPLAY();
-       win = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
-
-       atoms[0] = XInternAtom(dpy, "_NET_WM_STATE", False);
-       atoms[1] = XInternAtom(dpy, "_MB_WM_STATE_DOCK_TITLEBAR", False);
-       atoms[2] = XInternAtom(dpy, "_MB_DOCK_TITLEBAR_SHOW_ON_DESKTOP", False);
-
-       XChangeProperty (dpy, win, 
-		        atoms[0], XA_ATOM, 
-			32, PropModeReplace,
-			(unsigned char *) &atoms[1], 2);
+       /* custom WM hints are set in realize */
 
        gdk_window_get_geometry (GTK_WIDGET (window)->window,
 		       		NULL,NULL,&width, &height, NULL);
