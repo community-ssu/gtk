@@ -82,6 +82,10 @@ start)
   if [ -e $HOME/first-boot-flag ]; then
     ADVANCE_STEPS=1
 
+    if [ -x /usr/bin/hildon-update-notifier ]; then
+      /usr/bin/hildon-update-notifier --wake-up
+    fi
+    
     if [ -x $AF_INIT_DIR/wizard-background.sh ]; then
       source $AF_INIT_DIR/wizard-background.sh start
     fi

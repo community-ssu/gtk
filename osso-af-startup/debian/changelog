@@ -1,3 +1,10 @@
+osso-af-startup (1.43-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Applied patch from Tapani to add hildon-update-notifier startup.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 14 Jun 2007 13:10:59 +0300
+
 osso-af-startup (1.42-1) unstable; urgency=low
 
   * Setting the OOM killer protection more intelligently in af-services.
