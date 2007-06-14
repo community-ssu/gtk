@@ -65,20 +65,23 @@ static void hildon_desktop_window_dialog_fullscreen_cb (HDWM *hdwm, gboolean ful
 static void
 hildon_desktop_panel_window_dialog_realize (GtkWidget *widget)
 {
-  GdkDisplay *display = gtk_widget_get_display (widget);
-  Atom atoms[2];
-
   GTK_WIDGET_CLASS (hildon_desktop_panel_window_dialog_parent_class)->realize (widget);
 
-  atoms[0] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE_DOCK_TITLEBAR");
-  atoms[1] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_DOCK_TITLEBAR_SHOW_ON_DESKTOP");
+  if (HILDON_DESKTOP_PANEL_WINDOW_DIALOG (widget)->priv->old_titlebar)
+  {	 
+    GdkDisplay *display = gtk_widget_get_display (widget);
+    Atom atoms[2];
 
-  XChangeProperty (GDK_DISPLAY_XDISPLAY (display),
-		   GDK_WINDOW_XID (widget->window),
-		   gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE"),
-		   XA_ATOM, 32,
-		   PropModeReplace,
-		   (guchar*) atoms, 2);
+    atoms[0] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE_DOCK_TITLEBAR");
+    atoms[1] = gdk_x11_get_xatom_by_name_for_display (display, "_MB_DOCK_TITLEBAR_SHOW_ON_DESKTOP");
+
+    XChangeProperty (GDK_DISPLAY_XDISPLAY (display),
+		     GDK_WINDOW_XID (widget->window),
+		     gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_STATE"),
+		     XA_ATOM, 32,
+		     PropModeReplace,
+		     (guchar*) atoms, 2);
+  }
 }
 
 static void 

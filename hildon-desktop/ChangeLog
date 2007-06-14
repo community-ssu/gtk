@@ -1,3 +1,9 @@
+2007-06-14  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-window-dialog.c:
+	- Check in _realize if we are gonna use the ol' titlebar from
+	matchbox. It was missing in patch for MB 1358.
+
 2007-06-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c: move focus to applications pane when
