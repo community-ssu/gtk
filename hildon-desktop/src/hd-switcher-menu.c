@@ -1521,7 +1521,7 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   {	  
     category = g_value_get_string (hint);
 
-    if (g_str_equal (category, "system.note.dialog"))
+    if (g_str_has_prefix (category, "system.note"))
       goto out;	  
   }
   

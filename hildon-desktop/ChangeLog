@@ -6,6 +6,11 @@
 
 2007-06-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-switcher-menu.c: fixed notification filtering to discard all
+	notifications with "system.note" prefix in their category.
+
+2007-06-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-applications-menu.c: move focus to applications pane when
 	tapping on a category on the left pane. Fixes bug NB#60548.
 
