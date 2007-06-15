@@ -1,3 +1,10 @@
+matchbox-window-manager (2:1.2-osso5) unstable; urgency=low
+
+  * wm.c: resize and move dialog correctly when IM resizes
+    (bug #369 in o-hand bugzilla) 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 15 Jun 2007 13:02:38 +0300
+
 matchbox-window-manager (2:1.2-osso4) unstable; urgency=low
 
   * structs.h, mbtheme.c : read frame-animation properties from theme
