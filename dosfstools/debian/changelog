@@ -1,8 +1,7 @@
 dosfstools (2.11-0osso3) unstable; urgency=low
 
-  * UNRELEASED
-  * Patch for correct logical sector size. Thanks to Tilman Vogel for
-    reporting the problem. Fixes: MB#1537
+  * Patch for correct logical sector size calculation.
+    Thanks to Tilman Vogel for reporting the problem. Fixes: MB#1537
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Jun 2007 12:46:30 +0300
 
