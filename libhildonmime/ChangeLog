@@ -1,5 +1,9 @@
 2007-06-15  Martyn Russell  <martyn@imendio.com>
 
+	* Release 1.9.6.
+
+2007-06-15  Martyn Russell  <martyn@imendio.com>
+
 	* configure.in: Bumped version to 1.9.6.
 	
 	* libhildonmime/hildon-uri.c: Use old function when getting
