@@ -1,3 +1,9 @@
+libhildonmime (1.9.6-1) unstable; urgency=low
+
+  * Fixes: NB#60083, modest.desktop should be the default handler for mailto
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 15 Jun 2007 17:00:01 +0100
+
 libhildonmime (1.9.5-1) unstable; urgency=low
 
   * Fixed empty desktop file in list returned when getting desktop files by scheme
@@ -9,7 +15,7 @@ libhildonmime (1.9.4-1) unstable; urgency=low
 
   * Improve test case and documentation for open API, related to NB#54056
 
- -- Martyn Russell <martyn@imendio.com>  Fri, 27 April 2007 17:00:01 +0100
+ -- Martyn Russell <martyn@imendio.com>  Fri, 27 Apr 2007 17:00:01 +0100
 
 libhildonmime (1.9.3-2) unstable; urgency=low
 
