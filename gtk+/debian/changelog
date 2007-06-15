@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.10.12-0osso5) unstable; urgency=low
+
+  * Remove MAEMO_CHANGES code to move focus in TAB_FORWARD direction on the
+    default handler for activate in GtkEntry when activates-default is not
+    set.
+  * Take MAEMO_CHANGES into account when validating image flags in the
+    iconcache validator since we've extended them.
+  * Add HILDON_GTK_INPUT_MODE_MULTILINE to hint widgets capable of receiving
+    multiple lines of text.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 15 Jun 2007 13:57:02 +0300
+
 gtk+2.0 (2:2.10.12-0osso4) unstable; urgency=low
 
   * Switch submenu opening direction only if the opposite direction has
