@@ -1,3 +1,8 @@
+2007-06-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (hildonincludeinst_DATA): Add
+	hildon-file-system-storage-dialog.h here as well, stupid.
+
 2007-06-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-voldev.c

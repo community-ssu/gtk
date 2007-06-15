@@ -71,6 +71,7 @@ hildonincludeinst_DATA =			\
 	hildon-file-system-common.h		\
 	hildon-file-system-info.h		\
 	hildon-file-details-dialog.h		\
+	hildon-file-system-storage-dialog.h	\
 	hildon-fm1-compat.h
 
 noinst_PROGRAMS = t
