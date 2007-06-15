@@ -731,7 +731,7 @@ uri_get_desktop_file_actions_filtered (GSList              *actions,
 			 filter_mime_type != NULL) {
 			gchar **strv;
 			gint    i;
-			
+
 			strv = g_strsplit (action->mime_type, ";", -1);
 			
 			for (i = 0; strv && strv[i] != NULL; i++) {
@@ -1529,53 +1529,28 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 			       HildonURIActionType   action_type,
 			       GError              **error)
 {
-	GnomeVFSURI      *uri;
-	GnomeVFSFileInfo *info;
-	GnomeVFSResult    result;
-	GSList           *actions = NULL;
-	GSList           *desktop_files;
-	GSList           *l;
-	gchar            *filename;
-	gchar            *scheme = NULL;
-	gchar            *mime_type = NULL;
+	GSList      *actions = NULL;
+	GSList      *desktop_files;
+	GSList      *l;
+	gchar       *filename;
+	gchar       *scheme = NULL;
+	const gchar *mime_type;
 
 	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', NULL);
 
-	uri = gnome_vfs_uri_new (uri_str);
-	if (!uri) {
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "Could not create GnomeVFSURI from uri");
-		return NULL;
-	}
-
-	/* Get scheme */
-	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
+	scheme = hildon_uri_get_scheme_from_uri (uri_str, error);
 	if (!scheme || scheme[0] == '\0') {
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "The scheme could not be obtained from the uri.");
 		return NULL;
 	}
 
-	/* Get mime type */
-	info = gnome_vfs_file_info_new ();
-
-	result = gnome_vfs_get_file_info (uri_str, info, GNOME_VFS_FILE_INFO_GET_MIME_TYPE);
-	if (result == GNOME_VFS_OK && 
-	    info->mime_type && 
-	    info->mime_type != '\0') {
-		mime_type = g_strdup (info->mime_type);
+	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
+	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+		mime_type = NULL;
 	}
 
 	DEBUG_MSG (("URI: Getting actions by uri: %s, found scheme:'%s' and mime type'%s'", 
 		    uri_str, scheme, mime_type));
 
-	gnome_vfs_file_info_unref (info);
-	gnome_vfs_uri_unref (uri);
-	
 	/* Get desktop files */
 	desktop_files = uri_get_desktop_files_by_scheme (scheme);
 
@@ -1600,7 +1575,6 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 	g_slist_foreach (desktop_files, (GFunc) g_free, NULL);
 	g_slist_free (desktop_files);
 	
-	g_free (mime_type);
 	g_free (scheme);
 
 	return actions;
@@ -1962,12 +1936,9 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 				      GError      **error)
 {
 	GKeyFile         *key_file;
-	GnomeVFSURI      *uri;
-	GnomeVFSFileInfo *info;
-	GnomeVFSResult    result;
 	HildonURIAction  *action = NULL;
 	gchar            *scheme = NULL;
-	gchar            *mime_type = NULL;
+	const gchar      *mime_type;
 	gchar            *desktop_file = NULL;
 	gchar            *filename;
 	gchar            *full_path = NULL;
@@ -1975,41 +1946,18 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', NULL);
 
-	uri = gnome_vfs_uri_new (uri_str);
-	if (!uri) {
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "Could not create GnomeVFSURI from uri");
-		return NULL;
-	}
-
-	/* Get scheme */
-	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
+	scheme = hildon_uri_get_scheme_from_uri (uri_str, error);
 	if (!scheme || scheme[0] == '\0') {
-		gnome_vfs_uri_unref (uri);
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "The scheme could not be obtained from the uri.");
 		return NULL;
 	}
 
-	/* Get mime type */
-	info = gnome_vfs_file_info_new ();
-
-	result = gnome_vfs_get_file_info (uri_str, info, GNOME_VFS_FILE_INFO_GET_MIME_TYPE);
-	if (result == GNOME_VFS_OK && 
-	    info->mime_type && 
-	    info->mime_type != '\0') {
-		mime_type = g_strdup (info->mime_type);
+	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
+	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+		mime_type = NULL;
 	}
 
 	DEBUG_MSG (("URI: Getting default action by uri:'%s', with scheme:'%s' and mime type'%s'", 
 		    uri_str, scheme, mime_type));
-
-	gnome_vfs_file_info_unref (info);
-	gnome_vfs_uri_unref (uri);
 
 	/* Open file and get the mime type and action name */
 	key_file = g_key_file_new ();
@@ -2022,23 +1970,26 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 					     filename, 
 					     &full_path, 
 					     G_KEY_FILE_KEEP_COMMENTS, 
-					     NULL);
-
-	DEBUG_MSG (("URI: Getting default actions from file:'%s'", full_path));
+					     error);
 
 	if (ok) {
 		gchar *str;
 
+		DEBUG_MSG (("URI: Getting default actions from file:'%s'", full_path));
+
 		if (mime_type) {
 			gchar *group;
+			gchar *mime_type_dup;
 
-			str = strchr (mime_type, '/');
+			mime_type_dup = g_strdup (mime_type);
+			str = strchr (mime_type_dup, '/');
+			
 			if (str) {
 				str[0] = '-';
 			}
 
 			group = g_strdup_printf (HILDON_URI_DEFAULTS_GROUP_FORMAT, scheme);
-			str = g_key_file_get_string (key_file, group, mime_type, NULL);
+			str = g_key_file_get_string (key_file, group, mime_type_dup, NULL);
 			DEBUG_MSG (("URI: Found string:'%s' in group:'%s'", str, group));
 			g_free (group);
 
@@ -2046,6 +1997,8 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 				action = uri_get_desktop_file_action (scheme, str);
 				g_free (str);
 			}
+
+			g_free (mime_type_dup);
 		}
 
 		if (!action) {
@@ -2057,11 +2010,7 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 				    "function just using scheme:'%s'", 
 				    scheme));
 
-			str = g_key_file_get_string (key_file, HILDON_URI_DEFAULTS_GROUP, scheme, NULL);
-			if (str) {
-				action = uri_get_desktop_file_action (scheme, str);
-				g_free (str);
-			}
+			action = hildon_uri_get_default_action (scheme, error);
 		}
 	}
 
@@ -2069,7 +2018,6 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 	g_free (desktop_file);
 	g_free (filename);
-	g_free (mime_type);
 	g_free (scheme);
 
 	return action;
@@ -2175,14 +2123,11 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 				      HildonURIAction  *action,
 				      GError          **error)
 {
-	GnomeVFSURI      *uri;
-	GnomeVFSFileInfo *info;
-	GnomeVFSResult    result;
-	gchar            *scheme = NULL;
-	gchar            *mime_type = NULL;
-	const gchar      *desktop_file = NULL;
-	const gchar      *action_id = NULL;
-	gboolean          ok;
+	gchar       *scheme = NULL;
+	const gchar *mime_type;
+	const gchar *desktop_file = NULL;
+	const gchar *action_id = NULL;
+	gboolean     ok;
 
 	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', FALSE);
 
@@ -2195,52 +2140,18 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 		return hildon_uri_set_default_action (action->scheme, action, error);
 	}
 
-	uri = gnome_vfs_uri_new (uri_str);
-	if (!uri) {
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "Could not create GnomeVFSURI from uri");
-		return FALSE;
-	}
-
-	/* Get scheme */
-	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
+	scheme = hildon_uri_get_scheme_from_uri (uri_str, error);
 	if (!scheme || scheme[0] == '\0') {
-		gnome_vfs_uri_unref (uri);
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "The scheme could not be obtained from the uri.");
-
 		return FALSE;
 	}
 
-	/* Get mime type */
-	info = gnome_vfs_file_info_new ();
-
-	result = gnome_vfs_get_file_info (uri_str, info, GNOME_VFS_FILE_INFO_GET_MIME_TYPE);
-	if (result == GNOME_VFS_OK && 
-	    info->mime_type && 
-	    info->mime_type != '\0') {
-		mime_type = g_strdup (info->mime_type);
-	} else {
-		gnome_vfs_file_info_unref (info);
-		gnome_vfs_uri_unref (uri);
-		g_free (scheme);
-		g_set_error (error,
-			     HILDON_URI_ERROR,
-			     HILDON_URI_INVALID_URI,
-			     "The mime type could not be obtained from the uri.");
-
-		return FALSE;
+	mime_type = gnome_vfs_get_mime_type_for_name (uri_str);
+	if (strcmp (mime_type, GNOME_VFS_MIME_TYPE_UNKNOWN) == 0) {
+		mime_type = NULL;
 	}
 
 	DEBUG_MSG (("URI: Setting default action by uri:'%s', with scheme:'%s' and mime type'%s'", 
 		    uri_str, scheme, mime_type));
-
-	gnome_vfs_file_info_unref (info);
-	gnome_vfs_uri_unref (uri);
 
 	/* We can have a NULL action to remove the default action. */
 	if (action) {
@@ -2256,7 +2167,6 @@ hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 			     "The defaults file could not be saved.");
 	}
 
-	g_free (mime_type);
 	g_free (scheme);
 
 	return ok;
@@ -2311,7 +2221,6 @@ hildon_uri_open (const gchar      *uri,
 
 	scheme = hildon_uri_get_scheme_from_uri (uri, error);
 	if (!scheme || scheme[0] == '\0') {
-		/* Error is filled in by _get_scheme_from_uri(). */
 		return FALSE;
 	}
 

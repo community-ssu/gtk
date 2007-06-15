@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info"
+           xmlns:osso="http://nokia.com/osso/mime-categories">
+   <mime-type type="image/pjpeg">
+     <comment>JPEG Image</comment>
+     <glob pattern="*.pjpeg"/>
+     <osso:category name="images"/>
+   </mime-type>
+  <mime-type type="text/html">
+    <comment>HTML page</comment>
+    <magic priority="50">
+      <match value="&lt;!DOCTYPE HTML" type="string" offset="0:64"/>
+      <match value="&lt;!doctype html" type="string" offset="0:64"/>
+      <match value="&lt;HEAD" type="string" offset="0:64"/>
+      <match value="&lt;head" type="string" offset="0:64"/>
+      <match value="&lt;TITLE" type="string" offset="0:64"/>
+      <match value="&lt;title" type="string" offset="0:64"/>
+      <match value="&lt;html" type="string" offset="0:64"/>
+      <match value="&lt;HTML" type="string" offset="0:64"/>
+      <match value="&lt;BODY" type="string" offset="0"/>
+      <match value="&lt;body" type="string" offset="0"/>
+      <match value="&lt;TITLE" type="string" offset="0"/>
+      <match value="&lt;title" type="string" offset="0"/>
+      <match value="&lt;!--" type="string" offset="0"/>
+      <match value="&lt;h1" type="string" offset="0"/>
+      <match value="&lt;H1" type="string" offset="0"/>
+      <match value="&lt;!doctype HTML" type="string" offset="0"/>
+      <match value="&lt;!DOCTYPE html" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.html"/>
+    <glob pattern="*.htm"/>
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/css">
+    <comment>Cascading Style Sheet</comment>
+    <glob pattern="*.css"/>
+    <glob pattern="*.CSSL"/>
+    <osso:category name="documents"/>
+  </mime-type>
+ <mime-type type="text/sgml">
+    <comment>SGML document</comment>
+    <glob pattern="*.sgml"/>
+    <glob pattern="*.sgm"/>
+    <osso:category name="documents"/>
+ </mime-type>
+ <mime-type type="text/x-dtd">
+    <comment>document type definition</comment>
+    <glob pattern="*.dtd"/>
+    <osso:category name="documents"/>
+  </mime-type>
+ <mime-type type="application/x-javascript">
+    <sub-class-of type="text/plain"/>
+    <comment>Javascript program</comment>
+    <glob pattern="*.js"/>
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="image/x-xpixmap">
+    <comment>X PixMap image</comment>
+    <magic priority="80">
+      <match value="/* XPM" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.xpm"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/x-xbitmap">
+    <comment>X BitMap image</comment>
+    <glob pattern="*.xbm"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="application/x-shockwave-flash">
+    <comment>Shockwave Flash</comment>
+    <glob pattern="*.swf"/>
+    <osso:category name="documents"/>
+  </mime-type>
+</mime-info>

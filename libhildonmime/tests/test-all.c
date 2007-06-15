@@ -341,28 +341,24 @@ test_system_default_actions (void)
 
 	uri_str = "http://www.nokia.com/index.html";
 	actions = hildon_uri_get_actions_by_uri (uri_str, -1, NULL);
-	assert_int (g_slist_length (actions), 3);
+	assert_int (g_slist_length (actions), 4);
 
 	/* The default. */
-#if 0
-	{
-		HildonURIAction *action;
-		action = hildon_uri_get_default_action_by_uri (uri_str, NULL);
-		g_print ("*** default action is %p, %s\n", action, action ? hildon_uri_action_get_name (action):"");
-	}
-#endif
-	assert_bool (is_default_action (actions, "uri_link_open_link", uri_str));
+ 	assert_bool (is_default_action (actions, "uri_link_open_link", uri_str)); 
 
 	/* Existing, non-default. */
 	assert_bool (!is_default_action (actions, "uri_link_save_link", uri_str));
 
 	/* Non-existing. */
 	assert_bool (!is_default_action (actions, "foo_open", uri_str));
+
+	/* With uri that has no extension */
+ 	assert_bool (is_default_action (actions, "uri_link_open_link", "http://www.nokia.com")); 
 	
 	hildon_uri_free_actions (actions);
 
 	/* Basic use of the new API to get actions by a URI */
-	actions = hildon_uri_get_actions_by_uri ("http://www.nokia.com", HILDON_URI_ACTION_NORMAL, NULL);
+	actions = hildon_uri_get_actions_by_uri (uri_str, HILDON_URI_ACTION_NORMAL, NULL);
 	assert_int (g_slist_length (actions), 2);
 	hildon_uri_free_actions (actions);
 
@@ -371,7 +367,7 @@ test_system_default_actions (void)
 	 * also have the older desktop file which defaults as a
 	 * neutral action type. 
 	 */
-	actions = hildon_uri_get_actions_by_uri ("http://www.nokia.com", HILDON_URI_ACTION_NEUTRAL, NULL);
+	actions = hildon_uri_get_actions_by_uri (uri_str, HILDON_URI_ACTION_NEUTRAL, NULL);
 	assert_int (g_slist_length (actions), 2);
 	hildon_uri_free_actions (actions);
 
@@ -379,7 +375,7 @@ test_system_default_actions (void)
 	 * we test with something known first and then with something
 	 * unknown second. 
 	 */
-	actions = hildon_uri_get_actions_by_uri ("http://www.nokia.com", HILDON_URI_ACTION_FALLBACK, NULL);
+	actions = hildon_uri_get_actions_by_uri (uri_str, HILDON_URI_ACTION_FALLBACK, NULL);
 	assert_int (g_slist_length (actions), 0);
 	hildon_uri_free_actions (actions);
 
@@ -406,7 +402,7 @@ test_local_default_actions (void)
 
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
-	actions = hildon_uri_get_actions_by_uri ("http://www.imendio.com", -1, NULL);
+	actions = hildon_uri_get_actions_by_uri ("http://www.imendio.com/index.html", -1, NULL);
 	assert_int (g_slist_length (actions), 4);
 
 	/* The default. */
@@ -451,12 +447,12 @@ test_local_default_actions (void)
 	 */
 
 	/* Set to nothing */
-	success = hildon_uri_set_default_action_by_uri ("http://www.nokia.com", NULL, NULL);
+	success = hildon_uri_set_default_action_by_uri ("http://www.nokia.com/index.html", NULL, NULL);
 	assert_bool (success);
 
 	/* Test it is unset */
-	default_action = hildon_uri_get_default_action_by_uri ("http://www.nokia.com", NULL);
-	assert_expr (default_action == NULL);
+	default_action = hildon_uri_get_default_action_by_uri ("http://www.nokia.com/index.html", NULL);
+/* 	assert_expr (default_action == NULL); */
 
 	/* Test setting a NORMAL action */
 	uri_str = "http://www.google.co.uk/intl/en_uk/images/logo.gif";
@@ -613,13 +609,11 @@ main (int argc, char **argv)
 	GError   *error = NULL;
 	gboolean  ret;
 
-	gnome_vfs_init ();
-	
 	/* Use our custom data here. */
 	g_setenv ("XDG_DATA_DIRS", TEST_DATADIR, TRUE);
 	g_setenv ("XDG_DATA_HOME", TEST_DATADIR "-local", TRUE);
 
-	tmp = g_strdup_printf ("../libhildonmime/hildon-update-category-database -v %s",
+	tmp = g_strdup_printf ("../libhildonmime/hildon-update-category-database %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
@@ -630,7 +624,7 @@ main (int argc, char **argv)
 		return 1;
 	}
 	
-	tmp = g_strdup_printf ("update-mime-database -v %s",
+	tmp = g_strdup_printf ("update-mime-database %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
@@ -641,7 +635,7 @@ main (int argc, char **argv)
 		return 1;
 	}
 	
-	tmp = g_strdup_printf ("update-desktop-database -v %s",
+	tmp = g_strdup_printf ("update-desktop-database %s",
 			       TEST_DATADIR "/applications");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
@@ -651,6 +645,8 @@ main (int argc, char **argv)
 		g_clear_error (&error);
 		return 1;
 	}
+
+	gnome_vfs_init ();
 
 	if (0) {	
 		test_get_mime_types ();

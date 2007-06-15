@@ -1,3 +1,18 @@
+2007-06-15  Martyn Russell  <martyn@imendio.com>
+
+	* configure.in: Bumped version to 1.9.6.
+	
+	* libhildonmime/hildon-uri.c: Use old function when getting
+	default actions if no new action is found. Use our internal API to
+	get the scheme instead of creating a GnomeVFSURI to get the
+	scheme. Don't get the mime info from accessing the file, so
+	instead of using GnomeVFSFileInfo structs now, we use
+	gnome_vfs_get_mime_type_for_name(). 
+
+	* tests/datadir/mime/packages/table-browser.xml:
+	* tests/test-all.c: Updated to reflect some changes in the results
+	and added the text/html mime type.
+
 2007-06-15  Richard Hult  <richard@imendio.com>
 
 	* data/uri-action-defaults.list (mailto): Update default for mailto.

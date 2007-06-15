@@ -1,6 +1,9 @@
-libhildonmime (1.9.6-1) unstable; urgency=low
+libhildonmime (1.9.7-1) unstable; urgency=low
 
-  * Fixes: NB#60083, modest.desktop should be the default handler for mailto
+  * Fixed getting default action when falling back to older method.
+  * Fixed mime-type retrieval so we guess by extension not accessing file
+  * Fixed NB#48685, Web shortcut; Banner for invalid URI not shown ...
+  * Fixed NB#60083, modest.desktop should be the default handler for mailto
 
  -- Martyn Russell <martyn@imendio.com>  Fri, 15 Jun 2007 17:00:01 +0100
 
