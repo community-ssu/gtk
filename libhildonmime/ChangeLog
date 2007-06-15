@@ -1,3 +1,9 @@
+2007-06-15  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.7.
+
+	* configure.in: Bump since the debian version was bumped mistakenly.
+
 2007-06-15  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.9.6.
