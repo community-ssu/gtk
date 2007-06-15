@@ -1,3 +1,10 @@
+dbus (1.0.2-0osso8) experimental; urgency=low
+
+  * Removed condition from adding messagebus to the dialout group.
+    Fixes: NB#59355
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Jun 2007 10:43:35 +0300
+
 dbus (1.0.2-0osso7) experimental; urgency=low
 
   * Fixed upgrading problem with some environments.
