@@ -1,0 +1,62 @@
+Tests to carry out and expected results:
+========================================
+
+For these tests, you will need to set up your environment first.
+If running in scratchbox, you need to make sure your DBus session is running:
+	
+	$ export DISPLAY=127.0.0.1:2
+	$ af-sb-init.sh start
+
+Then 
+
+	$ source /etc/osso-af-init/af-defines.sh
+
+When this is done, you will need to make sure your environment points to the test data:
+
+	$ export XDG_DATA_HOME="/home/martyn/Source/libhildonmime/tests/datadir-local"	
+	$ export XDG_DATA_DIRS="/home/martyn/Source/libhildonmime/tests/datadir"
+
+For the test-all test, this is set up automatically, for all others, you will need this.	
+
+----
+
+TEST: 
+	Opening a uri of .html mime type should open in browser.
+COMMAND:
+	./test-uri -u http://www.foo.com/bar.html
+EXPECTED: 
+	Using default action:'uri_link_open_link' to open URI:'http://www.foo.com/bar.html'...
+	Opened URI:'http://www.foo.com/bar.html' successfully
+
+----
+
+TEST: 
+	Opening a uri of .mp3 mime type should open in media player.
+COMMAND:
+	./test-uri -u http://www.foo.com/bar.mp3
+EXPECTED:
+	Using default action:'uri_link_play' to open URI:'http://www.foo.com/bar.mp3'...
+	Opened URI:'http://www.foo.com/bar.mp3' successfully
+
+----
+
+TEST:
+	Getting a list of actions for an .mp3 mime type:
+COMMAND:
+	./test-uri -a http://www.foo.com/bar.mp3	
+EXPECTED:
+	Actions for uri:'http://www.foo.com/bar.mp3' are:
+	        uri_link_play
+        	uri_link_save_link
+	        image_viewer_open
+ 
+----
+
+TEST: 
+	Getting a list of actions for 'testplugin' scheme:
+COMMAND:
+	./test-uri -a testplugin://www.foo.com/bar.baz
+EXPECTED:
+	Actions for uri:'testplugin://www.foo.com/bar.baz' are:
+	        test-plugin-method
+

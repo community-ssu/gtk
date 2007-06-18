@@ -1,3 +1,12 @@
+libhildonmime (1.9.8-1) unstable; urgency=low
+
+  * UNRELEASED!
+  * Updated action filter function to sort by action type.
+  * Fixed hildon_uri_open() to use _by_uri() API when getting default action.
+  * Fixed test-uri -u option which was using old API.
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 22 May 2007 17:00:01 +0100
+	
 libhildonmime (1.9.7-2) unstable; urgency=low
 
   * Fixed getting default action when falling back to older method

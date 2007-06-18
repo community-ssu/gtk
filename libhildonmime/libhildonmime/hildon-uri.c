@@ -689,6 +689,27 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 	return actions;
 }
 
+static gint 
+uri_get_desktop_file_actions_sort_cb (gconstpointer a,
+				      gconstpointer b)
+{
+	HildonURIAction *action_a;
+	HildonURIAction *action_b;
+	gint             diff;
+	      
+	g_return_val_if_fail (a != NULL, 0);
+	g_return_val_if_fail (b != NULL, 0);
+
+	action_a = (HildonURIAction*) a;
+	action_b = (HildonURIAction*) b;
+
+	/* Sort by Normal, Neutral then Fallback */
+	diff = action_a->type - action_b->type;
+	diff = CLAMP (diff, -1, +1);
+
+	return diff;
+}
+
 static GSList *
 uri_get_desktop_file_actions_filtered (GSList              *actions,
 				       HildonURIActionType  filter_action_type,
@@ -754,8 +775,10 @@ uri_get_desktop_file_actions_filtered (GSList              *actions,
 			continue;
 		}
 
-		actions_filtered = g_slist_append (actions_filtered, 
-						   hildon_uri_action_ref (action));
+		actions_filtered = g_slist_insert_sorted (actions_filtered, 
+							  hildon_uri_action_ref (action),
+							  (GCompareFunc)
+							  uri_get_desktop_file_actions_sort_cb);
 	}
 
 	DEBUG_MSG (("URI: Filtering %d actions by mime type:'%s' and "
@@ -1758,10 +1781,11 @@ hildon_uri_is_default_action_by_uri (const gchar      *uri,
 
 	default_action = hildon_uri_get_default_action_by_uri (uri, error);
 
-	DEBUG_MSG (("URI: Checking desktop file is default for scheme:'%s':\n"
+	DEBUG_MSG (("URI: Checking desktop file is default by uri:'%s' for scheme:'%s':\n"
 		    "\tdefault_action:%p\n"
 		    "\tdefault_action->desktop_file:'%s'\n"
 		    "\taction->desktop_file:'%s'",
+		    uri,
 		    action->scheme,
 		    default_action,
 		    default_action ? default_action->desktop_file : "",
@@ -1794,7 +1818,7 @@ hildon_uri_is_default_action_by_uri (const gchar      *uri,
 			equal = TRUE;
 		}
 		
-		DEBUG_MSG (("URI: Checking desktop file is default:\n"
+		DEBUG_MSG (("URI: Checking desktop file is default by uri:'%s':\n"
 			    "\tfile1:'%s'\n"
 			    "\tfile2:'%s'\n"
 			    "\tname1:'%s'\n"
@@ -1802,6 +1826,7 @@ hildon_uri_is_default_action_by_uri (const gchar      *uri,
 			    "\tmethod1:'%s'\n"
 			    "\tmethod2:'%s'\n"
 			    "\tEQUAL = %s",
+			    uri,
 			    desktop_file1, desktop_file2,
 			    default_action->name, action->name,
 			    default_action->method, action->method,
@@ -1990,7 +2015,11 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 			group = g_strdup_printf (HILDON_URI_DEFAULTS_GROUP_FORMAT, scheme);
 			str = g_key_file_get_string (key_file, group, mime_type_dup, NULL);
-			DEBUG_MSG (("URI: Found string:'%s' in group:'%s'", str, group));
+			DEBUG_MSG (("URI: %s string:'%s' in group:'%s' with key:'%s'", 
+				    str ? "Found" : "Didn't find", 
+				    str, 
+				    group,
+				    mime_type_dup));
 			g_free (group);
 
 			if (str) {
@@ -2206,6 +2235,9 @@ hildon_uri_open (const gchar      *uri,
 	gboolean          ok;
 	gboolean          cleanup_action = FALSE;
 
+	DEBUG_MSG (("URI: Attempting to open URI:'%s' with %s action specified",
+		    uri, action_to_try ? "an" : "no"));
+
 	connection = dbus_bus_get (DBUS_BUS_SESSION, NULL);
 	if (!connection) {
 		str = "Could not get DBus connection";
@@ -2230,16 +2262,7 @@ hildon_uri_open (const gchar      *uri,
 			    "since no action was given.",
 			    uri));
 		
-		/* TODO: Fix this, what was the idea here */
-/*
-		if (action->id) {
-			action = hildon_uri_get_default_action_by_uri (uri, error);
-		} else {
-*/
-		action = hildon_uri_get_default_action (scheme, error);
-
-/*		}
- */
+		action = hildon_uri_get_default_action_by_uri (uri, error);
 		cleanup_action = TRUE;
 
 		if (!action) {
@@ -2251,7 +2274,7 @@ hildon_uri_open (const gchar      *uri,
 			 * an error further down, we want to use it
 			 * for that.
 			 */
-			actions = hildon_uri_get_actions (scheme, NULL);
+			actions = hildon_uri_get_actions_by_uri (scheme, -1, NULL);
 
 			/* At this stage we choose the first action
 			 * available from the long list picked up in

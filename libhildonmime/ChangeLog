@@ -1,3 +1,23 @@
+2007-06-18  Martyn Russell  <martyn@imendio.com>
+
+	* configure.in:
+	* debian/changelog: Bumped version to 1.9.8.
+	
+	* libhildonmime/hildon-uri.c: Updated action filter function to
+	sort by action type. Fixed hildon_uri_open() to use _by_uri() API
+	when getting default action. 
+
+	* tests/TESTS: Added some test scenarios.
+
+	* tests/datadir/applications/test/mp_ui.desktop: Updated according
+	to the new media player desktop file sent to us.
+	
+	* tests/datadir/applications/uri-action-defaults.list: Added the
+	media player as the default handler for audio/x-mp3 mime types.
+	
+	* tests/test-uri.c: Fixed the -u option which opens a uri, it was
+	using the old API.
+
 2007-06-15  Richard Hult  <richard@imendio.com>
 
 	* Release 1.9.7.

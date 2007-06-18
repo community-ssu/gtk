@@ -251,8 +251,8 @@ main (int argc, char **argv)
 
 		if (actions) {
 			HildonURIAction *action;
-			const gchar   *name = NULL;
-			gboolean       found = FALSE;
+			const gchar     *name = NULL;
+			gboolean         found = FALSE;
 
 			for (l = actions; l && !found; l = l->next) {
 				action = l->data;
@@ -266,7 +266,7 @@ main (int argc, char **argv)
 			if (found) {
 				gboolean is_default_action;
 
-				is_default_action = hildon_uri_is_default_action (action, NULL);
+				is_default_action = hildon_uri_is_default_action_by_uri (get_actions_by_uri, action, NULL);
 
 				g_print ("Action:'%s' %s the default action\n", 
 					 is_default, is_default_action ? "is" : "is NOT");
@@ -430,13 +430,13 @@ main (int argc, char **argv)
 		
 		while ((uri = open_uris[i++]) != NULL) {
 		       HildonURIAction *default_action = NULL;
-		       gboolean       success;
-
+		       gboolean         success;
+ 
 		       if (!use_default) {
 			       gchar *scheme;
 
 			       scheme = hildon_uri_get_scheme_from_uri (uri, NULL);
-			       default_action = hildon_uri_get_default_action (scheme, NULL);
+			       default_action = hildon_uri_get_default_action_by_uri (uri, NULL);
 			       
 			       if (default_action) {
 				       g_print ("Using default action:'%s' to open URI:'%s'...\n", 

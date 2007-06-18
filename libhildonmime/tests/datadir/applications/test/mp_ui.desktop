@@ -11,12 +11,18 @@ X-Window-Icon-Dimmed=tn-bookmarks-link-dimmed
 X-HildonDesk-ShowInToolbar=true
 X-Osso-Service=mediaplayer
 X-Osso-Type=application/x-executable
-X-Osso-URI-Actions=rtsp
-MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;video/x-ms-wmv;video/x-ms-wm;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;application/x-ms-asx;audio/x-ms-wax;video/x-ms-wvx;video/x-ms-wmx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
 Comment=medi_ap_mediaplayer_name_thumb
 
-[X-Osso-URI-Action Handler rtsp]
+[X-Osso-URI-Actions]
+rtsp=X-Osso-URI-Action-Open;
+mms=X-Osso-URI-Action-Open;
+http=X-Osso-URI-Action-Open;
+
+
+[X-Osso-URI-Action-Open]
 Method=mime_open
-Name=medi_ap_mediaplayer_name
-TranslationDomain=mediaplayer
+Name=uri_link_play
+TranslationDomain=osso-uri
+
 
