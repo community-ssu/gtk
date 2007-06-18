@@ -122,16 +122,20 @@ hd_keys_action_close (HDKeysConfig *keys,
     g_warning ("No active window set");
 }
 
-static void 
+static void
 hd_keys_action_application_close (HDKeysConfig *keys,
 				  gpointer     *user_data)
 {
-  HDWM *hdwm = hd_wm_get_singleton (); 
-	
-  HDWMWatchableApp *app = 
-    hd_wm_watched_window_get_app (hd_wm_get_active_window ());
+  HDWM *hdwm = hd_wm_get_singleton ();
+  HDWMWatchedWindow *window = hd_wm_get_active_window ();
 
-  hd_wm_close_application (hdwm, hd_wm_watchable_app_get_info (app));
+  if (window)
+  {
+    HDWMWatchableApp *app = hd_wm_watched_window_get_app (window);
+
+    if (app)
+      hd_wm_close_application (hdwm, hd_wm_watchable_app_get_info (app));
+  }
 }
 
 static void 
