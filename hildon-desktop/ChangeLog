@@ -1,3 +1,15 @@
+2007-06-18  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Set icon geometry to application socket or to entire appswitcher
+	according to position.
+	* src/hn-app-button.[ch]:
+	- Save last entry info used.
+	* libhildonwm/hd-entry-info.[ch]:
+	- Added support for icon geometry. Added flag to not override last
+	icon geometry if it was already set.
+	Fixes partially: NB#56505
+
 2007-06-18  Johan Bilien  <johan.bilien@nokia.com>
 
 	* data/statusbar.conf.in: added new plugin

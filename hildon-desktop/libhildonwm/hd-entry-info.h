@@ -87,6 +87,13 @@ GdkPixbuf *  hd_entry_info_get_icon        (HDEntryInfo *info);
 void         hd_entry_info_set_icon        (HDEntryInfo *info,
 				            GdkPixbuf   *icon);
 
+void         hd_entry_info_set_icon_geometry (HDEntryInfo *info,
+					      gint x,
+					      gint y,
+					      gint width,
+					      gint height,
+					      gboolean override);
+
 const gchar *hd_entry_info_get_app_icon_name (HDEntryInfo *info);
 GdkPixbuf *  hd_entry_info_get_app_icon      (HDEntryInfo *info,
                                               gint         size,

@@ -562,10 +562,22 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   const GList          *l, *children = hd_entry_info_get_children(entry);
   gboolean              urgent = FALSE;
   HNAppButton          *app_button = HN_APP_BUTTON (priv->buttons[pos]);
+  gboolean 	       update_icon_geometry;
+ 
+  update_icon_geometry = 
+   (hn_app_button_get_last_entry_info (app_button) != entry) ? TRUE : FALSE;
   
   /* deal with urgency flags */
   for (l = children; l != NULL; l = l->next)
   {
+    if (update_icon_geometry)	    
+      hd_entry_info_set_icon_geometry (l->data,	    
+		      		       GTK_WIDGET (app_button)->allocation.x,
+				       GTK_WIDGET (app_button)->allocation.y,
+				       GTK_WIDGET (app_button)->allocation.width,
+				       GTK_WIDGET (app_button)->allocation.height,
+				       TRUE);
+	  
     /*
      * If the entry is urgent and the ignore flag is not set, the button
      * should blink
@@ -577,10 +589,10 @@ refresh_app_button (HNAppSwitcher *app_switcher,
       urgent = TRUE;
     }
 
-      /*
-       * if the info is not urgent, we need to clear any leftover
-       * ignore_urgent flag
-       */
+   /*
+    * if the info is not urgent, we need to clear any leftover
+    * ignore_urgent flag
+    */
     if(!hd_entry_info_is_urgent(l->data) &&
        hd_entry_info_get_ignore_urgent(l->data))
     {
@@ -638,7 +650,7 @@ refresh_buttons (gpointer user_data)
 
   /* then refresh the icons of the application buttons */
   for (l = hd_wm_get_applications (app_switcher->hdwm), pos = 0;
-       l != NULL && pos < priv->nitems;
+       l != NULL;
        l = l->next, pos++)
   {
     HDEntryInfo *entry = l->data;
@@ -650,16 +662,26 @@ refresh_buttons (gpointer user_data)
       continue;
     }
 
-    if (active_button < 0 &&
-        gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->buttons[pos]))&&
-        !hd_entry_info_is_active (entry))
-    {
-        active_button = pos;
-    }
+    if (pos < priv->nitems)
+    {	    
+      if (active_button < 0 &&
+          gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->buttons[pos]))&&
+          !hd_entry_info_is_active (entry))
+      {
+          active_button = pos;
+      }
       
-    refresh_app_button (app_switcher, entry, pos);
-
-    g_debug ("Showing object");
+      refresh_app_button (app_switcher, entry, pos);
+    }
+    else
+    {
+      hd_entry_info_set_icon_geometry (l->data,	    
+		      		       GTK_WIDGET (app_switcher)->allocation.x,
+				       GTK_WIDGET (app_switcher)->allocation.y,
+				       GTK_WIDGET (app_switcher)->allocation.width,
+				       GTK_WIDGET (app_switcher)->allocation.height,
+				       FALSE);
+    }	    
   }
 
   if (active_button >= 0)

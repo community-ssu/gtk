@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <glib/gi18n.h>
 
+#include <X11/Xatom.h>
+
 #include "hd-entry-info.h"
 
 #include "hd-wm-watchable-app.h"
@@ -48,6 +50,7 @@ typedef struct
   GHashTable *icon_cache;
   
   guint ignore_urgent : 1;
+  guint override_icon_geometry : 1;
 } RealEntryInfo;
 
 #define REAL_ENTRY_INFO(x) ((RealEntryInfo *) (x))
@@ -64,6 +67,7 @@ hd_entry_info_new (HDEntryInfoType type)
   retval->parent = NULL;
   retval->children = NULL;
   retval->ignore_urgent = FALSE;
+  retval->override_icon_geometry = TRUE;
   retval->icon_cache = g_hash_table_new_full (g_direct_hash,
                                               g_direct_equal,
                                               NULL,
@@ -428,6 +432,49 @@ hd_entry_info_set_icon (HDEntryInfo *entry_info,
       g_assert_not_reached ();
       break;
   }
+}
+
+void 
+hd_entry_info_set_icon_geometry (HDEntryInfo *info,
+                                 gint x,
+                                 gint y,
+                                 gint width,
+                                 gint height,
+				 gboolean override)
+{
+  gulong data[4];
+  RealEntryInfo *real;
+  gboolean old_override_flag;
+  GdkDisplay *display = gdk_x11_lookup_xdisplay (GDK_DISPLAY ());
+  
+  g_return_if_fail (info != NULL);
+
+  real = REAL_ENTRY_INFO (info);
+
+  if (real->type == HD_ENTRY_INVALID)
+    return;	  
+
+  old_override_flag = real->override_icon_geometry;
+
+  real->override_icon_geometry = override;
+
+  if (!old_override_flag && !override)
+    return;
+
+  data[0] = x;
+  data[1] = y;
+  data[2] = width;
+  data[3] = height;
+
+  gdk_error_trap_push ();
+
+  XChangeProperty (GDK_DISPLAY (),
+                   hd_entry_info_get_x_window (info),
+                   gdk_x11_get_xatom_by_name_for_display (display,"_NET_WM_ICON_GEOMETRY"),
+                   XA_CARDINAL, 32, PropModeReplace,
+                   (guchar *)&data, 4);
+
+  gdk_error_trap_pop ();
 }
 
 void

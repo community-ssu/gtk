@@ -81,6 +81,7 @@ void         hn_app_button_set_icon_from_pixbuf (HNAppButton *button,
 						 GdkPixbuf   *pixbuf);
 GdkPixbuf *  hn_app_button_get_pixbuf_from_icon (HNAppButton *button);
 HDEntryInfo *hn_app_button_get_entry_info       (HNAppButton *button);
+HDEntryInfo *hn_app_button_get_last_entry_info  (HNAppButton *button);
 void         hn_app_button_set_entry_info       (HNAppButton *button,
 					         HDEntryInfo *info);
 gboolean     hn_app_button_get_is_blinking      (HNAppButton *button);
