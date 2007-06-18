@@ -5,5 +5,6 @@
 [@hildonstatusbardesktopentrydir@/presence.desktop]
 [@hildonstatusbardesktopentrydir@/contact.desktop]
 [@hildonstatusbardesktopentrydir@/hildon-status-bar-bluetooth.desktop]
+[@hildonstatusbardesktopentrydir@/location.desktop]
 [@hildonstatusbardesktopentrydir@/hildon-status-bar-alarm.desktop]
 [@hildonstatusbardesktopentrydir@/hildon-status-bar-usb.desktop]
