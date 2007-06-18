@@ -1,3 +1,9 @@
+hildon-desktop (1:0.0.18-2) sardine; urgency=low
+
+  * Fixed the name of the frozen application handler 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 18 Jun 2007 18:58:01 +0300
+
 hildon-desktop (1:0.0.18-1) sardine; urgency=low
 
   * src/hd-home-window.c: Do not reload the background when the
