@@ -1,5 +1,9 @@
 2007-06-18  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.18
+
+2007-06-18  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c: Do not reload the background when the
 	theme changes, as this is now done on the fly.
 

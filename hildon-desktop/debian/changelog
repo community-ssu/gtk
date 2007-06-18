@@ -1,3 +1,158 @@
+hildon-desktop (1:0.0.18-1) sardine; urgency=low
+
+  * src/hd-home-window.c: Do not reload the background when the
+  theme changes, as this is now done on the fly.
+
+  * libhildonwm/hd-keys.c: Added a few safeguard when retrieving
+  the active application. Fixes: NB#60495
+
+  * src/hd-switcher-menu.c: fixed handling of separators: only add
+  them when needed.
+
+  * src/hn-app-switcher.c:
+  - Set icon geometry to application socket or to entire appswitcher
+  according to position.
+  * src/hn-app-button.[ch]:
+  - Save last entry info used.
+  * libhildonwm/hd-entry-info.[ch]:
+  - Added support for icon geometry. Added flag to not override last
+  icon geometry if it was already set.
+  Fixes partially: NB#56505
+
+  * data/statusbar.conf.in: added new plugin
+
+  * libhildondesktop/hildon-desktop-window-dialog.c:
+  - Check in _realize if we are gonna use the ol' titlebar from
+  matchbox. It was missing in patch for MB 1358.
+
+  * src/hd-switcher-menu.c: fixed notification filtering to discard all
+  notifications with "system.note" prefix in their category.
+
+  * src/hd-applications-menu.c: move focus to applications pane when
+  tapping on a category on the left pane. Fixes bug NB#60548.
+
+  * src/hd-applications-menu.c: use GDK_Return, GDK_KP_Enter,
+  GDK_ISO_Enter to move focus to application pane. Fixes bug NB#60553.
+
+  * libhildondesktop/hildon-desktop-panel-window-dialog.c:
+  - Setting matchbox specific hints shouldn't rely on patched gtk.
+  Patch provided by Tommi Komulainen. Fixes: MB#1538
+
+  * src/hn-others-button.c, src/hd-applications-menu.c: keep track of changes 
+  in the standard  application directory and hildon-specific application 
+  directory to update the menu accordingly. Fixes bug NB#16392.
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: allow activating menu
+  items with GDK_Return. Fixes bug NB#60544.
+
+  * src/hd-applications-menu.c, src/hn-others-button.c, src/Makefile.am,
+  libhildondesktop/libhildonmenu.[ch], libhildondesktop/Makefile.am,
+  data/Makefile.am, configure.ac: do not hardcode the absolute path of
+  the menu definition file in libhildonmenu. 
+
+  * src/hn-others-button.c, src/hd-applications-menu.c: always copy the
+  system-wide menu definition to user directory to make sure restore
+  work. Fixes bug NB#42202.
+
+  * src/hd-switcher-menu.c: don't add a separator on the top of
+  application menu.
+
+  * libhildondesktop/hildon-home-titlebar.c: change the titlebar text
+  color label to "HomeTitleTextColor".
+
+  * src/main.c: Fixed problem with thread initialization with glib.
+  Pointed out by Tommi.
+
+  * libhildondesktop/hildon-home-area.c:
+  - Allow add without layout
+
+  * libhildondesktop/hildon-home-titlebar.c:
+  - reduced size of the menu button. Fixes: NB#58138
+
+  * src/hd-applications-menu.c:
+  - It was creating the hildon_desktop_popup_window with "1" extra
+  window. Now is set to "0" extra windows.
+  * src/hd-panel-window.c:
+  - XFixesFetchRegion needs an int and gcc 4.1.2 is really picky
+  * libhildondesktop/hildon-home-area.c:
+  - XQueryTree needs an unsigned int and gcc 4.1.2 is really picky :)
+
+  * src/hd-switcher-menu.c: Call changed_stack_cb when removing an
+  application from applications menu. Fixes: NB#59599
+
+  * src/hd-home-window.c:
+  - copy the background before applying, so further changes
+  in the dialog won't affect it.
+  Fixes: NB#57657
+
+  * src/hd-home-background.c:
+  - default value for background modes is Centered.
+  Fixes: NB#57648
+
+  * src/hd-home-background-dialog.c:
+  - remove extension and .sketch from image name
+  Fixes: NB#56712, NB#54030
+
+  * src/hd-home-background.c:
+  - call the callback even when an error occurred, so it can be
+  handled
+  * background-manager/background-manager.c:
+  - removed the "plain color fallback", no longer necessary
+  now that home draws its own titlebar
+  Fixes: NB#55272
+
+  * src/hd-home-window.c:
+  - add a filter on the root window to track whether the home
+  window is topmost
+
+  * src/hd-home-window.c:
+  - register the lowmem signal from libosso and act accordingly
+  - register the hw_screen_off signal from libosso and act
+  accordingly (tell the applets they are in the background)
+  Fixes: NB#54896
+
+  * src/hd-home-window.c:
+  - add _cancel_note_show/hide to show the background loading progress
+  - show the note if the loading did not complete within 1s
+  - do not apply if the background if it was cancelled from the note.
+  Fixes: NB#54014
+
+  * src/hd-applications-menu.c:
+  - unprotect spawned processes from the OOM shield.
+  Fixes: NB#25830
+
+  * libhildonwm/hd-wm.[ch]:
+  - clean up D-Bus setup by removing unused handlers. Patch courtesy
+  of Kimmo Hämälainen
+  Fixes: NB#59789
+
+  * libhildondesktop/hildon-home-titlebar.c:
+  - added style_set to load the background as Picture
+  - added expose, to paint the background from the widget
+  - added realize, to call style_set the first time
+  * src/hd-home-background.c:
+  - disabled compositing of the titlebar as it is now down by
+  the widget on the fly
+
+  * src/hn-app-button.c: hd_wm_activate_window with toplevel GdkWindow
+  not by using parent GtkWindow.
+
+  * libhildondesktop/hildon-desktop-plugin.h: added a tiny line of code to
+  avoid certain build warnings in plugin macros.
+
+  * src/hd-config.h: Added mandatory key
+  * src/hd-plugin-loader-legacy.c:
+  * src/hd-plugin-loader-default.c:
+  - Parse the mandatory key from plugin's .desktop file.
+  * libhildondesktop/hildon-desktop-item.[ch]:
+  - Added mandatory property.
+  * libhildondesktop/statusbar-item.[ch]:
+  - Removed mandatory property and move it out to HildonDesktopItem.
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Check out mandatory property in HildonDesktopItem not StatusbarItem.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 18 Jun 2007 18:41:55 +0300
+
 hildon-desktop (1:0.0.17-2) sardine; urgency=low
 
   * Added init script. Patch courtesy of Andrey Petrov.
