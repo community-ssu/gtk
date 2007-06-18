@@ -99,6 +99,7 @@ enum
   PROP_HIDE_HOME
 };
 
+
 static GObject *hildon_plugin_settings_dialog_constructor (GType gtype,
                                               		   guint n_params,
                                               		   GObjectConstructParam *params);
@@ -504,7 +505,7 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
 
   column_pb =
     gtk_tree_view_column_new_with_attributes
-      (NULL, renderer_pixbuf, "pixbuf", 4, NULL);
+      (NULL, renderer_pixbuf, "pixbuf", HP_COL_PIXBUF, NULL);
 
   column_toggle =
     gtk_tree_view_column_new_with_attributes
@@ -512,11 +513,11 @@ hildon_plugin_settings_dialog_fill_treeview (HildonPluginSettingsDialog *setting
 
   column_text =
     gtk_tree_view_column_new_with_attributes
-      (NULL, renderer_text, "text", 3, NULL);
+      (NULL, renderer_text, "text", HP_COL_NAME, NULL);
 
   column_button = 
     gtk_tree_view_column_new_with_attributes
-      (NULL, renderer_button, "plugin-module", 6, NULL);    
+      (NULL, renderer_button, "plugin-module", HP_COL_SETTINGS, NULL);    
 
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_pb);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tw), column_text);
@@ -887,7 +888,7 @@ hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *se
     g_list_find_custom (settings->priv->tabs,
                         container_name,
                         (GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
-
+  
   if (!container_tab)
     return;
 
@@ -897,7 +898,7 @@ hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *se
 
   if (!twcolumn)
     return;
-
+  
   GList *renderers = gtk_tree_view_column_get_cell_renderers (twcolumn);
 
   /* We only have a cell renderer per column */

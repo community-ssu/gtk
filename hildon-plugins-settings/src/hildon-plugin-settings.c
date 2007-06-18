@@ -31,10 +31,14 @@
 #include <libintl.h>
 #define _(a) dgettext(PACKAGE, a)
 
+#define TN_MAX_ITEMS 5
+
 /* HARDCODE_PARTY */
 /* Plugins to not be shown */
 #define HP_APPLICATION_SWITCHER "/usr/share/applications/hildon-navigator/app-switcher.desktop"
 #define HP_SWITCHER_MENU "/usr/share/applications/hildon-navigator/switcher-menu.desktop"
+
+GtkTreeRowReference *selected[TN_MAX_ITEMS];
 
 static gboolean
 _tn_visibility_filter (GtkTreeModel *model,
@@ -56,6 +60,68 @@ _tn_visibility_filter (GtkTreeModel *model,
   return TRUE;
 }
 
+static void 
+_sb_cell_mandatory_data_func (GtkTreeViewColumn *tc,
+                    	      GtkCellRenderer *cell,
+                    	      GtkTreeModel *tm,
+                    	      GtkTreeIter *iter,
+                    	      gpointer data)
+{
+  gboolean mandatory;
+
+  gtk_tree_model_get (tm, iter,
+		      HP_COL_MANDATORY, &mandatory,
+		      -1);
+  
+  g_object_set (G_OBJECT (cell), 
+		"sensitive", !mandatory,
+		"activatable", !mandatory,
+		NULL);
+}
+
+static void 
+_sb_cell_condition_data_func (GtkTreeViewColumn *tc,
+                    	      GtkCellRenderer *cell,
+                    	      GtkTreeModel *tm,
+                    	      GtkTreeIter *iter,
+                    	      gpointer data)
+{
+
+}
+
+static void 
+_tn_cell_selection_data_func (GtkTreeViewColumn *tc,
+                    	      GtkCellRenderer *cell,
+                    	      GtkTreeModel *tm,
+                    	      GtkTreeIter *iter,
+                    	      gpointer data)
+{
+  GtkTreeIter _iter;
+  guint selection = 0;
+  gboolean toggled;
+  GtkTreeModel *real_tm = GTK_IS_TREE_MODEL_FILTER (tm) ?
+    		          gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (tm)) :
+			  tm;
+
+  gtk_tree_model_get_iter_first (real_tm, &_iter);
+
+  do
+  {
+    gtk_tree_model_get (real_tm, &_iter,
+		        HP_COL_CHECKBOX, &toggled,
+		        -1);
+
+    if (toggled)
+      selection++;
+  }
+  while (gtk_tree_model_iter_next (real_tm, &_iter));  
+
+  g_debug ("selection %d", selection); 
+
+  if (selection >= TN_MAX_ITEMS)
+  {
+  } 	  
+}
 osso_return_t 
 execute (osso_context_t *osso,
 	 gpointer user_data,
@@ -71,6 +137,30 @@ execute (osso_context_t *osso,
     _tn_visibility_filter,
     NULL,
     NULL);    
+
+  hildon_plugin_settings_dialog_set_cell_data_func
+    (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+     HPSD_COLUMN_TOGGLE,
+     "Statusbar",
+    _sb_cell_mandatory_data_func,
+    NULL,
+    NULL);    
+
+  hildon_plugin_settings_dialog_set_cell_data_func
+    (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+     HPSD_COLUMN_PB,
+     "Statusbar",
+    _sb_cell_condition_data_func,
+    NULL,
+    NULL);    
+
+  hildon_plugin_settings_dialog_set_cell_data_func
+    (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+     HPSD_COLUMN_TOGGLE,
+     "Tasknavigator",
+     _tn_cell_selection_data_func,
+     NULL,
+     NULL);
 
   gtk_widget_show (dialog);
 

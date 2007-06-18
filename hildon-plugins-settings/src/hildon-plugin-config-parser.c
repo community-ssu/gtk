@@ -34,7 +34,7 @@
 #include <hildon-desktop/hd-config.h>
 
 #define HP_DESKTOP_GROUP "Desktop Entry"
-#define HP_PREDEFINED_COLS 3
+#define HP_PREDEFINED_COLS HP_COL_LAST_COL
 
 
 #define HILDON_PLUGIN_CONFIG_PARSER_GET_PRIVATE(object) \
@@ -312,6 +312,7 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
 		      HP_COL_DESKTOP_FILE, filename,
 		      HP_COL_CHECKBOX, FALSE,
 		      HP_COL_POSITION,0,
+		      HP_COL_FLAG, FALSE,
 		      -1);
 
   HPCPData *data = hildon_plugin_config_parser_new_data (0,FALSE);
@@ -646,6 +647,7 @@ hildon_plugin_config_parser_load (HildonPluginConfigParser *parser,
   _keys [i++] = G_TYPE_STRING; /* Desktop file name */
   _keys [i++] = G_TYPE_BOOLEAN; /* Checkbox */
   _keys [i++] = G_TYPE_INT; /* position */
+  _keys [i++] = G_TYPE_BOOLEAN; /* Flag */
 
   for (l = parser->priv->keys_types;
        l != NULL || i < parser->priv->n_keys;

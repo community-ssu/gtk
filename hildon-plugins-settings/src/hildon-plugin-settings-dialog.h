@@ -31,6 +31,8 @@
 #include <gtk/gtktreemodelfilter.h>
 #include <gtk/gtk.h> /* <--- Funny hem? :) */
 
+#include "hildon-plugin-config-parser.h"
+
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG TRUE
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW FALSE
 
@@ -41,6 +43,16 @@ typedef enum
   HPSD_COLUMN_TOGGLE=3
 }
 HildonPluginSettingsDialogColumn;
+
+typedef enum 
+{
+  HP_COL_NAME = HP_COL_LAST_COL,
+  HP_COL_PIXBUF,
+  HP_COL_MANDATORY,
+  HP_COL_SETTINGS,
+  HP_COL_CATEGORY
+}
+HildonPluginColExtensions;
 
 G_BEGIN_DECLS
 

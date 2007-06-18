@@ -39,7 +39,9 @@ typedef enum
 {
   HP_COL_DESKTOP_FILE,
   HP_COL_CHECKBOX,
-  HP_COL_POSITION
+  HP_COL_POSITION,
+  HP_COL_FLAG,
+  HP_COL_LAST_COL	  
 }
 HildonPluginConfigParserCols;  
 
