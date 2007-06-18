@@ -623,10 +623,6 @@ hd_switcher_menu_constructor (GType gtype,
                           G_CALLBACK (hd_switcher_menu_item_activated),
                           (gpointer)switcher); 
 
-  hildon_desktop_popup_menu_add_item
-   (switcher->priv->menu_applications, 
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
-
   hd_switcher_menu_populate_notifications (switcher);
 
   hd_switcher_menu_check_content (switcher);
@@ -1108,16 +1104,16 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     const GList * children = hd_entry_info_get_children(l->data);
     const GList * child;
 
+    if (l == apps)
+    {
+      separator = gtk_separator_menu_item_new ();
+
+      hildon_desktop_popup_menu_add_item
+       (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
+    }
+
     for (child = children; child != NULL; child = child->next)
     {
-      if (l == apps && child == children)
-      {
-        separator = gtk_separator_menu_item_new ();
-
-        hildon_desktop_popup_menu_add_item
-         (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
-      }	      
-	    
       HDEntryInfo *entry = child->data;
 
       menu_item = hd_switcher_menu_item_new_from_entry_info (entry, TRUE);
@@ -1137,7 +1133,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
       switcher->priv->active_menu_item = menu_item;
     }
 
-    /* append the separator for this app*/
+    /* Append the separator for this app*/
     if (l->next != NULL)
     {
       separator = gtk_separator_menu_item_new ();
@@ -1177,6 +1173,8 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
 
   for (l = children; l != NULL; l = g_list_next (l))
   {
+    GtkMenuItem *separator = NULL;
+	  
     if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))
     {	    
       _info = hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (l->data));
@@ -1186,9 +1184,20 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
         hildon_desktop_popup_menu_remove_item (switcher->priv->menu_applications,
 	  				       GTK_MENU_ITEM (l->data));
 
-        if (l->prev && GTK_IS_SEPARATOR_MENU_ITEM (l->prev->data))
+        if (l == children)
+	{
+          if (l->next && GTK_IS_SEPARATOR_MENU_ITEM (l->next->data))
+	    separator = GTK_MENU_ITEM (l->next->data);
+	}
+	else
+        {
+	  if (l->prev && GTK_IS_SEPARATOR_MENU_ITEM (l->prev->data))
+	    separator = GTK_MENU_ITEM (l->prev->data);
+	}
+
+	if (separator != NULL)
           hildon_desktop_popup_menu_remove_item (switcher->priv->menu_applications,
-                                                 GTK_MENU_ITEM (l->prev->data));		
+	  				         separator);
 
 	if (info == switcher->priv->last_urgent_info)
         {
@@ -1495,6 +1504,7 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   gchar *summary = NULL, *body = NULL;
   const gchar *category = NULL;
   GHashTable *hints;
+  GList *children;
   GValue *hint;
   guint id;
   GtkWidget *menu_item;
@@ -1528,7 +1538,15 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   if (switcher->priv->last_iter_added == NULL)
     hd_switcher_menu_notification_deleted_cb 
       (HILDON_DESKTOP_NOTIFICATION_MANAGER (tree_model), id, switcher);	    
+
+  children = 
+    hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
   
+  if (g_list_length (children) > 0)
+    hildon_desktop_popup_menu_add_item
+      (switcher->priv->menu_notifications, 
+       GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+
   menu_item = 
     hd_switcher_menu_item_new_from_notification 
       (id, icon, summary, body, TRUE);
@@ -1539,11 +1557,9 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
     (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
 
   hd_switcher_menu_replace_blinking_icon (switcher, icon);
+
   switcher->priv->last_urgent_info = NULL;
 
-  hildon_desktop_popup_menu_add_item
-    (switcher->priv->menu_notifications, 
-     GTK_MENU_ITEM (gtk_separator_menu_item_new ()));	 
 out:    	    
   switcher->priv->last_iter_added = NULL;
 
@@ -1567,6 +1583,7 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
   {
     if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))	  
     {
+      GtkMenuItem *separator = NULL;
       gint _id =
         hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));	    
 	  
@@ -1575,9 +1592,21 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
         hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
 	                                       GTK_MENU_ITEM (l->data));
 
-        if (l->prev && GTK_IS_SEPARATOR_MENU_ITEM (l->prev->data))
+        if (l == children)
+	{
+          if (l->next && GTK_IS_SEPARATOR_MENU_ITEM (l->next->data))
+	    separator = GTK_MENU_ITEM (l->next->data);
+	}
+	else
+        {
+	  if (l->prev && GTK_IS_SEPARATOR_MENU_ITEM (l->prev->data))
+	    separator = GTK_MENU_ITEM (l->prev->data);
+	}
+
+	if (separator != NULL)
           hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
-	  				         GTK_MENU_ITEM (l->prev->data));		
+	  				         separator);
+
         break;
       }	    
     }
