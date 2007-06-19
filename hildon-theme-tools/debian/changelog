@@ -1,3 +1,10 @@
+hildon-theme-tools (0.5.1-1) unstable; urgency=low
+
+  * Fixing the memory allocation problem 
+  * Updated repo addresses for bootstrap tool
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 19 Jun 2007 12:13:51 +0300
+
 hildon-theme-tools (0.5.0-1) unstable; urgency=low
 
   * Removing the 'separate_alpha' keyword

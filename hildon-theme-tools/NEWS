@@ -1,3 +1,7 @@
+[0.5.1 release]
+* Fixing the memory allocation problem 
+* Updated repo addresses for bootstrap tool
+
 [0.5.0 release]
 * Removing the 'separate_alpha' keyword
 * Adding the 'noalpha' keyword
