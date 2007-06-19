@@ -38,7 +38,6 @@ RC_FILES				= afterincludes.rc 		\
 					  gtktreeview.rc 		\
 					  hildonapp.rc 			\
 					  hildonbanners.rc 		\
-					  hildonbreadcrumbbutton.rc 	\
 					  hildoncandidatebox.rc 	\
 					  hildoncaption.rc 		\
 					  hildoncolorchooser.rc 	\
