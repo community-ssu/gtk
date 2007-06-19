@@ -1284,9 +1284,6 @@ set_initial_hints (GdkWindow *window)
   GdkToplevelX11 *toplevel;
   Atom atoms[9];
   gint i;
-#ifdef MAEMO_CHANGES
-  gint propmode;
-#endif /* MAEMO_CHANGES */
 
   private = (GdkWindowObject*) window;
   toplevel = _gdk_x11_window_get_toplevel (window);
@@ -1296,14 +1293,6 @@ set_initial_hints (GdkWindow *window)
 
   update_wm_hints (window, TRUE);
 
-#ifdef MAEMO_CHANGES
-  /* If the window has _NET_WM_STATE key specified, use it as the property mode */
-  propmode = (gint)g_object_get_data (G_OBJECT (window), "_NET_WM_STATE");
-
-  if (!propmode)
-    propmode = PropModeReplace;
-#endif /* MAEMO_CHANGES */
-  
   /* We set the spec hints regardless of whether the spec is supported,
    * since it can't hurt and it's kind of expensive to check whether
    * it's supported.
@@ -1376,19 +1365,10 @@ set_initial_hints (GdkWindow *window)
                        xwindow,
 		       gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE"),
                        XA_ATOM, 32,
-#ifdef MAEMO_CHANGES
-		       propmode,
-#else  /* !MAEMO_CHANGES */
                        PropModeReplace,
-#endif /* !MAEMO_CHANGES */
                        (guchar*) atoms, i);
     }
-#ifdef MAEMO_CHANGES
-    /* Don't delete the property, unless we are replacing it */
-  else if (propmode == PropModeReplace)
-#else  /* !MAEMO_CHANGES */
   else
-#endif /* !MAEMO_CHANGES */
     {
       XDeleteProperty (xdisplay,
                        xwindow,
