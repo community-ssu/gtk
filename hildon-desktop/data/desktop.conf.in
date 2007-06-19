@@ -17,6 +17,7 @@ X-Padding-Right=10
 X-Padding-Top=12
 X-Padding-Bottom=10
 X-Is-Ordered=0
+X-Load-New-Plugins=1
 X-Config-File=home.conf
 X-Plugin-Dir=@hildonhomedesktopentrydir@
 

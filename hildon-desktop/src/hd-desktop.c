@@ -80,6 +80,7 @@ typedef struct
   HDDesktop              *desktop;
   HDUIPolicy             *policy;
   gboolean                is_ordered;
+  gboolean                load_new_plugins;
   GnomeVFSMonitorHandle  *plugin_dir_monitor;
 } HDDesktopContainerInfo;
 
@@ -604,9 +605,20 @@ hd_desktop_plugin_dir_changed (GnomeVFSMonitorHandle *handle,
       event_type != GNOME_VFS_MONITOR_EVENT_CREATED)
     return;
 
-  if (event_type == GNOME_VFS_MONITOR_EVENT_CREATED)
+  if (info->load_new_plugins &&
+      event_type == GNOME_VFS_MONITOR_EVENT_CREATED)
+  {
+    GnomeVFSURI *uri = gnome_vfs_uri_new (info_uri);
+    gchar *uri_str;
+    
     update = TRUE;
-  
+
+    uri_str = 
+      gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD);
+
+    plugin_list = g_list_append (plugin_list, uri_str);
+  }
+    
   children = gtk_container_get_children (
                   HILDON_DESKTOP_WINDOW (info->container)->container);
 
@@ -698,7 +710,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
     GList *plugin_list = NULL;
     gchar *type, *container_config, *container_config_file, *plugin_dir;
     gchar *policy_module;
-    gboolean is_ordered;
+    gboolean is_ordered, load_new_plugins;
     
     error = NULL;
 
@@ -710,6 +722,18 @@ hd_desktop_load_containers (HDDesktop *desktop)
     if (error)
     {
       is_ordered = TRUE;
+      g_error_free (error);
+      error = NULL;
+    }
+    
+    load_new_plugins = g_key_file_get_boolean (keyfile, 
+                                               groups[i], 
+                                               HD_DESKTOP_CONFIG_KEY_LOAD_NEW_PLUGINS,
+                                               &error);
+
+    if (error)
+    {
+      load_new_plugins = FALSE;
       g_error_free (error);
       error = NULL;
     }
@@ -1042,6 +1066,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
     info->desktop = desktop;
     info->policy = policy;
     info->is_ordered = is_ordered;
+    info->load_new_plugins = load_new_plugins;
  
     g_signal_connect (G_OBJECT (info->container), 
                       "select-plugins",
