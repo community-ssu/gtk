@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.30~unreleased) unstable; urgency=low
+
+  * Fix some logical strings. Fixes: NB#60759
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Jun 2007 09:56:21 +0300
+
 libhildonfm (1:1.9.29) unstable; urgency=low
 
   * Provide "Storage Details Dialog".

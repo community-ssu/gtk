@@ -1943,7 +1943,7 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
         gint n = gtk_tree_model_iter_n_children(model, iter);
 
         g_snprintf(buffer2, sizeof(buffer2),
-                   dngettext(PACKAGE,
+                   dngettext(GETTEXT_PACKAGE,
                              "sfil_li_folder_contents_item",
                              "sfil_li_folder_contents_items", n),  n );
         line2 = buffer2;

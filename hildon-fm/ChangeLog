@@ -1,3 +1,11 @@
+2007-06-19  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Patch from Carlos Garnacho:
+	* configure.ac: Add definition of GETTEXT_PACKAGE.
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Use
+	GETTEXT_PACKAGE as the localisation domain. Fixes: NB#60759
+
 2007-06-15  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/Makefile.am (hildonincludeinst_DATA): Add

@@ -96,6 +96,9 @@ if test "x$enable_rebuilds" = "xyes" && \
 fi
 AC_SUBST(REBUILD)
 
+GETTEXT_PACKAGE="hildon-fm"
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package name])
+
 AC_CONFIG_FILES([Makefile
 		 hildon-fm/Makefile
  	         doc/Makefile
