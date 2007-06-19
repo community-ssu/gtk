@@ -33,8 +33,10 @@
 #include <config.h>
 #endif
 
+#ifdef MAEMO_CHANGES
 #ifdef HAVE_XTEST
 #include <X11/extensions/XTest.h>
+#endif
 #endif
 
 #define HILDON_DESKTOP_POPUP_WINDOW_GET_PRIVATE(object) \
@@ -82,11 +84,11 @@ static void hildon_desktop_popup_window_hide_all (GtkWidget *widget);
 
 static gboolean hildon_desktop_popup_window_motion_notify (GtkWidget *widget, GdkEventMotion *event);
 static gboolean hildon_desktop_popup_window_leave_notify (GtkWidget *widget, GdkEventCrossing *event);
-
+#ifdef MAEMO_CHANGES
 static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 				                               GdkEventVisibility *event,
 			        		               gpointer            data);
-
+#endif
 static gboolean hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
 						     		     GdkEventCrossing *event,
 						     		     HildonDesktopPopupWindow *popup);
@@ -98,8 +100,10 @@ static gboolean hildon_desktop_popup_window_composited_button_release (GtkWidget
 static gboolean popup_grab_on_window (GdkWindow *window, guint32 activate_time, gboolean grab_keyboard);
 
 static gboolean hildon_desktop_popup_window_button_release_event (GtkWidget *widget, GdkEventButton *event);
+#ifdef MAEMO_CHANGES
 #ifdef HAVE_XTEST
 static void hildon_desktop_popup_menu_fake_button_event (GdkEventButton *event, gboolean press);
+#endif
 #endif
 struct _HildonDesktopPopupWindowPrivate 
 {
@@ -112,6 +116,7 @@ struct _HildonDesktopPopupWindowPrivate
   gpointer			    position_func_data;
 
   gboolean 			    have_xgrab;
+  gboolean			    open;
   GtkWidget 			   *pane_with_grab;
 
   GtkWidget			   *attached_widget;
@@ -125,6 +130,7 @@ hildon_desktop_popup_window_init (HildonDesktopPopupWindow *popup)
   popup->priv->extra_panes   = NULL;
   popup->priv->n_extra_panes = 0;
 
+  popup->priv->open = 
   popup->priv->have_xgrab = FALSE; 
 
   popup->priv->pane_with_grab  =
@@ -244,24 +250,38 @@ hildon_desktop_popup_window_constructor (GType gtype,
                                                                                    params);
 
   popup = HILDON_DESKTOP_POPUP_WINDOW (object);
-
+#ifndef MAEMO_CHANGES
   GTK_WINDOW (popup)->type = GTK_WINDOW_POPUP;
+#else
+  GTK_WINDOW (popup)->type = GTK_WINDOW_TOPLEVEL;
 
+  gtk_window_set_decorated (GTK_WINDOW (popup), FALSE);
+  gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);
+#endif
+	  
   gtk_window_set_type_hint (GTK_WINDOW (popup), GDK_WINDOW_TYPE_HINT_MENU);
 
+#ifdef MAEMO_CHANGES
   g_signal_connect (popup,
 		    "visibility-notify-event",
 		    G_CALLBACK (hildon_desktop_popup_window_visibility_notify),
 		    NULL);
-
+#endif
   gtk_widget_push_composite_child ();
 
   popup->priv->extra_panes = g_new0 (GtkWidget *, popup->priv->n_extra_panes);
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
   {	  
+#ifndef MAEMO_CHANGES	  
     popup->priv->extra_panes[i] = gtk_window_new (GTK_WINDOW_POPUP);
+#else
+    popup->priv->extra_panes[i] = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
+    gtk_window_set_decorated (GTK_WINDOW (popup->priv->extra_panes[i]), FALSE);
+
+    gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);
+#endif
     g_object_ref (G_OBJECT (popup->priv->extra_panes[i]));
     gtk_object_sink (GTK_OBJECT (popup->priv->extra_panes[i]));		 
 
@@ -339,7 +359,10 @@ hildon_desktop_popup_window_show (GtkWidget *widget)
   GTK_WIDGET_CLASS (hildon_desktop_popup_window_parent_class)->show (widget);
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
-    gtk_widget_show (popup->priv->extra_panes[i]);
+  {
+    if (popup->priv->extra_panes[i]->requisition.height > 1)	  
+      gtk_widget_show (popup->priv->extra_panes[i]);
+  }
 }
 
 static void 
@@ -522,7 +545,7 @@ hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
 
   return TRUE;
 }
-
+#ifdef MAEMO_CHANGES
 static gboolean
 hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 		                               GdkEventVisibility *event,
@@ -567,7 +590,7 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
        type = gdk_window_get_type_hint (win);
  
       if (!gdk_error_trap_pop () && 
- 	  /*type != GDK_WINDOW_TYPE_HINT_MESSAGE && */
+ 	  type != GDK_WINDOW_TYPE_HINT_NOTIFICATION && 
           type != GDK_WINDOW_TYPE_HINT_MENU)
       {
         /* A non-message and non-menu window above us; close. */
@@ -590,7 +613,7 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 
   return FALSE;
 }
-
+#endif
 static gboolean
 hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
                                                        GdkEventButton *event,
@@ -614,12 +637,12 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
   {
      w = GTK_WIDGET (popup)->allocation.width;
      h = GTK_WIDGET (popup)->allocation.height;
-
+      
      gtk_widget_get_pointer (widget, &x, &y);
 
      if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
        in_window_area = TRUE;
-
+	  
      for (i=0; i < popup->priv->n_extra_panes; i++)
      {
        if (widget != popup->priv->extra_panes[i])
@@ -642,6 +665,7 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
   if (!in_panes_area || in_window_area)
   {	  
     hildon_desktop_popup_window_popdown (popup);
+#ifdef MAEMO_CHANGES    
 #ifdef HAVE_XTEST
     if (popup->priv->attached_widget)
     {	    
@@ -657,6 +681,7 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
       }
     }
 #endif
+#endif    
   }
   
   return TRUE;
@@ -696,11 +721,12 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
        break;
      }
   }
-
+g_debug ("event %p skdfjhskdjfh in_w %d",event,in_window_area);
   /* Event outside of popup or in button area, close in clean way */
-  if (!in_panes_area || in_window_area)
+  if (!in_panes_area || !in_window_area)
   {	  
     hildon_desktop_popup_window_popdown (popup);
+#ifdef MAEMO_CHANGES    
 #ifdef HAVE_XTEST
     if (popup->priv->attached_widget)
     {	    
@@ -711,11 +737,12 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
       
       if ((x < 0) || (x > w) || (y < 0) || (y > h))
       {	      
-        hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
-        hildon_desktop_popup_menu_fake_button_event (event, FALSE);
+        /*hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
+        hildon_desktop_popup_menu_fake_button_event (event, FALSE);*/
       }
     }
 #endif
+#endif    
   }
   return TRUE;
 }
@@ -885,6 +912,18 @@ popup_window_grab_transfer_window_get (HildonDesktopPopupWindow *popup)
   return window;
 }
 
+static void
+popup_window_grab_transfer_window_destroy (HildonDesktopPopupWindow *popup)
+{
+  GdkWindow *window = g_object_get_data (G_OBJECT (popup), "popup-window-transfer-window");
+  if (window)
+  {
+    gdk_window_set_user_data (window, NULL);
+    gdk_window_destroy (window);
+    g_object_set_data (G_OBJECT (popup), "popup-window-transfer-window", NULL);
+  }
+}
+
 static gboolean
 popup_grab_on_window (GdkWindow *window,
                       guint32    activate_time,
@@ -1048,21 +1087,39 @@ hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
   gtk_grab_add (GTK_WIDGET (popup));
 
   g_signal_emit_by_name (popup, "popup-window");
+
+  popup->priv->open = TRUE;
 }
 
 void 
 hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup)
 {
   gint i;
-	
+
+  if (!popup->priv->open)
+    return;	  
+
   gtk_widget_hide (GTK_WIDGET (popup));
+  
+  if (popup->priv->have_xgrab)
+  {	  
+    gtk_grab_remove (GTK_WIDGET (popup));
+    gtk_window_set_transient_for (GTK_WINDOW (popup), NULL);  
+  }
+  else
+  {	  
+    for (i=0; i < popup->priv->n_extra_panes; i++)
+    {	    
+      gtk_grab_remove (popup->priv->extra_panes[i]);	  
+      gtk_window_set_transient_for (GTK_WINDOW (popup->priv->extra_panes[i]), NULL);
+    }
+  }
 
-  gtk_grab_remove (GTK_WIDGET (popup));
-
-  for (i=0; i < popup->priv->n_extra_panes; i++)
-    gtk_grab_remove (popup->priv->extra_panes[i]);	  
+  popup_window_grab_transfer_window_destroy (popup);
 
   g_signal_emit_by_name (popup, "popdown-window");
+
+  popup->priv->open = FALSE;
 }
 
 void 

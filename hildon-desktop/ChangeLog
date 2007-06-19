@@ -1,3 +1,14 @@
+2007-06-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- ifdef MAEMO_CHANGES use _TOPLEVEL instead of _POPUP
+	- Destroy transfer window for grabing when popping down.
+	- Set transiency for NULL when popping down.
+	- Don't popdown if not open.
+	- Removed fake button press/release event in _release_event handler.
+	TBD.
+	- Fixes: NB#60558
+
 2007-06-19  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-window.c:
