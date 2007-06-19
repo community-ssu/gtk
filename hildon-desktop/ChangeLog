@@ -1,3 +1,12 @@
+2007-06-19  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c:
+	- do not propagate expose events to the child, as this
+	is already done by the parent class
+	* libhildondesktop/hildon-home-area.c:
+	- replaced a gtk_fixed_move with hildon_home_area_move
+	- fixed the window to update after a move
+
 2007-06-19  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.c: Fixed ellipsizing of labels.

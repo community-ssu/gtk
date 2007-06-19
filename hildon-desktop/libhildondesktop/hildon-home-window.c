@@ -256,11 +256,6 @@ hildon_home_window_expose (GtkWidget       *widget,
   priv = window->priv;
   child = GTK_BIN (widget)->child;
 
-  if (GTK_IS_WIDGET (child))
-    gtk_container_propagate_expose (GTK_CONTAINER (widget),
-                                    child,
-                                    event);
-
   if (GTK_IS_WIDGET (priv->titlebar))
     gtk_container_propagate_expose (GTK_CONTAINER (widget),
                                     priv->titlebar,

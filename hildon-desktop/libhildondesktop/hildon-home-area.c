@@ -1319,6 +1319,14 @@ hildon_home_area_expose (GtkWidget *widget,
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (widget);
 
+#if 0
+  g_debug ("Got expose event on %i,%i %ix%i",
+           event->area.x,
+           event->area.y,
+           event->area.width,
+           event->area.height);
+#endif
+
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       XRectangle                rectangle;
@@ -2042,10 +2050,10 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
       if (list_element)
         {
           applet = GTK_WIDGET (list_element->data);
-          gtk_fixed_move (GTK_FIXED (area),
-                          applet,
-                          x,
-                          y);
+          hildon_home_area_move (area,
+                                 applet,
+                                 x,
+                                 y);
 
           applets = g_list_remove (applets, applet);
         }
@@ -2214,12 +2222,10 @@ hildon_home_area_move (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
                               widget->allocation.width,
                               widget->allocation.height};
 
-      gdk_window_invalidate_rect (widget->window, &invalid, TRUE);
-
-      invalid.x = x + GTK_WIDGET (area)->allocation.x;
-      invalid.y = y + GTK_WIDGET (area)->allocation.y;
-
-      gdk_window_invalidate_rect (widget->window, &invalid, TRUE);
+      gdk_window_invalidate_rect (GTK_WIDGET (area)->window, &invalid, TRUE);
+      invalid.x = x;
+      invalid.y = y;
+      gdk_window_invalidate_rect (GTK_WIDGET (area)->window, &invalid, TRUE);
     }
 
   data->x = x;
