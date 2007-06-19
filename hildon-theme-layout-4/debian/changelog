@@ -1,3 +1,18 @@
+hildon-theme-layout-4 (0.9.0-1) unstable; urgency=low
+
+  * Fine-tuned animations for plankton theme
+  * Disabling the gtk animations
+  * Fixes for seekbar theming
+  * Fix for mediaplayer tabs
+  * Fixed theming of the titlebar 
+  * New colors for dialog buttons (layout change)
+  * Breadcrumb fixes 
+
+  * Fixes: NB#59734 Theming support for Media player fake tabs
+  * Fixes: NB#60153 Unable to preview input characters in secret editor
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 19 Jun 2007 11:41:05 +0300
+
 hildon-theme-layout-4 (0.8.2-1) unstable; urgency=low
 
   * Adding full Creative-Commons license text.
