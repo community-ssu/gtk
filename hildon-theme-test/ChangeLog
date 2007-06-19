@@ -1,3 +1,11 @@
+2007-06-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[4.9.0-1 release]
+
+	* configure.ac:
+	* debian/changelog:
+	* debian/control: Updating.
+
 2007-06-14  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: Updated with 3 new colors for dialog
