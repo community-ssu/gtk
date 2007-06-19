@@ -1,5 +1,15 @@
 2007-06-19  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
+	Released 1.9.31
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_change): Set voldev->volume
+	and voldev->drive to NULL if they are garbage (following code relies
+	on this). Added strcmp() for handling icons and localised names
+	for drives correctly.
+
+	Released 1.9.30
+
 	Patch from Carlos Garnacho:
 	* configure.ac: Add definition of GETTEXT_PACKAGE.
 

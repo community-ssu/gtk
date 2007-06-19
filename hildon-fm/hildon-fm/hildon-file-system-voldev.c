@@ -218,9 +218,15 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
   HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
 
   if (voldev->volume)
-    gnome_vfs_volume_unref (voldev->volume);
+    {
+      gnome_vfs_volume_unref (voldev->volume);
+      voldev->volume = NULL;
+    }
   if (voldev->drive)
-    gnome_vfs_drive_unref (voldev->drive);
+    {
+      gnome_vfs_drive_unref (voldev->drive);
+      voldev->drive = NULL;
+    }
 
   if (g_str_has_prefix (location->basepath, "drive://"))
     voldev->drive = find_drive (location->basepath + 8);
@@ -253,6 +259,12 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 	  gboolean internal = 
 	    g_str_has_prefix (location->basepath, "file:///media/mmc2");
 	  
+	  /* the following strcmp() is for drives, so that we don't need
+	   * knowledge about device naming */
+	  if (strcmp(location->fixed_title,
+		     "mmc-undefined-name-internal") == 0)
+	    internal = TRUE;
+
 	  if (internal)
 	    location->fixed_icon = "qgn_list_gene_internal_memory_card";
 	  else
