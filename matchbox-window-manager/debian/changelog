@@ -1,3 +1,12 @@
+matchbox-window-manager (2:1.2-osso6) unstable; urgency=low
+
+  * structs.h, ewmh.c: add new atom _NET_WM_ICON_GEOMETRY + query func
+  * main_client.c: use ICON_GEOMETRY values for animation if such found,
+    otherwise use values specified in theme
+  * Fixes: NB#55865
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 19 Jun 2007 12:19:53 +0300
+
 matchbox-window-manager (2:1.2-osso5) unstable; urgency=low
 
   * wm.c: resize and move dialog correctly when IM resizes
