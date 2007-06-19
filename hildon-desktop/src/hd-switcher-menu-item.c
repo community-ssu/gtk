@@ -484,10 +484,14 @@ hd_switcher_menu_item_size_request (GtkWidget      *widget,
   child_width = MAX (child_width, requisition->width);
   
   GTK_WIDGET_CLASS (hd_switcher_menu_item_parent_class)->size_request (widget,
-		 						  requisition);
-  if (child_width > AS_MENU_ITEM_WIDTH)
+		 						       requisition);
+
+  GtkWidget *parent = gtk_widget_get_parent (widget);
+  gint label_width_ellipsize = (parent) ? parent->requisition.width : AS_MENU_ITEM_WIDTH;
+
+  if (child_width > label_width_ellipsize)
   {
-    requisition->width = AS_MENU_ITEM_WIDTH;
+    requisition->width = label_width_ellipsize;
 
     gtk_label_set_ellipsize (GTK_LABEL (priv->label), PANGO_ELLIPSIZE_END);
     gtk_label_set_ellipsize (GTK_LABEL (priv->label2), PANGO_ELLIPSIZE_END);
