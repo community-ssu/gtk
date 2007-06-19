@@ -101,6 +101,10 @@ style "osso-logical-colors" {
         color["DialogButtonTextPressedColor"]		= "@DialogButtonTextPressedColor@"
         color["DialogButtonTextDisabledColor"]		= "@DialogButtonTextDisabledColor@"
 
+        color["ButtonTextColor"]		= "@ButtonTextColor@"
+        color["ButtonTextPressedColor"]		= "@ButtonTextPressedColor@"
+        color["ButtonTextDisabledColor"]	= "@ButtonTextDisabledColor@"
+
 }
 
 ##############################
