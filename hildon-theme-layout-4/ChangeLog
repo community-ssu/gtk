@@ -1,3 +1,14 @@
+2007-06-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: new colors for default buttons:
+	ButtonTextColor=7942,643,30,16
+	ButtonTextPressedColor=7942,659,30,16
+	ButtonTextDisabledColor=7942,673,30,16
+
+	* data/layout.txt: two new graphics for input method
+	qpn_plat_inputm_thumb_scv_tab_normal.png=5633,637,72,58 
+	qpn_plat_inputm_thumb_scv_tab_pressed.png=5633,701,72,58
+	
 2007-06-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.9.0-1 release]

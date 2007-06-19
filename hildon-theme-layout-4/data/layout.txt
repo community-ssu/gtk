@@ -105,6 +105,10 @@ DialogButtonTextColor=7942,598,30,16
 DialogButtonTextPressedColor=7942,613,30,16
 DialogButtonTextDisabledColor=7942,628,30,16
 
+#normal button colors
+ButtonTextColor=7942,643,30,16
+ButtonTextPressedColor=7942,659,30,16
+ButtonTextDisabledColor=7942,673,30,16
 
 [Elements]
 qgn_plat_application_frame_bottom.png=3271,619,50,24
@@ -351,6 +355,11 @@ qgn_plat_inputmet_thumb_button_key_space_normal.png=7414,305,42,87
 qgn_plat_inputmet_thumb_button_key_space_pressed.png=7414,396,42,87
 qgn_plat_inputmet_thumb_tab_normal.png=7296,305,42,87
 qgn_plat_inputmet_thumb_tab_selected.png=7296,396,42,87
+
+#new
+qpn_plat_inputm_thumb_scv_tab_normal.png=5633,637,72,58 
+qpn_plat_inputm_thumb_scv_tab_pressed.png=5633,701,72,58
+
 qgn_plat_live_search_frame.png=3261,750,86,40
 qgn_plat_mediaplayer_buttons_bg.png=5636,299,112,226
 qgn_plat_menu_button_radio_disabled.png=424,586,26,26
