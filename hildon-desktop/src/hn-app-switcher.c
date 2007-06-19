@@ -208,10 +208,9 @@ struct _HNAppSwitcherPrivate
   
   /* pointer location */
   guint pointer_on_button : 1;
-  guint is_thumbable : 1;
-  gboolean force_thumb : 1;
-  guint was_thumbable : 1;
   gboolean is_fullscreen;
+ 
+  guint orientation_changed : 1; 
 
   guint menu_button_timeout;
 
@@ -299,7 +298,7 @@ hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher)
 {
   GList *children = NULL, *iter;
 
-  g_debug ("orientation_changed");
+  app_switcher->priv->orientation_changed = TRUE;
   
   if (GTK_IS_CONTAINER (app_switcher->box))
     children = 
@@ -570,7 +569,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   /* deal with urgency flags */
   for (l = children; l != NULL; l = l->next)
   {
-    if (update_icon_geometry)	    
+    if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
       hd_entry_info_set_icon_geometry (l->data,	    
 		      		       GTK_WIDGET (app_button)->allocation.x,
 				       GTK_WIDGET (app_button)->allocation.y,
@@ -599,7 +598,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
       hd_entry_info_set_ignore_urgent(l->data, FALSE);
     }
   }
-
+  
   /* bind the entry info to the widget, so that we can
    * use it later when the user toggles the button
    *
@@ -725,18 +724,20 @@ refresh_buttons (gpointer user_data)
       * button should blink
       */
       
-      if (hd_entry_info_is_urgent(child) && !hd_entry_info_get_ignore_urgent(child))
+      if (hd_entry_info_is_urgent (child) && !hd_entry_info_get_ignore_urgent (child))
         is_urgent = TRUE;
          
       /*
        * if the info is not urgent, we need to clear any leftover
        * ignore_urgent flag
        */
-      if (!hd_entry_info_is_urgent(child) && hd_entry_info_get_ignore_urgent(child))
-        hd_entry_info_set_ignore_urgent(child, FALSE);
+      if (!hd_entry_info_is_urgent (child) && hd_entry_info_get_ignore_urgent (child))
+        hd_entry_info_set_ignore_urgent (child, FALSE);
        
     }
   }
+
+  app_switcher->priv->orientation_changed = FALSE;
 
   return FALSE;
 }
