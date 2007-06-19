@@ -1300,8 +1300,6 @@ hildon_home_area_child_state_change (ChildData *child_data)
                 "state", &state,
                 NULL);
 
-  g_debug ("state changed to %i", state);
-
   child_data->state = state;
 
 }

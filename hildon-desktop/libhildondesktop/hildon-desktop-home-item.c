@@ -54,7 +54,6 @@
 
 #define GRID_SIZE                   10
 
-#define DRAG_UPDATE_TIMEOUT         50
 #define LAYOUT_MODE_HIGHLIGHT_WIDTH 4
 
 #define HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE(obj) \
@@ -101,7 +100,6 @@ typedef struct HildonDesktopHomeItemPriv_
   guint         y_offset;
   gint          delta_x;
   gint          delta_y;
-  guint         timeout;
   gboolean      overlaps;
   GtkAllocation old_allocation;
 
@@ -159,6 +157,10 @@ static gboolean
 hildon_desktop_home_item_key_release_event (GtkWidget *applet,
                                             GdkEventKey *event);
 
+static gboolean
+hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
+                                        GdkEventMotion         *event);
+
 static void
 hildon_desktop_home_item_realize (GtkWidget *widget);
 
@@ -200,6 +202,11 @@ window_event_filter (GdkXEvent *xevent,
 
 static void
 hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *item);
+
+static void
+hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
+                                    HildonDesktopHomeItemState   state,
+                                    GdkEventButton              *button);
 
 
 GType
@@ -282,6 +289,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
       hildon_desktop_home_item_visibility_notify_event;
   widget_class->key_press_event   = hildon_desktop_home_item_key_press_event;
   widget_class->key_release_event = hildon_desktop_home_item_key_release_event;
+  widget_class->motion_notify_event = hildon_desktop_home_item_motion_notify;
   widget_class->realize = hildon_desktop_home_item_realize;
   widget_class->unrealize = hildon_desktop_home_item_unrealize;
   widget_class->map = hildon_desktop_home_item_map;
@@ -408,10 +416,10 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   pspec =  g_param_spec_int ("state",
                              "state",
                              "state of the applet",
-                             -1,
-                             G_MAXINT,
-                             0,
-                             G_PARAM_READABLE);
+                             HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL,
+                             HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
+                             HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING,
+                             G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE,
@@ -481,9 +489,6 @@ hildon_desktop_home_item_destroy (GtkObject *applet)
   HildonDesktopHomeItemPriv      *priv;
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM (applet));
 
-  if (priv->timeout)
-    g_source_remove (priv->timeout);
-
   if (GDK_IS_WINDOW (priv->close_button_window))
     {
       gdk_window_destroy (priv->close_button_window);
@@ -521,18 +526,21 @@ hildon_desktop_home_item_set_property (GObject      *object,
                                        const GValue *value,
                                        GParamSpec   *pspec)
 {
-  HildonDesktopHomeItemPriv      *priv;
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM (object));
+  HildonDesktopHomeItem        *item;
+  HildonDesktopHomeItemPriv    *priv;
+
+  item = HILDON_DESKTOP_HOME_ITEM (object);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
 
   switch (property_id)
     {
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE:
-          hildon_desktop_home_item_set_resize_type (HILDON_DESKTOP_HOME_ITEM (object),
-                                              g_value_get_enum (value));
+          hildon_desktop_home_item_set_resize_type (item,
+                                                    g_value_get_enum (value));
           break;
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE:
-          hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (object),
-                                              g_value_get_boolean (value));
+          hildon_desktop_home_item_set_layout_mode (item,
+                                                    g_value_get_boolean (value));
           break;
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS:
           priv->layout_mode_sucks = g_value_get_boolean (value);
@@ -546,6 +554,11 @@ hildon_desktop_home_item_set_property (GObject      *object,
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT:
           g_object_notify (object, "minimum-height");
           priv->minimum_height = g_value_get_int (value);
+          break;
+      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE:
+          hildon_desktop_home_item_set_state (item,
+                                              g_value_get_int (value),
+                                              NULL);
           break;
 
       default:
@@ -612,6 +625,7 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
       attributes.window_type = GDK_WINDOW_CHILD;
       attributes.event_mask = gtk_widget_get_events (widget)
           | GDK_BUTTON_MOTION_MASK
+          | GDK_POINTER_MOTION_HINT_MASK
           | GDK_BUTTON_PRESS_MASK
           | GDK_BUTTON_RELEASE_MASK
           | GDK_EXPOSURE_MASK
@@ -759,7 +773,6 @@ hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
   if (priv->state != HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
     {
       gboolean snap_to_grid = FALSE;
-      g_source_remove (priv->timeout);
 
       if (widget->parent)
         g_object_get (G_OBJECT (widget->parent),
@@ -769,8 +782,6 @@ hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
       if (snap_to_grid)
         hildon_desktop_home_item_snap_to_grid (HILDON_DESKTOP_HOME_ITEM (widget));
 
-      g_source_remove (priv->timeout);
-      priv->timeout = 0;
       priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
       g_object_notify (G_OBJECT (widget), "state");
 
@@ -1175,24 +1186,24 @@ hildon_desktop_home_item_visibility_notify_event (GtkWidget *applet,
 
 
 static gboolean
-hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
+hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
+                                        GdkEventMotion         *event)
 {
   HildonDesktopHomeItemPriv *priv;
   gint                  x_applet, y_applet;
   GdkModifierType       mod;
   GtkWidget            *area;
-  GtkWidget            *widget;
   gboolean              used_to_overlap;
-
-  widget = GTK_WIDGET (applet);
 
   if (!widget->parent)
     return FALSE;
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
+
+  if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
+    return FALSE;
 
   area = widget->parent;
-
   gdk_window_get_pointer (area->window, &x_applet, &y_applet, &mod);
 
   if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_MOVING)
@@ -1274,12 +1285,11 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
 
   used_to_overlap = priv->overlaps;
   priv->overlaps = FALSE;
-  gtk_container_foreach (GTK_CONTAINER (GTK_WIDGET (applet)->parent),
+  gtk_container_foreach (GTK_CONTAINER (widget->parent),
                          (GtkCallback)hildon_desktop_home_item_check_overlap,
-                         applet);
+                         widget);
   if (used_to_overlap != priv->overlaps)
     gtk_widget_queue_draw (widget);
-
 
   return TRUE;
 }
@@ -1413,55 +1423,21 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
       return TRUE;
     }
 
-  if (!priv->timeout)
+  if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
     {
-      if (HILDON_IS_HOME_AREA (w->parent))
-        g_signal_emit_by_name (G_OBJECT (w->parent),
-                               "applet-change-start",
-                               w);
-
-      gdk_window_raise (w->window);
-      gdk_pointer_grab (event->window,
-                        FALSE,
-                        GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK,
-                        NULL,
-                        NULL,
-                        event->time);
-
-      priv->old_allocation = w->allocation;
-      priv->delta_x = 0;
-      priv->delta_y = 0;
 
       if (event->window == priv->resize_handle_window)
         {
-          gint window_x, window_y;
-          gint window_width, window_height;
-
-          gdk_window_get_position (priv->resize_handle_window,
-                                   &window_x,
-                                   &window_y);
-          gdk_drawable_get_size (GDK_DRAWABLE (priv->resize_handle_window),
-                                 &window_width,
-                                 &window_height);
-
-          priv->x_offset = w->allocation.width -
-                           window_x - event->x;
-          priv->y_offset = w->allocation.height -
-                           window_y - event->y;
-          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING;
+          hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (w),
+                                              HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
+                                              event);
         }
       else
         {
-          priv->x_offset = event->x;
-          priv->y_offset = event->y;
-          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_MOVING;
+          hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (w),
+                                              HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING,
+                                              event);
         }
-      g_object_notify (G_OBJECT (w), "state");
-
-      priv->timeout = g_timeout_add (DRAG_UPDATE_TIMEOUT,
-                                     (GSourceFunc)
-                                            hildon_desktop_home_item_drag_update,
-                                     w);
 
     }
 
@@ -1469,57 +1445,27 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
 }
 
 static gboolean
-hildon_desktop_home_item_button_release_event (GtkWidget *applet,
-                                               GdkEventButton   *event)
+hildon_desktop_home_item_button_release_event (GtkWidget       *widget,
+                                               GdkEventButton  *event)
 {
   HildonDesktopHomeItemPriv      *priv;
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
 
   if (!priv->layout_mode_sucks && !priv->layout_mode)
     {
       if  (GTK_WIDGET_CLASS (parent_class)->button_release_event)
-        return GTK_WIDGET_CLASS (parent_class)->button_release_event (applet, event);
+        return GTK_WIDGET_CLASS (parent_class)->button_release_event (widget,
+                                                                      event);
       else
         return FALSE;
     }
 
-  if (priv->timeout)
-    {
-      gboolean snap_to_grid = FALSE;
+  if (priv->state != HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
+    hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (widget),
+                                        HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL,
+                                        event);
 
-      if (applet->parent)
-        g_object_get (G_OBJECT (applet->parent),
-                      "snap-to-grid", &snap_to_grid,
-                      NULL);
-
-      if (snap_to_grid)
-        hildon_desktop_home_item_snap_to_grid (HILDON_DESKTOP_HOME_ITEM (applet));
-
-      g_source_remove (priv->timeout);
-      priv->timeout = 0;
-      priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
-      g_object_notify (G_OBJECT (applet), "state");
-
-      gdk_pointer_ungrab (event->time);
-
-      /* We need to update the rectangle */
-      gtk_widget_queue_draw (GTK_WIDGET (applet));
-      if (priv->old_allocation.x != applet->allocation.x ||
-          priv->old_allocation.y != applet->allocation.y ||
-          priv->old_allocation.width != applet->allocation.width ||
-          priv->old_allocation.height != applet->allocation.height)
-
-        {
-          if (HILDON_IS_HOME_AREA (applet->parent))
-            g_signal_emit_by_name (G_OBJECT (applet->parent), "layout-changed");
-        }
-
-      if (HILDON_IS_HOME_AREA (applet->parent))
-        g_signal_emit_by_name (G_OBJECT (applet->parent),
-                               "applet-change-end",
-                               applet);
-    }
 
   return TRUE;
 }
@@ -1555,6 +1501,124 @@ hildon_desktop_home_item_key_release_event (GtkWidget *widget,
 
   return FALSE;
 }
+
+static void
+hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
+                                    HildonDesktopHomeItemState   state,
+                                    GdkEventButton              *event)
+{
+  HildonDesktopHomeItemPriv    *priv;
+  GtkWidget                    *widget; 
+
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+  widget = GTK_WIDGET (item);
+
+  if (state == HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
+    {
+      gboolean snap_to_grid = FALSE;
+
+      if (widget->parent)
+        g_object_get (G_OBJECT (widget->parent),
+                      "snap-to-grid", &snap_to_grid,
+                      NULL);
+
+      if (snap_to_grid)
+        hildon_desktop_home_item_snap_to_grid (item);
+
+      gdk_pointer_ungrab (GDK_CURRENT_TIME);
+
+      /* We need to update the rectangle */
+      gtk_widget_queue_draw (widget);
+      if (priv->old_allocation.x != widget->allocation.x ||
+          priv->old_allocation.y != widget->allocation.y ||
+          priv->old_allocation.width != widget->allocation.width ||
+          priv->old_allocation.height != widget->allocation.height)
+
+        {
+          if (HILDON_IS_HOME_AREA (widget->parent))
+            g_signal_emit_by_name (G_OBJECT (widget->parent),
+                                   "layout-changed");
+        }
+
+      if (HILDON_IS_HOME_AREA (widget->parent))
+        g_signal_emit_by_name (G_OBJECT (widget->parent),
+                               "applet-change-end",
+                               widget);
+
+      priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
+    }
+
+  else
+    {
+      if (HILDON_IS_HOME_AREA (widget->parent))
+        g_signal_emit_by_name (G_OBJECT (widget->parent),
+                               "applet-change-start",
+                               widget);
+
+      if (state == HILDON_DESKTOP_HOME_ITEM_STATE_MOVING)
+        {
+          gint window_x, window_y;
+          gint window_width, window_height;
+
+          if (event)
+            {
+              gdk_window_raise (widget->window);
+              gdk_pointer_grab (event->window,
+                                FALSE,
+                                GDK_BUTTON_PRESS_MASK |
+                                GDK_BUTTON_RELEASE_MASK |
+                                GDK_BUTTON_MOTION_MASK |
+                                GDK_POINTER_MOTION_HINT_MASK,
+                                NULL,
+                                NULL,
+                                event->time);
+
+              gdk_window_get_position (priv->resize_handle_window,
+                                       &window_x,
+                                       &window_y);
+              gdk_drawable_get_size (GDK_DRAWABLE (priv->resize_handle_window),
+                                     &window_width,
+                                     &window_height);
+
+              priv->x_offset = widget->allocation.width -
+                  window_x - event->x;
+              priv->y_offset = widget->allocation.height -
+                  window_y - event->y;
+            }
+
+          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING;
+        }
+
+      else
+        {
+          if (event)
+            {
+              gdk_window_raise (widget->window);
+              gdk_pointer_grab (event->window,
+                                FALSE,
+                                GDK_BUTTON_PRESS_MASK |
+                                GDK_BUTTON_RELEASE_MASK |
+                                GDK_BUTTON_MOTION_MASK |
+                                GDK_POINTER_MOTION_HINT_MASK,
+                                NULL,
+                                NULL,
+                                event->time);
+
+              priv->old_allocation = widget->allocation;
+              priv->delta_x = 0;
+              priv->delta_y = 0;
+              priv->x_offset = event->x;
+              priv->y_offset = event->y;
+            }
+          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_MOVING;
+        }
+
+
+    }
+
+  g_object_notify (G_OBJECT (widget), "state");
+}
+
 
 
 /********************/

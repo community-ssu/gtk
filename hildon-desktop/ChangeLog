@@ -1,7 +1,15 @@
+2007-06-19  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-home-item.c:
+	- added _set_state to centralize the setting of the dragable state
+	- use motion_notify instead of a timeout for the dragging
+	* src/hd-home-window.c, libhildondesktop/hildon-home-area.c:
+	- removed annoying debug messages
+
 2007-06-19  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c: update _NET_WM_ICON_GEOMETRY when orientation
-	changes. Fixes: NB56505.
+	changes. Fixes: NB#56505.
 
 2007-06-18  Johan Bilien  <johan.bilien@nokia.com>
 

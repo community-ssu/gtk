@@ -1380,7 +1380,6 @@ hd_home_window_area_changed (HDHomeWindow *window)
   HDHomeWindowPrivate  *priv;
 
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  g_debug ("layout changed, saving");
   if (!priv->save_area_timeout)
     priv->save_area_timeout = g_timeout_add (SAVE_TIMEOUT,
                                              (GSourceFunc)
