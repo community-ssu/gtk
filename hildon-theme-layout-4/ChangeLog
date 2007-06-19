@@ -1,5 +1,8 @@
 2007-06-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
+	* rc/themespecificgtk.rc: Added colors here too (oops) - still need to 
+	be added to the gtkbutton.rc!
+
 	* data/layout.txt: new colors for default buttons:
 	ButtonTextColor=7942,643,30,16
 	ButtonTextPressedColor=7942,659,30,16
