@@ -1,3 +1,8 @@
+2007-06-19  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gdk/x11/gdkwindow-x11.c (show_window_internal): drop MAEMO_CHANGES code
+	to use _NET_WM_STATE data on the object as property mode for XChangeProperty.
+
 2007-06-13  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* gtk/gtkenums.h, gtk/gtktextview.c: Add HILDON_GTK_INPUT_MODE_MULTILINE
