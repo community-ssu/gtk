@@ -180,14 +180,14 @@ test_get_actions (void)
 	/* Another one, just proves that you can get the action for a plugin
 	 * that adds a scheme, even though the same app handles the service.
 	 */
-	g_print ("For testplugin\n");
+	g_print ("For testplugin scheme\n");
 	actions = hildon_uri_get_actions ("testplugin", NULL);
 	assert_int (g_slist_length (actions), 1);
 	action = actions->data;
 	hildon_uri_free_actions (actions);
 
 	/* Test the fields in the action. */
-	g_print ("Test fields in the action\n");
+	g_print ("For test-action-fields scheme\n");
 	actions = hildon_uri_get_actions ("test-action-fields", NULL);
 	assert_int (g_slist_length (actions), 1);
 	action = actions->data;
@@ -197,7 +197,7 @@ test_get_actions (void)
 	hildon_uri_free_actions (actions);
 	
 	/* Test the fields in the action, service is specifed in the action. */
-	g_print ("Test fields in another action\n");
+	g_print ("For test-action-fields2 scheme\n");
 	actions = hildon_uri_get_actions ("test-action-fields2", NULL);
 	assert_int (g_slist_length (actions), 1);
 	action = actions->data;
@@ -279,6 +279,12 @@ test_failure_conditions (void)
 	actions = hildon_uri_get_actions_by_uri (NULL, -1, NULL);
 	assert_expr (actions == NULL);
 
+	actions = hildon_uri_get_actions_by_uri ("foo", -1, NULL);
+	assert_expr (actions == NULL);
+
+	actions = hildon_uri_get_actions_by_uri ("http", -1, NULL);
+	assert_expr (actions == NULL);
+
 	/* Misc functions */
 	str = hildon_uri_get_scheme_from_uri (NULL, NULL);
 	assert_expr (str == NULL);
@@ -337,8 +343,6 @@ test_system_default_actions (void)
 	unlink (TEST_DATADIR "-local/applications/uri-action-defaults.list");
 
 	/* The browser should be the default for http. */
-	g_print ("For http\n");
-
 	uri_str = "http://www.nokia.com/index.html";
 	actions = hildon_uri_get_actions_by_uri (uri_str, -1, NULL);
 	assert_int (g_slist_length (actions), 4);
@@ -401,7 +405,6 @@ test_local_default_actions (void)
 	unlink (TEST_DATADIR "-local/applications/uri-action-defaults.list");
 
 	/* The browser should be the default for http. */
-	g_print ("For http\n");
 	actions = hildon_uri_get_actions_by_uri ("http://www.imendio.com/index.html", -1, NULL);
 	assert_int (g_slist_length (actions), 4);
 

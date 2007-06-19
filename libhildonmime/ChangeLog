@@ -1,3 +1,14 @@
+2007-06-19  Martyn Russell  <martyn@imendio.com>
+
+	* libhildonmime/hildon-uri.c: (hildon_uri_open): Fixed call to
+	_get_actions_by_uri() here which was using the scheme instead of
+	the uri. Well spotted Richard.
+	
+	* tests/test-all.c: (test_get_actions), (test_failure_conditions):
+	Test the bug we just fixed is handled properly by trying to use
+	just a scheme and a non-valid scheme in the _get_actions_by_uri()
+	call. 
+
 2007-06-18  Martyn Russell  <martyn@imendio.com>
 
 	* configure.in:

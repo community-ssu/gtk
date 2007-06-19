@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD              "app_launch_banner"
 
 
-/* #define DEBUG_MSG(x)  */
-#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); 
+#define DEBUG_MSG(x)  
+/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  */
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -2274,7 +2274,7 @@ hildon_uri_open (const gchar      *uri,
 			 * an error further down, we want to use it
 			 * for that.
 			 */
-			actions = hildon_uri_get_actions_by_uri (scheme, -1, NULL);
+			actions = hildon_uri_get_actions_by_uri (uri, -1, NULL);
 
 			/* At this stage we choose the first action
 			 * available from the long list picked up in
