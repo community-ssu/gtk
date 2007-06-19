@@ -1,3 +1,11 @@
+2007-06-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* scripts/hildon-theme-bootstrap: Updating.
+
+	* src/common.c: Free the keyfile using proper deallocator.
+
+	* src/slicer.c: Fix the confusion with logical vs. bitewise operator.
+
 2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.5.0-1 release]

@@ -47,7 +47,7 @@ function show_layout_options
                         return
                 elif [ "$opt" == "hildon-theme-layout-4" ]; then
                         LAYOUT="hildon-theme-layout-4"
-                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/4.2.0-1/"
+                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/4.9.0-1/"
                         return
                 else
                         echo "Bad selection!"

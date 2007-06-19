@@ -107,7 +107,7 @@ Template*                       read_template (gchar *template_file)
         }
 
         if (key_file != NULL)
-                g_free (key_file);
+                g_key_file_free (key_file);
         
         if (element_keys != NULL)
                 g_strfreev (element_keys);

@@ -269,9 +269,9 @@ int                             main (int argc, char **argv)
         /* Check the optional directory argument */
         if (argc >= 4 && argv [3] != NULL) {
                 directory = argv [3];
-                if (! g_file_test (directory, G_FILE_TEST_IS_DIR || G_FILE_TEST_EXISTS)) {
+                if (! g_file_test (directory, G_FILE_TEST_IS_DIR | G_FILE_TEST_EXISTS)) {
                         g_print ("Creating directory %s\n", directory);
-                        if (g_mkdir_with_parents (directory, 493) != 0) {
+                        if (g_mkdir_with_parents (directory, 0755) != 0) {
                                 g_printerr ("ERROR: Failed to create directory!\n");
                                 goto Error;
                         }
