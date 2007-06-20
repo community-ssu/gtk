@@ -153,7 +153,7 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
            above everything else */
 
         location = g_object_new (HILDON_TYPE_FILE_SYSTEM_ROOT, NULL);
-        location->basepath = g_strdup ("");
+        location->basepath = g_strdup ("file:///");
         locations = g_node_new (location);
 
         rootpath =  get_local_device_root_path();

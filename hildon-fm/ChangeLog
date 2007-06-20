@@ -1,3 +1,15 @@
+2007-06-20  Richard Hult  <richard@imendio.com>
+
+	* configure.ac: Bump version.
+
+2007-06-20  Carlos Garnacho  <carlos@imendio.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Make the root filesystem node
+	to have the uri file:///, this way
+	hildon_file_system_model_load_path() will create the correct node
+	hierarchy on top of it when no node is found (NB59746).
+
 2007-06-19  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	Released 1.9.31
