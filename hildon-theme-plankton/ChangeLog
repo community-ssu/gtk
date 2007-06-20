@@ -1,3 +1,8 @@
+2007-06-20  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: some window border fixes, bugfix on
+	mediaplayer toolbar color (oops! :)) etc.	
+
 2007-06-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.*: updated to latest layout (3 new colors
