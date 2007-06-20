@@ -30,7 +30,7 @@
 2007-06-19  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-desktop.c: load newly installed plugins if the container is
-	configured for doing so.
+	configured for doing so. Fixes bug NB#56506.
 	* src/hd-config.h: new desktop container configuration key
 	"X-Load-New-Plugins".
 	* data/desktop.conf.in: configured home to automaticaly load newly 
