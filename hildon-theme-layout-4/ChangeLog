@@ -1,3 +1,7 @@
+2007-06-20  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* rc/gtkbutton.rc: Applied colors to gtkbutton, seems to work.	
+
 2007-06-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* rc/themespecificgtk.rc: Added colors here too (oops) - still need to 

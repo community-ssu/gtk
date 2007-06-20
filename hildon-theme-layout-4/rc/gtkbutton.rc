@@ -1,6 +1,22 @@
 # Copyright Nokia Corporation 2007
 # Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
+# Normal Button text color
+style "osso-button-text-color" = "osso-color-themeing" {
+
+    fg[NORMAL] = @ButtonTextColor
+    fg[PRELIGHT] = @ButtonTextColor
+    fg[ACTIVE] = @ButtonTextPressedColor
+    fg[SELECTED] = @ButtonTextPressedColor
+    fg[INSENSITIVE] = @ButtonTextDisabledColor
+    text[NORMAL] = @ButtonTextColor
+    text[PRELIGHT] = @ButtonTextColor
+    text[ACTIVE] = @ButtonTextPressedColor
+    text[SELECTED] = @ButtonTextPressedColor
+    text[INSENSITIVE] = @ButtonTextDisabledColor
+
+}
+
 # Normal Button styles:
 style "osso-button" {
 
@@ -99,7 +115,10 @@ class "GtkButton" style "osso-button"
 widget_class "*.GtkButton.GtkLabel" style "osso-ButtonFont"
 widget_class "*.GtkToggleButton.GtkLabel" style "osso-ButtonFont"
 
-# Button text color
+widget_class "*.GtkButton.GtkLabel" style "osso-button-text-color"
+widget_class "*.GtkToggleButton.GtkLabel" style "osso-button-text-color"
+
+# Dialog Button text color
 style "osso-dialogbutton-text-color" = "osso-color-themeing" {
 
     fg[NORMAL] = @DialogButtonTextColor
@@ -303,5 +322,3 @@ widget_class "*.GtkHButtonBox.GtkButton" style "osso-dialogbutton"
 
 widget_class "*.GtkHButtonBox.GtkButton.GtkLabel" style "osso-dialogbutton-text-color"
 widget_class "*.GtkHButtonBox.GtkToggleButton.GtkLabel" style "osso-dialogbutton-text-color"
-
-
