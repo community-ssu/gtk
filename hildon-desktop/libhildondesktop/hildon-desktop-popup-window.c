@@ -721,7 +721,7 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
        break;
      }
   }
-g_debug ("event %p skdfjhskdjfh in_w %d",event,in_window_area);
+  
   /* Event outside of popup or in button area, close in clean way */
   if (!in_panes_area || !in_window_area)
   {	  
@@ -737,8 +737,8 @@ g_debug ("event %p skdfjhskdjfh in_w %d",event,in_window_area);
       
       if ((x < 0) || (x > w) || (y < 0) || (y > h))
       {	      
-        /*hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
-        hildon_desktop_popup_menu_fake_button_event (event, FALSE);*/
+        hildon_desktop_popup_menu_fake_button_event (event, TRUE);	      
+        hildon_desktop_popup_menu_fake_button_event (event, FALSE);
       }
     }
 #endif
