@@ -1,3 +1,10 @@
+glib2.0 (2.12.12-1osso5) unstable; urgency=low
+
+  * Released a new package including just one m4 revert beacuse scratchbox
+    causing problems.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Wed, 21 Jun 2007 16:57:55 +0200
+
 glib2.0 (2.12.12-1osso4) unstable; urgency=low
 
   * Added -g to debian/rules to get correct debug packages
