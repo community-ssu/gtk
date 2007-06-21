@@ -224,6 +224,24 @@ typedef struct {
     gboolean is_child;
 } CallbackData;
 
+static HildonFileSystemSpecialLocation *
+create_child_location (HildonFileSystemSpecialLocation *parent_location,
+		       GNode                           *parent,
+		       const gchar                     *uri)
+{
+    HildonFileSystemSpecialLocation *location;
+
+    location = hildon_file_system_special_location_create_child_location (
+	    parent_location, (gchar *) uri);
+
+    if (location) {
+        g_object_ref (location);
+	g_node_append_data (parent, location);
+    }
+
+    return location;
+}
+
 static gboolean get_special_location_callback(GNode *node, gpointer data)
 {
     HildonFileSystemSpecialLocation *candidate = node->data;
@@ -245,15 +263,8 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
                 searched->is_child = FALSE;
             } else if (len_cand == 0
                        || searched->uri[len_cand] == G_DIR_SEPARATOR) {
-                searched->result =
-                    hildon_file_system_special_location_create_child_location(
-                    candidate, searched->uri);
+		searched->result = create_child_location (candidate, node, searched->uri);
                 searched->is_child = TRUE;
-                if (searched->result)
-                  {
-                    g_object_ref (searched->result);
-                    g_node_append_data (node, searched->result);
-                  }
             }
 
             return searched->result != NULL;
@@ -282,6 +293,13 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
 
         g_node_traverse(locations, G_POST_ORDER, G_TRAVERSE_ALL, -1,
             get_special_location_callback, &data);
+
+	if (!data.result) {
+	    /* No matching node found, try to create one */
+	    data.result = create_child_location (locations->data, locations, data.uri);
+	    data.is_child = TRUE;
+        }
+
         g_free(data.uri);
     }
 

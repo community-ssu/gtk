@@ -1,3 +1,13 @@
+2007-06-21  Carlos Garnacho  <carlos@imendio.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(get_special_location_callback): Factor out node creation code to
+	(create_child_location): Added
+	(_hildon_file_system_get_special_location): Use
+	create_child_location() on the root node if no node was found,
+	this way it handles properly all drive:/// URIs (improvement to
+	the fix below for NB#59746).
+
 2007-06-21  Richard Hult  <richard@imendio.com>
 
 	* hildon-fm/hildon-file-system-storage-dialog.c: Remove the
@@ -16,7 +26,7 @@
 	(_hildon_file_system_get_locations): Make the root filesystem node
 	to have the uri file:///, this way
 	hildon_file_system_model_load_path() will create the correct node
-	hierarchy on top of it when no node is found (NB59746).
+	hierarchy on top of it when no node is found (NB#59746).
 
 2007-06-19  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
