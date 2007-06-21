@@ -1,3 +1,12 @@
+2007-06-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* m4macros/glib-2.0.m4: Revert last upstream change and use 
+	AC_PATH_PROG for pkg-config detection instead of pkg-config own m4
+	macro. This is needed because a problem in scratchbox that, even with
+	pkg-config installed, aclocal and friends are looking for .m4 files on
+	the /scratchbox/tools directory and then getting some ancient version
+	of pkg-config.m4 file without the needed macro.
+	
 2007-05-16  Michael Natterer  <mitch@imendio.com>
 
 	* glib/gslice.[ch]: replace with versions from upstream trunk,
