@@ -1,3 +1,9 @@
+meta-desktop-sardine (1.1.0-3) unstable; urgency=low
+
+  * Added to dependency packages hildon-theme-gamma and hildon-theme-delta
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu, 21 Jun 2007 11:47:00 +0300
+
 meta-desktop-sardine (1.1.0-2) unstable; urgency=low
 
   * Added to dependency packages hildon-theme-beta and hildon-theme-alpha
