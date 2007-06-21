@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.32~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.32) unstable; urgency=low
 
   * Fixes: NB#59746. MP crashed when tapping on details from Clip menu.
   * Fixes: NB#61357. File manager crashes on opening the 'Storage details
@@ -10,7 +10,7 @@ libhildonfm (1:1.9.32~unreleased) unstable; urgency=low
   * Fixes: NB#59611. Media Player crashed when launched from File manager
     and while viewing details of the clip.
 
- -- Richard Hult <richard@imendio.com>  Wed, 20 Jun 2007 09:38:17 +0200
+ -- Richard Hult <richard@imendio.com>  Thu, 21 Jun 2007 14:44:52 +0300
 
 libhildonfm (1:1.9.31) unstable; urgency=low
 
