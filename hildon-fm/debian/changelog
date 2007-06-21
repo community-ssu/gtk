@@ -3,8 +3,12 @@ libhildonfm (1:1.9.32~unreleased) unstable; urgency=low
   * Fixes: NB#59746. MP crashed when tapping on details from Clip menu.
   * Fixes: NB#61357. File manager crashes on opening the 'Storage details
     dialog' a second time for the Nokia root folder.
+  * Fixes: NB#59767. Media player crashes and audio is still audible with
+    audio streaming.
+  * Fixes: NB#59229. Application crashes when details dialog is opened for
+    the file in MMC.
 
- -- Ricahrd Hult <richard@imendio.com>  Wed, 20 Jun 2007 09:38:17 +0200
+ -- Richard Hult <richard@imendio.com>  Wed, 20 Jun 2007 09:38:17 +0200
 
 libhildonfm (1:1.9.31) unstable; urgency=low
 
