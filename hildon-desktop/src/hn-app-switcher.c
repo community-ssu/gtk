@@ -655,7 +655,7 @@ refresh_buttons (gpointer user_data)
     HDEntryInfo *entry = l->data;
 
     /* we just want the most recently used top-level applications */
-    if (entry->type != HD_ENTRY_WATCHED_APP)
+    if (entry->type != HD_ENTRY_APPLICATION)
     {
       g_debug("Object is not an application");
       continue;
@@ -840,12 +840,12 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
    * If we are given an entry info and it of the app type, we just need to
    * update at most one button
    */
-  if (entry_info && entry_info->type == HD_ENTRY_WATCHED_APP)
+  if (entry_info && entry_info->type == HD_ENTRY_APPLICATION)
   {
     gint                  pos;
     GList *               l;
 
-    g_debug ("HDEntryInfo present and of type WATCHED_APP");
+    g_debug ("HDEntryInfo present and of type APPLICATION");
       
     for (l = hd_wm_get_applications (hdwm), pos = 0;
          l != NULL && pos < priv->nitems;
@@ -853,7 +853,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
     {
       HDEntryInfo *entry = l->data;
           
-      if (entry->type != HD_ENTRY_WATCHED_APP)
+      if (entry->type != HD_ENTRY_APPLICATION)
       {
         g_debug("Object is not an application");
         continue;
@@ -923,7 +923,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
       HDEntryInfo *entry = l->data;
       
       /* we just want the most recently used top-level applications */
-      if (entry->type != HD_ENTRY_WATCHED_APP)
+      if (entry->type != HD_ENTRY_APPLICATION)
       {
         g_debug("Object is not an application");
         continue;
@@ -1017,10 +1017,10 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
     return;
   }
   
-  if (entry_info->type == HD_ENTRY_WATCHED_APP)
+  if (entry_info->type == HD_ENTRY_APPLICATION)
   {
     /* we only accept entries for windows and views */
-    g_warning ("Cannot handle HD_ENTRY_WATCHED_APP");
+    g_warning ("Cannot handle HD_ENTRY_APPLICATION");
     return;
   }
   
@@ -1242,7 +1242,7 @@ hn_app_switcher_cad_kill_selected_items (GList *items)
       if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (item->button))
           && item->win != NULL)
         {
-          hd_wm_watched_window_attempt_signal_kill (item->win, SIGTERM, TRUE);
+          hd_wm_window_attempt_signal_kill (item->win, SIGTERM, TRUE);
         }
     }
 }
@@ -1310,19 +1310,19 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
     GtkWidget *label;
     GdkPixbuf *icon = NULL;
     GtkIconTheme *icon_theme;
-    HDWMWatchableApp *app;
+    HDWMApplication *app;
     HDWMCADItem *item = (HDWMCADItem *) l->data;
     g_debug ("item --> %p",l->data);
     if (item->win == NULL)
       continue;
 
-    app = hd_wm_watched_window_get_app (item->win);
+    app = hd_wm_window_get_application (item->win);
       
     if (app == NULL)
       continue;
       
-    label = gtk_label_new (_(hd_wm_watchable_app_get_name (app)));
-    icon_name = hd_wm_watchable_app_get_icon_name(app);
+    label = gtk_label_new (_(hd_wm_application_get_name (app)));
+    icon_name = hd_wm_application_get_icon_name(app);
     icon_theme = gtk_icon_theme_get_default ();
     
     if (icon_name)

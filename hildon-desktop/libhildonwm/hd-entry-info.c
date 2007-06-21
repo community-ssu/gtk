@@ -30,8 +30,8 @@
 
 #include "hd-entry-info.h"
 
-#include "hd-wm-watchable-app.h"
-#include "hd-wm-watched-window.h"
+#include "hd-wm-application.h"
+#include "hd-wm-window.h"
 #include "hd-wm-util.h"
 
 typedef struct
@@ -43,8 +43,8 @@ typedef struct
   GList       *children;
   
   union {
-    HDWMWatchableApp *app;
-    HDWMWatchedWindow *window;
+    HDWMApplication *app;
+    HDWMWindow *window;
   } d;
 
   GHashTable *icon_cache;
@@ -77,26 +77,26 @@ hd_entry_info_new (HDEntryInfoType type)
 }
 
 HDEntryInfo *
-hd_entry_info_new_from_app (HDWMWatchableApp *app)
+hd_entry_info_new_from_app (HDWMApplication *app)
 {
   HDEntryInfo *retval;
 
   g_return_val_if_fail (app != NULL, NULL);
 
-  retval = hd_entry_info_new (HD_ENTRY_WATCHED_APP);
+  retval = hd_entry_info_new (HD_ENTRY_APPLICATION);
   hd_entry_info_set_app (retval, app);
 
   return retval;
 }
 
 HDEntryInfo *
-hd_entry_info_new_from_window (HDWMWatchedWindow *window)
+hd_entry_info_new_from_window (HDWMWindow *window)
 {
   HDEntryInfo *retval;
   
   g_return_val_if_fail (window != NULL, NULL);
   
-  retval = hd_entry_info_new (HD_ENTRY_WATCHED_WINDOW);
+  retval = hd_entry_info_new (HD_ENTRY_WINDOW);
   hd_entry_info_set_window (retval, window);
   
   return retval;
@@ -114,9 +114,9 @@ hd_entry_info_free (HDEntryInfo *entry_info)
   real = REAL_ENTRY_INFO (entry_info);
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
       break;
     case HD_ENTRY_INVALID:
     default:
@@ -133,29 +133,29 @@ hd_entry_info_free (HDEntryInfo *entry_info)
 
 void
 hd_entry_info_set_app (HDEntryInfo      *entry_info,
-		       HDWMWatchableApp *app)
+		       HDWMApplication *app)
 {
   g_return_if_fail (entry_info != NULL);
-  g_return_if_fail (entry_info->type == HD_ENTRY_WATCHED_APP);
+  g_return_if_fail (entry_info->type == HD_ENTRY_APPLICATION);
 
   REAL_ENTRY_INFO (entry_info)->d.app = app;
 }
 
-HDWMWatchableApp *
+HDWMApplication *
 hd_entry_info_get_app (HDEntryInfo *entry_info)
 {
   RealEntryInfo         *real = NULL;
-  HDWMWatchedWindow     *win = NULL;
+  HDWMWindow     *win = NULL;
   
   g_return_val_if_fail (entry_info != NULL, 0);
   real = REAL_ENTRY_INFO (entry_info);
 
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       return REAL_ENTRY_INFO (entry_info)->d.app;
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
       win = hd_entry_info_get_window(entry_info);
       break;
     case HD_ENTRY_INVALID:
@@ -164,30 +164,30 @@ hd_entry_info_get_app (HDEntryInfo *entry_info)
       break;
   }
 
-  return hd_wm_watched_window_get_app(win);
+  return hd_wm_window_get_application(win);
 }
 
 void
 hd_entry_info_set_window (HDEntryInfo       *entry_info,
-			  HDWMWatchedWindow *window)
+			  HDWMWindow *window)
 {
   g_return_if_fail (entry_info != NULL);
-  g_return_if_fail (entry_info->type == HD_ENTRY_WATCHED_WINDOW);
+  g_return_if_fail (entry_info->type == HD_ENTRY_WINDOW);
   
   REAL_ENTRY_INFO (entry_info)->d.window = window;
 }
 
-HDWMWatchedWindow *
+HDWMWindow *
 hd_entry_info_get_window (HDEntryInfo *entry_info)
 {
   g_return_val_if_fail (entry_info != NULL, NULL);
 
   switch (entry_info->type)
   {
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
       return REAL_ENTRY_INFO (entry_info)->d.window;
     default:
-      return hd_wm_watchable_app_get_active_window (hd_entry_info_get_app (entry_info));
+      return hd_wm_application_get_active_window (hd_entry_info_get_app (entry_info));
     }
 }
 
@@ -227,11 +227,11 @@ hd_entry_info_peek_app_name (HDEntryInfo *entry_info)
   real = REAL_ENTRY_INFO (entry_info);
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
-      retval = hd_wm_watchable_app_get_name (real->d.app);
+    case HD_ENTRY_APPLICATION:
+      retval = hd_wm_application_get_name (real->d.app);
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
-      retval = hd_wm_watched_window_get_name (real->d.window);
+    case HD_ENTRY_WINDOW:
+      retval = hd_wm_window_get_name (real->d.window);
       break;
     case HD_ENTRY_DESKTOP:
       retval = _("tana_fi_home");
@@ -256,21 +256,21 @@ hd_entry_info_peek_title (HDEntryInfo *entry_info)
   real = REAL_ENTRY_INFO (entry_info);
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       {
-      HDWMWatchedWindow *win;
+      HDWMWindow *win;
 
-      win = hd_wm_watchable_app_get_active_window (real->d.app);
+      win = hd_wm_application_get_active_window (real->d.app);
 	
       if (win)
-        retval = hd_wm_watched_window_get_name (win);
+        retval = hd_wm_window_get_name (win);
       else
-        retval = hd_wm_watchable_app_get_name (real->d.app);
+        retval = hd_wm_application_get_name (real->d.app);
       }
       break;
     
-    case HD_ENTRY_WATCHED_WINDOW:
-      retval = hd_wm_watched_window_get_name (real->d.window);
+    case HD_ENTRY_WINDOW:
+      retval = hd_wm_window_get_name (real->d.window);
       break;
       
     case HD_ENTRY_DESKTOP:
@@ -365,12 +365,12 @@ hd_entry_info_set_title (HDEntryInfo *entry_info,
   
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       /* TODO */
       break;
       
-    case HD_ENTRY_WATCHED_WINDOW:
-      hd_wm_watched_window_set_name (real->d.window, title);
+    case HD_ENTRY_WINDOW:
+      hd_wm_window_set_name (real->d.window, title);
       break;
       
     case HD_ENTRY_INVALID:
@@ -392,11 +392,11 @@ hd_entry_info_get_icon (HDEntryInfo *entry_info)
   
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       /* TODO */
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
-      retval = hd_wm_watched_window_get_custom_icon (real->d.window);
+    case HD_ENTRY_WINDOW:
+      retval = hd_wm_window_get_custom_icon (real->d.window);
       break;
     case HD_ENTRY_DESKTOP:
       retval = NULL;
@@ -422,10 +422,10 @@ hd_entry_info_set_icon (HDEntryInfo *entry_info,
   
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       /* TODO */
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
       break;
     case HD_ENTRY_INVALID:
     default:
@@ -487,12 +487,12 @@ hd_entry_info_close (HDEntryInfo *info)
   real = REAL_ENTRY_INFO (info);
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       /* TODO */
       break;
       
-    case HD_ENTRY_WATCHED_WINDOW:
-      hd_wm_watched_window_close (real->d.window);
+    case HD_ENTRY_WINDOW:
+      hd_wm_window_close (real->d.window);
       break;
       
     case HD_ENTRY_INVALID:
@@ -506,18 +506,18 @@ const gchar *
 hd_entry_info_get_app_icon_name (HDEntryInfo *info)
 {
   RealEntryInfo     *real;
-  HDWMWatchedWindow *win = NULL;
-  HDWMWatchableApp  *app = NULL;
+  HDWMWindow *win = NULL;
+  HDWMApplication  *app = NULL;
   
   g_return_val_if_fail (info != NULL, NULL);
   
   real = REAL_ENTRY_INFO (info);
   switch (real->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       app = hd_entry_info_get_app (info);
       break;
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
       win = real->d.window;
       break;
     case HD_ENTRY_DESKTOP:
@@ -533,13 +533,13 @@ hd_entry_info_get_app_icon_name (HDEntryInfo *info)
     if (!win)
       return NULL;
 
-    app = hd_wm_watched_window_get_app (win);
+    app = hd_wm_window_get_application (win);
 
     if (!app)
       return NULL;
   }
   
-  return hd_wm_watchable_app_get_icon_name (app);
+  return hd_wm_application_get_icon_name (app);
 }
 
 GdkPixbuf *
@@ -636,7 +636,7 @@ hd_entry_info_get_children (HDEntryInfo *info)
 gboolean
 hd_entry_info_is_urgent (HDEntryInfo *info)
 {
-  HDWMWatchedWindow * win;
+  HDWMWindow * win;
   
   g_return_val_if_fail(info, FALSE);
   
@@ -646,7 +646,7 @@ hd_entry_info_is_urgent (HDEntryInfo *info)
   win = hd_entry_info_get_window (info);
 
   if (win)
-    return hd_wm_watched_window_is_urgent(win);
+    return hd_wm_window_is_urgent(win);
 
   return FALSE;
 }
@@ -681,7 +681,7 @@ hd_entry_info_is_active (HDEntryInfo *info)
   real = REAL_ENTRY_INFO (info);
   switch (info->type)
   {
-    case HD_ENTRY_WATCHED_APP:
+    case HD_ENTRY_APPLICATION:
       {
       GList *l;
 
@@ -691,8 +691,8 @@ hd_entry_info_is_active (HDEntryInfo *info)
       }
       return FALSE;
       
-    case HD_ENTRY_WATCHED_WINDOW:
-      return hd_wm_watched_window_is_active(real->d.window);
+    case HD_ENTRY_WINDOW:
+      return hd_wm_window_is_active(real->d.window);
       
     case HD_ENTRY_DESKTOP:
       return TRUE;
@@ -713,7 +713,7 @@ hd_entry_info_is_hibernating (HDEntryInfo *info)
   if (info->type == HD_ENTRY_DESKTOP)
     return FALSE;
   
-  return hd_wm_watchable_app_is_hibernating (hd_entry_info_get_app (info));
+  return hd_wm_application_is_hibernating (hd_entry_info_get_app (info));
 }
 
 const gchar *
@@ -723,10 +723,10 @@ hd_entry_info_get_extra_icon (HDEntryInfo *info)
   
   switch (info->type)
   {
-    case HD_ENTRY_WATCHED_APP:
-      return hd_wm_watchable_app_get_extra_icon(hd_entry_info_get_app(info));
+    case HD_ENTRY_APPLICATION:
+      return hd_wm_application_get_extra_icon(hd_entry_info_get_app(info));
         
-    case HD_ENTRY_WATCHED_WINDOW:
+    case HD_ENTRY_WINDOW:
     case HD_ENTRY_INVALID:
     default:
       g_critical("Invalid Entry type");
@@ -738,7 +738,7 @@ hd_entry_info_get_extra_icon (HDEntryInfo *info)
 Window
 hd_entry_info_get_x_window (HDEntryInfo *info)
 {
-  HDWMWatchedWindow *win;
+  HDWMWindow *win;
   g_return_val_if_fail (info, None);
 
   if (info->type == HD_ENTRY_DESKTOP)
@@ -747,7 +747,7 @@ hd_entry_info_get_x_window (HDEntryInfo *info)
   win = hd_entry_info_get_window (info);
 
   if (win)
-    return hd_wm_watched_window_get_x_win (win);
+    return hd_wm_window_get_x_win (win);
 
   return None;
 }

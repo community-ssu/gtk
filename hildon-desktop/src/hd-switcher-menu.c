@@ -847,62 +847,6 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
   g_list_free (children);
 }	
 
-static void
-hd_switcher_menu_get_workarea (GtkAllocation *allocation)
-{
-  unsigned long n;
-  unsigned long extra;
-  int format;
-  int status;
-  Atom property = XInternAtom (GDK_DISPLAY (), WORKAREA_ATOM, FALSE);
-  Atom realType;
-
-  /* This is needed to get rid of the punned type-pointer
-     breaks strict aliasing warning*/
-  union
-  {
-    unsigned char *char_value;
-    int *int_value;
-  } value;
-
-  status = XGetWindowProperty (GDK_DISPLAY (),
-                               GDK_ROOT_WINDOW (),
-                               property,
-                               0L,
-                               4L,
-                               0,
-                               XA_CARDINAL,
-                               &realType,
-                               &format,
-                               &n,
-                               &extra,
-                               (unsigned char **) &value.char_value);
-
-  if (status == Success &&
-      realType == XA_CARDINAL &&
-      format == 32 &&
-      n == 4  &&
-      value.char_value != NULL)
-  {
-    allocation->x = value.int_value[0];
-    allocation->y = value.int_value[1];
-    allocation->width = value.int_value[2];
-    allocation->height = value.int_value[3];
-  }
-  else
-  {
-    allocation->x = 0;
-    allocation->y = 0;
-    allocation->width = 0;
-    allocation->height = 0;
-  }
-
-  if (value.char_value)
-  {
-    XFree(value.char_value);
-  }
-}
-
 static void 
 hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
                          gint     *x,
@@ -930,7 +874,7 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
   if (!GTK_WIDGET_REALIZED (GTK_WIDGET (data)))
     return;
 
-  hd_switcher_menu_get_workarea (&workarea);
+  hd_wm_get_work_area (switcher->hdwm, &workarea);
 
   top_level = gtk_widget_get_toplevel (button);
 
@@ -1268,7 +1212,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
 
   /* We have to guess whether it is in app switcher's slots or not*/
   
-  if (info->type == HD_ENTRY_WATCHED_APP)
+  if (info->type == HD_ENTRY_APPLICATION)
   {	  
      apps = hd_wm_get_applications (switcher->hdwm);
 
@@ -1276,10 +1220,10 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
      {
         HDEntryInfo *iter_info = (HDEntryInfo *) l->data;
 
-	if (iter_info->type != HD_ENTRY_WATCHED_APP)
+	if (iter_info->type != HD_ENTRY_APPLICATION)
           continue;
  	
-        if (iter_info->type == HD_ENTRY_WATCHED_APP)		
+        if (iter_info->type == HD_ENTRY_APPLICATION)		
         {
 	  pos++;
 
@@ -1300,7 +1244,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
        const GList *iter_children;	     
        HDEntryInfo *iter_info = (HDEntryInfo *) l->data;
        
-       if (iter_info->type == HD_ENTRY_WATCHED_APP)
+       if (iter_info->type == HD_ENTRY_APPLICATION)
        {
          pos++;	
   	 

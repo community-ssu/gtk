@@ -1,3 +1,24 @@
+2007-06 21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm-watched-window.[ch]:
+	- Renamed to (below)
+	* libhildonwm/hd-wm-window.[ch]: 
+	- Refactored to GObject.
+	* libhildonwm/hd-wm-watchable-app.[ch]:
+	- Renamed to (below)
+	* libhildonwm/hd-wm-application.[ch]:
+	- Refactored to GObject.
+	* src/hd-desktop.c:
+	* src/hn-app-switcher.c:
+	* src/hd-switcher-menu.c:
+	* libhildonwm/hd-keys.c:
+	* libhildonwm/hd-wm.[ch]:
+	* libhildonwm/hd-wm-memory.c:
+	* libhildonwm/hd-wm-types.h:
+	* libhildonwm/hd-entry-info.[ch]:
+	* libhildonwm/Makefile.am:
+	- Adapted to new name scheme.
+
 2007-06-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-picture.c:

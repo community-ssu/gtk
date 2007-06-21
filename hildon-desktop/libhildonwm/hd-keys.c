@@ -24,7 +24,7 @@
 
 #include "hd-keys.h"
 #include "hd-wm.h"
-#include "hd-wm-watched-window.h"
+#include "hd-wm-window.h"
 
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
@@ -114,10 +114,10 @@ static void
 hd_keys_action_close (HDKeysConfig *keys,
 		      gpointer     *user_data)
 {
-  HDWMWatchedWindow * win = hd_wm_get_active_window();
+  HDWMWindow * win = hd_wm_get_active_window();
 
   if (win)
-    hd_wm_watched_window_close (win);
+    hd_wm_window_close (win);
   else
     g_warning ("No active window set");
 }
@@ -127,14 +127,14 @@ hd_keys_action_application_close (HDKeysConfig *keys,
 				  gpointer     *user_data)
 {
   HDWM *hdwm = hd_wm_get_singleton ();
-  HDWMWatchedWindow *window = hd_wm_get_active_window ();
+  HDWMWindow *window = hd_wm_get_active_window ();
 
   if (window)
   {
-    HDWMWatchableApp *app = hd_wm_watched_window_get_app (window);
+    HDWMApplication *app = hd_wm_window_get_application (window);
 
     if (app)
-      hd_wm_close_application (hdwm, hd_wm_watchable_app_get_info (app));
+      hd_wm_close_application (hdwm, hd_wm_application_get_info (app));
   }
 }
 
@@ -152,12 +152,12 @@ hd_keys_action_minimize (HDKeysConfig *keys,
 			 gpointer     *user_data)
 {
   /* Get topped app, call XIconise on its win */
-  HDWMWatchedWindow * win = hd_wm_get_active_window();
+  HDWMWindow * win = hd_wm_get_active_window();
 
   if (win)
   {
     XWindowAttributes attrs;
-    Window xid = hd_wm_watched_window_get_x_win (win);
+    Window xid = hd_wm_window_get_x_win (win);
     XGetWindowAttributes (GDK_DISPLAY(), xid, &attrs);
       
     XIconifyWindow (GDK_DISPLAY(), xid, XScreenNumberOfScreen (attrs.screen));      

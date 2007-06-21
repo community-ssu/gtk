@@ -1,9 +1,9 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 /* 
- * This file is part of maemo-af-desktop
+ * This file is part of libhildonwm
  *
- * Copyright (C) 2005, 2006 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -22,10 +22,6 @@
  * 02110-1301 USA
  *
  */
-
-/**
-* @file windowmanager.h
-*/
 
 #ifndef __HD_WM_TYPES_H__
 #define __HD_WM_TYPES_H__
@@ -70,6 +66,8 @@ enum
 
   HD_ATOM_UTF8_STRING,
 
+  HD_ATOM_STARTUP_INFO,
+
   HD_ATOM_COUNT
 };
 
@@ -92,19 +90,13 @@ enum
  *  key values represent windows that are valid for watching/tracking via 
  *  the HN.
  */
-typedef struct HDWMWatchableApp      HDWMWatchableApp;
-
-/* A HDWMWatchedWindow is a running watched / tracked instance of a window 
- * that references a valid HDWMWatchableApp. A watched window *may* contain
- * a list of views ( see below ). 
- */
-typedef struct HDWMWatchedWindow     HDWMWatchedWindow;
 
 /* callbacks for external application switch code - actual menu updates */
 typedef struct HDWMCallbacks         HDWMCallbacks;
 
-/* Used to pass data to launch banner timeout callback */
-typedef struct HDWMLaunchBannerInfo  HDWMLaunchBannerInfo;
+typedef struct _HDWMApplication     HDWMApplication;
+typedef struct _HDWMWindow   HDWMWindow;
+
 
 typedef struct _HDEntryInfo HDEntryInfo;
 

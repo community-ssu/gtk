@@ -42,8 +42,8 @@
 
 #include "hd-wm-types.h"
 #include "hd-wm-memory.h"
-#include "hd-wm-watched-window.h"
-#include "hd-wm-watchable-app.h"
+#include "hd-wm-window.h"
+#include "hd-wm-application.h"
 
 gboolean config_do_bgkill;
 gboolean config_lowmem_dim;
@@ -111,7 +111,7 @@ hd_wm_memory_get_limits (guint *pages_used,
 typedef struct
 {
   gboolean             only_able_to_hibernate;
-  HDWMWatchableApp   * top_app;
+  HDWMApplication   * top_app;
 } _memory_foreach_data;
 
 
@@ -120,29 +120,29 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
 					    gpointer value,
 					    gpointer userdata)
 {
-  HDWMWatchableApp     * app;
-  HDWMWatchedWindow    * win;
+  HDWMApplication     * app;
+  HDWMWindow    * win;
   _memory_foreach_data * d;
   
   HN_DBG("### enter ###");
 
   d   = (_memory_foreach_data*) userdata;
-  win = (HDWMWatchedWindow *)value;
-  app = hd_wm_watched_window_get_app(win);
+  win = (HDWMWindow *)value;
+  app = hd_wm_window_get_application(win);
 
   if (d->only_able_to_hibernate)
     {
       HN_DBG("'%s' able_to_hibernate? '%s' , hiberanting? '%s'",
-	     hd_wm_watched_window_get_name (win),
-	     hd_wm_watchable_app_is_able_to_hibernate(app) ? "yes" : "no",
-	     hd_wm_watchable_app_is_hibernating (app)       ? "yes" : "no");
+	     hd_wm_window_get_name (win),
+	     hd_wm_application_is_able_to_hibernate(app) ? "yes" : "no",
+	     hd_wm_application_is_hibernating (app)       ? "yes" : "no");
       
       if (app != d->top_app &&
-          hd_wm_watchable_app_is_able_to_hibernate(app) &&
-          !hd_wm_watchable_app_is_hibernating (app)) 
+          hd_wm_application_is_able_to_hibernate(app) &&
+          !hd_wm_application_is_hibernating (app)) 
 	{
-	  HN_DBG("hd_wm_watched_window_attempt_pid_kill() for '%s'",
-		 hd_wm_watched_window_get_name (win));
+	  HN_DBG("hd_wm_window_attempt_pid_kill() for '%s'",
+		 hd_wm_window_get_name (win));
           
           /* mark the application as hibernating -- we do not know how many
            * more windows it might have, so we need to set this on each one
@@ -154,9 +154,9 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
            * hibernating (NB, we cannot reset the hibernation flag here if the
            * SIGTERM fails because there is still the SIGKILL in the pipeline.
            */
-          hd_wm_watchable_app_set_hibernate (app, TRUE);
+          hd_wm_application_set_hibernate (app, TRUE);
           
-          if (!hd_wm_watched_window_attempt_signal_kill (win, SIGTERM, TRUE))
+          if (!hd_wm_window_attempt_signal_kill (win, SIGTERM, TRUE))
  	    {
               g_warning ("sigterm failed");
             }
@@ -166,8 +166,8 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
     {
       /* Totally kill everything */
       HN_DBG("killing everything, currently '%s'",
-             hd_wm_watched_window_get_name (win));
-      hd_wm_watched_window_attempt_signal_kill (win, SIGTERM, FALSE);
+             hd_wm_window_get_name (win));
+      hd_wm_window_attempt_signal_kill (win, SIGTERM, FALSE);
     }
 
   HN_DBG("### leave ###");
@@ -178,7 +178,7 @@ int
 hd_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
 {
   _memory_foreach_data   d;
-  HDWMWatchedWindow    * top_win = NULL;
+  HDWMWindow    * top_win = NULL;
   Window               * top_xwin;
 
   /* init the foreach data */
@@ -202,7 +202,7 @@ hd_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
   /* see if we have a matching watched window */
   if (top_xwin)
     {
-      top_win = g_hash_table_lookup (hd_wm_get_watched_windows(),
+      top_win = g_hash_table_lookup (hd_wm_get_windows(),
                                      (gconstpointer) top_xwin);
 
       XFree (top_xwin);
@@ -212,13 +212,13 @@ hd_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
   /* if so, get the corresponding application */
   if (top_win)
     {
-      d.top_app = hd_wm_watched_window_get_app (top_win);
+      d.top_app = hd_wm_window_get_application (top_win);
       HN_DBG ("Top level application [%s]",
-              hd_wm_watchable_app_get_name (d.top_app));
+              hd_wm_application_get_name (d.top_app));
     }
   
   /* now hibernate our applications */
-  g_hash_table_foreach ( hd_wm_get_watched_windows(),
+  g_hash_table_foreach ( hd_wm_get_windows(),
                          hd_wm_memory_kill_all_watched_foreach_func,
                          (gpointer)&d);
 
@@ -309,19 +309,19 @@ hd_wm_memory_kill_lru( void )
 
   if (menu_comp.wm_class != NULL) 
     {
-      HDWMWatchedWindow     *win = NULL;
+      HDWMWindow     *win = NULL;
 
 
-      win = hd_wm_lookup_watched_window_via_service (menu_comp.wm_class);
+      win = hd_wm_lookup_window_via_service (menu_comp.wm_class);
 
       if (win)
 	{
-	  HDWMWatchableApp      *app;
+	  HDWMApplication      *app;
 
-	  app = hd_wm_watched_window_get_app (win);
+	  app = hd_wm_window_get_application (win);
 	  
-	  if (hd_wm_watchable_app_is_able_to_hibernate (app))
-	    hd_wm_watched_window_attempt_signal_kill (win, SIGTERM);
+	  if (hd_wm_application_is_able_to_hibernate (app))
+	    hd_wm_window_attempt_signal_kill (win, SIGTERM);
 	}
     }
 #endif

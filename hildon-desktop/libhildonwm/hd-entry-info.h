@@ -44,11 +44,11 @@ G_BEGIN_DECLS
 typedef enum {
   HD_ENTRY_INVALID,        /* only used for debugging */
   HD_ENTRY_DESKTOP,
-  HD_ENTRY_WATCHED_APP,
-  HD_ENTRY_WATCHED_WINDOW
+  HD_ENTRY_APPLICATION,
+  HD_ENTRY_WINDOW
 } HDEntryInfoType;
 
-#define HD_ENTRY_INFO_IS_VALID_TYPE(x) (((x) > HD_ENTRY_INVALID) && ((x) <= HD_ENTRY_WATCHED_WINDOW))
+#define HD_ENTRY_INFO_IS_VALID_TYPE(x) (((x) > HD_ENTRY_INVALID) && ((x) <= HD_ENTRY_WINDOW))
 
 struct _HDEntryInfo
 {
@@ -56,16 +56,16 @@ struct _HDEntryInfo
 };
 
 HDEntryInfo *hd_entry_info_new             (HDEntryInfoType        type);
-HDEntryInfo *hd_entry_info_new_from_app    (HDWMWatchableApp      *app);
-HDEntryInfo *hd_entry_info_new_from_window (HDWMWatchedWindow     *window);
+HDEntryInfo *hd_entry_info_new_from_app    (HDWMApplication      *app);
+HDEntryInfo *hd_entry_info_new_from_window (HDWMWindow     *window);
 void         hd_entry_info_free            (HDEntryInfo           *info);
 
 void                   hd_entry_info_set_app    (HDEntryInfo           *info,
-						 HDWMWatchableApp      *app);
-HDWMWatchableApp *     hd_entry_info_get_app    (HDEntryInfo           *info);
+						 HDWMApplication      *app);
+HDWMApplication *     hd_entry_info_get_app    (HDEntryInfo           *info);
 void                   hd_entry_info_set_window (HDEntryInfo           *info,
-						 HDWMWatchedWindow     *window);
-HDWMWatchedWindow *    hd_entry_info_get_window (HDEntryInfo           *info);
+						 HDWMWindow     *window);
+HDWMWindow *    hd_entry_info_get_window (HDEntryInfo           *info);
 
 HDEntryInfo *hd_entry_info_get_parent      (HDEntryInfo *info);
 

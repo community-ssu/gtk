@@ -8,8 +8,8 @@ pkginclude_HEADERS = hd-entry-info.h \
 		     hd-wm-memory.h \
 		     hd-wm-types.h \
 		     hd-wm-util.h \
-		     hd-wm-watchable-app.h \
-		     hd-wm-watched-window.h \
+		     hd-wm-application.h \
+		     hd-wm-window.h \
 		     hd-wm.h
 		     
 
@@ -46,8 +46,8 @@ libhildonwm_la_SOURCES = \
 	hd-wm-util.c \
 	hd-wm-memory.c \
 	hd-keys.c \
-	hd-wm-watched-window.c \
-	hd-wm-watchable-app.c \
+	hd-wm-window.c \
+	hd-wm-application.c \
 	hd-entry-info.c
 
 libhildonwm_la_LIBADD =     \

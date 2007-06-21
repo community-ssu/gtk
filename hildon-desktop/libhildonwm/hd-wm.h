@@ -37,8 +37,8 @@
 
 #include <libhildonwm/hd-wm-types.h>
 #include <libhildonwm/hd-entry-info.h>
-#include <libhildonwm/hd-wm-watchable-app.h>
-#include <libhildonwm/hd-wm-watched-window.h>
+#include <libhildonwm/hd-wm-application.h>
+#include <libhildonwm/hd-wm-window.h>
 #include <libhildonwm/hd-keys.h>
 
 #define HN_WANT_DEBUG 0 /* Set to 1 for more verbose hn */
@@ -67,15 +67,15 @@
 
 /* DBus/Banner etc related defines
  */
-#define APP_LAUNCH_BANNER_MSG_LOADING        "ckct_ib_application_loading"
-#define APP_LAUNCH_BANNER_MSG_RESUMING       "ckct_ib_application_resuming"
-#define APP_LAUNCH_BANNER_MSG_LOADING_FAILED "ckct_ib_application_loading_failed"
+#define HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING        "ckct_ib_application_loading"
+#define HDWM_APPLICATION_LAUNCH_BANNER_MSG_RESUMING       "ckct_ib_application_resuming"
+#define HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING_FAILED "ckct_ib_application_loading_failed"
 /* Timeout of the launch banner, in secons */
-#define APP_LAUNCH_BANNER_TIMEOUT            20
+#define HDWM_APPLICATION_LAUNCH_BANNER_TIMEOUT            20
 /* Timeout of the launch banner in lowmem situation */
-#define APP_LAUNCH_BANNER_TIMEOUT_LOWMEM     40
+#define HDWM_APPLICATION_LAUNCH_BANNER_TIMEOUT_LOWMEM     40
 /* Interval for checking for new window or timeout, in seconds */
-#define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
+#define HDWM_APPLICATION_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
 /* .desktop file related defines, mainly for keys
  */
@@ -160,7 +160,7 @@ menuitem_comp_t;
 
 typedef struct 
 {
-  HDWMWatchedWindow* win;
+  HDWMWindow* win;
   GObject *button;
   gint vmdata;
   guint pid;
@@ -181,7 +181,7 @@ struct HDWMLaunchBannerInfo
   GtkWidget         *banner;
   struct timeval     launch_time;
   gchar             *msg;
-  HDWMWatchableApp  *app;
+  HDWMApplication  *app;
 };
 
 GType 
@@ -223,24 +223,24 @@ hd_wm_top_desktop(void);
 void 
 hd_wm_toggle_desktop (void);
 
-HDWMWatchedWindow*
-hd_wm_lookup_watched_window_via_service (const gchar *service_name);
+HDWMWindow*
+hd_wm_lookup_window_via_service (const gchar *service_name);
 
-HDWMWatchedWindow*
-hd_wm_lookup_watched_window_via_menu_widget (GtkWidget *menu_widget);
+HDWMWindow*
+hd_wm_lookup_window_via_menu_widget (GtkWidget *menu_widget);
 
-HDWMWatchableApp*
-hd_wm_lookup_watchable_app_via_service (const gchar *service_name);
+HDWMApplication*
+hd_wm_lookup_application_via_service (const gchar *service_name);
 
-HDWMWatchableApp*
-hd_wm_lookup_watchable_app_via_exec (const gchar *exec_name);
+HDWMApplication*
+hd_wm_lookup_application_via_exec (const gchar *exec_name);
 
-HDWMWatchableApp*
-hd_wm_lookup_watchable_app_via_menu (GtkWidget *menu);
+HDWMApplication*
+hd_wm_lookup_application_via_menu (GtkWidget *menu);
 
 gchar *
-hd_wm_compute_watched_window_hibernation_key (Window xwin,
-					      HDWMWatchableApp *app);
+hd_wm_compute_window_hibernation_key (Window xwin,
+					      HDWMApplication *app);
 
 void
 hd_wm_monitor_register (void);
@@ -284,7 +284,7 @@ hd_wm_activate_service (const gchar *service_name,
                         const gchar *launch_parameters);
 
 void 
-hd_wm_switch_application_window (HDWM *hdwm, HDWMWatchableApp *app, gboolean to_next);
+hd_wm_switch_application_window (HDWM *hdwm, HDWMApplication *app, gboolean to_next);
 
 void 
 hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *entry_info, gboolean to_next);
@@ -303,7 +303,7 @@ extern inline Atom
 hd_wm_get_atom(gint indx);
 
 extern inline GHashTable *
-hd_wm_get_watched_windows(void);
+hd_wm_get_windows(void);
 
 extern inline GHashTable *
 hd_wm_get_hibernating_windows(void);
@@ -344,10 +344,10 @@ hd_wm_get_lowmem_banner_timeout(void);
 extern inline gulong
 hd_wm_get_lowmem_timeout_multiplier(void);
 
-extern inline HDWMWatchedWindow *
+extern inline HDWMWindow *
 hd_wm_get_active_window(void);
 
-extern inline HDWMWatchedWindow *
+extern inline HDWMWindow *
 hd_wm_get_last_active_window(void);
 
 extern inline gboolean
@@ -358,7 +358,7 @@ hd_wm_modal_windows_present(void);
  *
  * NB: we intentionally do not provide a setter -- the active window is our
  * business alone and must not be done from anywhere else than the WM itself.
- * The reset function is only to be called from hd_wm_watched_window_destroy().
+ * The reset function is only to be called from hd_wm_window_destroy().
  */
 extern inline void
 hd_wm_reset_active_window(void);

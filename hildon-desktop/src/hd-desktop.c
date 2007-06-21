@@ -68,7 +68,7 @@ typedef struct
   GtkWidget         *banner;
   struct timeval     launch_time;
   gchar             *msg;
-  HDWMWatchableApp  *app;
+  HDWMApplication  *app;
   HDWM 		    *hdwm;
 } HDDesktopBannerInfo;
 
@@ -114,7 +114,7 @@ void
 hd_desktop_launch_banner_close (GtkWidget *parent, HDDesktopBannerInfo *info);
 
 static void 
-hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
+hd_desktop_launch_banner_show (HDWM *hdwm, HDWMApplication *app, gpointer data)
 {
   HDDesktopBannerInfo *info;
   guint                interval;
@@ -122,7 +122,7 @@ hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
 
   g_return_if_fail (app);
 
-  interval = APP_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
+  interval = HDWM_APPLICATION_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
 
   info = g_new0 (HDDesktopBannerInfo, 1);
 
@@ -131,12 +131,12 @@ hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
 
   gettimeofday (&info->launch_time, NULL );
 
-  lapp_name = hd_wm_watchable_app_get_localized_name (app);
+  lapp_name = hd_wm_application_get_localized_name (app);
 
   info->msg = 
-    g_strdup_printf (_(hd_wm_watchable_app_is_hibernating (app) ?
-                     APP_LAUNCH_BANNER_MSG_RESUMING :
-                     APP_LAUNCH_BANNER_MSG_LOADING),
+    g_strdup_printf (_(hd_wm_application_is_hibernating (app) ?
+                     HDWM_APPLICATION_LAUNCH_BANNER_MSG_RESUMING :
+                     HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING),
                      lapp_name ? _(lapp_name) : "" );
 
   info->banner = GTK_WIDGET (hildon_banner_show_animation (NULL, NULL, info->msg));
@@ -164,7 +164,7 @@ hd_desktop_launch_banner_timeout (gpointer data)
   time_left = (guint) (t2 - t1);
 
   if (time_left >= current_banner_timeout + 4)/* ||
-      hd_wm_watchable_app_has_windows (info->app))*/
+      hd_wm_application_has_windows (info->app))*/
   {
     hd_desktop_launch_banner_close (NULL, info);
     return FALSE;
