@@ -7,6 +7,8 @@ libhildonfm (1:1.9.32~unreleased) unstable; urgency=low
     audio streaming.
   * Fixes: NB#59229. Application crashes when details dialog is opened for
     the file in MMC.
+  * Fixes: NB#59611. Media Player crashed when launched from File manager
+    and while viewing details of the clip.
 
  -- Richard Hult <richard@imendio.com>  Wed, 20 Jun 2007 09:38:17 +0200
 
