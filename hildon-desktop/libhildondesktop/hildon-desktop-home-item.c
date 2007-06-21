@@ -52,7 +52,9 @@
 #define APPLET_CLOSE_BUTTON_WIDTH   26
 #define APPLET_CLOSE_BUTTON_HEIGHT  26
 
-#define GRID_SIZE                   10
+#define GRID_SIZE                       10
+#define CLICK_TIMEOUT                   1200
+#define MOVING_THRESHOLD                30
 
 #define LAYOUT_MODE_HIGHLIGHT_WIDTH 4
 
@@ -98,12 +100,17 @@ typedef struct HildonDesktopHomeItemPriv_
   HildonDesktopHomeItemState state;
   guint         x_offset;
   guint         y_offset;
+
+  GdkEventButton *last_click_event;
+  gboolean      moving_threshold;
+  guint         click_timeout;
   gint          delta_x;
   gint          delta_y;
   gboolean      overlaps;
   GtkAllocation old_allocation;
 
   gboolean      layout_mode_sucks;
+
 } HildonDesktopHomeItemPriv;
 
 static GtkEventBoxClass *parent_class;
@@ -193,7 +200,7 @@ hildon_desktop_home_item_set_property (GObject      *object,
 static void
 hildon_desktop_home_item_get_property (GObject      *object,
                                        guint         property_id,
-                                       GValue *value,
+                                       GValue       *value,
                                        GParamSpec   *pspec);
 static GdkFilterReturn
 window_event_filter (GdkXEvent *xevent,
@@ -514,6 +521,12 @@ hildon_desktop_home_item_destroy (GtkObject *applet)
   if (priv->resize_handle)
     g_object_unref (priv->resize_handle);
   priv->resize_handle = NULL;
+
+  if (priv->click_timeout)
+    {
+      g_source_remove (priv->click_timeout);
+      priv->click_timeout = 0;
+    }
 
   if (GTK_OBJECT_CLASS (parent_class)->destroy)
     GTK_OBJECT_CLASS (parent_class)->destroy (applet);
@@ -1200,15 +1213,35 @@ hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
 
-  if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
+  if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL &&
+      !priv->click_timeout)
     return FALSE;
 
   area = widget->parent;
   gdk_window_get_pointer (area->window, &x_applet, &y_applet, &mod);
 
+  /* We start moving only after a certain threshold */
+  if (priv->click_timeout && !priv->moving_threshold)
+    {
+      if (ABS (x_applet - widget->allocation.x -
+              priv->last_click_event->x) >= MOVING_THRESHOLD ||
+          ABS (y_applet - widget->allocation.y -
+              priv->last_click_event->y) >= MOVING_THRESHOLD)
+        {
+          g_source_remove (priv->click_timeout);
+          priv->click_timeout = 0;
+          priv->moving_threshold = TRUE;
+          hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (widget),
+                                              HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
+                                              priv->last_click_event);
+
+
+        }
+    }
+
   if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_MOVING)
     {
-      /* The Fixed has no window, thus the coordinates are relative to the
+      /* The Area has no window, thus the coordinates are relative to the
        * home's main window */
 
       x_applet -= area->allocation.x;
@@ -1242,7 +1275,7 @@ hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
                              y_applet);
 
     }
-  else /* Resizing */
+  else if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING)
     {
       gint width, height;
 
@@ -1283,13 +1316,16 @@ hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
       gtk_widget_set_size_request (widget, width, height);
     }
 
-  used_to_overlap = priv->overlaps;
-  priv->overlaps = FALSE;
-  gtk_container_foreach (GTK_CONTAINER (widget->parent),
-                         (GtkCallback)hildon_desktop_home_item_check_overlap,
-                         widget);
-  if (used_to_overlap != priv->overlaps)
-    gtk_widget_queue_draw (widget);
+  if (!priv->layout_mode_sucks)
+    {
+      used_to_overlap = priv->overlaps;
+      priv->overlaps = FALSE;
+      gtk_container_foreach (GTK_CONTAINER (widget->parent),
+                             (GtkCallback)hildon_desktop_home_item_check_overlap,
+                             widget);
+      if (used_to_overlap != priv->overlaps)
+        gtk_widget_queue_draw (widget);
+    }
 
   return TRUE;
 }
@@ -1305,7 +1341,7 @@ hildon_desktop_home_item_check_overlap (HildonDesktopHomeItem *applet1,
     return;
 
   priv2 = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet2);
-  
+
   if (gdk_rectangle_intersect (&GTK_WIDGET (applet1)->allocation,
                                &(GTK_WIDGET (applet2)->allocation),
                                &r))
@@ -1397,6 +1433,18 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
 }
 
 static gboolean
+hildon_desktop_home_item_click_timeout (HildonDesktopHomeItem *item)
+{
+  HildonDesktopHomeItemPriv    *priv;
+
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+
+  priv->click_timeout = 0;
+  return FALSE;
+}
+
+
+static gboolean
 hildon_desktop_home_item_button_press_event (GtkWidget *w,
                                              GdkEventButton   *event)
 {
@@ -1434,9 +1482,14 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
         }
       else
         {
-          hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (w),
-                                              HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
-                                              event);
+          priv->last_click_event =
+              (GdkEventButton *)gdk_event_copy ((GdkEvent *)event);
+
+          priv->moving_threshold = FALSE;
+          priv->click_timeout = g_timeout_add (CLICK_TIMEOUT,
+                                               (GSourceFunc)
+                                               hildon_desktop_home_item_click_timeout,
+                                               w);
         }
 
     }
@@ -1451,6 +1504,13 @@ hildon_desktop_home_item_button_release_event (GtkWidget       *widget,
   HildonDesktopHomeItemPriv      *priv;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
+
+  if (priv->click_timeout)
+    {
+      g_source_remove (priv->click_timeout);
+      priv->click_timeout = 0;
+      return FALSE;
+    }
 
   if (!priv->layout_mode_sucks && !priv->layout_mode)
     {
@@ -1553,7 +1613,7 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                "applet-change-start",
                                widget);
 
-      if (state == HILDON_DESKTOP_HOME_ITEM_STATE_MOVING)
+      if (state == HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING)
         {
           gint window_x, window_y;
           gint window_width, window_height;

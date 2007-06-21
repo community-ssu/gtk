@@ -1,6 +1,12 @@
 2007-06-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-picture.c:
+	- do not start dragging unless the user has dragged by at least
+	30px during the 1.2 first seconds. Fixes: NB#59337
+
+2007-06-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-picture.c:
 	- fixed changing of states
 
 2007-06-21  Johan Bilien  <johan.bilien@nokia.com>
