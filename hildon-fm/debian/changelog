@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.32) unstable; urgency=low
+libhildonfm (1:1.9.32~unreleased) unstable; urgency=low
 
   * Fixes: NB#59746. MP crashed when tapping on details from Clip menu.
 
