@@ -995,7 +995,6 @@ hildon_home_area_child_compose (ChildData *child_data,
                     alloc->y - priv->y_offset,
                     alloc->width,
                     alloc->height);
-
 }
 
 static void
@@ -1351,11 +1350,13 @@ hildon_home_area_expose (GtkWidget *widget,
                                    &rectangle,
                                    1);
 
+#if 0
       XFixesSetPictureClipRegion (GDK_DISPLAY (),
                                   priv->picture,
                                   0,
                                   0,
                                   region);
+#endif
 
       gdk_error_trap_push ();
       XQueryTree (GDK_DISPLAY (),
@@ -1403,27 +1404,50 @@ hildon_home_area_child_window_filter (GdkXEvent        *xevent,
                                       GdkEvent         *event,
                                       GtkWidget        *child)
 {
-  XAnyEvent            *aevent = xevent;
+  XEvent               *aevent = xevent;
   HildonHomeArea       *area = HILDON_HOME_AREA (child->parent);
   HildonHomeAreaClass  *klass = HILDON_HOME_AREA_GET_CLASS (area);
 
-
   if (aevent->type == klass->xdamage_event_base + XDamageNotify)
     {
-      XDamageNotifyEvent *ev = xevent;
-      GdkRectangle rect;
-      XserverRegion parts;
-
-      rect.x = ev->area.x + child->allocation.x;
-      rect.y = ev->area.y + child->allocation.y;
-      rect.width = ev->area.width;
-      rect.height = ev->area.height;
+      XDamageNotifyEvent       *ev = xevent;
+      XserverRegion             parts;
+      XRectangle               *rects;
+      guint                     i, n_rect;
 
       parts = XFixesCreateRegion (GDK_DISPLAY (), 0, 0);
       XDamageSubtract (GDK_DISPLAY (), ev->damage, None, parts);
-      XFixesDestroyRegion (GDK_DISPLAY (), parts);
 
-      gdk_window_invalidate_rect (child->parent->window, &rect, FALSE);
+      rects = XFixesFetchRegion (GDK_DISPLAY (),
+                                 parts,
+                                 &n_rect);
+
+      XFixesDestroyRegion (GDK_DISPLAY (),
+                           parts);
+
+      for (i = 0; i < n_rect; i++)
+        {
+          GdkRectangle  rect;
+
+          rect.x = child->allocation.x + rects[i].x;
+          rect.y = child->allocation.y + rects[i].y;
+          rect.width  = rects[i].width;
+          rect.height = rects[i].height;
+
+#if 0
+          g_debug ("Got damage on %i, %i %ix%i",
+                   rect.x,
+                   rect.y,
+                   rect.width,
+                   rect.height);
+#endif
+
+          gdk_window_invalidate_rect (GTK_WIDGET (area)->window,
+                                      &rect,
+                                      FALSE);
+        }
+
+      XFree (rects);
     }
 
   return GDK_FILTER_CONTINUE;
@@ -2223,8 +2247,8 @@ hildon_home_area_move (HildonHomeArea *area, GtkWidget *widget, gint x, gint y)
                               widget->allocation.height};
 
       gdk_window_invalidate_rect (GTK_WIDGET (area)->window, &invalid, TRUE);
-      invalid.x = x;
-      invalid.y = y;
+      invalid.x = x + GTK_WIDGET (area)->allocation.x;
+      invalid.y = y + GTK_WIDGET (area)->allocation.y;
       gdk_window_invalidate_rect (GTK_WIDGET (area)->window, &invalid, TRUE);
     }
 

@@ -284,10 +284,12 @@ hildon_desktop_picture_from_drawable (GdkDrawable *drawable)
   if (format == NULL)
     return None;
 
+  pa.subwindow_mode = IncludeInferiors;
+  pa.repeat = False;
   picture = XRenderCreatePicture (GDK_DISPLAY (),
                                   GDK_DRAWABLE_XID (drawable),
                                   format,
-                                  0,
+                                  CPSubwindowMode | CPRepeat,
                                   &pa);
 
   return picture;
