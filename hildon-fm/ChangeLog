@@ -1,3 +1,11 @@
+2007-06-21  Richard Hult  <richard@imendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: Remove the
+	get_apps source and make sure to cancel any pending dbus call when
+	done. Don't use a static string, put it in the object instead.
+	Fixes NB#61357.
+	(file_system_storage_dialog_stats_clear): Clear all categories.
+
 2007-06-20  Richard Hult  <richard@imendio.com>
 
 	* configure.ac: Bump version.

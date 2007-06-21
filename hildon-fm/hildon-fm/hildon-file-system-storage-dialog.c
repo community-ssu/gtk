@@ -48,7 +48,9 @@
 
 struct _HildonFileSystemStorageDialogPriv {
         DBusPendingCall  *pending_call;
-        
+        guint             get_apps_id;
+        GString          *apps_string;
+
         /* Stats */
         gchar            *uri_str;
 
@@ -369,12 +371,22 @@ file_system_storage_dialog_finalize (GObject *object)
 	}
 
         if (priv->pending_call) {
+                dbus_pending_call_cancel (priv->pending_call);
                 dbus_pending_call_unref (priv->pending_call);
                 priv->pending_call = NULL;
         }
 
+        if (priv->get_apps_id) {
+                g_source_remove (priv->get_apps_id);
+                priv->get_apps_id = 0;
+        }
+
+        if (priv->apps_string) {
+                g_string_free (priv->apps_string, TRUE);
+        }
+
         g_free (priv->uri_str);
-        
+
 	G_OBJECT_CLASS (hildon_file_system_storage_dialog_parent_class)->finalize (object);
 }
 
@@ -401,13 +413,16 @@ file_system_storage_dialog_stats_clear (GtkWidget *widget)
 
         priv->file_count = 0;
         priv->folder_count = 0;
-        
+
+        priv->email_size = 0;
         priv->image_size = 0;
         priv->video_size = 0;
+        priv->audio_size = 0;
         priv->html_size = 0;
         priv->doc_size = 0;
+        priv->contact_size = 0;
+        priv->installed_app_size = 0;
         priv->other_size = 0;
-
         priv->in_use_size = 0;
 }
 
@@ -681,11 +696,9 @@ file_system_storage_dialog_stats_get_apps_cb (GIOChannel   *source,
 					      GIOCondition  condition, 
 					      GtkWidget    *widget)
 {
-	static GString *str = NULL;
+	HildonFileSystemStorageDialogPriv *priv;
 
-	if (!str) {
-		str = g_string_new ("");
-	}
+        priv = GET_PRIV (widget);
 
 	if (condition & G_IO_IN) {
 		GIOStatus status;
@@ -700,8 +713,8 @@ file_system_storage_dialog_stats_get_apps_cb (GIOChannel   *source,
 			if (len < 1) {
 				break;
 			}
-
-			str = g_string_append (str, input);
+                        
+			g_string_append (priv->apps_string, input);
 			g_free (input);
 		}
 	}
@@ -715,8 +728,10 @@ file_system_storage_dialog_stats_get_apps_cb (GIOChannel   *source,
 		g_io_channel_shutdown (source, FALSE, NULL);
 		g_io_channel_unref (source);
 
+                priv->get_apps_id = 0;
+                
 		/* Get install application stats */
-		rows = g_strsplit (str->str, "\n", -1);
+		rows = g_strsplit (priv->apps_string->str, "\n", -1);
 		for (row = rows; *row != NULL; row++) {
 			GnomeVFSFileSize   bytes;
 			gchar            **cols;
@@ -749,14 +764,27 @@ static void
 file_system_storage_dialog_stats_get_apps (GtkWidget *widget,
 					   URIType    type)
 {
-	GIOChannel *channel;
-	GPid        pid;
-	gchar      *argv[] = { "/usr/bin/maemo-list-user-packages", NULL };
-	gint        out;
-	gboolean    success;
+        HildonFileSystemStorageDialogPriv *priv;
+	GIOChannel                        *channel;
+	GPid                               pid;
+	gchar                             *argv[] = { "/usr/bin/maemo-list-user-packages", NULL };
+	gint                               out;
+	gboolean                           success;
 
-	if (type != URI_TYPE_FILE_SYSTEM &&
-	    type != URI_TYPE_UNKNOWN) {
+        priv = GET_PRIV (widget);
+
+        if (priv->apps_string) {
+                g_string_truncate (priv->apps_string, 0);
+        } else {
+                priv->apps_string = g_string_new (NULL);
+        }
+
+        if (priv->get_apps_id) {
+                g_source_remove (priv->get_apps_id);
+                priv->get_apps_id = 0;
+        }
+        
+	if (type != URI_TYPE_FILE_SYSTEM && type != URI_TYPE_UNKNOWN) {
 		return;
 	}
 
@@ -773,13 +801,14 @@ file_system_storage_dialog_stats_get_apps (GtkWidget *widget,
 
 	channel = g_io_channel_unix_new (out);
 	g_io_channel_set_flags (channel, G_IO_FLAG_NONBLOCK, NULL);
-	g_io_add_watch_full (channel, 
-			     G_PRIORITY_DEFAULT_IDLE, 
-			     G_IO_IN | G_IO_HUP, 
-			     (GIOFunc) 
-			     file_system_storage_dialog_stats_get_apps_cb, 
-			     widget, 
-			     NULL);
+	priv->get_apps_id = g_io_add_watch_full (
+                channel, 
+                G_PRIORITY_DEFAULT_IDLE, 
+                G_IO_IN | G_IO_HUP, 
+                (GIOFunc) 
+                file_system_storage_dialog_stats_get_apps_cb, 
+                widget, 
+                NULL);
 }
 
 static void
@@ -847,6 +876,7 @@ file_system_storage_dialog_request_device_name (HildonFileSystemStorageDialog *d
         }
         
         if (priv->pending_call) {
+                dbus_pending_call_cancel (priv->pending_call);
                 dbus_pending_call_unref (priv->pending_call);
                 priv->pending_call = NULL;
         }
