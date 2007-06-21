@@ -1429,13 +1429,13 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
       if (event->window == priv->resize_handle_window)
         {
           hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (w),
-                                              HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
+                                              HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING,
                                               event);
         }
       else
         {
           hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (w),
-                                              HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING,
+                                              HILDON_DESKTOP_HOME_ITEM_STATE_MOVING,
                                               event);
         }
 
@@ -1544,8 +1544,6 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
         g_signal_emit_by_name (G_OBJECT (widget->parent),
                                "applet-change-end",
                                widget);
-
-      priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL;
     }
 
   else
@@ -1585,8 +1583,6 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
               priv->y_offset = widget->allocation.height -
                   window_y - event->y;
             }
-
-          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING;
         }
 
       else
@@ -1610,12 +1606,12 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
               priv->x_offset = event->x;
               priv->y_offset = event->y;
             }
-          priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_MOVING;
         }
 
 
     }
 
+  priv->state = state;
   g_object_notify (G_OBJECT (widget), "state");
 }
 
