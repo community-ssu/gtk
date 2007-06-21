@@ -1,0 +1,25 @@
+#! /bin/sh
+
+SCRIPT=/etc/osso-af-init/hildon-desktop.sh
+
+case "$1" in
+start)
+        su - user $SCRIPT start
+	sleep 5
+        ;;
+
+stop)   su - user $SCRIPT stop
+        ;;
+restart)
+        echo "$0: not implemented"
+        exit 1
+        ;;
+force-reload)
+        echo "$0: not implemented"
+        exit 1
+        ;;
+*)      echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
+
