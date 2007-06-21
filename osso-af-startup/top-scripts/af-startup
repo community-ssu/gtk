@@ -31,6 +31,19 @@ start)
         #
         /etc/init.d/fb-progress.sh stop
 
+	# in case of first boot, start services requiered by
+	# startup wizards. Touch a temporary flag file so these
+	# services won't start twice
+
+	if [ -e /home/user/first-boot-flag ]; then
+	  /etc/init.d/dnsmasq start
+	  /etc/init.d/btcond start
+	  /etc/init.d/bluez-utils start
+	  /etc/init.d/wlancond start
+	  /etc/init.d/osso-ic start
+	  touch /tmp/first-boot-flag-tmp
+	fi
+
         if [ -x /etc/init.d/startup-greeting.sh ]; then
           /etc/init.d/startup-greeting.sh start
         fi

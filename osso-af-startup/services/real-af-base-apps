@@ -23,10 +23,6 @@ case "$1" in
 start)
 
   source $SESSION_BUS_ADDRESS_FILE
-  source $AF_INIT_DIR/hildon-desktop.sh start
-
-  # boost desktop startup
-  sleep 9
 
   if [ -f /tmp/run-osso-backup-finish-restore ]; then
     $AF_INIT_DIR/osso-backup-finish-restore.sh
@@ -65,8 +61,6 @@ stop)
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT stop
   fi
-
-  source $AF_INIT_DIR/hildon-desktop.sh stop
 
   ;;
 restart)
