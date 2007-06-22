@@ -1,4 +1,4 @@
-2007-06 22  Moises Martinez  <moises.martinez@nokia.com>
+2007-06-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c:
 	- Moved UI part of ping timeout to hd-desktop.
@@ -13,7 +13,7 @@
 	* libhildonwm/Makefile.am:
 	- Depends only on GTK.
 
-2007-06 21  Moises Martinez  <moises.martinez@nokia.com>
+2007-06-21  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm-watched-window.[ch]:
 	- Renamed to (below)
