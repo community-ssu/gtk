@@ -156,12 +156,6 @@ void
 hd_wm_window_destroy (HDWMWindow *win);
 
 void
-hd_wm_ping_timeout( HDWMWindow *win );
-
-void
-hd_wm_ping_timeout_cancel( HDWMWindow *win );
-
-void
 hd_wm_window_close (HDWMWindow *win);
 
 void

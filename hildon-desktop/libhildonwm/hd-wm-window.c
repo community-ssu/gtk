@@ -146,8 +146,8 @@ static void
 hd_wm_window_finalize (GObject *object)
 {
   HDWMWindow	*win = HD_WM_WINDOW (object);	
-  GtkWidget             *note;
-  HDWM			*hdwm = hd_wm_get_singleton ();
+  GObject       *note;
+  HDWM		*hdwm = hd_wm_get_singleton ();
   
   HN_DBG("Removing '%s'", win->priv->name);
 
@@ -168,14 +168,16 @@ hd_wm_window_finalize (GObject *object)
       g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, win->priv->name);
   
       /* Show the infoprint */
-      hildon_banner_show_information (NULL, NULL, response_message);
+    g_debug ("TODO: %s hildon_banner_show_information (NULL, NULL, response_message);",
+	     response_message);
 
-      g_free (response_message);
+    g_free (response_message);
       
-      /* .. destroy the infonote */
-      gtk_widget_destroy (note);
-      hd_wm_application_set_ping_timeout_note (win->priv->app_parent, NULL);
-    }
+    /* .. destroy the infonote */
+    g_object_unref (note);
+
+    hd_wm_application_set_ping_timeout_note (win->priv->app_parent, NULL);
+  }
   
   if(win->priv->info)
   {
@@ -856,84 +858,6 @@ hd_wm_window_reset_x_win (HDWMWindow * win)
   g_return_if_fail (win);
   win->priv->xwin = None;
 }
-
-static void
-hd_wm_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
-{
-  HDWMWindow *win = (HDWMWindow *)data;
-  HDWMApplication *app = hd_wm_window_get_application (win);
-
-  gtk_widget_destroy (GTK_WIDGET(note));
-  hd_wm_application_set_ping_timeout_note (app, NULL);
-
-  if (ret == GTK_RESPONSE_OK)
-  {
-    /* Kill the app */
-    if (!hd_wm_window_attempt_signal_kill (win, SIGKILL, FALSE))
-      g_debug ("hd_wm_ping_timeout:failed to kill application '%s'.", win->priv->name);
-  }
-}
-
-void
-hd_wm_ping_timeout (HDWMWindow *win)
-{
-  GtkWidget *note;
-
-  HDWMApplication *app = hd_wm_window_get_application (win);
-
-  gchar *timeout_message = 
-    g_strdup_printf (PING_TIMEOUT_MESSAGE_STRING, win->priv->name );
-
-  /* FIXME: Do we need to check if the note already exists? */
-  note = hd_wm_application_get_ping_timeout_note (app);
-  
-  if (note && GTK_IS_WIDGET(note))
-  {
-    g_debug ("hd_wm_ping_timeout: the note already exists.");
-    goto cleanup_and_exit;
-  }
-
-  note = hildon_note_new_confirmation (NULL, timeout_message);
-
-  hd_wm_application_set_ping_timeout_note (app, note);
-
-  hildon_note_set_button_texts (HILDON_NOTE(note),
-                                PING_TIMEOUT_BUTTON_OK_STRING,
-                                PING_TIMEOUT_BUTTON_CANCEL_STRING);
-
-  g_signal_connect (G_OBJECT (note),
-                    "response",
-                    G_CALLBACK (hd_wm_ping_timeout_dialog_response),
-                    win);
-
-  gtk_widget_show_all (note);
-
-cleanup_and_exit:
-
-  g_free( timeout_message );
-}
-
-
-void
-hd_wm_ping_timeout_cancel (HDWMWindow *win)
-{
-  HDWMApplication *app = hd_wm_window_get_application (win);
-
-  GtkWidget *note = hd_wm_application_get_ping_timeout_note(app);
-
-  gchar *response_message = 
-    g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, win->priv->name);
-
-  if (note && GTK_IS_WIDGET (note)) {
-    gtk_dialog_response (GTK_DIALOG(note), GTK_RESPONSE_CANCEL);
-  }
-
-  /* Show the infoprint */
-  hildon_banner_show_information (NULL, NULL, response_message );
-
-  g_free (response_message);
-}
-
 
 /*
  * Closes window and associated views (if any), handling hibernated

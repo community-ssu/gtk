@@ -1,3 +1,18 @@
+2007-06 22  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-desktop.c:
+	- Moved UI part of ping timeout to hd-desktop.
+	* libhildonwm/hd-wm.[ch]:
+	- Code cleaned. Added new signal when application freezes.
+	* libhildonwm/hd-wm-application.[ch]:
+	- Removed Hildon* code.
+	- Code cleanup.
+	* libhildonwm/hd-wm-window.c:
+	- Removed Hildon* code.
+	- Code cleanup.
+	* libhildonwm/Makefile.am:
+	- Depends only on GTK.
+
 2007-06 21  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm-watched-window.[ch]:

@@ -62,6 +62,13 @@ G_DEFINE_TYPE (HDDesktop, hd_desktop, G_TYPE_OBJECT);
 #define HD_DESKTOP_CONFIG_FILE         "desktop.conf"
 #define HD_DESKTOP_CONFIG_USER_PATH    ".osso/hildon-desktop/"
 
+#define HD_DESKTOP_PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
+#define HD_DESKTOP_PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
+#define HD_DESKTOP_PING_TIMEOUT_KILL_FAILURE_STRING  _( "" )
+
+#define HD_DESKTOP_PING_TIMEOUT_BUTTON_OK_STRING     _( "qgn_bd_apkil_ok" )
+#define HD_DESKTOP_PING_TIMEOUT_BUTTON_CANCEL_STRING _( "qgn_bd_apkil_cancel" )
+
 typedef struct 
 {
   GtkWidget         *parent;
@@ -113,8 +120,99 @@ hd_desktop_launch_banner_timeout (gpointer data);
 void 
 hd_desktop_launch_banner_close (GtkWidget *parent, HDDesktopBannerInfo *info);
 
+static void
+hd_desktop_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
+{
+  HDWMWindow *win = (HDWMWindow *)data;
+  HDWMApplication *app = hd_wm_window_get_application (win);
+
+  gtk_widget_destroy (GTK_WIDGET(note));
+  hd_wm_application_set_ping_timeout_note (app, NULL);
+
+  if (ret == GTK_RESPONSE_OK)
+  {
+    /* Kill the app */
+    if (!hd_wm_window_attempt_signal_kill (win, SIGKILL, FALSE))
+      g_debug ("hd_wm_ping_timeout:failed to kill application '%s'.", hd_wm_window_get_name (win));
+  }
+}
+
+static void
+hd_desktop_application_frozen (HDWM *hdwm, HDWMWindow *win, gpointer data)
+{
+  GtkWidget *note;
+
+  HDWMApplication *app = hd_wm_window_get_application (win);
+
+  gchar *timeout_message = 
+    g_strdup_printf (HD_DESKTOP_PING_TIMEOUT_MESSAGE_STRING, hd_wm_window_get_name (win));
+
+  /* FIXME: Do we need to check if the note already exists? */
+  note = GTK_WIDGET (hd_wm_application_get_ping_timeout_note (app));
+  
+  if (note && GTK_IS_WIDGET (note))
+  {
+    g_debug ("hd_wm_ping_timeout: the note already exists.");
+    goto cleanup_and_exit;
+  }
+
+  note = hildon_note_new_confirmation (NULL, timeout_message);
+
+  hd_wm_application_set_ping_timeout_note (app, G_OBJECT (note));
+
+  hildon_note_set_button_texts (HILDON_NOTE (note),
+                                HD_DESKTOP_PING_TIMEOUT_BUTTON_OK_STRING,
+                                HD_DESKTOP_PING_TIMEOUT_BUTTON_CANCEL_STRING);
+
+  g_signal_connect (G_OBJECT (note),
+                    "response",
+                    G_CALLBACK (hd_desktop_ping_timeout_dialog_response),
+                    win);
+
+  gtk_widget_show_all (note);
+
+cleanup_and_exit:
+
+  g_free (timeout_message);
+}
+
+
+static void
+hd_desktop_application_frozen_cancel (HDWM *hdwm, HDWMWindow *win, gpointer data)
+{
+  HDWMApplication *app = hd_wm_window_get_application (win);
+
+  GObject *note = hd_wm_application_get_ping_timeout_note (app);
+
+  gchar *response_message = 
+    g_strdup_printf (HD_DESKTOP_PING_TIMEOUT_RESPONSE_STRING, hd_wm_window_get_name (win));
+
+  if (note && GTK_IS_WIDGET (note))
+    gtk_dialog_response (GTK_DIALOG (note), GTK_RESPONSE_CANCEL);
+
+  /* Show the infoprint */
+  hildon_banner_show_information (NULL, NULL, response_message);
+
+  g_free (response_message);
+}
+
+static void
+hd_desktop_application_died_dialog (HDWM *hdwm, gpointer text, gpointer data)
+{
+  gchar *_text = (gchar *) text;	
+  GtkWidget *dialog;
+	
+  dialog = hildon_note_new_information (NULL, text);
+  
+  gtk_widget_show_all(dialog);
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+  
+  g_free (_text);
+}
+
 static void 
-hd_desktop_launch_banner_show (HDWM *hdwm, HDWMApplication *app, gpointer data)
+hd_desktop_launch_banner_show (HDWM *hdwm, gpointer app, gpointer data)
 {
   HDDesktopBannerInfo *info;
   guint                interval;
@@ -127,17 +225,23 @@ hd_desktop_launch_banner_show (HDWM *hdwm, HDWMApplication *app, gpointer data)
   info = g_new0 (HDDesktopBannerInfo, 1);
 
   info->hdwm = hdwm;
-  info->app  = app;
+  info->app  = (HD_WM_IS_APPLICATION (app)) ? app : NULL;
 
   gettimeofday (&info->launch_time, NULL );
 
-  lapp_name = hd_wm_application_get_localized_name (app);
+  lapp_name = (HD_WM_IS_APPLICATION (app)) ? 
+	      hd_wm_application_get_localized_name (app) : app;
 
-  info->msg = 
-    g_strdup_printf (_(hd_wm_application_is_hibernating (app) ?
-                     HDWM_APPLICATION_LAUNCH_BANNER_MSG_RESUMING :
-                     HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING),
-                     lapp_name ? _(lapp_name) : "" );
+  if (HD_WM_IS_APPLICATION (app))
+    info->msg = 
+      g_strdup_printf (_(hd_wm_application_is_hibernating (app) ?
+                       HDWM_APPLICATION_LAUNCH_BANNER_MSG_RESUMING :
+                       HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING),
+                       lapp_name ? _(lapp_name) : "" );
+  else
+    info->msg =
+      g_strdup_printf (HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING,
+	  	       lapp_name ? _(lapp_name) : "" );	      
 
   info->banner = GTK_WIDGET (hildon_banner_show_animation (NULL, NULL, info->msg));
 
@@ -1460,6 +1564,21 @@ hd_desktop_init (HDDesktop *desktop)
 		    G_CALLBACK (hd_desktop_launch_banner_show),
 		    NULL);
 
+  g_signal_connect (hdwm,
+		    "application-died",
+		    G_CALLBACK (hd_desktop_application_died_dialog),
+		    NULL);
+  
+  g_signal_connect (hdwm,
+		    "application-frozen",
+		    G_CALLBACK (hd_desktop_application_frozen),
+		    NULL);
+
+  g_signal_connect (hdwm,
+		    "application-frozen-cancel",
+		    G_CALLBACK (hd_desktop_application_frozen_cancel),
+		    NULL);
+  
   desktop->priv->system_conf_monitor = NULL;
   desktop->priv->user_conf_monitor = NULL;
 

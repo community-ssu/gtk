@@ -144,7 +144,10 @@ struct _HDWMClass
   void (*entry_info_stack_changed) (HDWM *hdwm,HDEntryInfo *info);
   void (*work_area_changed)        (HDWM *hdwm,GdkRectangle *work_area);
   void (*show_menu)		   (HDWM *hdwm);
-  void (*application_starting)     (HDWM *hdwm, gchar *application);
+  void (*application_starting)     (HDWM *hdwm, gpointer application);
+  void (*application_died)	   (HDWM *hdwm, gpointer application);
+  void (*window_frozen)		   (HDWM *hdwm, HDWMWindow *window);
+  void (*window_frozen_cancel)     (HDWM *hdwm, HDWMWindow *window);
   /* */
 };
 

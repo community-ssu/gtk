@@ -36,18 +36,13 @@
 #include <gdk/gdkx.h>
 #include <gdk/gdkevents.h>
 #include <libgnomevfs/gnome-vfs.h>
-
-#ifdef HAVE_LIBHILDON
-#include <hildon/hildon-defines.h>
-#include <hildon/hildon-window.h>
-#else
-#include <hildon-widgets/hildon-defines.h>
-#include <hildon-widgets/hildon-window.h>
-#endif
+#include <glib/gi18n.h>
 
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
 #endif
+
+#include <hildon/hildon-window.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
@@ -116,6 +111,9 @@ enum
   HDWM_SHOW_A_MENU_SIGNAL,
   HDWM_LONG_PRESS_KEY,
   HDWM_APPLICATION_STARTING_SIGNAL,
+  HDWM_APPLICATION_DIED_SIGNAL,
+  HDWM_APPLICATION_FROZEN_SIGNAL,
+  HDWM_APPLICATION_FROZEN_CANCEL_SIGNAL,
   HDWM_FULLSCREEN,
   HDWM_CLOSE_APP,
   HDWM_SIGNALS
@@ -304,7 +302,7 @@ hd_wm_atoms_init (HDWM *hdwm)
     
     "UTF8_STRING",
 
-    "_NET_WM_STARTUP_INFO"
+    "_NET_STARTUP_INFO"
   };
 
   XInternAtoms (GDK_DISPLAY(),
@@ -565,6 +563,8 @@ out:
 static DBusHandlerResult
 hd_wm_dbus_signal_handler (DBusConnection *conn, DBusMessage *msg, void *data)
 {
+  HDWM *hdwm = HD_WM (data);
+
   if (dbus_message_is_signal(msg, MAEMO_LAUNCHER_SIGNAL_IFACE,
 				  APP_DIED_SIGNAL_NAME))
   {
@@ -595,12 +595,17 @@ hd_wm_dbus_signal_handler (DBusConnection *conn, DBusMessage *msg, void *data)
 	   filename, pid, status);
 
     /* Is this 'filename' watchable ? */
-    app = hd_wm_lookup_application_via_exec(filename);
+    app = hd_wm_lookup_application_via_exec (filename);
+
     if (app)
     {
-       g_debug ("Showing app died dialog ...");
-       hd_wm_application_died_dialog_show(app);
+       gchar *text = 
+	 g_strdup_printf (dgettext("ke-recv", "memr_ni_application_closed_no_resources"),
+			  hd_wm_application_get_name (app) ? _(hd_wm_application_get_name (app)) : "");
+
+       g_signal_emit_by_name (hdwm, "application-died", text);
     }
+
     return DBUS_HANDLER_RESULT_HANDLED;
   }
   
@@ -919,6 +924,39 @@ hd_wm_class_init (HDWMClass *hdwm_class)
                      1,
                      G_TYPE_POINTER);
 
+  hdwm_signals[HDWM_APPLICATION_DIED_SIGNAL] = 
+	g_signal_new("application-died",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_LAST,
+		     G_STRUCT_OFFSET (HDWMClass,application_died),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__POINTER,
+		     G_TYPE_NONE,
+                     1,
+                     G_TYPE_POINTER);
+
+  hdwm_signals[HDWM_APPLICATION_FROZEN_SIGNAL] = 
+	g_signal_new("application-frozen",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_LAST,
+		     G_STRUCT_OFFSET (HDWMClass,window_frozen),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__OBJECT,
+		     G_TYPE_NONE,
+                     1,
+                     G_TYPE_OBJECT);
+
+  hdwm_signals[HDWM_APPLICATION_FROZEN_CANCEL_SIGNAL] = 
+	g_signal_new("application-frozen-cancel",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_LAST,
+		     G_STRUCT_OFFSET (HDWMClass,window_frozen_cancel),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__OBJECT,
+		     G_TYPE_NONE,
+                     1,
+                     G_TYPE_OBJECT);
+  
   hdwm_signals[HDWM_FULLSCREEN] = 
 	g_signal_new("fullscreen",
 		     G_OBJECT_CLASS_TYPE(object_class),
@@ -2335,7 +2373,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
   if (((XEvent*)xevent)->type == ClientMessage)
   {
     XClientMessageEvent *cev = (XClientMessageEvent *)xevent;
-
+g_debug ("----------->>>>>>>> Message type %lx",cev->message_type);
     if (cev->message_type == hdwm->priv->atoms[HD_ATOM_HILDON_FROZEN_WINDOW])
     {
       Window   xwin_hung;
@@ -2351,9 +2389,11 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       if (win) 
       {
         if ( has_reawoken == TRUE ) 
-	  hd_wm_ping_timeout_cancel (win);
+	  g_signal_emit_by_name (hdwm, "application-frozen-cancel", win);
+	  /*hd_wm_ping_timeout_cancel (win);**/
 	else
-	  hd_wm_ping_timeout (win);
+          g_signal_emit_by_name (hdwm, "application-frozen", win);
+	  /*hd_wm_ping_timeout (win);*/
       }
       else 
       if (cev->message_type == hdwm->priv->atoms[HD_ATOM_HILDON_TN_ACTIVATE])
@@ -2366,7 +2406,11 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
     }
     else
     if (cev->message_type == hdwm->priv->atoms[HD_ATOM_STARTUP_INFO])
+    {	    
       g_debug ("-------## ->>>>>>>>>   hello %s      <<<<<<<<<<---",(gchar *)cev->data.l);	    
+
+      return GDK_FILTER_CONTINUE;
+    }
   }
   else
   if (((XEvent*)xevent)->type == KeyPress)

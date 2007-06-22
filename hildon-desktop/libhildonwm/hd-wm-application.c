@@ -96,7 +96,7 @@ struct _HDWMApplicationPrivate
   gchar     *exec_name; 		/* class || exec field ? */
   gchar     *class_name;        
   gchar     *text_domain;        
-  GtkWidget *ping_timeout_note; /* The note that is shown when the app quits responding */
+  GObject   *ping_timeout_note; /* The note that is shown when the app quits responding */
   HDWMWindow    *active_window;
   HDWMApplicationFlags flags;
   HDEntryInfo          *info;
@@ -166,14 +166,6 @@ hd_wm_application_has_windows_find_func (gpointer key,
 					   gpointer value,
 					   gpointer user_data);
 
-static void
-hd_wm_launch_banner_info_free (HDWMLaunchBannerInfo* info)
-{
-  g_return_if_fail(info);
-  
-  g_free(info->msg);
-  g_free(info);
-}
 
 HDWMApplication*
 hd_wm_application_new_dummy (void)
@@ -563,132 +555,12 @@ hd_wm_application_set_minimised (HDWMApplication *app,
 }
 
 void
-hd_wm_application_died_dialog_show(HDWMApplication *app)
-{
-  GtkWidget *dialog;
-  gchar *text;
-  text = g_strdup_printf(dgettext("ke-recv", "memr_ni_application_closed_no_resources"),
-			 app->priv->app_name ? _(app->priv->app_name) : "");
-  dialog = hildon_note_new_information(NULL, text);
-  gtk_widget_show_all(dialog);
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy(dialog);
-  g_free(text);
-}
-
-/* Launch Banner Dialog */
-
-/* FIXME: rename namespace to watched app */
-void 
-hd_wm_application_launch_banner_show (HDWMApplication *app) 
-{
-  HDWMLaunchBannerInfo *info;
-  guint                 interval;
-  gchar                *lapp_name;
-
-  g_return_if_fail(app);
-  
-  interval = HDWM_APPLICATION_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
-
-  info = g_new0(HDWMLaunchBannerInfo, 1);
-
-  info->app = app;
-
-  gettimeofday( &info->launch_time, NULL );
-
-  gdk_error_trap_push(); 	/* Needed ? */
-
-  lapp_name = (app->priv->text_domain?dgettext(app->priv->text_domain,app->priv->app_name):
-                                gettext(app->priv->app_name));
-
-  info->msg = g_strdup_printf(_(hd_wm_application_is_hibernating(app) ?
-                                HDWM_APPLICATION_LAUNCH_BANNER_MSG_RESUMING :
-                                HDWM_APPLICATION_LAUNCH_BANNER_MSG_LOADING ),
-                              lapp_name ? _(lapp_name) : "" );
-        
-  info->banner = hildon_banner_show_animation(NULL, NULL, info->msg);
-  gdk_error_trap_pop();
-
-  g_timeout_add(interval, hd_wm_application_launch_banner_timeout, info);
-
-}
-
-void 
-hd_wm_application_launch_banner_close (GtkWidget            *parent,
-					 HDWMLaunchBannerInfo *info)
-{
-  if (!(info && info->msg))
-    return;
-
-  if(info->banner)
-    gtk_widget_destroy(info->banner);
-
-  hd_wm_launch_banner_info_free(info);
-}
-
-gboolean 
-hd_wm_application_launch_banner_timeout (gpointer data)
-{
-  HDWMLaunchBannerInfo *info = data;
-  struct timeval        current_time;
-  long unsigned int     t1, t2;
-  guint                 time_left;
-  gulong                current_banner_timeout = 0;
-
-  /* Added by Karoliina Salminen 26092005 
-   * Addition to low memory situation awareness, the following 
-   * multiplies the launch banner timeout with the timeout 
-   * multiplier found from environment variable 
-   */
-  if(hd_wm_is_lowmem_situation()) 
-    current_banner_timeout
-      = hd_wm_get_lowmem_banner_timeout()*hd_wm_get_lowmem_timeout_multiplier();
-  
-  else 
-    current_banner_timeout = hd_wm_get_lowmem_banner_timeout();
-
-  /* End of addition 26092005 */
-
-#if 0 // needed ???
-  if ( find_service_from_tree( hnwm->callbacks.model, 
-			       &iter, 
-			       info->service_name ) > 0) 
-    {
-    } else {
-      /* This should never happen. Bail out! */
-      return FALSE;
-    }
-#endif	
-
-  gettimeofday( &current_time, NULL );
-
-  t1 = (long unsigned int) info->launch_time.tv_sec;
-  t2 = (long unsigned int) current_time.tv_sec;
-  time_left = (guint) (t2 - t1);
-	
-  /* The following uses now current_banner_timeout instead of 
-   * lowmem_banner_timeout, changed by
-   * Karoliina Salminen 26092005 
-   */
-  if (time_left >= current_banner_timeout 
-      || hd_wm_application_has_windows (info->app))
-    {
-      /* Close the banner */
-      hd_wm_application_launch_banner_close( NULL, info );
-      
-      return FALSE;
-    }
-  
-  return TRUE;
-}
-
-void
-hd_wm_application_set_ping_timeout_note(HDWMApplication *app, GtkWidget *note)
+hd_wm_application_set_ping_timeout_note (HDWMApplication *app, GObject *note)
 {
 	app->priv->ping_timeout_note = note;
 }
 
-GtkWidget*
+GObject *
 hd_wm_application_get_ping_timeout_note(HDWMApplication *app)
 {
 	return app->priv->ping_timeout_note;

@@ -270,14 +270,6 @@ hd_wm_application_set_able_to_hibernate (HDWMApplication *app,
 					   gboolean          hibernate);
 
 /** 
- * Shows application died dialog
- *
- * @param app HDWMApplication instance
- */
-void
-hd_wm_application_died_dialog_show (HDWMApplication *app);
-
-/** 
  * FIXME: CAn be static ?
  * Shows launch banner for app 
  * 
@@ -287,29 +279,10 @@ hd_wm_application_died_dialog_show (HDWMApplication *app);
 void 
 hd_wm_application_launch_banner_show (HDWMApplication *app);
 
-/** 
- * FIXME: Can be static ?
- * 
- * @param parent 
- */
-void 
-hd_wm_application_launch_banner_close (GtkWidget            *parent,
-					 HDWMLaunchBannerInfo *info);
-
-/** 
- * FIXME: this can be static
- * 
- * @param data 
- * 
- * @return 
- */
-gboolean 
-hd_wm_application_launch_banner_timeout (gpointer data);
-
 void
-hd_wm_application_set_ping_timeout_note (HDWMApplication *app, GtkWidget *note);
+hd_wm_application_set_ping_timeout_note (HDWMApplication *app, GObject *note);
 
-GtkWidget*
+GObject *
 hd_wm_application_get_ping_timeout_note (HDWMApplication *app);
 
 HDWMWindow *

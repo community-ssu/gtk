@@ -17,6 +17,7 @@ EXTRA_DIST = .empty
 
 INCLUDES = \
 	$(HILDON_CFLAGS) \
+        $(GTK_CFLAGS) \
 	$(GDK_CFLAGS) \
    	$(GCONF_CFLAGS) \
 	$(GNOME_VFS_CFLAGS) \
@@ -51,6 +52,7 @@ libhildonwm_la_SOURCES = \
 	hd-entry-info.c
 
 libhildonwm_la_LIBADD =     \
+ 	$(GTK_LIBS)	    \
 	$(GDK_LIBS)	    \
 	$(GCONF_LIBS)       \
 	$(GNOME_VFS_LIBS)   \
