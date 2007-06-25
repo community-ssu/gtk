@@ -1576,7 +1576,8 @@ hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
 {
   GtkTreeIter  iter;	
   GtkTreeModel *nm = GTK_TREE_MODEL (switcher->nm);
-
+  gboolean first_item = TRUE;
+  
   if (gtk_tree_model_get_iter_first (nm, &iter))
   {
     gint id;
@@ -1586,6 +1587,13 @@ hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
     do
     {
       GtkWidget *menu_item;
+
+      if (!first_item)
+        hildon_desktop_popup_menu_add_item
+          (switcher->priv->menu_notifications,
+          GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+      else
+        first_item = FALSE;
 
       gtk_tree_model_get (nm,
                           &iter,
@@ -1608,10 +1616,6 @@ hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
        (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
 
       hd_switcher_menu_replace_blinking_icon (switcher, icon);
-
-      hildon_desktop_popup_menu_add_item
-       (switcher->priv->menu_notifications,
-        GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
     }
     while (gtk_tree_model_iter_next (nm, &iter));
   }	  

@@ -1,5 +1,10 @@
 2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-switcher-menu.c: correctly add separators when populating the
+	notifications menu on startup.
+
+2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* debian/control: added build dependency on libsqlite3-dev to enable
 	notification manager persistency support.
 	* libhildondesktop/hildon-desktop-notification-manager.c: dynamicaly
