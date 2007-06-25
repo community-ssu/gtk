@@ -599,10 +599,32 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
     if (!item_desktop_id || strlen (item_desktop_id) == 0)
     {
       GtkTreeIter child_iter;
+      GtkWidget *hbox, *label;
 
+#if 0
       menu_item = gtk_image_menu_item_new_with_label (
                                 (item_text_domain && *item_text_domain) ?
                                 dgettext(item_text_domain, item_name) : _(item_name));
+#else
+      menu_item = gtk_menu_item_new ();
+      
+      hbox = gtk_hbox_new (FALSE, 0);
+      
+      label = gtk_label_new ((item_text_domain && *item_text_domain) ?
+      		        dgettext(item_text_domain, item_name) : _(item_name)), 
+      
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      
+      gtk_box_pack_start (GTK_BOX (hbox),
+      		          label,
+      		          TRUE, 
+      		          TRUE, 
+      		          15);
+      
+      gtk_container_add (GTK_CONTAINER (menu_item), hbox);
+      
+      gtk_widget_show_all (hbox);
+#endif
 
       GTK_WIDGET_SET_FLAGS (menu_item, GTK_CAN_FOCUS);
 

@@ -1,5 +1,9 @@
 2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-applications-menu.c: added padding to the categories pane.
+
+2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-switcher-menu.c: correctly add separators when populating the
 	notifications menu on startup.
 
