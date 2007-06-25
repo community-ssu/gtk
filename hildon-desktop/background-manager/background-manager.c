@@ -350,43 +350,6 @@ load_image_from_uri (const gchar  *uri,
 }
 
 static GdkPixbuf *
-load_image_from_file (const gchar  *filename,
-                      gboolean cancellable,
-                      GError      **error)
-{
-  gchar *filename_uri;
-  GdkPixbuf *retval;
-  GError *uri_error;
-  GError *load_error;
-
-  uri_error = NULL;
-  filename_uri = g_filename_to_uri (filename, NULL, &uri_error);
-  if (uri_error)
-    {
-      g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		   BACKGROUND_MANAGER_ERROR_UNKNOWN,
-		   "Unable to convert `%s' to a valid URI: %s",
-		   filename,
-		   uri_error->message);
-      g_error_free (uri_error);
-
-      return NULL;
-    }
-
-  load_error = NULL;
-  retval = load_image_from_uri (filename_uri, TRUE, cancellable, &load_error);
-  if (load_error)
-    {
-      g_propagate_error (error, load_error);
-    }
-
-  g_free (filename_uri);
-
-  return retval;
-}
-
-
-static GdkPixbuf *
 create_background_from_color (const GdkColor  *src,
                               gint             width,
                               gint             height)
@@ -566,8 +529,6 @@ static GdkPixbuf *
 composite_background (const GdkPixbuf  *bg_image,
                       const GdkColor   *bg_color,
                       BackgroundMode    mode,
-                      const gchar      *sidebar_path,
-                      const gchar      *titlebar_path,
                       gint              window_width,
                       gint              window_height,
                       gboolean          cancellable,
@@ -579,10 +540,6 @@ composite_background (const GdkPixbuf  *bg_image,
 {
   GError *bg_error;
   GdkPixbuf *pixbuf;
-  GdkPixbuf *compose;
-  gint titlebar_height = 0;
-
-  g_debug ("Compositing background image...");
 
   bg_error = NULL;
 
@@ -617,116 +574,6 @@ composite_background (const GdkPixbuf  *bg_image,
       g_propagate_error (error, bg_error);
 
       return NULL;
-    }
-
-  if (titlebar_path && *titlebar_path)
-    {
-      compose = load_image_from_file (titlebar_path, cancellable, &bg_error);
-
-      titlebar_height = gdk_pixbuf_get_height (compose);
-
-      if (bg_error)
-        {
-          g_warning ("Unable to load titlebar pixbuf: %s", bg_error->message);
-
-          g_error_free (bg_error);
-          bg_error = NULL;
-        }
-      else if (!compose)
-        {
-          g_debug ("Assuming loading of titlebar cancelled");
-          if (pixbuf)
-            g_object_unref (pixbuf);
-          return NULL;
-        }
-      else
-        {
-          g_debug ("Compositing titlebar");
-          /* Scale it horizontally */
-          double x_scale;
-
-          x_scale = (double)(window_width - left_offset - right_offset) /
-                    gdk_pixbuf_get_width (compose);
-
-          gdk_pixbuf_composite (compose,
-                                pixbuf,
-                                left_offset, top_offset,
-                                window_width - left_offset - right_offset,
-                                gdk_pixbuf_get_height (compose),
-                                left_offset, top_offset,
-                                x_scale,
-                                1.0,
-                                GDK_INTERP_NEAREST,
-                                HILDON_HOME_IMAGE_ALPHA_FULL);
-
-          g_object_unref (compose);
-          compose = NULL;
-        }
-    }
-
-  if (sidebar_path && *sidebar_path)
-    {
-
-      compose = load_image_from_file (sidebar_path, cancellable, &bg_error);
-      if (bg_error)
-        {
-          g_warning ("Unable to load sidebar pixbuf: %s", bg_error->message);
-
-          g_error_free (bg_error);
-          bg_error = NULL;
-        }
-      else if (!compose)
-        {
-          g_debug ("Assuming loading of sidebar cancelled");
-          if (pixbuf)
-            g_object_unref (pixbuf);
-          return NULL;
-        }
-      else
-        {
-          gint width = gdk_pixbuf_get_width (compose);
-          gint height = gdk_pixbuf_get_height (compose);
-          gint sidebar_height;
-
-          g_debug ("Compositing sidebar (w:%d, h:%d)",
-                   width, height);
-
-          sidebar_height = window_height - titlebar_height;
-          if (height != sidebar_height)
-            {
-              GdkPixbuf *scaled;
-              gint i;
-
-              scaled = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
-                                       width, sidebar_height);
-              for (i = 0; i < (sidebar_height - height); i += height)
-                {
-                  gdk_pixbuf_copy_area (compose,
-                                        0, 0,
-                                        width, height,
-                                        scaled,
-                                        0, i + height);
-                }
-
-              g_object_unref (compose);
-              compose = scaled;
-            }
-
-          gdk_pixbuf_composite (compose,
-                                pixbuf,
-                                left_offset,
-                                top_offset + titlebar_height,
-                                gdk_pixbuf_get_width (compose),
-                                gdk_pixbuf_get_height (compose),
-                                left_offset,
-                                top_offset,
-                                1.0, 1.0,
-                                GDK_INTERP_NEAREST,
-                                HILDON_HOME_IMAGE_ALPHA_FULL);
-
-          g_object_unref (compose);
-          compose = NULL;
-        }
     }
 
   return pixbuf;
@@ -774,8 +621,6 @@ gboolean
 background_manager_set_background (BackgroundManager   *manager,
                                    gint                 window_xid,
                                    const gchar         *filename,
-                                   const gchar         *top_bar,
-                                   const gchar         *left_bar,
                                    guint16              red,
                                    guint16              green,
                                    guint16              blue,
@@ -858,8 +703,6 @@ background_manager_set_background (BackgroundManager   *manager,
   background = composite_background (image,
                                      &color,
                                      mode,
-                                     NULL,
-                                     left_bar,
                                      width,
                                      height,
                                      TRUE,
@@ -931,7 +774,7 @@ background_manager_set_background (BackgroundManager   *manager,
 
   gdk_drawable_set_colormap (GDK_DRAWABLE (pixmap), colormap);
   gdk_flush ();
-  gdk_draw_pixbuf (pixmap, gc, background, 
+  gdk_draw_pixbuf (pixmap, gc, background,
                    0, 0, 0, 0,
                    gdk_pixbuf_get_width (background),
                    gdk_pixbuf_get_height (background),

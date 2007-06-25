@@ -43,10 +43,6 @@
 /* Key used in the home-background.conf */
 #define HD_HOME_BACKGROUND_KEY_GROUP            "Hildon Home"
 #define HD_HOME_BACKGROUND_KEY_URI              "BackgroundImage"
-#define HD_HOME_BACKGROUND_KEY_SIDEBAR          "SidebarImage"
-#define HD_HOME_BACKGROUND_KEY_TITLEBAR         "TitlebarImage"
-#define HD_HOME_BACKGROUND_KEY_BOTTOMBAR        "BottombarImage"
-#define HD_HOME_BACKGROUND_KEY_RIGHTBAR         "RightbarImage"
 #define HD_HOME_BACKGROUND_KEY_RED              "Red"
 #define HD_HOME_BACKGROUND_KEY_GREEN            "Green"
 #define HD_HOME_BACKGROUND_KEY_BLUE             "Blue"
@@ -62,10 +58,6 @@
 enum
 {
   PROP_FILENAME = 1,
-  PROP_NORTH_BORDER,
-  PROP_SOUTH_BORDER,
-  PROP_EAST_BORDER,
-  PROP_WEST_BORDER,
   PROP_MODE,
   PROP_COLOR
 };
@@ -77,10 +69,6 @@ struct _HDHomeBackgroundPrivate
   BackgroundMode    mode;
 
   gchar            *filename;
-  gchar            *north_border;
-  gchar            *west_border;
-  gchar            *east_border;
-  gchar            *south_border;
 
 };
 
@@ -127,42 +115,6 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
                                    PROP_FILENAME,
                                    pspec);
 
-  pspec = g_param_spec_string ("north-border",
-                               "North border",
-                               "North border image filename",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_NORTH_BORDER,
-                                   pspec);
-
-  pspec = g_param_spec_string ("south-border",
-                               "South border",
-                               "South border image filename",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_SOUTH_BORDER,
-                                   pspec);
-  
-  pspec = g_param_spec_string ("west-border",
-                               "West border",
-                               "West border image filename",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_WEST_BORDER,
-                                   pspec);
-  
-  pspec = g_param_spec_string ("east-border",
-                               "East border",
-                               "East border image filename",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_EAST_BORDER,
-                                   pspec);
-  
   pspec = g_param_spec_int ("mode",
                             "Mode",
                             "Background stretching mode",
@@ -181,32 +133,20 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_COLOR,
                                    pspec);
-                                
+
   g_type_class_add_private (klass, sizeof (HDHomeBackgroundPrivate));
 }
 
 static void
 hd_home_background_finalize (GObject *object)
 {
-  HDHomeBackgroundPrivate  *priv; 
-  
+  HDHomeBackgroundPrivate  *priv;
+
   g_return_if_fail (HD_IS_HOME_BACKGROUND (object));
   priv = HD_HOME_BACKGROUND (object)->priv;
 
   g_free (priv->filename);
   priv->filename = NULL;
-
-  g_free (priv->north_border);
-  priv->north_border = NULL;
-
-  g_free (priv->west_border);
-  priv->west_border = NULL;
-
-  g_free (priv->east_border);
-  priv->east_border = NULL;
-
-  g_free (priv->south_border);
-  priv->south_border = NULL;
 
   if (priv->color)
     gdk_color_free (priv->color);
@@ -231,22 +171,6 @@ hd_home_background_set_property (GObject       *object,
             priv->filename = g_strdup ("");
           else
             priv->filename = g_strdup (g_value_get_string (value));
-          break;
-      case PROP_NORTH_BORDER:
-          g_free (priv->north_border);
-          priv->north_border = g_strdup (g_value_get_string (value));
-          break;
-      case PROP_WEST_BORDER:
-          g_free (priv->west_border);
-          priv->west_border = g_strdup (g_value_get_string (value));
-          break;
-      case PROP_EAST_BORDER:
-          g_free (priv->east_border);
-          priv->east_border = g_strdup (g_value_get_string (value));
-          break;
-      case PROP_SOUTH_BORDER:
-          g_free (priv->south_border);
-          priv->east_border = g_strdup (g_value_get_string (value));
           break;
       case PROP_MODE:
           priv->mode = g_value_get_int (value);
@@ -274,18 +198,6 @@ hd_home_background_get_property (GObject       *object,
       case PROP_FILENAME:
           g_value_set_string (value, priv->filename);
           break;
-      case PROP_NORTH_BORDER:
-          g_value_set_string (value, priv->north_border);
-          break;
-      case PROP_WEST_BORDER:
-          g_value_set_string (value, priv->west_border);
-          break;
-      case PROP_EAST_BORDER:
-          g_value_set_string (value, priv->east_border);
-          break;
-      case PROP_SOUTH_BORDER:
-          g_value_set_string (value, priv->south_border);
-          break;
       case PROP_MODE:
           g_value_set_int (value, priv->mode);
           break;
@@ -302,7 +214,7 @@ hd_home_background_save (HDHomeBackground *background,
                          const gchar *filename,
                          GError **error)
 {
-  HDHomeBackgroundPrivate  *priv; 
+  HDHomeBackgroundPrivate  *priv;
   GKeyFile                 *keyfile;
   GError                   *local_error = NULL;
   gchar                    *buffer;
@@ -326,29 +238,6 @@ hd_home_background_save (HDHomeBackground *background,
                            HD_HOME_BACKGROUND_KEY_URI,
                            HD_HOME_BACKGROUND_VALUE_NO_IMAGE);
 
-  if (priv->north_border)
-    g_key_file_set_string (keyfile,
-                           HD_HOME_BACKGROUND_KEY_GROUP,
-                           HD_HOME_BACKGROUND_KEY_TITLEBAR,
-                           priv->north_border);
-  
-  if (priv->south_border)
-    g_key_file_set_string (keyfile,
-                           HD_HOME_BACKGROUND_KEY_GROUP,
-                           HD_HOME_BACKGROUND_KEY_BOTTOMBAR,
-                           priv->south_border);
-  
-  if (priv->west_border)
-    g_key_file_set_string (keyfile,
-                           HD_HOME_BACKGROUND_KEY_GROUP,
-                           HD_HOME_BACKGROUND_KEY_SIDEBAR,
-                           priv->west_border);
-  
-  if (priv->east_border)
-    g_key_file_set_string (keyfile,
-                           HD_HOME_BACKGROUND_KEY_GROUP,
-                           HD_HOME_BACKGROUND_KEY_RIGHTBAR,
-                           priv->east_border);
 
   /* Color */
   if (priv->color)
@@ -405,7 +294,7 @@ hd_home_background_save (HDHomeBackground *background,
                        buffer,
                        buffer_length,
                        &local_error);
-  
+
 cleanup:
   g_key_file_free (keyfile);
 
@@ -420,12 +309,12 @@ hd_home_background_load (HDHomeBackground *background,
                          const gchar *filename,
                          GError **error)
 {
-  HDHomeBackgroundPrivate  *priv; 
+  HDHomeBackgroundPrivate  *priv;
   GKeyFile                 *keyfile;
   GError                   *local_error = NULL;
   gint                      component;
   gchar                    *mode = NULL;
-  
+
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && filename);
   priv = background->priv;
 
@@ -443,7 +332,7 @@ hd_home_background_load (HDHomeBackground *background,
                                           HD_HOME_BACKGROUND_KEY_GROUP,
                                           HD_HOME_BACKGROUND_KEY_URI,
                                           &local_error);
-  
+
   if (local_error) goto cleanup;
 
   if (g_str_equal (priv->filename, HD_HOME_BACKGROUND_VALUE_NO_IMAGE))
@@ -452,28 +341,6 @@ hd_home_background_load (HDHomeBackground *background,
       priv->filename = NULL;
     }
 
-  /* the borders are not mandatory */
-  g_free (priv->north_border);
-  priv->north_border = g_key_file_get_string (keyfile,
-                                              HD_HOME_BACKGROUND_KEY_GROUP,
-                                              HD_HOME_BACKGROUND_KEY_TITLEBAR,
-                                              NULL);
-  g_free (priv->west_border);
-  priv->west_border = g_key_file_get_string (keyfile,
-                                             HD_HOME_BACKGROUND_KEY_GROUP,
-                                             HD_HOME_BACKGROUND_KEY_SIDEBAR,
-                                             NULL);
-  g_free (priv->east_border);
-  priv->east_border = g_key_file_get_string (keyfile,
-                                             HD_HOME_BACKGROUND_KEY_GROUP,
-                                             HD_HOME_BACKGROUND_KEY_RIGHTBAR,
-                                             NULL);
-  g_free (priv->south_border);
-  priv->south_border = g_key_file_get_string (keyfile,
-                                              HD_HOME_BACKGROUND_KEY_GROUP,
-                                              HD_HOME_BACKGROUND_KEY_BOTTOMBAR,
-                                              NULL);
-  
   /* Color */
   component = g_key_file_get_integer (keyfile,
                                       HD_HOME_BACKGROUND_KEY_GROUP,
@@ -490,7 +357,7 @@ hd_home_background_load (HDHomeBackground *background,
     }
   else
     priv->color->red = component;
-  
+
   component = g_key_file_get_integer (keyfile,
                                       HD_HOME_BACKGROUND_KEY_GROUP,
                                       HD_HOME_BACKGROUND_KEY_GREEN,
@@ -502,7 +369,7 @@ hd_home_background_load (HDHomeBackground *background,
     }
   else
     priv->color->green = component;
-  
+
   component = g_key_file_get_integer (keyfile,
                                       HD_HOME_BACKGROUND_KEY_GROUP,
                                       HD_HOME_BACKGROUND_KEY_BLUE,
@@ -516,7 +383,6 @@ hd_home_background_load (HDHomeBackground *background,
     priv->color->blue = component;
 
   /* Mode */
-  
   mode = g_key_file_get_string (keyfile,
                                 HD_HOME_BACKGROUND_KEY_GROUP,
                                 HD_HOME_BACKGROUND_KEY_MODE,
@@ -593,14 +459,10 @@ hd_home_background_apply (HDHomeBackground *background,
       right_offset = MAX (0, width- area->width - area->x);
     }
 
-  g_debug ("Trying to apply background to window: %x", (int)GDK_WINDOW_XID(window));
-
 #define S(string) (string?string:"")
   org_maemo_hildon_background_manager_set_background (background_manager_proxy,
                                                       GDK_WINDOW_XID (window),
                                                       S(priv->filename),
-                                                      S(priv->west_border),
-                                                      S(priv->north_border),
                                                       priv->color->red,
                                                       priv->color->green,
                                                       priv->color->blue,
@@ -742,8 +604,6 @@ hd_home_background_apply_async (HDHomeBackground               *background,
                                                 (background_manager_proxy,
                                                  GDK_WINDOW_XID (window),
                                                  S(priv->filename),
-                                                 "",
-                                                 "",
                                                  priv->color->red,
                                                  priv->color->green,
                                                  priv->color->blue,
@@ -771,10 +631,6 @@ hd_home_background_copy (const HDHomeBackground *src)
                        "mode", priv->mode,
                        "color", priv->color,
                        "filename", priv->filename,
-                       "west-border", priv->west_border,
-                       "east-border", priv->east_border,
-                       "south-border", priv->south_border,
-                       "north-border", priv->north_border,
                        NULL);
 
   return dest;
@@ -797,10 +653,6 @@ hd_home_background_equal (const HDHomeBackground *background1,
 
 #define equal_or_null(s, t) ((!s && !t) || ((s && t) && g_str_equal (s,t)))
   return (equal_or_null (priv1->filename,         priv2->filename)        &&
-          equal_or_null (priv1->west_border,      priv2->west_border)     &&
-          equal_or_null (priv1->east_border,      priv2->east_border)     &&
-          equal_or_null (priv1->north_border,     priv2->north_border)    &&
-          equal_or_null (priv1->south_border,     priv2->south_border)    &&
           gdk_color_equal (priv1->color,          priv2->color)           &&
           priv1->mode == priv2->mode);
 #undef equal_or_null

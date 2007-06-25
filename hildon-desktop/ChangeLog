@@ -1,5 +1,14 @@
 2007-06-25  Johan Bilien  <johan.bilien@nokia.com>
 
+	* background-manager/{background-manager.[ch],
+	  background-manager.xml.in}:
+	- removed the west and north border argument, not used
+	  anymore
+	* src/hd-home-background.[ch]:
+	- Removed _border properties, not used anymore
+
+2007-06-25  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c:
 	- created Layout struct which adds the stack index
 	- save and load the stack order

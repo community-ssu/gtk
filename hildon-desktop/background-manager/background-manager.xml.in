@@ -5,8 +5,6 @@
     <method name="SetBackground">
       <arg type="i" name="window_id"/>
       <arg type="s" name="filename"/>
-      <arg type="s" name="west_border"/>
-      <arg type="s" name="north_border"/>
       <arg type="i" name="red"/>
       <arg type="i" name="green"/>
       <arg type="i" name="blue"/>

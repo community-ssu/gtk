@@ -92,12 +92,10 @@ struct _BackgroundManagerClass
 
 GType                 background_manager_get_type          (void) G_GNUC_CONST;
 
-gboolean              background_manager_set_background 
+gboolean              background_manager_set_background
                             (BackgroundManager   *manager,
                              gint                 window_xid,
                              const gchar         *filename,
-                             const gchar         *top_bar,
-                             const gchar         *left_bar,
                              guint16              red,
                              guint16              green,
                              guint16              blue,

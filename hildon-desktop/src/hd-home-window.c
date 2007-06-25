@@ -106,9 +106,6 @@ struct _HDHomeWindowPrivate
   GtkWidget        *layout_mode_banner;
   gint              layout_mode_banner_to;
 
-  gchar            *north_border;
-  gchar            *west_border;
-
   HDHomeBackground *background;
   HDHomeBackground *previous_background;
 
