@@ -1492,8 +1492,6 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   {
     gint sample_id;
 
-    g_debug ("PLAYING SOUND!");
-    
     sound_file = g_value_get_string (hint);
 
     sample_id = hn_as_sound_register_sample (switcher->priv->esd_socket,
