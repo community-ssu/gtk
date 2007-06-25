@@ -96,7 +96,8 @@ void        hildon_home_area_set_batch_add      (HildonHomeArea *area,
 void        hildon_home_area_put                (HildonHomeArea *area,
                                                  GtkWidget      *child,
                                                  gint            x,
-                                                 gint            y);
+                                                 gint            y,
+                                                 gint            stack_index);
 
 void        hildon_home_area_move               (HildonHomeArea *area,
                                                  GtkWidget      *child,

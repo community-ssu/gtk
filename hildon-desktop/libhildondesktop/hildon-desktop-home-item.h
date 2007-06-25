@@ -59,6 +59,7 @@ G_BEGIN_DECLS
 #define HH_APPLET_KEY_Y                 "Y"
 #define HH_APPLET_KEY_WIDTH             "X-home-applet-width"
 #define HH_APPLET_KEY_HEIGHT            "X-home-applet-height"
+#define HH_APPLET_KEY_STACK_INDEX       "X-home-applet-stack-index"
 #define HH_APPLET_KEY_MINWIDTH          "X-home-applet-minwidth"
 #define HH_APPLET_KEY_MINHEIGHT         "X-home-applet-minheight"
 #define HH_APPLET_KEY_RESIZABLE         "X-home-applet-resizable"
