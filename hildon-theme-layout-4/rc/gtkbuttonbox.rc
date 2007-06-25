@@ -5,6 +5,7 @@ style "osso-hbuttonbox" {
 
   GtkHButtonBox::child_min_height = 47
   GtkHButtonBox::child_min_width = 105
+  GtkWidget::maemo-position-theming = 1
 }
 class "GtkHButtonBox" style "osso-hbuttonbox"
 

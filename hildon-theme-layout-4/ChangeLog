@@ -1,3 +1,7 @@
+2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkbuttonbox.rc: missing "maemo-position-theming = 1" in GtkHButtonBox.
+
 2007-06-20  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* rc/gtkbutton.rc: Applied colors to gtkbutton, seems to work.	
