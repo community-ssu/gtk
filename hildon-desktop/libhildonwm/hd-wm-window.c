@@ -1,6 +1,6 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* 
- * This file is part of hildon-desktop
+ * This file is part of libhildonwm
  *
  * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
@@ -47,7 +47,7 @@
 #endif
 
 #include "hd-wm-application.h"
-#include "hd-entry-info.h"
+#include "hd-wm-entry-info.h"
 
 #define _(o) o
 
@@ -62,7 +62,11 @@
 
 #define HIBERNATION_TIMEMOUT 3000 /* as suggested by 31410#10 */
 
-G_DEFINE_TYPE (HDWMWindow,hd_wm_window,G_TYPE_OBJECT);
+static void hd_wm_window_entry_info_init (HDWMEntryInfoIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (HDWMWindow,hd_wm_window,G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (HD_WM_TYPE_ENTRY_INFO,
+                                                hd_wm_window_entry_info_init));
 
 typedef char HDWMWindowFlags;
 
@@ -105,6 +109,10 @@ struct _HDWMWindowPrivate
   HDWMWindowFlags  flags;
   HDEntryInfo            *info;
   GdkWindow              *gdk_wrapper_win;
+
+  HDWMEntryInfo		 *parent;
+  gboolean 		  ignore_urgent;
+  gboolean		  info_init;
 };
 
 struct xwinv
@@ -140,6 +148,292 @@ pixbuf_destroy (guchar *pixels, gpointer data)
 {
   /* For hd_wm_window_process_net_wm_icon  */
   g_free(pixels);
+}
+
+static gboolean 
+hd_wm_win_info_init (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+  
+  if (win->priv->info_init)
+    return TRUE;
+
+  win->priv->info_init = TRUE;
+
+  return FALSE;  
+}
+
+static HDWMEntryInfo *
+hd_wm_win_info_get_parent (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return win->priv->parent;
+}
+
+static void 
+hd_wm_win_info_set_parent (HDWMEntryInfo *info, HDWMEntryInfo *parent)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  win->priv->parent = parent;
+}
+
+static const gchar *
+hd_wm_win_info_peek_app_name (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_get_name (win);
+}
+
+static const gchar *
+hd_wm_win_info_peek_title (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_get_name (win);
+}
+
+static gchar *
+hd_wm_win_info_get_title (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return g_strdup (hd_wm_window_get_name (win));
+}
+
+static void 
+hd_wm_win_info_set_title (HDWMEntryInfo *info, const gchar *title)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  hd_wm_window_set_name (win, title);
+}	
+
+static gchar * 
+hd_wm_win_info_get_app_name (HDWMEntryInfo *info)
+{
+  gchar *title, *sep;
+
+  title = hd_wm_entry_info_get_title (info);
+
+  if (!title)
+    return NULL;
+
+  sep = strstr (title, " - ");
+  if (sep)
+  {
+    gchar *retval;
+
+    *sep = 0;
+    retval = g_strdup (title);
+
+    g_free (title);
+
+    return retval;
+  }
+ 
+  return title;	
+}
+
+static gchar * 
+hd_wm_win_info_get_window_name (HDWMEntryInfo *info)
+{
+  gchar *title, *sep;
+
+  title = hd_wm_entry_info_get_title (info);
+  if (!title)
+    return NULL;
+
+  sep = strstr (title, " - ");
+  if (sep)
+  {
+    gchar *retval;
+
+    *sep = 0;
+    retval = g_strdup (sep + 3);
+
+    g_free (title);
+
+    return retval;
+  }
+  else
+    return NULL;
+}
+
+static GdkPixbuf *
+hd_wm_win_info_get_icon (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_get_custom_icon (win);
+}  
+
+static const gchar *
+hd_wm_win_info_get_app_icon_name (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+  HDWMApplication *app;
+  
+  app = hd_wm_window_get_application (win);
+
+  if (app)
+    return hd_wm_application_get_icon_name (app);
+
+  return NULL;
+}
+
+static GdkPixbuf *
+hd_wm_win_info_get_app_icon (HDWMEntryInfo *info,
+                               gint           size,
+                               GError     **error)
+{
+  GdkPixbuf *retval;	
+  const gchar *icon_name;
+  GError *load_error = NULL;
+  HDWMWindow *win = (HDWMWindow *) info;
+  HDWMApplication *app;
+
+  app = hd_wm_window_get_application (win);
+
+  if (!app)
+    return NULL;	  
+
+  retval = g_hash_table_lookup (hd_wm_application_get_icon_cache (app),
+                                GINT_TO_POINTER (size));
+  if (retval)
+    return g_object_ref (retval);
+
+  icon_name = hd_wm_entry_info_get_app_icon_name (info);
+  if (!icon_name || icon_name[0] == '\0')
+    return NULL;
+
+  load_error = NULL;
+  retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                     icon_name,
+                                     size,
+                                     GTK_ICON_LOOKUP_NO_SVG,
+                                     &load_error);
+  if (load_error)
+  {
+    g_propagate_error (error, load_error);
+    return NULL;
+  }
+
+  g_debug (G_STRLOC ": adding cache entry (size:%d)", size);
+  g_hash_table_insert (hd_wm_application_get_icon_cache (app),
+                       GINT_TO_POINTER (size),
+                       g_object_ref (retval));
+
+  return retval;
+}
+
+static void 
+hd_wm_win_info_close (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  hd_wm_window_close (win);
+}  
+
+static gboolean
+hd_wm_win_info_is_urgent (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_is_urgent (win);
+}
+
+static gboolean
+hd_wm_win_info_get_ignore_urgent (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return win->priv->ignore_urgent;
+}
+
+static void 
+hd_wm_win_info_set_ignore_urgent (HDWMEntryInfo *info, gboolean ignore_urgent)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  win->priv->ignore_urgent = ignore_urgent;
+}
+
+static gboolean
+hd_wm_win_info_is_active (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_is_active (win);;
+}
+
+static gboolean
+hd_wm_win_info_is_hibernating (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+  HDWMApplication *app;
+
+  app = hd_wm_window_get_application (win);
+
+  if (app)
+    return hd_wm_application_is_hibernating (app);
+
+  return FALSE;
+}
+
+static gboolean
+hd_wm_win_info_has_extra_icon (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+  HDWMApplication *app;
+
+  app = hd_wm_window_get_application (win);
+
+  if (app)
+    return (hd_wm_application_get_extra_icon (app) != NULL);
+
+  return FALSE;
+}
+
+static Window
+hd_wm_win_info_get_x_window (HDWMEntryInfo *info)
+{
+  HDWMWindow *win = (HDWMWindow *) info;
+
+  return hd_wm_window_get_x_win (win);
+}
+
+static void 
+hd_wm_window_entry_info_init (HDWMEntryInfoIface *iface)
+{
+  iface->init		   = hd_wm_win_info_init;	
+  iface->get_parent        = hd_wm_win_info_get_parent;
+  iface->set_parent        = hd_wm_win_info_set_parent;
+  iface->add_child         = NULL;
+  iface->remove_child      = NULL;
+  iface->get_children      = NULL;
+  iface->get_n_children    = NULL;
+  iface->peek_app_name     = hd_wm_win_info_peek_app_name;
+  iface->peek_title        = hd_wm_win_info_peek_title;
+  iface->get_title         = hd_wm_win_info_get_title;
+  iface->set_title         = hd_wm_win_info_set_title;
+  iface->get_app_name      = hd_wm_win_info_get_app_name;
+  iface->get_window_name   = hd_wm_win_info_get_window_name;
+  iface->get_icon          = hd_wm_win_info_get_icon;
+  iface->set_icon          = NULL;
+  iface->get_app_icon_name = hd_wm_win_info_get_app_icon_name;
+  iface->get_app_icon      = hd_wm_win_info_get_app_icon;
+  iface->close             = hd_wm_win_info_close;
+  iface->is_urgent         = hd_wm_win_info_is_urgent;
+  iface->get_ignore_urgent = hd_wm_win_info_get_ignore_urgent;
+  iface->set_ignore_urgent = hd_wm_win_info_set_ignore_urgent;
+  iface->is_active         = hd_wm_win_info_is_active;
+  iface->is_hibernating    = hd_wm_win_info_is_hibernating;
+  iface->has_extra_icon    = hd_wm_win_info_has_extra_icon;
+  iface->get_extra_icon    = NULL;
+  iface->get_x_window      = hd_wm_win_info_get_x_window;
 }
 
 static void
@@ -179,18 +473,16 @@ hd_wm_window_finalize (GObject *object)
     hd_wm_application_set_ping_timeout_note (win->priv->app_parent, NULL);
   }
   
-  if(win->priv->info)
+  if (hd_wm_entry_info_init (HD_WM_ENTRY_INFO (win)))
   {
     /* only windows of multiwindow apps have their own info */
     g_debug ("TO BE REMOVED a window of multiwindow application; removing info from AS");
 
-    gboolean removed_app = hd_wm_remove_applications (hdwm,win->priv->info);
+    gboolean removed_app = hd_wm_remove_applications (hdwm,HD_WM_ENTRY_INFO (win));
  
-    g_signal_emit_by_name (hdwm,"entry_info_removed",removed_app,win->priv->info);
+    g_signal_emit_by_name (hdwm,"entry_info_removed",removed_app,HD_WM_ENTRY_INFO (win));
       
-    hd_entry_info_free (win->priv->info);
-    
-    win->priv->info = NULL;
+    /*hd_entry_info_free (win->priv->info);*/
   }
   
   if (win->priv->name)
@@ -227,6 +519,10 @@ static void
 hd_wm_window_init (HDWMWindow *watched)
 {
   watched->priv = HD_WM_WINDOW_GET_PRIVATE (watched);	
+
+  watched->priv->parent = NULL;
+  watched->priv->ignore_urgent = FALSE;
+  watched->priv->info_init = FALSE;
 }
 
 static void 
@@ -245,7 +541,7 @@ hd_wm_window_process_net_wm_icon (HDWMWindow *win)
   gulong *data;
   gint    len = 0, offset, w, h, i;
   guchar *rgba_data, *p;
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   HDWM	      *hdwm = hd_wm_get_singleton ();
 
   rgba_data = p = NULL;
@@ -318,7 +614,7 @@ hd_wm_window_process_net_wm_icon (HDWMWindow *win)
   }
 
   /* FIXME: need to just update icon, also could be broke for views */
-  info = hd_wm_window_peek_info (win);
+  info = HD_WM_ENTRY_INFO (win);
 
   if (info)
     g_signal_emit_by_name (hdwm,"entry_info_changed",info);
@@ -493,9 +789,9 @@ hd_wm_window_process_wm_hints (HDWMWindow *win)
  
   if (need_icon_sync)
   {
-    HDEntryInfo *info = hd_wm_window_peek_info (win);
+    HDWMEntryInfo *info = HD_WM_ENTRY_INFO (win);
 
-    if (info)
+    if (hd_wm_entry_info_init (info))
       g_signal_emit_by_name (hdwm,"entry_info_changed",info);
   }
   
@@ -920,12 +1216,8 @@ hd_wm_window_close (HDWMWindow *win)
 
 void
 hd_wm_window_set_info (HDWMWindow *win,
-			       HDEntryInfo       *info)
+			       HDWMEntryInfo       *info)
 {
-  if (win->priv->info)
-    hd_entry_info_free (win->priv->info);
-  
-  win->priv->info = info;
 }
 
 HDEntryInfo *
@@ -937,15 +1229,6 @@ hd_wm_window_peek_info (HDWMWindow *win)
 HDEntryInfo *
 hd_wm_window_create_new_info (HDWMWindow *win)
 {
-  if (win->priv->info)
-      /*
-       * refuse to creat a new info, in case the old one is already referenced
-       * by AS
-       */
-      g_warning("Window info alread exists");
-  else
-    win->priv->info = hd_entry_info_new_from_window (win);
-  
   return win->priv->info;
 }
 
@@ -954,7 +1237,6 @@ hd_wm_window_destroy_info (HDWMWindow *win)
 {
   if (win->priv->info)
   {
-    hd_entry_info_free (win->priv->info);
     win->priv->info = NULL;
   }
 }

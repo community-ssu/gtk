@@ -123,7 +123,7 @@ struct _HDSwitcherMenuPrivate
 
   GtkTreeIter		   *last_iter_added;
 
-  HDEntryInfo		   *last_urgent_info;
+  HDWMEntryInfo		   *last_urgent_info;
 
   GtkWidget		   *window_dialog;
   GtkWidget		   *toggle_button;
@@ -148,10 +148,10 @@ static void hd_switcher_menu_add_clear_notifications_button_cb (HildonDesktopPop
 								gboolean show_controls,
 								HDSwitcherMenu *switcher);
 
-static void hd_switcher_menu_add_info_cb (HDWM *hdwm, HDEntryInfo *info, HDSwitcherMenu *switcher);
-static void hd_switcher_menu_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDEntryInfo *info, HDSwitcherMenu *switcher);
-static void hd_switcher_menu_changed_info_cb (HDWM *hdwm, HDEntryInfo *info, HDSwitcherMenu *switcher);
-static void hd_switcher_menu_changed_stack_cb (HDWM *hdwm, HDEntryInfo *info, HDSwitcherMenu *switcher);
+static void hd_switcher_menu_add_info_cb (HDWM *hdwm, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
+static void hd_switcher_menu_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
+static void hd_switcher_menu_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
+static void hd_switcher_menu_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
 static void hd_switcher_menu_show_menu_cb (HDWM *hdwm, HDSwitcherMenu *switcher);
 static void hd_switcher_menu_long_press_cb (HDWM *hdwm, HDSwitcherMenu *switcher);
 static void hd_switcher_menu_fullscreen_cb (HDWM *hdwm, gboolean fullscreen, HDSwitcherMenu *switcher);
@@ -619,7 +619,7 @@ hd_switcher_menu_constructor (GType gtype,
   GtkWidget *menu_item = 
     hd_switcher_menu_item_new_from_entry_info 
       (hd_wm_get_home_info (hdwm), FALSE);
- 
+
   hildon_desktop_popup_menu_add_item
    (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));
 
@@ -1032,7 +1032,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
   for (l = children; l != NULL; l = g_list_next (l))
   {
-    HDEntryInfo *info;
+    HDWMEntryInfo *info;
 
     if (GTK_IS_SEPARATOR_MENU_ITEM (l->data))
       info = NULL;
@@ -1040,8 +1040,8 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
       info = 
         hd_switcher_menu_item_get_entry_info 
 	  (HD_SWITCHER_MENU_ITEM (l->data));
-
-    if (info != hd_wm_get_home_info (hdwm))
+ 
+    if (info != hd_wm_get_home_info (switcher->hdwm))
       gtk_widget_destroy (GTK_WIDGET (l->data));
   }
 
@@ -1052,7 +1052,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
   for (l = apps; l != NULL; l = l->next)
   {
     GtkWidget *menu_item;
-    const GList * children = hd_entry_info_get_children(l->data);
+    const GList * children = hd_wm_entry_info_get_children(l->data);
     const GList * child;
 
     if (l == apps)
@@ -1065,7 +1065,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
     for (child = children; child != NULL; child = child->next)
     {
-      HDEntryInfo *entry = child->data;
+      HDWMEntryInfo *entry = child->data;
 
       menu_item = hd_switcher_menu_item_new_from_entry_info (entry, TRUE);
 
@@ -1077,7 +1077,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
       hildon_desktop_popup_menu_add_item
        (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));
 
-      if (hd_entry_info_is_active (entry))
+      if (hd_wm_entry_info_is_active (entry))
         hildon_desktop_popup_menu_select_item 
           (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));		
 
@@ -1101,7 +1101,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
 static void 
 hd_switcher_menu_add_info_cb (HDWM *hdwm, 
-			      HDEntryInfo *info,
+			      HDWMEntryInfo *info,
 			      HDSwitcherMenu *switcher)
 {
   if (!info)
@@ -1113,11 +1113,11 @@ hd_switcher_menu_add_info_cb (HDWM *hdwm,
 static void 
 hd_switcher_menu_remove_info_cb (HDWM *hdwm,
 				 gboolean removed_app,
-				 HDEntryInfo *info,
+				 HDWMEntryInfo *info,
 				 HDSwitcherMenu *switcher)
 {
   GList *children = NULL, *l;
-  HDEntryInfo *_info;
+  HDWMEntryInfo *_info;
 
   children =
     hildon_desktop_popup_menu_get_children (switcher->priv->menu_applications);
@@ -1169,15 +1169,15 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
 }
 
 static GdkPixbuf *
-hd_switcher_get_default_icon_from_entry_info (HDSwitcherMenu *switcher, HDEntryInfo *info)
+hd_switcher_get_default_icon_from_entry_info (HDSwitcherMenu *switcher, HDWMEntryInfo *info)
 {
-  GdkPixbuf *app_pixbuf = hd_entry_info_get_icon (info);
+  GdkPixbuf *app_pixbuf = hd_wm_entry_info_get_icon (info);
  
   if (!app_pixbuf)
   {
     GError *error = NULL;
 
-    app_pixbuf = hd_entry_info_get_app_icon (info,
+    app_pixbuf = hd_wm_entry_info_get_app_icon (info,
                                              AS_ICON_THUMB_SIZE,
                                              &error);
     if (error)
@@ -1206,7 +1206,7 @@ hd_switcher_get_default_icon_from_entry_info (HDSwitcherMenu *switcher, HDEntryI
 
 static void 
 hd_switcher_menu_changed_info_cb (HDWM *hdwm,
-				  HDEntryInfo *info,
+				  HDWMEntryInfo *info,
 				  HDSwitcherMenu *switcher)
 {
   GtkWidget *menu_item = NULL;
@@ -1219,18 +1219,18 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
 
   /* We have to guess whether it is in app switcher's slots or not*/
   
-  if (info->type == HD_ENTRY_APPLICATION)
+  if (HD_WM_IS_APPLICATION (info))
   {	  
      apps = hd_wm_get_applications (switcher->hdwm);
 
      for (l = apps; l != NULL; l = g_list_next (l))
      {
-        HDEntryInfo *iter_info = (HDEntryInfo *) l->data;
+        HDWMEntryInfo *iter_info = (HDWMEntryInfo *) l->data;
 
-	if (iter_info->type != HD_ENTRY_APPLICATION)
+	if (!HD_WM_IS_APPLICATION (iter_info))
           continue;
  	
-        if (iter_info->type == HD_ENTRY_APPLICATION)		
+        if (HD_WM_IS_APPLICATION (iter_info))		
         {
 	  pos++;
 
@@ -1249,14 +1249,14 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
      for (l = apps; l != NULL; l = g_list_next (l))
      {
        const GList *iter_children;	     
-       HDEntryInfo *iter_info = (HDEntryInfo *) l->data;
+       HDWMEntryInfo *iter_info = (HDWMEntryInfo *) l->data;
        
-       if (iter_info->type == HD_ENTRY_APPLICATION)
+       if (HD_WM_IS_APPLICATION (iter_info))
        {
          pos++;	
   	 
          const GList *info_children = 
-  	   hd_entry_info_get_children (iter_info);
+  	   hd_wm_entry_info_get_children (iter_info);
 	 
 	 for (iter_children = info_children; 
  	      iter_children != NULL; 
@@ -1279,7 +1279,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
   {
     if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))
     {	   
-      HDEntryInfo *_info = 
+      HDWMEntryInfo *_info = 
         hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (l->data));
  
       if (_info == info)
@@ -1297,22 +1297,22 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
     hd_switcher_menu_item_set_entry_info (HD_SWITCHER_MENU_ITEM (menu_item), info);
   }   
   
-  if (!hd_entry_info_is_urgent (info) &&
-       hd_entry_info_get_ignore_urgent (info))
+  if (!hd_wm_entry_info_is_urgent (info) &&
+       hd_wm_entry_info_get_ignore_urgent (info))
   {
-     hd_entry_info_set_ignore_urgent (info, FALSE);
+     hd_wm_entry_info_set_ignore_urgent (info, FALSE);
      return;
   }
   else
-  if (!hd_entry_info_is_urgent (info) &&         /* We were told to change appswitcher icon with */
+  if (!hd_wm_entry_info_is_urgent (info) &&         /* We were told to change appswitcher icon with */
       switcher->priv->last_urgent_info == info)	 /* application's one. Now we've been told to change it back*/
   {
     hd_switcher_menu_reset_main_icon (switcher);	  
     switcher->priv->last_urgent_info = NULL;	  
   }	  
 
-  if (hd_entry_info_is_urgent (info) &&
-      !hd_entry_info_get_ignore_urgent (info))
+  if (hd_wm_entry_info_is_urgent (info) &&
+      !hd_wm_entry_info_get_ignore_urgent (info))
   {
     if (menu_item)
     {
@@ -1333,7 +1333,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
 
 static void 
 hd_switcher_menu_changed_stack_cb (HDWM *hdwm,
-				   HDEntryInfo *info,
+				   HDWMEntryInfo *info,
 				   HDSwitcherMenu *switcher)
 {
   GList *children = NULL, *l;
@@ -1345,10 +1345,10 @@ hd_switcher_menu_changed_stack_cb (HDWM *hdwm,
   {
     if (HD_IS_SWITCHER_MENU_ITEM (l->data))
     {
-      HDEntryInfo *info =	    
+      HDWMEntryInfo *info =	    
         hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (l->data));
 
-      if (hd_entry_info_is_active (info))
+      if (hd_wm_entry_info_is_active (info))
       {	      
         hildon_desktop_popup_menu_select_item
           (switcher->priv->menu_applications, GTK_MENU_ITEM (l->data));

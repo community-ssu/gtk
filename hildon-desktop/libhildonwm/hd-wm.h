@@ -1,9 +1,9 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 /* 
- * This file is part of maemo-af-desktop
+ * This file is part of libhildonwm
  *
- * Copyright (C) 2005, 2006 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -36,9 +36,10 @@
 #include <gtk/gtk.h>
 
 #include <libhildonwm/hd-wm-types.h>
-#include <libhildonwm/hd-entry-info.h>
+#include <libhildonwm/hd-wm-entry-info.h>
 #include <libhildonwm/hd-wm-application.h>
 #include <libhildonwm/hd-wm-window.h>
+#include <libhildonwm/hd-wm-desktop.h>
 #include <libhildonwm/hd-keys.h>
 
 #define HN_WANT_DEBUG 0 /* Set to 1 for more verbose hn */
@@ -138,10 +139,10 @@ struct _HDWMClass
 {
   GObjectClass parent_class;
 
-  void (*entry_info_added) 	   (HDWM *hdwm,HDEntryInfo *info);
-  void (*entry_info_removed) 	   (HDWM *hdwm,HDEntryInfo *info);
-  void (*entry_info_changed) 	   (HDWM *hdwm,HDEntryInfo *info);
-  void (*entry_info_stack_changed) (HDWM *hdwm,HDEntryInfo *info);
+  void (*entry_info_added) 	   (HDWM *hdwm,HDWMEntryInfo *info);
+  void (*entry_info_removed) 	   (HDWM *hdwm,HDWMEntryInfo *info);
+  void (*entry_info_changed) 	   (HDWM *hdwm,HDWMEntryInfo *info);
+  void (*entry_info_stack_changed) (HDWM *hdwm,HDWMEntryInfo *info);
   void (*work_area_changed)        (HDWM *hdwm,GdkRectangle *work_area);
   void (*show_menu)		   (HDWM *hdwm);
   void (*application_starting)     (HDWM *hdwm, gpointer application);
@@ -196,7 +197,7 @@ hd_wm_get_singleton (void);
 HDWM *
 hd_wm_get_singleton_without_dbus (void);
 
-HDEntryInfo *
+HDWMEntryInfo *
 hd_wm_get_home_info (HDWM *hdwm);
 
 /**  Send 'top' request for a certain existing window/view
@@ -205,7 +206,7 @@ hd_wm_get_home_info (HDWM *hdwm);
  *
  */
 void 
-hd_wm_top_item (HDEntryInfo *info);
+hd_wm_top_item (HDWMEntryInfo *info);
 
 
 /**  Send 'top' request for a certain service
@@ -271,13 +272,13 @@ GList *
 hd_wm_get_applications (HDWM *hdwm);
 
 void 
-hd_wm_close_application (HDWM *hdwm, HDEntryInfo *entry_info);
+hd_wm_close_application (HDWM *hdwm, HDWMEntryInfo *entry_info);
 
-void 
-hd_wm_add_applications (HDWM *hdwm, HDEntryInfo *entry_info);
+/*void 
+hd_wm_add_applications (HDWM *hdwm, HDEntryInfo *entry_info);*/
 
 gboolean  
-hd_wm_remove_applications (HDWM *hdwm, HDEntryInfo *entry_info);
+hd_wm_remove_applications (HDWM *hdwm, HDWMEntryInfo *entry_info);
 
 void 
 hd_wm_update_client_list (HDWM *hdwm);
@@ -290,10 +291,13 @@ void
 hd_wm_switch_application_window (HDWM *hdwm, HDWMApplication *app, gboolean to_next);
 
 void 
-hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *entry_info, gboolean to_next);
+hd_wm_switch_info_window (HDWM *hdwm, HDWMEntryInfo *entry_info, gboolean to_next);
 
 void 
 hd_wm_switch_instance_current_window (HDWM *hdwm, gboolean to_next);
+
+GHashTable *
+hd_wm_get_icon_cache (HDWM *hdwm);
 
 /*
  * These are simple getters/setters that replace direct use of global

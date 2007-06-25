@@ -1,3 +1,34 @@
+2007-06-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm-entry-info.[ch]:
+	- New commodity interface to make no diferences between diferent kinds
+	window management elements and to make easier their handling.
+	* libhildonwm/hd-wm-application.[ch]:
+	* libhildonwm/hd-wm-window.[ch]:
+	- Deleted references to old HDEntryInfo.
+	- Implements HDWMEntryInfo
+	* src/hn-app-switcher.c:
+	* src/hd-switcher-menu-item.[ch]: 
+	* src/hn-app-button.[ch] 
+	* src/hd-switcher-menu.c:
+	* libhildonwm/hd-keys.c:
+	- Deleted references to old HDEntryInfo.
+	- Updated to use new HDWMEntryInfo.
+	* libhildonwm/hd-wm.[ch]:	
+	- Deleted references to old HDEntryInfo.
+	- Updated to use new HDWMEntryInfo.
+	- try to catch DESKTOP_WINDOW Xid only when updating client list at
+	the begininng. (It could be a little bit later in different scenarios)
+	* libhildonwm/hd-wm-types.h:
+	- Added HDWMDesktop.
+	* libhildonwm/hd-entry-info.[ch]:
+	- Deleted
+	* libhildonwm/Makefile.am:
+	- Added the new stuff
+	* libhildonwm/hd-wm-desktop.[ch]:
+	- New GObject class representing the DESKTOP WINDOW.
+	- Implements HDWMEntryInfo.
+
 2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-switcher-menu.c: added support for sound hint on
@@ -238,7 +269,7 @@
 	* libhildondesktop/hildon-home-titlebar.c: change the titlebar text
 	color label to "HomeTitleTextColor".
 
-2007-06-12  Moises Martinez  <moises.martinez@nokia.com
+2007-06-12  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/main.c: Fixed problem with thread initialization with glib.
 	Pointed out by Tommi.
@@ -1543,7 +1574,7 @@
 	* src/hn-app-switcher.c: 
 	- Handling of swap key fixed.
 	- Open thumb menu when swap key pressed.
-	* libhildonwm/hd-wm.c (working copy):
+	* libhildonwm/hd-wm.c:
 	- Created constructor and moved DBus initialization to constructor.
 
 2007-03-28  Lucas Rocha  <lucas.rocha@nokia.com>

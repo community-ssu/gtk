@@ -1,5 +1,5 @@
 /* 
- * This file is part of hildon-desktop
+ * This file is part of libhildonwm
  *
  * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *

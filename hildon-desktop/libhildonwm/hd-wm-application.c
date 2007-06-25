@@ -1,6 +1,6 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* 
- * This file is part of hildon-desktop
+ * This file is part of libhildonwm
  *
  * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
@@ -46,11 +46,15 @@
 #include "hd-wm.h"
 #include "hd-wm-application.h"
 #include "hd-wm-window.h"
-#include "hd-entry-info.h"
+#include "hd-wm-entry-info.h"
 
 #define SERVICE_PREFIX          "com.nokia."
 
-G_DEFINE_TYPE (HDWMApplication, hd_wm_application, G_TYPE_OBJECT);
+static void hd_wm_application_entry_info_init (HDWMEntryInfoIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (HDWMApplication, hd_wm_application, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (HD_WM_TYPE_ENTRY_INFO,
+						hd_wm_application_entry_info_init));
 
 #define HD_WM_APPLICATION_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), HD_WM_TYPE_APPLICATION, HDWMApplicationPrivate))
 
@@ -100,11 +104,15 @@ struct _HDWMApplicationPrivate
   HDWMWindow    *active_window;
   HDWMApplicationFlags flags;
   HDEntryInfo          *info;
+  GList 	*children;
+  gboolean	info_init;
+
+  GHashTable *icon_cache;
 };
 
 static void 
 hd_wm_application_finalize (GObject *object)
-{
+{ g_debug ("FIIIIIIIIIINALIZIIIIIIING APPPPPPPPPPPPLICATION");
   HDWMApplication *app = HD_WM_APPLICATION (object);
   
   if (app->priv->icon_name)
@@ -127,9 +135,309 @@ hd_wm_application_finalize (GObject *object)
   
   if (app->priv->text_domain)
     g_free(app->priv->text_domain);
+
+  g_hash_table_destroy (app->priv->icon_cache);
+}
+
+static gboolean 
+hd_wm_app_info_init (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
   
-  if (app->priv->info)
-    hd_entry_info_free (app->priv->info);
+  if (app->priv->info_init)
+    return TRUE;
+
+  app->priv->info_init = TRUE;
+
+  return FALSE;  
+}	
+
+static HDWMEntryInfo *
+hd_wm_app_info_get_parent (HDWMEntryInfo *info)
+{
+  return NULL;
+}	
+
+static void 
+hd_wm_app_info_add_child (HDWMEntryInfo *info, HDWMEntryInfo *child)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  GList *l;
+   
+  for (l = app->priv->children; l != NULL; l = l->next)
+  {	   
+    if (info == l->data)
+      return;	     
+  }	   
+
+  app->priv->children = g_list_prepend (app->priv->children, child);
+   
+  hd_wm_entry_info_set_parent (child, info);
+}
+
+static gboolean 
+hd_wm_app_info_remove_child (HDWMEntryInfo *info, HDWMEntryInfo *child)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+
+  app->priv->children = g_list_remove (app->priv->children, child);
+
+  return (app->priv->children != NULL);
+}
+
+static const GList *
+hd_wm_app_info_get_children (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+
+  return app->priv->children;
+}
+
+static gint 
+hd_wm_app_info_get_n_children (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+
+  return g_list_length (app->priv->children);
+}
+
+static const gchar *
+hd_wm_app_info_peek_app_name (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+ 
+  return app->priv->app_name;  
+}
+
+static const gchar *
+hd_wm_app_info_peek_title (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  HDWMWindow *win;
+
+  win = hd_wm_application_get_active_window (app);
+
+  if (win)
+    return hd_wm_window_get_name (win);
+
+  return app->priv->app_name;
+}	
+
+static gchar * 
+hd_wm_app_info_get_title (HDWMEntryInfo *info)
+{
+  return g_strdup (hd_wm_app_info_peek_title (info));
+}
+
+static gchar * 
+hd_wm_app_info_get_app_name (HDWMEntryInfo *info)
+{
+  gchar *title, *sep;
+
+  title = hd_wm_app_info_get_title (info);
+
+  if (!title)
+    return NULL;
+
+  sep = strstr (title, " - ");
+  if (sep)
+  {
+    gchar *retval;
+
+    *sep = 0;
+    retval = g_strdup (title);
+
+    g_free (title);
+
+    return retval;
+  }
+ 
+  return title;	
+}
+
+static gchar * 
+hd_wm_app_info_get_window_name (HDWMEntryInfo *info)
+{
+  gchar *title, *sep;
+
+  title = hd_wm_entry_info_get_title (info);
+  if (!title)
+    return NULL;
+
+  sep = strstr (title, " - ");
+  if (sep)
+  {
+    gchar *retval;
+
+    *sep = 0;
+    retval = g_strdup (sep + 3);
+
+    g_free (title);
+
+    return retval;
+  }
+  else
+    return NULL;
+}	
+
+static const gchar *
+hd_wm_app_info_get_app_icon_name (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+	
+  return hd_wm_application_get_icon_name (app);	
+}
+
+static GdkPixbuf *
+hd_wm_app_info_get_app_icon (HDWMEntryInfo *info,
+			       gint           size,
+			       GError     **error)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  GdkPixbuf *retval;
+  GError *load_error = NULL;
+  const gchar *icon_name;
+
+  retval = g_hash_table_lookup (app->priv->icon_cache,
+                                GINT_TO_POINTER (size));
+  if (retval)
+    return g_object_ref (retval);
+
+  icon_name = hd_wm_entry_info_get_app_icon_name (info);
+  if (!icon_name || icon_name[0] == '\0')
+    return NULL;
+
+  load_error = NULL;
+  retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                     icon_name,
+                                     size,
+                                     GTK_ICON_LOOKUP_NO_SVG,
+                                     &load_error);
+  if (load_error)
+  {
+    g_propagate_error (error, load_error);
+    return NULL;
+  }
+
+  g_debug (G_STRLOC ": adding cache entry (size:%d)", size);
+  g_hash_table_insert (app->priv->icon_cache,
+                       GINT_TO_POINTER (size),
+                       g_object_ref (retval));
+
+  return retval;
+}
+
+static gboolean 
+hd_wm_app_info_is_urgent (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  GList *l;
+
+  for (l = app->priv->children; l != NULL; l = l->next)
+  {     	      
+     if (hd_wm_entry_info_is_active (HD_WM_ENTRY_INFO (l->data)))
+       return hd_wm_entry_info_is_urgent (HD_WM_ENTRY_INFO (l->data)); 
+  }
+
+  return FALSE;
+}	
+
+static gboolean 
+hd_wm_app_info_get_ignore_urgent (HDWMEntryInfo *info)
+{
+  return FALSE;
+}	
+
+static gboolean 
+hd_wm_app_info_is_active (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  GList *l;
+
+  for (l = app->priv->children; l != NULL; l = l->next)
+    if (hd_wm_entry_info_is_active (HD_WM_ENTRY_INFO (l->data)))
+      return TRUE;
+
+  return FALSE;
+}
+
+static gboolean 
+hd_wm_app_info_is_hibernating (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+
+  return hd_wm_application_is_hibernating (app);
+}	
+
+static gboolean 
+hd_wm_app_info_has_extra_icon (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+
+  g_debug ("hd_wm_application_get_extra_icon %s",hd_wm_application_get_extra_icon (app));
+
+  return (NULL != hd_wm_application_get_extra_icon (app));  
+}	
+
+static const gchar *
+hd_wm_app_info_get_extra_icon (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  
+  return hd_wm_application_get_extra_icon (app);  
+}	
+
+static Window
+hd_wm_app_info_get_x_window (HDWMEntryInfo *info)
+{
+  HDWMApplication *app = (HDWMApplication *) info;
+  GList *l;
+  HDWMEntryInfo *active = NULL;
+
+  for (l = app->priv->children; l != NULL; l = l->next)
+  {
+     if (hd_wm_entry_info_is_active (HD_WM_ENTRY_INFO (l->data)))
+     {
+       active = HD_WM_ENTRY_INFO (l->data);
+       break;
+     }
+  }
+
+  if (active)
+    return hd_wm_entry_info_get_x_window (HD_WM_ENTRY_INFO (l->data));
+
+  return None;
+}
+
+static void 
+hd_wm_application_entry_info_init (HDWMEntryInfoIface *iface)
+{
+  iface->init		   = hd_wm_app_info_init;	
+  iface->get_parent        = hd_wm_app_info_get_parent;
+  iface->set_parent	   = NULL;
+  iface->add_child         = hd_wm_app_info_add_child;
+  iface->remove_child      = hd_wm_app_info_remove_child;
+  iface->get_children      = hd_wm_app_info_get_children;
+  iface->get_n_children    = hd_wm_app_info_get_n_children;
+  iface->peek_app_name     = hd_wm_app_info_peek_app_name;
+  iface->peek_title        = hd_wm_app_info_peek_title;
+  iface->get_title         = hd_wm_app_info_get_title;
+  iface->set_title         = NULL;
+  iface->get_app_name      = hd_wm_app_info_get_app_name;
+  iface->get_window_name   = hd_wm_app_info_get_window_name;
+  iface->get_icon          = NULL;
+  iface->set_icon          = NULL;
+  iface->get_app_icon_name = hd_wm_app_info_get_app_icon_name;
+  iface->get_app_icon      = hd_wm_app_info_get_app_icon;
+  iface->close             = NULL;
+  iface->is_urgent         = hd_wm_app_info_is_urgent;
+  iface->get_ignore_urgent = hd_wm_app_info_get_ignore_urgent;
+  iface->set_ignore_urgent = NULL;
+  iface->is_active         = hd_wm_app_info_is_active;
+  iface->is_hibernating    = hd_wm_app_info_is_hibernating;
+  iface->has_extra_icon    = hd_wm_app_info_has_extra_icon;
+  iface->get_extra_icon    = hd_wm_app_info_get_extra_icon;
+  iface->get_x_window      = hd_wm_app_info_get_x_window;
 }	
 
 static void 
@@ -149,6 +457,15 @@ hd_wm_application_init (HDWMApplication *app)
 
   app->priv->active_window = NULL;
   app->priv->info = NULL;
+
+  app->priv->children = NULL;
+
+  app->priv->icon_cache = g_hash_table_new_full (g_direct_hash,
+                                                 g_direct_equal,
+                                                 NULL,
+                                                 (GDestroyNotify) g_object_unref); 
+
+  app->priv->info_init = FALSE;
 }	
 
 static void 
@@ -601,12 +918,18 @@ hd_wm_application_set_launching (HDWMApplication *app,
     HDWM_APPLICATION_UNSET_FLAG(app, HDWM_APPLICATION_LAUNCHING);
 }
 
+GHashTable *
+hd_wm_application_get_icon_cache (HDWMApplication *app)
+{
+  return app->priv->icon_cache;
+}	
+
 HDEntryInfo *
 hd_wm_application_get_info (HDWMApplication *app)
 {
-  if (!app->priv->info)
+/*  if (!app->priv->info)
     app->priv->info = hd_entry_info_new_from_app (app);
-
+*/
   return app->priv->info;
 }
 
@@ -671,7 +994,7 @@ hd_wm_application_is_active (HDWMApplication *app)
 const gchar *
 hd_wm_application_get_extra_icon (HDWMApplication *app)
 {
-  g_return_val_if_fail(app, NULL);
+  g_return_val_if_fail (app, NULL);
   
   return app->priv->extra_icon;
 }

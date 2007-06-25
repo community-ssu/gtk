@@ -1,7 +1,7 @@
 /* 
- * This file is part of maemo-af-desktop
+ * This file is part of libhildonwm
  *
- * Copyright (C) 2005, 2006 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *

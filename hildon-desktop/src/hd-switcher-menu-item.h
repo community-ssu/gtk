@@ -65,7 +65,7 @@ struct _HDSwitcherMenuItemClass
 
 GType        hd_switcher_menu_item_get_type        (void) G_GNUC_CONST;
 
-GtkWidget *  hd_switcher_menu_item_new_from_entry_info (HDEntryInfo   *info,
+GtkWidget *  hd_switcher_menu_item_new_from_entry_info (HDWMEntryInfo   *info,
                                                	        gboolean       show_close);
 
 GtkWidget *  hd_switcher_menu_item_new_from_notification (gint id,
@@ -75,8 +75,8 @@ GtkWidget *  hd_switcher_menu_item_new_from_notification (gint id,
                                              	          gboolean   show_close);
 
 void         hd_switcher_menu_item_set_entry_info  (HDSwitcherMenuItem *menuitem,
-					       HDEntryInfo   *info);
-HDEntryInfo *hd_switcher_menu_item_get_entry_info  (HDSwitcherMenuItem *menuitem);
+					       HDWMEntryInfo   *info);
+HDWMEntryInfo *hd_switcher_menu_item_get_entry_info  (HDSwitcherMenuItem *menuitem);
 void         hd_switcher_menu_item_set_blinking (HDSwitcherMenuItem *menuitem,
 					       gboolean       is_blinking);
 gboolean     hd_switcher_menu_item_is_blinking (HDSwitcherMenuItem *menuitem);

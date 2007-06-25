@@ -96,7 +96,7 @@ typedef struct HDWMCallbacks         HDWMCallbacks;
 
 typedef struct _HDWMApplication     HDWMApplication;
 typedef struct _HDWMWindow   HDWMWindow;
-
+typedef struct _HDWMDesktop HDWMDesktop;
 
 typedef struct _HDEntryInfo HDEntryInfo;
 

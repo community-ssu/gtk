@@ -125,7 +125,7 @@ enum
 
 struct _HNAppButtonPrivate
 {
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   GtkWidget *icon;
 
   GtkToggleButton *prev_button;
@@ -136,7 +136,7 @@ struct _HNAppButtonPrivate
   guint is_blinking  : 1;
   guint is_thumbable : 1;
 
-  HDEntryInfo *last_entry;
+  HDWMEntryInfo *last_entry;
 
   HNAppSwitcher *app_switcher;
 };
@@ -400,7 +400,7 @@ hn_app_button_create_menu (HNAppButton *app_button)
 {
   GtkWidget *menu;
   GtkWidget *active_item = NULL;
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   const GList *children, *l;
   gint width;
   GtkRequisition req;
@@ -414,21 +414,21 @@ hn_app_button_create_menu (HNAppButton *app_button)
 		  	     GTK_WIDGET (app_button),
 			     NULL);
 
-  children = hd_entry_info_get_children (info);
+  children = hd_wm_entry_info_get_children (info);
   for (l = children; l != NULL; l = l->next)
-    {
-      GtkWidget *menu_item;
+  {
+    GtkWidget *menu_item;
 
-      menu_item =
-        hd_switcher_menu_item_new_from_entry_info (l->data, FALSE);
+    menu_item =
+      hd_switcher_menu_item_new_from_entry_info (HD_WM_ENTRY_INFO (l->data), FALSE);
+    
+    /* the G spec says the first item should be selected */
+    if (!active_item)
+      active_item = menu_item;
 
-      /* the G spec says the first item should be selected */
-      if (!active_item)
-        active_item = menu_item;
-
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-      gtk_widget_show (menu_item);
-    }
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+    gtk_widget_show (menu_item);
+  }
 
   if (active_item)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (menu), active_item);
@@ -573,21 +573,21 @@ static gboolean
 hn_app_button_pop_menu (HNAppButton *app_button)
 {
   guint            n_children;
-  HDEntryInfo     *info;
+  HDWMEntryInfo     *info;
 
   g_return_val_if_fail(app_button, FALSE);
 
   info = app_button->priv->info;
   g_return_val_if_fail(info, FALSE);
   
-  n_children = hd_entry_info_get_n_children (info);
+  n_children = hd_wm_entry_info_get_n_children (info);
   if (n_children == 1) /*FIXME: to be deleted */
   {
     /* pointer released in the app button, top our app */
       const GList *child;
       gboolean was_blinking;
 
-      child = hd_entry_info_get_children (app_button->priv->info);
+      child = hd_wm_entry_info_get_children (app_button->priv->info);
 
       /* stop the blinking if needed */
       was_blinking = hn_app_button_get_is_blinking (app_button);
@@ -595,8 +595,8 @@ hn_app_button_pop_menu (HNAppButton *app_button)
         {
           hn_app_button_set_is_blinking (app_button, FALSE);
 	  
-	  if (hd_entry_info_is_urgent (child->data))
-            hd_entry_info_set_ignore_urgent (child->data, TRUE);
+	  if (hd_wm_entry_info_is_urgent (child->data))
+            hd_wm_entry_info_set_ignore_urgent (child->data, TRUE);
 	}
       
       hd_wm_top_item (child->data);
@@ -625,10 +625,10 @@ hn_app_button_pop_menu (HNAppButton *app_button)
            * set the ignore flag on any children that were causing the
            * blinking
            */
-          for (l = hd_entry_info_get_children (info); l != NULL; l = l->next)
+          for (l = hd_wm_entry_info_get_children (info); l != NULL; l = l->next)
             {
-              if (hd_entry_info_is_urgent(l->data))
-                hd_entry_info_set_ignore_urgent(l->data, TRUE);
+              if (hd_wm_entry_info_is_urgent(l->data))
+                hd_wm_entry_info_set_ignore_urgent(l->data, TRUE);
             }
         }
       
@@ -700,7 +700,7 @@ hn_app_button_key_press_event (GtkWidget * widget,
       }
     }
     
-    n_children = hd_entry_info_get_n_children (app_button->priv->info);
+    n_children = hd_wm_entry_info_get_n_children (app_button->priv->info);
 
     if (n_children > 1 || 
 	event->keyval == GDK_KP_Enter || 
@@ -805,7 +805,7 @@ hn_app_button_press_event (GtkWidget      *widget,
   GtkToggleButton *tmp_button = NULL;
   GtkWidget *toplevel_window;
   GSList *l;
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   
   g_return_val_if_fail (widget && event, FALSE);
   
@@ -857,13 +857,13 @@ hn_app_button_press_event (GtkWidget      *widget,
       return FALSE;
     }
 
-  if (hd_entry_info_get_n_children (info) == 1)
+  if (hd_wm_entry_info_get_n_children (info) == 1)
   {
     if (!priv->tooltip)
       priv->tooltip = hn_app_tooltip_new (GTK_WIDGET (app_button));
 
     hn_app_tooltip_set_text (HN_APP_TOOLTIP(app_button->priv->tooltip),
-                             _(hd_entry_info_peek_app_name (info)));
+                             _(hd_wm_entry_info_peek_app_name (info)));
 
     hn_app_tooltip_install_timer (HN_APP_TOOLTIP(app_button->priv->tooltip),
                                   NULL,
@@ -1093,7 +1093,7 @@ hn_app_button_get_pixbuf_from_icon (HNAppButton *button)
   return gtk_image_get_pixbuf (GTK_IMAGE (button->priv->icon));
 }
 
-HDEntryInfo *
+HDWMEntryInfo *
 hn_app_button_get_entry_info (HNAppButton *button)
 {
   g_return_val_if_fail (HN_IS_APP_BUTTON (button), NULL);
@@ -1101,7 +1101,7 @@ hn_app_button_get_entry_info (HNAppButton *button)
   return button->priv->info;
 }
 
-HDEntryInfo *
+HDWMEntryInfo *
 hn_app_button_get_last_entry_info (HNAppButton *button)
 {
   g_return_val_if_fail (HN_IS_APP_BUTTON (button), NULL);
@@ -1110,20 +1110,20 @@ hn_app_button_get_last_entry_info (HNAppButton *button)
 }
 
 static GdkPixbuf *
-get_pixbuf_for_entry_info (HDEntryInfo *info)
+get_pixbuf_for_entry_info (HDWMEntryInfo *info)
 {
   GdkPixbuf *retval;
   GError *error;
 
   error = NULL;
   
-  retval = hd_entry_info_get_app_icon (info, AS_ICON_SIZE, &error);
+  retval = hd_wm_entry_info_get_app_icon (info, AS_ICON_SIZE, &error);
 
   if (!error)
     return retval;
 
   g_debug ("Could not load icon '%s': %s\n",
-           hd_entry_info_get_app_icon_name (info),
+           hd_wm_entry_info_get_app_icon_name (info),
            error->message);
 
   /* Fallback to default icon */
@@ -1149,7 +1149,7 @@ get_pixbuf_for_entry_info (HDEntryInfo *info)
 static GdkPixbuf *
 hn_app_button_compose_app_pixbuf (HNAppButton     *button,
 				  const GdkPixbuf *src,
-				  HDEntryInfo 	  *info)
+				  HDWMEntryInfo	  *info)
 {
   GdkPixbuf *retval, *inst_pixbuf = NULL;
   GError *error;
@@ -1159,17 +1159,15 @@ hn_app_button_compose_app_pixbuf (HNAppButton     *button,
   g_return_val_if_fail (GDK_IS_PIXBUF (src), NULL);
   g_return_val_if_fail (info != NULL, NULL);
 
-  HN_MARK();
-
   /* first of all, see if this app is hibernated */
-  if (hd_entry_info_is_hibernating (info))
+  if (hd_wm_entry_info_is_hibernating (info))
     inst_pixbuf = 
       hn_app_button_class_get_bkilled_emblem (HN_APP_BUTTON_GET_CLASS (button));
   else 
-  if (hd_entry_info_has_extra_icon (info))
+  if (hd_wm_entry_info_has_extra_icon (info))
   {
-    const char *inst_name = hd_entry_info_get_extra_icon (info);
-      
+    const char *inst_name = hd_wm_entry_info_get_extra_icon (info);
+
     if (inst_name)
     {
       error = NULL;
@@ -1193,7 +1191,7 @@ hn_app_button_compose_app_pixbuf (HNAppButton     *button,
   }
   else
   {
-    guint n_instances = hd_entry_info_get_n_children (info);
+    guint n_instances = hd_wm_entry_info_get_n_children (info);
 
     inst_pixbuf = 
       hn_app_button_class_get_groupped_emblem (HN_APP_BUTTON_GET_CLASS (button), n_instances);
@@ -1228,7 +1226,7 @@ hn_app_button_compose_app_pixbuf (HNAppButton     *button,
 
 void
 hn_app_button_set_entry_info (HNAppButton *button,
-			      HDEntryInfo *info)
+			      HDWMEntryInfo *info)
 {
   g_return_if_fail (HN_IS_APP_BUTTON (button));
 
@@ -1278,7 +1276,7 @@ hn_app_button_set_entry_info (HNAppButton *button,
     gtk_widget_show (button->priv->icon);
     gtk_widget_set_sensitive (GTK_WIDGET (button), TRUE);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
-	                          hd_entry_info_is_active (info));
+	                          hd_wm_entry_info_is_active (info));
       
     g_object_set (G_OBJECT (button), "can-focus", TRUE, NULL);
       
@@ -1299,7 +1297,7 @@ hn_app_button_set_entry_info (HNAppButton *button,
 void
 hn_app_button_force_update_icon (HNAppButton *button)
 {
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   
   g_return_if_fail (HN_IS_APP_BUTTON (button));
 
@@ -1346,7 +1344,7 @@ hn_app_button_force_update_icon (HNAppButton *button)
       gtk_widget_show (button->priv->icon);
       gtk_widget_set_sensitive (GTK_WIDGET (button), TRUE);
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
-		                    hd_entry_info_is_active (info));
+		                    hd_wm_entry_info_is_active (info));
       
       g_object_set (G_OBJECT (button), "can-focus", TRUE, NULL);
       

@@ -139,16 +139,16 @@ enum
 };
 
 static void 
-hn_app_switcher_add_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data);
+hn_app_switcher_add_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data);
 
 static void 
-hn_app_switcher_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDEntryInfo *entry_info, gpointer data);
+hn_app_switcher_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDWMEntryInfo *entry_info, gpointer data);
 
 static void 
-hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data);
+hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data);
 
 static void 
-hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data);
+hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data);
 
 static void 
 hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher);
@@ -160,7 +160,7 @@ static void
 hn_app_switcher_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
 static void
-refresh_app_button (HNAppSwitcher *app_switcher, HDEntryInfo *entry, gint pos);
+refresh_app_button (HNAppSwitcher *app_switcher, HDWMEntryInfo *entry, gint pos);
 
 static void
 queue_refresh_buttons (HNAppSwitcher *app_switcher);
@@ -519,7 +519,7 @@ hn_app_switcher_show_all (GtkWidget *widget)
   for (i = 0; i < priv->nitems; i++)
   {
     GtkWidget *button = priv->buttons[i];
-    HDEntryInfo *info;
+    HDWMEntryInfo *info;
      
     info = hn_app_button_get_entry_info (HN_APP_BUTTON (button));
     if (info)
@@ -529,7 +529,7 @@ hn_app_switcher_show_all (GtkWidget *widget)
 
 static void
 remove_entry_from_app_button (HNAppSwitcher *app_switcher,
-			      HDEntryInfo   *entry_info)
+			      HDWMEntryInfo   *entry_info)
 {
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   gint pos;
@@ -539,7 +539,7 @@ remove_entry_from_app_button (HNAppSwitcher *app_switcher,
   for (pos = 0; pos < priv->nitems; pos++)
   {
     GtkWidget *button = priv->buttons[pos];
-    HDEntryInfo *e;
+    HDWMEntryInfo *e;
 
     e = hn_app_button_get_entry_info (HN_APP_BUTTON (button));
     if (e == entry_info)
@@ -554,11 +554,11 @@ remove_entry_from_app_button (HNAppSwitcher *app_switcher,
 
 static void
 refresh_app_button (HNAppSwitcher *app_switcher,
-                    HDEntryInfo   *entry,
+                    HDWMEntryInfo *entry,
                     gint           pos)
 {
   HNAppSwitcherPrivate *priv = app_switcher->priv;
-  const GList          *l, *children = hd_entry_info_get_children(entry);
+  const GList          *l, *children = hd_wm_entry_info_get_children (entry);
   gboolean              urgent = FALSE;
   HNAppButton          *app_button = HN_APP_BUTTON (priv->buttons[pos]);
   gboolean 	       update_icon_geometry;
@@ -569,6 +569,8 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   /* deal with urgency flags */
   for (l = children; l != NULL; l = l->next)
   {
+    HDWMEntryInfo *_info = HD_WM_ENTRY_INFO (l->data);	  
+#if 0	  
     if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
       hd_entry_info_set_icon_geometry (l->data,	    
 		      		       GTK_WIDGET (app_button)->allocation.x,
@@ -576,13 +578,13 @@ refresh_app_button (HNAppSwitcher *app_switcher,
 				       GTK_WIDGET (app_button)->allocation.width,
 				       GTK_WIDGET (app_button)->allocation.height,
 				       TRUE);
-	  
+#endif	  
     /*
      * If the entry is urgent and the ignore flag is not set, the button
      * should blink
      */
-    if (hd_entry_info_is_urgent(l->data) &&
-        !hd_entry_info_get_ignore_urgent(l->data))
+    if (hd_wm_entry_info_is_urgent (_info) &&
+        !hd_wm_entry_info_get_ignore_urgent (_info))
     {
       g_debug("Found an urgent button");
       urgent = TRUE;
@@ -592,10 +594,10 @@ refresh_app_button (HNAppSwitcher *app_switcher,
     * if the info is not urgent, we need to clear any leftover
     * ignore_urgent flag
     */
-    if(!hd_entry_info_is_urgent(l->data) &&
-       hd_entry_info_get_ignore_urgent(l->data))
+    if(!hd_wm_entry_info_is_urgent (_info) &&
+       hd_wm_entry_info_get_ignore_urgent (_info))
     {
-      hd_entry_info_set_ignore_urgent(l->data, FALSE);
+      hd_wm_entry_info_set_ignore_urgent (_info, FALSE);
     }
   }
   
@@ -613,7 +615,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
 
   hn_app_button_set_is_blinking (app_button, urgent);
 
-  if (hd_entry_info_is_active (entry))
+  if (hd_wm_entry_info_is_active (entry))
   {
     GtkToggleButton *button;
 
@@ -652,10 +654,10 @@ refresh_buttons (gpointer user_data)
        l != NULL;
        l = l->next, pos++)
   {
-    HDEntryInfo *entry = l->data;
+    HDWMEntryInfo *entry = l->data;
 
     /* we just want the most recently used top-level applications */
-    if (entry->type != HD_ENTRY_APPLICATION)
+    if (!HD_WM_IS_APPLICATION (entry))
     {
       g_debug("Object is not an application");
       continue;
@@ -665,7 +667,7 @@ refresh_buttons (gpointer user_data)
     {	    
       if (active_button < 0 &&
           gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->buttons[pos]))&&
-          !hd_entry_info_is_active (entry))
+          !hd_wm_entry_info_is_active (entry))
       {
           active_button = pos;
       }
@@ -674,12 +676,14 @@ refresh_buttons (gpointer user_data)
     }
     else
     {
+#if 0	    
       hd_entry_info_set_icon_geometry (l->data,	    
 		      		       GTK_WIDGET (app_switcher)->allocation.x,
 				       GTK_WIDGET (app_switcher)->allocation.y,
 				       GTK_WIDGET (app_switcher)->allocation.width,
 				       GTK_WIDGET (app_switcher)->allocation.height,
 				       FALSE);
+#endif      
     }	    
   }
 
@@ -707,7 +711,7 @@ refresh_buttons (gpointer user_data)
        l = l->next, ++pos)
   {
     const GList       *k;
-    HDEntryInfo       *child;
+    HDWMEntryInfo       *child,*app = HD_WM_ENTRY_INFO (l->data);
 
     if (pos < priv->nitems)
       continue;
@@ -716,7 +720,7 @@ refresh_buttons (gpointer user_data)
      * we skip the first four apps, which cause blinking of the app buttons,
      * not the menu button.
      */
-    for (k = hd_entry_info_get_children (l->data); k != NULL; k = k->next)
+    for (k = hd_wm_entry_info_get_children (app); k != NULL; k = k->next)
     {
       child = k->data;
 
@@ -724,15 +728,15 @@ refresh_buttons (gpointer user_data)
       * button should blink
       */
       
-      if (hd_entry_info_is_urgent (child) && !hd_entry_info_get_ignore_urgent (child))
+      if (hd_wm_entry_info_is_urgent (child) && !hd_wm_entry_info_get_ignore_urgent (child))
         is_urgent = TRUE;
          
       /*
        * if the info is not urgent, we need to clear any leftover
        * ignore_urgent flag
        */
-      if (!hd_entry_info_is_urgent (child) && hd_entry_info_get_ignore_urgent (child))
-        hd_entry_info_set_ignore_urgent (child, FALSE);
+      if (!hd_wm_entry_info_is_urgent (child) && hd_wm_entry_info_get_ignore_urgent (child))
+        hd_wm_entry_info_set_ignore_urgent (child, FALSE);
        
     }
   }
@@ -767,7 +771,7 @@ queue_refresh_buttons (HNAppSwitcher *app_switcher)
  * entry has been added to the applications list.
  */
 static void
-hn_app_switcher_add_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
+hn_app_switcher_add_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data)
 {
   HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);
   HNAppSwitcherPrivate *priv = app_switcher->priv;
@@ -796,12 +800,12 @@ hn_app_switcher_add_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
 static void
 hn_app_switcher_remove_info_cb (HDWM *hdwm, 
 				gboolean removed_app, 
-				HDEntryInfo *entry_info, 
+				HDWMEntryInfo *entry_info, 
 				gpointer data)
 {
   HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);
   HNAppSwitcherPrivate *priv = app_switcher->priv;
-  HDEntryInfo *info_parent = hd_entry_info_get_parent(entry_info);
+  HDWMEntryInfo *info_parent = hd_wm_entry_info_get_parent(entry_info);
   
   /* Play a sound */
   if (hn_as_sound_play_sample (priv->esd_socket, priv->end_sample) == -1)
@@ -826,7 +830,7 @@ hn_app_switcher_remove_info_cb (HDWM *hdwm,
  * NB: entry_info can be NULL for global update
  */
 static void
-hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
+hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data)
 {
   HNAppSwitcher        *app_switcher = HN_APP_SWITCHER (data);
   HNAppSwitcherPrivate *priv = app_switcher->priv;
@@ -840,7 +844,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
    * If we are given an entry info and it of the app type, we just need to
    * update at most one button
    */
-  if (entry_info && entry_info->type == HD_ENTRY_APPLICATION)
+  if (entry_info && HD_WM_IS_APPLICATION (entry_info))
   {
     gint                  pos;
     GList *               l;
@@ -851,9 +855,9 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
          l != NULL && pos < priv->nitems;
          l = l->next, pos++)
     {
-      HDEntryInfo *entry = l->data;
+      HDWMEntryInfo *entry = l->data;
           
-      if (entry->type != HD_ENTRY_APPLICATION)
+      if (!HD_WM_IS_APPLICATION (entry))
       {
         g_debug("Object is not an application");
         continue;
@@ -875,15 +879,14 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
      * we already dealt with, child changes affect the blinking of the
      * associated buttons
      */
-    HDEntryInfo *parent;
+    HDWMEntryInfo *parent;
     GtkWidget   *button = NULL;
     GList       *l;
     gint         pos;
       
-    g_return_if_fail (entry_info->type != HD_ENTRY_INVALID);
     g_debug ("HDEntryInfo present, with child entry");
 
-    parent = hd_entry_info_get_parent (entry_info);
+    parent = hd_wm_entry_info_get_parent (entry_info);
 
     if (!parent)
     {
@@ -895,8 +898,8 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
      * causing the button to blink, and will not cause the button to blink,
      * so we do not need to update the buttons
      */
-    if (hd_entry_info_is_urgent (entry_info) &&
-        hd_entry_info_get_ignore_urgent (entry_info))
+    if (hd_wm_entry_info_is_urgent (entry_info) &&
+        hd_wm_entry_info_get_ignore_urgent (entry_info))
     {
       return;
     }
@@ -906,10 +909,10 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
      * button to blink (it was being ingored), so we do not need to update
      * the button.
      */
-    if (!hd_entry_info_is_urgent (entry_info) &&
-        hd_entry_info_get_ignore_urgent (entry_info))
+    if (!hd_wm_entry_info_is_urgent (entry_info) &&
+        hd_wm_entry_info_get_ignore_urgent (entry_info))
     {
-      hd_entry_info_set_ignore_urgent (entry_info, FALSE);
+      hd_wm_entry_info_set_ignore_urgent (entry_info, FALSE);
       return;
     }
 
@@ -920,10 +923,10 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
          l != NULL && pos < priv->nitems;
          l = l->next, pos++)
     {
-      HDEntryInfo *entry = l->data;
+      HDWMEntryInfo *entry = l->data;
       
       /* we just want the most recently used top-level applications */
-      if (entry->type != HD_ENTRY_APPLICATION)
+      if (!HD_WM_IS_APPLICATION (entry))
       {
         g_debug("Object is not an application");
         continue;
@@ -945,8 +948,8 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
       /* if the current info is urgent and not to be ignored, we know the app
        * button should blink; make sure it does
        */
-    if (hd_entry_info_is_urgent (entry_info) &&
-        !hd_entry_info_get_ignore_urgent (entry_info))
+    if (hd_wm_entry_info_is_urgent (entry_info) &&
+        !hd_wm_entry_info_get_ignore_urgent (entry_info))
     {
       if (button)
       {
@@ -962,8 +965,8 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
      * associated button is not blinking, we know that it was not urgent
      * previously, so we do not need to update the button
      */
-    if (!hd_entry_info_is_urgent (entry_info) &&
-        !hd_entry_info_get_ignore_urgent (entry_info))
+    if (!hd_wm_entry_info_is_urgent (entry_info) &&
+        !hd_wm_entry_info_get_ignore_urgent (entry_info))
     {
       if ((button && !hn_app_button_get_is_blinking (HN_APP_BUTTON (button))))
       {
@@ -993,19 +996,19 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
  * The TN receives notification from MB about window/view being topped. 
  */
 static void
-hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
+hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer data)
 {
   HNAppSwitcher	       * app_switcher = HN_APP_SWITCHER (data);
   HNAppSwitcherPrivate * priv = app_switcher->priv;
   gint                   pos, active_pos;
   GList                * l;
-  HDEntryInfo          * parent;
+  HDWMEntryInfo          * parent;
   gboolean               active_found = FALSE;
 
   g_debug ("In hn_app_switcher_real_changed_stack");
 
   
-  if (!entry_info || !hd_entry_info_is_active (entry_info))
+  if (!entry_info || !hd_wm_entry_info_is_active (entry_info))
   {
     /* rebuild everything, since we were not told what has been topped
      * issue warning, as this is not how this function is meant to be
@@ -1017,16 +1020,16 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
     return;
   }
   
-  if (entry_info->type == HD_ENTRY_APPLICATION)
+  if (HD_WM_IS_APPLICATION (entry_info))
   {
     /* we only accept entries for windows and views */
     g_warning ("Cannot handle HD_ENTRY_APPLICATION");
     return;
   }
   
-  if (entry_info->type != HD_ENTRY_DESKTOP)  
+  if (!HD_WM_IS_DESKTOP (entry_info))
   {
-     parent = hd_entry_info_get_parent (entry_info);
+     parent = hd_wm_entry_info_get_parent (entry_info);
 
      if (!parent)
      {
@@ -1040,7 +1043,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
           l != NULL && pos < priv->nitems;
           l = l->next, pos++)
      {
-       HDEntryInfo *entry = l->data;
+       HDWMEntryInfo *entry = l->data;
           
        if (parent == entry)
        {

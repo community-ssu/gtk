@@ -1,6 +1,6 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /* 
- * This file is part of hildon-desktop
+ * This file is part of libhildonwm
  *
  * Copyright (C) 2006, 2007 Nokia Corporation.
  *
@@ -245,7 +245,8 @@ struct _HDWMPrivate   /* Our main struct */
 
   gboolean 		 init_dbus;
 
-  HDEntryInfo		*home_info;
+  HDWMEntryInfo		*home_info;
+
 };
 
 static HDWMPrivate *hdwmpriv = NULL; 			/* Singleton instance */
@@ -339,15 +340,15 @@ hd_wm_prepare_close_application_dialog (HDWM *hdwm, HDWMCADAction action, gboole
     HDWMApplication *app;
     HDWMWindow* win;
     GdkAtom a;
-    HDEntryInfo *info;
+    HDWMEntryInfo *info;
     HDWMCADItem *item;
 
-    info = (HDEntryInfo*)l->data;
-    win = hd_entry_info_get_window (info);
+    info = HD_WM_ENTRY_INFO (l->data);
+    win = HD_WM_IS_WINDOW (info) ? HD_WM_WINDOW (info) : NULL;
 
     if (win == NULL)
     {
-      gchar *title = hd_entry_info_get_title (info);
+      gchar *title = hd_wm_entry_info_get_title (info);
       g_warning ("No win found for item %s",title);
       g_free (title);
       continue;
@@ -357,7 +358,7 @@ hd_wm_prepare_close_application_dialog (HDWM *hdwm, HDWMCADAction action, gboole
       
     if (app == NULL)
     {
-      gchar *title = hd_entry_info_get_title (info);
+      gchar *title = hd_wm_entry_info_get_title (info);
       g_warning ("No app found for item %s",title);
       g_free (title);
       continue;
@@ -381,7 +382,7 @@ hd_wm_prepare_close_application_dialog (HDWM *hdwm, HDWMCADAction action, gboole
 							    NULL);
     if (pid_result == NULL)
     {
-      gchar * title = hd_entry_info_get_title(info);
+      gchar * title = hd_wm_entry_info_get_title(info);
       g_warning ("No pid found for item %s",title);
       g_free (title);
       continue;
@@ -476,45 +477,45 @@ hd_wm_x_window_is_watchable (HDWM *hdwm, Window xid)
 
   gdk_error_trap_push();
 
-  status = XGetClassHint(GDK_DISPLAY(), xid, &class_hint);
+  status = XGetClassHint (GDK_DISPLAY(), xid, &class_hint);
   
   if (gdk_error_trap_pop() || status == 0 || class_hint.res_name == NULL)
     goto out;
   
   /* Does this window class belong to a 'watched' application ? */
   
-  app = g_hash_table_lookup(hdwm->priv->watched_apps,
-			    (gconstpointer)class_hint.res_name);
+  app = g_hash_table_lookup (hdwm->priv->watched_apps,
+			     (gconstpointer)class_hint.res_name);
 
   /* FIXME: below checks are really uneeded assuming we trust new MB list prop
    */
-  wm_type_atom
-    = hd_wm_util_get_win_prop_data_and_validate (xid,
-						 hdwm->priv->atoms[HD_ATOM_NET_WM_WINDOW_TYPE],
-						 XA_ATOM,
-						 32,
-						 0,
-						 NULL);
+  wm_type_atom =
+    hd_wm_util_get_win_prop_data_and_validate (xid,
+					       hdwm->priv->atoms[HD_ATOM_NET_WM_WINDOW_TYPE],
+					       XA_ATOM,
+					       32,
+					       0,
+					       NULL);
   if (!wm_type_atom)
-    {
-      Window trans_win;
-      Status result;
+  {
+    Window trans_win;
+    Status result;
 
-      /* Assume anything not setting there type is a TYPE_NORMAL. 
-       * This is to support non EWMH 1980 style wins created by 
-       * SDL, alegro etc.
-      */
-      gdk_error_trap_push();
+    /* Assume anything not setting there type is a TYPE_NORMAL. 
+     * This is to support non EWMH 1980 style wins created by 
+     * SDL, alegro etc.
+    */
+    gdk_error_trap_push();
 
-      result = XGetTransientForHint (GDK_DISPLAY(), xid, &trans_win);
+    result = XGetTransientForHint (GDK_DISPLAY(), xid, &trans_win);
 
-      /* If its transient for something, assume dialog and ignore.
-       * This should really never happen.
-      */
-      if (gdk_error_trap_pop() || (result && trans_win != None))
-        app = NULL;
-      goto out;
-    }
+    /* If its transient for something, assume dialog and ignore.
+     * This should really never happen.
+    */
+    if (gdk_error_trap_pop() || (result && trans_win != None))
+      app = NULL;
+    goto out;
+  }
 
   /* Only care about desktop and app wins */
   if (wm_type_atom[0] != hdwm->priv->atoms[HD_ATOM_NET_WM_WINDOW_TYPE_NORMAL]
@@ -725,7 +726,7 @@ hd_wm_finalize (GObject *object)
 {
   HDWM *hdwm = HD_WM (object);
 
-  hd_entry_info_free (hdwm->priv->home_info);
+  g_object_unref (G_OBJECT (hdwm->priv->home_info));
 
   g_hash_table_destroy (hdwm->priv->windows);
   g_hash_table_destroy (hdwm->priv->windows_hibernating);
@@ -1110,20 +1111,20 @@ hd_wm_init (HDWM *hdwm)
 
   /* Hash to track watched windows */
 
-  hdwm->priv->windows
-    = g_hash_table_new_full (g_int_hash,
-			     g_int_equal,
-			     (GDestroyNotify)g_free,
-			     (GDestroyNotify)g_object_unref);
+  hdwm->priv->windows =
+    g_hash_table_new_full (g_int_hash,
+			   g_int_equal,
+			   (GDestroyNotify)g_free,
+			   (GDestroyNotify)g_object_unref);
 
   /* Hash for windows that dont really still exists but HN makes them appear
    * as they do - they are basically backgrounded.
    */
-  hdwm->priv->windows_hibernating
-    = g_hash_table_new_full (g_str_hash,
-			     g_str_equal,
-			     (GDestroyNotify)g_free,
-			     (GDestroyNotify)g_object_unref);
+  hdwm->priv->windows_hibernating =
+    g_hash_table_new_full (g_str_hash,
+		           g_str_equal,
+			   (GDestroyNotify)g_free,
+			   (GDestroyNotify)g_object_unref);
 
   gdk_error_trap_push ();
 
@@ -1140,36 +1141,31 @@ hd_wm_init (HDWM *hdwm)
   gdk_error_trap_pop();
 
   
-  hdwm->priv->home_info = hd_entry_info_new (HD_ENTRY_DESKTOP);
-
+  hdwm->priv->home_info = HD_WM_ENTRY_INFO (hd_wm_desktop_new ());
+  
   hdwm->keys = NULL;
 }
 
 void
-hd_wm_top_item (HDEntryInfo *info)
+hd_wm_top_item (HDWMEntryInfo *info)
 {
   HDWMWindow *win = NULL;
   HDWMApplication *app;
-  gboolean single_view = FALSE;
   HDWM *hdwm = hd_wm_get_singleton ();  
   
   hd_wm_reset_focus (hdwm);
   
-  if (info->type == HD_ENTRY_APPLICATION)
+  if (HD_WM_IS_APPLICATION (info))
   {
-    app = hd_entry_info_get_app (info);
-
-    g_debug  ("Found app: '%s'", hd_wm_application_get_name (app));
-
-    hd_wm_top_service (hd_wm_application_get_service (app));
+    hd_wm_top_service (hd_wm_application_get_service (HD_WM_APPLICATION (info)));
     return;
   }
   
-  if (info->type == HD_ENTRY_WINDOW || single_view)
+  if (HD_WM_IS_WINDOW (info))
   {
     XEvent ev;
       
-    win = hd_entry_info_get_window (info);
+    win = HD_WM_WINDOW (info);
     app = hd_wm_window_get_application (win);
 
     g_debug  ("Found window without views: '%s'\n", hd_wm_window_get_name (win));
@@ -1212,17 +1208,17 @@ hd_wm_top_item (HDEntryInfo *info)
     gdk_error_trap_pop();
 
   }
-
+/*
   if (info->type == HD_ENTRY_DESKTOP)
   {
     hd_wm_top_desktop ();	  
     g_signal_emit_by_name (hdwm, "entry_info_stack_changed", info);
   }	  
   else
-    g_debug  ("### Invalid window type ###\n");
+    g_debug  ("### Invalid window type ###\n");*/
 }
 
-HDEntryInfo *
+HDWMEntryInfo *
 hd_wm_get_home_info (HDWM *hdwm)
 {
   return hdwm->priv->home_info;
@@ -1695,7 +1691,6 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
   HDWMWindow *win;
   Window            *app_xwin;
 
-  g_debug  ("called");
   
   if(hdwm->priv->active_window)
     previous_app_xwin = hd_wm_window_get_x_win (hdwm->priv->active_window);
@@ -1733,7 +1728,7 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
     /* Window with no views */
     g_debug ("Window 0x%x just became active", (int)win);
 	  
-    HDEntryInfo *info = hd_wm_window_peek_info (win);
+    HDWMEntryInfo *info = HD_WM_ENTRY_INFO (win);
 
     g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
   }
@@ -1743,13 +1738,10 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
      * gets minimised and the desktop is showing. We need to notify the AS to
      * deactivate any active buttons.
      */
-      
-    HDEntryInfo * info = hdwm->priv->home_info;
-      
-    if (info)
-      g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-  }
   
+    g_signal_emit_by_name (hdwm,"entry_info_stack_changed",hdwm->priv->home_info);
+    
+  }
 out:
   XFree(app_xwin);
 }
@@ -1783,7 +1775,7 @@ client_list_steal_foreach_func (gpointer key,
        * windows hash
        */
       HDWMApplication *app;
-      HDEntryInfo      *app_info = NULL;
+      HDWMEntryInfo      *app_info = NULL;
       
       g_debug  ("hibernating window [%s], moving to hibernating hash",
               hd_wm_window_get_hibernation_key(win));
@@ -1799,7 +1791,7 @@ client_list_steal_foreach_func (gpointer key,
       app = hd_wm_window_get_application (win);
 
       if (app)
-        app_info = hd_wm_application_get_info (app);
+        app_info = HD_WM_ENTRY_INFO (app);
       
 
       g_signal_emit_by_name (hdwm,"entry_info_changed",app_info);
@@ -1829,18 +1821,24 @@ client_list_steal_foreach_func (gpointer key,
   return TRUE;
 }
 
-static HDEntryInfo *
-hd_wm_find_app_for_child (HDWM *hdwm, HDEntryInfo *entry_info)
+static HDWMEntryInfo *
+hd_wm_find_app_for_child (HDWM *hdwm, HDWMEntryInfo *entry_info)
 {
   GList * l = hdwm->priv->applications;
-  HDWMApplication *app = hd_entry_info_get_app(entry_info);
-        
+  HDWMApplication *app;
+
+  if (HD_WM_IS_WINDOW (entry_info))
+    app = hd_wm_window_get_application (HD_WM_WINDOW (entry_info));
+  else
+  if (HD_WM_IS_APPLICATION (entry_info))
+    app = HD_WM_APPLICATION (entry_info);
+  else
+    return NULL;
+  
   while (l)
   {
-    HDEntryInfo *e = (HDEntryInfo *)l->data;
-            
-    if (app == hd_entry_info_get_app(e))
-      return e;
+    if (app == l->data)
+      return HD_WM_ENTRY_INFO (l->data);
     l = g_list_next(l);
   }
 
@@ -1848,9 +1846,9 @@ hd_wm_find_app_for_child (HDWM *hdwm, HDEntryInfo *entry_info)
 }
 
 void 
-hd_wm_close_application (HDWM *hdwm, HDEntryInfo *entry_info)
+hd_wm_close_application (HDWM *hdwm, HDWMEntryInfo *entry_info)
 {
-  HDWMWindow *appwindow;
+  HDWMWindow *window;
   const GList *children = NULL, *l;
 	
   if (!entry_info)/* || entry_info->type != HD_ENTRY_WINDOW)*/
@@ -1859,25 +1857,26 @@ hd_wm_close_application (HDWM *hdwm, HDEntryInfo *entry_info)
     return;
   }
 
-  children = hd_entry_info_get_children (entry_info);
+  children = hd_wm_entry_info_get_children (entry_info);
 
   for (l = children ; l ; l = g_list_next (l))
   {
-    appwindow = hd_entry_info_get_window ((HDEntryInfo*)l->data);
+    window = HD_WM_WINDOW (l->data);
 
-    hd_wm_window_close (appwindow);
+    hd_wm_window_close (l->data);
   }
-
+#if 0
   appwindow = hd_entry_info_get_window (entry_info);
 
   hd_wm_window_close (appwindow);
+#endif
 }
 
-void 
-hd_wm_add_applications (HDWM *hdwm, HDEntryInfo *entry_info)
+static void 
+hd_wm_add_applications (HDWM *hdwm, HDWMEntryInfo *entry_info)
 {
   HDWMApplication *app;
-  HDEntryInfo	   *e;
+  HDWMEntryInfo	   *e;
 
   if (!entry_info)
   {
@@ -1885,84 +1884,57 @@ hd_wm_add_applications (HDWM *hdwm, HDEntryInfo *entry_info)
     return;
   }
   
-  switch(entry_info->type)
+  if (HD_WM_IS_WINDOW (entry_info))
   {
-    case HD_ENTRY_WINDOW:
-      /*
-       * because initial windows get created before we have a chance to add
-       * the application item, we have to store orphan windows in temporary
-       * list and process them when the application item is added
-       */
-      app = hd_entry_info_get_app (entry_info);
-      e   = hd_wm_find_app_for_child (hdwm,entry_info);
+    app = hd_wm_window_get_application (HD_WM_WINDOW (entry_info));
+    e   = hd_wm_find_app_for_child (hdwm, entry_info);
 
-      if (!e)
-      {
-        e = hd_wm_application_get_info(app);
-        if (!e)
-        {
-          g_warning ("Could not create HDEntryInfo for app.");
-          return;
-        }
-        
-	hdwm->priv->applications = g_list_prepend (hdwm->priv->applications, e);
-      }
+    if (!e)
+    {
+      e = HD_WM_ENTRY_INFO (app);
 
-      g_debug ("add_child: %p %p",e,entry_info);        
-
-      hd_entry_info_add_child (e, entry_info);
-
-      break;
-      
-    case HD_ENTRY_APPLICATION:
-      /* we handle adding of applications internally in AS */
-      g_warning ("asked to append HD_ENTRY_APPLICATION "
-                 "-- this should not happen");
-      return;
-      
-    default:
-      g_warning ("Unknown info type");
-      return;
-  }
-
+      hdwm->priv->applications = g_list_prepend (hdwm->priv->applications, e);
+    }
+    
+    hd_wm_entry_info_add_child (e, entry_info);
+  }	  
+  else
+  if (HD_WM_IS_APPLICATION (entry_info))
+  {
+    g_warning ("asked to append HD_ENTRY_APPLICATION "
+                "-- this should not happen");
+  }	  
 }
 
 gboolean  
-hd_wm_remove_applications (HDWM *hdwm, HDEntryInfo *entry_info)
+hd_wm_remove_applications (HDWM *hdwm, HDWMEntryInfo *entry_info)
 {
-  HDEntryInfo * info_parent = NULL;
+  HDWMEntryInfo *info_parent = NULL;
   gboolean removed_app = FALSE;
-	
-  switch (entry_info->type)
+
+  if (HD_WM_IS_WINDOW (entry_info))
   {
-    case HD_ENTRY_WINDOW:
-      g_debug ("removing child from AS ...");
-      info_parent = hd_entry_info_get_parent(entry_info);
-
-      if (!info_parent)
-      {
-        g_warning("An orphan HDEntryInfo !!!");
-        return FALSE;
-      }
-
-      if (!hd_entry_info_remove_child (info_parent, entry_info))
-      {
-        g_debug ("... no more children, removing app.");
-        hdwm->priv->applications = 
-	  g_list_remove (hdwm->priv->applications, info_parent);
-	
-        removed_app = TRUE;
-      }
-      break;
-      
-    case HD_ENTRY_APPLICATION:
-      /* we handle adding/removing of applications internally in AS */
-      g_warning("asked to remove HD_ENTRY_APPLICATION -- this should not happen");
+    info_parent = hd_wm_entry_info_get_parent (entry_info);
+  
+    if (!info_parent)
+    {
+      g_warning("An orphan HDWMEntryInfo !!!");
       return FALSE;
-      
-    default:
-      g_warning("Unknown info type");
-      return FALSE;
+    }
+
+    if (!hd_wm_entry_info_remove_child (info_parent, entry_info))
+    {
+      g_debug ("... no more children, removing app.");
+      hdwm->priv->applications =
+        g_list_remove (hdwm->priv->applications, info_parent);
+
+      removed_app = TRUE;
+    }
+  }
+  else
+  if (HD_WM_IS_APPLICATION (entry_info))
+  {
+    g_warning("asked to remove HD_ENTRY_APPLICATION -- this should not happen");
   }
 
   if (removed_app)
@@ -1976,8 +1948,14 @@ hd_wm_remove_applications (HDWM *hdwm, HDEntryInfo *entry_info)
       
     for (l = hdwm->priv->applications; l != NULL; l = l->next)
     {
-      HDEntryInfo * entry = l->data;
-      HDWMApplication * app = hd_entry_info_get_app (entry);
+      HDWMEntryInfo *entry = l->data;
+      HDWMApplication *app = NULL;
+
+      if (HD_WM_IS_APPLICATION (entry))
+        app = HD_WM_APPLICATION (app);
+      else
+      if (HD_WM_IS_WINDOW (entry))
+        app = hd_wm_window_get_application (HD_WM_WINDOW (entry));
 
       if (app && !hd_wm_application_is_hibernating (app))
       {
@@ -1992,7 +1970,7 @@ hd_wm_remove_applications (HDWM *hdwm, HDEntryInfo *entry_info)
        * Unfortunately, we do not know which application is the
        * most recently used one, so we just wake up the first one
        */
-       hd_wm_top_item ((HDEntryInfo*)hdwm->priv->applications->data);
+       hd_wm_top_item ((HDWMEntryInfo*)hdwm->priv->applications->data);
     }
   }
  
@@ -2011,6 +1989,48 @@ hd_wm_process_x_client_list (HDWM *hdwm)
 {
   struct xwinv xwins;
   int     i;
+ 
+  /* Try to get desktop home window the first this function is called 
+   * This is f*ck*ng expensive but it is supposed to work at the startup and 
+   * you should forget about it 
+   */
+  
+  if (hd_wm_entry_info_get_x_window (hd_wm_get_home_info (hdwm)) == None)
+  {		  
+    struct xwinv allwins;
+    Atom *wm_type_atom;
+
+    allwins.wins =
+      hd_wm_util_get_win_prop_data_and_validate
+      (GDK_ROOT_WINDOW(),
+       hdwm->priv->atoms[HD_ATOM_NET_CLIENT_LIST],
+       XA_WINDOW,
+       32,
+       0,
+       &allwins.n_wins);
+
+    if (G_UNLIKELY (allwins.wins == NULL))
+      return;
+
+    for (i=0; i < allwins.n_wins; i++)
+    {
+      wm_type_atom =
+        hd_wm_util_get_win_prop_data_and_validate (allwins.wins[i],
+					           hdwm->priv->atoms[HD_ATOM_NET_WM_WINDOW_TYPE],
+					           XA_ATOM,
+					           32,
+					           0,
+					           NULL);
+      if (!wm_type_atom)
+        continue;
+
+      if (wm_type_atom[0] == hdwm->priv->atoms[HD_ATOM_NET_WM_WINDOW_TYPE_DESKTOP])
+      {
+	hd_wm_desktop_set_x_window (HD_WM_DESKTOP (hd_wm_get_home_info (hdwm)), allwins.wins[i]);
+	break;
+      }	      
+    }
+  }
 
   /* FIXME: We (or MB!) should probably keep a copy of ordered window list
    * that way we can check against new list for changes before to save
@@ -2021,94 +2041,92 @@ hd_wm_process_x_client_list (HDWM *hdwm)
    * that works first.
    */
 
-  xwins.wins
-    = hd_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
-			hdwm->priv->atoms[HD_ATOM_MB_APP_WINDOW_LIST_STACKING],
-			XA_WINDOW,
-			32,
-			0,
-			&xwins.n_wins);
+  xwins.wins = 
+    hd_wm_util_get_win_prop_data_and_validate 
+      (GDK_ROOT_WINDOW(),
+       hdwm->priv->atoms[HD_ATOM_MB_APP_WINDOW_LIST_STACKING],
+       XA_WINDOW,
+       32,
+       0,
+       &xwins.n_wins);
   
   if (G_UNLIKELY(xwins.wins == NULL))
-    {
-      g_warning("Failed to read _MB_APP_WINDOW_LIST_STACKING root win prop, "
-		"you probably need a newer matchbox !!!");
-      return;
-    }
+  {
+    g_warning("Failed to read _MB_APP_WINDOW_LIST_STACKING root win prop, "
+	      "you probably need a newer matchbox !!!");
+    return;
+  }
 
   /* Check if any windows in our hash have since disappeared -- we use
    * foreach_steal here because some of the windows that disappeared might in
    * fact be hibernating, and we do not want to destroy those, see
    * client_list_steal_foreach_func ()
    */
-  g_hash_table_foreach_steal ( hdwm->priv->windows,
-                               client_list_steal_foreach_func,
-                               (gpointer)&xwins);
+  g_hash_table_foreach_steal (hdwm->priv->windows,
+                              client_list_steal_foreach_func,
+                              (gpointer)&xwins);
   
   /* Now add any new ones  */
   for (i=0; i < xwins.n_wins; i++)
+  {
+    if (!g_hash_table_lookup(hdwm->priv->windows,(gconstpointer)&xwins.wins[i]))
     {
-      if (!g_hash_table_lookup(hdwm->priv->windows,
-			       (gconstpointer)&xwins.wins[i]))
-	{
-	  HDWMWindow   *win;
-	  HDWMApplication    *app;
+      HDWMWindow   *win;
+      HDWMApplication    *app;
 	  
-	  /* We've found a window thats listed but not currently watched.
-	   * Check if it is watchable by us
-	   */
-	  app = hd_wm_x_window_is_watchable (hdwm, xwins.wins[i]);
+      /* We've found a window thats listed but not currently watched.
+       * Check if it is watchable by us
+       */
+      app = hd_wm_x_window_is_watchable (hdwm, xwins.wins[i]);
 	  
-	  if (!app)
-	    continue;
+      if (!app)
+        continue;
 	  
-	  win = hd_wm_window_new (xwins.wins[i], app);
+      win = hd_wm_window_new (xwins.wins[i], app);
 	  
-	  if (!win)
-	    continue;
+      if (!win)
+        continue;
 
 
-	  if (!hd_wm_add_window (win))
-	    continue; 		/* XError likely occured, xwin gone */
+      if (!hd_wm_add_window (win))
+        continue; 		/* XError likely occured, xwin gone */
 
-          /* since we now have a window for the application, we clear any
-	   * outstanding is_launching flag
-	   */
-	  hd_wm_application_set_launching (app, FALSE);
+      /* since we now have a window for the application, we clear any
+       * outstanding is_launching flag
+       */
+      hd_wm_application_set_launching (app, FALSE);
       
-	  /* Grab the view prop from the window and add any views.
-	   * Note this will add menu items for em.
-	   */
-	  hd_wm_window_props_sync (win, HD_WM_SYNC_HILDON_VIEW_LIST);
+      /* Grab the view prop from the window and add any views.
+       * Note this will add menu items for em.
+       */
+      hd_wm_window_props_sync (win, HD_WM_SYNC_HILDON_VIEW_LIST);
 
-	  if (hd_wm_application_is_dummy (app))
-          {		  
-            g_warning("Application %s did not provide valid .desktop file",
-                      hd_wm_window_get_name(win));
+      if (hd_wm_application_is_dummy (app))
+      {		  
+        g_warning ("Application %s did not provide valid .desktop file",
+                   hd_wm_window_get_name(win));
 
-	    hd_wm_application_dummy_set_name (app, hd_wm_window_get_name(win));
+        hd_wm_application_dummy_set_name (app, hd_wm_window_get_name(win));
 
-	    g_signal_emit_by_name (hdwm, "application-starting", app);
-	  }
+        g_signal_emit_by_name (hdwm, "application-starting", app);
+      }
 
-	  HDEntryInfo *info;
-
-	  HN_MARK();
-	      
-          /* if the window does not have attached info yet, then it is new
-	   * and needs to be added to AS; if it has one, then it is coming
-	   * out of hibernation, in which case it must not be added
-	   */
-	   info = hd_wm_window_peek_info (win);
-	   if (!info)
-           {
-	     info  = hd_wm_window_create_new_info (win);
-	     g_debug ("Adding AS entry for view-less window\n");
-	     hd_wm_add_applications (hdwm,info);
-	     g_signal_emit_by_name (hdwm,"entry_info_added",info);		
-	   }
-	}
+      HDWMEntryInfo *info;
+    
+      /* if the window does not have attached info yet, then it is new
+       * and needs to be added to AS; if it has one, then it is coming
+       * out of hibernation, in which case it must not be added
+       */
+      info = HD_WM_ENTRY_INFO (win);
+	   
+      if (!hd_wm_entry_info_init (info))
+      {
+        g_debug ("Adding AS entry for view-less window\n");
+        hd_wm_add_applications (hdwm,info);
+        g_signal_emit_by_name (hdwm,"entry_info_added",info);		
+       }
     }
+  }
 
   if (xwins.wins)
     XFree(xwins.wins);
@@ -2237,8 +2255,6 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
   /*GtkWidget * button = NULL;*/
   HDWM *hdwm = hd_wm_get_singleton ();
 
-  g_debug ("received request %d", what);
-  
   if (what >= (int) HD_TN_ACTIVATE_LAST)
   {
     g_critical("Invalid value passed to hd_wm_activate()");
@@ -2341,9 +2357,9 @@ hd_wm_check_net_state (HDWM *hdwm, HDWMWindow *win)
       for (i=0; i < n; i++)
         if (value.a[i] && value.a[i] == hdwm->priv->atoms[HD_ATOM_NET_WM_STATE_FULLSCREEN])
         {
-          if (value.a) XFree(value.a);
+          if (value.a) 
+  	    XFree(value.a);
           g_signal_emit_by_name (hdwm,"fullscreen",TRUE);
-	  g_debug ("FULLSCREEN ON %d",(GdkNativeWindow)xid);
 	  return;
         }
     }
@@ -2353,8 +2369,6 @@ hd_wm_check_net_state (HDWM *hdwm, HDWMWindow *win)
     XFree(value.a);	      
 
   g_signal_emit_by_name (hdwm,"fullscreen",FALSE);
-  g_debug ("FULLSCREEN OFF");
-
 }
 
 /* Main event filter  */
@@ -2373,7 +2387,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
   if (((XEvent*)xevent)->type == ClientMessage)
   {
     XClientMessageEvent *cev = (XClientMessageEvent *)xevent;
-g_debug ("----------->>>>>>>> Message type %lx",cev->message_type);
+    
     if (cev->message_type == hdwm->priv->atoms[HD_ATOM_HILDON_FROZEN_WINDOW])
     {
       Window   xwin_hung;
@@ -3140,32 +3154,32 @@ hd_wm_switch_application_window (HDWM *hdwm,
 				 HDWMApplication *app,
 				 gboolean to_next)
 {
-  HDEntryInfo *app_info;
+  HDWMEntryInfo *app_info;
 	
   g_return_if_fail (app != NULL);
 
-  app_info = hd_wm_application_get_info (app);
+  app_info = HD_WM_ENTRY_INFO (app);
 
   hd_wm_switch_info_window (hdwm,app_info,to_next);
 }
 
 void 
-hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *app_info, gboolean to_next)
+hd_wm_switch_info_window (HDWM *hdwm, HDWMEntryInfo *app_info, gboolean to_next)
 {
-  HDEntryInfo *info = NULL;	
+  HDWMEntryInfo *info = NULL;	
   HDWMWindow *window;
   const GList *list = NULL, *iter, *next_entry, *prev_entry;
 
   g_return_if_fail (app_info != NULL);
-
+#if 0
   if (app_info == hdwm->priv->home_info)
     return;	  
-  
-  list = hd_entry_info_get_children (app_info);
+#endif
+  list = hd_wm_entry_info_get_children (app_info);
 
   for (iter = list; iter != NULL; iter = g_list_next (iter))
   {
-    window = hd_entry_info_get_window ((HDEntryInfo *)iter->data);
+    window = HD_WM_WINDOW (iter->data);
     
     if (window == hdwm->priv->active_window)
     {
@@ -3183,10 +3197,10 @@ hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *app_info, gboolean to_next)
       }
 	
       if (next_entry)
-        info = (HDEntryInfo *) next_entry->data;
+        info = (HDWMEntryInfo *) next_entry->data;
       else
       if (prev_entry)	      
-        info = (HDEntryInfo *) prev_entry->data;
+        info = (HDWMEntryInfo *) prev_entry->data;
       
       if (info)
       {	      
@@ -3206,6 +3220,7 @@ hd_wm_switch_instance_current_window (HDWM *hdwm, gboolean to_next)
   	  
   hd_wm_switch_info_window 
     (hdwm, 
-     hd_entry_info_get_parent (hd_wm_window_peek_info (hdwm->priv->active_window)),
+     hd_wm_entry_info_get_parent (HD_WM_ENTRY_INFO (hdwm->priv->active_window)),
      to_next);
 }	
+

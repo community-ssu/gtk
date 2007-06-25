@@ -1,9 +1,9 @@
 /* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 /* 
- * This file is part of maemo-af-desktop
+ * This file is part of libhildonwm
  *
- * Copyright (C) 2005, 2006 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -301,6 +301,9 @@ hd_wm_application_is_launching (HDWMApplication *app);
 void
 hd_wm_application_set_launching (HDWMApplication *app,
                                    gboolean launching);
+
+GHashTable *
+hd_wm_application_get_icon_cache (HDWMApplication *app);
 
 HDEntryInfo *
 hd_wm_application_get_info (HDWMApplication *app);

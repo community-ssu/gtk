@@ -115,7 +115,7 @@ struct _HDSwitcherMenuItemPrivate
 
   GdkPixbufAnimation *pixbuf_anim;
   
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
 
   HNAppPixbufAnimBlinker *blinker;
 
@@ -319,23 +319,24 @@ hd_switcher_menu_item_constructor (GType                  type,
   gtk_widget_show (priv->label);
 
   if (priv->info)
-  {
+  { 
     GdkPixbuf *app_pixbuf;
       
-    priv->is_blinking = hd_entry_info_is_urgent (priv->info);
-    app_pixbuf = hd_entry_info_get_icon (priv->info);
+    priv->is_blinking = hd_wm_entry_info_is_urgent (priv->info);
+    app_pixbuf = hd_wm_entry_info_get_icon (priv->info);
     
     if (!app_pixbuf)
     {
       GError *error = NULL;
 
-      app_pixbuf = hd_entry_info_get_app_icon (priv->info,
-                                               AS_ICON_THUMB_SIZE,
-                                               &error);
+      app_pixbuf = hd_wm_entry_info_get_app_icon (priv->info,
+                                                  AS_ICON_THUMB_SIZE,
+                                                  &error);
+
       if (error)
       {
         g_warning ("Could not load icon %s from theme: %s.",
-                    hd_entry_info_get_app_icon_name (priv->info),
+                    hd_wm_entry_info_get_app_icon_name (priv->info),
                     error->message);
         g_error_free (error);
         error = NULL;
@@ -360,7 +361,7 @@ hd_switcher_menu_item_constructor (GType                  type,
     {
       GdkPixbuf *compose = NULL;
       
-      if (hd_entry_info_is_hibernating (priv->info))
+      if (hd_wm_entry_info_is_hibernating (priv->info))
         compose = gtk_icon_theme_load_icon (priv->icon_theme,
  		      			    "qgn_indi_bkilled",
 					     16,
@@ -404,8 +405,8 @@ hd_switcher_menu_item_constructor (GType                  type,
       gtk_widget_show (GTK_WIDGET (priv->icon));
     }
 
-    gchar *app_name = hd_entry_info_get_app_name (priv->info);
-    gchar *win_name = hd_entry_info_get_window_name (priv->info);
+    gchar *app_name = hd_wm_entry_info_get_app_name (priv->info);
+    gchar *win_name = hd_wm_entry_info_get_window_name (priv->info);
 
     if (win_name)
       gtk_label_set_text (GTK_LABEL (priv->label2), win_name);
@@ -414,7 +415,6 @@ hd_switcher_menu_item_constructor (GType                  type,
 
     g_free (app_name);
     g_free (win_name);
-    
   }
   else
   {
@@ -508,13 +508,13 @@ hd_switcher_menu_item_size_request (GtkWidget      *widget,
 static void
 hd_switcher_menu_item_activate (GtkMenuItem *menu_item)
 {
-  HDEntryInfo *info;
+  HDWMEntryInfo *info;
   
   info = hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (menu_item));
 
   if (info != NULL)
   {
-    HN_DBG ("Raising application '%s'", hd_entry_info_peek_title (info));
+    HN_DBG ("Raising application '%s'", hd_wm_entry_info_peek_title (info));
   
     hd_wm_top_item (info);
   }
@@ -567,7 +567,7 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
            menuitem->priv->close->allocation.width)
   {
     if (menuitem->priv->info != NULL)
-      hd_entry_info_close (menuitem->priv->info);
+      hd_wm_entry_info_close (menuitem->priv->info);
     else
     if (menuitem->priv->notification_id != -1)
     {
@@ -747,11 +747,11 @@ hd_switcher_menu_item_init (HDSwitcherMenuItem *menuitem)
 }
 
 GtkWidget *
-hd_switcher_menu_item_new_from_entry_info (HDEntryInfo *info,
+hd_switcher_menu_item_new_from_entry_info (HDWMEntryInfo *info,
 		                           gboolean     show_close)
 {
   g_return_val_if_fail (info != NULL, NULL);
-  g_return_val_if_fail (HD_ENTRY_INFO_IS_VALID_TYPE (info->type), NULL);
+  g_return_val_if_fail (HD_WM_IS_ENTRY_INFO (info), NULL);
   
   return 
     g_object_new (HD_TYPE_SWITCHER_MENU_ITEM,
@@ -781,7 +781,7 @@ hd_switcher_menu_item_new_from_notification (gint id,
 
 void
 hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
-  		                      HDEntryInfo        *info)
+  		                      HDWMEntryInfo        *info)
 {
   HDSwitcherMenuItemPrivate *priv;
   GdkPixbuf *pixbuf;
@@ -793,20 +793,20 @@ hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
 
   priv->info = info;
   
-  pixbuf = hd_entry_info_get_icon (priv->info);
+  pixbuf = hd_wm_entry_info_get_icon (priv->info);
   
   if (!pixbuf)
   {
     GError *error = NULL;
 
 
-    pixbuf = hd_entry_info_get_app_icon (priv->info,
+    pixbuf = hd_wm_entry_info_get_app_icon (priv->info,
                                            AS_ICON_THUMB_SIZE,
                                            &error);
     if (error)
     {
       g_warning ("Could not load icon %s from theme: %s.",
-                 hd_entry_info_get_app_icon_name (priv->info),
+                 hd_wm_entry_info_get_app_icon_name (priv->info),
                  error->message);
           
           
@@ -835,12 +835,12 @@ hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
   }
   
   gtk_label_set_text (GTK_LABEL (priv->label),
-		      hd_entry_info_peek_title (priv->info));
+		      hd_wm_entry_info_peek_title (priv->info));
 
   g_object_notify (G_OBJECT (menuitem), "entry-info");
 }
 
-HDEntryInfo *
+HDWMEntryInfo *
 hd_switcher_menu_item_get_entry_info (HDSwitcherMenuItem *menuitem)
 {
   g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), NULL);

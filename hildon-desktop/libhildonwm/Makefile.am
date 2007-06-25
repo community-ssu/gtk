@@ -3,13 +3,15 @@
 pkgconfigdir = $(libdir)/pkgconfig
 pkgincludedir = $(includedir)/libhildonwm/libhildonwm
 pkgconfig_DATA = libhildonwm.pc
-pkginclude_HEADERS = hd-entry-info.h \
+pkginclude_HEADERS = \
+		     hd-wm-entry-info.h \
 		     hd-keys.h \
 		     hd-wm-memory.h \
 		     hd-wm-types.h \
 		     hd-wm-util.h \
 		     hd-wm-application.h \
 		     hd-wm-window.h \
+		     hd-wm-desktop.h \
 		     hd-wm.h
 		     
 
@@ -49,7 +51,8 @@ libhildonwm_la_SOURCES = \
 	hd-keys.c \
 	hd-wm-window.c \
 	hd-wm-application.c \
-	hd-entry-info.c
+	hd-wm-desktop.c \
+	hd-wm-entry-info.c
 
 libhildonwm_la_LIBADD =     \
  	$(GTK_LIBS)	    \

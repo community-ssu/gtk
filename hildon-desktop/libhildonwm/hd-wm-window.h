@@ -3,7 +3,7 @@
 /* 
  * This file is part of libhildonwm
  *
- * Copyright (C) 2005, 2006 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -160,7 +160,7 @@ hd_wm_window_close (HDWMWindow *win);
 
 void
 hd_wm_window_set_info (HDWMWindow *win,
-			       HDEntryInfo       *info);
+			       HDWMEntryInfo       *info);
 
 HDEntryInfo *
 hd_wm_window_peek_info (HDWMWindow *win);
