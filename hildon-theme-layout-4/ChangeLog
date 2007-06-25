@@ -1,3 +1,8 @@
+2007-06-25  Richard Sun  <richard.sun@nokia.com>
+
+	* rc/hildonkeyboard.rc: 
+	Add theme of thumb-able special character input. 
+
 2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkbuttonbox.rc: missing "maemo-position-theming = 1" in GtkHButtonBox.

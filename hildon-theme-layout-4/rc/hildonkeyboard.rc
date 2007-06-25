@@ -739,3 +739,149 @@ style "hildon-input-method-wc-finger-candidate-label"
     font_name = "Nokia Sans 24"
 }
 widget "*hildon-input-method-finger-wc.hildon-wc-candidate-button.GtkLabel" style "hildon-input-method-wc-finger-candidate-label"
+
+# Hardware keyboard special character view theme 
+
+# TAB key in Thumb-able SCV
+style "osso-im-thumb-scv-tab-key" {
+    GtkButton::child_spacing = 0
+    engine "sapwood"
+    {
+        image
+        {
+            function = BOX
+            state = NORMAL
+            file = "../images/qpn_plat_inputm_thumb_scv_tab_normal.png"
+            border = { 35, 35, 0, 0 }
+        }
+        image
+        {
+            function = BOX
+            state = ACTIVE
+            file = "../images/qpn_plat_inputm_thumb_scv_tab_pressed.png"
+            border = { 35, 35, 0, 0 }
+        }
+	image
+        {
+            function = BOX
+            state = INSENSITIVE
+            file = "../images/qpn_plat_inputm_thumb_scv_tab_normal.png"
+            border = { 35, 35, 0, 0 }
+        }
+    }
+}
+widget "*osso-im-thumb-scv-tab-key" style "osso-im-thumb-scv-tab-key"
+
+style "osso-input-method-scv-key" = "osso-logical-colors"
+{
+    fg[NORMAL] = @DefaultTextColor
+
+    GtkButton::child_spacing = 0
+    engine "sapwood"
+    {
+        image
+        {            
+	    function = BOX
+            state = NORMAL
+            file = "../images/qgn_plat_inputmet_button_key_special_normal.png"
+            border = { 12, 12, 0, 0 }
+        }
+        image
+        {   
+            function = BOX
+            state = INSENSITIVE
+            file = "../images/qgn_plat_inputmet_button_key_special_normal.png"
+            border = { 12, 12, 0, 0 }
+        }
+        image
+        {
+            function = BOX
+            state = ACTIVE
+            file = "../images/qgn_plat_inputmet_button_key_special_pressed.png"
+            border = { 12, 12, 0, 0 }
+        }
+    }
+}
+widget "*osso-im-scv-key" style "osso-input-method-scv-key"
+
+style "hildon-im-thumb-scv-frame" = "osso-logical-colors"
+{
+    bg[NORMAL] = @WCFrameColor
+
+    engine "sapwood"
+    {
+        image
+        {
+          function = FLAT_BOX
+          detail = "eventbox"
+          file = "../images/qgn_plat_inputmet_special_key_background.png"
+          border = { 10, 10, 0, 0 }
+        }
+    }
+}
+widget "*.hildon-im-thumb-scv-frame" style "hildon-im-thumb-scv-frame"
+
+style "hildon-im-thumb-scv-font"
+{
+    font_name = "Nokia Sans 24"
+}
+widget "*osso-im-scv-renderer" style "hildon-im-thumb-scv-font"
+
+style "hildon-im-thumb-scv-down-button"
+{
+	engine "sapwood"
+	{
+	    image
+	    {
+	        function = BOX
+	        state = ACTIVE
+                file = "../images/qgn_plat_inputmet_button_down_pressed.png"
+                border = { 10, 10, 0, 0 }
+            }
+            image
+            {
+                function = BOX
+	        state = NORMAL
+                file = "../images/qgn_plat_inputmet_button_down_normal.png"
+                border = { 10, 10, 0, 0 }
+            }
+            image
+            {
+                function = BOX
+                state = PRELIGHT
+                file = "../images/qgn_plat_inputmet_button_down_normal.png"
+                border = { 10, 10, 0, 0 }
+            }
+	}
+}
+widget "*.hildon-im-thumb-scv-down-button" style "hildon-im-thumb-scv-down-button"
+
+style "hildon-im-thumb-scv-up-button"
+{
+        engine "sapwood"
+        {
+	    image
+	    {
+                function = BOX
+                state = ACTIVE
+                file = "../images/qgn_plat_inputmet_button_up_pressed.png"
+                border = { 10, 10, 0, 0 }
+            }
+            image
+            {
+                function = BOX
+                state = NORMAL
+                file = "../images/qgn_plat_inputmet_button_up_normal.png"
+                border = { 10, 10, 0, 0 }
+	    }
+            image
+            {
+                function = BOX
+                state = PRELIGHT
+                file = "../images/qgn_plat_inputmet_button_up_normal.png"
+                border = { 10, 10, 0, 0 }
+            }
+        }
+}
+widget "*.hildon-im-thumb-scv-up-button" style "hildon-im-thumb-scv-up-button"
+
