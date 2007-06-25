@@ -1,5 +1,13 @@
 2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate):
+	* gtk/gtkvbbox.c (gtk_vbutton_box_size_allocate): 
+
+	Need to rest the container border_width, not add, since the logic uses
+	the full allocation width including the border width.
+
+2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
+	
 	* gdk/x11/gdkinput-x11.c (gdk_input_translate_coordinates): protect maemo changes with
 	MAEMO_CHANGES.
 
