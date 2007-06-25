@@ -457,6 +457,7 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
 	}
     }
 
+#ifdef MAEMO_CHANGES
   /* Xi spec allows max_value be unset (0 or -1 usually) meaning
    * bounded to screen size
    */
@@ -471,6 +472,7 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
   else
     device_height = (gdkdev->axes[y_axis].max_value -
                      gdkdev->axes[y_axis].min_value);
+#endif /* MAEMO_CHANGES */
 
   if (gdkdev->info.mode == GDK_MODE_SCREEN) 
     {
