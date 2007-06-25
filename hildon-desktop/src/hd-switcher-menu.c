@@ -29,6 +29,7 @@
 /* Hildon includes */
 #include "hd-switcher-menu.h"
 #include "hd-switcher-menu-item.h"
+#include "hn-app-sound.h"
 #include "hn-app-pixbuf-anim-blinker.h"
 
 #include <gdk/gdkx.h>
@@ -126,6 +127,8 @@ struct _HDSwitcherMenuPrivate
 
   GtkWidget		   *window_dialog;
   GtkWidget		   *toggle_button;
+  
+  gint                      esd_socket;
 };
 
 static GObject *hd_switcher_menu_constructor (GType gtype,
@@ -210,6 +213,8 @@ hd_switcher_menu_init (HDSwitcherMenu *switcher)
   switcher->priv->icon_theme = gtk_icon_theme_get_default ();
 
   g_object_ref (switcher->hdwm);
+
+  switcher->priv->esd_socket = hn_as_sound_init ();
 }
 
 static void 
@@ -693,7 +698,9 @@ hd_switcher_menu_finalize (GObject *object)
     gtk_widget_destroy (switcher->priv->window_dialog);	  
 
   g_object_unref (switcher->priv->icon_theme);
-	
+
+  hn_as_sound_deinit (switcher->priv->esd_socket); 
+  
   G_OBJECT_CLASS (hd_switcher_menu_parent_class)->finalize (object);
 }
 
@@ -1446,7 +1453,7 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
 {
   GdkPixbuf *icon = NULL;
   gchar *summary = NULL, *body = NULL;
-  const gchar *category = NULL;
+  const gchar *category = NULL, *sound_file = NULL;
   GHashTable *hints;
   GList *children;
   GValue *hint;
@@ -1477,6 +1484,34 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
 
     if (g_str_has_prefix (category, "system.note"))
       goto out;	  
+  }
+
+  hint = g_hash_table_lookup (hints, "sound-file");
+
+  if (hint)
+  {
+    gint sample_id;
+
+    g_debug ("PLAYING SOUND!");
+    
+    sound_file = g_value_get_string (hint);
+
+    sample_id = hn_as_sound_register_sample (switcher->priv->esd_socket,
+                                             sound_file);
+
+    if (hn_as_sound_play_sample (switcher->priv->esd_socket, 
+			         sample_id) == -1)
+    {
+      hn_as_sound_deinit (switcher->priv->esd_socket);
+      
+      switcher->priv->esd_socket = hn_as_sound_init ();
+
+      hn_as_sound_play_sample (switcher->priv->esd_socket, 
+		               sample_id);
+    }
+
+    hn_as_sound_deregister_sample (switcher->priv->esd_socket, 
+		                   sample_id);
   }
   
   if (switcher->priv->last_iter_added == NULL)
