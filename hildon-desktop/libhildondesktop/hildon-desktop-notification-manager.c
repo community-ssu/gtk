@@ -35,10 +35,6 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#ifdef HAVE_SQLITE
-#include <sqlite3.h>
-#endif
-
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, HildonDesktopNotificationManagerPrivate))
 
@@ -55,6 +51,63 @@ static gint signals[N_SIGNALS];
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_DBUS_PATH  "/org/freedesktop/Notifications"
 
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_ICON_SIZE  48
+
+#ifdef HAVE_SQLITE
+
+#define SQLITE_OK     0 
+#define SQLITE_ERROR  1 
+
+typedef struct _sqlite3 sqlite3;
+
+typedef int        (*sqlite3_callback)   (void *,
+                                          int,
+                                          char**, 
+                                          char**);
+
+static char       *(*sqlite3_mprintf)    (const char*, ...);
+
+static void        (*sqlite3_free_table) (char **result);
+
+static int         (*sqlite3_get_table)  (sqlite3 *, 
+                                          const char *sql, 
+                                          char ***resultp, 
+                                          int *nrow, 
+                                          int *ncolumn, 
+                                          char **errmsg);
+
+static int         (*sqlite3_open)       (const char *filename, 
+                                          sqlite3 **ppDb);
+
+static int         (*sqlite3_close)      (sqlite3 *);
+
+static void        (*sqlite3_free)       (void *);
+
+static int         (*sqlite3_exec)       (sqlite3 *, 
+                                          const char *sql, 
+                                          sqlite3_callback,
+                                          void *, 
+                                          char **errmsg);
+
+static const char *(*sqlite3_errmsg)     (sqlite3 *);
+
+static struct SqliteDlMapping
+{
+  const char *fn_name;
+  gpointer *fn_ptr_ref;
+} sqlite_dl_mapping[] =
+{
+#define MAP_SYMBOL(a) { #a, (void *)&a }
+  MAP_SYMBOL (sqlite3_mprintf),
+  MAP_SYMBOL (sqlite3_open),
+  MAP_SYMBOL (sqlite3_errmsg),
+  MAP_SYMBOL (sqlite3_close),
+  MAP_SYMBOL (sqlite3_free),
+  MAP_SYMBOL (sqlite3_exec),
+  MAP_SYMBOL (sqlite3_get_table),
+  MAP_SYMBOL (sqlite3_free_table)
+#undef MAP_SYMBOL
+};
+#endif
 
 struct _HildonDesktopNotificationManagerPrivate
 {
@@ -81,6 +134,42 @@ enum
   HD_NM_HINT_TYPE_FLOAT,
   HD_NM_HINT_TYPE_UCHAR
 };
+
+#ifdef HAVE_SQLITE
+static void
+open_libsqlite3 ()
+{
+  static gboolean done = FALSE;
+
+  if (!done)
+  {
+    int i;
+    GModule *sqlite;
+
+    done = TRUE;
+
+    sqlite = g_module_open ("libsqlite3.so.0", G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
+
+    if (!sqlite)
+      return;
+
+    for (i = 0; i < G_N_ELEMENTS (sqlite_dl_mapping); i++)
+    {
+      if (!g_module_symbol (sqlite, sqlite_dl_mapping[i].fn_name,
+                            sqlite_dl_mapping[i].fn_ptr_ref))
+      {
+        g_warning ("Missing symbol '%s' in libsqlite3", sqlite_dl_mapping[i].fn_name);
+        g_module_close (sqlite);
+
+        for (i = 0; i < G_N_ELEMENTS (sqlite_dl_mapping); i++)
+          sqlite_dl_mapping[i].fn_ptr_ref = NULL;
+
+        return;
+      }
+    }
+  }
+}
+#endif
 
 static void                            
 hint_value_free (GValue *value)
@@ -326,7 +415,7 @@ hildon_desktop_notification_manager_db_load (HildonDesktopNotificationManager *n
 {
   gchar *error;
   
-  g_return_if_fail(nm->priv->db != NULL);
+  g_return_if_fail (nm->priv->db != NULL);
   
   if (sqlite3_exec (nm->priv->db, 
 		    "SELECT * FROM notifications",
@@ -631,7 +720,7 @@ hildon_desktop_notification_manager_db_delete (HildonDesktopNotificationManager 
 {
   gchar *sql;
   gint result;
-        
+
   result = hildon_desktop_notification_manager_db_exec (nm, "BEGIN TRANSACTION");
 
   if (result != SQLITE_OK) goto rollback;
@@ -745,11 +834,18 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
                                        G_OBJECT (nm));
 
 #ifdef HAVE_SQLITE
+  nm->priv->db = NULL;
+
+  open_libsqlite3 ();
+
+  if (sqlite3_open == NULL)
+    return;
+
   notifications_db = g_build_filename (g_get_home_dir (), 
 		  		       ".osso/hildon-desktop",
 				       "notifications.db",
 				       NULL); 
-  
+
   result = sqlite3_open (notifications_db, &nm->priv->db);
 
   g_free (notifications_db);

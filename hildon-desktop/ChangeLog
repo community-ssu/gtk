@@ -1,3 +1,11 @@
+2007-06-25  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/control: added build dependency on libsqlite3-dev to enable
+	notification manager persistency support.
+	* libhildondesktop/hildon-desktop-notification-manager.c: dynamicaly
+	load libsqlite3 in order to avoid direct linking.
+	* libhildondesktop/Makefile.am: don't link to sqlite anymore.
+
 2007-06-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c:
@@ -204,7 +212,6 @@
 	* src/main.c: Fixed problem with thread initialization with glib.
 	Pointed out by Tommi.
 
-2007-06-12  Johan Bilien  <johan.bilien@nokia.com>
 2007-06-12  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:

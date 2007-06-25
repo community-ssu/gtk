@@ -40,7 +40,6 @@ INCLUDES = \
 	$(HILDON_CFLAGS)             \
 	$(GNOME_VFS_CFLAGS)          \
 	$(OSSO_CFLAGS)               \
-	$(SQLITE_CFLAGS)             \
 	$(LIBXML_CFLAGS)             \
 	$(DBUS_GLIB_CFLAGS)          \
 	$(XCOMPOSITE_CFLAGS)         \
@@ -130,7 +129,6 @@ libhildondesktop_la_SOURCES = \
 
 libhildondesktop_la_LIBADD =                      \
 	$(HILDON_LIBS)                            \
-	$(SQLITE_LIBS)                            \
 	$(HILDONBASELIB_LIBS)                     \
 	$(GNOME_VFS_LIBS)                         \
 	$(DBUS_GLIB_LIBS)                         \
