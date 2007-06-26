@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# Copyright (C) 2007 Nokia Corporation. All rights reserved. 
+#
+# Licensed under the GNU Lesser General Public License, version 2.1
+# See COPYING for details
+
+args=$*
+
+usage() {
+    cat <<EOF
+usage: $0 --[un]register schemas.file1 [schemas.file2 [...]]
+EOF
+}
+
+if [ -z "$args" ]; then
+    usage
+    exit 1
+fi
+
+if [ $1 != "--register" ] && [ $1 != "--unregister" ]; then
+    usage
+    exit 1
+fi
+
+# check that at least one schemas file is given
+if [ $# -lt 2 ]; then
+    usage
+    exit 1
+fi
+
+if [ `id -u` -ne 0 ]; then
+    echo "You must be root to launch this program."
+    exit 1
+fi
+
+action=$1
+
+# take out the action from the arguments
+shift
+
+# Go through the given schema files and construct a path with the
+# schema location.
+# TODO: isabs($SCHEMA)
+schema_location="/usr/share/gconf/schemas"
+schema_files=$*
+
+for SCHEMA in $schema_files; do
+    if [ -e $schema_location/$SCHEMA ]; then
+	schemas="$schemas $schema_location/$SCHEMA"
+    else
+	echo "Warning: $schema_location/$SCHEMA could not be found."
+    fi
+done
+
+# create a temp directory and try to ensure that the directory does
+# not already exist
+tmp_home="/tmp/gconf2-regunreg-$$"
+until [ ! -d $tmp_home ]; do
+    tmp_home="$tmp_home"_x
+done
+
+mkdir -p $tmp_home
+
+if [ $action = "--register" ]; then
+    HOME=$tmp_home GCONF_CONFIG_SOURCE="xml:readwrite:/var/lib/gconf/defaults"\
+	gconftool-2 --makefile-install-rule $schemas
+#    kill -s HUP `pidof gconfd-2` >/dev/null 2>&1 || true
+fi
+
+if [ $action = "--unregister" ]; then
+    HOME=$tmp_home GCONF_CONFIG_SOURCE="xml:readwrite:/var/lib/gconf/defaults"\
+	gconftool-2 --makefile-uninstall-rule $schemas
+fi
+
+# remove the temp directory
+rm -rf $tmp_home

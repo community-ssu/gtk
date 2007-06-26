@@ -6,3 +6,5 @@ debian/tmp/usr/share/dbus-1/services/gconf.service
 debian/tmp/etc/dbus-1/system.d/gconfd.conf
 debian/tmp/etc/gconf/2/path
 debian/gconf-daemon.sh /etc/osso-af-init
+debian/gconf-schemas usr/sbin
+
