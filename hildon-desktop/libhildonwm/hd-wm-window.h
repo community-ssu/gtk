@@ -174,6 +174,13 @@ hd_wm_window_destroy_info (HDWMWindow *win);
 gboolean
 hd_wm_window_is_active (HDWMWindow *win);
 
+void         
+hd_wm_window_set_icon_geometry (HDWMWindow *win,
+                                gint x,
+                                gint y,
+                                gint width,
+                                gint height,
+                                gboolean override);
 
 G_END_DECLS
 

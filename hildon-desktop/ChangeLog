@@ -1,3 +1,9 @@
+2007-06-26  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c: Some optimizations.
+	* libhildonwm/hd-wm-window.[ch]: Added _set_icon_geometry method
+	* src/hn-app-switcher.c: Added _set_icon_geometry calls
+
 2007-06-26  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c: Fixed build without composite

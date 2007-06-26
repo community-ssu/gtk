@@ -1901,8 +1901,7 @@ hd_wm_add_applications (HDWM *hdwm, HDWMEntryInfo *entry_info)
   else
   if (HD_WM_IS_APPLICATION (entry_info))
   {
-    g_warning ("asked to append HD_ENTRY_APPLICATION "
-                "-- this should not happen");
+    g_warning ("asked to append HD_WM_APPLICATION!!!!!!");
   }	  
 }
 
@@ -1943,19 +1942,12 @@ hd_wm_remove_applications (HDWM *hdwm, HDWMEntryInfo *entry_info)
      * hibernating, and if they are, wake one of them up, because
      * we will not receive current window msg from MB
      */
-    GList * l;
+    GList *l;
     gboolean all_asleep = TRUE;
       
     for (l = hdwm->priv->applications; l != NULL; l = l->next)
     {
-      HDWMEntryInfo *entry = l->data;
-      HDWMApplication *app = NULL;
-
-      if (HD_WM_IS_APPLICATION (entry))
-        app = HD_WM_APPLICATION (app);
-      else
-      if (HD_WM_IS_WINDOW (entry))
-        app = hd_wm_window_get_application (HD_WM_WINDOW (entry));
+      HDWMApplication *app = HD_WM_APPLICATION (l->data);
 
       if (app && !hd_wm_application_is_hibernating (app))
       {
@@ -1982,7 +1974,6 @@ hd_wm_get_applications (HDWM *hdwm)
 {
   return hdwm->priv->applications;
 }
-
 
 static void
 hd_wm_process_x_client_list (HDWM *hdwm)

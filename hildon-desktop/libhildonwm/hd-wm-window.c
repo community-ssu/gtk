@@ -62,6 +62,14 @@
 
 #define HIBERNATION_TIMEMOUT 3000 /* as suggested by 31410#10 */
 
+enum
+{
+  HDWM_WIN_CLOSE_WINDOW_SIGNAL,
+  HDWM_WIN_N_SIGNALS
+};  
+
+gint hdwm_win_signals [HDWM_WIN_N_SIGNALS];
+
 static void hd_wm_window_entry_info_init (HDWMEntryInfoIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE (HDWMWindow,hd_wm_window,G_TYPE_OBJECT,
@@ -113,6 +121,7 @@ struct _HDWMWindowPrivate
   HDWMEntryInfo		 *parent;
   gboolean 		  ignore_urgent;
   gboolean		  info_init;
+  gboolean		  override_icon_geometry;
 };
 
 struct xwinv
@@ -445,6 +454,8 @@ hd_wm_window_finalize (GObject *object)
   
   HN_DBG("Removing '%s'", win->priv->name);
 
+  g_signal_emit_by_name (object, "close-window", win);
+
   /* Dont destroy windows that are hiberating */
   if (hd_wm_window_is_hibernating (win))
     {
@@ -521,8 +532,10 @@ hd_wm_window_init (HDWMWindow *watched)
   watched->priv = HD_WM_WINDOW_GET_PRIVATE (watched);	
 
   watched->priv->parent = NULL;
-  watched->priv->ignore_urgent = FALSE;
-  watched->priv->info_init = FALSE;
+  
+  watched->priv->info_init =
+  watched->priv->ignore_urgent =
+  watched->priv->override_icon_geometry = FALSE;
 }
 
 static void 
@@ -533,6 +546,15 @@ hd_wm_window_class_init (HDWMWindowClass *watched_class)
   object_class->finalize = hd_wm_window_finalize;
 	
   g_type_class_add_private (watched_class, sizeof (HDWMWindowPrivate));
+
+  hdwm_win_signals[HDWM_WIN_CLOSE_WINDOW_SIGNAL] = 
+	g_signal_new("close-window",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_FIRST,
+		     0,
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__POINTER,
+		     G_TYPE_NONE, 1, G_TYPE_POINTER);
 }
 
 static void
@@ -1248,5 +1270,42 @@ hd_wm_window_is_active (HDWMWindow *win)
     return TRUE;
 
   return FALSE;
+}
+
+void         
+hd_wm_window_set_icon_geometry (HDWMWindow *win,
+                                gint x,
+                                gint y,
+                                gint width,
+                                gint height,
+                                gboolean override)
+{
+  gulong data[4];
+  gboolean old_override_flag;
+  GdkDisplay *display = gdk_x11_lookup_xdisplay (GDK_DISPLAY ());
+
+  g_return_if_fail (win != NULL && HD_WM_IS_WINDOW (win));
+
+  old_override_flag = win->priv->override_icon_geometry;
+
+  win->priv->override_icon_geometry = override;
+
+  if (!old_override_flag && !override)
+    return;
+
+  data[0] = x;
+  data[1] = y;
+  data[2] = width;
+  data[3] = height;
+
+  gdk_error_trap_push ();
+
+  XChangeProperty (GDK_DISPLAY (),
+                   hd_wm_window_get_x_win (win),
+                   gdk_x11_get_xatom_by_name_for_display (display,"_NET_WM_ICON_GEOMETRY"),
+                   XA_CARDINAL, 32, PropModeReplace,
+                   (guchar *)&data, 4);
+
+  gdk_error_trap_pop ();
 }
 

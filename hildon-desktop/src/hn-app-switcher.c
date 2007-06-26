@@ -570,15 +570,14 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   for (l = children; l != NULL; l = l->next)
   {
     HDWMEntryInfo *_info = HD_WM_ENTRY_INFO (l->data);	  
-#if 0	  
+	  
     if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
-      hd_entry_info_set_icon_geometry (l->data,	    
-		      		       GTK_WIDGET (app_button)->allocation.x,
-				       GTK_WIDGET (app_button)->allocation.y,
-				       GTK_WIDGET (app_button)->allocation.width,
-				       GTK_WIDGET (app_button)->allocation.height,
-				       TRUE);
-#endif	  
+      hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
+		      		      GTK_WIDGET (app_button)->allocation.x,
+				      GTK_WIDGET (app_button)->allocation.y,
+				      GTK_WIDGET (app_button)->allocation.width,
+				      GTK_WIDGET (app_button)->allocation.height,
+				      TRUE);
     /*
      * If the entry is urgent and the ignore flag is not set, the button
      * should blink
@@ -676,14 +675,12 @@ refresh_buttons (gpointer user_data)
     }
     else
     {
-#if 0	    
-      hd_entry_info_set_icon_geometry (l->data,	    
-		      		       GTK_WIDGET (app_switcher)->allocation.x,
-				       GTK_WIDGET (app_switcher)->allocation.y,
-				       GTK_WIDGET (app_switcher)->allocation.width,
-				       GTK_WIDGET (app_switcher)->allocation.height,
-				       FALSE);
-#endif      
+      hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
+		      		      GTK_WIDGET (app_switcher)->allocation.x,
+				      GTK_WIDGET (app_switcher)->allocation.y,
+				      GTK_WIDGET (app_switcher)->allocation.width,
+				      GTK_WIDGET (app_switcher)->allocation.height,
+				      FALSE);
     }	    
   }
 
