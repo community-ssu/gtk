@@ -46,19 +46,19 @@ style "osso-bread-crumb-back-button" {
       function = FOCUS
 	state = ACTIVE
 	file = "../images/qgn_plat_breadcrumb_backbutton_pressed.png"
-	border = { 6, 6, 27, 28 }
+	border = { 5, 6, 28, 28 }
     }
 
     image {
       function = FOCUS
 	file = "../images/qgn_plat_breadcrumb_backbutton_focused.png"
-	border = { 5, 5, 27, 28 }
+	border = { 5, 6, 28, 28 }
     }
 
     image {
       function = BOX
 	file = "../images/qgn_plat_breadcrumb_backbutton_normal.png"
-	border = { 4, 4, 27, 28 }
+	border = { 5, 6, 28, 28 }
     }
   }
 }
@@ -91,35 +91,35 @@ style "osso-bread-crumb-button" {
       function = BOX
 	position = LEFT, RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_normal.png"
-	border = { 0, 4, 28, 29 }
+	border = { 4, 5, 28, 28 }
     }
     image {
       function = FOCUS
 	state = ACTIVE
 	position = LEFT, RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_pressed.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 5, 28, 28 }
     }
 
     image {
       function = FOCUS
 	position = LEFT, RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_focused.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 5, 28, 28 }
     }
 
     image {
       function = BOX
 	position = RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_normal.png"
-	border = { 0, 4, 28, 29 }
+	border = { 4, 5, 28, 28 }
     }
     image {
       function = FOCUS
 	state = ACTIVE
 	position = RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_pressed.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 5, 28, 28 }
     }
 
     image {
@@ -133,19 +133,19 @@ style "osso-bread-crumb-button" {
       function = FOCUS
 	state = ACTIVE
 	file = "../images/qgn_plat_breadcrumb_middle_pressed.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 4, 28, 28 }
     }
 
     image {
       function = BOX
 	file ="../images/qgn_plat_breadcrumb_middle_normal.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 4, 28, 28 }
     }
 
     image {
       function = FOCUS
 	file = "../images/qgn_plat_breadcrumb_middle_focused.png"
-	border = { 4, 4, 28, 29 }
+	border = { 4, 4, 28, 28 }
     }
 
   }

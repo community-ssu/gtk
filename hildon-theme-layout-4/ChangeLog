@@ -1,5 +1,10 @@
 2007-06-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonbreadcrumbtrail.rc: Fixing the breadcrumb bordervalues. Fixes
+	NB#61622.
+
+2007-06-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/gtkbutton.rc:
 	* rc/gtktoolbutton.rc:
 	* rc/hildontimeeditor.rc: Removing the button displacement (equals to x =
