@@ -1,3 +1,10 @@
+libhildonmime (1.9.9-1) unstable; urgency=low
+
+  * Fix the fix for this:
+  * Fixes: NB#60083, modest.desktop should be the default handler for mailto
+
+ -- Richard Hult <richard@imendio.com>  Tue, 26 Jun 2007 13:31:23 +0200
+	
 libhildonmime (1.9.8-1) unstable; urgency=low
 
   * Updated action filter function to sort by action type.
@@ -5,7 +12,7 @@ libhildonmime (1.9.8-1) unstable; urgency=low
   * Fixed hildon_uri_open() to use _by_uri() API when getting default action.
   * Fixed test-uri -u option which was using old API.
 
- -- Martyn Russell <martyn@imendio.com>  Fri, 22 May 2007 17:00:01 +0100
+ -- Martyn Russell <martyn@imendio.com>  Fri, 22 Jun 2007 17:00:01 +0100
 	
 libhildonmime (1.9.7-2) unstable; urgency=low
 

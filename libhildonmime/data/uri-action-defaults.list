@@ -5,5 +5,5 @@ http=hildon-browser.desktop
 https=hildon-browser.desktop
 ftp=hildon-browser.desktop
 sipto=hildon-osso-addressbook.desktop
-mailto=modest.desktop
+mailto=hildon-modest.desktop
 chatto=hildon-chat-ui.desktop

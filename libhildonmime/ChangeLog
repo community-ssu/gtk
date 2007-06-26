@@ -1,3 +1,12 @@
+2007-06-26  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.9.
+
+	* data/uri-action-defaults.list: Fix location of the modest
+	desktop file.
+
+	* configure.in: Bump version.
+
 2007-06-22  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.9.8.
