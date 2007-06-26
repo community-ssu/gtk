@@ -90,6 +90,9 @@ enum {
   PROP_DELETABLE,
   PROP_GRAVITY,
   PROP_TRANSIENT_FOR,
+#ifdef MAEMO_CHANGES
+  PROP_TEMPORARY,
+#endif /* MAEMO_CHANGES */
   
   /* Readonly properties */
   PROP_IS_ACTIVE,
@@ -174,6 +177,9 @@ struct _GtkWindowPrivate
   guint focus_on_map : 1;
   guint deletable : 1;
   guint transient_parent_group : 1;
+#ifdef MAEMO_CHANGES
+  guint is_temporary : 1;
+#endif /* MAEMO_CHANGES */
 
   guint reset_type_hint : 1;
   GdkWindowTypeHint type_hint;
@@ -641,6 +647,27 @@ gtk_window_class_init (GtkWindowClass *klass)
 							 TRUE,
 							 GTK_PARAM_READWRITE));
 
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkWindow:temporary:
+   *
+   * Whether the window is "temporary" (completion popups, menus, etc) and should be
+   * automatically closed when it receives the _GTK_DELETE_TEMPORARIES ClientMessage.
+   * If set to TRUE GTK will send a delete-event to the window whenever it receives
+   * a _GTK_DELETE_TEMPORARIES message, so this needs to be properly handled by the
+   * widget.
+   *
+   * Since: 2.12
+   * Stability: Unstable
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_DELETABLE,
+                                   g_param_spec_boolean ("temporary",
+							 P_("Temporary"),
+							 P_("Whether the window should be closed when it receives the _GTK_DELETE_TEMPORARIES ClientMessage"),
+							 FALSE,
+							 GTK_PARAM_READWRITE));
+#endif
 
   /**
    * GtkWindow:gravity:
@@ -925,6 +952,11 @@ gtk_window_set_property (GObject      *object,
     case PROP_TRANSIENT_FOR:
       gtk_window_set_transient_for (window, g_value_get_object (value));
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_TEMPORARY:
+      gtk_window_set_temporary (window, g_value_get_boolean (value));
+      break;
+#endif
     default:
       break;
     }
@@ -1036,6 +1068,11 @@ gtk_window_get_property (GObject      *object,
     case PROP_TRANSIENT_FOR:
       g_value_set_object (value, gtk_window_get_transient_for (window));
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_TEMPORARY:
+      g_value_set_boolean (value, gtk_window_is_temporary (window));
+      break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -4821,6 +4858,9 @@ gtk_window_focus_out_event (GtkWidget     *widget,
 
 static GdkAtom atom_rcfiles = GDK_NONE;
 static GdkAtom atom_iconthemes = GDK_NONE;
+#ifdef MAEMO_CHANGES
+static GdkAtom atom_temporaries = GDK_NONE;
+#endif /* MAEMO_CHANGES */
 
 static void
 send_client_message_to_embedded_windows (GtkWidget *widget,
@@ -4850,6 +4890,74 @@ send_client_message_to_embedded_windows (GtkWidget *widget,
     }
 }
 
+#ifdef MAEMO_CHANGES
+/**
+ * gtk_window_set_temporary:
+ * @window: a #GtkWindow
+ * @setting: %TRUE if the window should be closed when it receives the _GTK_DELETE_TEMPORARIES ClientMessage
+ * 
+ * Since: 2.12
+ * Stability: Unstable
+ */
+void
+gtk_window_set_temporary (GtkWindow *window,
+			  gboolean   setting)
+{
+  GtkWindowPrivate *priv;
+
+  g_return_if_fail (GTK_IS_WINDOW (window));
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+
+  if (priv->is_temporary != setting)
+    {
+      priv->is_temporary = setting;
+
+      g_object_notify (G_OBJECT (window), "temporary");
+    }
+}
+
+/**
+ * gtk_window_is_temporary:
+ * @window: a #GtkWindow
+ *
+ * Return value: %TRUE if the window is marked as temporary.
+ *
+ * Since: 2.12
+ * Stability: Unstable
+ */
+gboolean
+gtk_window_is_temporary (GtkWindow *window)
+{
+  GtkWindowPrivate *priv;
+
+  g_return_val_if_fail (GTK_IS_WINDOW (window), FALSE);
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+  return priv->is_temporary;
+}
+
+static void
+delete_if_temporary (GtkWidget *widget)
+{
+  GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (widget);
+
+  if (priv->is_temporary)
+    {
+      /* synthesize delete-event to close the window */
+      GdkEvent *event;
+
+      event = gdk_event_new (GDK_DELETE);
+
+      event->any.window = g_object_ref (widget->window);
+      event->any.send_event = TRUE;
+
+      gtk_main_do_event (event);
+      gdk_event_free (event);
+    }
+}
+#endif /* MAEMO_CHANGES */
+
 static gint
 gtk_window_client_event (GtkWidget	*widget,
 			 GdkEventClient	*event)
@@ -4858,6 +4966,9 @@ gtk_window_client_event (GtkWidget	*widget,
     {
       atom_rcfiles = gdk_atom_intern_static_string ("_GTK_READ_RCFILES");
       atom_iconthemes = gdk_atom_intern_static_string ("_GTK_LOAD_ICONTHEMES");
+#ifdef MAEMO_CHANGES
+      atom_temporaries = gdk_atom_intern_static_string ("_GTK_DELETE_TEMPORARIES");
+#endif /* MAEMO_CHANGES */
     }
 
   if (event->message_type == atom_rcfiles) 
@@ -4871,6 +4982,14 @@ gtk_window_client_event (GtkWidget	*widget,
       send_client_message_to_embedded_windows (widget, atom_iconthemes);
       _gtk_icon_theme_check_reload (gtk_widget_get_display (widget));    
     }
+
+#ifdef MAEMO_CHANGES
+  if (event->message_type == atom_temporaries)
+    {
+      send_client_message_to_embedded_windows (widget, atom_temporaries);
+      delete_if_temporary (widget);
+    }
+#endif /* MAEMO_CHANGES */
 
   return FALSE;
 }
