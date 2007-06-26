@@ -437,7 +437,9 @@ static void     gtk_combo_box_child_show                     (GtkWidget       *w
 							      GtkComboBox     *combo_box);
 static void     gtk_combo_box_child_hide                     (GtkWidget       *widget,
 							      GtkComboBox     *combo_box);
-
+static gboolean gtk_combo_box_child_delete_event             (GtkWidget       *widget,
+							      GdkEventAny     *event,
+							      GtkComboBox     *combo_box);
 
 /* GtkCellEditable method implementations */
 static void gtk_combo_box_start_editing (GtkCellEditable *cell_editable,
@@ -1330,6 +1332,9 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
 			    combo_box);
 	  g_signal_connect (GTK_WINDOW(combo_box->priv->popup_window),"hide",
 			    G_CALLBACK (gtk_combo_box_child_hide),
+			    combo_box);
+	  g_signal_connect (GTK_WINDOW(combo_box->priv->popup_window),"delete_event",
+			    G_CALLBACK (gtk_combo_box_child_delete_event),
 			    combo_box);
   	  
 	  toplevel = gtk_widget_get_toplevel (GTK_WIDGET (combo_box));
@@ -2334,6 +2339,16 @@ gtk_combo_box_child_hide (GtkWidget *widget,
 
   priv->popup_shown = FALSE;
   g_object_notify (G_OBJECT (combo_box), "popup-shown");
+}
+
+static gboolean
+gtk_combo_box_child_delete_event (GtkWidget *widget,
+				  GdkEventAny *event,
+				  GtkComboBox *combo_box)
+{
+  gtk_combo_box_popdown (combo_box);
+
+  return TRUE;
 }
 
 static gboolean
@@ -3633,6 +3648,12 @@ gtk_combo_box_list_destroy (GtkComboBox *combo_box)
 					G_SIGNAL_MATCH_DATA,
 					0, 0, NULL, 
 					gtk_combo_box_child_hide,
+					NULL);
+
+  g_signal_handlers_disconnect_matched (combo_box->priv->popup_window,
+					G_SIGNAL_MATCH_DATA,
+					0, 0, NULL, 
+					gtk_combo_box_child_delete_event,
 					NULL);
   
   if (combo_box->priv->box)
