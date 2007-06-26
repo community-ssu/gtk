@@ -188,3 +188,15 @@ binding "menu-f4"
 }
 
 class "GtkMenu" binding "menu-f4"
+
+# Handle focus correctly for edition widgets
+binding "editors-focus"
+{
+  bind "Left"  { "move-focus" (left)         }
+  bind "Right" { "move-focus" (right)        }
+  bind "Up"    { "move-focus" (tab-backward) }
+  bind "Down"  { "move-focus" (tab-forward)  }
+}
+
+class "HildonTimeEditor" binding "editors-focus"
+class "HildonDateEditor" binding "editors-focus"

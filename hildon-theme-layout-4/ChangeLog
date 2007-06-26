@@ -1,3 +1,8 @@
+2007-06-26  Xan Lopez  <xan@nokia.com>
+
+	* rc/base.rc (gtk-icon-sizes): handle focus for Editor widgets.
+	Depends on gtk+2.0 >= 2.10.12-osso6
+
 2007-06-25  Richard Sun  <richard.sun@nokia.com>
 
 	* rc/hildonkeyboard.rc: 
