@@ -4286,12 +4286,7 @@ gtk_window_realize (GtkWidget *widget)
     case GTK_WINDOW_POPUP:
       attributes.window_type = GDK_WINDOW_TEMP;
       break;
-#ifdef MAEMO_CHANGES
-    case PROP_TEMPORARY:
-      gtk_window_set_temporary (window, g_value_get_boolean (value));
-      break;
-#endif
-    default:
+   default:
       g_warning (G_STRLOC": Unknown window type %d!", window->type);
       break;
     }
@@ -4561,12 +4556,7 @@ gtk_window_frame_event (GtkWindow *window, GdkEvent *event)
       configure_event->height -= window->frame_top + window->frame_bottom;
       return gtk_window_configure_event (GTK_WIDGET (window), configure_event);
       break;
-#ifdef MAEMO_CHANGES
-    case PROP_TEMPORARY:
-      g_value_set_boolean (value, gtk_window_is_temporary (window));
-      break;
-#endif
-    default:
+   default:
       break;
     }
   return FALSE;
