@@ -836,12 +836,6 @@ hd_home_window_expose (GtkWidget *widget, GdkEventExpose *event)
 
       priv = HD_HOME_WINDOW_GET_PRIVATE (widget);
 
-      g_debug ("Got expose on window %i,%i %ix%i",
-               event->area.x,
-               event->area.y,
-               event->area.width,
-               event->area.height);
-
       if (priv->background_picture != None)
         {
           Picture                   picture;
