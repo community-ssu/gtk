@@ -450,6 +450,9 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   g_signal_connect (priv->popup_window, "delete-event",
 		    G_CALLBACK (gtk_entry_completion_popup_delete_event),
 		    completion);
+#ifdef MAEMO_CHANGES
+  gtk_window_set_temporary (GTK_WINDOW (priv->popup_window), TRUE);
+#endif /* MAEMO_CHANGES */
 
   popup_frame = gtk_frame_new (NULL);
   gtk_frame_set_shadow_type (GTK_FRAME (popup_frame),

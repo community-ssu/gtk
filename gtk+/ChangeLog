@@ -1,5 +1,16 @@
 2007-06-26  Xan Lopez  <xan@nokia.com>
 
+	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget):
+	* gtk/gtkentrycompletion.c: (gtk_entry_completion_init):
+
+	Mark popup windows as temporary.
+	
+	* gtk/gtkmenu.c: (gtk_menu_window_event):
+
+	Manually listen for _GTK_DELETE_TEMPORARIES message.
+
+2007-06-26  Xan Lopez  <xan@nokia.com>
+
 	* gtk/gtkwindow.c: (gtk_window_class_init),
 	(gtk_window_set_property), (gtk_window_get_property),
 	(gtk_window_set_temporary), (gtk_window_is_temporary),
