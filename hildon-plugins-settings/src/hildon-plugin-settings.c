@@ -89,39 +89,6 @@ _sb_cell_condition_data_func (GtkTreeViewColumn *tc,
 
 }
 
-static void 
-_tn_cell_selection_data_func (GtkTreeViewColumn *tc,
-                    	      GtkCellRenderer *cell,
-                    	      GtkTreeModel *tm,
-                    	      GtkTreeIter *iter,
-                    	      gpointer data)
-{
-  GtkTreeIter _iter;
-  guint selection = 0;
-  gboolean toggled;
-  GtkTreeModel *real_tm = GTK_IS_TREE_MODEL_FILTER (tm) ?
-    		          gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (tm)) :
-			  tm;
-
-  gtk_tree_model_get_iter_first (real_tm, &_iter);
-
-  do
-  {
-    gtk_tree_model_get (real_tm, &_iter,
-		        HP_COL_CHECKBOX, &toggled,
-		        -1);
-
-    if (toggled)
-      selection++;
-  }
-  while (gtk_tree_model_iter_next (real_tm, &_iter));  
-
-  g_debug ("selection %d", selection); 
-
-  if (selection >= TN_MAX_ITEMS)
-  {
-  } 	  
-}
 osso_return_t 
 execute (osso_context_t *osso,
 	 gpointer user_data,
@@ -154,13 +121,10 @@ execute (osso_context_t *osso,
     NULL,
     NULL);    
 
-  hildon_plugin_settings_dialog_set_cell_data_func
+  hildon_plugin_settings_dialog_set_choosing_limit 
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
-     HPSD_COLUMN_TOGGLE,
      "Tasknavigator",
-     _tn_cell_selection_data_func,
-     NULL,
-     NULL);
+     3);
 
   gtk_widget_show (dialog);
 

@@ -36,6 +36,8 @@
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_DIALOG TRUE
 #define HILDON_PLUGIN_SETTINGS_DIALOG_TYPE_WINDOW FALSE
 
+#define HPSD_NO_LIMIT -1
+
 typedef enum
 {
   HPSD_COLUMN_PB,
@@ -92,6 +94,11 @@ hildon_plugin_settings_dialog_new (void);
 GList *
 hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *settings);
 
+
+void 
+hildon_plugin_settings_dialog_set_choosing_limit (HildonPluginSettingsDialog *settings,
+					          const gchar *container_name,
+					 	  gint limit);
 GtkTreeModel *
 hildon_plugin_settings_dialog_set_visibility_filter (HildonPluginSettingsDialog *settings,
 					             const gchar *container_name,

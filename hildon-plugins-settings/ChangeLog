@@ -1,3 +1,11 @@
+2007-06-26  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-settings-dialog.[ch]:
+	- Added method to set limit of items for a container.
+	- Implemented limitation of selected items.
+	* src/hildon-plugin-settings.c:
+	- Set limit to 3 items for Tasknavigator.
+
 2007-06-18  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-config-parser.[ch]:

@@ -68,6 +68,7 @@
 #define HILDON_PLUGIN_SETTINGS_DIALOG_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_PLUGIN_TYPE_SETTINGS_DIALOG, HildonPluginSettingsDialogPrivate))
 
+
 G_DEFINE_TYPE (HildonPluginSettingsDialog, hildon_plugin_settings_dialog, GTK_TYPE_DIALOG);
 
 typedef struct 
@@ -77,6 +78,8 @@ typedef struct
   GtkTreeView *tw;
   GtkTreeModel *filter;
   gboolean is_sorted;
+  gint limit;
+  guint counter_limit;
 }
 HPSDTab;
 
@@ -184,6 +187,34 @@ hildon_plugin_settings_dialog_class_init (HildonPluginSettingsDialogClass *setti
 
 }
 
+static void 
+hildon_plugin_settings_dialog_check_limits (GtkTreeView *tw, HPSDTab *tab)
+{
+  gboolean selected;	
+  GtkTreeIter iter;	
+  GtkTreeModel *tm; /* We shouldn't care about whether we use a filter or not
+		       we want to check the limits according what user sees
+		       */
+  
+  tm = gtk_tree_view_get_model (tw);
+
+  gtk_tree_model_get_iter_first (tm, &iter);
+
+  do
+  {
+    gtk_tree_model_get (tm, &iter,
+		        HP_COL_CHECKBOX, &selected,
+			-1);
+
+    if (selected)
+      tab->counter_limit++;	    
+  }
+  while (gtk_tree_model_iter_next (tm, &iter));  
+
+  if (tab->counter_limit > 0)
+    tab->limit = tab->counter_limit;	  
+}	
+
 static GObject *
 hildon_plugin_settings_dialog_constructor (GType gtype,
                                            guint n_params,
@@ -284,6 +315,11 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
       tw = gtk_tree_view_new_with_model (tab->parser->tm);
 
     tab->tw = GTK_TREE_VIEW (tw);
+
+    g_object_set_data (G_OBJECT (tw), "tab-data", tab);
+
+    if (tab->limit != HPSD_NO_LIMIT)
+      hildon_plugin_settings_dialog_check_limits (GTK_TREE_VIEW (tw), tab);
 
     hildon_plugin_settings_dialog_fill_treeview (settings, GTK_TREE_VIEW (tw));
 
@@ -642,6 +678,8 @@ hildon_plugin_settings_parse_desktop_conf (HildonPluginSettingsDialog *settings)
     tab->tw = NULL;
     tab->filter = NULL;
     tab->is_sorted = is_sorted;
+    tab->limit = HPSD_NO_LIMIT;
+    tab->counter_limit = 0; /*Note to myself: create the damned _new function!!! */
 
     g_free (path_to_save);
 
@@ -714,6 +752,7 @@ hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_r
   GtkTreeIter iter;
   gboolean selected;
   GtkTreeModel *tm = gtk_tree_view_get_model (tw);
+  HPSDTab *tab = NULL;
   
   if (!gtk_tree_model_get_iter_from_string (tm, &iter, path))
     return;
@@ -721,6 +760,20 @@ hildon_plugin_settings_dialog_renderer_toggled_cb (GtkCellRendererToggle *cell_r
   gtk_tree_model_get (tm, &iter, 
 		      HP_COL_CHECKBOX, &selected, 
 		      -1);
+
+  tab = g_object_get_data (G_OBJECT (tw),"tab-data");
+
+  if (tab && tab->limit != HPSD_NO_LIMIT)
+  {
+    if (!selected && tab->counter_limit >= tab->limit)
+      return;
+    else
+    if (tab->counter_limit <= tab->limit)
+      tab->counter_limit = (!selected) ? tab->counter_limit + 1: tab->counter_limit - 1;	    
+
+    if (tab->counter_limit < 0)
+      tab->counter_limit = 0;	    
+  }	  
   
   if (GTK_IS_TREE_MODEL_FILTER (tm))
   {
@@ -788,6 +841,29 @@ hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *s
      names = g_list_append (names, ((HPSDTab *)l->data)->name);
 
   return names;
+}
+
+void
+hildon_plugin_settings_dialog_set_choosing_limit (HildonPluginSettingsDialog *settings,
+                                                  const gchar *container_name,
+                                                  gint limit)
+{
+  GList *container_tab = NULL;
+
+
+  container_tab = 
+    g_list_find_custom (settings->priv->tabs,
+   		        container_name,
+			(GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+
+  if (!container_tab)
+    return;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  tab->limit = limit;
+
+  hildon_plugin_settings_dialog_check_limits (tab->tw, tab);
 }
 
 GtkTreeModel *
