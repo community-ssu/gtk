@@ -1,4 +1,4 @@
-2007-06-26  Xan Lopez  <xan@nokia.com>
+2007-06-26  Xan Lopez  <xan@.lopeznokia.com>
 
 	Take from upstream:
 	
@@ -21,7 +21,7 @@
 	navigation in toolbars. I'll fix the behavior if somebody can
 	explain me if and how exactly the new behavior is broken.
 
-2007-06-26  Xan Lopez  <xan@nokia.com>
+2007-06-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget):
 	* gtk/gtkentrycompletion.c: (gtk_entry_completion_init):
@@ -32,7 +32,7 @@
 
 	Manually listen for _GTK_DELETE_TEMPORARIES message.
 
-2007-06-26  Xan Lopez  <xan@nokia.com>
+2007-06-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwindow.c: (gtk_window_class_init),
 	(gtk_window_set_property), (gtk_window_get_property),
@@ -49,7 +49,7 @@
 
 	This API is *UNSTABLE*
 
-2007-06-26  Xan Lopez  <xan@nokia.com>
+2007-06-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget),
 	(gtk_combo_box_child_delete_event), (gtk_combo_box_list_destroy):
