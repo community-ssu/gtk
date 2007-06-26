@@ -1,3 +1,10 @@
+libhildonfm (1:1.9.33~unreleased) unstable; urgency=low
+
+  * Fixes: NB#59187. File/Folder operations in MMC through PC does not 
+    update in MMC.
+
+ -- Richard Hult <richard@imendio.com>  Tue, 26 Jun 2007 14:32:51 +0200
+
 libhildonfm (1:1.9.32) unstable; urgency=low
 
   * Fixes: NB#59746. MP crashed when tapping on details from Clip menu.

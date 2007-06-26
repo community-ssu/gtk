@@ -276,6 +276,7 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
     }
 
   g_signal_emit_by_name (location, "changed");
+  g_signal_emit_by_name (location, "rescan");
 }
 
 static char *

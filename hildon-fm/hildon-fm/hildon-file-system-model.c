@@ -1781,19 +1781,25 @@ hildon_file_system_model_kick_node(GNode *node, gpointer data)
 
 static gboolean notify_volumes_changed(GNode *node, gpointer data)
 {
-    HildonFileSystemSpecialLocation *location;
+    HildonFileSystemModelNode *model_node = node->data;
 
-    if ((location = node->data) != NULL)
-        hildon_file_system_special_location_volumes_changed(location, data);
+    if (model_node->location)
+	hildon_file_system_special_location_volumes_changed(model_node->location, data);
 
     return FALSE;
 }
 
 static void real_volumes_changed(GtkFileSystem *fs, gpointer data)
 {
+    HildonFileSystemModel *model;
+    HildonFileSystemModelPrivate *priv;
+
     ULOG_DEBUG_F("entered");
 
-    g_node_traverse(_hildon_file_system_get_locations(fs),
+    model = HILDON_FILE_SYSTEM_MODEL (data);
+    priv = CAST_GET_PRIVATE(model);
+
+    g_node_traverse(priv->roots,
             G_PRE_ORDER, G_TRAVERSE_ALL, -1,
             notify_volumes_changed, fs);
 }
@@ -2437,6 +2443,7 @@ location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
 {
     HildonFileSystemModelNode *model_node;
     HildonFileSystemModel *model;
+    GNode *child;
 
     g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
     g_assert(node != NULL && node->data != NULL);
@@ -2446,8 +2453,22 @@ location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
     model_node = node->data;
     model = model_node->model;
 
-    hildon_file_system_model_queue_node_reload
-      (HILDON_FILE_SYSTEM_MODEL(model), node, TRUE);
+    if (!hildon_file_system_special_location_is_visible (location))
+      {
+	unlink_file_folder(node);
+
+	child = node->children;
+	while (child)
+	  child = hildon_file_system_model_kick_node(child, model);
+      }
+    else
+      {
+	if (!link_file_folder(node, model_node->path))
+	  return;
+
+	hildon_file_system_model_queue_node_reload
+		(HILDON_FILE_SYSTEM_MODEL(model), node, TRUE);
+      }
 }
 
 static HildonFileSystemModelNode *

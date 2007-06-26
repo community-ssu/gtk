@@ -1,3 +1,25 @@
+2007-06-26  Richard Hult  <richard@imendio.com>
+
+	* configure.ac: Bump version.
+
+2007-06-25  Carlos Garnacho  <carlos@imendio.com>
+
+	Fix NB#59187, where contents in a memory card didn't update if it
+	was unmounted/changed/mounted.
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_change): emit ::rescan if any
+	volume has changed, it may be one of these.
+
+	* hildon-fm/hildon-file-system-model.c
+	(notify_volumes_changed) (real_volumes_changed): also notify other
+	nodes than the ones returned by _hildon_file_system_get_locations().
+	(location_rescan): invalidate location node and its children if it
+	becomes invisible, and load the node if it becomes visible. This
+	way we don't leave invalid nodes if the location contents change
+	after being set invisible (think changing a memory card,
+	connecting the usb cable and modifying from the computer, etc...).
+
 2007-06-21  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	Released 1.9.32
