@@ -5,7 +5,7 @@ style "osso-rss-feed-reader"
 {
   xthickness = 0
   ythickness = 0
-  HildonDesktopHomeItem::background-borders = { 262, 36, 12, 72 }
+  HildonDesktopHomeItem::background-borders = { 262,36,12,72 }
   bg_pixmap[PRELIGHT] = "../images/qgn_plat_news_applet_bg_alpha.png"
 
   GtkScrollbar::has-forward-stepper = 0
@@ -17,7 +17,7 @@ style "osso-rss-feed-reader"
         {
           function = SHADOW
           file     = "../images/qgn_plat_news_applet_bg.png"
-          border   = { 262, 36, 12, 72 }
+          border   = { 262,36,12,72 }
           shaped = TRUE
         }
 

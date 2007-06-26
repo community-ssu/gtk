@@ -1,5 +1,10 @@
 2007-06-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/ossorssfeedreader.rc: Fixing the border values for rss reader. Fixes
+	NB#61636.
+
+2007-06-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/hildonbreadcrumbtrail.rc: Fixing the breadcrumb bordervalues. Fixes
 	NB#61622.
 
