@@ -57,13 +57,13 @@ enum
 typedef struct
 {
   GtkWidget    *widget;
+  Window        window;
   gint          x;
   gint          y;
   gint          stack_index;
   gulong        realize_handler;
 #ifdef HAVE_X_COMPOSITE
   GtkAllocation old_allocation;
-  Window        window;
   Damage        damage;
   Picture       picture;
   Picture       alpha_mask;
@@ -248,6 +248,13 @@ child_data_free (ChildData *child_data)
   g_free (child_data);
 
 }
+
+static gint
+find_by_window (ChildData *data, Window *w)
+{
+  return !(data->window == *w);
+}
+
 
 GType
 hildon_home_area_get_type (void)
@@ -1315,12 +1322,6 @@ hildon_home_area_child_state_change (ChildData *child_data)
 }
 
 
-static gint
-find_by_window (ChildData *data, Window *w)
-{
-  return !(data->window == *w);
-}
-
 static gboolean
 hildon_home_area_expose (GtkWidget *widget,
                          GdkEventExpose *event)
@@ -1548,6 +1549,8 @@ hildon_home_area_child_realize (GtkWidget             *child,
   gtk_container_child_get (GTK_CONTAINER (area), child,
                            "child-data", &data,
                            NULL);
+
+  data->window = GDK_WINDOW_XID (child->window);
 #ifdef HAVE_X_COMPOSITE
 
   /* HACK: Pretend the child shaped so GDK does not add the
@@ -2282,7 +2285,10 @@ hildon_home_area_put (HildonHomeArea *area,
                               area);
 
   if (GTK_WIDGET_REALIZED (widget))
-    hildon_home_area_sort_stack (area);
+    {
+      hildon_home_area_sort_stack (area);
+      child_data->window = GDK_WINDOW_XID (widget->window);
+    }
 
 #ifdef HAVE_X_COMPOSITE
   if (HILDON_HOME_AREA_GET_CLASS (area)->composite)
