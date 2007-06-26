@@ -247,7 +247,7 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 		     gint          width,
 		     gint          height)
 {
-  gint src_x[4], src_y[4], dest_x[4], dest_y[4];
+  gint dest_x[4], dest_y[4];
   gint pixbuf_width;
   gint pixbuf_height;
   SapwoodRect rect[9];
@@ -266,16 +266,6 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
     {
       SapwoodPixmap *pixmap;
 
-      src_x[0] = 0;
-      src_x[1] = theme_pb->border_left;
-      src_x[2] = pixbuf_width - theme_pb->border_right;
-      src_x[3] = pixbuf_width;
-      
-      src_y[0] = 0;
-      src_y[1] = theme_pb->border_top;
-      src_y[2] = pixbuf_height - theme_pb->border_bottom;
-      src_y[3] = pixbuf_height;
-      
       dest_x[0] = x;
       dest_x[1] = x + theme_pb->border_left;
       dest_x[2] = x + width - theme_pb->border_right;

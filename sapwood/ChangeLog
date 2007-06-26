@@ -1,3 +1,7 @@
+2007-06-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-render.c (theme_pixbuf_render): Remove unused variables.
+
 2007-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 2.91.5 ===
