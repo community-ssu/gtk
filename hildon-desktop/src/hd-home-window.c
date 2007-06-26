@@ -1866,11 +1866,6 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
           if (!hd_home_background_equal (priv->background,
                                          priv->previous_background))
             {
-              priv->background_loading_timeout =
-                  g_timeout_add (1000,
-                                 (GSourceFunc)
-                                   hd_home_window_set_background_timeout,
-                                 window);
               hd_home_background_apply_async
                   (priv->previous_background,
                    GTK_WIDGET (window)->window,

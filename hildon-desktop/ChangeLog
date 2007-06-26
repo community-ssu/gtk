@@ -1,5 +1,11 @@
 2007-06-26  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- do not show the cancel note when cancelling the dialog.
+	Fixes: NB#61793
+
+2007-06-26  Johan Bilien  <johan.bilien@nokia.com>
+
 	* background-manager/background-manager.[ch]:
 	- reimplemted with XRender instead of gdk_pixbuf_
 	- send the picture XID back to the client
