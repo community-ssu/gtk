@@ -55,7 +55,6 @@ enum {
   FRAME_EVENT,
   ACTIVATE_FOCUS,
   ACTIVATE_DEFAULT,
-  MOVE_FOCUS,
   KEYS_CHANGED,
   LAST_SIGNAL
 };
@@ -742,17 +741,6 @@ gtk_window_class_init (GtkWindowClass *klass)
                   _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE,
                   0);
-
-  window_signals[MOVE_FOCUS] =
-    g_signal_new (I_("move_focus"),
-                  G_TYPE_FROM_CLASS (gobject_class),
-                  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-                  G_STRUCT_OFFSET (GtkWindowClass, move_focus),
-                  NULL, NULL,
-                  _gtk_marshal_VOID__ENUM,
-                  G_TYPE_NONE,
-                  1,
-                  GTK_TYPE_DIRECTION_TYPE);
 
   window_signals[KEYS_CHANGED] =
     g_signal_new (I_("keys_changed"),
@@ -4298,6 +4286,11 @@ gtk_window_realize (GtkWidget *widget)
     case GTK_WINDOW_POPUP:
       attributes.window_type = GDK_WINDOW_TEMP;
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_TEMPORARY:
+      gtk_window_set_temporary (window, g_value_get_boolean (value));
+      break;
+#endif
     default:
       g_warning (G_STRLOC": Unknown window type %d!", window->type);
       break;
@@ -4568,6 +4561,11 @@ gtk_window_frame_event (GtkWindow *window, GdkEvent *event)
       configure_event->height -= window->frame_top + window->frame_bottom;
       return gtk_window_configure_event (GTK_WIDGET (window), configure_event);
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_TEMPORARY:
+      g_value_set_boolean (value, gtk_window_is_temporary (window));
+      break;
+#endif
     default:
       break;
     }
