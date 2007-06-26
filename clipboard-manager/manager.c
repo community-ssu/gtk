@@ -35,6 +35,7 @@ typedef struct
   {
   GSource source ;
   Display *display ;
+  GPollFD event_poll_fd ;
   } X11EventSource ;
 
 void
@@ -80,7 +81,9 @@ static gboolean x11_event_prepare (GSource *source, gint *p_timeout)
 
 static gboolean x11_event_check (GSource *source)
   {
-  return XPending (((X11EventSource *)source)->display) ;
+  X11EventSource *x11_event_source = (X11EventSource *)source ;
+  return (x11_event_source->event_poll_fd.revents & G_IO_IN) ||
+          XPending (x11_event_source->display) ;
   }
 
 static gboolean x11_event_dispatch (GSource *source, GSourceFunc callback, gpointer user_data)
@@ -103,6 +106,9 @@ x11_event_source_new (Display *display)
   {
   X11EventSource *x11_event_source = (X11EventSource *)g_source_new (&source_funcs, sizeof (X11EventSource)) ;
   x11_event_source->display = display ;
+  x11_event_source->event_poll_fd.fd = ConnectionNumber (display) ;
+  x11_event_source->event_poll_fd.events = G_IO_IN ;
+  g_source_add_poll ((GSource *)x11_event_source, &x11_event_source->event_poll_fd) ;
 
   g_print ("x11_event_source_new: Returning 0x%x\n", (int)x11_event_source) ;
 

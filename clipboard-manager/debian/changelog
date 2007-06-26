@@ -1,3 +1,9 @@
+clipboard-manager (0.6.6-1) sardine; urgency=low
+
+  * Add the X connection to the list of fds to poll. Fixes: NB#61616
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 26 Jun 2007 13:22:57 +0300
+
 clipboard-manager (0.6.5-3) sardine; urgency=low
 
   * Added default gconf2xsettings keys file
