@@ -1,3 +1,7 @@
+2007-06-26  Xan Lopez  <xan@gnome.org>
+
+	* gtk/gtkwindow.c: fix merge breakage.
+
 2007-06-26  Xan Lopez  <xan@.lopeznokia.com>
 
 	Take from upstream:
