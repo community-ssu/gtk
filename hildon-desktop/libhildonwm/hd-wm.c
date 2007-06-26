@@ -1208,14 +1208,14 @@ hd_wm_top_item (HDWMEntryInfo *info)
     gdk_error_trap_pop();
 
   }
-/*
-  if (info->type == HD_ENTRY_DESKTOP)
+
+  if (HD_WM_IS_DESKTOP (info))
   {
     hd_wm_top_desktop ();	  
     g_signal_emit_by_name (hdwm, "entry_info_stack_changed", info);
   }	  
   else
-    g_debug  ("### Invalid window type ###\n");*/
+    g_debug  ("### Invalid window type ###\n");
 }
 
 HDWMEntryInfo *
