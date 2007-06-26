@@ -303,7 +303,7 @@ hd_wm_atoms_init (HDWM *hdwm)
     
     "UTF8_STRING",
 
-    "_NET_STARTUP_INFO"
+    "_NET_STARTUP_INFO_BEGIN"
   };
 
   XInternAtoms (GDK_DISPLAY(),
@@ -2098,8 +2098,6 @@ hd_wm_process_x_client_list (HDWM *hdwm)
                    hd_wm_window_get_name(win));
 
         hd_wm_application_dummy_set_name (app, hd_wm_window_get_name(win));
-
-        g_signal_emit_by_name (hdwm, "application-starting", app);
       }
 
       HDWMEntryInfo *info;
@@ -2410,7 +2408,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       return GDK_FILTER_CONTINUE;
     }
     else
-    if (cev->message_type == hdwm->priv->atoms[HD_ATOM_STARTUP_INFO])
+    if (cev->message_type == hdwm->priv->atoms[HD_ATOM_STARTUP_INFO_BEGIN])
     {	    
       g_debug ("-------## ->>>>>>>>>   hello %s      <<<<<<<<<<---",(gchar *)cev->data.l);	    
 
