@@ -107,6 +107,9 @@ static gboolean gtk_entry_completion_popup_key_event     (GtkWidget             
 static gboolean gtk_entry_completion_popup_button_press  (GtkWidget               *widget,
                                                           GdkEventButton          *event,
                                                           gpointer                 user_data);
+static gboolean gtk_entry_completion_popup_delete_event  (GtkWidget               *widget,
+							  GdkEventAny             *event,
+							  gpointer                 user_data);
 static gboolean gtk_entry_completion_list_button_press   (GtkWidget               *widget,
                                                           GdkEventButton          *event,
                                                           gpointer                 user_data);
@@ -444,6 +447,9 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   g_signal_connect (priv->popup_window, "button_press_event",
                     G_CALLBACK (gtk_entry_completion_popup_button_press),
                     completion);
+  g_signal_connect (priv->popup_window, "delete-event",
+		    G_CALLBACK (gtk_entry_completion_popup_delete_event),
+		    completion);
 
   popup_frame = gtk_frame_new (NULL);
   gtk_frame_set_shadow_type (GTK_FRAME (popup_frame),
@@ -782,6 +788,18 @@ gtk_entry_completion_popup_button_press (GtkWidget      *widget,
     return FALSE;
 
   /* if we come here, it's usually time to popdown */
+  _gtk_entry_completion_popdown (completion);
+
+  return TRUE;
+}
+
+static gboolean
+gtk_entry_completion_popup_delete_event (GtkWidget   *widget,
+					 GdkEventAny *event,
+					 gpointer     user_data)
+{
+  GtkEntryCompletion *completion = GTK_ENTRY_COMPLETION (user_data);
+
   _gtk_entry_completion_popdown (completion);
 
   return TRUE;

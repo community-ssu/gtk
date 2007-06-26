@@ -1,3 +1,13 @@
+2007-06-26  Xan Lopez  <xan@gnome.org>
+
+	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget),
+	(gtk_combo_box_child_delete_event), (gtk_combo_box_list_destroy):
+	* gtk/gtkentrycompletion.c: (gtk_entry_completion_init),
+	(gtk_entry_completion_popup_delete_event):
+
+	Make GtkComboBox and GtkEntryCompletion handle the delete-event signal
+	closing any open popup/temporary window.
+
 2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate):
