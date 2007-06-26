@@ -21,7 +21,7 @@
 	and send delete-event to all temporary windows ("temporary" property
 	set to TRUE) when it receives it.
 
-	Also add API to allow third party plugins to mark their windows as
+	Also add API to allow third party applications to mark their windows as
 	temporary.
 
 	This API is *UNSTABLE*
