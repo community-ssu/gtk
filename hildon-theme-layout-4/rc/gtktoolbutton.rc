@@ -11,8 +11,8 @@
 # default style:
 style "osso-toolbutton" {
 
-   GtkButton::child_displacement_x = -2
-   GtkButton::child_displacement_y = 2
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
    GtkButton::minimum_width = 48
 #   GtkButton::minimum_height = 40
 

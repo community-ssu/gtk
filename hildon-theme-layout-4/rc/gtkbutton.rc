@@ -23,8 +23,8 @@ style "osso-button" {
   GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
   GtkWidget::focus-width = 0
   GtkButton::default_border = { 0, 0, 0, 0 }
-  GtkButton::child-displacement-x = -2
-  GtkButton::child-displacement-y = 2
+  GtkButton::child-displacement-x = 0
+  GtkButton::child-displacement-y = 0
   GtkButton::interior_focus = 0
   GtkButton::child_spacing = 1
   xthickness = 7
