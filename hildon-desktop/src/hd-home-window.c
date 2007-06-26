@@ -39,11 +39,13 @@
 
 #include <libhildondesktop/hildon-home-area.h>
 #include <libhildondesktop/hildon-desktop-home-item.h>
+#include <libhildondesktop/hildon-desktop-picture.h>
 
 #include <gtk/gtkcheckmenuitem.h>
 #include <gtk/gtkspinbutton.h>
 
 #include <X11/Xatom.h>
+#include <X11/extensions/Xrender.h>
 
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-banner.h>
@@ -109,6 +111,8 @@ struct _HDHomeWindowPrivate
   HDHomeBackground *background;
   HDHomeBackground *previous_background;
 
+  Picture           background_picture;
+
   gboolean          screen_is_off;
 
   gboolean          selecting_applets;
@@ -122,7 +126,7 @@ struct _HDHomeWindowPrivate
 };
 
 /* Properties */
-enum 
+enum
 {
   PROP_0,
   PROP_OSSO_CONTEXT,
@@ -223,6 +227,10 @@ hd_home_window_map_event (GtkWidget    *widget,
 static void
 hd_home_window_realize (GtkWidget *widget);
 
+static gboolean
+hd_home_window_expose (GtkWidget       *widget,
+                       GdkEventExpose  *event);
+
 static void
 hd_home_window_unrealize (GtkWidget *widget);
 
@@ -312,6 +320,7 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   widget_class->key_press_event = hd_home_window_key_press_event;
   widget_class->realize   = hd_home_window_realize;
   widget_class->unrealize = hd_home_window_unrealize;
+  widget_class->expose_event = hd_home_window_expose;
 
   hhwindow_class->button1_clicked = hd_home_window_button1_clicked;
   hhwindow_class->button2_clicked = hd_home_window_button2_clicked;
@@ -642,7 +651,7 @@ hd_home_window_notify (GObject     *object,
 
 static void
 background_apply_callback (HDHomeBackground *background,
-                           gint              pixmap_xid,
+                           Picture           picture,
                            GError           *error,
                            HDHomeWindow     *window)
 {
@@ -673,8 +682,17 @@ background_apply_callback (HDHomeBackground *background,
       return;
     }
 
-  gdk_window_clear (GTK_WIDGET (window)->window);
-  gtk_widget_queue_draw (GTK_WIDGET (window));
+  if (priv->background_picture)
+    XRenderFreePicture (GDK_DISPLAY (), priv->background_picture);
+
+  priv->background_picture = picture;
+  g_debug ("Received picture %i", (gint)priv->background_picture);
+
+  if (GTK_WIDGET_VISIBLE (GTK_WIDGET (window)))
+    gdk_window_invalidate_rect (GTK_WIDGET (window)->window,
+                                (GdkRectangle*)(&GTK_WIDGET (window)->allocation),
+                                TRUE);
+
 
   if (background != priv->background)
     {
@@ -687,7 +705,7 @@ background_apply_callback (HDHomeBackground *background,
 
 static void
 background_apply_and_save_callback (HDHomeBackground *background,
-                                    gint              pixmap_xid,
+                                    Picture           picture,
                                     GError           *error,
                                     HDHomeWindow     *window)
 {
@@ -700,7 +718,7 @@ background_apply_and_save_callback (HDHomeBackground *background,
 
   background_cancelled = priv->background_cancelled;
 
-  background_apply_callback (background, pixmap_xid, error, window);
+  background_apply_callback (background, picture, error, window);
 
   /* Do not save if an error occurred */
   if (error || background_cancelled)
@@ -807,6 +825,58 @@ hd_home_window_root_event_filter (GdkXEvent *xevent,
     }
 
   return GDK_FILTER_CONTINUE;
+}
+
+static gboolean
+hd_home_window_expose (GtkWidget *widget, GdkEventExpose *event)
+{
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      HDHomeWindowPrivate      *priv;
+
+      priv = HD_HOME_WINDOW_GET_PRIVATE (widget);
+
+      g_debug ("Got expose on window %i,%i %ix%i",
+               event->area.x,
+               event->area.y,
+               event->area.width,
+               event->area.height);
+
+      if (priv->background_picture != None)
+        {
+          Picture                   picture;
+          GdkDrawable              *drawable;
+          gint                      x_offset, y_offset;
+
+          g_debug ("About to draw background");
+
+          gdk_window_get_internal_paint_info (widget->window,
+                                              &drawable,
+                                              &x_offset, &y_offset);
+
+          g_debug ("Got offset: %i, %i", x_offset, y_offset);
+
+          picture = hildon_desktop_picture_from_drawable (drawable);
+
+          XRenderComposite (GDK_DISPLAY (),
+                            PictOpSrc,
+                            priv->background_picture,
+                            None,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            - x_offset, - y_offset,
+                            widget->allocation.width, widget->allocation.height);
+
+          XRenderFreePicture (GDK_DISPLAY (), picture);
+          XSync (GDK_DISPLAY (), FALSE);
+        }
+
+      return GTK_WIDGET_CLASS (hd_home_window_parent_class)->
+          expose_event (widget, event);
+    }
+
+  return FALSE;
 }
 
 static void

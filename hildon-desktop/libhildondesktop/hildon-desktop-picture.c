@@ -32,7 +32,6 @@
 #include <stdlib.h> /* malloc */
 
 #include "hildon-desktop-picture.h"
-
 void
 hildon_desktop_picture_and_mask_from_file (const gchar *filename,
                                            Picture     *picture,
@@ -42,6 +41,39 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
 {
   GError                       *error = NULL;
   GdkPixbuf                    *pixbuf = NULL;
+
+  g_return_if_fail (filename);
+  pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+
+  if (error)
+    {
+      g_warning ("Could not load background image: %s",
+                 error->message);
+      g_error_free (error);
+      return;
+    }
+
+  if (width != NULL)
+    *width = gdk_pixbuf_get_width (pixbuf);
+
+  if (height != NULL)
+    *height = gdk_pixbuf_get_height (pixbuf);
+
+  hildon_desktop_picture_and_mask_from_pixbuf (gdk_display_get_default (),
+                                               pixbuf,
+                                               picture,
+                                               mask);
+
+  g_object_unref (pixbuf);
+}
+
+void
+hildon_desktop_picture_and_mask_from_pixbuf (GdkDisplay      *gdisplay,
+                                             const GdkPixbuf *pixbuf,
+                                             Picture   *picture,
+                                             Picture   *mask)
+{
+  Display                      *display;
   Pixmap                        pixmap = None, mask_pixmap = None;
   gint                          pw, ph;
   XRenderPictFormat            *format;
@@ -55,19 +87,13 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
   GC                            gc;
   XGCValues                     gc_values = {0};
 
-  g_return_if_fail (filename);
+
   if (!picture && !mask)
     return;
 
-  pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+  g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
 
-  if (error)
-    {
-      g_warning ("Could not load background image: %s",
-                 error->message);
-      g_error_free (error);
-      return;
-    }
+  display = GDK_DISPLAY_XDISPLAY (gdisplay);
 
   pw = gdk_pixbuf_get_width  (pixbuf);
   ph = gdk_pixbuf_get_height (pixbuf);
@@ -88,15 +114,15 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
 
   gdk_error_trap_push ();
   if (color)
-    pixmap = XCreatePixmap (GDK_DISPLAY (),
-                            DefaultRootWindow (GDK_DISPLAY ()),
+    pixmap = XCreatePixmap (display,
+                            DefaultRootWindow (display),
                             pw,
                             ph,
                             32);
 
   if (alpha)
-    mask_pixmap = XCreatePixmap (GDK_DISPLAY (),
-                                 DefaultRootWindow (GDK_DISPLAY ()),
+    mask_pixmap = XCreatePixmap (display,
+                                 DefaultRootWindow (display),
                                  pw,
                                  ph,
                                  8);
@@ -104,11 +130,9 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
   if (gdk_error_trap_pop ())
     {
       if (pixmap)
-        XFreePixmap (GDK_DISPLAY (), pixmap);
+        XFreePixmap (display, pixmap);
       if (mask_pixmap)
-        XFreePixmap (GDK_DISPLAY (), mask_pixmap);
-
-      g_object_unref (pixbuf);
+        XFreePixmap (display, mask_pixmap);
       return;
     }
 
@@ -117,7 +141,7 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
       /* Use malloc here because it is freed by Xlib */
       data      = (gchar *) malloc (pw*ph*4);
 
-      image = XCreateImage (GDK_DISPLAY (),
+      image = XCreateImage (display,
                             None,
                             32,         /* depth */
                             ZPixmap,
@@ -132,7 +156,7 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
   if (alpha)
     {
       mask_data = (gchar*) malloc (pw*ph);
-      mask_image = XCreateImage (GDK_DISPLAY (),
+      mask_image = XCreateImage (display,
                                  None,
                                  8,         /* depth */
                                  ZPixmap,
@@ -183,18 +207,16 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
 
     }
 
-  g_object_unref (pixbuf);
-
   gdk_error_trap_push ();
 
   if (color)
     {
-      gc = XCreateGC (GDK_DISPLAY (),
+      gc = XCreateGC (display,
                       pixmap,
                       0,
                       &gc_values);
 
-      XPutImage (GDK_DISPLAY (),
+      XPutImage (display,
                  pixmap,
                  gc,
                  image,
@@ -202,18 +224,18 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
                  0, 0,
                  pw, ph);
 
-      XFreeGC (GDK_DISPLAY (), gc);
+      XFreeGC (display, gc);
       XDestroyImage (image);
     }
 
   if (alpha)
     {
-      gc = XCreateGC (GDK_DISPLAY (),
+      gc = XCreateGC (display,
                       mask_pixmap,
                       0,
                       &gc_values);
 
-      XPutImage (GDK_DISPLAY (),
+      XPutImage (display,
                  mask_pixmap,
                  gc,
                  mask_image,
@@ -221,46 +243,40 @@ hildon_desktop_picture_and_mask_from_file (const gchar *filename,
                  0, 0,
                  pw, ph);
 
-      XFreeGC (GDK_DISPLAY (), gc);
+      XFreeGC (display, gc);
       XDestroyImage (mask_image);
     }
 
 
   if (color)
     {
-      format = XRenderFindStandardFormat (GDK_DISPLAY(),
+      format = XRenderFindStandardFormat (display,
                                           PictStandardARGB32);
 
       pa.repeat = True;
-      *picture = XRenderCreatePicture (GDK_DISPLAY (),
+      *picture = XRenderCreatePicture (display,
                                        pixmap,
                                        format,
                                        CPRepeat,
                                        &pa);
-      XFreePixmap (GDK_DISPLAY (),
+      XFreePixmap (display,
                    pixmap);
 
     }
 
   if (alpha)
     {
-      format = XRenderFindStandardFormat (GDK_DISPLAY(),
+      format = XRenderFindStandardFormat (display,
                                           PictStandardA8);
 
-      *mask = XRenderCreatePicture (GDK_DISPLAY (),
+      *mask = XRenderCreatePicture (display,
                                     mask_pixmap,
                                     format,
                                     CPRepeat,
                                     &pa);
-      XFreePixmap (GDK_DISPLAY (),
+      XFreePixmap (display,
                    mask_pixmap);
     }
-
-  if (width)
-    *width = pw;
-
-  if (height)
-    *height = ph;
 
   if (gdk_error_trap_pop ())
     g_warning ("X Error while loading picture from file");

@@ -54,6 +54,7 @@
 #define HD_HOME_BACKGROUND_VALUE_STRETCHED      "Stretched"
 #define HD_HOME_BACKGROUND_VALUE_SCALED         "Scaled"
 #define HD_HOME_BACKGROUND_VALUE_TILED          "Tiled"
+#define HD_HOME_BACKGROUND_VALUE_CROPPED        "Cropped"
 
 enum
 {
@@ -119,7 +120,7 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
                             "Mode",
                             "Background stretching mode",
                             BACKGROUND_CENTERED,
-                            BACKGROUND_TILED,
+                            BACKGROUND_CROPPED,
                             BACKGROUND_CENTERED,
                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
   g_object_class_install_property (object_class,
@@ -283,6 +284,12 @@ hd_home_background_save (HDHomeBackground *background,
                                  HD_HOME_BACKGROUND_KEY_MODE,
                                  HD_HOME_BACKGROUND_VALUE_TILED);
           break;
+      case BACKGROUND_CROPPED:
+          g_key_file_set_string (keyfile,
+                                 HD_HOME_BACKGROUND_KEY_GROUP,
+                                 HD_HOME_BACKGROUND_KEY_MODE,
+                                 HD_HOME_BACKGROUND_VALUE_CROPPED);
+          break;
     }
 
   buffer = g_key_file_to_data (keyfile,
@@ -400,6 +407,8 @@ hd_home_background_load (HDHomeBackground *background,
     priv->mode = BACKGROUND_SCALED;
   else if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_STRETCHED))
     priv->mode = BACKGROUND_STRETCHED;
+  else if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_CROPPED))
+    priv->mode = BACKGROUND_CROPPED;
   else
     priv->mode = BACKGROUND_TILED;
 
@@ -408,13 +417,6 @@ cleanup:
   g_key_file_free (keyfile);
   if (local_error)
     g_propagate_error (error, local_error);
-}
-
-static void
-free_pixmap (Pixmap pixmap_xid)
-{
-  g_debug ("Freeing pixmap %i\n", (int)pixmap_xid);
-  XFreePixmap (GDK_DISPLAY (), pixmap_xid);
 }
 
 void
@@ -499,45 +501,25 @@ struct cb_data
 
 static void
 hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
-                                              gint              pixmap_xid,
+                                              gint              picture_id,
                                               GError           *error,
                                               struct cb_data   *data)
 {
-  GdkPixmap *pixmap;
-
   if (error)
     {
       goto cleanup;
     }
 
-  if (!pixmap_xid)
+  if (!picture_id)
     {
-      g_warning ("No pixmap id returned");
+      g_warning ("No picture id returned");
       goto cleanup;
     }
 
-  pixmap = gdk_pixmap_foreign_new (pixmap_xid);
-
-  if (pixmap)
-    {
-      GdkColormap *colormap;
-
-      g_object_weak_ref (G_OBJECT (pixmap),
-                         (GWeakNotify)free_pixmap,
-                         GINT_TO_POINTER((GDK_PIXMAP_XID (pixmap))));
-
-      colormap = gdk_drawable_get_colormap (GDK_DRAWABLE (data->window));
-      gdk_drawable_set_colormap (GDK_DRAWABLE (pixmap), colormap);
-
-      gdk_window_set_back_pixmap (data->window, pixmap, FALSE);
-      g_object_unref (pixmap);
-    }
-  else
-    g_warning ("No such pixmap: %i", pixmap_xid);
 
 cleanup:
   if (data->callback)
-    data->callback (data->background, pixmap_xid, error, data->user_data);
+    data->callback (data->background, picture_id, error, data->user_data);
 
   if (G_IS_OBJECT (data->background))
       g_object_unref (data->background);

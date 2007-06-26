@@ -1,4 +1,7 @@
 bin_PROGRAMS = hildon-background-manager
+hildon_background_manager_LDADD = \
+		$(top_srcdir)/libhildondesktop/libhildondesktop.la
+				 
 
 BUILT_SOURCES = background-manager-glue.h hildon-background-manager.h
 CLEANFILES = $(BUILT_SOURCES) \

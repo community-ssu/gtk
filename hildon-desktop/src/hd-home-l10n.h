@@ -88,6 +88,7 @@ G_BEGIN_DECLS
 #define HH_SET_BG_MODE_SCALED     _MAD("home_va_set_backgr_scaled")
 #define HH_SET_BG_MODE_STRETCHED  _MAD("home_va_set_backgr_stretched")
 #define HH_SET_BG_MODE_TILED      _MAD("home_va_set_backgr_tiled")
+#define HH_SET_BG_MODE_CROPPED    _MAD("home_va_set_backgr_cropped")
 
 /* cancel background loading note */
 #define HH_CANCEL_BG_TEXT         _MAD("home_nw_loading_image")

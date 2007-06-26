@@ -53,7 +53,7 @@ struct _HDHomeBackground
 
 struct _HDHomeBackgroundClass
 {
-  GObjectClass                  parent_class; 
+  GObjectClass                  parent_class;
 
 };
 

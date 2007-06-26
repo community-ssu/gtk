@@ -93,12 +93,12 @@
 
 G_DEFINE_TYPE (HDHomeBackgroundDialog, hd_home_background_dialog, GTK_TYPE_DIALOG);
 
-enum 
-{ 	 
-  BG_IMAGE_NAME, 	 
-  BG_IMAGE_FILENAME, 	 
+enum
+{
+  BG_IMAGE_NAME,
+  BG_IMAGE_FILENAME,
   BG_IMAGE_PRIORITY
-}; 
+};
 
 enum
 {
@@ -117,7 +117,7 @@ struct _HDHomeBackgroundDialogPrivate
   GtkWidget        *img_combo;
   GtkWidget        *mode_combo;
   gpointer          osso_context;
-  
+
   HDHomeBackground *background;
 };
 
@@ -284,7 +284,8 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
     HH_SET_BG_MODE_CENTERED,
     HH_SET_BG_MODE_SCALED,
     HH_SET_BG_MODE_STRETCHED,
-    HH_SET_BG_MODE_TILED
+    HH_SET_BG_MODE_TILED,
+    HH_SET_BG_MODE_CROPPED
   };
 
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
@@ -339,6 +340,8 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
                              image_modes[BACKGROUND_STRETCHED]);
   gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
                              image_modes[BACKGROUND_TILED]);
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+                             image_modes[BACKGROUND_CROPPED]);
   
   g_signal_connect_swapped (priv->mode_combo, "changed",
                             G_CALLBACK (hd_home_background_dialog_mode_changed),

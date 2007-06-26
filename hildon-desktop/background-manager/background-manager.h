@@ -53,7 +53,8 @@ typedef enum {
   BACKGROUND_CENTERED,
   BACKGROUND_SCALED,
   BACKGROUND_STRETCHED,
-  BACKGROUND_TILED
+  BACKGROUND_TILED,
+  BACKGROUND_CROPPED
 } BackgroundMode;
 
 GType background_mode_get_type (void) G_GNUC_CONST;

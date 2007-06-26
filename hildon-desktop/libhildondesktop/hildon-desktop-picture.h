@@ -35,6 +35,11 @@ void    hildon_desktop_picture_and_mask_from_file (const gchar *filename,
                                                    gint        *width,
                                                    gint        *height);
 
+void    hildon_desktop_picture_and_mask_from_pixbuf (GdkDisplay        *display,
+                                                     const GdkPixbuf   *pixbuf,
+                                                     Picture           *picture,
+                                                     Picture           *mask);
+
 Picture hildon_desktop_picture_from_drawable      (GdkDrawable *drawable);
 
 G_END_DECLS

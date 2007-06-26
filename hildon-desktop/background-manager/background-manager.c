@@ -2,8 +2,9 @@
 /*
  * This file is part of hildon-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2006, 2007 Nokia Corporation.
  *
+ * Author:  Johan Bilien <johan.bilien@nokia.com>
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -31,6 +32,9 @@
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdkx.h>
+
+#include <libhildondesktop/hildon-desktop-picture.h>
+#include <X11/extensions/Xrender.h>
 
 #ifdef HAVE_LIBOSSO
 /*SAW (allocation watchdog facilities)*/
@@ -69,9 +73,10 @@ background_mode_get_type (void)
         { BACKGROUND_SCALED, "BACKGROUND_SCALED", "scaled" },
         { BACKGROUND_STRETCHED, "BACKGROUND_STRETCHED", "stretched" },
         { BACKGROUND_TILED, "BACKGROUND_TILED", "tiled" },
+        { BACKGROUND_CROPPED, "BACKGROUND_CROPPED", "cropped" },
         { 0, NULL, NULL }
       };
-      
+
       etype = g_enum_register_static ("BackgroundMode", values);
     }
 
@@ -79,34 +84,6 @@ background_mode_get_type (void)
 }
 
 G_DEFINE_TYPE (BackgroundManager, background_manager, G_TYPE_OBJECT);
-
-static void
-background_manager_set_property (GObject      *object,
-				 guint         prop_id,
-				 const GValue *value,
-				 GParamSpec   *pspec)
-{
-  switch (prop_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
-
-static void
-background_manager_get_property (GObject    *object,
-				 guint       prop_id,
-				 GValue     *value,
-				 GParamSpec *pspec)
-{
-  switch (prop_id)
-    {
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
-    }
-}
 
 #ifdef HAVE_LIBOSSO
 static void
@@ -349,29 +326,52 @@ load_image_from_uri (const gchar  *uri,
   return retval;
 }
 
-static GdkPixbuf *
-create_background_from_color (const GdkColor  *src,
-                              gint             width,
-                              gint             height)
+static Picture
+create_background_from_color (GdkDisplay       *display,
+                              const GdkColor   *src,
+                              gint              width,
+                              gint              height)
 {
-  GdkPixbuf *dest;
-  guint32 color = 0;
+  Picture                       picture;
+  XRenderPictFormat            *format;
+  XRenderPictureAttributes      pa = {0};
+  XRenderColor                  color = {src->red,
+                                         src->green,
+                                         src->blue,
+                                         0xFFFF};
+  Pixmap                        pixmap;
+  Display                      *xdisplay = GDK_DISPLAY_XDISPLAY (display);
 
-  g_return_val_if_fail (src != NULL, NULL);
+  pixmap = XCreatePixmap (xdisplay,
+                          DefaultRootWindow (xdisplay),
+                          width,
+                          height,
+                          24);
 
-  color = (guint8) (src->red >> 8) << 24 |
-	  (guint8) (src->green >> 8) << 16 |
-	  (guint8) (src->blue >> 8) << 8 |
-	  0xff;
+  pa.repeat = True;
 
-  dest = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  gdk_pixbuf_fill (dest, color);
+  format = XRenderFindStandardFormat (xdisplay, PictStandardRGB24);
+  picture = XRenderCreatePicture (xdisplay,
+                                  pixmap,
+                                  format,
+                                  CPRepeat,
+                                  &pa);
 
-  return dest;
+  XRenderFillRectangle (xdisplay,
+                        PictOpSrc,
+                        picture,
+                        &color,
+                        0, 0,
+                        width, height);
+
+  XFreePixmap (xdisplay, pixmap);
+
+  return picture;
 }
 
-static GdkPixbuf *
-create_background_from_pixbuf (const GdkPixbuf  *src,
+static Picture
+create_background_from_pixbuf (GdkDisplay       *display,
+                               const GdkPixbuf  *pixbuf,
                                const GdkColor   *fill,
                                BackgroundMode    mode,
                                gint              width,
@@ -382,59 +382,56 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
                                gint              right_offset,
                                GError          **error)
 {
-  GdkPixbuf *dest = NULL;
+  Display *xdisplay = GDK_DISPLAY_XDISPLAY (display);
+  Picture picture = None;
+  Picture image_picture = None;
+  Picture image_mask = None;
   gint src_width, src_height;
-  gint dest_x, dest_y;
   gint area_width, area_height;
-  gdouble scaling_ratio;
-  gdouble off_x, off_y;
+  gint off_x, off_y;
+  gint dest_x, dest_y;
 
-  g_return_val_if_fail (src != NULL, NULL);
-  g_return_val_if_fail (fill != NULL, NULL);
+  picture = create_background_from_color (display, fill, width, height);
 
-  dest = create_background_from_color (fill, width, height);
-  if (!dest)
+  if (picture == None)
     {
       g_set_error (error, BACKGROUND_MANAGER_ERROR,
 		   BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
 		   "Unable to create background color");
 
-      return NULL;
+      return None;
     }
 
-  src_width = gdk_pixbuf_get_width (src);
-  src_height = gdk_pixbuf_get_height (src);
+  hildon_desktop_picture_and_mask_from_pixbuf (display,
+                                               pixbuf,
+                                               &image_picture,
+                                               &image_mask);
+
+
+  src_width  = gdk_pixbuf_get_width  (pixbuf);
+  src_height = gdk_pixbuf_get_height (pixbuf);
   area_width = width - left_offset - right_offset;
   area_height = height - top_offset - bottom_offset;
-
-  g_debug ("*** background: (w:%d, h:%d), mode: %d",
-           src_width,
-           src_height,
-           mode);
 
   if (src_width == area_width &&
       src_height == area_height)
     {
-      gdk_pixbuf_composite (src,
-                            dest,
-                            0, 0,
-                            width, height,
-                            left_offset, top_offset,
-                            1.0, 1.0,
-                            GDK_INTERP_NEAREST,
-                            0xFF);
-      if (!dest)
-        {
-          g_set_error (error, BACKGROUND_MANAGER_ERROR,
-                       BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
-                       "Unable to composite the background color with the image");
+      XRenderComposite (xdisplay,
+                        PictOpOver,
+                        image_picture,
+                        image_mask,
+                        picture,
+                        0, 0,
+                        0, 0,
+                        left_offset, top_offset,
+                        src_width, src_height);
 
-          return NULL;
-        }
+      if (image_picture != None)
+        XRenderFreePicture (xdisplay, image_picture);
 
-      g_debug ("*** We got a background pixbuf");
-
-      return dest;
+      if (image_mask != None)
+        XRenderFreePicture (xdisplay, image_mask);
+      return picture;
     }
 
   switch (mode)
@@ -447,86 +444,136 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
 
           dest_y = MAX (top_offset, off_y);
 
-          gdk_pixbuf_composite (src, dest,
-                                dest_x, dest_y,
-                                MIN (src_width, area_width),
-                                MIN (src_height, area_height),
-                                off_x, off_y,
-                                1.0, 1.0,
-                                GDK_INTERP_NEAREST,
-                                HILDON_HOME_IMAGE_ALPHA_FULL);
+          XRenderComposite (xdisplay,
+                            PictOpOver,
+                            image_picture,
+                            image_mask,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            off_x, off_y,
+                            src_width, src_height);
+
           break;
       case BACKGROUND_SCALED:
-          scaling_ratio = MIN (((gdouble) area_width / src_width),
-                               (gdouble) area_height / src_height);
-          dest_x = (gint) (MAX (left_offset,
-                                left_offset +
-                                (area_width
-                                 - scaling_ratio
-                                 * src_width) / 2));
-          dest_y = (gint) (MAX (top_offset,
-                                top_offset + 
-                                 (area_height
-                                 - scaling_ratio
-                                 * src_height) / 2));
+        {
+          gdouble scaling_ratio = MAX ((gdouble) src_width  / area_width,
+                                       (gdouble) src_height / area_height);
+          gint dest_width  = (gdouble)src_width  / scaling_ratio;
+          gint dest_height = (gdouble)src_height / scaling_ratio;
+          XTransform transform = {{{XDoubleToFixed (scaling_ratio), 0, 0 },
+                                   {0, XDoubleToFixed (scaling_ratio), 0 },
+                                   {0, 0, XDoubleToFixed (1.0)}}};
 
-          gdk_pixbuf_composite (src, dest,
-                                dest_x, dest_y,
-                                scaling_ratio * src_width,
-                                scaling_ratio * src_height,
-                                dest_x,
-                                dest_y,
-                                scaling_ratio, scaling_ratio,
-                                GDK_INTERP_NEAREST,
-                                HILDON_HOME_IMAGE_ALPHA_FULL);
+          dest_x = (gint) (left_offset + (area_width  - dest_width)  / 2);
+          dest_y = (gint) (top_offset  + (area_height - dest_height) / 2);
+
+          XRenderSetPictureTransform (xdisplay,
+                                      image_picture,
+                                      &transform);
+          if (image_mask != None)
+            XRenderSetPictureTransform (xdisplay,
+                                        image_mask,
+                                        &transform);
+
+          XRenderComposite (xdisplay,
+                            PictOpOver,
+                            image_picture,
+                            image_mask,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            dest_x, dest_y,
+                            dest_width, dest_height);
           break;
+        }
+
+
       case BACKGROUND_TILED:
-          for (dest_x = left_offset;
-               dest_x < width - right_offset;
-               dest_x += src_width)
-            {
-              for (dest_y = top_offset;
-                   dest_y < height - bottom_offset;
-                   dest_y += src_height)
-                {
-                  gdk_pixbuf_composite (src, dest,
-                                        dest_x, dest_y,
-                                        MIN (src_width, width - dest_x),
-                                        MIN (src_height, height - dest_y),
-                                        dest_x, dest_y,
-                                        1.0, 1.0,
-                                        GDK_INTERP_NEAREST,
-                                        HILDON_HOME_IMAGE_ALPHA_FULL);
-                }
-            }
+        {
+          XRenderComposite (xdisplay,
+                            PictOpOver,
+                            image_picture,
+                            image_mask,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            0, 0,
+                            area_width, area_height);
           break;
+
+        }
       case BACKGROUND_STRETCHED:
-          gdk_pixbuf_composite (src, dest,
-                                left_offset, top_offset,
-                                area_width, area_height,
-                                left_offset, top_offset,
-                                (gdouble) area_width  / src_width,
-                                (gdouble) area_height / src_height,
-                                GDK_INTERP_NEAREST,
-                                HILDON_HOME_IMAGE_ALPHA_FULL);
+        {
+          XTransform transform =
+            {{{XDoubleToFixed ((gdouble)src_width/area_width), 0, 0 },
+              {0, XDoubleToFixed ((gdouble)src_height/area_height), 0 },
+              {0, 0, XDoubleToFixed (1.0)}}};
+
+          XRenderSetPictureTransform (xdisplay,
+                                      image_picture,
+                                      &transform);
+          if (image_mask != None)
+            XRenderSetPictureTransform (xdisplay,
+                                        image_mask,
+                                        &transform);
+
+          XRenderComposite (xdisplay,
+                            PictOpOver,
+                            image_picture,
+                            image_mask,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            0, 0,
+                            area_width, area_height);
+
           break;
-      default:
-          g_assert_not_reached ();
+        }
+      case BACKGROUND_CROPPED:
+        {
+          gdouble scaling_ratio = (src_width < src_height)?
+                                        (gdouble) src_width  / area_width:
+                                        (gdouble) src_height / area_height;
+          gint dest_width  = (gdouble)src_width  / scaling_ratio;
+          gint dest_height = (gdouble)src_height / scaling_ratio;
+          XTransform transform = {{{XDoubleToFixed (scaling_ratio), 0, 0 },
+                                   {0, XDoubleToFixed (scaling_ratio), 0 },
+                                   {0, 0, XDoubleToFixed (1.0)}}};
+
+          dest_x = (gint) (left_offset + (area_width  - dest_width) / 2);
+          dest_y = (gint) (top_offset  + (area_height - dest_height) / 2);
+
+          g_debug ("Got dest: %i, %i", dest_x, dest_y);
+
+          XRenderSetPictureTransform (xdisplay,
+                                      image_picture,
+                                      &transform);
+          if (image_mask != None)
+            XRenderSetPictureTransform (xdisplay,
+                                        image_mask,
+                                        &transform);
+
+          XRenderComposite (xdisplay,
+                            PictOpOver,
+                            image_picture,
+                            image_mask,
+                            picture,
+                            0, 0,
+                            0, 0,
+                            dest_x, dest_y,
+                            dest_width, dest_height);
+
           break;
+        }
     }
 
-  return dest;
+  return picture;
 }
 
-/* We create the cached pixbuf compositing the sidebar and the titlebar
- * pixbufs from their relative files; we use a child process to retain
- * some interactivity; we use a pipe to move the error messages from
- * the child process to the background manager. the child process saves
- * the composed image to the cache file and we read it inside the
- * child notification callback
- */
-static GdkPixbuf *
-composite_background (const GdkPixbuf  *bg_image,
+static Picture
+composite_background (GdkDisplay       *display,
+                      const GdkPixbuf  *bg_image,
                       const GdkColor   *bg_color,
                       BackgroundMode    mode,
                       gint              window_width,
@@ -539,55 +586,52 @@ composite_background (const GdkPixbuf  *bg_image,
                       GError          **error)
 {
   GError *bg_error;
-  GdkPixbuf *pixbuf;
+  Picture       picture;
 
   bg_error = NULL;
 
   if (bg_image)
     {
-      pixbuf = create_background_from_pixbuf (bg_image,
-                                              bg_color,
-                                              mode,
-                                              window_width,
-                                              window_height,
-                                              0, 0, 0, 0,
-                                              /*
-                                              top_offset,
-                                              bottom_offset,
-                                              left_offset,
-                                              right_offset,
-                                              */
-                                              &bg_error);
+      picture = create_background_from_pixbuf (display,
+                                               bg_image,
+                                               bg_color,
+                                               mode,
+                                               window_width,
+                                               window_height,
+                                               0, 0, 0, 0,
+                                               /*
+                                                  top_offset,
+                                                  bottom_offset,
+                                                  left_offset,
+                                                  right_offset,
+                                                  */
+                                               &bg_error);
     }
   else
     {
-      pixbuf = create_background_from_color (bg_color,
-                                             window_width,
-                                             window_height
-                                            );
+      picture = create_background_from_color (display,
+                                              bg_color,
+                                              window_width,
+                                              window_height
+                                             );
 
-      g_return_val_if_fail (pixbuf, NULL);
     }
 
   if (bg_error)
     {
       g_propagate_error (error, bg_error);
 
-      return NULL;
+      return None;
     }
 
-  return pixbuf;
+  return picture;
 }
 
 
 static void
 background_manager_class_init (BackgroundManagerClass *klass)
 {
-  GObjectClass     *gobject_class = G_OBJECT_CLASS (klass);
   GError           *error = NULL;
-
-  gobject_class->set_property = background_manager_set_property;
-  gobject_class->get_property = background_manager_get_property;
 
   klass->connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 
@@ -629,22 +673,16 @@ background_manager_set_background (BackgroundManager   *manager,
                                    gint32               bottom_offset,
                                    gint32               left_offset,
                                    gint32               right_offset,
-                                   gint                *pixmap_xid,
+                                   gint                *picture_xid,
                                    GError             **error)
 {
   GdkDisplay               *display;
   GdkColor                  color;
   GdkWindow                *window;
   GdkPixbuf                *image = NULL;
-  GdkPixbuf                *background = NULL;
-  GdkColormap              *colormap;
-  GdkPixmap                *pixmap  = NULL;
-/*  GdkBitmap                *bitmask = NULL;*/
   GError                   *local_error = NULL;
   gint                      width, height;
   const gchar              *display_name;
-  GdkGC                    *gc;
-  /*XImage                   *ximage;*/
 
   g_debug ("set_background on %s", filename);
 
@@ -668,7 +706,7 @@ background_manager_set_background (BackgroundManager   *manager,
                    display_name);
       return FALSE;
     }
-  
+
   window = gdk_window_foreign_new_for_display (display, window_xid);
 
   if (!window)
@@ -700,17 +738,18 @@ background_manager_set_background (BackgroundManager   *manager,
 
   gdk_drawable_get_size (GDK_DRAWABLE (window), &width, &height);
 
-  background = composite_background (image,
-                                     &color,
-                                     mode,
-                                     width,
-                                     height,
-                                     TRUE,
-                                     top_offset,
-                                     bottom_offset,
-                                     left_offset,
-                                     right_offset,
-                                     &local_error);
+  *picture_xid = composite_background (display,
+                                       image,
+                                       &color,
+                                       mode,
+                                       width,
+                                       height,
+                                       TRUE,
+                                       top_offset,
+                                       bottom_offset,
+                                       left_offset,
+                                       right_offset,
+                                       &local_error);
 
   if (image)
     g_object_unref (image);
@@ -720,91 +759,11 @@ background_manager_set_background (BackgroundManager   *manager,
       g_propagate_error (error, local_error);
       return FALSE;
     }
-  
-  colormap = gdk_drawable_get_colormap (GDK_DRAWABLE (window));
 
-#if 0
-  gdk_pixbuf_render_pixmap_and_mask_for_colormap (background,
-                                                  colormap,
-                                                  &pixmap,
-                                                  &bitmask,
-                                                  0);
-#endif
-  gc = gdk_gc_new (GDK_DRAWABLE (window));
+  XSetCloseDownMode (GDK_DISPLAY_XDISPLAY(display), RetainTemporary);
   gdk_flush ();
-  pixmap = gdk_pixmap_new (GDK_DRAWABLE (window),
-                           width,
-                           height,
-                           -1);
-                           /*gdk_colormap_get_visual (colormap)->depth);*/
-  gdk_flush ();
-
-#if 0
-
-  g_debug ("Window depth is %i", gdk_drawable_get_depth (GDK_DRAWABLE (window)));
-  g_debug ("bixbuf has %i bits per color", gdk_pixbuf_get_bits_per_sample (background);
-
-  ximage = XCreateImage (GDK_DISPLAY_XDISPLAY(display),
-                         GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (GDK_DRAWABLE (window))),
-                         32,
-/*                       gdk_drawable_get_depth (GDK_DRAWABLE (window))*/
-                         ZPixmap,
-                         0,
-                         gdk_pixbuf_get_pixels (background),
-                         width,
-                         height,
-                         32,
-                         4*width);
-
-  XPutImage (GDK_DISPLAY_XDISPLAY(display),
-             GDK_PIXMAP_XID (pixmap),
-             GDK_GC_XGC (gc),
-             ximage,
-             0,
-             0,
-             0,
-             0,
-             width,
-             height);
-
-  XFree (ximage);
-#else
-
-
-
-  gdk_drawable_set_colormap (GDK_DRAWABLE (pixmap), colormap);
-  gdk_flush ();
-  gdk_draw_pixbuf (pixmap, gc, background,
-                   0, 0, 0, 0,
-                   gdk_pixbuf_get_width (background),
-                   gdk_pixbuf_get_height (background),
-                   GDK_RGB_DITHER_NORMAL,
-                   0, 0);
-  gdk_flush ();
-  g_object_unref (gc);
-#endif
-
-  if (pixmap)
-    {
-      if (pixmap_xid)
-        {
-          XSetCloseDownMode (GDK_DISPLAY_XDISPLAY(display), RetainTemporary);
-          *pixmap_xid = (gint)GDK_PIXMAP_XID (pixmap);
-        }
-      else
-        {
-          gdk_window_set_back_pixmap (window, pixmap, FALSE);
-          g_object_unref (pixmap);
-        }
-    }
 
   gdk_display_close (display);
-
-  if (background)
-    g_object_unref (background);
-
-  gdk_window_clear (window);
-  gdk_flush ();
 
   g_idle_add ((GSourceFunc)g_main_loop_quit, main_loop);
   return TRUE;
