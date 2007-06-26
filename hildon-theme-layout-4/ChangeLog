@@ -5,7 +5,7 @@
 	* rc/hildontimeeditor.rc: Removing the button displacement (equals to x =
 	0, y = 0 now). Fixes NB#61717.
 
-2007-06-26  Xan Lopez  <xan@nokia.com>
+2007-06-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/base.rc (gtk-icon-sizes): handle focus for Editor widgets.
 	Depends on gtk+2.0 >= 2.10.12-osso6
