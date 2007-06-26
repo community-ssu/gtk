@@ -1,5 +1,14 @@
 2007-06-26  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildonwm/hd-wm-types.h:
+	- Added NET_STARTUP_INFO/BEGIN
+	* libhildonwm/hd-wm-util.[ch]:
+	- new util function for broadcasting NET_STARTUP_INFO/BEGIN
+	* libhildonwm/hd-wm.[ch]:
+	- broadcast STARTUP when launching applications.
+
+2007-06-26  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildonwm/hd-wm.c: Removed launch banner for dummy applications.
 
 2007-06-26  Moises Martinez  <moises.martinez@nokia.com>

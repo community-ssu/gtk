@@ -135,6 +135,79 @@ hd_wm_util_send_x_message (Window        xwin_src,
   return TRUE;
 }
 
+void
+hd_wm_util_broadcast_message (Atom info, Atom begin_info, const gchar *message)
+{
+  Window xwindow;
+	
+  {
+    XSetWindowAttributes attrs;
+
+    attrs.override_redirect = True;
+    attrs.event_mask = PropertyChangeMask | StructureNotifyMask;
+
+    xwindow =
+      XCreateWindow (GDK_DISPLAY(),
+                     GDK_ROOT_WINDOW(),
+                     -100, -100, 1, 1,
+                     0,
+                     CopyFromParent,
+                     CopyFromParent,
+                     CopyFromParent,
+                     CWOverrideRedirect | CWEventMask,
+                     &attrs);
+  }
+
+  {
+    XEvent xevent;
+    const char *src;
+    const char *src_end;
+    char *dest;
+    char *dest_end;
+
+    xevent.xclient.type = ClientMessage;
+    xevent.xclient.message_type = begin_info;
+    xevent.xclient.display = GDK_DISPLAY ();
+    xevent.xclient.window = xwindow;
+    xevent.xclient.format = 8;
+
+    src = message;
+    src_end = message + strlen (message) + 1; /* +1 to include nul byte */
+
+    while (src != src_end)
+    {
+      dest = &xevent.xclient.data.b[0];
+      dest_end = dest + 20;
+
+      while (dest != dest_end &&
+             src != src_end)
+      {
+         *dest = *src;
+         ++dest;
+         ++src;
+      }
+
+      gdk_error_trap_push ();
+
+      XSendEvent (GDK_DISPLAY (),
+                  GDK_ROOT_WINDOW (),
+                  False,
+                  PropertyChangeMask,
+                  &xevent);
+      XSync (GDK_DISPLAY (), FALSE);
+
+      if (gdk_error_trap_pop ())
+        g_warning ("Failed to broadcast startup");	      
+      
+      xevent.xclient.message_type = info;
+    }
+  }
+
+  XDestroyWindow (GDK_DISPLAY (), xwindow);
+  XFlush (GDK_DISPLAY ());
+}
+
+
 /* Function to retrieve the size of VmData for a process
  * Returns -1 on failure
  */

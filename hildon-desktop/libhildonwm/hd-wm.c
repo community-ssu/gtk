@@ -176,6 +176,9 @@ static void hd_wm_set_property (GObject *object,
 		                const GValue *value,
 		                GParamSpec *pspec);
 
+static void 
+hd_wm_send_startup_notification_new (HDWM *hdwm, HDWMApplication *app);
+
 struct xwinv
 {
   Window *wins;
@@ -303,6 +306,7 @@ hd_wm_atoms_init (HDWM *hdwm)
     
     "UTF8_STRING",
 
+    "_NET_STARTUP_INFO",
     "_NET_STARTUP_INFO_BEGIN"
   };
 
@@ -551,11 +555,10 @@ out:
   if (class_hint.res_name)
     XFree(class_hint.res_name);
 
-  if (app && 
-      !hd_wm_application_has_any_windows (app) && 
-      !hd_wm_application_is_dummy (app))
-  {	  
-    g_signal_emit_by_name (hdwm, "application-starting", app);
+  if (app) 
+  {
+    if (!hd_wm_application_is_dummy (app))	  
+      g_signal_emit_by_name (hdwm, "application-starting", app);
   }
 
   return app;
@@ -1289,6 +1292,7 @@ hd_wm_activate_service (const gchar *app, const gchar *parameters)
         g_signal_emit_by_name (hdwm,
                                "application-starting",
                                wapp);
+        hd_wm_send_startup_notification_new (hdwm, wapp);
       }
     }
   }
@@ -2131,6 +2135,69 @@ hd_wm_set_window_focus (GdkWindow *window, gboolean focus)
   gdk_window_set_accept_focus (window,focus);
 }
 
+static gchar *
+hd_wm_strip_slashes (const gchar *name)
+{
+  gchar *b = g_strdup (name);
+  char  *s = b;
+
+  while (*s)
+  {
+    if (*s == '/')
+      *s = '|';
+    ++s;	      
+  }	
+
+  return b;
+}
+
+static void 
+hd_wm_send_startup_notification_new (HDWM *hdwm, HDWMApplication *app)
+{
+  static gint sequence_number = 0;	
+  static gboolean have_hostname	= FALSE;
+  static gchar hostbuf[257];	
+  gchar *launcher_name = HD_WM_LAUNCHER_NAME;
+  gchar *launchee_name = hd_wm_strip_slashes (_(hd_wm_application_get_localized_name (app)));
+  gchar *startup_id;
+  gchar *message;
+  gchar *app_name = _(hd_wm_application_get_name (app));
+  gchar *tmp;
+
+  app_name = g_strescape (app_name,"");
+
+  if (!have_hostname)
+  {
+    if (gethostname (hostbuf, sizeof (hostbuf)-1) == 0)
+      have_hostname = TRUE;
+    else
+      hostbuf[0] = '\0';
+  }
+
+  startup_id = 
+    g_strdup_printf ("%s/%s/%d-%d-%s_TIME%lu",
+                     launcher_name, launchee_name,
+		     (gint) getpid (), (gint) sequence_number, hostbuf,
+                     (gulong) GDK_CURRENT_TIME);
+
+  tmp = g_strescape (startup_id,"");
+  g_free (startup_id);
+  startup_id = tmp;
+  
+  message = g_strdup_printf ("new: ID:\"%s\" NAME:\"%s\" SCREEN:%d",
+		             startup_id,
+		             _(hd_wm_application_get_name (app)),
+		             gdk_screen_get_number (gdk_screen_get_default ()));
+
+  hd_wm_util_broadcast_message (hdwm->priv->atoms[HD_ATOM_STARTUP_INFO],
+		  		hdwm->priv->atoms[HD_ATOM_STARTUP_INFO_BEGIN],
+				message);
+
+  g_free (app_name);  
+  g_free (startup_id);
+  g_free (message);
+}
+
 void 
 hd_wm_set_all_menu_button (HDWM *hdwm, GtkWidget *widget)
 {
@@ -2376,7 +2443,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
   if (((XEvent*)xevent)->type == ClientMessage)
   {
     XClientMessageEvent *cev = (XClientMessageEvent *)xevent;
-    
+
     if (cev->message_type == hdwm->priv->atoms[HD_ATOM_HILDON_FROZEN_WINDOW])
     {
       Window   xwin_hung;
@@ -2405,13 +2472,6 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
           hd_wm_activate (cev->data.l[0]);
       }
       
-      return GDK_FILTER_CONTINUE;
-    }
-    else
-    if (cev->message_type == hdwm->priv->atoms[HD_ATOM_STARTUP_INFO_BEGIN])
-    {	    
-      g_debug ("-------## ->>>>>>>>>   hello %s      <<<<<<<<<<---",(gchar *)cev->data.l);	    
-
       return GDK_FILTER_CONTINUE;
     }
   }

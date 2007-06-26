@@ -115,6 +115,8 @@
 #define TN_DEFAULT_FOCUS FALSE
 #endif
 
+#define HD_WM_LAUNCHER_NAME "libhildonwm"
+
 #define HD_TYPE_WM            (hd_wm_get_type ())
 #define HD_WM(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), HD_TYPE_WM, HDWM))
 #define HD_WM_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  HD_TYPE_WM, HDWMClass))
