@@ -42,16 +42,22 @@ GtkTreeRowReference *selected[TN_MAX_ITEMS];
 
 static gboolean
 _tn_visibility_filter (GtkTreeModel *model,
-                   GtkTreeIter *iter,
-                   gpointer data)
+                       GtkTreeIter *iter,
+                       gpointer data)
 {
-  gchar *name;
+  if (!model || !iter)
+    return TRUE;	  
+	
+  gchar *name = NULL;
 
   gtk_tree_model_get (model,
                       iter,
                       0,
                       &name,
                       -1);
+
+  if (!name)
+    return TRUE;	  
 
   if (g_str_equal (name,HP_APPLICATION_SWITCHER) ||
       g_str_equal (name,HP_SWITCHER_MENU))
@@ -61,11 +67,11 @@ _tn_visibility_filter (GtkTreeModel *model,
 }
 
 static void 
-_sb_cell_mandatory_data_func (GtkTreeViewColumn *tc,
-                    	      GtkCellRenderer *cell,
-                    	      GtkTreeModel *tm,
-                    	      GtkTreeIter *iter,
-                    	      gpointer data)
+_cell_mandatory_data_func (GtkTreeViewColumn *tc,
+                           GtkCellRenderer *cell,
+                           GtkTreeModel *tm,
+                           GtkTreeIter *iter,
+                           gpointer data)
 {
   gboolean mandatory;
 
@@ -109,7 +115,7 @@ execute (osso_context_t *osso,
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
      HPSD_COLUMN_TOGGLE,
      "Statusbar",
-    _sb_cell_mandatory_data_func,
+    _cell_mandatory_data_func,
     NULL,
     NULL);    
 
@@ -118,6 +124,14 @@ execute (osso_context_t *osso,
      HPSD_COLUMN_PB,
      "Statusbar",
     _sb_cell_condition_data_func,
+    NULL,
+    NULL);    
+
+  hildon_plugin_settings_dialog_set_cell_data_func
+    (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+     HPSD_COLUMN_TOGGLE,
+     "Tasknavigator",
+    _cell_mandatory_data_func,
     NULL,
     NULL);    
 

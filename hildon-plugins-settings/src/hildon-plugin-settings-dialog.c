@@ -62,6 +62,10 @@
 #define HD_DESKTOP_CONFIG_USER_PATH ".osso/hildon-desktop"
 #define HD_DESKTOP_CONFIG_PATH "/etc/hildon-desktop"
 
+#define CPA_UP_BUTTON_ICON      "qgn_indi_arrow_up"
+#define CPA_DOWN_BUTTON_ICON    "qgn_indi_arrow_down"
+#define CPA_ARROW_BUTTON_ICON_SIZE  26
+
 #define HPSD_RESPONSE_UP GTK_RESPONSE_YES
 #define HPSD_RESPONSE_DOWN GTK_RESPONSE_NO
 
@@ -213,7 +217,44 @@ hildon_plugin_settings_dialog_check_limits (GtkTreeView *tw, HPSDTab *tab)
 
   if (tab->counter_limit > 0)
     tab->limit = tab->counter_limit;	  
-}	
+}
+
+static void 
+hildon_plugin_settings_dialog_change_drag_icon_cb (GtkWidget *widget,
+		                    		   GdkDragContext *context,
+				                   gpointer data)
+{
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GdkPixbuf *pixbuf = NULL;
+
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
+
+  if (!gtk_tree_selection_get_selected(selection, &model, &iter))
+    return;
+
+  gtk_tree_model_get (model,&iter,
+		      HP_COL_PIXBUF, &pixbuf,
+		      -1);
+
+  if (!pixbuf)
+    return;	  
+
+  gtk_drag_set_icon_pixbuf (context, pixbuf, 0, 0 );
+  g_object_unref(pixbuf);
+
+  g_signal_stop_emission_by_name(widget, "drag-begin");
+}
+
+static void 
+hildon_plugin_settings_dialog_row_inserted_cb (GtkTreeModel *tm,
+		                    	       GtkTreePath  *path,
+					       GtkTreeIter  *iter,
+				               GtkTreeView  *tw)
+{
+  gtk_tree_view_set_cursor (tw, path, NULL, FALSE);
+}
 
 static GObject *
 hildon_plugin_settings_dialog_constructor (GType gtype,
@@ -225,6 +266,9 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   GtkWidget *button_up, 
 	    *button_down, 
 	    *scrolled_window;
+  GdkPixbuf *pb_up = NULL,
+	    *pb_down = NULL;
+  GtkIconTheme *icon_theme = gtk_icon_theme_get_default ();
   GList *l;
 
   GError *error = NULL;
@@ -259,12 +303,12 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
 		  	 HPSD_OK,
 			 GTK_RESPONSE_OK);
 
-  button_down =
+  button_up =
     gtk_dialog_add_button (dialog,
 	  		   "Up",
 	       		   HPSD_RESPONSE_DOWN);
 
-  button_up =
+  button_down =
     gtk_dialog_add_button (dialog,
 	 		   "Down",
 	       		   HPSD_RESPONSE_UP);
@@ -272,6 +316,48 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   settings->priv->button_up   = button_up;
   settings->priv->button_down = button_down;
 
+  pb_down = gtk_icon_theme_load_icon
+	        (icon_theme,
+		 CPA_DOWN_BUTTON_ICON, CPA_ARROW_BUTTON_ICON_SIZE,
+                 GTK_ICON_LOOKUP_NO_SVG, 
+		 &error);
+
+  if (!error)
+  {	  
+    gtk_container_remove (GTK_CONTAINER (button_down), GTK_BIN (button_down)->child);	  
+    gtk_container_add (GTK_CONTAINER (button_down), 
+		       gtk_image_new_from_pixbuf (pb_down));
+    gtk_widget_show (GTK_BIN (button_down)->child);
+    gdk_pixbuf_unref (pb_down);
+
+  }
+  else
+  {	  
+    g_error_free (error);	  
+    error = NULL;
+  }
+
+  pb_up = gtk_icon_theme_load_icon
+            (icon_theme,
+  	     CPA_UP_BUTTON_ICON, CPA_ARROW_BUTTON_ICON_SIZE,
+             GTK_ICON_LOOKUP_NO_SVG, 
+	     &error);
+
+  if (!error)
+  {
+    gtk_container_remove (GTK_CONTAINER (button_up), GTK_BIN (button_up)->child);	  
+    gtk_container_add (GTK_CONTAINER (button_up), 
+		       gtk_image_new_from_pixbuf (pb_up));
+    gtk_widget_show (GTK_BIN (button_up)->child);
+    gdk_pixbuf_unref (pb_up);
+
+  }
+  else
+  {	  
+    g_error_free (error);	  
+    error = NULL;
+  }
+  
   settings->button_cancel =
     gtk_dialog_add_button (dialog,
 			   HPSD_CANCEL,
@@ -313,6 +399,18 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
     }
     else
       tw = gtk_tree_view_new_with_model (tab->parser->tm);
+
+    gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tw), TRUE);
+
+    g_signal_connect (tw, 
+		      "drag-begin",
+		      G_CALLBACK (hildon_plugin_settings_dialog_change_drag_icon_cb), 
+		      NULL);
+
+    g_signal_connect (tab->parser->tm,
+		      "row-inserted",
+		      G_CALLBACK (hildon_plugin_settings_dialog_row_inserted_cb),
+		      tw);
 
     tab->tw = GTK_TREE_VIEW (tw);
 

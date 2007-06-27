@@ -1,3 +1,20 @@
+2007-06-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* data/hildon-plugins-settings.desktop.in:
+	- Changed name to new one.
+	* src/hildon-plugin-cell-renderer-button.c:
+	- Fixed style of button.
+	* src/hildon-plugin-settings-dialog.c:
+	(hildon_plugin_settings_dialog_change_drag_icon_cb), added
+	(hildon_plugin_settings_dialog_row_inserted_cb), added 
+	(hildon_plugin_settings_dialog_constructor):
+	- Fixed buttons images.
+	* src/hildon-plugin-settings.c: (_tn_visibility_filter),
+	- Fixed strange cases when tw is NULL (WTF??)
+	(_cell_mandatory_data_func): used also for tasknavigator.
+	* configure.ac: 0.0.2
+	* debian/changelog updated.
+
 2007-06-26  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-settings-dialog.[ch]:

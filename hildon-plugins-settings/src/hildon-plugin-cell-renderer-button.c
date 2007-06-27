@@ -246,7 +246,7 @@ hildon_plugin_cell_renderer_button_constructor (GType gtype,
                                                                                    params);
 
   g_object_set (object, 
-		"text", "Settings", 
+		"text", "Organize", 
 		/*"size", 9*20,*/
 		/*"ellipsize", PANGO_ELLIPSIZE_END,*/
 		NULL);
@@ -337,8 +337,8 @@ hildon_plugin_paint_button (GtkStyle *style,
 			    gint height)
 {
   gtk_paint_box (style, window,
-                 GTK_STATE_SELECTED, 
-		 GTK_SHADOW_IN,
+                 GTK_STATE_NORMAL, 
+		 GTK_SHADOW_OUT,
                  expose_area, 
 		 widget, "buttondefault",
                  x, y, width, height);
