@@ -1,5 +1,9 @@
 2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtk.symbols: Add new GtkWindow functions.
+
+2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkwindow.c (gtk_window_close_all_temporaries): add a
 	helper function to broadcast the _GTK_DELETE_TEMPORARIES ClientEvent
 

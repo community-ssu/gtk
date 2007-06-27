@@ -4604,6 +4604,7 @@ gtk_window_add_embedded_xid
 gtk_window_add_mnemonic
 gtk_window_begin_move_drag
 gtk_window_begin_resize_drag
+gtk_window_close_all_temporaries
 gtk_window_deiconify
 gtk_window_fullscreen
 gtk_window_get_accept_focus
@@ -4642,6 +4643,7 @@ gtk_window_group_remove_window
 gtk_window_has_toplevel_focus
 gtk_window_iconify
 gtk_window_is_active
+gtk_window_is_temporary
 gtk_window_list_toplevels
 gtk_window_maximize
 gtk_window_mnemonic_activate
@@ -4697,6 +4699,7 @@ gtk_window_set_screen
 gtk_window_set_skip_pager_hint
 gtk_window_set_skip_taskbar_hint
 gtk_window_set_urgency_hint
+gtk_window_set_temporary
 gtk_window_set_title
 gtk_window_set_transient_for
 gtk_window_set_type_hint

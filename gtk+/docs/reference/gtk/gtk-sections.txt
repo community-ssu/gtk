@@ -5239,6 +5239,9 @@ gtk_window_set_icon_list
 gtk_window_set_icon_from_file
 gtk_window_set_icon_name
 gtk_window_set_auto_startup_notification
+gtk_window_close_all_temporaries
+gtk_window_set_temporary
+gtk_window_is_temporary
 <SUBSECTION Standard>
 GTK_WINDOW
 GTK_IS_WINDOW

@@ -1,3 +1,7 @@
+2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtk-sections.txt: Add Temporary window doc.
+
 2007-05-30  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* gtk/tmpl/gtkimcontext.sgml: Add HILDON_GTK_INPUT_MODE_MULTILINE
