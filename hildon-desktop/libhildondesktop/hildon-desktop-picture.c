@@ -248,12 +248,12 @@ hildon_desktop_picture_and_mask_from_pixbuf (GdkDisplay      *gdisplay,
     }
 
 
+  pa.repeat = True;
   if (color)
     {
       format = XRenderFindStandardFormat (display,
                                           PictStandardARGB32);
 
-      pa.repeat = True;
       *picture = XRenderCreatePicture (display,
                                        pixmap,
                                        format,

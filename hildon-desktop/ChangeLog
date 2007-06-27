@@ -1,5 +1,10 @@
 2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-picture.c:
+	- fixed loading of mask-only picture
+
+2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/main.c:
 	- removed thread protection for GDK. Only the main thread
 	shall access GDK / GTK
