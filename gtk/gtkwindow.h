@@ -268,6 +268,7 @@ void       gtk_window_set_deletable            (GtkWindow *window,
                                                 gboolean   setting);
 gboolean   gtk_window_get_deletable            (GtkWindow *window);
 #ifdef MAEMO_CHANGES
+void       gtk_window_close_all_temporaries ();
 void       gtk_window_set_temporary	        (GtkWindow *window,
 						 gboolean  setting);
 gboolean   gtk_window_is_temporary	        (GtkWindow *window);
