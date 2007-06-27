@@ -44,6 +44,8 @@
 #include <gtk/gtkcheckmenuitem.h>
 #include <gtk/gtkspinbutton.h>
 
+#include <dbus/dbus-glib.h>
+
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
 
@@ -677,8 +679,29 @@ background_apply_callback (HDHomeBackground *background,
 
   if (error)
     {
-      g_warning ("Got error when apply background: %s",
-                 error->message);
+      const gchar *text = NULL;
+      g_warning ("Got error when apply background: %i %i %s  %s",
+                 error->domain,
+                 error->code,
+                 error->message,
+      dbus_g_error_get_name (error));
+      
+      if (dbus_g_error_has_name (error,
+                                 "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code2"))
+        text = HH_FILE_CORRUPTED_TEXT;
+      else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code1")))
+        text = HH_NO_CONNECTION_TEXT;
+      else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code4")))
+        text = HH_MMC_OPEN_TEXT;
+      else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code7")))
+        text = HH_NO_CONNECTION_TEXT;
+
+      if (text)
+        hd_home_window_show_information_note (window, text);
+
       return;
     }
 
@@ -842,13 +865,9 @@ hd_home_window_expose (GtkWidget *widget, GdkEventExpose *event)
           GdkDrawable              *drawable;
           gint                      x_offset, y_offset;
 
-          g_debug ("About to draw background");
-
           gdk_window_get_internal_paint_info (widget->window,
                                               &drawable,
                                               &x_offset, &y_offset);
-
-          g_debug ("Got offset: %i, %i", x_offset, y_offset);
 
           picture = hildon_desktop_picture_from_drawable (drawable);
 

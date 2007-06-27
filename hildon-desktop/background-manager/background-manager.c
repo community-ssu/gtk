@@ -731,6 +731,7 @@ background_manager_set_background (BackgroundManager   *manager,
                                    &local_error);
       if (local_error)
         {
+          g_debug ("Got error %i %i %s", local_error->domain, local_error->code, local_error->message);
           g_propagate_error (error, local_error);
           return FALSE;
         }

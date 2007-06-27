@@ -1,5 +1,11 @@
 2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- added error handling for background loading
+	Fixes: NB#59340, NB#59339, NB#61836, NB#61841
+
+2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-picture.c:
 	- fixed loading of mask-only picture
 
