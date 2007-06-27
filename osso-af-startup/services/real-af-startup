@@ -29,7 +29,7 @@ start_input()
 
   source $AF_INIT_DIR/keyboard.sh start
   # give VKB some time to start
-  sleep 5
+  sleep 1
 
   # start clipboard daemon for the wizard
   if [ -f $AF_INIT_DIR/clipboard.sh ]; then

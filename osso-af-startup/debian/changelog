@@ -1,3 +1,9 @@
+osso-af-startup (1.45~unreleased) unstable; urgency=low
+
+  * Patch from Leonid to optimise first boot.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 27 Jun 2007 13:12:11 +0300
+
 osso-af-startup (1.44-1) unstable; urgency=low
 
   * Patch from Andrey Petrov to reduce startup time. Fixes: NB#60087
