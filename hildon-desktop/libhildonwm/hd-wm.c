@@ -2871,7 +2871,7 @@ hd_wm_applications_init (void)
 
   while ((entry = readdir(directory)) != NULL)
   {
-    gchar        *path;
+    gchar *path;
 
     if (!g_str_has_suffix(entry->d_name, DESKTOP_SUFFIX))
 	continue;
@@ -2893,6 +2893,35 @@ hd_wm_applications_init (void)
   }
 
   closedir (directory);
+
+  /* Read hildon specific directory for backwards compatibility */
+  if ((directory = opendir(DESKTOPENTRYDIR "/hildon")) != NULL)
+  {
+    while ((entry = readdir(directory)) != NULL)
+    {
+      gchar *path;
+
+      if (!g_str_has_suffix(entry->d_name, DESKTOP_SUFFIX))
+          continue;
+
+      path = g_build_filename (DESKTOPENTRYDIR "/hildon", entry->d_name, NULL);
+
+      g_debug ("Attempting to open desktop file [%s] ...", path);
+
+      app = hd_wm_application_new (path);
+
+      if (app)
+      {
+        g_hash_table_insert (applications,
+                             g_strdup(hd_wm_application_get_class_name (app)),
+                             (gpointer)app);
+      }
+
+      g_free (path);
+    }
+
+    closedir (directory);
+  }
 
   return applications;
 }
