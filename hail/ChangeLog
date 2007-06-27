@@ -1,3 +1,30 @@
+2007-06-27  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+        * hail/hail-hildon-desktop/haildesktoppopupwindow.h:
+        * hail/hail-hildon-desktop/haildesktoppopupwindow.c:
+        * hail/hail-hildon-desktop/haildesktoppopupmenu.h:
+        * hail/hail-hildon-desktop/haildesktoppopupmenu.c:
+        * hail/hail-hildon-desktop/hailmenuitem.h:
+        * hail/hail-hildon-desktop/hailmenuitem.c:
+        * hail/hail-hildon-libs/hailbreadcrumb.h:
+        * hail/hail-hildon-libs/hailbreadcrumb.c:
+	Added a11y implementation for hildon-desktop-popup-window,
+        hildon-desktop-popup-menu and hail-bread-crumb widgets.
+
+        * hail/hail-hildon-desktop/Makefile.am:
+        * hail/hail-hildon-libs/Makefile.am:
+        * hail/hail-hildon-fm/Makefile.am:
+        Removed this files because now it is only generated one library
+        in hail subdirectory and not one every hail-hildon-...
+
+        * hail/hail-hildon-desktop/hail-hildon-desktop.c:
+        * hail/hail-hildon-libs/hail-hildon-libs.c:
+        * hail/hail-hildon-fm/hail-hildon-fm.c:
+        * hail/Makefile.am:
+        * hail/hail.c:
+        * configure.in:
+        Changes according because of the only library now is created.
+
 2007-05-28  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* hail/hail-hildon-desktop/Makefile.am:

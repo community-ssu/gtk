@@ -18,14 +18,14 @@
  */
 
 
-#include "hailfactory.h"
-#include "hail-hildon-libs/hail-hildon-libs.h"
-#include "hail-hildon-fm/hail-hildon-fm.h"
-#include "hail-hildon-desktop/hail-hildon-desktop.h"
-#include "hail.h"
+#include <hail/hailfactory.h>
+#include <hail/hail.h>
+#include <hail/hail-hildon-libs/hail-hildon-libs.h>
+#include <hail/hail-hildon-fm/hail-hildon-fm.h>
+#include <hail/hail-hildon-desktop/hail-hildon-desktop.h>
 
 /*
- *   These exported symbols are hooked by gnome-program
+ * These exported symbols are hooked by gnome-program
  * to provide automatic module initialization and shutdown.
  */
 extern void hildon_accessibility_module_init     (void);

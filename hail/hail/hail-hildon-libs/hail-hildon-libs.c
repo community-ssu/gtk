@@ -1,5 +1,5 @@
 #include <hail/hailfactory.h>
-#include <hail-hildon-libs.h>
+#include "hail-hildon-libs.h"
 
 #include "hailappview.h"
 #include "hailcaption.h"
@@ -18,6 +18,7 @@
 #include "hailvolumebar.h"
 #include "hailweekdaypicker.h"
 #include "hailwindow.h"
+#include "hailbreadcrumb.h"
 
 #include <hildon/hildon-caption.h>
 #include <hildon/hildon-code-dialog.h>
@@ -32,7 +33,7 @@
 #include <hildon/hildon-volumebar.h>
 #include <hildon/hildon-weekday-picker.h>
 #include <hildon/hildon-window.h>
-
+#include <hildon/hildon-bread-crumb-trail.h>
 
 /* Hail factories class definition */
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_CAPTION, hail_caption, hail_caption_new)
@@ -49,6 +50,7 @@ HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_RANGE_EDITOR, hail_range_editor, hail_range_e
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_COLOR_BUTTON, hail_color_button, hail_color_button_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_WINDOW, hail_window, hail_window_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_CODE_DIALOG, hail_code_dialog, hail_code_dialog_new)
+HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_BREAD_CRUMB, hail_bread_crumb, hail_bread_crumb_new)
 
 void
 hail_hildon_libs_init (void)
@@ -67,5 +69,5 @@ hail_hildon_libs_init (void)
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_COLOR_BUTTON, hail_color_button);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_WINDOW, hail_window);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_CODE_DIALOG, hail_code_dialog);
-
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_BREAD_CRUMB_TRAIL, hail_bread_crumb);
 }
