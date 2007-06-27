@@ -1,3 +1,8 @@
+2007-06-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* data/applications-menu.desktop.in:
+	- Added temporary X-Settings fake key
+
 2007-06-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildonwm/hd-wm.c (hd_wm_init): read the standard applications 

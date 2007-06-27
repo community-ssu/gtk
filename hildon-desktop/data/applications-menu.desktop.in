@@ -2,3 +2,5 @@
 Name=Applications Menu
 Type=builtin
 X-Path=applicationsmenu
+Mandatory=true
+X-Settings=libapplicationorganize.so
