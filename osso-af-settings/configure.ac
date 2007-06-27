@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(osso-af-settings, 0.9.0)
+AM_INIT_AUTOMAKE(osso-af-settings, 0.9.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST

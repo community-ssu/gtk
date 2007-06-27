@@ -1769,7 +1769,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=osso-af-settings
- VERSION=0.9.0
+ VERSION=0.9.1
 
 
 cat >>confdefs.h <<_ACEOF
