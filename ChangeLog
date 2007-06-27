@@ -1,3 +1,10 @@
+2007-06-27  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): when updating the
+	scroll arrows' state, make sure we don't overwrite the insensitive
+	state that might have been set by the first scroll step hitting
+	the top/bottom border of the menu. Fixes #59210.
+
 2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtk.symbols: Add new GtkWindow functions.
@@ -11,7 +18,7 @@
 
 	* gtk/gtkwindow.c: fix merge breakage.
 
-2007-06-26  Xan Lopez  <xan@.lopeznokia.com>
+2007-06-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	Take from upstream:
 	
@@ -82,8 +89,8 @@
 
 2007-06-25  Xan Lopez  <xan.lopez@nokia.com>
 	
-	* gdk/x11/gdkinput-x11.c (gdk_input_translate_coordinates): protect maemo changes with
-	MAEMO_CHANGES.
+	* gdk/x11/gdkinput-x11.c (gdk_input_translate_coordinates):
+	protect maemo changes with MAEMO_CHANGES.
 
 2007-06-19  Xan Lopez  <xan.lopez@nokia.com>
 
