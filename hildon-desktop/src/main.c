@@ -43,9 +43,6 @@ int main (int argc, char **argv)
   gchar *gtkrc = NULL;
 
   g_thread_init (NULL);
-  gdk_threads_init ();
-  gdk_threads_enter ();
-
   setlocale (LC_ALL, "");
 
   bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -85,7 +82,6 @@ int main (int argc, char **argv)
   hd_desktop_run (HD_DESKTOP (desktop));
 
   gtk_main ();
-  gdk_threads_leave ();
 
   return 0;
 }
