@@ -1,6 +1,7 @@
 gconf2 (2.16.0~unreleased) unstable; urgency=low
 
   * Partly fixes NB#56587, dh_gconf does not generate .postinst scripts
+  * Fixes: NB#59161, Cannot unapply schema from gconf
 
  -- Richard Hult <richard@imendio.com>  Tue, 26 Jun 2007 16:13:53 +0200
 
