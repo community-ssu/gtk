@@ -3670,8 +3670,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 
   if (priv->upper_arrow_state != GTK_STATE_INSENSITIVE)
     {
-      gboolean     arrow_pressed = FALSE;
-      GtkStateType arrow_state   = GTK_STATE_NORMAL;
+      gboolean arrow_pressed = FALSE;
 
       if (menu->upper_arrow_visible && !menu->tearoff_active)
         {
@@ -3738,17 +3737,26 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
             }
         }
 
-      if (arrow_pressed)
-        arrow_state = GTK_STATE_ACTIVE;
-      else if (menu->upper_arrow_prelight)
-        arrow_state = GTK_STATE_PRELIGHT;
-
-      if (arrow_state != priv->upper_arrow_state)
+      /*  gtk_menu_start_scrolling() might have hit the top of the
+       *  menu, so check if the button isn't insensitive before
+       *  changing it to something else.
+       */
+      if (priv->upper_arrow_state != GTK_STATE_INSENSITIVE)
         {
-          priv->upper_arrow_state = arrow_state;
+          GtkStateType arrow_state = GTK_STATE_NORMAL;
 
-          gdk_window_invalidate_rect (GTK_WIDGET (menu)->window,
-                                      &rect, FALSE);
+          if (arrow_pressed)
+            arrow_state = GTK_STATE_ACTIVE;
+          else if (menu->upper_arrow_prelight)
+            arrow_state = GTK_STATE_PRELIGHT;
+
+          if (arrow_state != priv->upper_arrow_state)
+            {
+              priv->upper_arrow_state = arrow_state;
+
+              gdk_window_invalidate_rect (GTK_WIDGET (menu)->window,
+                                          &rect, FALSE);
+            }
         }
     }
 
@@ -3769,8 +3777,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 
   if (priv->lower_arrow_state != GTK_STATE_INSENSITIVE)
     {
-      gboolean     arrow_pressed = FALSE;
-      GtkStateType arrow_state   = GTK_STATE_NORMAL;
+      gboolean arrow_pressed = FALSE;
 
       if (menu->lower_arrow_visible && !menu->tearoff_active)
         {
@@ -3837,17 +3844,26 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
             }
         }
 
-      if (arrow_pressed)
-        arrow_state = GTK_STATE_ACTIVE;
-      else if (menu->lower_arrow_prelight)
-        arrow_state = GTK_STATE_PRELIGHT;
-
-      if (arrow_state != priv->lower_arrow_state)
+      /*  gtk_menu_start_scrolling() might have hit the bottom of the
+       *  menu, so check if the button isn't insensitive before
+       *  changing it to something else.
+       */
+      if (priv->lower_arrow_state != GTK_STATE_INSENSITIVE)
         {
-          priv->lower_arrow_state = arrow_state;
+          GtkStateType arrow_state = GTK_STATE_NORMAL;
 
-          gdk_window_invalidate_rect (GTK_WIDGET (menu)->window,
-                                      &rect, FALSE);
+          if (arrow_pressed)
+            arrow_state = GTK_STATE_ACTIVE;
+          else if (menu->lower_arrow_prelight)
+            arrow_state = GTK_STATE_PRELIGHT;
+
+          if (arrow_state != priv->lower_arrow_state)
+            {
+              priv->lower_arrow_state = arrow_state;
+
+              gdk_window_invalidate_rect (GTK_WIDGET (menu)->window,
+                                          &rect, FALSE);
+            }
         }
     }
 }
