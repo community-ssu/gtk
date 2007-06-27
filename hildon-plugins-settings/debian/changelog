@@ -12,6 +12,11 @@ hildon-plugins-settings (0.0.2-1) feisty; urgency=low
   * src/hildon-plugin-settings.c: (_tn_visibility_filter),
   - Fixed strange cases when tw is NULL (WTF??)
   (_cell_mandatory_data_func): used also for tasknavigator.
+  * src/hildon-plugin-settings-dialog.[ch]:
+  - Added method to set limit of items for a container.
+  - Implemented limitation of selected items.
+  * src/hildon-plugin-settings.c:
+  - Set limit to 3 items for Tasknavigator.
 
  -- Moises Martinez <moises.martinez@nokia.com>  Wed, 27 Jun 2007 15:31:13 +0300
 
