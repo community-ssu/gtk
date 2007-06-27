@@ -1,4 +1,4 @@
-osso-af-settings (0.9.1) unstable; urgency=low
+osso-af-settings (0.9.1-1) unstable; urgency=low
 
   * Change the standard applications directory to "/usr/share/applications"
 
