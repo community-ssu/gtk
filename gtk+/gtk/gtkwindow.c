@@ -4879,6 +4879,27 @@ send_client_message_to_embedded_windows (GtkWidget *widget,
 }
 
 #ifdef MAEMO_CHANGES
+
+/**
+ * gtk_window_close_all_temporaries:
+ * 
+ * Sends a _GTK_DELETE_TEMPORARIES ClientEvent to all toplevel windows
+ *
+ * Since: 2.12
+ * Stability: Unstable
+ */
+void
+gtk_window_close_all_temporaries ()
+{
+  GdkEventClient client;
+
+  memset(&client, 0, sizeof(client));
+  client.message_type = gdk_atom_intern ("_GTK_DELETE_TEMPORARIES", FALSE);
+  client.data_format = 32;
+
+  gdk_event_send_clientmessage_toall ((GdkEvent*)&client);
+}
+
 /**
  * gtk_window_set_temporary:
  * @window: a #GtkWindow
