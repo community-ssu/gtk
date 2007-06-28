@@ -1,3 +1,10 @@
+2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gdk/gdk-sections.txt:
+	* gtk/gtk-sections.txt:
+
+	Move close temporary windows helper function from GTK to GDK.
+
 2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtk-sections.txt: Add Temporary window doc.

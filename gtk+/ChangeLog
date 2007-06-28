@@ -1,3 +1,12 @@
+2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gdk/gdk.h:
+	* gdk/gdkdisplay.c: (gdk_close_all_temporary_windows):
+	* gtk/gtk.symbols:
+
+	Move gtk_window_close_all_temporaries to GDK per Moises' request.
+	It now lives in GDK and it's called gdk_close_all_temporary_windows.
+
 2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate):
