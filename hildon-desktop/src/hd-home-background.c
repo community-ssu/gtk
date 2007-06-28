@@ -65,11 +65,10 @@ enum
 
 struct _HDHomeBackgroundPrivate
 {
-  GdkColor         *color;
-
-  BackgroundMode    mode;
-
-  gchar            *filename;
+  GdkColor             *color;
+  BackgroundMode        mode;
+  gchar                *filename;
+  gboolean              cancelled;
 
 };
 
@@ -505,6 +504,13 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
                                               GError           *error,
                                               struct cb_data   *data)
 {
+  if (data->background->priv->cancelled)
+    {
+      g_debug ("background is cancelled");
+      g_free (data);
+      return;
+    }
+
   if (error)
     {
       goto cleanup;
@@ -580,6 +586,8 @@ hd_home_background_apply_async (HDHomeBackground               *background,
   g_debug ("Applying background %s aynchronously",
            priv->filename);
 
+  priv->cancelled = FALSE;
+
   /* Here goes */
 #define S(string) (string?string:"")
   org_maemo_hildon_background_manager_set_background_async 
@@ -641,3 +649,11 @@ hd_home_background_equal (const HDHomeBackground *background1,
 
 }
 
+void
+hd_home_background_cancel (HDHomeBackground *background)
+{
+  g_return_if_fail (HD_IS_HOME_BACKGROUND (background));
+
+  background->priv->cancelled = TRUE;
+
+}

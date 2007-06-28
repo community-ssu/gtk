@@ -86,6 +86,8 @@ HDHomeBackground *
 gboolean    hd_home_background_equal            (const HDHomeBackground *bg1,
                                                  const HDHomeBackground *bg2);
 
+void        hd_home_background_cancel           (HDHomeBackground *background);
+
 G_END_DECLS
 
 #endif /* __HD_HOME_BACKGROUND_H__ */

@@ -1,3 +1,13 @@
+2007-06-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background.[ch]:
+	- added hd_home_background_cancel
+	- if background was cancelled, return from the callback immediately
+	* src/hd-home-window.c:
+	- attach the background being set to the cancel note, so it
+	can be cancelled.
+	Fixes: NB#61779
+
 2007-06-28  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-window.c:
