@@ -1,5 +1,11 @@
 2007-06-28  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- fixed access to wrong GError in case of flash full.
+	Fixes: NB#61983
+
+2007-06-28  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background.[ch]:
 	- added hd_home_background_cancel
 	- if background was cancelled, return from the callback immediately

@@ -752,7 +752,7 @@ background_apply_and_save_callback (HDHomeBackground *background,
     {
       g_warning ("Error when saving background settings to %s: %s",
                  conffile,
-                 error->message);
+                 save_error->message);
       g_error_free (save_error);
     }
 
