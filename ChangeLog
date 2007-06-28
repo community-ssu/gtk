@@ -1,5 +1,9 @@
 2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gdk/gdk.symbols: add the function here too.
+
+2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gdk/gdk.h:
 	* gdk/gdkdisplay.c: (gdk_close_all_temporary_windows):
 	* gtk/gtk.symbols:
