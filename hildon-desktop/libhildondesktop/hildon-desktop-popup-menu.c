@@ -952,3 +952,10 @@ hildon_desktop_popup_menu_get_scroll_button_down (HildonDesktopPopupMenu *menu)
   return menu->priv->scroll_down;
 }	
 
+GtkAdjustment *
+hildon_desktop_popup_menu_get_adjustment (HildonDesktopPopupMenu *menu)
+{
+  g_return_val_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu), NULL);
+
+  return gtk_viewport_get_vadjustment (GTK_VIEWPORT (menu->priv->viewport));
+}

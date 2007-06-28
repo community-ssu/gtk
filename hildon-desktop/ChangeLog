@@ -1,3 +1,18 @@
+2007-06-28  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-switcher-menu.c: changed the order the new notifications are
+	added to the pane (newest ones on the bottom). Implemented the clear
+	events button which appears when scrolling is activated on the menu. 
+	Update the acknowledge column on notification notification accordingly
+	to disable blinking after the menu is closed. Changed the scrolling 
+	behavior (keep scrolled on the bottom to keep track of latest 
+	notifications).
+	* libhildondesktop/hildon-desktop-popup-menu.[ch]: new method to get
+	the vertical adjustment of internal viewport.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]: new
+	column which can be used to keep track if the notification was "read"
+	or not.
+
 2007-06-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:

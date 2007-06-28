@@ -99,6 +99,9 @@ hildon_desktop_popup_menu_get_scroll_button_up (HildonDesktopPopupMenu *menu);
 const GtkWidget *
 hildon_desktop_popup_menu_get_scroll_button_down (HildonDesktopPopupMenu *menu);
 
+GtkAdjustment *
+hildon_desktop_popup_menu_get_adjustment (HildonDesktopPopupMenu *menu);
+
 G_BEGIN_DECLS
 
 #endif/*__HILDON_DESKTOP_POPUP_MENU_H__*/

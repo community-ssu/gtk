@@ -48,6 +48,7 @@ enum
   HD_NM_COL_HINTS,
   HD_NM_COL_TIMEOUT,
   HD_NM_COL_REMOVABLE,
+  HD_NM_COL_ACK,
   HD_NM_COL_SENDER,
   HD_NM_N_COLS
 };
@@ -115,6 +116,8 @@ gboolean   hildon_desktop_notification_manager_get_server_info    (HildonDesktop
 gboolean   hildon_desktop_notification_manager_close_notification (HildonDesktopNotificationManager *nm,
                                                                    guint id, 
 								   GError **error);
+
+void       hildon_desktop_notification_manager_close_all          (HildonDesktopNotificationManager *nm);
 
 gboolean   hildon_desktop_notification_manager_find_by_id         (HildonDesktopNotificationManager *nm,
 		 						   guint id,

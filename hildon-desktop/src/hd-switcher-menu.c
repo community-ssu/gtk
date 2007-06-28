@@ -2,6 +2,7 @@
  * Copyright (C) 2006 Nokia Corporation.
  *
  * Author:  Moises Martinez <moises.martinez@nokia.com>
+ *          Lucas Rocha <lucas.rocha@nokia.com>
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -32,12 +33,19 @@
 #include "hn-app-sound.h"
 #include "hn-app-pixbuf-anim-blinker.h"
 
+#include <glib/gi18n.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
+#ifdef HAVE_LIBHILDON
+#include <hildon/hildon-note.h>
+#else
+#include <hildon-widgets/hildon-note.h>
+#endif
 
 #include <gtk/gtkimage.h>
 #include <libhildondesktop/hildon-desktop-popup-window.h>
@@ -49,12 +57,18 @@
 #define AS_HOME_ITEM 		_("tana_fi_home")
 #define AS_HOME_ITEM_ICON 	"qgn_list_home"
 
+#define AS_CLEAR_ITEM          _("tana_fi_clear_received_events")
+#define AS_CLEAR_ITEM_ICON     "qgn_list_home"
+#define AS_CLEAR_CONFIRM       _("tana_nc_clear_events")
+#define AS_CLEAR_CONFIRM_ICON  "qgn_note_confirm" 
+
+#define AS_ITEMS_LIMIT  7
+
 /* Defined workarea atom */
 #define WORKAREA_ATOM "_NET_WORKAREA"
 
-#define AS_MENU_BUTTON_ICON      "qgn_list_tasknavigator_appswitcher"
-#define AS_MENU_DEFAULT_APP_ICON "qgn_list_gene_default_app"
-
+#define AS_MENU_BUTTON_ICON       "qgn_list_tasknavigator_appswitcher"
+#define AS_MENU_DEFAULT_APP_ICON  "qgn_list_gene_default_app"
 #define ANIM_DURATION 5000 	/* 5 Secs for blinking icons */
 #define ANIM_FPS      2
 
@@ -92,7 +106,7 @@
 
 enum 
 {
-  PROP_MENU_NITEMS=1,
+  PROP_MENU_NITEMS = 1,
 };
 
 #define HD_SWITCHER_MENU_GET_PRIVATE(obj) \
@@ -144,9 +158,7 @@ static void hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *swit
 static void hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 					HDSwitcherMenu *switcher);
 
-static void hd_switcher_menu_add_clear_notifications_button_cb (HildonDesktopPopupMenu *menu,
-								gboolean show_controls,
-								HDSwitcherMenu *switcher);
+static void hd_switcher_menu_add_clear_notifications_button (HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_add_info_cb (HDWM *hdwm, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
 static void hd_switcher_menu_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDWMEntryInfo *info, HDSwitcherMenu *switcher);
@@ -170,7 +182,7 @@ static void hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model
                                                       GtkTreeIter    *iter,
                                                       HDSwitcherMenu *switcher);
 
-static void hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher);
+static void hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher);
 
@@ -210,6 +222,10 @@ hd_switcher_menu_init (HDSwitcherMenu *switcher)
     HILDON_DESKTOP_NOTIFICATION_MANAGER 
      (hildon_desktop_notification_manager_get_singleton ());
 
+  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (switcher->nm),
+		  			HD_NM_COL_ID,
+					GTK_SORT_DESCENDING);
+  
   switcher->priv->icon_theme = gtk_icon_theme_get_default ();
 
   g_object_ref (switcher->hdwm);
@@ -385,18 +401,38 @@ hd_switcher_menu_update_open (HildonDesktopPopupWindow *window, HDSwitcherMenu *
 
   for (l = children; l != NULL; l = g_list_next (l))
   {
-    if (HD_IS_SWITCHER_MENU_ITEM (l->data))
-    {	    
-      if (hd_switcher_menu_item_is_blinking (HD_SWITCHER_MENU_ITEM (l->data)))	    
-        hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (l->data),FALSE);
+    if (HD_IS_SWITCHER_MENU_ITEM (l->data) &&
+	hd_switcher_menu_item_is_blinking (HD_SWITCHER_MENU_ITEM (l->data)))
+    {
+      GtkTreeIter iter;
+      guint id = 
+        hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));
+
+      if (hildon_desktop_notification_manager_find_by_id (switcher->nm, id, &iter))
+      {
+        g_signal_handlers_block_by_func (switcher->nm,
+					 hd_switcher_menu_notification_changed_cb, 
+					 switcher);
+	      
+        gtk_list_store_set (GTK_LIST_STORE (switcher->nm),
+                            &iter,
+                            HD_NM_COL_ACK, FALSE,
+                            -1);
+
+        g_signal_handlers_unblock_by_func (switcher->nm,
+					   hd_switcher_menu_notification_changed_cb, 
+					   switcher);
+      }
+
+      hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (l->data), FALSE);
     }
-  }	  
+  }
 
   gtk_toggle_button_set_active 
     (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 
   g_list_free (children);
-}	
+}
 
 static GObject *
 hd_switcher_menu_constructor (GType gtype,
@@ -443,10 +479,10 @@ hd_switcher_menu_constructor (GType gtype,
     hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 0);
 
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->popup_window),
-			       340,100);
+			       340, 100);
   
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->notifications_window),
-			       340,100);  
+			       340, 100);  
 
   switcher->priv->menu_applications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
@@ -491,7 +527,7 @@ hd_switcher_menu_constructor (GType gtype,
     
     image_up   = gtk_image_new_from_pixbuf (icon_up);
     image_down = gtk_image_new_from_pixbuf (icon_down);
-    
+ 
     gtk_container_add (GTK_CONTAINER (button_up),   image_up);
     gtk_container_add (GTK_CONTAINER (button_down), image_down);
     gtk_widget_show (image_up);
@@ -548,12 +584,7 @@ hd_switcher_menu_constructor (GType gtype,
 		    "popup-menu-resize",
 		    G_CALLBACK (hd_switcher_menu_resize_menu),
 		    (gpointer)switcher);
- 
-  g_signal_connect (switcher->priv->menu_notifications,
-		    "show-controls",
-		    G_CALLBACK (hd_switcher_menu_add_clear_notifications_button_cb),
-		    (gpointer)switcher); 
-  
+
   g_signal_connect (button,
 		    "toggled",
 		    G_CALLBACK (hd_switcher_menu_toggled_cb),
@@ -628,7 +659,7 @@ hd_switcher_menu_constructor (GType gtype,
                           G_CALLBACK (hd_switcher_menu_item_activated),
                           (gpointer)switcher); 
 
-  hd_switcher_menu_populate_notifications (switcher);
+  hd_switcher_menu_create_notifications_menu (switcher);
 
   hd_switcher_menu_check_content (switcher);
 
@@ -704,12 +735,114 @@ hd_switcher_menu_finalize (GObject *object)
   G_OBJECT_CLASS (hd_switcher_menu_parent_class)->finalize (object);
 }
 
-static void 
-hd_switcher_menu_add_clear_notifications_button_cb (HildonDesktopPopupMenu *menu,
-						    gboolean show_controls,
-						    HDSwitcherMenu *switcher)
+static gboolean
+hd_switcher_menu_confirm_clear_events ()
 {
-  /*TODO: Waiting for Roope to implement this wonderful feature */	
+	GtkWidget *note;
+	gint response;
+	
+	note = hildon_note_new_confirmation_with_icon_name (NULL,
+					                    AS_CLEAR_CONFIRM,
+							    AS_CLEAR_CONFIRM_ICON);
+
+	response = gtk_dialog_run (GTK_DIALOG (note));
+
+	gtk_widget_destroy (note);
+	
+	return (response == GTK_RESPONSE_OK); 
+}
+
+static void 
+hd_switcher_menu_clear_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher)
+{
+  GtkTreeModel *nm;
+  GtkTreeIter iter;
+  gboolean need_confirmation = FALSE;
+
+  nm = GTK_TREE_MODEL (switcher->nm);
+
+  if (gtk_tree_model_get_iter_first (nm, &iter))
+  {
+    do
+    {
+      GHashTable *hints;
+      GValue *hint;
+      const gchar *category;
+      
+      gtk_tree_model_get (nm,
+                          &iter,
+                          HD_NM_COL_HINTS, &hints,
+                          -1);
+
+      hint = g_hash_table_lookup (hints, "category");
+
+      if (hint)
+      {	  
+        category = g_value_get_string (hint);
+
+        if (g_str_has_prefix (category, "im."))
+        {
+          need_confirmation = TRUE;
+	  break; 
+	}
+      }
+    }
+    while (gtk_tree_model_iter_next (nm, &iter));
+  }	 
+
+  if (!need_confirmation ||
+      hd_switcher_menu_confirm_clear_events ())
+  {
+    hildon_desktop_notification_manager_close_all (switcher->nm);
+    gtk_widget_destroy (switcher->priv->clear_events_menu_item);
+  }
+}
+	
+static void 
+hd_switcher_menu_add_clear_notifications_button (HDSwitcherMenu *switcher)
+{
+  GtkWidget *hbox, *image, *label;
+  GdkPixbuf *icon;
+
+  switcher->priv->clear_events_menu_item = gtk_menu_item_new ();
+    
+  hbox = gtk_hbox_new (FALSE, 0);
+
+  icon = hd_switcher_menu_get_icon_from_theme (switcher,
+        	  			         AS_CLEAR_ITEM_ICON, 
+      					 -1);
+  
+  image = gtk_image_new_from_pixbuf (icon);
+  
+  gtk_box_pack_start (GTK_BOX (hbox),
+  		        image, 
+  		        FALSE, 
+  		        FALSE, 
+  		        15);
+  
+  label = gtk_label_new (AS_CLEAR_ITEM); 
+  
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  
+  gtk_box_pack_start (GTK_BOX (hbox),
+  		        label,
+  		        TRUE, 
+  		        TRUE, 
+  		        0);
+  
+  gtk_container_add (GTK_CONTAINER (switcher->priv->clear_events_menu_item), 
+      	       hbox);
+
+  gtk_widget_show_all (hbox);
+
+  g_signal_connect_after (G_OBJECT (switcher->priv->clear_events_menu_item),
+                          "activate",
+                          G_CALLBACK (hd_switcher_menu_clear_item_activated),
+                          switcher);
+
+  hildon_desktop_popup_menu_add_item
+   (switcher->priv->menu_notifications, 
+    GTK_MENU_ITEM (switcher->priv->clear_events_menu_item));
 }
 
 static void
@@ -817,7 +950,7 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
     }
     else
     {	     
-      hd_switcher_menu_update_highlighting (switcher, FALSE);        
+      hd_switcher_menu_update_highlighting (switcher, FALSE); 
     }
 
     if (!switcher->priv->fullscreen)
@@ -856,9 +989,9 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
 
 static void 
 hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
-                         gint     *x,
-                         gint     *y,
-                         gpointer  data)
+                                gint     *x,
+                                gint     *y,
+                                gpointer  data)
 {
   HDSwitcherMenu *switcher = HD_SWITCHER_MENU (data);
   GtkRequisition req;
@@ -975,9 +1108,9 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
     GDK_CURRENT_TIME);
 
   if (!hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications))
-    gtk_widget_hide (hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 1));
+    gtk_widget_hide (switcher->priv->notifications_window);
   else
-    gtk_widget_show (hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 1));  
+    gtk_widget_show (switcher->priv->notifications_window);  
 
   switcher->priv->is_open = TRUE;
 
@@ -987,23 +1120,29 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
 
   if (GTK_BIN (switcher->priv->toggle_button)->child == switcher->priv->icon)
     hd_switcher_menu_attach_button (switcher);	  
-}	
+}
 
 static void 
 hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 			    HDSwitcherMenu *switcher)
 {
-   if (!switcher->priv->menu_applications ||
-       !switcher->priv->menu_notifications)
-   {
-     return;	   
-   }	   
+  GtkAdjustment *adj;
+       
+  if (!switcher->priv->menu_applications ||
+      !switcher->priv->menu_notifications)
+  {
+    return;	   
+  }	   
+  hildon_desktop_popup_menu_scroll_to_selected
+   (switcher->priv->menu_applications);
 
-   hildon_desktop_popup_menu_scroll_to_selected
-    (switcher->priv->menu_applications);
+  adj = hildon_desktop_popup_menu_get_adjustment (switcher->priv->menu_notifications);
 
-   hildon_desktop_popup_menu_scroll_to_selected
-    (switcher->priv->menu_notifications);
+  gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
+/*  if (adj->upper > adj->page_size)
+    gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
+  else
+    gtk_adjustment_set_value (adj, adj->upper);*/
 }
 
 static void 
@@ -1022,7 +1161,88 @@ hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher)
 }	
 
 static void 
-hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
+hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
+{
+  GtkWidget *menu_item = NULL, *first_item = NULL;
+  GtkTreeModel *nm = GTK_TREE_MODEL (switcher->nm);
+  GList *children = NULL, *l;
+  GtkTreeIter  iter;	
+ 
+  children =
+    hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
+
+  /* FIXME: it should use the screen height instead of number of items */
+  if (g_list_length (children) > 9 || 
+      gtk_tree_model_iter_n_children (nm, NULL) >= AS_ITEMS_LIMIT)
+  {
+    hd_switcher_menu_add_clear_notifications_button (switcher);
+    first_item = switcher->priv->clear_events_menu_item;
+  }
+  else
+  {
+    if (switcher->priv->clear_events_menu_item)
+    {
+      gtk_widget_destroy (switcher->priv->clear_events_menu_item);
+      switcher->priv->clear_events_menu_item = NULL;
+    }
+  }
+  
+  for (l = children; l != NULL; l = g_list_next (l))
+  {
+    if (l->data != switcher->priv->clear_events_menu_item)
+      gtk_widget_destroy (GTK_WIDGET (l->data));
+  }
+
+  g_list_free (children);
+
+  if (gtk_tree_model_get_iter_first (nm, &iter))
+  {
+    gint id;
+    GdkPixbuf *icon;
+    gchar *summary, *body;
+    gboolean ack;
+
+    do
+    {
+      if (first_item)
+        hildon_desktop_popup_menu_add_item
+          (switcher->priv->menu_notifications,
+          GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+
+      gtk_tree_model_get (nm,
+                          &iter,
+                          HD_NM_COL_ID, &id,
+                          HD_NM_COL_ICON, &icon,
+                          HD_NM_COL_SUMMARY, &summary,
+                          HD_NM_COL_BODY, &body,
+                          HD_NM_COL_ACK, &ack,
+                          -1); 
+
+      menu_item =
+        hd_switcher_menu_item_new_from_notification
+         (id, icon, summary, body, TRUE);
+
+      hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), !ack);
+
+      hildon_desktop_popup_menu_add_item
+       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+
+      if (!ack)
+        hd_switcher_menu_replace_blinking_icon (switcher, icon);
+
+      if (!first_item)
+	first_item = menu_item;
+    }
+    while (gtk_tree_model_iter_next (nm, &iter));
+
+    hd_switcher_menu_scroll_to (NULL, switcher);
+  }
+
+  hd_switcher_menu_check_content (switcher); 
+}
+
+static void 
+hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 {
   GList *children = NULL, *apps = NULL, *l;
   GtkWidget *separator = NULL;
@@ -1105,9 +1325,9 @@ hd_switcher_menu_add_info_cb (HDWM *hdwm,
 			      HDSwitcherMenu *switcher)
 {
   if (!info)
-    return;	  
+    return;
 
-  hd_switcher_menu_create_menu (switcher, hdwm);
+  hd_switcher_menu_create_applications_menu (switcher, hdwm);
 }
 
 static void 
@@ -1304,7 +1524,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
      return;
   }
   else
-  if (!hd_wm_entry_info_is_urgent (info) &&         /* We were told to change appswitcher icon with */
+  if (!hd_wm_entry_info_is_urgent (info) &&      /* We were told to change appswitcher icon with */
       switcher->priv->last_urgent_info == info)	 /* application's one. Now we've been told to change it back*/
   {
     hd_switcher_menu_reset_main_icon (switcher);	  
@@ -1451,15 +1671,11 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
                                         GtkTreeIter    *iter,
                                         HDSwitcherMenu *switcher)
 {
-  GdkPixbuf *icon = NULL;
-  gchar *summary = NULL, *body = NULL;
-  const gchar *category = NULL, *sound_file = NULL;
   GHashTable *hints;
-  GList *children;
+  const gchar *category = NULL, *sound_file = NULL;
   GValue *hint;
   guint id;
-  GtkWidget *menu_item;
- 
+  
   GtkWidget *pane_notifications = 
    hildon_desktop_popup_window_get_pane 
      (switcher->priv->popup_window, 1);
@@ -1470,9 +1686,6 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   gtk_tree_model_get (tree_model,
 		      iter,
 		      HD_NM_COL_ID, &id,
-		      HD_NM_COL_ICON, &icon,
-		      HD_NM_COL_SUMMARY, &summary,
-		      HD_NM_COL_BODY, &body,
 		      HD_NM_COL_HINTS, &hints,
 		      -1);
 
@@ -1511,39 +1724,19 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
     hn_as_sound_deregister_sample (switcher->priv->esd_socket, 
 		                   sample_id);
   }
-  
+
+/*  
   if (switcher->priv->last_iter_added == NULL)
     hd_switcher_menu_notification_deleted_cb 
-      (HILDON_DESKTOP_NOTIFICATION_MANAGER (tree_model), id, switcher);	    
-
-  children = 
-    hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
-  
-  if (g_list_length (children) > 0)
-    hildon_desktop_popup_menu_add_item
-      (switcher->priv->menu_notifications, 
-       GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
-
-  menu_item = 
-    hd_switcher_menu_item_new_from_notification 
-      (id, icon, summary, body, TRUE);
-
-  hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), TRUE);
-
-  hildon_desktop_popup_menu_add_item
-    (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
-
-  hd_switcher_menu_replace_blinking_icon (switcher, icon);
-
+      (HILDON_DESKTOP_NOTIFICATION_MANAGER (tree_model), id, switcher);
+*/
+      
   switcher->priv->last_urgent_info = NULL;
 
+  hd_switcher_menu_create_notifications_menu (switcher);
+  
 out:    	    
   switcher->priv->last_iter_added = NULL;
-
-  hd_switcher_menu_check_content (switcher);
-
-  g_free (summary);
-  g_free (body);
 }
 
 static void 
@@ -1562,7 +1755,7 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
     {
       GtkMenuItem *separator = NULL;
       gint _id =
-        hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));	    
+        hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));
 	  
       if (_id == id)      
       {
@@ -1589,6 +1782,23 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
     }
   }	  
 
+  /* FIXME: it should use the screen height instead of number of items */
+  if (g_list_length (children) - 2 < 2 * (AS_ITEMS_LIMIT + 1) - 1)
+  {
+    if (switcher->priv->clear_events_menu_item)
+    {
+      GList *clear_child;
+
+      clear_child = g_list_last (children);
+      
+      gtk_widget_destroy (switcher->priv->clear_events_menu_item);
+
+      if (clear_child->prev && GTK_IS_SEPARATOR_MENU_ITEM (clear_child->prev->data))
+        hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
+        				       GTK_MENU_ITEM (clear_child->prev->data));
+    }
+  }
+ 
   g_list_free (children);
 
   hd_switcher_menu_check_content (switcher);
@@ -1601,55 +1811,4 @@ hd_switcher_menu_notification_added_cb   (GtkTreeModel   *tree_model,
                                           HDSwitcherMenu *switcher)
 {
    switcher->priv->last_iter_added = iter;	
-}
-
-
-static void 
-hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
-{
-  GtkTreeIter  iter;	
-  GtkTreeModel *nm = GTK_TREE_MODEL (switcher->nm);
-  gboolean first_item = TRUE;
-  
-  if (gtk_tree_model_get_iter_first (nm, &iter))
-  {
-    gint id;
-    GdkPixbuf *icon;
-    gchar *summary, *body;
-
-    do
-    {
-      GtkWidget *menu_item;
-
-      if (!first_item)
-        hildon_desktop_popup_menu_add_item
-          (switcher->priv->menu_notifications,
-          GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
-      else
-        first_item = FALSE;
-
-      gtk_tree_model_get (nm,
-                          &iter,
-                          HD_NM_COL_ID, &id,
-                          HD_NM_COL_ICON, &icon,
-                          HD_NM_COL_SUMMARY, &summary,
-                          HD_NM_COL_BODY, &body,
-                          -1); 
-
-      menu_item =
-        hd_switcher_menu_item_new_from_notification
-         (id, icon, summary, body, TRUE);
-
-      hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), TRUE);
-
-      hildon_desktop_popup_menu_add_item
-       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
-
-      hildon_desktop_popup_menu_select_item
-       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
-
-      hd_switcher_menu_replace_blinking_icon (switcher, icon);
-    }
-    while (gtk_tree_model_iter_next (nm, &iter));
-  }	  
 }

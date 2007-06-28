@@ -404,6 +404,7 @@ hildon_desktop_notification_manager_load_row (void *data,
 		      HD_NM_COL_HINTS, hints,
 		      HD_NM_COL_TIMEOUT, (gint) g_ascii_strtod (argv[5], NULL),
 		      HD_NM_COL_REMOVABLE, TRUE,
+		      HD_NM_COL_ACK, FALSE,
 		      HD_NM_COL_SENDER, argv[6],
 		      -1);
 
@@ -779,6 +780,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
     G_TYPE_POINTER,
     G_TYPE_INT,
     G_TYPE_BOOLEAN,
+    G_TYPE_BOOLEAN,
     G_TYPE_STRING
   };
 
@@ -1135,6 +1137,7 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 		        HD_NM_COL_HINTS, hints_copy,
 		        HD_NM_COL_TIMEOUT, timeout,
 			HD_NM_COL_REMOVABLE, TRUE,
+			HD_NM_COL_ACK, FALSE,
 			HD_NM_COL_SENDER, dbus_g_method_get_sender (context),
 		        -1);
 
@@ -1163,6 +1166,7 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 			HD_NM_COL_SUMMARY, summary,
 			HD_NM_COL_BODY, body,
 			HD_NM_COL_REMOVABLE, FALSE,
+			HD_NM_COL_ACK, FALSE,
 			-1);
 
 #ifdef HAVE_SQLITE
@@ -1582,4 +1586,38 @@ hildon_desktop_notification_manager_call_action (HildonDesktopNotificationManage
     
     g_free (dest);
   }
+}
+
+void
+hildon_desktop_notification_manager_close_all (HildonDesktopNotificationManager *nm)
+{
+  GtkTreeIter iter;
+
+  if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (nm), &iter))
+  {
+    GHashTable *hints;
+    GValue *hint;
+    gchar *dest;
+    gint id;
+    gboolean persistent;
+    
+    do
+    {
+      gtk_tree_model_get (GTK_TREE_MODEL (nm),
+                          &iter,
+			  HD_NM_COL_HINTS, &hints,
+                          HD_NM_COL_ID, &id,
+			  HD_NM_COL_SENDER, &dest,
+                          -1);
+
+      hint = g_hash_table_lookup (hints, "persistent");
+
+      persistent = hint != NULL && g_value_get_uchar (hint);
+
+      hildon_desktop_notification_manager_notification_closed (nm, id, dest, persistent);
+    
+      g_free (dest);
+    }
+    while (gtk_list_store_remove (GTK_LIST_STORE (nm), &iter));
+  }	  
 }
