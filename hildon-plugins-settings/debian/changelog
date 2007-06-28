@@ -1,4 +1,4 @@
-hildon-plugins-settings (0.0.2-1) feisty; urgency=low
+hildon-plugins-settings (0.0.2-1) unstable; urgency=low
 
   * data/hildon-plugins-settings.desktop.in:
   - Changed name to new one.
