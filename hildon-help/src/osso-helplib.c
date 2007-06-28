@@ -66,10 +66,9 @@ handle_xevent(GdkXEvent * xevent, GdkEvent * event, gpointer dialog)
         if (cm->message_type == wm_atom && cm->data.l[0] == help_atom) {
             /* XClientMessageEvent *cm = xevent; */
             g_signal_emit(G_OBJECT(dialog), help_signal, 0);
-        }
 
-        return GDK_FILTER_REMOVE;       /* Event handled, don't process
-                                           further */
+            return GDK_FILTER_REMOVE;       /* Event handled, don't process further */
+        }
     }
 
     return GDK_FILTER_CONTINUE; /* Event not handled */

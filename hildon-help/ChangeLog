@@ -1,3 +1,8 @@
+2007-06-28 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+  * Stop eating client messages
+  * Fixes: NB#61917
+
 2007-05-31 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Removed dependency on libart_lgpl
