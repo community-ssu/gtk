@@ -123,6 +123,11 @@ struct _HildonFileSystemModelPrivate {
     gulong volumes_changed_handler;
 };
 
+typedef struct {
+    HildonFileSystemModel *model;
+    GNode *node;
+} HandleData;
+
 /* Property id:s */
 enum {
     PROP_BACKEND = 1,
@@ -1569,23 +1574,35 @@ unlink_file_folder(GNode *node)
 }
 
 static void
+free_handle_data (HandleData *handle_data)
+{
+    g_object_unref (handle_data->model);
+    g_slice_free (HandleData, handle_data);
+}
+
+static void
 get_folder_callback (GtkFileSystemHandle *handle,
                      GtkFileFolder *folder,
                      const GError *error,
                      gpointer data)
 {
   gboolean cancelled = handle->cancelled;
-  GNode *node = (GNode *)data;
   HildonFileSystemModelNode *model_node;
   HildonFileSystemModel *model;
+  HandleData *handle_data = (HandleData *) data;
+  GNode *node;
 
   g_object_unref (handle);
 
-  /* When the operation has been cancelled, DATA is no longer valid.
+  /* When the operation has been cancelled, handle_data->node is no longer valid.
    */
   if (cancelled)
-    return;
+    {
+      free_handle_data (handle_data);
+      return;
+    }
 
+  node = handle_data->node;
   model_node = (HildonFileSystemModelNode *) node->data;
   model = model_node->model;
 
@@ -1646,6 +1663,8 @@ get_folder_callback (GtkFileSystemHandle *handle,
 
   if (error)
     handle_load_error (node);
+
+  free_handle_data (handle_data);
 }
 
 static gboolean
@@ -1654,6 +1673,7 @@ link_file_folder (GNode *node, const GtkFilePath *path)
   HildonFileSystemModel *model;
   HildonFileSystemModelNode *model_node;
   GtkFileFolder *parent_folder;
+  HandleData *handle_data;
 
   g_assert(node != NULL && path != NULL);
   model_node = node->data;
@@ -1675,6 +1695,13 @@ link_file_folder (GNode *node, const GtkFilePath *path)
   parent_folder = (node->parent && node->parent->data) ?
       ((HildonFileSystemModelNode *) node->parent->data)->folder : NULL;
 
+  /* hold a reference to the model, it will be released
+   * when the get_folder operation has finished
+   */
+  handle_data = g_slice_new (HandleData);
+  handle_data->model = g_object_ref (model);
+  handle_data->node = node;
+
   if (model_node->location)
     {
       model_node->get_folder_handle =
@@ -1682,19 +1709,20 @@ link_file_folder (GNode *node, const GtkFilePath *path)
           (model_node->location,
            model->priv->filesystem,
            path, GTK_FILE_INFO_ALL,
-           get_folder_callback, node);
+           get_folder_callback, handle_data);
     }
   else
     {
       model_node->get_folder_handle =
         gtk_file_system_get_folder (model->priv->filesystem,
                                     path, GTK_FILE_INFO_ALL,
-                                    get_folder_callback, node);
+                                    get_folder_callback, handle_data);
     }
 
   if (model_node->get_folder_handle == NULL)
     {
       ULOG_ERR_F ("Failed to create monitor for path %s", (char *) path);
+      free_handle_data (handle_data);
       return FALSE;
     }
   else

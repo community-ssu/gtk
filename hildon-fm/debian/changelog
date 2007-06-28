@@ -2,6 +2,8 @@ libhildonfm (1:1.9.33~unreleased) unstable; urgency=low
 
   * Fixes: NB#59187. File/Folder operations in MMC through PC does not 
     update in MMC.
+  * Fixes: NB#59429. Application crashes on cancelling the 'open image' dialog
+    more than once.
 
  -- Richard Hult <richard@imendio.com>  Tue, 26 Jun 2007 14:32:51 +0200
 

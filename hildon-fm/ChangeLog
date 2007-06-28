@@ -1,3 +1,13 @@
+2007-06-27  Carlos Garnacho  <carlos@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c (struct HandleData)
+	(free_handle_data): Added.
+	(link_file_folder): Pass HandleData to the asynchronous get_folder
+	function. keep a reference to the model for each operation.
+	(get_folder_callback): Release the reference when the operation has
+	been processed. This avoids early model destruction when there are
+	noncancellable operations still alive. (NB#59429)
+
 2007-06-26  Richard Hult  <richard@imendio.com>
 
 	* configure.ac: Bump version.
