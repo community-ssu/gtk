@@ -1,3 +1,25 @@
+gtk+2.0 (2:2.10.12-0osso6) unstable; urgency=low
+
+  *** NOTE: This release adds new (unstable) API ***
+
+  * Add helper function to close all temporary windows: gdk_close_all_temporary_windows
+  * Don't overwrite insensitive state on menu's scroll arrows, Fixes: NB#59210
+  * Move the ::move-focus signal to GtkWidget, taken from upstream 2.11.x
+  * Mark GtkComboBox, GtkEntryCompletion and GtkMenu (indirectly) as temporary.
+    Fixes: NB#59773
+  * Make GtkWindow listen to the _GTK_DELETE_TEMPORARIES ClientEvent. When it's
+    received, it will broadcast the ::delete-event to all toplevel windows marked
+    with the "temporary" property. Also, of course, add the temporary property
+    to GtkWindow.
+  * Make GtkComboBox and GtkEntryCompletion handle ::delete-event to close
+    their popups.
+  * Fix GTK_BUTTONBOX_CENTER miscalculation in centering code.
+    Fixes: NB#61092, MB#1120
+  * Drop MAEMO_CHANGES code to use _NET_WM_STATE data on the object as
+    property mode for XChangeProperty.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 28 Jun 2007 15:08:37 +0300
+
 gtk+2.0 (2:2.10.12-0osso5) unstable; urgency=low
 
   * Remove MAEMO_CHANGES code to move focus in TAB_FORWARD direction on the
