@@ -75,6 +75,7 @@ gdk_keyboard_ungrab
 gdk_pointer_is_grabbed
 gdk_pointer_ungrab
 gdk_event_send_client_message
+gdk_close_all_temporary_windows
 gdk_event_send_clientmessage_toall
 #endif
 #endif
