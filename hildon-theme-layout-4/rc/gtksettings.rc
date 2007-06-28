@@ -34,4 +34,4 @@ gtk-keynav-wrap-around = 0
 gtk-keynav-cursor-only = 1
 
 # Enable the delayed asterix in password fields
-gtk-entry-last-char-timeout = 600
+gtk-entry-password-hint-timeout = 600

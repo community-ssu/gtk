@@ -1,3 +1,8 @@
+2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtksettings.rc (gtk-entry-password-hint-timeout): use the correct
+	GtkSettings name. Fixes: NB#60153
+
 2007-06-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/ossorssfeedreader.rc: Fixing the border values for rss reader. Fixes
