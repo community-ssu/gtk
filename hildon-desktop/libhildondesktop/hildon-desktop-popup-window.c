@@ -88,6 +88,9 @@ static gboolean hildon_desktop_popup_window_leave_notify (GtkWidget *widget, Gdk
 static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 				                               GdkEventVisibility *event,
 			        		               gpointer            data);
+static gboolean hildon_desktop_popup_window_delete_event (GtkWidget *widget,
+							  GdkEvent  *event,
+							  gpointer   data);
 #endif
 static gboolean hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
 						     		     GdkEventCrossing *event,
@@ -255,6 +258,8 @@ hildon_desktop_popup_window_constructor (GType gtype,
 #else
   GTK_WINDOW (popup)->type = GTK_WINDOW_TOPLEVEL;
 
+  gtk_window_set_temporary (GTK_WINDOW (popup), TRUE);
+
   gtk_window_set_decorated (GTK_WINDOW (popup), FALSE);
   gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);
 #endif
@@ -265,6 +270,11 @@ hildon_desktop_popup_window_constructor (GType gtype,
   g_signal_connect (popup,
 		    "visibility-notify-event",
 		    G_CALLBACK (hildon_desktop_popup_window_visibility_notify),
+		    NULL);
+
+  g_signal_connect (popup,
+		    "delete-event",
+		    G_CALLBACK (hildon_desktop_popup_window_delete_event),
 		    NULL);
 #endif
   gtk_widget_push_composite_child ();
@@ -612,6 +622,16 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
   }
 
   return FALSE;
+}
+
+static gboolean 
+hildon_desktop_popup_window_delete_event (GtkWidget *widget,
+					  GdkEvent *event,
+					  gpointer data)
+{ 
+  hildon_desktop_popup_window_popdown (HILDON_DESKTOP_POPUP_WINDOW (widget));
+  
+  return TRUE;
 }
 #endif
 static gboolean

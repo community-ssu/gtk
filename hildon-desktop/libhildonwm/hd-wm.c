@@ -710,7 +710,9 @@ mce_handler (DBusConnection *conn,
   if (g_str_equal (HOME_LONG_PRESS, member) && !hd_wm_modal_windows_present())
   {
     g_signal_emit_by_name (hdwm, "long-key-press");
-
+    
+    gdk_close_all_temporary_windows ();
+    
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
   

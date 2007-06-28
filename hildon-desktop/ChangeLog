@@ -1,3 +1,11 @@
+2007-06-28  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- Set the window as temporary.
+	* libhildonwm/hd-wm.c:
+	- When sending long key press, close all temporary windows.
+	Fixes: NB#61291
+
 2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/Makefile.am:
