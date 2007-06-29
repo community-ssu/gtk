@@ -1,3 +1,10 @@
+2007-06-29  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenu.c: use gtk-dnd-drag-threshold (which is 30) instead
+	of a hardcoded value of 20 pixels when deciding whether to pop
+	down context menus when the user drags the stylus outside the
+	menu.
+
 2007-06-29  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtk.symbols:

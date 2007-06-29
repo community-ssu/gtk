@@ -2925,17 +2925,22 @@ gtk_menu_button_release (GtkWidget      *widget,
           (priv->popup_pointer_x >= 0) &&
           (priv->popup_pointer_y >= 0))
         {
+          gint threshold;
           gint distance;
+
+          g_object_get (gtk_widget_get_settings (widget),
+                        "gtk-dnd-drag-threshold", &threshold,
+                        NULL);
 
           distance = distance_traveled (widget);
 
           priv->popup_pointer_x = -1;
           priv->popup_pointer_y = -1;
 
-          /*  Don't popdown if we traveled less than 20px since popup
-           *  point, as per the Nokia 770 specs.
+          /*  Don't popdown if we traveled less than DND threshold
+           *  since popup point, as per the Nokia 770 specs.
            */
-          if (distance < 20)
+          if (distance < threshold)
             return TRUE;
         }
 
@@ -3189,11 +3194,17 @@ gtk_menu_motion_notify  (GtkWidget	   *widget,
 
       if (priv->context_menu)
         {
+          gint threshold;
+
+          g_object_get (gtk_widget_get_settings (widget),
+                        "gtk-dnd-drag-threshold", &threshold,
+                        NULL);
+
           /* Context menu mode. If we dragged out of the menu, close
            * the menu, as by the specs.
            */
           if (!pointer_in_menu_window (widget, event->x_root, event->y_root) &&
-              (distance_traveled (widget) >= 20) &&
+              (distance_traveled (widget) >= threshold) &&
               (event->state & GDK_BUTTON1_MASK))
             {
               gtk_menu_shell_deactivate (GTK_MENU_SHELL (widget));
