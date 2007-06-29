@@ -1,5 +1,10 @@
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-home-item.c:
+	- apply the background from the style in realize
+
+2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c:
 	- added safeguard against unrealized children in _style_set
 
