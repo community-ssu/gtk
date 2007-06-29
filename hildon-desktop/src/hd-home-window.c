@@ -152,11 +152,6 @@ hd_home_window_set_property (GObject      *gobject,
                              const GValue *value,
                              GParamSpec   *pspec);
 
-static void
-hd_home_window_notify (GObject     *object,
-                       GParamSpec  *pspec);
-
-
 #ifdef HAVE_LIBOSSO
 static void
 hd_home_window_set_osso_context (HDHomeWindow *window, osso_context_t *osso);
@@ -315,7 +310,6 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   object_class->constructor  = hd_home_window_constructor;
   object_class->set_property = hd_home_window_set_property;
   object_class->get_property = hd_home_window_get_property;
-  object_class->notify       = hd_home_window_notify;
 
   widget_class->map_event = hd_home_window_map_event;
   widget_class->style_set = hd_home_window_style_set;
@@ -634,21 +628,6 @@ hd_home_window_get_property (GObject    *gobject,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
       break;
   }
-}
-
-static void
-hd_home_window_notify (GObject     *object,
-                       GParamSpec  *pspec)
-{
-  HDHomeWindowPrivate  *priv;
-  priv = HD_HOME_WINDOW_GET_PRIVATE (object);
-
-  if (g_str_equal (pspec->name, "work-area"))
-    {
-      g_debug ("Work area changed, reapplying the background");
-      hd_home_window_set_background (HD_HOME_WINDOW (object),
-                                     priv->background);
-    }
 }
 
 static void

@@ -44,9 +44,12 @@ main (int argc, char **argv)
   DBusGProxy           *driver_proxy;
   GError               *error = NULL;
   guint                  request_ret;
-  
+
+  g_thread_init (NULL);
   g_type_init ();
   gnome_vfs_init ();
+
+  g_set_prgname ("hildon-background-manager");
 
   connection = dbus_g_bus_get (DBUS_BUS_STARTER, &error);
   if (error)
@@ -78,6 +81,6 @@ main (int argc, char **argv)
     }
 
   g_main_loop_run (main_loop);
-  
+
   return 0;
 }

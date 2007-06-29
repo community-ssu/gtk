@@ -1,6 +1,15 @@
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:
+	- removed _notify handler as we don't need to adapt the background
+	to the work area anymore.
+	* background-manager/main.c:
+	- added g_set_prgname and g_init_thread to quiet Glib and GDK
+	Fixes: NB#62097
+
+2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
 	- fixed bogus check in the display state handler
 
 2007-06-28  Lucas Rocha  <lucas.rocha@nokia.com>
