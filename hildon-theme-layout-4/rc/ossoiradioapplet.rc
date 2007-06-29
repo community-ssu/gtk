@@ -12,6 +12,12 @@ style "osso-iradio-applet"
     {
       image
         {
+          function = BOX
+          file     = "../images/qgn_plat_radio_applet_bg.png"
+          shaped = TRUE
+        }
+      image
+        {
           function = SHADOW
           file     = "../images/qgn_plat_radio_applet_bg.png"
           shaped = TRUE
