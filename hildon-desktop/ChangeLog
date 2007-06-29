@@ -1,5 +1,10 @@
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-area.c:
+	- added safeguard against unrealized children in _style_set
+
+2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c:
 	- removed _notify handler as we don't need to adapt the background
 	to the work area anymore.
