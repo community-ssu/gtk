@@ -4621,6 +4621,7 @@ gtk_window_get_has_frame
 gtk_window_get_icon
 gtk_window_get_icon_list
 gtk_window_get_icon_name
+gtk_window_get_is_temporary
 gtk_window_get_mnemonic_modifier
 gtk_window_get_modal
 gtk_window_get_position
@@ -4642,7 +4643,6 @@ gtk_window_group_remove_window
 gtk_window_has_toplevel_focus
 gtk_window_iconify
 gtk_window_is_active
-gtk_window_is_temporary
 gtk_window_list_toplevels
 gtk_window_maximize
 gtk_window_mnemonic_activate
@@ -4698,7 +4698,7 @@ gtk_window_set_screen
 gtk_window_set_skip_pager_hint
 gtk_window_set_skip_taskbar_hint
 gtk_window_set_urgency_hint
-gtk_window_set_temporary
+gtk_window_set_is_temporary
 gtk_window_set_title
 gtk_window_set_transient_for
 gtk_window_set_type_hint

@@ -1337,7 +1337,7 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
 			    G_CALLBACK (gtk_combo_box_child_delete_event),
 			    combo_box);
 #ifdef MAEMO_CHANGES
-	  gtk_window_set_temporary (GTK_WINDOW (combo_box->priv->popup_window), TRUE);
+	  gtk_window_set_is_temporary (GTK_WINDOW (combo_box->priv->popup_window), TRUE);
 #endif /* MAEMO_CHANGES */
   	  
 	  toplevel = gtk_widget_get_toplevel (GTK_WIDGET (combo_box));
