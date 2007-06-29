@@ -1,3 +1,26 @@
+2007-06-29  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/Makefile.am:
+	* libhildondesktop/hildon-desktop-container.c:
+	- New interface for creating composited containers (containers made
+	out of more than one container)
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	(hildon_desktop_panel_expandable_container_init),
+	(hildon_desktop_panel_expandable_class_init),
+	(hildon_desktop_panel_expandable_constructor),
+	(hildon_desktop_panel_expandable_get_children),
+	(hildon_desktop_panel_expandable_cadd),
+	(hildon_desktop_panel_expandable_cremove),
+	(hildon_desktop_panel_expandable_set_property),
+	(hildon_desktop_panel_expandable_button_destroyed),
+	(hildon_desktop_panel_expandable_add_button),
+	(hildon_desktop_panel_expandable_add_in_extension),
+	(hildon_desktop_panel_expandable_arrange_items),
+	(hildon_desktop_panel_expandable_requeue_last_in_panel):
+	- Fixing reorder when new configuration is loaded.
+	* src/hd-plugin-manager.c: (hd_plugin_manager_sync):
+	- Check if the container is a HildonDesktopContainer when syncing.
+
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-home-item.c:

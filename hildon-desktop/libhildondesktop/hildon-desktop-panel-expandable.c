@@ -33,6 +33,7 @@
 #include <gdk/gdkx.h>
 #include <gdk/gdkevents.h>
 #include <libhildondesktop/statusbar-item-socket.h>
+#include <libhildondesktop/hildon-desktop-container.h>
 #include <gtk/gtkinvisible.h>
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 #define SYSTEM_TRAY_BEGIN_MESSAGE   1
@@ -47,7 +48,13 @@
 #define HSB_ARROW_ICON_SIZE HSB_ITEM_WIDTH
 #define HSB_ARROW_ICON_NAME "qgn_stat_more"
 
-G_DEFINE_TYPE (HildonDesktopPanelExpandable, hildon_desktop_panel_expandable, HILDON_DESKTOP_TYPE_PANEL);
+#define gtk_container_parent_remove(container,widget) GTK_CONTAINER_CLASS(hildon_desktop_panel_expandable_parent_class)->remove(container,widget)
+
+static void hildon_desktop_panel_expandable_container_init (HildonDesktopContainerIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (HildonDesktopPanelExpandable, hildon_desktop_panel_expandable, HILDON_DESKTOP_TYPE_PANEL,
+			 G_IMPLEMENT_INTERFACE (HILDON_DESKTOP_TYPE_CONTAINER,
+                                                hildon_desktop_panel_expandable_container_init));
 
 enum 
 {
@@ -103,7 +110,7 @@ static void hildon_desktop_panel_expandable_set_property       (GObject *object,
 
 static void hildon_desktop_panel_expandable_cadd (GtkContainer *container, GtkWidget *widget);
 
-static void hildon_desktop_panel_expandable_cremove (GtkContainer *container, GtkWidget *widget);
+static void hildon_desktop_panel_expandable_cremove (HildonDesktopContainer *container, GtkWidget *widget);
 
 static void hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget *widget);
 
@@ -123,11 +130,23 @@ static void hildon_desktop_panel_expandable_arrow_toggled (GtkToggleButton *butt
 
 static void hildon_desktop_panel_expandable_resize_notify (HildonDesktopPanelExpandable *panel);
 
+static void hildon_desktop_panel_expandable_requeue_last_in_panel (HildonDesktopPanelExpandable *panel);
+
 #ifdef SYSTRAY_SUPPORT
 static void hildon_desktop_panel_expandable_init_systray (HildonDesktopPanelExpandable *panel, gpointer data);
 static GdkFilterReturn hildon_desktop_x_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer _panel);
 static void hildon_desktop_panel_embed_applet (HildonDesktopPanelExpandable *panel, Window wid);
 #endif
+
+static GList *
+hildon_desktop_panel_expandable_get_children (HildonDesktopContainer *container);
+
+static void 
+hildon_desktop_panel_expandable_container_init (HildonDesktopContainerIface *iface)
+{
+  iface->get_children = hildon_desktop_panel_expandable_get_children;
+  iface->remove = hildon_desktop_panel_expandable_cremove;
+}
 
 static void 
 hildon_desktop_panel_expandable_class_init (HildonDesktopPanelExpandableClass *panel_class)
@@ -142,7 +161,6 @@ hildon_desktop_panel_expandable_class_init (HildonDesktopPanelExpandableClass *p
   hildon_panel_class->add_button = hildon_desktop_panel_expandable_add_button;
 
   container_class->add    = hildon_desktop_panel_expandable_cadd;
-  container_class->remove = hildon_desktop_panel_expandable_cremove;
 
   object_class->constructor  = hildon_desktop_panel_expandable_constructor;
   object_class->finalize     = hildon_desktop_panel_expandable_finalize;
@@ -152,7 +170,7 @@ hildon_desktop_panel_expandable_class_init (HildonDesktopPanelExpandableClass *p
 
   g_object_class_install_property (object_class,
                                    PROP_ITEMS_P_ROW,
-                                   g_param_spec_uint ("items_row",
+                                   g_param_spec_uint ("items-row",
                                                      "itemsrow",
                                                      "Number of items per row",
                                                      1,
@@ -184,8 +202,8 @@ hildon_desktop_panel_expandable_init (HildonDesktopPanelExpandable *panel)
   panel->priv = HILDON_DESKTOP_PANEL_EXPANDABLE_GET_PRIVATE (panel);
 
   panel->priv->items_p_row = 
-      panel->priv->n_items = 
-      panel->priv->current_position = 0;
+  panel->priv->n_items = 
+  panel->priv->current_position = 0;
   
   panel->priv->items = g_hash_table_new_full (g_str_hash,
 		  			      g_str_equal,
@@ -315,7 +333,7 @@ hildon_desktop_panel_expandable_constructor (GType gtype,
   gtk_widget_show (GTK_WIDGET (panel->priv->extension_table));
 
   g_signal_connect (object,
-		    "notify::items_row",
+		    "notify::items-row",
 		    G_CALLBACK (hildon_desktop_panel_expandable_resize_notify),
 		    NULL);
 
@@ -365,24 +383,69 @@ hildon_desktop_panel_expandable_finalize (GObject *object)
   G_OBJECT_CLASS (hildon_desktop_panel_expandable_parent_class)->finalize (object);
 }
 
+static GList *
+hildon_desktop_panel_expandable_get_children (HildonDesktopContainer *container)
+{
+  HildonDesktopPanelExpandable *panel = HILDON_DESKTOP_PANEL_EXPANDABLE (container);
+  GList *children_panel, *children_table, *l, *retval = NULL;
+
+  children_panel = gtk_container_get_children (GTK_CONTAINER (panel));
+  children_table = gtk_container_get_children (GTK_CONTAINER (panel->priv->extension_table));
+
+  for (l = children_panel ; l ; l = g_list_next (l))
+  {	 
+    if (panel->priv->arrow != l->data)
+      retval = g_list_append (retval, l->data);
+  }
+  for (l = children_table ; l ; l = g_list_next (l))
+    retval = g_list_append (retval, l->data);	  
+
+  return retval;
+}	
+
 static void 
 hildon_desktop_panel_expandable_cadd (GtkContainer *container, GtkWidget *widget)
 {
+  GList *children;	
   g_return_if_fail (HILDON_DESKTOP_IS_PANEL_EXPANDABLE (container));
+
+  children = gtk_container_get_children (container);
+/*
+  if (children && 
+      g_list_length (children) == 1 &&
+      children->data == HILDON_DESKTOP_PANEL_EXPANDABLE (container)->priv->arrow)
+  {
+    gtk_container_parent_remove (container,HILDON_DESKTOP_PANEL_EXPANDABLE (container)->priv->arrow);
+  }	  
+*/
+  if (widget == HILDON_DESKTOP_PANEL_EXPANDABLE (container)->priv->arrow)
+    return;	  
 
   hildon_desktop_panel_expandable_add_button (HILDON_DESKTOP_PANEL (container), widget);
 }
 
 static void 
-hildon_desktop_panel_expandable_cremove (GtkContainer *container, GtkWidget *widget)
+hildon_desktop_panel_expandable_cremove (HildonDesktopContainer *container, GtkWidget *widget)
 {
   HildonDesktopPanelExpandable *panel;
-
-  GTK_CONTAINER_CLASS (hildon_desktop_panel_expandable_parent_class)->remove (container, widget);
-
   panel = HILDON_DESKTOP_PANEL_EXPANDABLE (container);
 
+  if (widget == panel->priv->arrow)
+  {	  
+    gtk_container_remove (GTK_CONTAINER (container), widget);
+    return;
+  }
+
   panel->priv->n_items--; 
+
+  if (panel->priv->n_items < panel->priv->items_p_row && panel->priv->arrow && panel->priv->arrow->parent == GTK_WIDGET (container))
+    gtk_container_remove (GTK_CONTAINER (container), panel->priv->arrow);	  
+
+  if (widget->parent == GTK_WIDGET (container))
+    gtk_container_remove (GTK_CONTAINER (container), widget);
+  else
+  if (widget->parent == GTK_WIDGET (panel->priv->extension_table))
+    gtk_container_remove (GTK_CONTAINER (panel->priv->extension_table), widget);
 }
 
 static void 
@@ -428,7 +491,7 @@ hildon_desktop_panel_expandable_set_property (GObject *object,
       new_items_p_row =  g_value_get_uint (value);
       
       if (panel->priv->items_p_row != 0 && panel->priv->items_p_row != new_items_p_row)
-	g_object_notify (object,"items_row");
+	g_object_notify (object,"items-row");
       
       panel->priv->items_p_row = new_items_p_row;
       break;
@@ -442,6 +505,9 @@ hildon_desktop_panel_expandable_set_property (GObject *object,
 static void 
 hildon_desktop_panel_expandable_button_destroyed (GtkWidget *widget, gpointer _panel)
 {
+  if (!widget && !_panel)
+    return;
+
   g_hash_table_remove (HILDON_DESKTOP_PANEL_EXPANDABLE (_panel)->priv->items,
 		       HILDON_DESKTOP_ITEM (widget)->id);
 }
@@ -475,9 +541,18 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
 		    (gpointer)panel);
 
   g_object_set (G_OBJECT (item), "position", ex_panel->priv->current_position++, NULL);
+  
+  if ((ex_panel->priv->n_items+2) > ex_panel->priv->items_p_row && (ex_panel->priv->n_items+1) != ex_panel->priv->items_p_row)
+  { 
+    if (STATUSBAR_IS_ITEM (button) && !STATUSBAR_ITEM (button)->condition)
+      g_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
+    else  
+    {	    
+      if ((ex_panel->priv->n_items) == ex_panel->priv->items_p_row)
+        hildon_desktop_panel_expandable_requeue_last_in_panel (ex_panel);	      
+      hildon_desktop_panel_expandable_add_in_extension (ex_panel, item);
+    }
 
-  if ((ex_panel->priv->n_items+1) > ex_panel->priv->items_p_row)
-  {
     if (ex_panel->priv->arrow == NULL)
     {
       GtkWidget *arrow = hildon_desktop_panel_expandable_add_arrow (ex_panel);
@@ -485,12 +560,7 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
       HILDON_DESKTOP_PANEL_CLASS (hildon_desktop_panel_expandable_parent_class)->add_button (panel,arrow);
       
       ex_panel->priv->arrow = arrow;
-    }
-  
-    if (STATUSBAR_IS_ITEM (button) && !STATUSBAR_ITEM (button)->condition)
-      g_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
-    else  
-      hildon_desktop_panel_expandable_add_in_extension (ex_panel, item);
+    } 
   }
   else
   {
@@ -516,10 +586,11 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
       gtk_object_sink (GTK_OBJECT (item));
       g_object_ref (G_OBJECT (item));
     }
-    
-    g_hash_table_insert (ex_panel->priv->items,
-			 HILDON_DESKTOP_ITEM (item)->id,
-			 (gpointer)item);
+
+    if (GTK_WIDGET (item) != ex_panel->priv->arrow)
+      g_hash_table_insert (ex_panel->priv->items,
+			   HILDON_DESKTOP_ITEM (item)->id,
+			   (gpointer)item);
   }
 }
 
@@ -531,13 +602,18 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 	left_attach,
 	right_attach,
 	top_attach,
-	bottom_attach;
+	bottom_attach,
+	division,
+	n_items;
 
-  g_debug ("Adding button in expandable extension");
+  n_items = panel->priv->n_items+1;
 
-  n_rows = (((panel->priv->n_items+1)/panel->priv->items_p_row) + 
-	   ((((panel->priv->n_items+1) % panel->priv->items_p_row) > 0) ? 1 : 0)) - 1;
-	
+  g_debug ("Adding button in expandable extension %d",(gint)((panel->priv->n_items+1) / panel->priv->items_p_row));
+
+  division = ((guint)((n_items+1) / panel->priv->items_p_row));
+
+  n_rows = division + (((n_items+1) % panel->priv->items_p_row) != 0) ? 1 : 0;
+  
   g_object_get (panel->priv->extension_table, "n-rows", &table_rows, NULL);
 
   if (n_rows > table_rows)
@@ -554,16 +630,10 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 
   if (1)/*HILDON_DESKTOP_PANEL (panel)->orient == GTK_ORIENTATION_HORIZONTAL)*/
   {	  
-    top_attach    = n_rows-1;
-    bottom_attach = n_rows;
+    top_attach    = division - 1;
+    bottom_attach = division;
 
-    if ((panel->priv->n_items % panel->priv->items_p_row) == 0)
-      left_attach = 0;
-    else 
-      left_attach = (((panel->priv->n_items+1) % panel->priv->items_p_row)) - 1;
-
-    if (left_attach == -1)
-      left_attach = panel->priv->items_p_row - 1;	    
+    left_attach = (((n_items+1) % panel->priv->items_p_row)) - 1;
 
     right_attach = left_attach + 1;
 
@@ -635,7 +705,7 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
       panel->priv->arrow = NULL;
 
     if (!STATUSBAR_IS_ITEM_SOCKET (l->data))
-      gtk_container_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
+      gtk_container_parent_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
   }
 
   for (l = children_table ; l ; l = g_list_next (l))
@@ -643,8 +713,8 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
     if (!STATUSBAR_IS_ITEM_SOCKET (l->data))
     {	    
       g_object_ref (G_OBJECT (l->data));
-      gtk_container_remove (GTK_CONTAINER (panel->priv->extension_table),
-		    	    GTK_WIDGET (l->data));
+      gtk_container_parent_remove (GTK_CONTAINER (panel->priv->extension_table),
+		    	           GTK_WIDGET (l->data));
     }
   }
 
@@ -784,6 +854,26 @@ hildon_desktop_panel_expandable_resize_notify (HildonDesktopPanelExpandable *pan
 
   hildon_desktop_panel_expandable_arrange_items (panel);  
 }
+
+static void 
+hildon_desktop_panel_expandable_requeue_last_in_panel (HildonDesktopPanelExpandable *panel)
+{
+  GList *children = gtk_container_get_children (GTK_CONTAINER (panel));
+  HildonDesktopPanelItem *item;
+
+  if (!children)
+    return;	  
+  
+  item = HILDON_DESKTOP_PANEL_ITEM ((g_list_last (children))->data);
+
+  g_object_ref (G_OBJECT (item));
+
+  gtk_container_parent_remove (GTK_CONTAINER (panel), GTK_WIDGET (item));
+
+  hildon_desktop_panel_expandable_add_in_extension (panel, item);
+
+  g_object_unref (G_OBJECT (item));
+}	
 
 #ifdef SYSTRAY_SUPPORT
 static void 

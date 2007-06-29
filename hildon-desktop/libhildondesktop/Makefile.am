@@ -16,6 +16,7 @@ pkginclude_HEADERS = \
 	hildon-desktop-popup-window.h \
 	hildon-desktop-popup-menu.h   \
 	hildon-desktop-panel.h        \
+	hildon-desktop-container.h    \
 	hildon-desktop-multiscreen.h  \
 	hildon-desktop-panel-expandable.h \
 	hildon-desktop-notification-manager.h \
@@ -88,6 +89,8 @@ libhildondesktop_la_SOURCES = \
 	hildon-desktop-item-plug.c           \
 	hildon-desktop-plugin.h              \
 	hildon-desktop-plugin.c              \
+	hildon-desktop-container.h	     \
+	hildon-desktop-container.c	     \
 	hildon-desktop-window.h              \
 	hildon-desktop-window.c              \
 	hildon-desktop-panel.h               \

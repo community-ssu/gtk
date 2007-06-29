@@ -30,6 +30,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libhildondesktop/hildon-desktop-container.h>
+
 #include "hd-plugin-manager.h"
 #include "hd-ui-policy.h"
 #include "hd-plugin-loader.h"
@@ -257,14 +259,20 @@ hd_plugin_manager_sync (HDPluginManager *pm,
   if (f_plugin_list == NULL)
     g_list_foreach (plugin_list, append_to_list, &f_plugin_list);
 
-  children = gtk_container_get_children (container);
+  if (HILDON_DESKTOP_IS_CONTAINER (container))
+    children = hildon_desktop_container_get_children (HILDON_DESKTOP_CONTAINER (container));
+  else
+    children = gtk_container_get_children (container);
 
   /* If keeping the order, we need to temporaly remove the loaded
      plugins from the container. */
   for (iter = children; keep_order && iter; iter = g_list_next (iter))
   {
     g_object_ref (iter->data);
-    gtk_container_remove (container, GTK_WIDGET (iter->data));
+    if (HILDON_DESKTOP_IS_CONTAINER (container))
+      hildon_desktop_container_remove (HILDON_DESKTOP_CONTAINER (container), GTK_WIDGET (iter->data));	    
+    else	     
+      gtk_container_remove (container, GTK_WIDGET (iter->data));
   }
 
   /* Add plugins to container if they are not already loaded */
