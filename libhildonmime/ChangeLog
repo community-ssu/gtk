@@ -1,3 +1,10 @@
+2007-06-29  Martyn Russell  <martyn@imendio.com>
+
+	* configure.in: Bumped version.
+	
+	* data/uri-action-defaults.list: Updated the default application
+	for mime types using the http scheme.
+
 2007-06-26  Richard Hult  <richard@imendio.com>
 
 	* Release 1.9.9.

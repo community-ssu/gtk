@@ -1,3 +1,9 @@
+libhildonmime (1.9.10-1) unstable; urgency=low
+
+  * Updated the default application list for mime types with the http scheme.
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 29 Jun 2007 17:00:01 +0100
+
 libhildonmime (1.9.9-1) unstable; urgency=low
 
   * Fix the fix for this:
