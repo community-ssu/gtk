@@ -15,6 +15,13 @@ style "osso-rss-feed-reader"
     {
       image
         {
+          function = BOX
+          file     = "../images/qgn_plat_news_applet_bg.png"
+          border   = { 262, 36, 12, 72 }
+          shaped = TRUE
+        }
+      image
+        {
           function = SHADOW
           file     = "../images/qgn_plat_news_applet_bg.png"
           border   = { 262,36,12,72 }

@@ -1,3 +1,8 @@
+2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/ossorssfeedreader: Added theming for both BOX and SHADOW,
+	until the RSS reader applet has applied a patch of mine
+
 2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtksettings.rc (gtk-entry-password-hint-timeout): use the correct
