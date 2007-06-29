@@ -1,3 +1,16 @@
+2007-06-29  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtk.symbols:
+	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget):
+	* gtk/gtkentrycompletion.c: (gtk_entry_completion_init):
+	* gtk/gtkwindow.c: (gtk_window_set_property),
+	(gtk_window_get_property), (gtk_window_set_is_temporary),
+	(gtk_window_get_is_temporary):
+	* gtk/gtkwindow.h:
+
+	s/gtk_window_is_temporary/gtk_window_get_is_temporary/
+	s/gtk_window_set_temporary/gtk_window_set_is_temporary/
+
 2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gdk/gdk.symbols: add the function here too.

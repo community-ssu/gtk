@@ -1,3 +1,10 @@
+2007-06-29  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtk-sections.txt:
+
+	s/gtk_window_is_temporary/gtk_window_get_is_temporary/
+	s/gtk_window_set_temporary/gtk_window_set_is_temporary/
+
 2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gdk/gdk-sections.txt:
