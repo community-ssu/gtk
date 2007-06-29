@@ -1538,8 +1538,6 @@ static void
 hd_home_window_osso_display_state_cb (osso_display_state_t      state,
                                       gpointer                  window)
 {
-  g_return_if_fail (state);
-
   g_signal_emit_by_name (G_OBJECT (window),
                          "screen-off",
                          state == OSSO_DISPLAY_OFF);
