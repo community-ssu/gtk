@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.10.12-0osso7) unstable; urgency=low
+
+  * Rename gtk_window_is_temporary to gtk_window_set_is_temporary and
+    gtk_window_set_temporary to gtk_window_set_is_temporary 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 29 Jun 2007 14:48:22 +0300
+
 gtk+2.0 (2:2.10.12-0osso6) unstable; urgency=low
 
   *** NOTE: This release adds new (unstable) API ***

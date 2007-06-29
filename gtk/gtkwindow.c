@@ -942,7 +942,7 @@ gtk_window_set_property (GObject      *object,
       break;
 #ifdef MAEMO_CHANGES
     case PROP_TEMPORARY:
-      gtk_window_set_temporary (window, g_value_get_boolean (value));
+      gtk_window_set_is_temporary (window, g_value_get_boolean (value));
       break;
 #endif
     default:
@@ -1058,7 +1058,7 @@ gtk_window_get_property (GObject      *object,
       break;
 #ifdef MAEMO_CHANGES
     case PROP_TEMPORARY:
-      g_value_set_boolean (value, gtk_window_is_temporary (window));
+      g_value_set_boolean (value, gtk_window_get_is_temporary (window));
       break;
 #endif
     default:
@@ -4881,27 +4881,7 @@ send_client_message_to_embedded_windows (GtkWidget *widget,
 #ifdef MAEMO_CHANGES
 
 /**
- * gtk_window_close_all_temporaries:
- * 
- * Sends a _GTK_DELETE_TEMPORARIES ClientEvent to all toplevel windows
- *
- * Since: 2.12
- * Stability: Unstable
- */
-void
-gtk_window_close_all_temporaries ()
-{
-  GdkEventClient client;
-
-  memset(&client, 0, sizeof(client));
-  client.message_type = gdk_atom_intern ("_GTK_DELETE_TEMPORARIES", FALSE);
-  client.data_format = 32;
-
-  gdk_event_send_clientmessage_toall ((GdkEvent*)&client);
-}
-
-/**
- * gtk_window_set_temporary:
+ * gtk_window_set_is_temporary:
  * @window: a #GtkWindow
  * @setting: %TRUE if the window should be closed when it receives the _GTK_DELETE_TEMPORARIES ClientMessage
  * 
@@ -4909,8 +4889,8 @@ gtk_window_close_all_temporaries ()
  * Stability: Unstable
  */
 void
-gtk_window_set_temporary (GtkWindow *window,
-			  gboolean   setting)
+gtk_window_set_is_temporary (GtkWindow *window,
+                             gboolean   setting)
 {
   GtkWindowPrivate *priv;
 
@@ -4927,7 +4907,7 @@ gtk_window_set_temporary (GtkWindow *window,
 }
 
 /**
- * gtk_window_is_temporary:
+ * gtk_window_get_is_temporary:
  * @window: a #GtkWindow
  *
  * Return value: %TRUE if the window is marked as temporary.
@@ -4936,7 +4916,7 @@ gtk_window_set_temporary (GtkWindow *window,
  * Stability: Unstable
  */
 gboolean
-gtk_window_is_temporary (GtkWindow *window)
+gtk_window_get_is_temporary (GtkWindow *window)
 {
   GtkWindowPrivate *priv;
 

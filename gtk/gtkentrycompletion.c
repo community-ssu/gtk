@@ -451,7 +451,7 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
 		    G_CALLBACK (gtk_entry_completion_popup_delete_event),
 		    completion);
 #ifdef MAEMO_CHANGES
-  gtk_window_set_temporary (GTK_WINDOW (priv->popup_window), TRUE);
+  gtk_window_set_is_temporary (GTK_WINDOW (priv->popup_window), TRUE);
 #endif /* MAEMO_CHANGES */
 
   popup_frame = gtk_frame_new (NULL);
