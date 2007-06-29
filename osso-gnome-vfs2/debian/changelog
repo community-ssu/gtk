@@ -2,7 +2,7 @@ osso-gnome-vfs2 (2.16.3-1osso21) unstable; urgency=low
 
   * Fixes: NB#62096, gnomevfs daemon shall call g_thread_init()
 
- -- Richard Hult <richard@imendio.com>  Fri, 29 Jun 2007 09:49:57 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 29 Jun 2007 14:48:33 +0200
 
 osso-gnome-vfs2 (2.16.3-1osso20) unstable; urgency=low
 
