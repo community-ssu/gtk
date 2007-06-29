@@ -1,3 +1,18 @@
+hildon-theme-layout-4 (0.10.0-1) unstable; urgency=low
+
+  * Removing button displacement
+  * Fixed border values for RSS reader 
+  * Handle focus for edit widgets
+  * Adding theme for thumbable special-character input in IM
+
+  * Fixes: NB#61717 Icons/text in buttons move when pressed
+  * Fixes: NB#61622 Wrong border values used in breadcrumbtrail widget
+  * Fixes: NB#61636 Wrong border values used in RSS home applet background
+  * Fixes: NB#61632 Border values in web search home applet are wrong  
+  * Fixes: NB#60153 Unable to preview input characters in secret editor
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 29 Jun 2007 16:58:34 +0300
+
 hildon-theme-layout-4 (0.9.0-1) unstable; urgency=low
 
   * Fine-tuned animations for plankton theme

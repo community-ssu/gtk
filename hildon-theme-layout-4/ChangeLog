@@ -1,3 +1,11 @@
+2007-06-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.10.0-1 release]
+
+	* NEWS:
+	* debian/changelog:
+	* consfigure.ac: Updating.
+
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/ossorssfeedreader: Added theming for both BOX and SHADOW,

@@ -1,3 +1,9 @@
+[0.10.0-1]
+* Removing button displacement
+* Fixed border values for RSS reader 
+* Handle focus for edit widgets
+* Adding theme for thumbable special-character input in IM
+
 [0.9.0-1]
 * Fine-tuned animations for plankton theme
 * Disabling the gtk animations
