@@ -1,3 +1,270 @@
+hildon-desktop (1:0.0.19-1) sardine; urgency=low
+
+  * data/home{-layout}.conf:
+  - added promo-plugin
+
+  * libhildondesktop/Makefile.am:
+  * libhildondesktop/hildon-desktop-container.c:
+  - New interface for creating composited containers (containers made
+  out of more than one container)
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  (hildon_desktop_panel_expandable_container_init),
+  (hildon_desktop_panel_expandable_class_init),
+  (hildon_desktop_panel_expandable_constructor),
+  (hildon_desktop_panel_expandable_get_children),
+  (hildon_desktop_panel_expandable_cadd),
+  (hildon_desktop_panel_expandable_cremove),
+  (hildon_desktop_panel_expandable_set_property),
+  (hildon_desktop_panel_expandable_button_destroyed),
+  (hildon_desktop_panel_expandable_add_button),
+  (hildon_desktop_panel_expandable_add_in_extension),
+  (hildon_desktop_panel_expandable_arrange_items),
+  (hildon_desktop_panel_expandable_requeue_last_in_panel):
+  - Fixing reorder when new configuration is loaded.
+  * src/hd-plugin-manager.c: (hd_plugin_manager_sync):
+  - Check if the container is a HildonDesktopContainer when syncing.
+
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - apply the background from the style in realize
+
+  * libhildondesktop/hildon-home-area.c:
+  - added safeguard against unrealized children in _style_set
+
+  * src/hd-home-window.c:
+  - removed _notify handler as we don't need to adapt the background
+  to the work area anymore.
+  * background-manager/main.c:
+  - added g_set_prgname and g_init_thread to quiet Glib and GDK
+  Fixes: NB#62097
+
+  * src/hd-home-window.c:
+  - fixed bogus check in the display state handler
+
+  * src/hd-switcher-menu.c: changed the order the new notifications are
+  added to the pane (newest ones on the bottom). Implemented the clear
+  events button which appears when scrolling is activated on the menu. 
+  Update the acknowledge column on notification notification accordingly
+  to disable blinking after the menu is closed. Changed the scrolling 
+  behavior (keep scrolled on the bottom to keep track of latest 
+  notifications).
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]: new method to get
+  the vertical adjustment of internal viewport.
+  * libhildondesktop/hildon-desktop-notification-manager.[ch]: new
+  column which can be used to keep track if the notification was "read"
+  or not.
+
+  * src/hd-home-window.c:
+  - fixed access to wrong GError in case of flash full.
+  Fixes: NB#61983
+
+  * src/hd-home-background.[ch]:
+  - added hd_home_background_cancel
+  - if background was cancelled, return from the callback immediately
+  * src/hd-home-window.c:
+  - attach the background being set to the cancel note, so it
+  can be cancelled.
+  Fixes: NB#61779
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Set the window as temporary.
+  * libhildonwm/hd-wm.c:
+  - When sending long key press, close all temporary windows.
+  Fixes: NB#61291
+
+  * background-manager/Makefile.am:
+  - added hack to use a longer timeout for async calls. Background
+  loading can be longer than the default timeout.
+
+  * src/hd-home-window.c:
+  - added error handling for background loading
+  Fixes: NB#59340, NB#59339, NB#61836, NB#61841
+
+  * libhildondesktop/hildon-desktop-picture.c:
+  - fixed loading of mask-only picture
+
+  * src/main.c:
+  - removed thread protection for GDK. Only the main thread
+  shall access GDK / GTK
+
+  * data/applications-menu.desktop.in:
+  - Added temporary X-Settings fake key
+
+  * libhildonwm/hd-wm.c (hd_wm_init): read the standard applications 
+  directory and the hildon-specific application directory (if available) 
+  in order to keep backwards compatibility.
+
+  * src/hd-home-window.c:
+  - do not show the cancel note when cancelling the dialog.
+  Fixes: NB#61793
+
+  * background-manager/background-manager.[ch]:
+  - reimplemted with XRender instead of gdk_pixbuf_
+  - send the picture XID back to the client
+  - added Cropped mode
+  * src/hd-home-window.c:
+  - in the background manager callback, save the picture id
+  - added _expose to paint the background
+  * src/hd-home-background.c, src/hd-home-background-dialog.c:
+  - added Cropped mode
+  * libhildondesktop/hildon-desktop-picture.[ch]:
+  - added _picture_and_mask_from_pixbuf
+
+  * libhildonwm/hd-wm-types.h:
+  - Added NET_STARTUP_INFO/BEGIN
+  * libhildonwm/hd-wm-util.[ch]:
+  - new util function for broadcasting NET_STARTUP_INFO/BEGIN
+  * libhildonwm/hd-wm.[ch]:
+  - broadcast STARTUP when launching applications.
+
+  * libhildonwm/hd-wm.c: Removed launch banner for dummy applications.
+
+  * libhildonwm/hd-wm.c: Some optimizations.
+  * libhildonwm/hd-wm-window.[ch]: Added _set_icon_geometry method
+  * src/hn-app-switcher.c: Added _set_icon_geometry calls
+
+  * libhildondesktop/hildon-home-area.c: Fixed build without composite
+
+  * libhildonwm/hd-wm.c: top desktop.
+
+  * libhildonwm/hd-wm-entry-info.[ch]:
+  - New commodity interface to make no diferences between diferent kinds
+  window management elements and to make easier their handling.
+  * libhildonwm/hd-wm-application.[ch]:
+  * libhildonwm/hd-wm-window.[ch]:
+  - Deleted references to old HDEntryInfo.
+  - Implements HDWMEntryInfo
+  * src/hn-app-switcher.c:
+  * src/hd-switcher-menu-item.[ch]: 
+  * src/hn-app-button.[ch] 
+  * src/hd-switcher-menu.c:
+  * libhildonwm/hd-keys.c:
+  - Deleted references to old HDEntryInfo.
+  - Updated to use new HDWMEntryInfo.
+  * libhildonwm/hd-wm.[ch]:  
+  - Deleted references to old HDEntryInfo.
+  - Updated to use new HDWMEntryInfo.
+  - try to catch DESKTOP_WINDOW Xid only when updating client list at
+  the begininng. (It could be a little bit later in different scenarios)
+  * libhildonwm/hd-wm-types.h:
+  - Added HDWMDesktop.
+  * libhildonwm/hd-entry-info.[ch]:
+  - Deleted
+  * libhildonwm/Makefile.am:
+  - Added the new stuff
+  * libhildonwm/hd-wm-desktop.[ch]:
+  - New GObject class representing the DESKTOP WINDOW.
+  - Implements HDWMEntryInfo.
+
+  * src/hd-switcher-menu.c: added support for sound hint on
+  notifications.
+
+  * background-manager/{background-manager.[ch],
+    background-manager.xml.in}:
+  - removed the west and north border argument, not used
+    anymore
+  * src/hd-home-background.[ch]:
+  - Removed _border properties, not used anymore
+
+  * libhildondesktop/hildon-home-area.c:
+  - created Layout struct which adds the stack index
+  - save and load the stack order
+  - re-apply the stack order when an applet gets realized
+  Fixes: NB#56368
+
+  * src/hd-applications-menu.c: added padding to the categories pane.
+
+  * src/hd-switcher-menu.c: correctly add separators when populating the
+  notifications menu on startup.
+
+  * debian/control: added build dependency on libsqlite3-dev to enable
+  notification manager persistency support.
+  * libhildondesktop/hildon-desktop-notification-manager.c: dynamicaly
+  load libsqlite3 in order to avoid direct linking.
+  * libhildondesktop/Makefile.am: don't link to sqlite anymore.
+
+  * src/hd-desktop.c:
+  - Moved UI part of ping timeout to hd-desktop.
+  * libhildonwm/hd-wm.[ch]:
+  - Code cleaned. Added new signal when application freezes.
+  * libhildonwm/hd-wm-application.[ch]:
+  - Removed Hildon* code.
+  - Code cleanup.
+  * libhildonwm/hd-wm-window.c:
+  - Removed Hildon* code.
+  - Code cleanup.
+  * libhildonwm/Makefile.am:
+  - Depends only on GTK.
+
+  * libhildonwm/hd-wm-watched-window.[ch]:
+  - Renamed to (below)
+  * libhildonwm/hd-wm-window.[ch]: 
+  - Refactored to GObject.
+  * libhildonwm/hd-wm-watchable-app.[ch]:
+  - Renamed to (below)
+  * libhildonwm/hd-wm-application.[ch]:
+  - Refactored to GObject.
+  * src/hd-desktop.c:
+  * src/hn-app-switcher.c:
+  * src/hd-switcher-menu.c:
+  * libhildonwm/hd-keys.c:
+  * libhildonwm/hd-wm.[ch]:
+  * libhildonwm/hd-wm-memory.c:
+  * libhildonwm/hd-wm-types.h:
+  * libhildonwm/hd-entry-info.[ch]:
+  * libhildonwm/Makefile.am:
+  - Adapted to new name scheme.
+
+  * libhildondesktop/hildon-desktop-picture.c:
+  - do not start dragging unless the user has dragged by at least
+  30px during the 1.2 first seconds. Fixes: NB#59337
+
+  * libhildondesktop/hildon-desktop-picture.c:
+  - fixed changing of states
+
+  * libhildondesktop/hildon-home-area.c:
+  - fixed handling of the damage events
+  * libhildondesktop/hildon-desktop-picture.c:
+  - load pictures with IncludeInferior
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Reverted fake button event.
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - ifdef MAEMO_CHANGES use _TOPLEVEL instead of _POPUP
+  - Destroy transfer window for grabing when popping down.
+  - Set transiency for NULL when popping down.
+  - Don't popdown if not open.
+  - Removed fake button press/release event in _release_event handler.
+  TBD.
+  - Fixes: NB#60558
+
+  * libhildondesktop/hildon-home-window.c:
+  - do not propagate expose events to the child, as this
+  is already done by the parent class
+  * libhildondesktop/hildon-home-area.c:
+  - replaced a gtk_fixed_move with hildon_home_area_move
+  - fixed the window to update after a move
+
+  * src/hd-switcher-menu-item.c: Fixed ellipsizing of labels.
+
+  * src/hd-desktop.c: load newly installed plugins if the container is
+  configured for doing so. Fixes bug NB#56506.
+  * src/hd-config.h: new desktop container configuration key
+  "X-Load-New-Plugins".
+  * data/desktop.conf.in: configured home to automaticaly load newly 
+  installed plugins.
+
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - added _set_state to centralize the setting of the dragable state
+  - use motion_notify instead of a timeout for the dragging
+  * src/hd-home-window.c, libhildondesktop/hildon-home-area.c:
+  - removed annoying debug messages
+
+  * src/hn-app-switcher.c: update _NET_WM_ICON_GEOMETRY when orientation
+  changes. Fixes: NB#56505.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 29 Jun 2007 17:36:39 +0300
+
 hildon-desktop (1:0.0.18-2) sardine; urgency=low
 
   * Fixed the name of the frozen application handler 

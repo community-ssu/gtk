@@ -1,5 +1,9 @@
 2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.19
+
+2007-06-29  Johan Bilien  <johan.bilien@nokia.com>
+
 	* data/home{-layout}.conf:
 	- added promo-plugin
 
