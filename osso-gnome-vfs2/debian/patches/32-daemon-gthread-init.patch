@@ -1,0 +1,15 @@
+Index: daemon/vfs-daemon.c
+===================================================================
+--- daemon/vfs-daemon.c	(revision 12537)
++++ daemon/vfs-daemon.c	(arbetskopia)
+@@ -923,6 +923,10 @@ main (int argc, char *argv[])
+ 	}
+ 
+ 	setlocale(LC_ALL, "");
++
++	if (!g_thread_supported ()) {
++		g_thread_init (NULL);
++	}
+ 	
+ 	g_type_init ();
+ 
