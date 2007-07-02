@@ -1,3 +1,7 @@
+2007-07-02  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.33
+
 2007-06-27  Carlos Garnacho  <carlos@imendio.com>
 
 	* hildon-fm/hildon-file-system-model.c (struct HandleData)

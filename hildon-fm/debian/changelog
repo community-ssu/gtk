@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.33~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.33) unstable; urgency=low
 
   * Fixes: NB#59187. File/Folder operations in MMC through PC does not 
     update in MMC.
