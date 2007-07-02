@@ -1,7 +1,12 @@
+2007-07-02 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Remove direct dependency on libpng and libjpeg via gdk_pixbuf_get_file_info()
+	* Patch from Tommi Komulainen
+
 2007-06-28 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
-  * Stop eating client messages
-  * Fixes: NB#61917
+	* Stop eating client messages
+	* Fixes: NB#61917
 
 2007-05-31 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 

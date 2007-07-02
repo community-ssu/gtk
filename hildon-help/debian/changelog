@@ -1,3 +1,10 @@
+libhildonhelp (1.9.3-1) unstable; urgency=low
+
+  * Remove direct dependency on libpng and libjpeg via gdk_pixbuf_get_file_info()
+  * Patch from Tommi Komulainen
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Mon,  2 Jul 2007 15:51:35 +0300
+
 libhildonhelp (1.9.2-1) unstable; urgency=low
 
   * Stop eating client messages

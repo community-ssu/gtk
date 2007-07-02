@@ -2,7 +2,7 @@ Source: libhildonhelp
 Section: misc
 Priority: optional
 Maintainer: Gabriel Schulhof <gabriel.schulhof@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.0-1), pkg-config, libosso-dev, libhildon1-dev (>= 0.9.9-3), intltool (>= 0.21), autoconf, automake1.7, libtool, gtkhtml-dev (>= 3.9.1), libpng12-dev, libjpeg62-dev, libxml2-dev
+Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.0-1), pkg-config, libosso-dev, libhildon1-dev (>= 0.9.9-3), intltool (>= 0.21), autoconf, automake1.7, libtool, gtkhtml-dev (>= 3.9.1), libxml2-dev
 Standards-Version: 3.6.1
 
 Package: libhildonhelp-dev

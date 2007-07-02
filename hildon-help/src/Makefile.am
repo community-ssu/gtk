@@ -25,7 +25,7 @@ libhildonhelp_la_CFLAGS=$(INCLUDES) \
 # Added to allow prelinkage
 # Changed to '_LIBADD'
 #
-libhildonhelp_la_LDFLAGS=@DEPS_LIBS@ @JPEG_LIBS@
+libhildonhelp_la_LDFLAGS=@DEPS_LIBS@
 #libhildonhelp_la_LIBADD=$(DEPS_LIBS)
 
 libhildonhelp_la_includedir = $(includedir)/hildon-help/hildon

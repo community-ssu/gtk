@@ -26,10 +26,6 @@
 
 #include <gtk/gtk.h>
 
-#include <png.h>    /* libpng */
-#include <jpeglib.h> /* linjpeg */
-#include <setjmp.h>  /* Used for libjpeg error handling */
-
 /* Height limit for showing a pic in full size
  *
  * This should be around the size of 'normal' Help text in browser.
@@ -38,109 +34,6 @@
 gboolean dialog_mode; /*internal.h*/
 
 /*---( HelpLib portion -- HTML conversion )---*/
-
-/**
-  Get the resolution (width & height) of a .PNG picture
-  
-  @param fn filename
-  @param wref reference to store the width
-  @param href reference to store the height
-  @return #TRUE for success
-*/
-static
-gboolean png_resolution( const char *fname, guint *wref, guint *href )
-{
-    gboolean ok= FALSE;
-    FILE *f;
-    
-    /* TBD: Could optimize this by keeping the 'png_p' and 'info_p'
-     *      structures alive (static), but it didn't seem to work
-     *      as expected.. So, for now they're made afresh each time.
-     */
-        
-    png_structp png_p=
-        png_create_read_struct( PNG_LIBPNG_VER_STRING, 
-                                NULL, NULL, NULL );
-    if (!png_p) {       
-        ULOG_DEBUG ("libPNG error: Unable to init 'png_p'!\n" );
-        return FALSE;
-    }
-
-    png_infop info_p= png_create_info_struct( png_p );
-    if (!info_p) {
-        png_destroy_read_struct( &png_p, NULL, NULL );
-        ULOG_DEBUG ("libPNG error: Unable to init 'info_p'!\n" );
-        return FALSE;
-    }
-
-    /* libPNG set up, let's see the file */
-    f= fopen( fname, "rb" );
-    if (f) {
-        /*void*/ png_init_io( png_p, f );
-        /*void*/ png_read_info( png_p, info_p );
-        
-        fclose(f), f=NULL;      /* we got what we wanted, thanks */
-        
-        if (wref) *wref= info_p->width;
-        if (href) *href= info_p->height;
-    
-        ok= TRUE;
-    }
-
-    png_destroy_read_struct( &png_p, &info_p, NULL );
-
-    return ok;  
-}
-
-
-static
-void jpeg_error_exit(j_common_ptr cinfo)
-{
-    /* Return control to the setjmp point */
-    longjmp(cinfo->client_data, 1);
-}
-
-static
-gboolean jpeg_resolution( const char *fname, guint *wref, guint *href )
-{
-    gboolean ok= FALSE;
-    FILE *f = NULL;
-    jmp_buf setjmp_buffer;
-    struct jpeg_decompress_struct cinfo;
-    struct jpeg_error_mgr jerr;
-
-    jpeg_create_decompress(&cinfo);
-    cinfo.err = jpeg_std_error(&jerr);
-    jerr.error_exit = jpeg_error_exit;
-    cinfo.client_data = (void *) &setjmp_buffer;
-
-    f= fopen( fname, "rb" );
-    if (setjmp(setjmp_buffer)) {
-        /* If we get here, the JPEG code has signaled an error and
-           we got here by the longjmp call in jpeg_error_exit */
-        /* Nothing is done here because destroying of jpeg data structure
-           and closing of file is doen in common code to successfull case */
-    }
-    else
-    {
-        /* This part is normally run */
-        if (f) {
-            jpeg_stdio_src(&cinfo, f);
-            jpeg_read_header(&cinfo, TRUE);
-
-            if (wref) *wref= cinfo.image_width;
-            if (href) *href= cinfo.image_height;
-
-            ok= TRUE;
-        }
-    }
-
-    jpeg_destroy_decompress(&cinfo);
-    fclose(f), f=NULL;
-
-    return ok;  
-}
-
 
 /**
   Write an HTML tag entry for an inline picture to 'buf'.
@@ -163,27 +56,13 @@ gboolean graphic_tag( char *buf, size_t bufsize, const char *fname)
      *
      * snprintf( buf, bufsize, "<img src=\"file://%s\"/>", fname );
      */
-    if (strstr( fname, ".png" )) {
-        ULOG_DEBUG ("PNG processing: %s\n", fname );
-
-        ok= png_resolution( fname, &w, &h );
-
-        if (ok) {
-          ULOG_DEBUG("PNG resolution: %dx%d\n", w, h );
-        } else {
-           ULOG_DEBUG ("PNG resolution: failed\n" );
-        }
-    }
-    else if (strstr( fname, ".jpg" ) || strstr( fname, ".jpeg" )) {
-        ULOG_DEBUG ("JPEG processing: %s\n", fname );
-
-        ok= jpeg_resolution( fname, &w, &h );
-
-        if (ok) {
-          ULOG_DEBUG("JPEG resolution: %dx%d\n", w, h );
-        } else {
-           ULOG_DEBUG ("JPEG resolution: failed\n" );
-        }
+    ULOG_DEBUG ("processing: %s\n", fname );
+    ok = gdk_pixbuf_get_file_info (fname, &w, &h) != NULL;
+    if (ok) {
+	ULOG_DEBUG("resolution: %dx%d\n", w, h );
+    } else {
+	ULOG_DEBUG ("resolution: failed\n" );
+	w = h = 0;
     }
 
     /* Force image height to 26 pixels */

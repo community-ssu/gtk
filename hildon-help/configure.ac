@@ -7,7 +7,7 @@
 
 # Mandatory, initializes autoconf.
 #
-AC_INIT(libhildonhelp, 1.9.2)
+AC_INIT(libhildonhelp, 1.9.3)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR(src/hildon-help.h)
@@ -37,19 +37,10 @@ PKG_CHECK_MODULES( DEPS,
     glib-2.0 >= 2.6
     hildon-1 >= 1.0.0
     libosso >= 1.0.0
-    libpng
     libgtkhtml-3.8
 )
 AC_SUBST( DEPS_CFLAGS )
 AC_SUBST( DEPS_LIBS )
-
-AC_CHECK_LIB([jpeg], [jpeg_read_header], [have_jpeg="yes"], [have_jpeg="no"])
-if test x$have_jpeg = xyes;then
-    JPEG_LIBS="-ljpeg"
-else
-    AC_ERROR([Library libjpeg not found.])
-fi
-AC_SUBST( JPEG_LIBS )
 
 # Localisation-related
 #
