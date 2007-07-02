@@ -41,10 +41,16 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
+#include <dbus/dbus.h>
+
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-note.h>
 #else
 #include <hildon-widgets/hildon-note.h>
+#endif
+
+#ifdef HAVE_MCE
+#include <mce/dbus-names.h>
 #endif
 
 #include <gtk/gtkimage.h>
@@ -390,8 +396,76 @@ hd_switcher_menu_switcher_keypress_cb (GtkWidget      *widget,
   return TRUE;
 }
 
+#ifdef HAVE_MCE
+static void
+hd_switcher_menu_set_led_pattern (const gchar *pattern, gboolean activate)
+{
+  DBusConnection *sys_conn = dbus_bus_get (DBUS_BUS_SYSTEM, NULL);
+
+  g_return_if_fail (pattern != NULL);
+  
+  DBusMessage *message = 
+    dbus_message_new_method_call (MCE_SERVICE,
+                                  MCE_REQUEST_PATH,
+                                  MCE_REQUEST_IF,
+				  (activate ? MCE_ACTIVATE_LED_PATTERN :
+				              MCE_DEACTIVATE_LED_PATTERN));
+
+  dbus_message_append_args (message,
+                            DBUS_TYPE_STRING, &pattern,
+                            DBUS_TYPE_INVALID);
+
+  dbus_message_set_no_reply (message, TRUE);
+
+  dbus_connection_send (sys_conn, message, NULL);
+  dbus_connection_flush (sys_conn);
+
+  dbus_message_unref (message);
+  dbus_connection_unref (sys_conn);
+}
+#endif
+
+static void
+hd_switcher_menu_update_open (HildonDesktopPopupWindow *window,
+			      HDSwitcherMenu *switcher)
+{
+#ifdef HAVE_MCE  
+  GList *children, *l; 
+	
+  children = hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
+
+  for (l = children; l != NULL; l = g_list_next (l))
+  {
+    if (HD_IS_SWITCHER_MENU_ITEM (l->data))
+    {
+      GtkTreeIter iter;
+      GHashTable *hints;
+      GValue *hint;
+
+      guint id = 
+        hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));
+
+      if (hildon_desktop_notification_manager_find_by_id (switcher->nm, id, &iter))
+      {
+        gtk_tree_model_get (GTK_TREE_MODEL (switcher->nm),
+                            &iter,
+                            HD_NM_COL_HINTS, &hints,
+                            -1);
+
+	hint = g_hash_table_lookup (hints, "led-pattern");
+
+	if (hint)
+          hd_switcher_menu_set_led_pattern (g_value_get_string (hint), FALSE);
+      }
+    }
+  }
+#endif
+
+  hd_switcher_menu_scroll_to (window, switcher);
+}
+
 static void 
-hd_switcher_menu_update_open (HildonDesktopPopupWindow *window, HDSwitcherMenu *switcher)
+hd_switcher_menu_update_close (HildonDesktopPopupWindow *window, HDSwitcherMenu *switcher)
 {
   GList *children = NULL, *l;
 	
@@ -572,7 +646,7 @@ hd_switcher_menu_constructor (GType gtype,
 
   g_signal_connect (switcher->priv->popup_window,
 		    "popdown-window",
-		    G_CALLBACK (hd_switcher_menu_update_open),
+		    G_CALLBACK (hd_switcher_menu_update_close),
 		    (gpointer)switcher);
   
   g_signal_connect (switcher->priv->menu_applications,
@@ -592,7 +666,7 @@ hd_switcher_menu_constructor (GType gtype,
 
   g_signal_connect (switcher->priv->popup_window,
 		    "popup-window",
-		    G_CALLBACK (hd_switcher_menu_scroll_to),
+		    G_CALLBACK (hd_switcher_menu_update_open),
 		    (gpointer)switcher);
 
   g_signal_connect (switcher->hdwm,
@@ -1139,10 +1213,6 @@ hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
   adj = hildon_desktop_popup_menu_get_adjustment (switcher->priv->menu_notifications);
 
   gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
-/*  if (adj->upper > adj->page_size)
-    gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
-  else
-    gtk_adjustment_set_value (adj, adj->upper);*/
 }
 
 static void 
@@ -1725,6 +1795,15 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
 		                   sample_id);
   }
 
+#ifdef HAVE_MCE
+  hint = g_hash_table_lookup (hints, "led-pattern");
+
+  if (hint)
+  {
+    hd_switcher_menu_set_led_pattern (g_value_get_string (hint), TRUE);
+  }
+#endif
+  
 /*  
   if (switcher->priv->last_iter_added == NULL)
     hd_switcher_menu_notification_deleted_cb 

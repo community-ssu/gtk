@@ -146,6 +146,12 @@ PKG_CHECK_MODULES(HILDON,
 AC_SUBST(HILDON_LIBS)
 AC_SUBST(HILDON_CFLAGS)
 
+PKG_CHECK_MODULES(MCE, 
+		  [mce],
+                  AC_DEFINE(HAVE_MCE, [], [Whether mce is present on the system]), 
+		  [AC_MSG_NOTICE([mce not present.])])
+AC_SUBST(MCE_CFLAGS)
+
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.6)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(GTK_CFLAGS)

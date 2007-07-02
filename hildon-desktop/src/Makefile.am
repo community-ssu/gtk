@@ -14,6 +14,7 @@ hildon_desktop_CPPFLAGS = \
 	$(HILDON_FM_CFLAGS)             				   \
 	$(OSSO_CFLAGS)               					   \
 	$(HILDON_HELP_CFLAGS)          					   \
+	$(MCE_CFLAGS)                                                      \
 	$(GCONF_CFLAGS)                                                    \
 	$(LIBXML_CFLAGS)                                                   \
 	$(GNOME_VFS_CFLAGS)                                                \

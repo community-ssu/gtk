@@ -1,3 +1,13 @@
+2007-07-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/Makefile.am, configure.ac: added optional dependency on mce-dev
+	to be used by the led pattern handling on switcher menu.
+	* debian/control: added build dependency on mce-dev.
+	* src/hd-switcher-menu.c (hd_switcher_menu_set_led_pattern,
+	hd_switcher_menu_update_open, hd_switcher_menu_update_close): added
+	support for "led-pattern" hint. If the hint is set, a D-Bus message is
+	sent to MCE service for led pattern activation/deactivation.
+
 2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.20
