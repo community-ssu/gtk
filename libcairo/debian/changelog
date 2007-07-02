@@ -1,3 +1,9 @@
+libcairo (1.4.6-0osso3) unstable; urgency=low
+
+  * Useless release to fix the sardine bot.  
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  2 Jul 2007 12:24:20 +0300
+
 libcairo (1.4.6-0osso2) unstable; urgency=low
 
   * Use hardware floating point when available. 
