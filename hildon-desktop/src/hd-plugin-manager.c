@@ -310,7 +310,7 @@ hd_plugin_manager_sync (HDPluginManager *pm,
 
     position++;
   }
-
+  
   /* Destroy plugins that are not used anymore */
   for (iter = children; iter; iter = g_list_next (iter))
   {

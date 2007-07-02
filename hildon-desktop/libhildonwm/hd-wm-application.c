@@ -112,7 +112,7 @@ struct _HDWMApplicationPrivate
 
 static void 
 hd_wm_application_finalize (GObject *object)
-{ g_debug ("FIIIIIIIIIINALIZIIIIIIING APPPPPPPPPPPPLICATION");
+{ hd_wm_debug ("FIIIIIIIIIINALIZIIIIIIING APPPPPPPPPPPPLICATION");
   HDWMApplication *app = HD_WM_APPLICATION (object);
   
   if (app->priv->icon_name)
@@ -319,7 +319,7 @@ hd_wm_app_info_get_app_icon (HDWMEntryInfo *info,
     return NULL;
   }
 
-  g_debug (G_STRLOC ": adding cache entry (size:%d)", size);
+  hd_wm_debug (G_STRLOC ": adding cache entry (size:%d)", size);
   g_hash_table_insert (app->priv->icon_cache,
                        GINT_TO_POINTER (size),
                        g_object_ref (retval));
@@ -374,7 +374,7 @@ hd_wm_app_info_has_extra_icon (HDWMEntryInfo *info)
 {
   HDWMApplication *app = (HDWMApplication *) info;
 
-  g_debug ("hd_wm_application_get_extra_icon %s",hd_wm_application_get_extra_icon (app));
+  hd_wm_debug ("hd_wm_application_get_extra_icon %s",hd_wm_application_get_extra_icon (app));
 
   return (NULL != hd_wm_application_get_extra_icon (app));  
 }	
@@ -500,7 +500,7 @@ hd_wm_application_new_dummy (void)
 
   HDWM_APPLICATION_SET_FLAG (app, HDWM_APPLICATION_DUMMY);
   
-  g_debug ("Registered new non-watchable app\n\tapp_name: "
+  hd_wm_debug ("Registered new non-watchable app\n\tapp_name: "
          "%s\n\tclass name: %s\n\texec name (service): %s", 
          app->priv->app_name, app->priv->class_name, app->priv->service);
 
@@ -626,7 +626,7 @@ hd_wm_application_new (const gchar *file)
     app->priv->class_name = g_path_get_basename(exec_name);
 
   app->priv->active_window = NULL;
-  g_debug ("Registered new watchable app\n"
+  hd_wm_debug ("Registered new watchable app\n"
 	 "\texec name: %s\n"
 	 "\tapp name: %s\n"
 	 "\tclass name: %s\n"
@@ -658,7 +658,7 @@ hd_wm_application_update (HDWMApplication *app, HDWMApplication *update)
       (update->priv->icon_name && !app->priv->icon_name) ||
       (update->priv->icon_name && app->priv->icon_name && g_str_equal (update->priv->icon_name,app->priv->icon_name)))
   {
-    g_debug ("changing %s -> %s", app->priv->icon_name, update->priv->icon_name);
+    hd_wm_debug ("changing %s -> %s", app->priv->icon_name, update->priv->icon_name);
       
     if (app->priv->icon_name)
       g_free (app->priv->icon_name);
@@ -671,7 +671,7 @@ hd_wm_application_update (HDWMApplication *app, HDWMApplication *update)
       (update->priv->service && !app->priv->service) ||
       (update->priv->service && app->priv->service && !g_str_equal (update->priv->service,app->priv->service)))
   {
-    g_debug ("changing %s -> %s", app->priv->service, update->priv->service);
+    hd_wm_debug ("changing %s -> %s", app->priv->service, update->priv->service);
     if (app->priv->service)
       g_free (app->priv->service);
   
@@ -683,7 +683,7 @@ hd_wm_application_update (HDWMApplication *app, HDWMApplication *update)
       (update->priv->app_name && !app->priv->app_name) ||
       (update->priv->app_name && app->priv->app_name && !g_str_equal (update->priv->app_name,app->priv->app_name)))
   {
-    g_debug ("changing %s -> %s", app->priv->app_name, update->priv->app_name);
+    hd_wm_debug ("changing %s -> %s", app->priv->app_name, update->priv->app_name);
     if (app->priv->app_name)
       g_free (app->priv->app_name);
   
@@ -695,7 +695,7 @@ hd_wm_application_update (HDWMApplication *app, HDWMApplication *update)
       (update->priv->exec_name && !app->priv->exec_name) ||
       (update->priv->exec_name && app->priv->exec_name && !g_str_equal (update->priv->exec_name,app->priv->exec_name)))
   {
-    g_debug ("changing %s -> %s", app->priv->exec_name, update->priv->exec_name);
+    hd_wm_debug ("changing %s -> %s", app->priv->exec_name, update->priv->exec_name);
     if (app->priv->exec_name)
       g_free (app->priv->exec_name);
   
@@ -718,7 +718,7 @@ hd_wm_application_has_windows_find_func (gpointer key,
 
   win = (HDWMWindow*)value;
 
-  g_debug ("Checking %p vs %p", 
+  hd_wm_debug ("Checking %p vs %p", 
 	 hd_wm_window_get_application(win),
 	 (HDWMApplication *)user_data);
 
@@ -769,7 +769,6 @@ void
 hd_wm_application_set_hibernate (HDWMApplication *app,
 				   gboolean          hibernate)
 {
-  HN_MARK();
   if(hibernate)
     HDWM_APPLICATION_SET_FLAG(app, HDWM_APPLICATION_HIBERNATING);
   else

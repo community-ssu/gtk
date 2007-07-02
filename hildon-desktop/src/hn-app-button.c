@@ -473,7 +473,7 @@ menu_unmap_cb (GtkWidget   *widget,
   if (app_button->priv->prev_button &&
       app_button->priv->prev_button != GTK_TOGGLE_BUTTON(app_button))
     {
-      HN_DBG ("Retoggling previously toggled button");
+      g_debug ("Retoggling previously toggled button");
 	 
       /*gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);*/
       gtk_toggle_button_toggled (app_button->priv->prev_button);
@@ -503,8 +503,8 @@ menu_button_release_cb (GtkWidget      *widget,
    */
   gtk_widget_get_pointer(widget, &x, &y);
 
-  HN_DBG ("pointer [%d,%d],\n"
-          "allocation [%d, %d, %d, %d]",
+  g_debug ("pointer [%d,%d],\n"
+           "allocation [%d, %d, %d, %d]",
           x, y,
           widget->allocation.x,
           widget->allocation.y,
@@ -519,7 +519,7 @@ menu_button_release_cb (GtkWidget      *widget,
 
       if (app_button->priv->prev_button)
         {
-          HN_DBG ("Retoggling previously toggled button");
+          g_debug ("Retoggling previously toggled button");
 	 
           gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);
           gtk_toggle_button_toggled (app_button->priv->prev_button);
@@ -553,7 +553,7 @@ menu_keypress_cb (GtkWidget *menu, GdkEventKey *event, HNAppButton * app_button)
           /* pointer outside the button, i.e., press canceled */
           if (app_button->priv->prev_button)
             {
-              HN_DBG ("Retoggling previously toggled button");
+              g_debug ("Retoggling previously toggled button");
 	 
               gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);
               gtk_toggle_button_toggled (app_button->priv->prev_button);
@@ -672,7 +672,7 @@ hn_app_button_key_press_event (GtkWidget * widget,
 
   if (!event)
     {
-      HN_DBG("no event given !!!");
+      g_debug ("no event given !!!");
       return FALSE;
     }
   
@@ -728,11 +728,11 @@ hn_app_button_release_event (GtkWidget      *widget,
   gint x,y;
   gboolean untoggle = FALSE;
   
-  HN_DBG("Button released ...");
+  g_debug("Button released ...");
 
   if (priv->tooltip)
     {
-      HN_DBG("removing tooltip timer");
+      g_debug("removing tooltip timer");
       
       /* have to remove the show timer, so that if the tooltip is not
        * yet showing, it does not get displayed
@@ -745,7 +745,7 @@ hn_app_button_release_event (GtkWidget      *widget,
 
   gtk_widget_get_pointer(widget, &x, &y);
 
-  HN_DBG ("pointer [%d,%d],\n"
+  g_debug ("pointer [%d,%d],\n"
           "allocation [%d, %d, %d, %d]",
           x, y,
           widget->allocation.x,
@@ -763,7 +763,7 @@ hn_app_button_release_event (GtkWidget      *widget,
     {
       if (priv->prev_button)
         {
-          HN_DBG ("Retoggling previously toggled button");
+          g_debug ("Retoggling previously toggled button");
      
           gtk_toggle_button_set_active (priv->prev_button, TRUE);
           gtk_toggle_button_toggled (priv->prev_button);
@@ -816,7 +816,7 @@ hn_app_button_press_event (GtkWidget      *widget,
   toggle_button = GTK_TOGGLE_BUTTON (widget);
 
   /* remember which button was used to press this button */
-  HN_DBG("App button pressed using button %d", event->button);
+  g_debug("App button pressed using button %d", event->button);
 
   toplevel_window = gtk_widget_get_toplevel (widget);
 
@@ -828,7 +828,7 @@ hn_app_button_press_event (GtkWidget      *widget,
   else
     priv->is_thumbable = FALSE;
   
-  HN_DBG ("choosing");
+  g_debug ("choosing");
 
   /* search for the toggled button, so that we can re-toggle
    * it in case the user didn't top the window/application
@@ -1018,7 +1018,7 @@ hn_app_button_set_group (HNAppButton *app_button,
   if (g_slist_find (group, app_button))
     return;
 
-  HN_DBG ("setting group for the button");
+  g_debug ("setting group for the button");
 
   if (app_button->group)
     {
@@ -1233,8 +1233,6 @@ hn_app_button_set_entry_info (HNAppButton *button,
   button->priv->last_entry = button->priv->info;
   button->priv->info = NULL;
 
-  HN_MARK();
-
   if (info)
   {
     GdkPixbuf *app_pixbuf;
@@ -1301,8 +1299,6 @@ hn_app_button_force_update_icon (HNAppButton *button)
   
   g_return_if_fail (HN_IS_APP_BUTTON (button));
 
-  HN_MARK ();
-
   info = button->priv->info;
 
   if (info)
@@ -1331,7 +1327,7 @@ hn_app_button_force_update_icon (HNAppButton *button)
 	  g_object_unref (app_pixbuf);
 	}
       else
-	HN_DBG ("Unable to find the icon (even the default one)");
+	g_debug ("Unable to find the icon (even the default one)");
 
       /* the newly composed image is static */
       if (button->priv->is_blinking &&
@@ -1403,7 +1399,7 @@ void
 hn_app_button_set_is_blinking (HNAppButton *button,
 			       gboolean     is_blinking)
 {
-  HN_DBG("Setting is_blinking %d -> %d",
+  g_debug("Setting is_blinking %d -> %d",
          button->priv->is_blinking,
          is_blinking);
   

@@ -1,3 +1,30 @@
+2007-07-02  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	(hildon_desktop_panel_expandable_get_children),
+	(hildon_desktop_panel_expandable_cremove),
+	(hildon_desktop_panel_expandable_add_button),
+	(hildon_desktop_panel_expandable_add_in_extension),
+	(hildon_desktop_panel_expandable_hash_adding),
+	(hildon_desktop_panel_expandable_arrange_items),
+	(hildon_desktop_panel_expandable_add_arrow),
+	(hildon_desktop_panel_remove_embed),
+	(hildon_desktop_panel_embed_applet):
+	- Fixed reloading of configuration. Fixes: NB#59584
+	* libhildonwm/hd-wm.h:
+	- Added hd_wm_debug. By default does nothing.
+	- Removed HN_DBG/HN_MARK
+	* libhildonwm/hd-keys.c:
+	* libhildonwm/hd-wm-application.c:
+	* libhildonwm/hd-wm-memory.c:
+	* libhildonwm/hd-wm-window.c:
+	* libhildonwm/hd-wm.c:
+	- Use of hd_wm_debug instead of g_debug/HN_DBG
+	* src/hd-switcher-menu-item.c:
+	* src/hn-app-button.c:
+	* src/hn-app-tooltip.c:
+	- Use of hd_wm_debug instead of HN_DBG
+
 2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.21

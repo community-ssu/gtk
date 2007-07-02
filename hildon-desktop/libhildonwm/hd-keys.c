@@ -88,7 +88,7 @@ hd_keys_config_init (HDKeysConfig *keys)
 
   hd_keys_load_and_grab_all_shortcuts (keys);
 
-  g_debug ("**** Shortcuts loaded and grabbed ****");
+  hd_wm_debug ("**** Shortcuts loaded and grabbed ****");
 }
 
 static void 
@@ -486,10 +486,10 @@ hd_keys_shortcut_new (HDKeysConfig *keys,
     case XK_F6:
     case XK_F7:
     case XK_F8:
-      g_debug ("Illegal shortcut symbol -- ignoring");
+      hd_wm_debug ("Illegal shortcut symbol -- ignoring");
       return NULL;
     default:
-      g_debug ("%s: %d, should never be reached",__FILE__,__LINE__);
+      hd_wm_debug ("%s: %d, should never be reached",__FILE__,__LINE__);
     }
   
   if (hd_keys_keysym_needs_shift(ks))
@@ -540,7 +540,7 @@ hd_keys_shortcut_new (HDKeysConfig *keys,
 				     &shortcut->n_keycodes);
   shortcut->index    = index;
 
-  g_debug("'%s' to new shortcut with ks:%li, mask:%i", keystr, ks, mask);
+  hd_wm_debug("'%s' to new shortcut with ks:%li, mask:%i", keystr, ks, mask);
 
   return shortcut;
 }
@@ -605,14 +605,14 @@ hd_key_shortcut_grab (HDKeysConfig  *keys,
           /* FIXME: Log below somewhere */
           if (result == BadAccess)
 	  {
-	    g_debug ("Some other program is already using the key %s "
+	    hd_wm_debug ("Some other program is already using the key %s "
 	  	     "with modifiers %x as a binding\n",  
  		     (XKeysymToString (shortcut->keysym)) ? XKeysymToString (shortcut->keysym) : "unknown", 
 	             shortcut->mod_mask | ignored_mask );
 	  }
           else
 	  {
-	    g_debug ("Unable to grab the key %s with modifiers %x as a binding\n", 
+	    hd_wm_debug ("Unable to grab the key %s with modifiers %x as a binding\n", 
 		     (XKeysymToString (shortcut->keysym)) ? XKeysymToString (shortcut->keysym) : "unknown", 
 		      shortcut->mod_mask | ignored_mask);
           }
@@ -645,7 +645,7 @@ hd_keys_load_and_grab_all_shortcuts (HDKeysConfig *keys)
 	  
       if ((shortcut = hd_keys_shortcut_new (keys, key_def_str, i)) != NULL)
       {
-        g_debug ("Grabbing '%s'", key_def_str);
+        hd_wm_debug ("Grabbing '%s'", key_def_str);
         hd_key_shortcut_grab (keys, shortcut, FALSE); 
         keys->shortcuts = g_slist_append (keys->shortcuts, shortcut);
       }
@@ -665,7 +665,7 @@ gconf_key_changed_callback (GConfClient *client,
 
   gvalue = gconf_entry_get_value(entry);
   
-  g_debug ("called");
+  hd_wm_debug ("called");
 
   if (gconf_entry_get_key(entry))
   {
@@ -675,7 +675,7 @@ gconf_key_changed_callback (GConfClient *client,
     GSList        *item;
     const gchar   *value;
 
-    g_debug ("Looking up '%s'", gconf_entry_get_key(entry));
+    hd_wm_debug ("Looking up '%s'", gconf_entry_get_key(entry));
 
       /* Find what this keys matches in lookup */
     while (HDKeysActionConfLookup[i].gkey != NULL)
@@ -687,7 +687,7 @@ gconf_key_changed_callback (GConfClient *client,
 
     if (HDKeysActionConfLookup[i].gkey == NULL)
     {
-      g_debug ("Unable to find '%s'", gconf_entry_get_key(entry));
+      hd_wm_debug ("Unable to find '%s'", gconf_entry_get_key(entry));
       return; 		/* key not found */
     }
 
@@ -700,7 +700,7 @@ gconf_key_changed_callback (GConfClient *client,
 
       if (sc->action == HDKeysActionConfLookup[i].action)
       {
-        g_debug ("removing exisiting action %i", sc->action);
+        hd_wm_debug ("removing exisiting action %i", sc->action);
         hd_key_shortcut_grab (keys, sc, TRUE); 
         keys->shortcuts = g_slist_remove (keys->shortcuts, item->data);
         hd_keys_shortcut_free (sc);
@@ -714,14 +714,14 @@ gconf_key_changed_callback (GConfClient *client,
     {
       value = gconf_value_get_string (gvalue);
 
-      g_debug ("attempting to grab '%s'", value);
+      hd_wm_debug ("attempting to grab '%s'", value);
 
       /* Grab the new shortcut and addd to our list */
       if (value && g_ascii_strncasecmp(value, "disabled", 8))
       {
         if ((shortcut = hd_keys_shortcut_new (keys, value, i)) != NULL)
         {
-  	  g_debug ("now grabbing '%s'", value);
+  	  hd_wm_debug ("now grabbing '%s'", value);
 	  hd_key_shortcut_grab (keys, shortcut, FALSE); 
 	  keys->shortcuts = g_slist_append (keys->shortcuts, shortcut);
 	}
@@ -775,7 +775,7 @@ hd_keys_handle_keypress (HDKeysConfig *keys,
   {
     HDKeyShortcut *shortcut = (HDKeyShortcut *)item->data;
 
-    g_debug ("%i vs %i, %li vs %li",
+    hd_wm_debug ("%i vs %i, %li vs %li",
 	     shortcut->mod_mask, mod_mask,
 	     shortcut->keysym, XKeycodeToKeysym(GDK_DISPLAY(), keycode, 0));
 
@@ -794,7 +794,7 @@ hd_keys_handle_keypress (HDKeysConfig *keys,
 void 
 hd_keys_send_key_by_keysym (HDKeysConfig *keys, KeySym keysym)
 {
-  g_debug ("Faking keysym %li", keysym);
+  hd_wm_debug ("Faking keysym %li", keysym);
 
   hd_keys_send_key_by_keycode (keys,XKeysymToKeycode (GDK_DISPLAY(), keysym));
 }
@@ -802,7 +802,7 @@ hd_keys_send_key_by_keysym (HDKeysConfig *keys, KeySym keysym)
 void 
 hd_keys_send_key_by_keycode (HDKeysConfig *keys, KeyCode keycode)
 {
-  g_debug ("Faking keycode %d", keycode);
+  hd_wm_debug ("Faking keycode %d", keycode);
 
   if (keycode != 0)
   {

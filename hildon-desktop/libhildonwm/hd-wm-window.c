@@ -330,7 +330,7 @@ hd_wm_win_info_get_app_icon (HDWMEntryInfo *info,
     return NULL;
   }
 
-  g_debug (G_STRLOC ": adding cache entry (size:%d)", size);
+  hd_wm_debug (G_STRLOC ": adding cache entry (size:%d)", size);
   g_hash_table_insert (hd_wm_application_get_icon_cache (app),
                        GINT_TO_POINTER (size),
                        g_object_ref (retval));
@@ -452,14 +452,14 @@ hd_wm_window_finalize (GObject *object)
   GObject       *note;
   HDWM		*hdwm = hd_wm_get_singleton ();
   
-  HN_DBG("Removing '%s'", win->priv->name);
+  hd_wm_debug("Removing '%s'", win->priv->name);
 
   g_signal_emit_by_name (object, "close-window", win);
 
   /* Dont destroy windows that are hiberating */
   if (hd_wm_window_is_hibernating (win))
     {
-      g_debug ("### Aborting destroying '%s' as hibernating ###", win->priv->name);
+      hd_wm_debug ("### Aborting destroying '%s' as hibernating ###", win->priv->name);
       return;
     }
   
@@ -473,7 +473,7 @@ hd_wm_window_finalize (GObject *object)
       g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, win->priv->name);
   
       /* Show the infoprint */
-    g_debug ("TODO: %s hildon_banner_show_information (NULL, NULL, response_message);",
+    hd_wm_debug ("TODO: %s hildon_banner_show_information (NULL, NULL, response_message);",
 	     response_message);
 
     g_free (response_message);
@@ -487,7 +487,7 @@ hd_wm_window_finalize (GObject *object)
   if (hd_wm_entry_info_init (HD_WM_ENTRY_INFO (win)))
   {
     /* only windows of multiwindow apps have their own info */
-    g_debug ("TO BE REMOVED a window of multiwindow application; removing info from AS");
+    hd_wm_debug ("TO BE REMOVED a window of multiwindow application; removing info from AS");
 
     gboolean removed_app = hd_wm_remove_applications (hdwm,HD_WM_ENTRY_INFO (win));
  
@@ -590,7 +590,7 @@ hd_wm_window_process_net_wm_icon (HDWMWindow *win)
       w = data[offset];
       h = data[offset+1];
 
-      HN_DBG("got w:%i, h:%im offset is %i\n", w, h, offset);
+      hd_wm_debug("got w:%i, h:%im offset is %i\n", w, h, offset);
 
       if (w == 26 && h == 26)
 	break;
@@ -601,7 +601,7 @@ hd_wm_window_process_net_wm_icon (HDWMWindow *win)
 
   if (offset >= len)
     {
-      HN_DBG("w,h not found");
+      hd_wm_debug("w,h not found");
       goto out;
     }
 
@@ -833,7 +833,7 @@ hd_wm_window_process_net_wm_user_time (HDWMWindow *win)
                  0,
                  NULL);
   
-  HN_DBG("#### processing _NET_WM_USER_TIME ####");
+  hd_wm_debug("#### processing _NET_WM_USER_TIME ####");
 
   if (data == NULL)
     return;
@@ -1046,7 +1046,7 @@ hd_wm_window_sigterm_timeout_cb (gpointer data)
       /* Something went wrong, perhaps we do not have sufficient
        * permissions to kill this process
        */
-	  g_debug ("%s %d: SIGKILL failed",__FILE__,__LINE__);
+	  hd_wm_debug ("%s %d: SIGKILL failed",__FILE__,__LINE__);
         }
     }
   
@@ -1078,7 +1078,7 @@ hd_wm_window_attempt_signal_kill (HDWMWindow *win,
     return FALSE;
   }
 
-  g_debug ("Attempting to kill pid %d with signal %d", pid_result[0], sig);
+  hd_wm_debug ("Attempting to kill pid %d with signal %d", pid_result[0], sig);
 
   if (sig == SIGTERM && ensure)
   {

@@ -428,7 +428,7 @@ hd_wm_prepare_close_application_dialog (HDWM *hdwm, HDWMCADAction action, gboole
     if (pid_exists)
       continue;
    
-    g_debug ("%s(): %s is %s, Pid:%i, VmData: %ikB\n", __FUNCTION__, hd_wm_application_get_name(app),
+    hd_wm_debug ("%s(): %s is %s, Pid:%i, VmData: %ikB\n", __FUNCTION__, hd_wm_application_get_name(app),
            hd_wm_application_is_hibernating(app) ? "hibernating" : "awake",
            pid,
            hd_wm_get_vmdata_for_pid (pid));
@@ -542,7 +542,7 @@ hd_wm_x_window_is_watchable (HDWM *hdwm, Window xid)
 
      app = hd_wm_application_new_dummy ();
 
-     g_debug (" ## Created dummy application for app without .desktop ##");
+     hd_wm_debug (" ## Created dummy application for app without .desktop ##");
   }
 
   XFree(wm_type_atom);
@@ -595,7 +595,7 @@ hd_wm_dbus_signal_handler (DBusConnection *conn, DBusMessage *msg, void *data)
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 
-    g_debug ("Checking if filename: '%s' is watchable pid='%i' status='%i'",
+    hd_wm_debug ("Checking if filename: '%s' is watchable pid='%i' status='%i'",
 	   filename, pid, status);
 
     /* Is this 'filename' watchable ? */
@@ -782,7 +782,7 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
   
   if (!connection)
   {
-      g_debug ("Failed to connect to DBUS: %s!\n", error.message );
+      hd_wm_debug ("Failed to connect to DBUS: %s!\n", error.message );
       dbus_error_free( &error );
   }
   else
@@ -801,7 +801,7 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
 
   if (!sys_connection)
   {
-      g_debug ("Failed to connect to DBUS: %s!\n", sys_error.message );
+      hd_wm_debug ("Failed to connect to DBUS: %s!\n", sys_error.message );
       dbus_error_free( &sys_error );
   }
   else
@@ -1065,12 +1065,12 @@ static void hd_wm_register_object_path (HDWM *hdwm,
 
   if (res)
   { 
-    g_debug ("%s Registered",interface);
+    hd_wm_debug ("%s Registered",interface);
     dbus_bus_add_match (conn, match_rule, NULL);
     dbus_connection_flush(conn);
   }
   else
-    g_debug ("I couldn't register %s",interface);
+    hd_wm_debug ("I couldn't register %s",interface);
     
   g_free (match_rule);
 }			
@@ -1173,13 +1173,13 @@ hd_wm_top_item (HDWMEntryInfo *info)
     win = HD_WM_WINDOW (info);
     app = hd_wm_window_get_application (win);
 
-    g_debug  ("Found window without views: '%s'\n", hd_wm_window_get_name (win));
+    hd_wm_debug  ("Found window without views: '%s'\n", hd_wm_window_get_name (win));
 
     if (app)
     {
       if (hd_wm_window_is_hibernating (win))
       {
-        g_debug  ("Window hibernating, calling hd_wm_top_service\n");
+        hd_wm_debug  ("Window hibernating, calling hd_wm_top_service\n");
 
         /* make sure we top the window user requested */
         hd_wm_application_set_active_window(app, win);
@@ -1189,7 +1189,7 @@ hd_wm_top_item (HDWMEntryInfo *info)
       }
     }
 
-    g_debug  ("toping non view window (%li) via _NET_ACTIVE_WINDOW message",
+    hd_wm_debug  ("toping non view window (%li) via _NET_ACTIVE_WINDOW message",
               hd_wm_window_get_x_win (win));
 
     /* FIXME: hd_wm_util_send_x_message() should be used here but wont
@@ -1220,7 +1220,7 @@ hd_wm_top_item (HDWMEntryInfo *info)
     g_signal_emit_by_name (hdwm, "entry_info_stack_changed", info);
   }	  
   else
-    g_debug  ("### Invalid window type ###\n");
+    hd_wm_debug  ("### Invalid window type ###\n");
 }
 
 HDWMEntryInfo *
@@ -1313,7 +1313,7 @@ hd_wm_top_service (const gchar *service_name)
 
   *killed_by_dialog = TRUE;
 
-  g_debug (" Called with '%s'", service_name);
+  hd_wm_debug (" Called with '%s'", service_name);
 
   if (service_name == NULL)
   {
@@ -1348,7 +1348,7 @@ hd_wm_top_service (const gchar *service_name)
   /* Check how much memory we do have until the lowmem threshold */
 
   if (!hd_wm_memory_get_limits (&pages_used, &pages_available))
-    g_debug ("### Failed to read memory limits, using scratchbox ??");
+    hd_wm_debug ("### Failed to read memory limits, using scratchbox ??");
 
   /* Here we should compare the amount of pages to a configurable
    *  threshold. Value 0 means that we don't know and assume
@@ -1381,8 +1381,8 @@ hd_wm_top_service (const gchar *service_name)
       /* We dont have a watched window for this service currently
        * so just launch it.
        */
-    g_debug ("unable to find service name '%s' in running wins", service_name);
-    g_debug ("Thus launcing via DBus");
+    hd_wm_debug ("unable to find service name '%s' in running wins", service_name);
+    hd_wm_debug ("Thus launcing via DBus");
     hd_wm_activate_service(service_name, NULL);
     return TRUE;
   }
@@ -1398,7 +1398,7 @@ hd_wm_top_service (const gchar *service_name)
        guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
        HDWMWindow *h_active_win = hd_wm_application_get_active_window(app);
       
-       g_debug ("app is hibernating, attempting to reawaken"
+       hd_wm_debug ("app is hibernating, attempting to reawaken"
 		 "via osso_manager_launch()");
 
        if (h_active_win)
@@ -1414,12 +1414,12 @@ hd_wm_top_service (const gchar *service_name)
         we add a timeout allowing us to check the application started,
         since we need to display a banner if it did not
       */
-       g_debug ("adding launch_timeout() callback");
+       hd_wm_debug ("adding launch_timeout() callback");
        g_timeout_add( interval, hd_wm_relaunch_timeout,(gpointer) g_strdup(service_name));
        return TRUE;
     }
       
-    g_debug ("sending x message to activate app");
+    hd_wm_debug ("sending x message to activate app");
       
     /* Regular or grouped win, get MB to top */
     XEvent ev;
@@ -1427,7 +1427,7 @@ hd_wm_top_service (const gchar *service_name)
 
     memset(&ev, 0, sizeof(ev));
       
-    g_debug ("@@@@ Last active window %s\n",
+    hd_wm_debug ("@@@@ Last active window %s\n",
              active_win ? hd_wm_window_get_hibernation_key(active_win) : "none");
       
     ev.xclient.type         = ClientMessage;
@@ -1732,7 +1732,7 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
     hdwm->priv->active_window = hdwm->priv->last_active_window = win;
       
     /* Window with no views */
-    g_debug ("Window 0x%x just became active", (int)win);
+    hd_wm_debug ("Window 0x%x just became active", (int)win);
 	  
     HDWMEntryInfo *info = HD_WM_ENTRY_INFO (win);
 
@@ -1783,7 +1783,7 @@ client_list_steal_foreach_func (gpointer key,
       HDWMApplication *app;
       HDWMEntryInfo      *app_info = NULL;
       
-      g_debug  ("hibernating window [%s], moving to hibernating hash",
+      hd_wm_debug  ("hibernating window [%s], moving to hibernating hash",
               hd_wm_window_get_hibernation_key(win));
       
       g_hash_table_insert (hd_wm_get_hibernating_windows(),
@@ -1929,7 +1929,7 @@ hd_wm_remove_applications (HDWM *hdwm, HDWMEntryInfo *entry_info)
 
     if (!hd_wm_entry_info_remove_child (info_parent, entry_info))
     {
-      g_debug ("... no more children, removing app.");
+      hd_wm_debug ("... no more children, removing app.");
       hdwm->priv->applications =
         g_list_remove (hdwm->priv->applications, info_parent);
 
@@ -2116,7 +2116,7 @@ hd_wm_process_x_client_list (HDWM *hdwm)
 	   
       if (!hd_wm_entry_info_init (info))
       {
-        g_debug ("Adding AS entry for view-less window\n");
+        hd_wm_debug ("Adding AS entry for view-less window\n");
         hd_wm_add_applications (hdwm,info);
         g_signal_emit_by_name (hdwm,"entry_info_added",info);		
        }
@@ -2285,9 +2285,9 @@ hd_wm_reset_focus (HDWM *hdwm)
   
   if (hdwm->priv->has_focus)
   {
-    g_debug ("Making TN unfocusable");
+    hd_wm_debug ("Making TN unfocusable");
     hdwm->priv->has_focus = FALSE;
-    g_debug ("%s: %d, hn_window_set_focus (tasknav,FALSE);",__FILE__,__LINE__);
+    hd_wm_debug ("%s: %d, hn_window_set_focus (tasknav,FALSE);",__FILE__,__LINE__);
   }
 }
 
@@ -2332,7 +2332,7 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
         hd_wm_set_window_focus (window,FALSE);
       return;
     case HD_TN_ACTIVATE_MAIN_MENU:
-      g_debug  ("activating main menu: signal");
+      hd_wm_debug  ("activating main menu: signal");
       g_signal_emit_by_name (hdwm, "show-menu");
       return;
     case HD_TN_ACTIVATE_LAST_APP_WINDOW:
@@ -2344,7 +2344,7 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
       g_signal_emit_by_name (hdwm->priv->all_menu, "toggled");
       break;
     default:
-      g_debug ("%s: %d, hd_wm_activate: deprecated. It was used to activate specific tasknavigator buttons",__FILE__,__LINE__);
+      hd_wm_debug ("%s: %d, hd_wm_activate: deprecated. It was used to activate specific tasknavigator buttons",__FILE__,__LINE__);
   }
 }
 
@@ -2355,7 +2355,7 @@ hdwm_power_key_timeout (gpointer data)
 
   if (!hdwm->keys)
   {	  
-    g_debug ("No key handling initialized");
+    hd_wm_debug ("No key handling initialized");
     return FALSE;
   }
 	
@@ -2404,7 +2404,7 @@ hd_wm_check_net_state (HDWM *hdwm, HDWMWindow *win)
 
   if (gdk_error_trap_pop ())
   {
-    g_debug ("Some watched window view closed can be the cause");
+    hd_wm_debug ("Some watched window view closed can be the cause");
     return;
   }
 
@@ -2454,7 +2454,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       xwin_hung    = (Window)cev->data.l[0];
       has_reawoken = (gboolean)cev->data.l[1];
 
-      g_debug ("@@@@ FROZEN: Window %li status %i @@@@", xwin_hung, has_reawoken);
+      hd_wm_debug ("@@@@ FROZEN: Window %li status %i @@@@", xwin_hung, has_reawoken);
 
       win = g_hash_table_lookup (hdwm->priv->windows, &xwin_hung);
 
@@ -2470,7 +2470,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       else 
       if (cev->message_type == hdwm->priv->atoms[HD_ATOM_HILDON_TN_ACTIVATE])
       {
-          g_debug ("_HILDON_TN_ACTIVATE: %d", (int)cev->data.l[0]);
+          hd_wm_debug ("_HILDON_TN_ACTIVATE: %d", (int)cev->data.l[0]);
           hd_wm_activate (cev->data.l[0]);
       }
       
@@ -2562,7 +2562,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
     else 
     if (prop->atom == hdwm->priv->atoms[HD_ATOM_MB_NUM_MODAL_WINDOWS_PRESENT])
     {
-      g_debug  ("Received MODAL WINDOWS notification");
+      hd_wm_debug  ("Received MODAL WINDOWS notification");
           
       int *value;
 
@@ -2577,7 +2577,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       if (value)
       {
         hdwm->priv->modal_windows = *value;
-        g_debug  ("value = %d", hdwm->priv->modal_windows);
+        hd_wm_debug  ("value = %d", hdwm->priv->modal_windows);
         XFree(value);
       }
     }
@@ -2658,11 +2658,11 @@ hd_wm_applications_reload (void)
   DIR               *directory;
   struct dirent     *entry = NULL;
 
-  g_debug ("Attempting to open directory [%s]", DESKTOPENTRYDIR);
+  hd_wm_debug ("Attempting to open directory [%s]", DESKTOPENTRYDIR);
   
   if ((directory = opendir(DESKTOPENTRYDIR)) == NULL)
     {
-      g_debug (" ##### Failed in opening " DESKTOPENTRYDIR " ##### ");
+      hd_wm_debug (" ##### Failed in opening " DESKTOPENTRYDIR " ##### ");
       return NULL;
     }
 
@@ -2680,7 +2680,7 @@ hd_wm_applications_reload (void)
 
       path = g_build_filename(DESKTOPENTRYDIR, entry->d_name, NULL);
 
-      g_debug ("Attempting to open desktop file [%s] ...", path);
+      hd_wm_debug ("Attempting to open desktop file [%s] ...", path);
 
       app = hd_wm_application_new (path);
 
@@ -2726,7 +2726,7 @@ monitor_hash_table_foreach_steal_func (gpointer key,
       /*
        * we need to insert new_app into the old apps hash
        */
-      g_debug ("Inserting a new application");
+      hd_wm_debug ("Inserting a new application");
       g_hash_table_insert(old_apps->apps,
                          g_strdup(hd_wm_application_get_class_name(new_app)),
                          new_app);
@@ -2740,7 +2740,7 @@ monitor_hash_table_foreach_steal_func (gpointer key,
        * we already have this app in the old_app hash, so we need to update
        * it
        */
-      g_debug ("Updating existing application");
+      hd_wm_debug ("Updating existing application");
       old_apps->update |= hd_wm_application_update(old_app, new_app);
 
       /* the original should be left in the in new apps hash */
@@ -2797,13 +2797,13 @@ hd_wm_monitor_process (HDWM *hdwm)
      * we have no watched windows, i.e., no references to the apps, so we can
      * just replace the old apps with the new ones
      */
-     g_debug ("Have no watched windows -- reinitialising watched apps");
+     hd_wm_debug ("Have no watched windows -- reinitialising watched apps");
      g_hash_table_destroy(hdwm->priv->watched_apps);
      hdwm->priv->watched_apps = hd_wm_applications_init();
      return FALSE;
   }
 
-  g_debug ("Some watched windows -- doing it the hard way");
+  hd_wm_debug ("Some watched windows -- doing it the hard way");
   
   new_apps = hd_wm_applications_init ();
   
@@ -2826,7 +2826,7 @@ hd_wm_monitor_process (HDWM *hdwm)
 
   if (std.update)
   {
-    g_debug ("Some apps updated -- notifying AS");
+    hd_wm_debug ("Some apps updated -- notifying AS");
     g_signal_emit_by_name (hdwm,"entry_info_changed",NULL);
   }
 
@@ -2858,11 +2858,11 @@ hd_wm_applications_init (void)
   DIR               *directory;
   struct dirent     *entry = NULL;
 
-  g_debug ("Attempting to open directory [%s]", DESKTOPENTRYDIR);
+  hd_wm_debug ("Attempting to open directory [%s]", DESKTOPENTRYDIR);
   
   if ((directory = opendir(DESKTOPENTRYDIR)) == NULL)
   {
-    g_debug (" ##### Failed in opening " DESKTOPENTRYDIR " ##### ");
+    hd_wm_debug (" ##### Failed in opening " DESKTOPENTRYDIR " ##### ");
     return NULL;
   }
 
@@ -2880,7 +2880,7 @@ hd_wm_applications_init (void)
 
     path = g_build_filename (DESKTOPENTRYDIR, entry->d_name, NULL);
 
-    g_debug ("Attempting to open desktop file [%s] ...", path);
+    hd_wm_debug ("Attempting to open desktop file [%s] ...", path);
 
     app = hd_wm_application_new (path);
 
@@ -2908,7 +2908,7 @@ hd_wm_applications_init (void)
 
       path = g_build_filename (DESKTOPENTRYDIR "/hildon", entry->d_name, NULL);
 
-      g_debug ("Attempting to open desktop file [%s] ...", path);
+      hd_wm_debug ("Attempting to open desktop file [%s] ...", path);
 
       app = hd_wm_application_new (path);
 
@@ -2935,7 +2935,7 @@ hd_wm_compute_window_hibernation_key (Window            xwin,
   gchar *role, *hibernation_key = NULL;
   HDWM  *hdwm = hd_wm_get_singleton ();
 
-  g_debug ("#### computing hibernation key ####");
+  hd_wm_debug ("#### computing hibernation key ####");
 
   g_return_val_if_fail (app, NULL);
 
@@ -2957,7 +2957,7 @@ hd_wm_compute_window_hibernation_key (Window            xwin,
   if (role)
     XFree(role);
 
-  g_debug ("#### hibernation key: %s ####", hibernation_key);
+  hd_wm_debug ("#### hibernation key: %s ####", hibernation_key);
 
   return hibernation_key;
 }

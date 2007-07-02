@@ -42,15 +42,14 @@
 #include <libhildonwm/hd-wm-desktop.h>
 #include <libhildonwm/hd-keys.h>
 
-#define HN_WANT_DEBUG 0 /* Set to 1 for more verbose hn */
+#define HD_WM_DEBUG 0 /* Set to 1 for more verbose hn */
 
-#if (HN_WANT_DEBUG)
-#define HN_DBG(x, a...) \
- fprintf(stderr, __FILE__ ":%d,%s() " x "\n", __LINE__, __func__, ##a)
+#if (HD_WM_DEBUG)
+#define hd_wm_debug(x, a...) \
+ g_debug( __FILE__ ":%d,%s() " x "\n", __LINE__, __func__, ##a)
 #else
-#define HN_DBG(x, a...) do {} while (0)
+#define hd_wm_debug(x, a...) do {} while (0)
 #endif
-#define HN_MARK() HN_DBG("--mark--");
 
 /* For gathering available memory information */
 #define LOWMEM_PROC_ALLOWED              "/proc/sys/vm/lowmem_allowed_pages"

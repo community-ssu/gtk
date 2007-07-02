@@ -124,15 +124,13 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
   HDWMWindow    * win;
   _memory_foreach_data * d;
   
-  HN_DBG("### enter ###");
-
   d   = (_memory_foreach_data*) userdata;
   win = (HDWMWindow *)value;
   app = hd_wm_window_get_application(win);
 
   if (d->only_able_to_hibernate)
     {
-      HN_DBG("'%s' able_to_hibernate? '%s' , hiberanting? '%s'",
+      hd_wm_debug("'%s' able_to_hibernate? '%s' , hiberanting? '%s'",
 	     hd_wm_window_get_name (win),
 	     hd_wm_application_is_able_to_hibernate(app) ? "yes" : "no",
 	     hd_wm_application_is_hibernating (app)       ? "yes" : "no");
@@ -141,7 +139,7 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
           hd_wm_application_is_able_to_hibernate(app) &&
           !hd_wm_application_is_hibernating (app)) 
 	{
-	  HN_DBG("hd_wm_window_attempt_pid_kill() for '%s'",
+	  hd_wm_debug("hd_wm_window_attempt_pid_kill() for '%s'",
 		 hd_wm_window_get_name (win));
           
           /* mark the application as hibernating -- we do not know how many
@@ -165,12 +163,12 @@ hd_wm_memory_kill_all_watched_foreach_func (gpointer key,
   else
     {
       /* Totally kill everything */
-      HN_DBG("killing everything, currently '%s'",
+      hd_wm_debug("killing everything, currently '%s'",
              hd_wm_window_get_name (win));
       hd_wm_window_attempt_signal_kill (win, SIGTERM, FALSE);
     }
 
-  HN_DBG("### leave ###");
+  hd_wm_debug("### leave ###");
 }
 
 /* FIXME: rename kill to hibernate - kill is misleading */
@@ -213,7 +211,7 @@ hd_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
   if (top_win)
     {
       d.top_app = hd_wm_window_get_application (top_win);
-      HN_DBG ("Top level application [%s]",
+      hd_wm_debug ("Top level application [%s]",
               hd_wm_application_get_name (d.top_app));
     }
   
@@ -256,7 +254,7 @@ hd_wm_memory_lowmem_func (gboolean is_on)
       
     if (is_on)
     {
-      g_debug ("We enter in lowmem situation");
+      hd_wm_debug ("We enter in lowmem situation");
     }
   }
 }
@@ -273,7 +271,7 @@ hd_wm_memory_update_lowmem_ui (gboolean lowmem)
   if (!config_lowmem_dim)
     return;
   
-  g_debug ("We have to set sensitiveness of others menu here!");
+  hd_wm_debug ("We have to set sensitiveness of others menu here!");
 /*
   gtk_widget_set_sensitive(hn_window_get_others_menu(tasknav),!lowmem);
 */

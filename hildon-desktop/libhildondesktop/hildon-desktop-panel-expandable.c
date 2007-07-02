@@ -40,6 +40,13 @@
 #define SYSTEM_TRAY_CANCEL_MESSAGE  2
 #endif
 
+#define STATUSBAR_DEBUG 0
+#if (STATUSBAR_DEBUG)
+#define sb_debug(o,a...) sb_debug("sb" o,##a);
+#else
+#define sb_debug(o,a...) do{} while (0)
+#endif
+
 #define HILDON_DESKTOP_PANEL_EXPANDABLE_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_DESKTOP_TYPE_PANEL_EXPANDABLE, HildonDesktopPanelExpandablePrivate))
 
@@ -132,6 +139,7 @@ static void hildon_desktop_panel_expandable_resize_notify (HildonDesktopPanelExp
 
 static void hildon_desktop_panel_expandable_requeue_last_in_panel (HildonDesktopPanelExpandable *panel);
 
+static void hildon_desktop_panel_expandable_hash_adding (gchar *key, HildonDesktopItem *item, GList **list);
 #ifdef SYSTRAY_SUPPORT
 static void hildon_desktop_panel_expandable_init_systray (HildonDesktopPanelExpandable *panel, gpointer data);
 static GdkFilterReturn hildon_desktop_x_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer _panel);
@@ -387,18 +395,11 @@ static GList *
 hildon_desktop_panel_expandable_get_children (HildonDesktopContainer *container)
 {
   HildonDesktopPanelExpandable *panel = HILDON_DESKTOP_PANEL_EXPANDABLE (container);
-  GList *children_panel, *children_table, *l, *retval = NULL;
+  GList *retval = NULL;
 
-  children_panel = gtk_container_get_children (GTK_CONTAINER (panel));
-  children_table = gtk_container_get_children (GTK_CONTAINER (panel->priv->extension_table));
-
-  for (l = children_panel ; l ; l = g_list_next (l))
-  {	 
-    if (panel->priv->arrow != l->data)
-      retval = g_list_append (retval, l->data);
-  }
-  for (l = children_table ; l ; l = g_list_next (l))
-    retval = g_list_append (retval, l->data);	  
+  g_hash_table_foreach (panel->priv->items,
+		  	(GHFunc)hildon_desktop_panel_expandable_hash_adding,
+			(gpointer)&retval);
 
   return retval;
 }	
@@ -436,16 +437,26 @@ hildon_desktop_panel_expandable_cremove (HildonDesktopContainer *container, GtkW
     return;
   }
 
-  panel->priv->n_items--; 
+  if (STATUSBAR_IS_ITEM (widget) && !STATUSBAR_ITEM (widget)->condition)
+    sb_debug ("This item doesn't count");
+  else  
+  if (panel->priv->n_items > 0)	  
+    panel->priv->n_items--;
+  
+  sb_debug ("Panel items %d",panel->priv->n_items);
 
-  if (panel->priv->n_items < panel->priv->items_p_row && panel->priv->arrow && panel->priv->arrow->parent == GTK_WIDGET (container))
-    gtk_container_remove (GTK_CONTAINER (container), panel->priv->arrow);	  
+  if (panel->priv->n_items < panel->priv->items_p_row && GTK_IS_WIDGET (panel->priv->arrow))
+  {	  
+    gtk_widget_destroy (panel->priv->arrow);	  
+    panel->priv->arrow = NULL;
+  }
 
   if (widget->parent == GTK_WIDGET (container))
     gtk_container_remove (GTK_CONTAINER (container), widget);
   else
   if (widget->parent == GTK_WIDGET (panel->priv->extension_table))
     gtk_container_remove (GTK_CONTAINER (panel->priv->extension_table), widget);
+
 }
 
 static void 
@@ -522,7 +533,7 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
 
   g_signal_emit_by_name (ex_panel, "queued-button", button);
 
-  g_debug ("Adding button in expandable %d %d",ex_panel->priv->items_p_row,ex_panel->priv->n_items+1);
+  sb_debug ("Adding button in expandable %d %d",ex_panel->priv->items_p_row,ex_panel->priv->n_items+1);
 
   req.width  = button->requisition.width;
   req.height = button->requisition.height;
@@ -535,22 +546,26 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
   /* gtk_widget_set_size_request (button, item_width, item_height);*/
   gtk_widget_set_size_request (GTK_BIN (button)->child, item_width, item_height);
   
-  g_signal_connect (button,
-		    "destroy",
-		    G_CALLBACK (hildon_desktop_panel_expandable_button_destroyed),
-		    (gpointer)panel);
 
   g_object_set (G_OBJECT (item), "position", ex_panel->priv->current_position++, NULL);
   
   if ((ex_panel->priv->n_items+2) > ex_panel->priv->items_p_row && (ex_panel->priv->n_items+1) != ex_panel->priv->items_p_row)
   { 
     if (STATUSBAR_IS_ITEM (button) && !STATUSBAR_ITEM (button)->condition)
-      g_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
+      sb_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
     else  
     {	    
       if ((ex_panel->priv->n_items) == ex_panel->priv->items_p_row)
-        hildon_desktop_panel_expandable_requeue_last_in_panel (ex_panel);	      
-      hildon_desktop_panel_expandable_add_in_extension (ex_panel, item);
+      {	      
+        hildon_desktop_panel_expandable_requeue_last_in_panel (ex_panel);
+	hildon_desktop_panel_expandable_add_in_extension (ex_panel, item);
+	ex_panel->priv->n_items--;
+      }	
+      else
+      {	      
+        ex_panel->priv->n_items++;	      
+        hildon_desktop_panel_expandable_add_in_extension (ex_panel, item);
+      }
     }
 
     if (ex_panel->priv->arrow == NULL)
@@ -565,16 +580,21 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
   else
   {
     if (STATUSBAR_IS_ITEM (button) && !STATUSBAR_ITEM (button)->condition)
-      g_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
+      sb_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
     else
     {
-      ex_panel->priv->n_items++;  
+      ex_panel->priv->n_items++;
       HILDON_DESKTOP_PANEL_CLASS (hildon_desktop_panel_expandable_parent_class)->add_button (panel,button);
     }
   }
   
   if (g_hash_table_lookup (ex_panel->priv->items, HILDON_DESKTOP_ITEM (item)->id) == NULL)
   {
+    g_signal_connect (button,
+		      "destroy",
+		      G_CALLBACK (hildon_desktop_panel_expandable_button_destroyed),
+		      (gpointer)panel);
+ 
     if (STATUSBAR_IS_ITEM (button))
       g_signal_connect_after (STATUSBAR_ITEM (item),
 		              "notify::condition",
@@ -606,9 +626,7 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 	division,
 	n_items;
 
-  n_items = panel->priv->n_items+1;
-
-  g_debug ("Adding button in expandable extension %d",(gint)((panel->priv->n_items+1) / panel->priv->items_p_row));
+  n_items = panel->priv->n_items;
 
   division = ((guint)((n_items+1) / panel->priv->items_p_row));
 
@@ -637,12 +655,12 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 
     right_attach = left_attach + 1;
 
-    g_debug ("nrows: %d left attach %d right attach %d top attach %d b attach %d",
+    sb_debug ("nrows: %d left attach %d right attach %d top attach %d b attach %d",
 	     n_rows, left_attach,right_attach,top_attach,bottom_attach);
   }
   else
   {
-    /*TODO:  g_debug ("l: %d, r: %d, t:%d, b: %d",left_attach,right_attach,top_attach,bottom_attach);*/
+    /*TODO:  sb_debug ("l: %d, r: %d, t:%d, b: %d",left_attach,right_attach,top_attach,bottom_attach);*/
   }
 
   gtk_table_attach_defaults (panel->priv->extension_table,
@@ -662,10 +680,10 @@ hildon_desktop_panel_expandable_arrange_items_cb (StatusbarItem *item, gboolean 
 static void 
 hildon_desktop_panel_expandable_hash_adding (gchar *key, 
 					     HildonDesktopItem *item,
-					     HildonDesktopPanelExpandable *panel)
+					     GList **list)
 {
-  panel->priv->queued_items = 
-    g_list_append (panel->priv->queued_items, item);
+  *list = 
+    g_list_append (*list, item);
 }
 
 static gint 
@@ -722,7 +740,7 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
   
   g_hash_table_foreach (panel->priv->items,
 		  	(GHFunc)hildon_desktop_panel_expandable_hash_adding,
-			(gpointer)panel);
+			(gpointer)&(panel->priv->queued_items));
   
   panel->priv->queued_items = 
     g_list_sort (panel->priv->queued_items,
@@ -734,9 +752,9 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
 		      			        GTK_WIDGET (l->data));
 
     if (STATUSBAR_IS_ITEM (l->data) && !STATUSBAR_ITEM (l->data)->condition)
-      g_debug ("not unreffing");
+      sb_debug ("not unreffing");
     else if (STATUSBAR_IS_ITEM (l->data) && HILDON_DESKTOP_ITEM (l->data)->mandatory)
-      g_debug ("not unreffing");
+      sb_debug ("not unreffing");
     else
       g_object_unref (G_OBJECT (l->data));
   }	  
@@ -768,7 +786,7 @@ hildon_desktop_panel_expandable_add_arrow (HildonDesktopPanelExpandable *panel)
   {
     gtk_image_set_from_pixbuf (GTK_IMAGE(arrow_image), arrow_pixbuf);
     gdk_pixbuf_unref (arrow_pixbuf);
-    g_debug ("%s: %d, setting pixbuf for arrow",__FILE__,__LINE__);
+    sb_debug ("%s: %d, setting pixbuf for arrow",__FILE__,__LINE__);
   }
   else
   if (error)
@@ -980,7 +998,7 @@ hildon_desktop_panel_remove_embed (GtkSocket *socket, HildonDesktopPanelExpandab
 
   id = g_strdup (HILDON_DESKTOP_ITEM (parent)->id);
 
-  g_debug ("%s ---- has been removed",id);
+  sb_debug ("%s ---- has been removed",id);
   
   g_hash_table_steal (panel->priv->items, id);
 
@@ -1004,7 +1022,7 @@ hildon_desktop_panel_embed_applet (HildonDesktopPanelExpandable *panel, Window w
   id   = g_strdup_printf ("XEmbed:%d",(GdkNativeWindow)wid);
   name = g_strdup_printf ("Statusbar-systray-item:%d",(GdkNativeWindow)wid);
 
-  g_debug ("id: %s ------------ name: %s",id,name);
+  sb_debug ("id: %s ------------ name: %s",id,name);
   
   sb_socket = g_object_new (STATUSBAR_TYPE_ITEM_SOCKET,
 		  	    "id",id,

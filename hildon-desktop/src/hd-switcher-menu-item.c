@@ -501,7 +501,7 @@ hd_switcher_menu_item_size_request (GtkWidget      *widget,
 
   requisition->height = MAX (requisition->height, child_height);
 
-  HN_DBG ("menu-item requisition: (%d, %d)",
+  g_debug ("menu-item requisition: (%d, %d)",
 	  requisition->width, requisition->height);
 }
 
@@ -514,7 +514,7 @@ hd_switcher_menu_item_activate (GtkMenuItem *menu_item)
 
   if (info != NULL)
   {
-    HN_DBG ("Raising application '%s'", hd_wm_entry_info_peek_title (info));
+    g_debug ("Raising application '%s'", hd_wm_entry_info_peek_title (info));
   
     hd_wm_top_item (info);
   }
@@ -548,7 +548,7 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
   HDSwitcherMenuItem *menuitem = HD_SWITCHER_MENU_ITEM(widget);
   gint x, y;
   
-  HN_DBG ("menu item clicked ended");
+  g_debug ("menu item clicked ended");
   
   if(!menuitem->priv->show_close ||
      !menuitem->priv->close)
@@ -598,7 +598,7 @@ hd_switcher_menu_item_button_press_event (GtkWidget      *widget,
   HDSwitcherMenuItem *menuitem = HD_SWITCHER_MENU_ITEM(widget);
   gint x, y;
   
-  HN_DBG ("menu item clicked");
+  g_debug ("menu item clicked");
   
   if(!menuitem->priv->show_close ||
      !menuitem->priv->close)
@@ -611,7 +611,7 @@ hd_switcher_menu_item_button_press_event (GtkWidget      *widget,
   
   gtk_widget_get_pointer(widget, &x, &y);
 
-  HN_DBG ("pointer [%d,%d],\n"
+  g_debug ("pointer [%d,%d],\n"
           "close allocation [%d, %d, %d, %d]",
           x, y,
           menuitem->priv->close->allocation.x,

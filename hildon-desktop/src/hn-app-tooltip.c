@@ -333,14 +333,14 @@ hn_app_tooltip_show_timeout_cb (gpointer data)
 {
   HNAppTooltip *tip = HN_APP_TOOLTIP (data);
 
-  HN_DBG ("Showing tooltip");
+  g_debug ("Showing tooltip");
   
   gtk_widget_show (GTK_WIDGET (tip));
 
   if (tip->show_cb)
     tip->show_cb (GTK_WIDGET (tip), tip->cb_data);
 
-  HN_DBG ("Installing tooltip hide timer");
+  g_debug ("Installing tooltip hide timer");
   
   tip->show_timer_id = 0;
   tip->hide_timer_id = g_timeout_add (TOOLTIP_HIDE_TIMEOUT,
@@ -365,7 +365,7 @@ hn_app_tooltip_install_timer (HNAppTooltip *tip,
   tip->hide_cb = hide_callback;
   tip->cb_data = callback_data;
 
-  HN_DBG ("Installing tooltip show timer");
+  g_debug ("Installing tooltip show timer");
 
   tip->show_timer_id = g_timeout_add (TOOLTIP_SHOW_TIMEOUT,
 		  		      hn_app_tooltip_show_timeout_cb,
@@ -379,7 +379,7 @@ hn_app_tooltip_remove_show_timer(HNAppTooltip *tip)
 
   if (tip->show_timer_id)
     {
-      HN_DBG ("Removing tooltip show timer");
+      g_debug ("Removing tooltip show timer");
 
       g_source_remove (tip->show_timer_id);
       tip->show_timer_id = 0;
@@ -394,7 +394,7 @@ hn_app_tooltip_remove_timers (HNAppTooltip *tip)
 
   if (tip->show_timer_id)
     {
-      HN_DBG ("Removing tooltip show timer");
+      g_debug ("Removing tooltip show timer");
 
       g_source_remove (tip->show_timer_id);
       tip->show_timer_id = 0;
@@ -402,7 +402,7 @@ hn_app_tooltip_remove_timers (HNAppTooltip *tip)
 
   if (tip->hide_timer_id)
     {
-      HN_DBG ("Removing tooltip hide timer");
+      g_debug ("Removing tooltip hide timer");
 
       gtk_widget_hide(GTK_WIDGET(tip));
       
