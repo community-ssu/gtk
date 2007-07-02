@@ -258,7 +258,7 @@ hildon_desktop_popup_window_constructor (GType gtype,
 #else
   GTK_WINDOW (popup)->type = GTK_WINDOW_TOPLEVEL;
 
-  gtk_window_set_temporary (GTK_WINDOW (popup), TRUE);
+  gtk_window_set_is_temporary (GTK_WINDOW (popup), TRUE);
 
   gtk_window_set_decorated (GTK_WINDOW (popup), FALSE);
   gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);
