@@ -1,6 +1,7 @@
 gtkhtml (3.9.1-3osso11) unstable; urgency=low
 
   * Added patch from Jose Dapena Paz for exporting last search selected area
+  * Fixes: NB#61549
 
  -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Mon,  2 Jul 2007 15:57:31 +0300
 
