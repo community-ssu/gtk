@@ -1,6 +1,6 @@
 AC_INIT(Makefile.am)
 
-AM_INIT_AUTOMAKE(hildon-desktop, 0.0.20)
+AM_INIT_AUTOMAKE(hildon-desktop, 0.0.21)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -99,6 +99,9 @@ PKG_CHECK_MODULES(OSSOSETTINGS,
                   ])
 
 AC_SUBST(localedir)
+
+pluginlibdir="${hildondesktoplibdir}"
+AC_SUBST(pluginlibdir)
 
 #+++++++++++++++++++++
 # Dependencies checks

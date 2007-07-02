@@ -1,3 +1,15 @@
+hildon-desktop (1:0.0.21-1) sardine; urgency=low
+
+  * src/Makefile.am, configure.ac: added optional dependency on mce-dev
+  to be used by the led pattern handling on switcher menu.
+  * debian/control: added build dependency on mce-dev.
+  * src/hd-switcher-menu.c (hd_switcher_menu_set_led_pattern,
+  hd_switcher_menu_update_open, hd_switcher_menu_update_close): added
+  support for "led-pattern" hint. If the hint is set, a D-Bus message is
+  sent to MCE service for led pattern activation/deactivation.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Jul 2007 16:16:39 +0300
+
 hildon-desktop (1:0.0.20-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-popup-window.c:

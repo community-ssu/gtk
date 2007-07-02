@@ -1,3 +1,7 @@
+2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.21
+
 2007-07-02  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/Makefile.am, configure.ac: added optional dependency on mce-dev
