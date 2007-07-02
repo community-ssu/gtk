@@ -1,5 +1,9 @@
 2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.20
+
+2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-window.c:
 	- gtk_window_temporary is now gtk_window_set_temporary
 
