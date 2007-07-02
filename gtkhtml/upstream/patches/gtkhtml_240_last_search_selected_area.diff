@@ -1,0 +1,132 @@
+diff -r -U 5 gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91-selected-area-api/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-06-25 11:09:14.970379010 +0200
++++ gtkhtml-3.13.91-selected-area-api/src/gtkhtml.c	2007-06-25 11:05:48.745596648 +0200
+@@ -5929,10 +5929,16 @@
+ 	g_return_if_fail (GTK_IS_HTML (html));
+ 
+ 	gtk_html_set_magnification (html, 1.0);
+ }
+ 
++void
++gtk_html_get_selection_area (GtkHTML *html, gint *x, gint *y, gint *w, gint *h)
++{
++	html_engine_get_selection_area (html->engine, x, y, w, h);
++}
++
+ void 
+ gtk_html_set_allow_frameset (GtkHTML *html, gboolean allow)
+ {
+ 	g_return_if_fail (GTK_IS_HTML (html));
+ 	g_return_if_fail (HTML_IS_ENGINE (html->engine));
+diff -r -U 5 gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91-selected-area-api/src/gtkhtml.h
+--- gtkhtml-3.13.91/src/gtkhtml.h	2007-06-25 11:09:14.977378731 +0200
++++ gtkhtml-3.13.91-selected-area-api/src/gtkhtml.h	2007-06-25 11:05:48.815593858 +0200
+@@ -344,9 +344,14 @@
+ 								   GtkHTMLSaveReceiverFn      receiver,
+ 								   gpointer                   data);
+ GtkHTMLStream             *gtk_html_begin_content                 (GtkHTML                   *html,
+ 								   gchar                     *content_type);
+ void                       gtk_html_drag_dest_set                 (GtkHTML                   *html);
++void                   gtk_html_get_selection_area                (GtkHTML                   *html,
++								   gint *x, 
++								   gint *y,
++								   gint *w,
++								   gint *h);
+ 
+ #endif
+ 
+ #endif /* _GTKHTML_H_ */
+diff -r -U 5 gtkhtml-3.13.91/src/htmlengine-search.c gtkhtml-3.13.91-selected-area-api/src/htmlengine-search.c
+--- gtkhtml-3.13.91/src/htmlengine-search.c	2007-06-25 11:09:14.444399968 +0200
++++ gtkhtml-3.13.91-selected-area-api/src/htmlengine-search.c	2007-06-25 11:05:48.056624103 +0200
+@@ -93,10 +93,15 @@
+ 	ex += last->width;
+ 	ey += last->descent;
+ 	w = ex - x;
+ 	h = ey - y;
+ 
++	e->search_area_x = x;
++	e->search_area_y = y;
++	e->search_area_w = w;
++	e->search_area_h = h;
++
+ 	/* now calculate gtkhtml adustments */
+ 	if (x <= ep->x_offset)
+ 		nx = x;
+ 	else if (x + w > ep->x_offset + ep->width)
+ 		nx = x + w - ep->width;
+diff -r -U 5 gtkhtml-3.13.91/src/htmlengine-search.h gtkhtml-3.13.91-selected-area-api/src/htmlengine-search.h
+--- gtkhtml-3.13.91/src/htmlengine-search.h	2007-01-03 16:19:57.000000000 +0100
++++ gtkhtml-3.13.91-selected-area-api/src/htmlengine-search.h	2007-06-25 11:05:48.106622111 +0200
+@@ -30,5 +30,9 @@
+ 						 gboolean forward);
+ gboolean  html_engine_search_next               (HTMLEngine *e);
+ gboolean  html_engine_search_incremental        (HTMLEngine *e,
+ 						 const gchar *text,
+ 						 gboolean forward);
++
++void      html_engine_search_get_selected_area  (HTMLEngine *e,
++						 gint *x, gint *y,
++						 gint *w, gint *h);
+diff -r -U 5 gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91-selected-area-api/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-06-25 11:09:14.988378293 +0200
++++ gtkhtml-3.13.91-selected-area-api/src/htmlengine.c	2007-06-25 11:05:47.689638728 +0200
+@@ -6584,5 +6584,28 @@
+ 		html_object_change_set_down (e->clue, HTML_CHANGE_ALL);
+ 		html_engine_calc_size (e, FALSE);
+ 		html_engine_schedule_update (e);
+ 	}
+ }
++
++static void
++add_iframe_off (HTMLEngine *e, gint *x, gint *y)
++{
++	g_assert (e);
++	g_assert (e->widget);
++
++	if (e->widget->iframe_parent) {
++		*x += e->widget->iframe_parent->allocation.x;
++		*y += e->widget->iframe_parent->allocation.y;
++	}
++}
++
++void
++html_engine_get_selection_area (HTMLEngine *e, 
++				gint *x, gint *y, 
++				gint *w, gint *h)
++{
++	*x = e->search_area_x;
++	*y = e->search_area_y;
++	*w = e->search_area_w;
++	*h = e->search_area_h;
++}
+diff -r -U 5 gtkhtml-3.13.91/src/htmlengine.h gtkhtml-3.13.91-selected-area-api/src/htmlengine.h
+--- gtkhtml-3.13.91/src/htmlengine.h	2007-06-25 11:09:14.993378094 +0200
++++ gtkhtml-3.13.91-selected-area-api/src/htmlengine.h	2007-06-25 11:05:47.727637213 +0200
+@@ -265,10 +265,15 @@
+ 
+ 	gboolean expose;
+ 	gboolean need_update;
+ 
+ 	HTMLObject *parser_clue;  /* the root of the currently parsed block */
++
++	gint search_area_x;
++	gint search_area_y;
++	gint search_area_w;
++	gint search_area_h;
+ };
+ 
+ /* must be forward referenced *sigh* */
+ struct _HTMLEmbedded;
+ 
+@@ -492,7 +497,10 @@
+ void html_engine_opened_streams_decrement (HTMLEngine *e);
+ void html_engine_opened_streams_set (HTMLEngine *e, int value);
+ 
+ void html_engine_refresh_fonts (HTMLEngine *e);
+ void html_engine_set_link_visited (HTMLEngine *e, char *url, gboolean visited) ;
++void html_engine_get_selection_area (HTMLEngine *e, 
++				     gint *x, gint *y, 
++				     gint *w, gint *h);
+ 
+ #endif /* _HTMLENGINE_H_ */

@@ -1,6 +1,10 @@
+2007-07-02  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Added patch from Jose Dapena Paz for exporting last search selected area	
+
 2007-05-30  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
-  * Added patch to remove instances where libart_lgpl headers are being included
+	* Added patch to remove instances where libart_lgpl headers are being included
 
 2007-05-09  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
