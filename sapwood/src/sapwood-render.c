@@ -308,8 +308,13 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
       if (!mask)
         {
+	  gint mask_width;
+	  gint mask_height;
+
 	  mask_x = 0;
 	  mask_y = 0;
+	  mask_width = width;
+	  mask_height = height;
 	  mask_required = FALSE;
 
 	  if (clip_rect)
@@ -317,32 +322,32 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 	      /* limit the mask to clip_rect size to avoid allocating huge
 	       * pixmaps and getting BadAlloc from X
 	       */
-	      if (clip_rect->width < width)
+	      if (clip_rect->width < mask_width)
 		{
-		  LOG("width: %d -> %d", width, clip_rect->width);
-		  x      = clip_rect->x;
-		  width  = clip_rect->width;
+		  LOG("width: %d -> %d", mask_width, clip_rect->width);
+		  mask_x = clip_rect->x;
+		  mask_width = clip_rect->width;
 		}
 	      if (clip_rect->height < height)
 		{
-		  LOG("height: %d -> %d", height, clip_rect->height);
-		  y      = clip_rect->y;
-		  height = clip_rect->height;
+		  LOG("height: %d -> %d", mask_height, clip_rect->height);
+		  mask_y = clip_rect->y;
+		  mask_height = clip_rect->height;
 		}
 	    }
 
 	  gdk_error_trap_push ();
 
-	  mask = gdk_pixmap_new (NULL, width, height, 1);
+	  mask = gdk_pixmap_new (NULL, mask_width, mask_height, 1);
 
 	  /* gdk_flush (); */
 	  if (gdk_error_trap_pop ())
 	    {
 	      if (clip_rect)
 		g_warning ("theme_pixbuf_render(clip_rect={x: %d,y: %d, width: %d, height: %d}: gdk_pixmap_new(width: %d, height: %d) failed",
-			   clip_rect->x, clip_rect->y, clip_rect->width, clip_rect->height, width, height);
+			   clip_rect->x, clip_rect->y, clip_rect->width, clip_rect->height, mask_width, mask_height);
 	      else
-		g_warning ("theme_pixbuf_render(clip_rect=(null)}: gdk_pixmap_new(width: %d, height: %d) failed", width, height);
+		g_warning ("theme_pixbuf_render(clip_rect=(null)}: gdk_pixmap_new(width: %d, height: %d) failed", mask_width, mask_height);
 
 	      /* pretend that we drew things successfully, there should be a
 	       * new paint call coming to allow us to paint the thing properly
