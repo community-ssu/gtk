@@ -1,6 +1,5 @@
 libosso (2.13-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fix some warnings in osso-state.c when using -pedantic
   * Patch from Leonid to improve saw_malloc_hook() in osso-mem.c.
     Fixes: NB#62391
