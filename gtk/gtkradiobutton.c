@@ -442,7 +442,7 @@ gtk_radio_button_focus (GtkWidget         *widget,
    */
   if (!GTK_TOGGLE_BUTTON (widget)->draw_indicator)
     return GTK_WIDGET_CLASS (gtk_radio_button_parent_class)->focus (widget, direction);
-  
+
   if (gtk_widget_is_focus (widget))
     {
       GtkSettings *settings = gtk_widget_get_settings (widget);
@@ -451,6 +451,11 @@ gtk_radio_button_focus (GtkWidget         *widget,
       GtkWidget *new_focus = NULL;
       gboolean cursor_only;
       gboolean wrap_around;
+
+      g_object_get (settings,
+                    "gtk-keynav-cursor-only", &cursor_only,
+                    "gtk-keynav-wrap-around", &wrap_around,
+                    NULL);
 
       switch (direction)
 	{
@@ -466,12 +471,28 @@ gtk_radio_button_focus (GtkWidget         *widget,
 	  break;
 	case GTK_DIR_TAB_FORWARD:
 	case GTK_DIR_TAB_BACKWARD:
-          /* fall through */
+#ifdef MAEMO_CHANGES
+          /* We have remapped cursor keys to TAB movements in our rc files, so we'll get
+             TAB_{FORWARD,BACKWARD} instead of DOWN/UP here. For GtkRadioButton, though,
+             we need to re-enable the old behavior or navigation within the group would be
+             impossible */
+          if (cursor_only)
+            {
+              focus_list = g_slist_copy (radio_button->group);
+              focus_list = g_slist_sort_with_data (focus_list, up_down_compare, toplevel);
+              break;
+            }
+#endif /* MAEMO_CHANGES */
+            /* fall through */
 	default:
 	  return FALSE;
 	}
 
-      if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP)
+      if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP
+#ifdef MAEMO_CHANGES
+          || (cursor_only && direction == GTK_DIR_TAB_BACKWARD)
+#endif /* MAEMO_CHANGES */
+          )
 	focus_list = g_slist_reverse (focus_list);
 
       tmp_list = g_slist_find (focus_list, widget);
@@ -493,11 +514,6 @@ gtk_radio_button_focus (GtkWidget         *widget,
 	      tmp_list = tmp_list->next;
 	    }
 	}
-
-      g_object_get (settings,
-                    "gtk-keynav-cursor-only", &cursor_only,
-                    "gtk-keynav-wrap-around", &wrap_around,
-                    NULL);
 
       if (!new_focus)
 	{
