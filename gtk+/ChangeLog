@@ -7,13 +7,6 @@
 	We need to re-enable the old behavior or navigation within the group would be
         impossible.
 
-2007-07-02  Xan Lopez  <xan.lopez@nokia.com>
-
-	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup),
-	(_gtk_entry_completion_popdown): 
-	Do not grab keyboard and pointer for the popup window.
-	Fixes: NB#60874
-
 2007-06-29  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenu.c: use gtk-dnd-drag-threshold (which is 30) instead
