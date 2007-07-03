@@ -41,38 +41,38 @@ G_BEGIN_DECLS
 
 #define HH_MENU_SELECT              _MAD("home_me_select_applets")
 #define HH_MENU_APPLET_SETTINGS     _MAD("home_me_applet_settings")
-#define HH_MENU_EDIT_LAYOUT         _MAD("home_me_edit_layout")
-#define HH_MENU_TOOLS               _MAD("home_me_tools")
+#define HH_MENU_EDIT_LAYOUT         _MAD("home_me_edit_layout")/*NOLOC*/
+#define HH_MENU_TOOLS               _MAD("home_me_tools")/*NOLOC*/
 
 #define HH_MENU_SET_BACKGROUND      _MAD("home_me_set_background")
 #define HH_MENU_PERSONALISATION     _MAD("home_me_set_theme")
 #define HH_MENU_CALIBRATION         _MAD("home_me_screen_calibration")
 #define HH_MENU_HELP                _MAD("home_me_help")
 
-#define HH_MENU_LAYOUT_TITLE        _MAD("home_ti_layout_mode")
+#define HH_MENU_LAYOUT_TITLE        _MAD("home_ti_layout_mode")/*NOLOC*/
 
-#define HH_MENU_LAYOUT_SELECT       _MAD("home_me_layout_select_applets")
-#define HH_MENU_LAYOUT_ACCEPT       _MAD("home_me_layout_accept_layout")
-#define HH_MENU_LAYOUT_CANCEL       _MAD("home_me_layout_cancel")
+#define HH_MENU_LAYOUT_SELECT       _MAD("home_me_layout_select_applets")/*NOLOC*/
+#define HH_MENU_LAYOUT_ACCEPT       _MAD("home_me_layout_accept_layout")/*NOLOC*/
+#define HH_MENU_LAYOUT_CANCEL       _MAD("home_me_layout_cancel")/*NOLOC*/
 #define HH_MENU_LAYOUT_SNAP_TO_GRID "Snap to grid"
-#define HH_MENU_LAYOUT_HELP         _MAD("home_me_layout_help")
+#define HH_MENU_LAYOUT_HELP         _MAD("home_me_layout_help")/*NOLOC*/
 
 /* applet settings unavailable banner */
 #define HH_APPLET_SETTINGS_BANNER   _MAD("home_ib_not_available")
 
 /* layout mode unavailable banner */
-#define HH_LAYOUT_UNAVAIL_BANNER    _MAD("home_ib_select_applets")
+#define HH_LAYOUT_UNAVAIL_BANNER    _MAD("home_ib_select_applets") /*NOLOC*/
 
 /* layout mode starting banner */
-#define HH_LAYOUT_MODE_BANNER       _MAD("home_pb_layout_mode")
+#define HH_LAYOUT_MODE_BANNER       _MAD("home_pb_layout_mode")/*NOLOC*/
 
 /* cancel layout dialog */
-#define HH_LAYOUT_CANCEL_TEXT       _MAD("home_nc_cancel_layout")
-#define HH_LAYOUT_CANCEL_YES        _MAD("home_bd_cancel_layout_yes")
-#define HH_LAYOUT_CANCEL_NO         _MAD("home_bd_cancel_layout_no")
+#define HH_LAYOUT_CANCEL_TEXT       _MAD("home_nc_cancel_layout")/*NOLOC*/
+#define HH_LAYOUT_CANCEL_YES        _MAD("home_bd_cancel_layout_yes")/*NOLOC*/
+#define HH_LAYOUT_CANCEL_NO         _MAD("home_bd_cancel_layout_no")/*NOLOC*/
 
 /* overlapping applets notification */
-#define HH_LAYOUT_OVERLAP_TEXT      _MAD("home_ni_overlapping_applets")
+#define HH_LAYOUT_OVERLAP_TEXT      _MAD("home_ni_overlapping_applets")/*NOLOC*/
 
 /* set background dialog */
 #define HH_SET_BG_TITLE           _MAD("home_ti_set_backgr")
