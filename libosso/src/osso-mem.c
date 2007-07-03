@@ -274,23 +274,26 @@ static void setup_sys_values(void)
  * ------------------------------------------------------------------------- */
 static void* saw_malloc_hook(size_t size, const void* caller)
 {
-   void* ptr;  /* Allocated pointer, NULL means OOM situation happened */
+   static unsigned count = 0; /* Validation count per number of allocations */
+   void* ptr;       /* Allocated pointer, NULL means OOM situation happened */
 
    THREAD_LOCK();
 
    /* Restore the real malloc hook */
    __malloc_hook = saw_old_malloc_hook;
 
-   /* Check for OOM-potential situation */
-   if (size >= saw_max_block_size)
+   /* Check for OOM-potential situation by size or allocated blocks counter */
+   if (size >= saw_max_block_size || !count)
    {
       /* We must test amount of memory to predict future */
       const struct mallinfo mi = mallinfo();
-      ptr = (mi.arena + mi.hblkhd + size >= saw_max_heap_size ? NULL : malloc(size));
+      ptr = (mi.arena + mi.hblkhd + size >= saw_max_heap_size || osso_mem_in_lowmem_state() ? NULL : malloc(size));
+      count = 1024;
    }
    else
    {
       ptr = malloc(size);
+      count--;
    }
 
    /* Restore malloc hook to self */
@@ -298,8 +301,12 @@ static void* saw_malloc_hook(size_t size, const void* caller)
 
    /* Test allocation, call OOM function if necessary  */
    /* Note: SAW may be removed but that is safe for us */
-   if (!ptr && saw_user_oom_func)
-      saw_user_oom_func(saw_max_heap_size + size, saw_max_heap_size, saw_user_context);
+   if ( !ptr )
+   {
+      count = 0;  /* force the next validation */
+      if (saw_user_oom_func)
+         saw_user_oom_func(saw_max_heap_size + size, saw_max_heap_size, saw_user_context);
+   }
 
    THREAD_UNLOCK();
 
