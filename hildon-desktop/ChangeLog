@@ -1,3 +1,20 @@
+2007-07-03  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed debug macro
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	(hildon_desktop_popup_window_visibility_notify),
+	(hildon_desktop_popup_window_composited_button_release),
+	(hildon_desktop_popup_window_button_release_event):
+	- Added some comments.
+	* src/hd-applications-menu.c: (hd_applications_menu_create_menu):
+	- Not attach the widget in order to be transient for root window and
+	be shown on top of vkb.
+	* src/hd-switcher-menu.c: (hd_switcher_menu_constructor):
+	- Not attach the widget in order to be transient for root window and
+        be shown on top of vkb.
+	- Fixes: NB#62048.
+
 2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-l10n.h: Added NOLOC comments

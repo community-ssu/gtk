@@ -42,7 +42,7 @@
 
 #define STATUSBAR_DEBUG 0
 #if (STATUSBAR_DEBUG)
-#define sb_debug(o,a...) sb_debug("sb" o,##a);
+#define sb_debug(o,a...) g_debug("sb" o,##a);
 #else
 #define sb_debug(o,a...) do{} while (0)
 #endif

@@ -103,10 +103,8 @@ static gboolean hildon_desktop_popup_window_composited_button_release (GtkWidget
 static gboolean popup_grab_on_window (GdkWindow *window, guint32 activate_time, gboolean grab_keyboard);
 
 static gboolean hildon_desktop_popup_window_button_release_event (GtkWidget *widget, GdkEventButton *event);
-#ifdef MAEMO_CHANGES
-#ifdef HAVE_XTEST
+#if defined (MAEMO_CHANGES) && defined(HAVE_XTEST)
 static void hildon_desktop_popup_menu_fake_button_event (GdkEventButton *event, gboolean press);
-#endif
 #endif
 struct _HildonDesktopPopupWindowPrivate 
 {
@@ -601,9 +599,55 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
  
       if (!gdk_error_trap_pop () && 
  	  type != GDK_WINDOW_TYPE_HINT_NOTIFICATION && 
-          type != GDK_WINDOW_TYPE_HINT_MENU)
+          type != GDK_WINDOW_TYPE_HINT_MENU && 
+	  type != GDK_WINDOW_TYPE_HINT_POPUP_MENU &&
+          type != GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU)
       {
         /* A non-message and non-menu window above us; close. */
+
+#if 0	      
+	/* This code is to check whether if we receive the visibility-notify from
+	 * the virtual keyboard. In that case we don't close but the menu window
+	 * is gonna be behind the virtual keyboard
+	 */
+	      
+        Atom    type_ret;
+        gint    format_ret;
+        gulong  items_ret;
+        gulong  after_ret;
+        union
+        {
+           Atom *a;
+           guchar *c;
+        } window_type;
+        gint    status;
+ 
+        window_type.c = NULL;
+ 
+        gdk_error_trap_push ();
+ 
+        status = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (gdk_drawable_get_display (GDK_DRAWABLE (win))),
+                                     GDK_WINDOW_XID (win),
+                                     gdk_x11_get_xatom_by_name ("_NET_WM_WINDOW_TYPE"),
+                                     0, G_MAXLONG,
+                                     False,
+                                     XA_ATOM,
+                                     &type_ret,
+                                      &format_ret,
+                                      &items_ret,
+                                      &after_ret,
+                                      &window_type.c);
+ 
+        if (!gdk_error_trap_pop () &&
+            status == Success &&
+            window_type.c != NULL &&
+            items_ret == 1 &&
+            window_type.a[0] == gdk_x11_get_xatom_by_name ("_NET_WM_WINDOW_TYPE_INPUT"))
+        {
+           break;
+        }
+#endif	
+
         deactivate = TRUE;
         break;
       }
@@ -685,8 +729,12 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
   if (!in_panes_area || in_window_area)
   {	  
     hildon_desktop_popup_window_popdown (popup);
-#ifdef MAEMO_CHANGES    
-#ifdef HAVE_XTEST
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTEST)    
+    /* This hack sends an extra button-event in order to not lose the event
+     * when closing outside the menu so another button could receive it and
+     * act consequently.
+     */
+    
     if (popup->priv->attached_widget)
     {	    
       gtk_widget_get_pointer (popup->priv->attached_widget, &x, &y);
@@ -700,7 +748,6 @@ hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
         hildon_desktop_popup_menu_fake_button_event (event, FALSE);
       }
     }
-#endif
 #endif    
   }
   
@@ -746,8 +793,12 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
   if (!in_panes_area || !in_window_area)
   {	  
     hildon_desktop_popup_window_popdown (popup);
-#ifdef MAEMO_CHANGES    
-#ifdef HAVE_XTEST
+#if defined(MAEMO_CHANGES) && defined(HAVE_XTEST)
+    /* This hack sends an extra button-event in order to not lose the event
+     * when closing outside the menu so another button could receive it and
+     * act consequently.
+     */
+    
     if (popup->priv->attached_widget)
     {	    
       gtk_widget_get_pointer (popup->priv->attached_widget, &x, &y);
@@ -762,7 +813,6 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
       }
     }
 #endif
-#endif    
   }
   return TRUE;
 }
