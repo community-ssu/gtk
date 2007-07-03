@@ -28,7 +28,7 @@ style "hildon-thumb-scrollbar"
 	orientation     = VERTICAL
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_thumbsize_vertical_shaft_disabled.png"
-	border          = { 0, 0, 0, 0 }
+	border          = { 0, 0, 15, 15 }
       }
     image
       {
@@ -36,7 +36,7 @@ style "hildon-thumb-scrollbar"
 	orientation     = VERTICAL
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_thumbsize_vertical_thumb_disabled.png"
-	border		= { 0, 0, 10, 10 }
+	border		= { 0, 0, 15, 15 }
       }
     image
       {
@@ -51,14 +51,14 @@ style "hildon-thumb-scrollbar"
 	orientation     = VERTICAL
         state           = ACTIVE
 	file            = "../images/qgn_plat_scroll_thumbsize_vertical_thumb_pressed.png"
-	border		= { 0, 0, 10, 10 }
+	border		= { 0, 0, 15, 15 }
       }
     image
       {
         function        = SLIDER
 	orientation     = VERTICAL
 	file            = "../images/qgn_plat_scroll_thumbsize_vertical_thumb_normal.png"
-	border		= { 0, 0, 10, 10 }
+	border		= { 0, 0, 15, 15 }
       }
     # up
     image
