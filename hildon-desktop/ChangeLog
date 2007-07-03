@@ -1,6 +1,16 @@
 2007-07-03  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	(hildon_desktop_panel_expandable_cadd),
+	(hildon_desktop_panel_expandable_cremove),
+	(hildon_desktop_panel_expandable_add_button),
+	(hildon_desktop_panel_expandable_add_in_extension),
+	(hildon_desktop_panel_expandable_requeue_last_in_panel):
+	- Some further fixes for statusbar.
+
+2007-07-03  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
 	- Fixed debug macro
 	* libhildondesktop/hildon-desktop-popup-window.c:
 	(hildon_desktop_popup_window_visibility_notify),
