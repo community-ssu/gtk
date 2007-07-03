@@ -1,5 +1,16 @@
 2007-07-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-pixmap.c (sapwood_pixmap_render_rects): Rename to
+	sapwood_pixmap_render_rects_internal.
+	* src/sapwood-pixmap.h (sapwood_pixmap_render_rects): Add width and
+	height parameters in order to do downscaling.
+	* src/sapwood-pixmap.c (sapwood_pixmap_render_rects): When rendering
+	to a target smaller than the pixmap, paint first at least as big as
+	the pixmaps and scale down to target size using cairo.
+	* configure.in: bump gtk+ dependency to 2.8 due to cairo
+
+2007-07-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-render.c (theme_pixbuf_render): Refactor painting of
 	centered pixmaps using sapwood_pixmap_render_rects()
 	* src/sapwood-pixmap.h (sapwood_pixmap_render)

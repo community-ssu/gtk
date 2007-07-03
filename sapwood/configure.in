@@ -89,7 +89,7 @@ dnl Initialize libtool
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 1.3.12)
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.8)
 
 GTK_VERSION=`$PKG_CONFIG --variable=gtk_binary_version gtk+-2.0`
 AC_SUBST(GTK_CFLAGS)

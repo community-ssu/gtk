@@ -251,6 +251,8 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
   SapwoodPixmap *pixmap;
   gint pixbuf_width;
   gint pixbuf_height;
+  gint draw_width;
+  gint draw_height;
   SapwoodRect rect[9];
   gint       n_rect;
   gint       mask_x;
@@ -265,17 +267,21 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
   pixmap = theme_pixbuf_get_pixmap (theme_pb);
 
+  /* if we do scaling we want to draw at least the whole pixmap */
+  draw_width  = MAX(width, pixbuf_width);
+  draw_height = MAX(height, pixbuf_height);
+
   if (theme_pb->stretch)
     {
       dest_x[0] = x;
       dest_x[1] = x + theme_pb->border_left;
-      dest_x[2] = x + width - theme_pb->border_right;
-      dest_x[3] = x + width;
+      dest_x[2] = x + draw_width - theme_pb->border_right;
+      dest_x[3] = x + draw_width;
 
       dest_y[0] = y;
       dest_y[1] = y + theme_pb->border_top;
-      dest_y[2] = y + height - theme_pb->border_bottom;
-      dest_y[3] = y + height;
+      dest_y[2] = y + draw_height - theme_pb->border_bottom;
+      dest_y[3] = y + draw_height;
 
       if (component_mask & COMPONENT_ALL)
 	component_mask = (COMPONENT_ALL - 1) & ~component_mask;
@@ -363,7 +369,7 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 	}
 
       sapwood_pixmap_render_rects (pixmap,
-                                   window, x, y,
+                                   window, x, y, width, height,
                                    mask, mask_x, mask_y, mask_required,
                                    clip_rect, n_rect, rect);
 
@@ -371,8 +377,8 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
     }
   else if (center)
     {
-      x += (width - pixbuf_width) / 2;
-      y += (height - pixbuf_height) / 2;
+      x += (draw_width - pixbuf_width) / 2;
+      y += (draw_height - pixbuf_height) / 2;
 
       sapwood_pixmap_get_pixmap (pixmap, 1, 1,
                                  &rect[0].pixmap, &rect[0].pixmask);
@@ -382,7 +388,7 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
       rect[0].dest.height = pixbuf_height;
 
       sapwood_pixmap_render_rects (pixmap,
-                                   window, x, y,
+                                   window, x, y, width, height,
                                    mask, x, y, FALSE,
                                    clip_rect, 1, rect);
     }
