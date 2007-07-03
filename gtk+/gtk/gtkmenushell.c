@@ -557,7 +557,16 @@ _gtk_menu_shell_fake_button_events (GtkWidget *widget,
 
   display = gtk_widget_get_display (widget);
 
-  attached_widget = gtk_menu_get_attach_widget (GTK_MENU (widget));
+  /* If we are a menu get the widget we are attached to. If we are a 
+     menubar we are ourselves the attach widget in this case. If both
+     checks fail, just exit */
+
+  if (GTK_IS_MENU (widget))
+    attached_widget = gtk_menu_get_attach_widget (GTK_MENU (widget));
+  else if (GTK_IS_MENU_BAR (widget))
+    attached_widget = widget;
+  else
+    return;
 
   /* Blacklist GtkWindow to disable this functionality in HildonWindow,
      as there is no reliable way of detecting the click on the window
