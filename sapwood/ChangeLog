@@ -1,5 +1,13 @@
 2007-07-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-render.c (theme_pixbuf_render): Refactor painting of
+	centered pixmaps using sapwood_pixmap_render_rects()
+	* src/sapwood-pixmap.h (sapwood_pixmap_render)
+	* src/sapwood-pixmap.c (sapwood_pixmap_render, get_scratch_gc): Remove
+	as obsolete.
+
+2007-07-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-render.c (theme_pixbuf_render): When clamping the mask
 	to clip mask, do not change the area to paint.
 

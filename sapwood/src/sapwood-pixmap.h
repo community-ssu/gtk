@@ -60,19 +60,6 @@ void      sapwood_pixmap_get_pixmap   (SapwoodPixmap *self,
 				       GdkPixmap    **ret_pixmap,
 				       GdkBitmap    **ret_pixmask) G_GNUC_INTERNAL;
 
-void      sapwood_pixmap_render       (SapwoodPixmap *self,
-				      GdkWindow    *window,
-				      GdkBitmap    *mask,
-				      GdkRectangle *clip_rect,
-				      gint          src_x,
-				      gint          src_y,
-				      gint          src_width,
-				      gint          src_height,
-				      gint          dest_x,
-				      gint          dest_y,
-				      gint          dest_width,
-				      gint          dest_height) G_GNUC_INTERNAL;
-
 void      sapwood_pixmap_render_rects (SapwoodPixmap *self,
 				      GdkDrawable  *draw,
 				      gint          draw_x,

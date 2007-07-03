@@ -248,6 +248,7 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 		     gint          height)
 {
   gint dest_x[4], dest_y[4];
+  SapwoodPixmap *pixmap;
   gint pixbuf_width;
   gint pixbuf_height;
   SapwoodRect rect[9];
@@ -262,10 +263,10 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
   if (!theme_pixbuf_get_geometry (theme_pb, &pixbuf_width, &pixbuf_height))
     return FALSE;
 
+  pixmap = theme_pixbuf_get_pixmap (theme_pb);
+
   if (theme_pb->stretch)
     {
-      SapwoodPixmap *pixmap;
-
       dest_x[0] = x;
       dest_x[1] = x + theme_pb->border_left;
       dest_x[2] = x + width - theme_pb->border_right;
@@ -278,8 +279,6 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
       if (component_mask & COMPONENT_ALL)
 	component_mask = (COMPONENT_ALL - 1) & ~component_mask;
-
-      pixmap = theme_pixbuf_get_pixmap (theme_pb);
 
 #define RENDER_COMPONENT(X,Y) do {			           \
     sapwood_pixmap_get_pixmap (pixmap, X, Y, &rect[n_rect].pixmap, \
@@ -363,22 +362,29 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 	  mask_required = TRUE;
 	}
 
-      sapwood_pixmap_render_rects (theme_pixbuf_get_pixmap (theme_pb),
-				  window, x, y,
-				  mask, mask_x, mask_y, mask_required,
-				  clip_rect, n_rect, rect);
+      sapwood_pixmap_render_rects (pixmap,
+                                   window, x, y,
+                                   mask, mask_x, mask_y, mask_required,
+                                   clip_rect, n_rect, rect);
 
       g_object_unref (mask);
     }
   else if (center)
     {
-	  x += (width - pixbuf_width) / 2;
-	  y += (height - pixbuf_height) / 2;
+      x += (width - pixbuf_width) / 2;
+      y += (height - pixbuf_height) / 2;
 
-	  sapwood_pixmap_render (theme_pixbuf_get_pixmap (theme_pb),
-				window, mask, clip_rect,
-				0, 0, pixbuf_width, pixbuf_height,
-				x, y, pixbuf_width, pixbuf_height);
+      sapwood_pixmap_get_pixmap (pixmap, 1, 1,
+                                 &rect[0].pixmap, &rect[0].pixmask);
+      rect[0].dest.x = x;
+      rect[0].dest.y = y;
+      rect[0].dest.width = pixbuf_width;
+      rect[0].dest.height = pixbuf_height;
+
+      sapwood_pixmap_render_rects (pixmap,
+                                   window, x, y,
+                                   mask, x, y, FALSE,
+                                   clip_rect, 1, rect);
     }
   else /* tile? */
     {
