@@ -1454,13 +1454,15 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
   
 
   gtk_widget_show (completion->priv->popup_window);
-    
+
+#if !MAEMO_CHANGES    
   gtk_grab_add (completion->priv->popup_window);
   gdk_pointer_grab (completion->priv->popup_window->window, TRUE,
                     GDK_BUTTON_PRESS_MASK |
                     GDK_BUTTON_RELEASE_MASK |
                     GDK_POINTER_MOTION_MASK,
                     NULL, NULL, GDK_CURRENT_TIME);
+#endif
 }
 
 void
@@ -1470,9 +1472,11 @@ _gtk_entry_completion_popdown (GtkEntryCompletion *completion)
     return;
 
   completion->priv->ignore_enter = FALSE;
-  
-  gdk_pointer_ungrab (GDK_CURRENT_TIME);
+
+#if !MAEMO_CHANGES
+  gdk_pointer_ungrab (GDK_CURRENT_TIME);  
   gtk_grab_remove (completion->priv->popup_window);
+#endif
 
   gtk_widget_hide (completion->priv->popup_window);
 }
