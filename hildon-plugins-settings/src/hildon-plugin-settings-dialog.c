@@ -215,7 +215,7 @@ hildon_plugin_settings_dialog_check_limits (GtkTreeView *tw, HPSDTab *tab)
   }
   while (gtk_tree_model_iter_next (tm, &iter));  
 
-  if (tab->counter_limit > 0)
+  if (tab->counter_limit > 0 && tab->counter_limit > tab->limit)
     tab->limit = tab->counter_limit;	  
 }
 
@@ -256,6 +256,37 @@ hildon_plugin_settings_dialog_row_inserted_cb (GtkTreeModel *tm,
   gtk_tree_view_set_cursor (tw, path, NULL, FALSE);
 }
 
+static void 
+hildon_plugin_settings_dialog_selection_changed_cb (GtkTreeSelection *selection,
+		                                    HildonPluginSettingsDialog *settings)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean up_active = FALSE, down_active = FALSE;
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter)) 
+  {
+    gchar *path_str;
+    path_str = gtk_tree_model_get_string_from_iter (model, &iter);
+
+     /* Start with all sensitive and disable if needed. */
+    up_active = TRUE;
+    down_active = TRUE;
+
+    if (g_str_equal(path_str, "0"))
+      up_active = FALSE;
+
+    g_free (path_str);
+
+    if (!gtk_tree_model_iter_next (model, &iter))
+      down_active = FALSE;
+ }
+
+ gtk_widget_set_sensitive (settings->priv->button_up, up_active);
+ gtk_widget_set_sensitive (settings->priv->button_down, down_active);
+
+}
+
 static GObject *
 hildon_plugin_settings_dialog_constructor (GType gtype,
                                            guint n_params,
@@ -287,7 +318,7 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   }
   else 
   {
-    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+    gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
     gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   }
   
@@ -399,6 +430,11 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
     }
     else
       tw = gtk_tree_view_new_with_model (tab->parser->tm);
+
+    g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (tw)),
+		      "changed",
+                      G_CALLBACK (hildon_plugin_settings_dialog_selection_changed_cb),
+		      (gpointer)settings);
 
     gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tw), TRUE);
 
@@ -899,6 +935,7 @@ hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
 						    guint page,
 						    HildonPluginSettingsDialog *settings)
 {
+  GtkTreeIter iter;	
   GtkWidget *sw =
       gtk_notebook_get_nth_page (GTK_NOTEBOOK (settings->priv->notebook),page);
                                 
@@ -907,6 +944,12 @@ hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
     GtkTreeView *tw = GTK_TREE_VIEW (GTK_BIN (sw)->child);
     GList *container_tab = NULL;
 
+    gtk_tree_model_get_iter_first (gtk_tree_view_get_model (tw), &iter);
+
+    gtk_tree_selection_select_iter (gtk_tree_view_get_selection (tw), &iter);
+
+    gtk_widget_set_sensitive (settings->priv->button_up, FALSE);
+    
     container_tab = 
       g_list_find_custom (settings->priv->tabs,
 			  tw,
@@ -917,7 +960,6 @@ hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
 			  
     HPSDTab *tab = (HPSDTab *)container_tab->data;
 
-    gtk_widget_set_sensitive (settings->priv->button_up, tab->is_sorted);
     gtk_widget_set_sensitive (settings->priv->button_down, tab->is_sorted);
   }
 }

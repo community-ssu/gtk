@@ -1,3 +1,14 @@
+2007-07-04  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-settings-dialog.c:
+	- Fixed a problem when there is a limit for items to be selected. 
+	Fixes: NB#62312.
+	- Dimmed proper arrow when at the beginning or the end of the list.
+	Fixes: NB#62363
+	- Select the first item in the list when changing from one tab to
+	another. Fixes: NB#62360
+	- Dialog is no longer system modal. Fixes: NB#62322	
+
 2007-06-27  Moises Martinez  <moises.martinez@nokia.com>
 
 	* data/hildon-plugins-settings.desktop.in:
