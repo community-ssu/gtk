@@ -4,3 +4,4 @@
 /etc/hildon-desktop/home-layout.conf
 /etc/osso-af-init/hildon-desktop.sh
 /etc/xdg/menus/applications.menu
+/etc/init.d/hildon-desktop

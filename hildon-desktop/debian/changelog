@@ -1,3 +1,9 @@
+hildon-desktop (1:0.0.21-2) sardine; urgency=low
+
+  * Added initscript to conffiles
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  4 Jul 2007 16:24:18 +0300
+
 hildon-desktop (1:0.0.21-1) sardine; urgency=low
 
   * src/Makefile.am, configure.ac: added optional dependency on mce-dev
