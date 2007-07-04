@@ -1,3 +1,9 @@
+2007-07-04  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup),
+	(_gtk_entry_completion_popdown): Used ifdef, not if, for the
+	MAEMO_CHANGES guards...
+
 2007-07-03  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenushell.c (_gtk_menu_shell_fake_button_events):
