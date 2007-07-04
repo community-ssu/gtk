@@ -1,5 +1,33 @@
 2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* data/Makefile.am, data/notification-groups.conf: new notification
+	grouping configuration file.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]
+	(hildon_desktop_notification_manager_call_dbus_callback): new method
+	to send a dbus message from a string description. This is used by the
+	notification group menu item to make the dbus call for the group.
+	* src/hd-switcher-menu-item.[ch] (hd_switcher_menu_item_finalize,
+	hd_switcher_menu_item_set_property, hd_switcher_menu_item_get_property,
+	hd_switcher_menu_item_constructor, hd_switcher_menu_item_activate,
+	hd_switcher_menu_item_button_release_event, 
+	hd_switcher_menu_item_class_init, hd_switcher_menu_item_init,
+	hd_switcher_menu_item_new_from_notification_group,
+	hd_switcher_menu_item_compare_ids, hd_switcher_menu_item_has_id):
+	new type of HDSwitcherMenuItem for notification group items.
+	* src/hd-switcher-menu.c (hd_switcher_menu_free_notification_group,
+	hd_switcher_menu_add_notification_group,
+	hd_switcher_menu_add_notification_groups,
+	hd_switcher_menu_reset_notification_group,
+	hd_switcher_menu_reset_notification_groups,
+	hd_switcher_menu_load_notification_groups,
+	hd_switcher_menu_constructor, hd_switcher_menu_finalize,
+	hd_switcher_menu_clear_item_activated,
+	hd_switcher_menu_create_notifications_menu, 
+	hd_switcher_menu_notification_deleted_cb): support for notification
+	grouping based on a configuration file (notification-groups.conf).
+
+2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* policies/tasknavigator-policy.c (is_gap_plugin,
 	hd_ui_policy_module_filter_plugin_list): allow setting the position of
 	the applications menu plugin but keep it as mandatory.

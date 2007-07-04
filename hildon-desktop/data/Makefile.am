@@ -1,9 +1,10 @@
-hildondesktopconf_DATA = \
-	desktop.conf        \
-	tasknavigator.conf  \
-	home.conf           \
-	home-layout.conf    \
-	statusbar.conf
+hildondesktopconf_DATA =           \
+	desktop.conf               \
+	tasknavigator.conf         \
+	statusbar.conf             \
+	home.conf                  \
+	home-layout.conf           \
+	notification-groups.conf
 
 hildonnavigatordesktopentry_DATA = \
 	app-switcher.desktop       \

@@ -127,6 +127,9 @@ void       hildon_desktop_notification_manager_call_action        (HildonDesktop
                                                                    guint                  id,
 								   const gchar           *action_id);
 
+void       hildon_desktop_notification_manager_call_dbus_callback (HildonDesktopNotificationManager *nm,
+		                                                   const gchar           *dbus_call);
+
 G_END_DECLS
 
 #endif /* __HILDON_DESKTOP_NOTIFICATION_MANAGER_H__ */

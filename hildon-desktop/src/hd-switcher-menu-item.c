@@ -93,9 +93,11 @@ enum
   MENU_PROP_SHOW_CLOSE,
   MENU_PROP_IS_BLINKING,
   MENU_PROP_NOT_ID,
+  MENU_PROP_NOT_IDS,
   MENU_PROP_NOT_SUMMARY,
   MENU_PROP_NOT_BODY,
-  MENU_PROP_NOT_ICON
+  MENU_PROP_NOT_ICON,
+  MENU_PROP_DBUS_CALLBACK
 };
 
 #define HD_SWITCHER_MENU_ITEM_GET_PRIVATE(obj) \
@@ -120,10 +122,13 @@ struct _HDSwitcherMenuItemPrivate
   HNAppPixbufAnimBlinker *blinker;
 
   gint       notification_id;
+  GList     *notification_ids;
   gchar     *notification_summary;
   gchar     *notification_body;
   GdkPixbuf *notification_icon;
 
+  gchar     *dbus_callback;
+  
   gboolean   was_topped;
 
   HildonDesktopNotificationManager *nm;
@@ -147,6 +152,12 @@ hd_switcher_menu_item_finalize (GObject *gobject)
 
   if (priv->notification_body)
     g_free (priv->notification_body);	  
+
+  if (priv->notification_ids)
+    g_list_free (priv->notification_ids);
+  
+  if (priv->dbus_callback)
+    g_free (priv->dbus_callback);	  
 
   G_OBJECT_CLASS (hd_switcher_menu_item_parent_class)->finalize (gobject);
 }
@@ -177,6 +188,10 @@ hd_switcher_menu_item_set_property (GObject      *gobject,
       priv->notification_id = g_value_get_int (value);
       break;
       
+    case MENU_PROP_NOT_IDS:
+      priv->notification_ids = g_value_get_pointer (value);
+      break;
+      
     case MENU_PROP_NOT_SUMMARY:
       priv->notification_summary = g_strdup (g_value_get_string (value));
       break;
@@ -188,6 +203,10 @@ hd_switcher_menu_item_set_property (GObject      *gobject,
     case MENU_PROP_NOT_ICON:
       priv->notification_icon = g_value_get_object (value);
       break;
+      
+    case MENU_PROP_DBUS_CALLBACK:
+      priv->dbus_callback = g_strdup (g_value_get_string (value));
+      break; 
       
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
@@ -221,6 +240,10 @@ hd_switcher_menu_item_get_property (GObject    *gobject,
       g_value_set_int (value, priv->notification_id);
       break;
       
+    case MENU_PROP_NOT_IDS:
+      g_value_set_pointer (value, priv->notification_ids);
+      break;
+      
     case MENU_PROP_NOT_SUMMARY:
       g_value_set_string (value, priv->notification_summary);
       break;
@@ -232,6 +255,10 @@ hd_switcher_menu_item_get_property (GObject    *gobject,
     case MENU_PROP_NOT_ICON:
       g_value_set_object (value, priv->notification_icon);
       break;
+      
+    case MENU_PROP_DBUS_CALLBACK:
+      g_value_set_string (value, priv->dbus_callback);
+      break; 
       
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
@@ -417,8 +444,8 @@ hd_switcher_menu_item_constructor (GType                  type,
     g_free (win_name);
   }
   else
+  if (priv->notification_id != -1)
   {
-    /* TODO: notification id*/
     if (priv->notification_icon)	 
       gtk_image_set_from_pixbuf 
         (GTK_IMAGE (priv->icon), priv->notification_icon);
@@ -429,7 +456,19 @@ hd_switcher_menu_item_constructor (GType                  type,
 		        priv->notification_summary); /* TODO: Insert timestamp */
     gtk_label_set_text (GTK_LABEL (priv->label2),
 		    	priv->notification_body);
-  }	  
+  }
+  else
+  if (priv->notification_ids != NULL)
+  {
+    if (priv->notification_icon)	 
+      gtk_image_set_from_pixbuf 
+        (GTK_IMAGE (priv->icon), priv->notification_icon);
+
+    gtk_label_set_text (GTK_LABEL (priv->label), 
+		        priv->notification_summary);
+ 
+    gtk_widget_hide (priv->label2); 
+  }  
 
   if (priv->show_close)
   {
@@ -539,6 +578,30 @@ hd_switcher_menu_item_activate (GtkMenuItem *menu_item)
       g_error_free (error);
     } 
   }	  
+  else
+  if (HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_ids != NULL)
+  {
+    GList *l;
+    GError *error = NULL;
+
+    for (l = HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_ids; l; l = g_list_next (l))
+    {
+      gint id = GPOINTER_TO_INT (l->data);
+
+      hildon_desktop_notification_manager_close_notification
+        (HD_SWITCHER_MENU_ITEM (menu_item)->priv->nm, id, &error);
+
+      if (error)
+      {
+        g_warning ("We cannot close the notification!?!?!");
+        g_error_free (error);
+      } 
+    }
+
+    hildon_desktop_notification_manager_call_dbus_callback 
+      (HD_SWITCHER_MENU_ITEM (menu_item)->priv->nm, 
+       HD_SWITCHER_MENU_ITEM (menu_item)->priv->dbus_callback); 
+  }	  
 }
 
 static gboolean
@@ -584,7 +647,26 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
 	g_error_free (error);
       }	     	 
     }	    
-    
+    else
+    if (menuitem->priv->notification_ids != NULL)
+    {
+      GList *l;
+      GError *error = NULL;
+
+      for (l = HD_SWITCHER_MENU_ITEM (menuitem)->priv->notification_ids; l; l = g_list_next (l))
+      {
+        gint id = GPOINTER_TO_INT (l->data);
+
+        hildon_desktop_notification_manager_close_notification
+          (HD_SWITCHER_MENU_ITEM (menuitem)->priv->nm, id, &error);
+
+        if (error)
+        {
+          g_warning ("We cannot close the notification!?!?!");
+          g_error_free (error);
+        } 
+      } 
+    } 
     return TRUE;
   }
   
@@ -696,6 +778,14 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
 						      G_MAXINT,
 						      -1,
 						     (G_PARAM_CONSTRUCT | G_PARAM_READWRITE)));
+
+  g_object_class_install_property (gobject_class,
+		  		   MENU_PROP_NOT_IDS,
+				   g_param_spec_pointer ("notification-ids",
+					   		 "List of ids of notifications",
+							 "The list of ids of the notifications",
+							 (G_PARAM_CONSTRUCT | G_PARAM_READWRITE)));
+ 
   g_object_class_install_property (gobject_class,
 		  		   MENU_PROP_NOT_SUMMARY,
 				   g_param_spec_string ("notification-summary",
@@ -720,6 +810,14 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
 							GDK_TYPE_PIXBUF,
 							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE))); 
  
+  g_object_class_install_property (gobject_class,
+		  		   MENU_PROP_DBUS_CALLBACK,
+				   g_param_spec_string ("dbus-callback",
+					   		"D-Bus callback for notification group",
+							"The DBus callback of the notification group",
+							"",
+							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE)));
+ 
   g_type_class_add_private (klass, sizeof (HDSwitcherMenuItemPrivate));
 }
 
@@ -737,9 +835,11 @@ hd_switcher_menu_item_init (HDSwitcherMenuItem *menuitem)
   priv->pixbuf_anim          = NULL;
   priv->info                 = NULL;
   priv->notification_id      = -1;
+  priv->notification_ids     = NULL;
   priv->notification_summary = 
   priv->notification_body    = NULL;
   priv->notification_icon    = NULL;
+  priv->dbus_callback        = NULL;
 
   priv->nm = 
     HILDON_DESKTOP_NOTIFICATION_MANAGER 
@@ -778,6 +878,25 @@ hd_switcher_menu_item_new_from_notification (gint id,
 		  "show-close", show_close,
 		  NULL); 
 }	
+
+GtkWidget *
+hd_switcher_menu_item_new_from_notification_group (GList     *ids,
+					           GdkPixbuf *icon,
+					           gchar     *summary,
+						   gchar     *dbus_callback,
+					           gboolean   show_close)
+{
+
+  return 
+    g_object_new (HD_TYPE_SWITCHER_MENU_ITEM,
+		  "notification-id", -1, 
+		  "notification-ids", ids, 
+		  "notification-icon", icon,
+		  "notification-summary", summary, 
+		  "dbus-callback", dbus_callback, 
+		  "show-close", show_close,
+		  NULL); 
+}
 
 void
 hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
@@ -873,4 +992,26 @@ hd_switcher_menu_item_get_notification_id (HDSwitcherMenuItem *menuitem)
   g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), -1);
 
   return menuitem->priv->notification_id;
+}	
+
+static gint
+hd_switcher_menu_item_compare_ids (gconstpointer a, gconstpointer b)
+{
+  if (GPOINTER_TO_INT (a) == GPOINTER_TO_INT (b))
+    return 0;
+  else
+    return 1;
+}
+	
+gboolean 
+hd_switcher_menu_item_has_id (HDSwitcherMenuItem *menuitem, gint id)
+{
+  g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), FALSE);
+
+  if (g_list_find_custom (menuitem->priv->notification_ids, 
+			  GINT_TO_POINTER (id), 
+			  hd_switcher_menu_item_compare_ids) != NULL)
+    return TRUE;
+  else
+    return FALSE;
 }	

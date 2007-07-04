@@ -74,6 +74,12 @@ GtkWidget *  hd_switcher_menu_item_new_from_notification (gint id,
                                         	          gchar     *body,
                                              	          gboolean   show_close);
 
+GtkWidget *  hd_switcher_menu_item_new_from_notification_group (GList     *ids,
+             		                                        GdkPixbuf *icon,
+                         		                        gchar     *summary,
+								gchar     *dbus_callback,
+                                             	                gboolean   show_close);
+
 void         hd_switcher_menu_item_set_entry_info  (HDSwitcherMenuItem *menuitem,
 					       HDWMEntryInfo   *info);
 HDWMEntryInfo *hd_switcher_menu_item_get_entry_info  (HDSwitcherMenuItem *menuitem);
@@ -82,6 +88,8 @@ void         hd_switcher_menu_item_set_blinking (HDSwitcherMenuItem *menuitem,
 gboolean     hd_switcher_menu_item_is_blinking (HDSwitcherMenuItem *menuitem);
 
 gint	     hd_switcher_menu_item_get_notification_id (HDSwitcherMenuItem *menuitem);
+
+gboolean     hd_switcher_menu_item_has_id (HDSwitcherMenuItem *menuitem, gint id);
 
 G_END_DECLS
 

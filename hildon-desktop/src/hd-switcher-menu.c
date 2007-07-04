@@ -120,6 +120,16 @@ enum
 
 G_DEFINE_TYPE (HDSwitcherMenu, hd_switcher_menu, TASKNAVIGATOR_TYPE_ITEM);
 
+typedef struct 
+{
+  gchar     *icon;
+  gchar     *category;
+  gchar     *label;
+  gchar     *dbus_callback;
+  gboolean   is_active;
+  GList     *notifications;
+} HDSwitcherMenuNotificationGroup;
+
 struct _HDSwitcherMenuPrivate
 {
   HildonDesktopPopupMenu *menu_applications;
@@ -147,6 +157,8 @@ struct _HDSwitcherMenuPrivate
 
   GtkWidget		   *window_dialog;
   GtkWidget		   *toggle_button;
+
+  GHashTable               *notification_groups;
   
   gint                      esd_socket;
 };
@@ -508,6 +520,193 @@ hd_switcher_menu_update_close (HildonDesktopPopupWindow *window, HDSwitcherMenu 
   g_list_free (children);
 }
 
+static void
+hd_switcher_menu_free_notification_group (gpointer user_data)
+{
+  HDSwitcherMenuNotificationGroup *ngroup;
+
+  ngroup = (HDSwitcherMenuNotificationGroup *) user_data;
+
+  if (ngroup->icon)
+    g_free (ngroup->icon);
+
+  if (ngroup->category)
+    g_free (ngroup->category);
+
+  if (ngroup->label)
+    g_free (ngroup->label);
+
+  if (ngroup->dbus_callback)
+    g_free (ngroup->dbus_callback);
+
+  if (ngroup->notifications)
+    g_list_free (ngroup->notifications);
+
+  g_free (ngroup);
+}
+
+static void
+hd_switcher_menu_add_notification_group (gpointer key,
+	             	                 gpointer value, 
+					 gpointer user_data)
+{
+  HDSwitcherMenuNotificationGroup *ngroup;
+  HDSwitcherMenu *switcher;
+  
+  ngroup = (HDSwitcherMenuNotificationGroup *) value;
+  switcher = (HDSwitcherMenu *) user_data;	
+ 
+  if (ngroup->is_active)
+  {
+    GtkWidget *menu_item;
+    GdkPixbuf *icon;
+    gchar *summary;
+	  
+    summary = g_strdup_printf (_(ngroup->label), 
+		               g_list_length (ngroup->notifications));
+    
+    icon = hd_switcher_menu_get_icon_from_theme (switcher, ngroup->icon, -1);
+    
+    hildon_desktop_popup_menu_add_item
+      (switcher->priv->menu_notifications,
+      GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+
+    menu_item = hd_switcher_menu_item_new_from_notification_group
+      (ngroup->notifications, icon, summary, ngroup->dbus_callback, TRUE);
+
+    hildon_desktop_popup_menu_add_item
+     (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+  }
+}
+
+static void
+hd_switcher_menu_add_notification_groups (HDSwitcherMenu *switcher)
+{
+  g_hash_table_foreach (switcher->priv->notification_groups, 
+		        hd_switcher_menu_add_notification_group,
+			switcher);
+}
+
+static void
+hd_switcher_menu_reset_notification_group (gpointer key,
+	             	                   gpointer value, 
+					   gpointer user_data)
+{
+  HDSwitcherMenuNotificationGroup *ngroup;
+  
+  ngroup = (HDSwitcherMenuNotificationGroup *) value;
+
+  ngroup->notifications = NULL;
+  ngroup->is_active = FALSE;
+}
+
+static void
+hd_switcher_menu_reset_notification_groups (HDSwitcherMenu *switcher)
+{
+  g_hash_table_foreach (switcher->priv->notification_groups, 
+		        hd_switcher_menu_reset_notification_group,
+			switcher);
+}
+
+static void
+hd_switcher_menu_load_notification_groups (HDSwitcherMenu *switcher)
+{
+  GKeyFile *keyfile;
+  gchar **groups;
+  GError *error = NULL;
+  gint i;
+
+  keyfile = g_key_file_new ();
+
+  g_key_file_load_from_file (keyfile,
+                             HD_DESKTOP_CONFIG_PATH "/notification-groups.conf",
+                             G_KEY_FILE_NONE,
+                             &error);
+
+  if (error)
+  {
+    g_warning ("Error loading notification groups file: %s", error->message);
+    g_error_free (error);
+    
+    return;
+  }
+
+  groups = g_key_file_get_groups (keyfile, NULL);
+
+  for (i = 0; groups[i]; i++)
+  {
+    HDSwitcherMenuNotificationGroup *ngroup;
+
+    ngroup = g_new0 (HDSwitcherMenuNotificationGroup, 1);
+
+    ngroup->icon = g_key_file_get_string (keyfile,
+		    			  groups[i],
+					  "Icon",
+					  &error);
+
+    if (error)
+    {
+      g_warning ("Error loading notification groups file: %s", error->message);
+      hd_switcher_menu_free_notification_group (ngroup);
+      g_error_free (error);
+      error = NULL;
+      continue;
+    }
+
+    ngroup->category = g_key_file_get_string (keyfile,
+		    			      groups[i],
+					      "Category",
+					      &error);
+
+    if (error)
+    {
+      g_warning ("Error loading notification groups file: %s", error->message);
+      hd_switcher_menu_free_notification_group (ngroup);
+      g_error_free (error);
+      error = NULL;
+      continue;
+    }      
+
+    ngroup->label = g_key_file_get_string (keyfile,
+		    			   groups[i],
+					   "Label",
+					   &error);
+
+    if (error)
+    {
+      g_warning ("Error loading notification groups file: %s", error->message);
+      hd_switcher_menu_free_notification_group (ngroup);
+      g_error_free (error);
+      error = NULL;
+      continue;
+    }
+
+    ngroup->dbus_callback = g_key_file_get_string (keyfile,
+		    			           groups[i],
+					           "DBus-Call",
+					           &error);
+
+    if (error)
+    {
+      g_warning ("Error loading notification groups file: %s", error->message);
+      hd_switcher_menu_free_notification_group (ngroup);
+      g_error_free (error);
+      error = NULL;
+      continue;
+    }
+
+    ngroup->is_active = FALSE;
+    ngroup->notifications = NULL;
+    
+    g_hash_table_insert (switcher->priv->notification_groups, 
+		         ngroup->category, 
+			 ngroup); 
+  }
+
+  g_free (groups);
+  g_key_file_free (keyfile);
+}
+	
 static GObject *
 hd_switcher_menu_constructor (GType gtype,
 			      guint n_params,
@@ -737,12 +936,20 @@ hd_switcher_menu_constructor (GType gtype,
                           G_CALLBACK (hd_switcher_menu_item_activated),
                           (gpointer)switcher); 
 
+  switcher->priv->notification_groups = 
+          g_hash_table_new_full (g_str_hash, 
+	  		         g_str_equal,
+			         (GDestroyNotify) g_free,
+			         (GDestroyNotify) hd_switcher_menu_free_notification_group);
+
+  hd_switcher_menu_load_notification_groups (switcher);
+  
   hd_switcher_menu_create_notifications_menu (switcher);
 
   hd_switcher_menu_check_content (switcher);
 
   switcher->priv->window_dialog = NULL;
-  
+
   return object;
 }
 
@@ -809,7 +1016,13 @@ hd_switcher_menu_finalize (GObject *object)
   g_object_unref (switcher->priv->icon_theme);
 
   hn_as_sound_deinit (switcher->priv->esd_socket); 
-  
+
+  if (switcher->priv->notification_groups)
+  {
+    g_hash_table_destroy (switcher->priv->notification_groups);
+    switcher->priv->notification_groups = NULL;
+  }
+	  
   G_OBJECT_CLASS (hd_switcher_menu_parent_class)->finalize (object);
 }
 
@@ -873,6 +1086,7 @@ hd_switcher_menu_clear_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *sw
   {
     hildon_desktop_notification_manager_close_all (switcher->nm);
     gtk_widget_destroy (switcher->priv->clear_events_menu_item);
+    switcher->priv->clear_events_menu_item = NULL;
   }
 }
 	
@@ -1241,13 +1455,11 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
   GtkTreeModel *nm = GTK_TREE_MODEL (switcher->nm);
   GList *children = NULL, *l;
   GtkTreeIter  iter;	
- 
+
   children =
     hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
 
-  /* FIXME: it should use the screen height instead of number of items */
-  if (g_list_length (children) > 9 || 
-      gtk_tree_model_iter_n_children (nm, NULL) >= AS_ITEMS_LIMIT)
+  if (gtk_tree_model_iter_n_children (nm, NULL) >= AS_ITEMS_LIMIT)
   {
     hd_switcher_menu_add_clear_notifications_button (switcher);
     first_item = switcher->priv->clear_events_menu_item;
@@ -1271,44 +1483,91 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
 
   if (gtk_tree_model_get_iter_first (nm, &iter))
   {
-    gint id;
     GdkPixbuf *icon;
+    HDSwitcherMenuNotificationGroup *ngroup;
+    GHashTable *hints;
+    GValue *hint;
     gchar *summary, *body;
     gboolean ack;
+    gint id;
 
+    if (switcher->priv->clear_events_menu_item)
+    {
+      do
+      {
+        gtk_tree_model_get (nm,
+                            &iter,
+                            HD_NM_COL_ID, &id,
+                            HD_NM_COL_HINTS, &hints,
+                            -1);
+
+	hint = g_hash_table_lookup (hints, "category");
+
+	ngroup = 
+	  g_hash_table_lookup (switcher->priv->notification_groups, 
+	                       g_value_get_string (hint));
+
+	if (ngroup != NULL)
+        {
+	  ngroup->notifications = 
+            g_list_prepend (ngroup->notifications, GINT_TO_POINTER (id));
+
+	  ngroup->is_active = 
+            (g_list_length (ngroup->notifications) > 1);
+	}
+      }
+      while (gtk_tree_model_iter_next (nm, &iter));
+
+      hd_switcher_menu_add_notification_groups (switcher);
+
+      gtk_tree_model_get_iter_first (nm, &iter);
+    }
+   
     do
     {
-      if (first_item)
-        hildon_desktop_popup_menu_add_item
-          (switcher->priv->menu_notifications,
-          GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
-
       gtk_tree_model_get (nm,
                           &iter,
                           HD_NM_COL_ID, &id,
                           HD_NM_COL_ICON, &icon,
                           HD_NM_COL_SUMMARY, &summary,
                           HD_NM_COL_BODY, &body,
+                          HD_NM_COL_HINTS, &hints,
                           HD_NM_COL_ACK, &ack,
                           -1); 
 
-      menu_item =
-        hd_switcher_menu_item_new_from_notification
-         (id, icon, summary, body, TRUE);
+      hint = g_hash_table_lookup (hints, "category");
+      
+      ngroup = 
+        g_hash_table_lookup (switcher->priv->notification_groups, 
+                             g_value_get_string (hint));
 
-      hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), !ack);
+      if (ngroup == NULL || !ngroup->is_active)
+      {
+        if (first_item)
+          hildon_desktop_popup_menu_add_item
+            (switcher->priv->menu_notifications,
+            GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
 
-      hildon_desktop_popup_menu_add_item
-       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+        menu_item =
+          hd_switcher_menu_item_new_from_notification
+           (id, icon, summary, body, TRUE);
 
-      if (!ack)
-        hd_switcher_menu_replace_blinking_icon (switcher, icon);
+        hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), !ack);
 
-      if (!first_item)
-	first_item = menu_item;
+        hildon_desktop_popup_menu_add_item
+         (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+
+        if (!ack)
+          hd_switcher_menu_replace_blinking_icon (switcher, icon);
+
+        if (!first_item)
+	  first_item = menu_item;
+      }
     }
     while (gtk_tree_model_iter_next (nm, &iter));
 
+    hd_switcher_menu_reset_notification_groups (switcher);
+    
     hd_switcher_menu_scroll_to (NULL, switcher);
   }
 
@@ -1834,16 +2093,22 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
   
   for (l = children; l != NULL; l = g_list_next (l))
   {
-    if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))	  
+    if (HD_IS_SWITCHER_MENU_ITEM (l->data))	  
     {
-      GtkMenuItem *separator = NULL;
-      gint _id =
+      GtkMenuItem *menu_item = NULL, *separator = NULL;
+      gint _id = 
         hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));
-	  
-      if (_id == id)      
+      
+      if ((_id != -1 && _id == id) ||
+          (hd_switcher_menu_item_has_id (HD_SWITCHER_MENU_ITEM (l->data), id)))      
+      {
+        menu_item = GTK_MENU_ITEM (l->data);
+      }
+
+      if (menu_item)
       {
         hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
-	                                       GTK_MENU_ITEM (l->data));
+	                                       menu_item);
 
         if (l == children)
 	{
@@ -1861,12 +2126,11 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
 	  				         separator);
 
         break;
-      }	    
+      }
     }
-  }	  
+  }
 
-  /* FIXME: it should use the screen height instead of number of items */
-  if (g_list_length (children) - 2 < 2 * (AS_ITEMS_LIMIT + 1) - 1)
+  if (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (switcher->nm), NULL) <= AS_ITEMS_LIMIT)
   {
     if (switcher->priv->clear_events_menu_item)
     {
@@ -1875,7 +2139,8 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
       clear_child = g_list_last (children);
       
       gtk_widget_destroy (switcher->priv->clear_events_menu_item);
-
+      switcher->priv->clear_events_menu_item = NULL;
+      
       if (clear_child->prev && GTK_IS_SEPARATOR_MENU_ITEM (clear_child->prev->data))
         hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
         				       GTK_MENU_ITEM (clear_child->prev->data));

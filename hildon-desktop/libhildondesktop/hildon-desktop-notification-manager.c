@@ -1621,3 +1621,22 @@ hildon_desktop_notification_manager_close_all (HildonDesktopNotificationManager 
     while (gtk_list_store_remove (GTK_LIST_STORE (nm), &iter));
   }	  
 }
+
+void
+hildon_desktop_notification_manager_call_dbus_callback (HildonDesktopNotificationManager *nm,
+		                                        const gchar *dbus_call)
+{ 
+  DBusMessage *message;
+	
+  g_return_if_fail (HILDON_DESKTOP_IS_NOTIFICATION_MANAGER (nm));
+  g_return_if_fail (dbus_call != NULL);
+
+  message = hildon_desktop_notification_manager_message_from_desc (nm, dbus_call); 
+
+  if (message != NULL)
+  {
+    dbus_connection_send (dbus_g_connection_get_connection (nm->priv->connection), 
+    		          message, 
+    		          NULL);
+  }
+}
