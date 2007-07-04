@@ -540,12 +540,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		xmlDocPtr doc, xmlNodePtr root_element, GtkTreeIter *iterator,
 		GList *desktop_files)
 {
-	gint level = 0;
 	gboolean doc_created = FALSE;
-
-	GdkPixbuf *favourite_icon                = NULL;
-	GdkPixbuf *favourite_open_icon           = NULL;
-	GdkPixbuf *favourite_closed_icon         = NULL;
 	
 	static GdkPixbuf *folder_icon            = NULL;
 	static GdkPixbuf *folder_thumb_icon      = NULL;
@@ -580,60 +575,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	if ( !folder_closed_icon ) {
 		folder_closed_icon = add_emblem_to_icon(
 				folder_icon, emblem_expander_closed );
-	}
-
-	/* Make sure we have a valid iterator */
-	if (!gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
-		gtk_tree_store_append(menu_tree, iterator, NULL);
-	}
-
-	if (gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
-		level = gtk_tree_store_iter_depth(menu_tree, iterator);
-	}
-
-	/* Always add the "Favourites" */
-	if (level == 0) {
-		favourite_icon = get_icon(ICON_FAVOURITES, ICON_SIZE);
-		favourite_open_icon = add_emblem_to_icon(
-				favourite_icon, emblem_expander_open );
-		favourite_closed_icon = add_emblem_to_icon(
-				favourite_icon, emblem_expander_closed );
-		
-		gtk_tree_store_set(menu_tree,
-				iterator,
-				TREE_MODEL_NAME,
-				FAVOURITES_NAME,
-				TREE_MODEL_ICON,
-				favourite_icon,
-				TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-				favourite_open_icon,
-				TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-				favourite_closed_icon,
-				TREE_MODEL_EXEC,
-				"",
-				TREE_MODEL_SERVICE,
-				"",
-				TREE_MODEL_DESKTOP_ID,
-				"",
-                TREE_MODEL_COMMENT,
-                "",
-				-1);
-		
-		if ( favourite_icon ) {
-			g_object_unref( G_OBJECT( favourite_icon ) );
-			favourite_icon = NULL;
-		}
-		
-		if ( favourite_open_icon ) {
-			g_object_unref( G_OBJECT( favourite_open_icon ) );
-			favourite_open_icon = NULL;
-		}
-		
-		if ( favourite_closed_icon ) {
-			g_object_unref( G_OBJECT( favourite_closed_icon ) );
-			favourite_closed_icon = NULL;
-		}
-
 	}
 
 	if (doc == NULL) {
@@ -678,27 +619,19 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		if (strcmp((const char *) current_element->name, "Menu") == 0) {
 			
 			/* Submenu */
-			g_debug( "read_menu_conf: "
-					"level %i: appending submenu.", level );
-
 			gtk_tree_store_append(menu_tree, &child_iterator, iterator);
 
 			read_menu_conf(filename, menu_tree,
 					doc, current_element, &child_iterator, desktop_files);
 		} else if (strcmp((const char *) current_element->name, "Name") == 0) {
 
-			if (level == 0) {
-				/* H4rd c0d3d for top level */
-				continue;
-			} else {
-				key = xmlNodeListGetString(doc,
-						current_element->xmlChildrenNode,
-						1);
-			}
+                  key = xmlNodeListGetString(doc,
+                                             current_element->xmlChildrenNode,
+                                             1);
 
-			g_debug( "read_menu_conf: "
-					"level %i: Name = '%s'", level, key);
 
+                  if (iterator && 
+                      gtk_tree_store_iter_is_valid (menu_tree, iterator))
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
 					key,
@@ -773,8 +706,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						continue;
 					}
 
-					g_debug( "read_menu_conf: level %i: "
-							"appending .desktop", level );
                                         add_desktop_entry(item, menu_tree, iterator);
                                         xmlFree(key);
                                 }
@@ -819,9 +750,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 
 		} else if (strcmp((const char *) current_element->name, "Separator") == 0) {
-			g_debug( "read_menu_conf: level %i: "
-					"appending separator.", level );
-
 			GtkTreeIter child_iter;
 			
 			gtk_tree_store_append(menu_tree,
@@ -853,141 +781,34 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	}
 			
 
-	if ( doc_created )
-	{
-		/* The doc handle was created in this call */
-		xmlFreeDoc(doc);
-	}
+        if ( doc_created )
+          {
+            /* The doc handle was created in this call */
+            xmlFreeDoc(doc);
+          }
 
-	check_unallocated:
-
-	if ( level == 0 ) {
-
-		GList *loop = g_list_first( desktop_files );
-		desktop_entry_t *item;
-
-		/* Create the extras menu if it does not exist */
-		if ( !extras_iter || !gtk_tree_store_iter_is_valid(
-					menu_tree, extras_iter ) ) {
-
-			g_debug( "Menu '%s' does not exist.",
-					EXTRAS_MENU_STRING );
-
-			GtkTreeIter iter;
-
-			gtk_tree_model_get_iter_first(
-					GTK_TREE_MODEL( menu_tree ), &iter );
-
-			extras_iter = g_malloc0( sizeof( GtkTreeIter ) );
-
-			GtkTreePath *first_folder = NULL;
-			GtkTreePath *last_folder  = NULL;
-
-			find_first_and_last_root_level_folders(
-					GTK_TREE_MODEL( menu_tree ),
-					&first_folder, &last_folder );
-
-			GtkTreeIter sibling;
-
-			if ( last_folder ) {	
-				gtk_tree_model_get_iter(
-						GTK_TREE_MODEL( menu_tree ),
-						&sibling, last_folder );
-
-                                gtk_tree_path_free( last_folder );
-				gtk_tree_store_insert_after(
-						menu_tree, extras_iter,
-						NULL, &sibling );
-
-			} else if ( first_folder ) {
-				gtk_tree_model_get_iter(
-						GTK_TREE_MODEL( menu_tree ),
-						&sibling, first_folder );
-
-                                gtk_tree_path_free( first_folder );
-				gtk_tree_store_insert_after(
-						menu_tree, extras_iter,
-						NULL, &sibling );
-
-			} else {
-				gtk_tree_store_append( menu_tree,
-						extras_iter, &iter );
-			}
+check_unallocated:
 
 
-			if ( !gtk_tree_store_iter_is_valid(
-						menu_tree, extras_iter ) ) {
-				g_warning( "read_menu_conf: "
-						"failed to create "
-						"'%s' -menu.",
-						EXTRAS_MENU_STRING );
-				return;
-			}
+        /* We don't need our reference to the folder icon pixbuf anymore */
+        if ( folder_icon ) {
+          g_object_unref( G_OBJECT( folder_icon ) );
+          folder_icon = NULL;
+        }
 
-			gtk_tree_store_set(menu_tree,
-					extras_iter,
-					TREE_MODEL_NAME,
-					EXTRAS_MENU_STRING,
-					TREE_MODEL_ICON,
-					folder_icon,
-					TREE_MODEL_THUMB_ICON,
-					folder_thumb_icon,
-					TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-					folder_open_icon,
-					TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-					folder_closed_icon,
-					TREE_MODEL_EXEC,
-					"",
-					TREE_MODEL_SERVICE,
-					"",
-					TREE_MODEL_DESKTOP_ID,
-					"",
-					-1 );
+        if ( folder_open_icon ) {
+          g_object_unref( G_OBJECT( folder_open_icon ) );
+          folder_open_icon = NULL;
+        }
 
-			g_debug( "Menu '%s' created.", EXTRAS_MENU_STRING );
-		} else {
-			g_debug( "Menu '%s' exists.", EXTRAS_MENU_STRING );
-		}
-
-
-		while ( loop ) {
-
-			item = loop->data;
-			
-			if ( item->allocated == FALSE ) {
-
-				g_debug( "read_menu_conf: "
-						"unallocated item: '%s'",
-						item->desktop_id );
-
-                                add_desktop_entry( item, menu_tree, extras_iter );
-
-			}
-
-			loop = loop->next;
-		}
-
-		/* We don't need our reference to the folder icon pixbuf anymore */
-		if ( folder_icon ) {
-			g_object_unref( G_OBJECT( folder_icon ) );
-			folder_icon = NULL;
-		}
-
-		if ( folder_open_icon ) {
-			g_object_unref( G_OBJECT( folder_open_icon ) );
-			folder_open_icon = NULL;
-		}
-
-		if ( folder_closed_icon ) {
-			g_object_unref( G_OBJECT( folder_closed_icon ) );
-			folder_closed_icon = NULL;
-		}
+        if ( folder_closed_icon ) {
+          g_object_unref( G_OBJECT( folder_closed_icon ) );
+          folder_closed_icon = NULL;
+        }
 
         g_free( extras_iter );
         extras_iter = NULL;
 
-		g_debug( "read_menu_conf: DONE!" );
-	}
 
 	return;
 }
@@ -997,9 +818,6 @@ GtkTreeModel *get_menu_contents(void)
 {
 	GtkTreeStore *contents;
 	GList *desktop_files = NULL;
-
-	GtkTreeIter content_iter;
-
 	gchar *user_home_dir;
 	gchar *user_menu_conf_file;
 
@@ -1018,8 +836,6 @@ GtkTreeModel *get_menu_contents(void)
 			G_TYPE_STRING,     /* Comment */
 			G_TYPE_STRING	   /* Text domain */
 			);
-		
-	gtk_tree_store_append(contents, &content_iter, NULL);
 
 	/* Get $HOME */
 	user_home_dir = getenv( "HOME" );
@@ -1034,11 +850,11 @@ GtkTreeModel *get_menu_contents(void)
 
 		/* .. read it */
 		read_menu_conf(user_menu_conf_file, contents,
-				NULL, NULL, &content_iter, desktop_files);
+				NULL, NULL, NULL, desktop_files);
 	} else {
 		/* Use the system-wide menu file */
 		read_menu_conf(HILDON_DESKTOP_MENU_DIR "/" MENU_FILE, contents,
-				NULL, NULL, &content_iter, desktop_files);
+				NULL, NULL, NULL, desktop_files);
 	}
 
 	/* Cleanup */
@@ -1058,7 +874,6 @@ gboolean write_menu_conf( xmlTextWriterPtr writer,
 
 	gchar *name = NULL;
 	gchar *desktop_id = NULL;
-
 
 	/* Make sure we have a valid iterator */
 	if (!gtk_tree_store_iter_is_valid( menu_tree, iterator) ) {
@@ -1563,6 +1378,7 @@ gboolean set_menu_contents( GtkTreeModel *model )
 	g_assert( GTK_IS_TREE_MODEL( model ) );
 
 	gboolean return_value = FALSE;
+        GtkTreeIter iter;
 
 	xmlBufferPtr buffer;
 	xmlTextWriterPtr writer;
@@ -1599,20 +1415,21 @@ gboolean set_menu_contents( GtkTreeModel *model )
 
 	}
 
-	GtkTreeIter iterator;
+        gtk_tree_model_get_iter_first (model, &iter);
+        if ( xmlTextWriterStartElement( writer,
+                                        BAD_CAST "Menu" ) < 0 ) {
+               g_warning ( "set_menu_contents: failed to write root element");
+               goto cleanup_and_exit;
+        }
 
-	gtk_tree_model_get_iter_first( model, &iterator );
-
-	if ( !gtk_tree_store_iter_is_valid(
-				GTK_TREE_STORE( model ), &iterator ) ) {
-		g_warning( "set_menu_contents: failed to get iterator." );
-		goto cleanup_and_exit;	
-	}
-
-	if ( write_menu_conf( writer, GTK_TREE_STORE( model ), &iterator ) == FALSE ) {
+	if ( write_menu_conf( writer, GTK_TREE_STORE( model ), &iter ) == FALSE ) {
 		g_warning( "set_menu_contents: failed to write menu conf." );
 		goto cleanup_and_exit;
 	}
+        if ( xmlTextWriterEndElement( writer ) < 0 ) {
+               g_warning ( "set_menu_contents: failed to write root element");
+               goto cleanup_and_exit;
+        }
 
 	/* End the document */
 	if ( xmlTextWriterEndDocument( writer ) ) {

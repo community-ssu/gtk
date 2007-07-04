@@ -1,3 +1,20 @@
+2007-07-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-app-menu-dialog.[ch]:
+	- added dialog to manage application menu
+	* src/hd-app-menu-tree.[ch]:
+	- added 2-views tree view to manage application menu
+	* src/hd-applications-menu-settings.c:
+	- exported symbol for the hildon-plugin-settings
+	* src/hd-applications-menu.c:
+	- modified to expect multiple root tree store
+	* libhildondesktop/libhildonmenu.c:
+	- hacked to generate multiple-root tree store
+	* src/Makefile.am: added configuration library for
+	the application menu
+	* data/applications-menu.desktop.in: Changed path
+	to settings library
+
 2007-07-03  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-expandable.c:

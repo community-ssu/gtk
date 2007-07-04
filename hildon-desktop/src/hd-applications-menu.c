@@ -557,12 +557,9 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
 
   if (model == NULL)
   {
-    GtkTreeIter fiter;
-
     model = get_menu_contents ();
     
-    if (!gtk_tree_model_get_iter_first (model, &fiter) ||
-        !gtk_tree_model_iter_children (model, iter, &fiter))
+    if (!gtk_tree_model_get_iter_first (model, iter))
     {
       g_object_unref (G_OBJECT (model));
 

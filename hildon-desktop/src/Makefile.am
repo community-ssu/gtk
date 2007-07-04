@@ -114,6 +114,22 @@ hildon_desktop_SOURCES = \
 	hd-config.h                  \
 	main.c
 
+pluginlib_LTLIBRARIES = libhd-applications-menu-settings.la
+
+libhd_applications_menu_settings_la_CPPFLAGS = $(HILDON_CFLAGS) \
+                                               $(LIBXML_CFLAGS)
+libhd_applications_menu_settings_la_LDFLAGS = -module -avoid-version
+libhd_applications_menu_settings_la_LIBADD  = \
+                $(top_srcdir)/libhildondesktop/libhildondesktop.la
+
+libhd_applications_menu_settings_la_SOURCES = \
+                            hd-app-menu-dialog.c \
+                            hd-app-menu-dialog.h \
+                            hd-app-menu-tree.c \
+                            hd-app-menu-tree.h \
+                            hd-applications-menu-settings-l10n.h \
+                            hd-applications-menu-settings.c
+
 EXTRA_DIST = notification-manager.xml
 
 CLEANFILES = *~ $(BUILT_SOURCES)
