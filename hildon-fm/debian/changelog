@@ -1,3 +1,11 @@
+libhildonfm (1:1.9.34~unreleased) unstable; urgency=low
+
+  * Clarify API doc comments about the storage root URIs for the storage
+    details dialog, fix a small unlikely leak and only do fast MIME type
+    checking.
+
+ -- Richard Hult <richard@imendio.com>  Wed,  4 Jul 2007 11:53:22 +0200
+
 libhildonfm (1:1.9.33) unstable; urgency=low
 
   * Fixes: NB#59187. File/Folder operations in MMC through PC does not 
