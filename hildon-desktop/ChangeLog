@@ -6,6 +6,10 @@
 
 2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-home-area.c: fixed build warning.
+
+2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* data/Makefile.am, data/notification-groups.conf: new notification
 	grouping configuration file.
 	* libhildondesktop/hildon-desktop-notification-manager.[ch]

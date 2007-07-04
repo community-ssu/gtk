@@ -1981,7 +1981,7 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
   guint                 buffer_size;
   GError               *local_error = NULL;
   gint                  ret;
-  gint                  n_children, i;
+  guint                 n_children, i;
   Window               *wchildren, root, parent;
 
   g_return_val_if_fail (HILDON_IS_HOME_AREA (area) && path, -1);
