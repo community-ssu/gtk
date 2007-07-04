@@ -1,3 +1,11 @@
+sapwood (2.91.6-1) unstable; urgency=low
+
+  * Implement downscaling
+    - Fixes: NB#62512 sapwood ignores width/height if smaller than the bitmap
+  * debian/control: Build-depend on libgtk2.0-dev 2.8 due to cairo
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  4 Jul 2007 10:47:00 +0300
+
 sapwood (2.91.5-1) unstable; urgency=low
 
   * Fix 'position' handling to correctly check widgets visibility (breadcrumb)
