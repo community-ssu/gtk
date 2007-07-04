@@ -1,6 +1,12 @@
 2007-07-04  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup),
+	(_gtk_entry_completion_popdown): and use ifndef instead
+	of ifdef !. See you in 2 hours with another fix.
+
+2007-07-04  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup),
 	(_gtk_entry_completion_popdown): Used ifdef, not if, for the
 	MAEMO_CHANGES guards...
 
