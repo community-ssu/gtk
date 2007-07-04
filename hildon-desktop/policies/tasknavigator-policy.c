@@ -46,8 +46,7 @@ G_MODULE_EXPORT HildonDesktopItem *hd_ui_policy_module_get_failure_item   (gint 
 static gboolean
 is_gap_plugin (const gchar *plugin_id)
 {
-  if (!g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_APPS_MENU_PLUGIN)    &&
-      !g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_APP_SWITCHER_PLUGIN) &&
+  if (!g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_APP_SWITCHER_PLUGIN) &&
       !g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_SWITCHER_MENU_PLUGIN))
   {
     return TRUE;
@@ -62,13 +61,21 @@ hd_ui_policy_module_filter_plugin_list (GList *plugin_list)
   GList *i, *f_plugin_list = NULL;
   gboolean used_browser_plugin = FALSE;
   gboolean used_contact_plugin = FALSE;
+  gboolean used_appsmenu_plugin = FALSE;
   gint position = 0;
   gint n_items;
 
-  for (i = plugin_list; i && position < 2; i = i->next)
+  for (i = plugin_list; i && position < 3; i = i->next)
   {
     const gchar *plugin_id = (const gchar *) i->data;
 
+    if (position == 2 && !used_appsmenu_plugin)
+    {
+      f_plugin_list = g_list_append (f_plugin_list, 
+		                     g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_APPS_MENU_PLUGIN));
+      break;
+    }
+ 
     if (is_gap_plugin (plugin_id))
     {
       f_plugin_list = g_list_append (f_plugin_list, g_strdup (plugin_id));
@@ -84,27 +91,33 @@ hd_ui_policy_module_filter_plugin_list (GList *plugin_list)
     if (g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_CONTACT_PLUGIN))
       used_contact_plugin = TRUE;
  
+    if (g_str_equal (plugin_id, HD_TN_ENTRY_PATH "/" HD_TN_APPS_MENU_PLUGIN))
+      used_appsmenu_plugin = TRUE;
+    
     position++;
   }
 
   n_items = g_list_length (f_plugin_list);
   
-  if (n_items < 2 && !used_browser_plugin)
+  if (n_items < 3 && !used_browser_plugin)
   {
     f_plugin_list = g_list_prepend (f_plugin_list, 
 		    		    g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_BROWSER_PLUGIN));
     n_items++;
   }
   
-  if (n_items < 2 && !used_contact_plugin)
+  if (n_items < 3 && !used_contact_plugin)
   {
     f_plugin_list = g_list_append (f_plugin_list, 
 		    		   g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_CONTACT_PLUGIN));
   }
 
-  f_plugin_list = g_list_append (f_plugin_list, 
-		  		 g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_APPS_MENU_PLUGIN));
-  
+  if (n_items < 3 && !used_appsmenu_plugin)
+  {
+    f_plugin_list = g_list_append (f_plugin_list, 
+		    		   g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_APPS_MENU_PLUGIN));
+  }
+
   f_plugin_list = g_list_append (f_plugin_list, 
 		  		 g_strdup (HD_TN_ENTRY_PATH "/" HD_TN_APP_SWITCHER_PLUGIN));
 

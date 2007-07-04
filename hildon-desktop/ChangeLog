@@ -1,3 +1,9 @@
+2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* policies/tasknavigator-policy.c (is_gap_plugin,
+	hd_ui_policy_module_filter_plugin_list): allow setting the position of
+	the applications menu plugin but keep it as mandatory.
+
 2007-07-03  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-app-menu-dialog.[ch]:
@@ -39,7 +45,7 @@
 	be shown on top of vkb.
 	* src/hd-switcher-menu.c: (hd_switcher_menu_constructor):
 	- Not attach the widget in order to be transient for root window and
-        be shown on top of vkb.
+	be shown on top of vkb.
 	- Fixes: NB#62048.
 
 2007-07-02  Johan Bilien  <johan.bilien@nokia.com>
