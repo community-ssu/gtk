@@ -1,3 +1,7 @@
+2007-07-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* === Release 2.91.6 ===
+
 2007-07-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-pixmap.c (sapwood_pixmap_render_rects): Rename to

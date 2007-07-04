@@ -1,3 +1,17 @@
+sapwood 2.91.6 - 2007-07-04
+===========================
+
+Changes
+-------
+When painting to areas smaller than bitmap use downscaling instead of clipping
+or ignoring the target size.
+
+
+Bugs fixed
+----------
+NB#62512 - sapwood ignores width/height if smaller than the bitmap
+
+
 sapwood 2.91.5 - 2007-06-08
 ===========================
 
