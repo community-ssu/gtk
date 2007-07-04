@@ -1,3 +1,9 @@
+2007-07-04  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-desktop.c: Explicitely use dgettext when translating
+	the kill application dialog.
+	Fixes: NB#62248, NB#62270
+
 2007-07-04  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* data/Makefile.am, data/notification-groups.conf: new notification

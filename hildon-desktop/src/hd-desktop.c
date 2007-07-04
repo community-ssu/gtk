@@ -62,12 +62,14 @@ G_DEFINE_TYPE (HDDesktop, hd_desktop, G_TYPE_OBJECT);
 #define HD_DESKTOP_CONFIG_FILE         "desktop.conf"
 #define HD_DESKTOP_CONFIG_USER_PATH    ".osso/hildon-desktop/"
 
-#define HD_DESKTOP_PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
-#define HD_DESKTOP_PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
-#define HD_DESKTOP_PING_TIMEOUT_KILL_FAILURE_STRING  _( "" )
+#define _L10N(s) dgettext(GETTEXT_PACKAGE, s)
 
-#define HD_DESKTOP_PING_TIMEOUT_BUTTON_OK_STRING     _( "qgn_bd_apkil_ok" )
-#define HD_DESKTOP_PING_TIMEOUT_BUTTON_CANCEL_STRING _( "qgn_bd_apkil_cancel" )
+#define HD_DESKTOP_PING_TIMEOUT_MESSAGE_STRING       _L10N("qgn_nc_apkil_notresponding")
+#define HD_DESKTOP_PING_TIMEOUT_RESPONSE_STRING      _L10N( "qgn_ib_apkil_responded" )
+#define HD_DESKTOP_PING_TIMEOUT_KILL_FAILURE_STRING  _L10N( "" )
+
+#define HD_DESKTOP_PING_TIMEOUT_BUTTON_OK_STRING     _L10N( "qgn_bd_apkil_ok" )
+#define HD_DESKTOP_PING_TIMEOUT_BUTTON_CANCEL_STRING _L10N( "qgn_bd_apkil_cancel" )
 
 typedef struct 
 {
