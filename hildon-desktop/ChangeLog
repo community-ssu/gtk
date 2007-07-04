@@ -1,3 +1,27 @@
+2007-07-04  Moises Martinez  <moises.martinez@nokia.com>
+
+	* data/desktop.conf.in:
+	- Added X-Load-New-Plugins for statusbar
+	* data/install_sbapplet.sh:
+	- exit 0; script for backward-compatibility
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- disabled sb_debug output
+	* libhildonwm/hd-wm-desktop.c: code cleanup.
+	* libhildonwm/hd-wm-window.c: (hd_wm_window_close):
+	* libhildonwm/hd-wm.[ch]:
+	- gdk_close_all_temporary_windows is MAEMO_CHANGES
+	- Treat menu_button as a gobject not gtkwidget.
+	- Removed unused methods
+	* src/hd-applications-menu.c:
+	* src/hn-others-button.c:
+	- Pass the menu button as a GObject.
+	* src/hd-switcher-menu.c:
+	* src/hn-app-switcher.c:
+	- disabled debug output
+	* src/hn-app-button.c:
+	- Partially fixed size of menu_items
+	- disabled debug ouput
+
 2007-07-04  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-desktop.c: Explicitely use dgettext when translating

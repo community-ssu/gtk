@@ -29,5 +29,6 @@ X-Size-Width=282
 X-Size-Height=50
 X-Orientation=top
 X-Is-Ordered=1
+X-Load-New-Plugins=1
 X-Config-File=statusbar.conf
 X-Plugin-Dir=@hildonstatusbardesktopentrydir@

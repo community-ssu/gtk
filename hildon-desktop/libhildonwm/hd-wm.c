@@ -215,7 +215,7 @@ struct _HDWMPrivate   /* Our main struct */
   GHashTable             *watched_apps;
 
 
-  GtkWidget              *all_menu;
+  GObject	         *all_menu;
 
   Window                  desktop_window;
 
@@ -710,9 +710,9 @@ mce_handler (DBusConnection *conn,
   if (g_str_equal (HOME_LONG_PRESS, member) && !hd_wm_modal_windows_present())
   {
     g_signal_emit_by_name (hdwm, "long-key-press");
-    
+#ifdef MAEMO_CHANGES    
     gdk_close_all_temporary_windows ();
-    
+#endif    
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
   
@@ -1568,46 +1568,6 @@ hd_wm_lookup_window_via_service (const gchar *service_name)
   return win;
 }
 
-#if 0
-static gboolean
-hd_wm_lookup_window_via_menu_widget_find_func (gpointer key,
-                                                       gpointer value,
-                                                       gpointer user_data)
-{
-  HDWMWindow *win;
-  
-  win = (HDWMWindow*)value;
-
-  if (hd_wm_window_get_menu (win) == (GtkWidget*)user_data)
-    return TRUE;
-
-  return FALSE;
-}
-
-
-HDWMWindow*
-hd_wm_lookup_window_via_menu_widget (GtkWidget *menu_widget)
-{
-  HDWMWindow *win = NULL;
-
-  win
-    = g_hash_table_find (hdwm->priv->windows,
-			 hd_wm_lookup_window_via_menu_widget_find_func,
-			 (gpointer)menu_widget);
-
-  if (!win)
-    {
-      /* Maybe its stored in our hibernating hash
-       */
-      win = g_hash_table_find (hdwm->priv->windows_hibernating,
-			       hd_wm_lookup_window_via_menu_widget_find_func,
-			       (gpointer)menu_widget);
-    }
-  
-  return win;
-}
-#endif
-
 static gboolean
 hd_wm_lookup_application_via_service_find_func (gpointer key,
 						  gpointer value,
@@ -1668,24 +1628,6 @@ hd_wm_lookup_application_via_exec (const gchar *exec_name)
 			   hd_wm_lookup_application_via_exec_find_func,
 			  (gpointer)exec_name);
 }
-
-#if 0
-HDWMApplication*
-hd_wm_lookup_application_via_menu (GtkWidget *menu)
-{
-  HDWMWindow     *win;
-
-  win = hd_wm_lookup_window_via_menu_widget (menu);
-
-  if (!win)
-    win = hd_wm_lookup_window_view (menu);
-
-  if (win)
-    return hd_wm_window_get_application (win);
-
-  return NULL;
-}
-#endif
 
 /* Root win property changes */
 
@@ -2201,12 +2143,12 @@ hd_wm_send_startup_notification_new (HDWM *hdwm, HDWMApplication *app)
 }
 
 void 
-hd_wm_set_all_menu_button (HDWM *hdwm, GtkWidget *widget)
+hd_wm_set_all_menu_button (HDWM *hdwm, GObject *menu_button)
 {
-  g_assert (hdwm && widget);
-  g_assert (HD_IS_WM (hdwm) && GTK_IS_WIDGET (widget));
+  g_assert (hdwm && menu_button);
+  g_assert (HD_IS_WM (hdwm) && G_IS_OBJECT (menu_button));
 
-  hdwm->priv->all_menu = widget;
+  hdwm->priv->all_menu = menu_button;
 }
 
 void 
@@ -2340,7 +2282,7 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
       hd_wm_focus_active_window (hdwm);
       return;
     case HD_TN_ACTIVATE_ALL_MENU:
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hdwm->priv->all_menu), TRUE);
+      g_object_set (hdwm->priv->all_menu, "activate", TRUE, NULL);
       g_signal_emit_by_name (hdwm->priv->all_menu, "toggled");
       break;
     default:

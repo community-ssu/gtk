@@ -231,21 +231,15 @@ hd_wm_toggle_desktop (void);
 HDWMWindow*
 hd_wm_lookup_window_via_service (const gchar *service_name);
 
-HDWMWindow*
-hd_wm_lookup_window_via_menu_widget (GtkWidget *menu_widget);
-
 HDWMApplication*
 hd_wm_lookup_application_via_service (const gchar *service_name);
 
 HDWMApplication*
 hd_wm_lookup_application_via_exec (const gchar *exec_name);
 
-HDWMApplication*
-hd_wm_lookup_application_via_menu (GtkWidget *menu);
-
 gchar *
 hd_wm_compute_window_hibernation_key (Window xwin,
-					      HDWMApplication *app);
+				      HDWMApplication *app);
 
 void
 hd_wm_monitor_register (void);
@@ -261,7 +255,7 @@ void
 hd_wm_focus_active_window (HDWM *hdwm);
 
 void 
-hd_wm_set_all_menu_button (HDWM *hdwm, GtkWidget *widget);
+hd_wm_set_all_menu_button (HDWM *hdwm, GObject *menu_button);
 
 gboolean
 hd_wm_fullscreen_mode (void);

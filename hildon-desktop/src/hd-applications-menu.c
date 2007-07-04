@@ -174,7 +174,7 @@ hd_applications_menu_init (HDApplicationsMenu *button)
   gtk_widget_show_all (priv->button);
 
   hdwm = hd_wm_get_singleton ();
-  hd_wm_set_all_menu_button (hdwm, priv->button);
+  hd_wm_set_all_menu_button (hdwm, G_OBJECT (priv->button));
 
   g_signal_connect (G_OBJECT (priv->button), 
 		    "toggled",

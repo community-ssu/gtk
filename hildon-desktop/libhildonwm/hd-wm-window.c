@@ -1204,7 +1204,6 @@ hd_wm_window_close (HDWMWindow *win)
     ev.xclient.format       = 32;
     ev.xclient.data.l[0]    = CurrentTime;
     ev.xclient.data.l[1]    = GDK_WINDOW_XID (gdk_get_default_root_window ());
-      /*ev.xclient.data.l[1]    = GDK_WINDOW_XID(gtk_widget_get_parent_window (GTK_WIDGET (tasknav)));*/
   
     gdk_error_trap_push();
     XSendEvent (GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,SubstructureRedirectMask, &ev);

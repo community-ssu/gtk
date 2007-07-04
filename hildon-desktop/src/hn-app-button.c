@@ -437,7 +437,7 @@ hn_app_button_create_menu (HNAppButton *app_button)
   gtk_widget_set_size_request (menu, -1, -1);
   gtk_widget_size_request (menu, &req);
   gtk_widget_set_size_request (menu,
-		  	       MAX (width, req.width),
+		  	       AS_MENU_ITEM_WIDTH,/*MAX (width, req.width),*/
 			       -1);
 
   return menu;

@@ -40,7 +40,7 @@
 #define SYSTEM_TRAY_CANCEL_MESSAGE  2
 #endif
 
-#define STATUSBAR_DEBUG 1
+#define STATUSBAR_DEBUG 0
 #if (STATUSBAR_DEBUG)
 #define sb_debug(o,a...) g_debug("sb: " o,##a)
 #else

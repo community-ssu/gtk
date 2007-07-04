@@ -1390,7 +1390,7 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
   if (switcher->priv->is_open)
   {	  
     hildon_desktop_popup_menu_select_next_item (switcher->priv->menu_applications);
-    g_debug ("selecting next item");
+    hd_wm_debug ("selecting next item");
   }
     
   hildon_desktop_popup_window_popup 

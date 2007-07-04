@@ -266,7 +266,7 @@ app_button_toggled_cb (GtkToggleButton *toggle,
   gboolean is_active = gtk_toggle_button_get_active (toggle);
   gboolean is_inconsistent = gtk_toggle_button_get_inconsistent (toggle);
   gchar *name,*name_pressed;
-  static gint i=0;
+  
   name =
    g_strdup_printf (AS_BUTTON_NAME,pos+1);
 
@@ -286,11 +286,10 @@ app_button_toggled_cb (GtkToggleButton *toggle,
   g_free (name);
   g_free (name_pressed);
 
-  g_debug ("%i setting button (pos=%d) (inconsistent='<%s>', active='<%s>') name: %s",
-	   i,pos,
-	   is_inconsistent ? "true" : "false",
-	   is_active ? "true" : "false",
-	   gtk_widget_get_name (widget));
+  hd_wm_debug ("setting button (pos=%d) (inconsistent='<%s>', active='<%s>') name: %s",
+	       pos, is_inconsistent ? "true" : "false",
+	       is_active ? "true" : "false",
+	       gtk_widget_get_name (widget));
 }
 
 static void 
@@ -353,7 +352,7 @@ create_app_button (HNAppSwitcher *app_switcher,
   name = 
     g_strdup_printf (AS_BUTTON_NAME,pos+1);
   
-  g_debug ("Creating app button at pos %d (name %s)", pos, name);
+  hd_wm_debug ("Creating app button at pos %d (name %s)", pos, name);
  
   retval = hn_app_button_new (NULL);
 
@@ -394,7 +393,7 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   gtk_widget_push_composite_child ();
 
   /* most recent applications buttons */
-  g_debug ("Adding buttons");
+  hd_wm_debug ("Adding buttons");
 
   for (i=0;i < app_switcher->priv->nitems;i++)
   {
@@ -585,7 +584,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
     if (hd_wm_entry_info_is_urgent (_info) &&
         !hd_wm_entry_info_get_ignore_urgent (_info))
     {
-      g_debug("Found an urgent button");
+      hd_wm_debug("Found an urgent button");
       urgent = TRUE;
     }
 
@@ -609,7 +608,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   hn_app_button_set_group (app_button, priv->buttons_group);
   priv->buttons_group = hn_app_button_get_group (app_button);
 
-  g_debug ("buttons_group.size := %d",
+  hd_wm_debug ("buttons_group.size := %d",
 	  g_slist_length (priv->buttons_group));
 
   hn_app_button_set_is_blinking (app_button, urgent);
@@ -658,7 +657,7 @@ refresh_buttons (gpointer user_data)
     /* we just want the most recently used top-level applications */
     if (!HD_WM_IS_APPLICATION (entry))
     {
-      g_debug("Object is not an application");
+      hd_wm_debug("Object is not an application");
       continue;
     }
 
@@ -688,7 +687,7 @@ refresh_buttons (gpointer user_data)
   {
     GtkToggleButton *button;
       
-    g_debug ("Unsetting the previously active button %d",
+    hd_wm_debug ("Unsetting the previously active button %d",
              active_button);
 
     button = GTK_TOGGLE_BUTTON (priv->buttons[active_button]);
@@ -831,7 +830,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
 {
   HNAppSwitcher        *app_switcher = HN_APP_SWITCHER (data);
   HNAppSwitcherPrivate *priv = app_switcher->priv;
-  g_debug ("In hn_app_switcher_real_changed_info");
+  hd_wm_debug ("In hn_app_switcher_real_changed_info");
 
   /* all changes have potential impact on the the main menu; app menus are
    * created on the fly, so we do not have to worry about menu changes there
@@ -846,7 +845,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
     gint                  pos;
     GList *               l;
 
-    g_debug ("HDEntryInfo present and of type APPLICATION");
+    hd_wm_debug ("HDEntryInfo present and of type APPLICATION");
       
     for (l = hd_wm_get_applications (hdwm), pos = 0;
          l != NULL && pos < priv->nitems;
@@ -856,7 +855,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
           
       if (!HD_WM_IS_APPLICATION (entry))
       {
-        g_debug("Object is not an application");
+        hd_wm_debug("Object is not an application");
         continue;
       }
 
@@ -881,7 +880,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
     GList       *l;
     gint         pos;
       
-    g_debug ("HDEntryInfo present, with child entry");
+    hd_wm_debug ("HDEntryInfo present, with child entry");
 
     parent = hd_wm_entry_info_get_parent (entry_info);
 
@@ -925,7 +924,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
       /* we just want the most recently used top-level applications */
       if (!HD_WM_IS_APPLICATION (entry))
       {
-        g_debug("Object is not an application");
+        hd_wm_debug("Object is not an application");
         continue;
       }
 
@@ -938,7 +937,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
 
     if (button)
     {
-      g_debug ("Force the button's icon to update itself");
+      hd_wm_debug ("Force the button's icon to update itself");
       hn_app_button_force_update_icon (HN_APP_BUTTON (button));
     }
 
@@ -979,7 +978,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointer
      */
   }
   
-  g_debug ("Queuing a refresh cycle of the buttons (info: %s)",
+  hd_wm_debug ("Queuing a refresh cycle of the buttons (info: %s)",
            entry_info != NULL ? "yes" : "no");
 
   /* either global update (no entry_info) or a more complicated case that
@@ -1002,7 +1001,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointe
   HDWMEntryInfo          * parent;
   gboolean               active_found = FALSE;
 
-  g_debug ("In hn_app_switcher_real_changed_stack");
+  hd_wm_debug ("In hn_app_switcher_real_changed_stack");
 
   
   if (!entry_info || !hd_wm_entry_info_is_active (entry_info))
@@ -1061,7 +1060,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointe
     {
       GtkToggleButton *app_button;
 
-      g_debug ("Setting inconsistent state for pos %d", pos);
+      hd_wm_debug ("Setting inconsistent state for pos %d", pos);
 
       app_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
       gtk_toggle_button_set_inconsistent (app_button, TRUE);
@@ -1087,7 +1086,7 @@ hn_app_switcher_finalize (GObject *gobject)
 
   g_object_unref (app_switch->hdwm);
 
-  g_debug ("Destroying HNAppSwitcher");
+  hd_wm_debug ("Destroying HNAppSwitcher");
 
   G_OBJECT_CLASS (hn_app_switcher_parent_class)->finalize (gobject);
 }
@@ -1100,13 +1099,13 @@ hn_app_switcher_constructor (GType                  type,
   GObject *object;
   HNAppSwitcher *appswitcher;
 
-  g_debug ("inside hn_app_switcher_constructor...");
+  hd_wm_debug ("inside hn_app_switcher_constructor...");
 
   
   object      = G_OBJECT_CLASS (hn_app_switcher_parent_class)->constructor (type,n_construct_params, construct_params);
   appswitcher = HN_APP_SWITCHER (object);
   
-  g_debug ("building HNAppSwitcher widget");
+  hd_wm_debug ("building HNAppSwitcher widget");
       
   hn_app_switcher_build (appswitcher);
 
@@ -1301,7 +1300,7 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
 
   gtk_container_add (GTK_CONTAINER(hbox), label);
   gtk_container_add (GTK_CONTAINER(hbox), vbox);
-  g_debug ("there should be items %p", items);
+  hd_wm_debug ("there should be items %p", items);
   /* Collect open applications */
   for (l = items; l; l = l->next)
   {
@@ -1312,7 +1311,7 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
     GtkIconTheme *icon_theme;
     HDWMApplication *app;
     HDWMCADItem *item = (HDWMCADItem *) l->data;
-    g_debug ("item --> %p",l->data);
+    
     if (item->win == NULL)
       continue;
 

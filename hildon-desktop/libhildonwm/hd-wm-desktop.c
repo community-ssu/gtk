@@ -35,7 +35,7 @@
 #include <X11/Xutil.h> 		/* For WMHints */
 #include <X11/Xatom.h>
 #include <gdk/gdkx.h>
-#include <gtk/gtk.h> /* needed by hildon-navigator-main.h */
+#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
 #include "hd-wm-application.h"
