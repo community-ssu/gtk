@@ -2,18 +2,16 @@ Index: libgnomevfs/gnome-vfs-monitor.c
 ===================================================================
 --- libgnomevfs/gnome-vfs-monitor.c	(revision 12626)
 +++ libgnomevfs/gnome-vfs-monitor.c	(working copy)
-@@ -452,7 +452,18 @@ gnome_vfs_monitor_callback (GnomeVFSMeth
+@@ -452,7 +452,16 @@ gnome_vfs_monitor_callback (GnomeVFSMeth
  				send_uri_changes_now (monitor_handle, uri, now);
  				callback_data->send_at = now;
  			} else {
 -				callback_data->send_at = last_data->send_at + CONSECUTIVE_CALLBACK_DELAY;
 +				time_t when;
 +
-+				/* To make sure we don't have a
-+				 * callback send time in the future,
-+				 * we make sure that 'now' is the
-+				 * longest the user will wait for the
-+				 * event.
++				/* Make sure we don't send events in
++				 * the future, handle the case where
++				 * the system time is set back.
 +				 */
 +				when  = MIN(last_data->send_at, now);
 +				when += CONSECUTIVE_CALLBACK_DELAY;
