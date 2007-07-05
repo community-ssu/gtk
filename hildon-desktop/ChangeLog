@@ -1,3 +1,10 @@
+2007-07-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- sort the stack order after the container is realized,
+	instead of doing it after each child. This was changing the
+	order of the children while the same list was being iterated.
+
 2007-07-05  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/notification-manager.xml,

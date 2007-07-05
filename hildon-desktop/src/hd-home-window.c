@@ -1265,6 +1265,8 @@ hd_home_window_save_area_layout (HDHomeWindow *window)
 {
   GtkWidget    *area = GTK_BIN (window)->child;
 
+  g_debug ("Saving area layout");
+
   if (HILDON_IS_HOME_AREA (area))
     {
       GError *error = NULL;

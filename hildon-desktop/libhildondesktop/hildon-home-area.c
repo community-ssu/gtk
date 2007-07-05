@@ -182,10 +182,10 @@ hildon_home_area_child_realize (GtkWidget             *child,
                                 HildonHomeArea        *area);
 
 
-#ifdef HAVE_X_COMPOSITE
-
 static void
 hildon_home_area_realize (GtkWidget *widget);
+
+#ifdef HAVE_X_COMPOSITE
 
 static void
 hildon_home_area_unrealize (GtkWidget *widget);
@@ -221,6 +221,8 @@ hildon_home_area_child_state_change (ChildData         *child_data);
 
 #endif
 
+static void
+hildon_home_area_sort_stack (HildonHomeArea *area);
 
 static void
 hildon_home_area_finalize (GObject *object);
@@ -331,11 +333,11 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
 
   widget_class->size_allocate = hildon_home_area_size_allocate;
   widget_class->size_request  = hildon_home_area_size_request;
+  widget_class->realize       = hildon_home_area_realize;
 
 #ifdef HAVE_X_COMPOSITE
   if (klass->composite)
     {
-      widget_class->realize      = hildon_home_area_realize;
       widget_class->unrealize    = hildon_home_area_unrealize;
       widget_class->expose_event = hildon_home_area_expose;
     }
@@ -809,35 +811,28 @@ hildon_home_area_size_allocate (GtkWidget      *widget,
     }
 
 }
-
-#ifdef HAVE_X_COMPOSITE
-
 static void
 hildon_home_area_realize (GtkWidget *widget)
 {
-  HildonHomeAreaPriv           *priv;
-  XRenderPictureAttributes      pa;
-  XRenderPictFormat            *format;
-
   GTK_WIDGET_CLASS (parent_class)->realize (widget);
 
-  XCompositeRedirectSubwindows (GDK_DISPLAY (),
-                                GDK_WINDOW_XID (widget->window),
-                                CompositeRedirectManual);
+#ifdef HAVE_X_COMPOSITE
+  if (HILDON_HOME_AREA_GET_CLASS (widget)->composite)
+    {
 
-  priv = HILDON_HOME_AREA_GET_PRIVATE (widget);
+      XCompositeRedirectSubwindows (GDK_DISPLAY (),
+                                    GDK_WINDOW_XID (widget->window),
+                                    CompositeRedirectManual);
 
-  format = XRenderFindVisualFormat (GDK_DISPLAY(),
-                                    GDK_VISUAL_XVISUAL (
-                                     gdk_drawable_get_visual (widget->window)));
+    }
+#endif
 
-  pa.subwindow_mode = IncludeInferiors;
-  priv->picture = XRenderCreatePicture (GDK_DISPLAY (),
-                                        GDK_WINDOW_XID (widget->window),
-                                        format,
-                                        CPSubwindowMode,
-                                        &pa);
+  hildon_home_area_sort_stack (HILDON_HOME_AREA (widget));
+
 }
+
+
+#ifdef HAVE_X_COMPOSITE
 
 static void
 hildon_home_area_unrealize (GtkWidget *widget)
@@ -956,7 +951,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
           hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0, G_MAXINT);
         }
 
-      g_signal_emit_by_name (area, "layout-changed");
 
       if (priv->layout_mode)
         hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
@@ -2245,6 +2239,7 @@ hildon_home_area_set_batch_add (HildonHomeArea *area, gboolean batch_add)
     {
       priv->batch_add = FALSE;
       hildon_home_area_batch_add (area);
+      g_signal_emit_by_name (area, "layout-changed");
     }
 
   priv->batch_add = batch_add;
