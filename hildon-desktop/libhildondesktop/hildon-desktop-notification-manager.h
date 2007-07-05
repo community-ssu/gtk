@@ -110,8 +110,8 @@ gboolean   hildon_desktop_notification_manager_get_capabilities   (HildonDesktop
 gboolean   hildon_desktop_notification_manager_get_server_info    (HildonDesktopNotificationManager *nm,
                                                       		   gchar                **out_name,
                                                       		   gchar                **out_vendor,
-                                                      		   gchar                **out_version,
-                                                      		   gchar                **out_spec_ver);
+                                                      		   gchar                **out_version/*,
+                                                      		   gchar                **out_spec_ver*/);
 
 gboolean   hildon_desktop_notification_manager_close_notification (HildonDesktopNotificationManager *nm,
                                                                    guint id, 

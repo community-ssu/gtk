@@ -1324,13 +1324,13 @@ gboolean
 hildon_desktop_notification_manager_get_server_info (HildonDesktopNotificationManager *nm,
                                          	     gchar                **out_name,
                                          	     gchar                **out_vendor,
-                                         	     gchar                **out_version,
-                                         	     gchar                **out_spec_ver)
+                                         	     gchar                **out_version/*,
+                                         	     gchar                **out_spec_ver*/)
 {
   *out_name     = g_strdup ("Hildon Desktop Notification Manager");
   *out_vendor   = g_strdup ("Nokia");
   *out_version  = g_strdup (VERSION);
-  *out_spec_ver = g_strdup ("0.9");
+  /**out_spec_ver = g_strdup ("0.9");*/
 
   return TRUE;
 }
