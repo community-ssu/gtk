@@ -218,7 +218,7 @@ hd_applications_menu_has_focus (HildonDesktopPopupMenu *menu)
   {
     GtkWidget *item = (GtkWidget *) i->data;
 
-    if (GTK_WIDGET_HAS_FOCUS (item))
+    if (gtk_widget_is_focus (item))
       return TRUE;
   }
 
@@ -242,7 +242,7 @@ hd_applications_menu_key_press (GtkWidget *menu,
 			        HDApplicationsMenu *button)
 {
   HDWM *hdwm = hd_wm_get_singleton ();
-  
+
   if (event->keyval == GDK_Left    ||
       event->keyval == GDK_KP_Left ||
       event->keyval == GDK_Escape)
@@ -302,6 +302,10 @@ hd_applications_menu_key_press (GtkWidget *menu,
 			                         selected_item);
       
       return TRUE;
+    }
+    else if (hd_applications_menu_has_focus (button->priv->menu_applications))
+    {
+      return gtk_widget_event (GTK_WIDGET (button->priv->menu_applications), (GdkEvent *) event);
     }
   }
   else

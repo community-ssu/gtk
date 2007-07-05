@@ -1,3 +1,9 @@
+2007-07-05  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c (hd_applications_menu_has_focus):
+	correctly check where the focus is in the menus to avoid keyboard
+	navigation problems. Fixes NB#60958.
+
 2007-07-05  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
