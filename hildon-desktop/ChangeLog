@@ -1,3 +1,8 @@
+2007-07-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-desktop.c: (hd_desktop_launch_banner_timeout):
+	- Remove the banner as soon as the application has windows.
+
 2007-07-05  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c (hd_applications_menu_has_focus):
