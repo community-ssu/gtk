@@ -1,3 +1,16 @@
+hildon-plugins-settings (0.0.3-1) unstable; urgency=low
+
+  * src/hildon-plugin-settings-dialog.c:
+  - Fixed a problem when there is a limit for items to be selected.
+  Fixes: NB#62312.
+  - Dimmed proper arrow when at the beginning or the end of the list.
+  Fixes: NB#62363
+  - Select the first item in the list when changing from one tab to
+  another. Fixes: NB#62360
+  - Dialog is no longer system modal. Fixes: NB#62322
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Thu,  5 Jul 2007 14:52:37 +0300
+
 hildon-plugins-settings (0.0.2-1) unstable; urgency=low
 
   * data/hildon-plugins-settings.desktop.in:
