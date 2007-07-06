@@ -205,12 +205,20 @@ G_DEFINE_TYPE (GtkMenuShell, gtk_menu_shell, GTK_TYPE_CONTAINER)
 static void
 gtk_menu_shell_insensitive_press (GtkWidget *widget)
 {
-  GtkMenuShell *menu_shell;
   GdkEvent *event;
+
   g_return_if_fail (GTK_IS_MENU_SHELL (widget));
-  menu_shell = GTK_MENU_SHELL (widget);
+
   event = gtk_get_current_event ();
-  gtk_widget_insensitive_press (gtk_get_event_widget (event));
+  if (event)
+    {
+      GtkWidget *event_widget;
+
+      event_widget = gtk_get_event_widget (event);
+      if (event_widget != widget)
+	gtk_widget_insensitive_press (event_widget);
+      gdk_event_free (event);
+    }
 }
 #endif /* MAEMO_CHANGES */
 
