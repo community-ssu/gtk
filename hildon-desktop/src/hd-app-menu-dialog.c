@@ -295,10 +295,9 @@ hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
 
     gtk_tree_store_append (GTK_TREE_STORE (dialog->priv->model), &iter, NULL);
 
-    g_debug ("About to add %s", name);
-
     gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
-                        TREE_MODEL_NAME, name,
+                        TREE_MODEL_NAME, g_strdup (name),
+                        TREE_MODEL_LOCALIZED_NAME, g_strdup (name),
                         TREE_MODEL_ICON, icon,
                         -1);
 
@@ -326,10 +325,8 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
     return;
 
   gtk_tree_model_get (dialog->priv->model, &iter,
-                      TREE_MODEL_NAME, &name,
+                      TREE_MODEL_LOCALIZED_NAME, &name,
                       -1);
-
-  g_debug ("About to create dialog");
 
   new_dialog = gtk_dialog_new_with_buttons (HD_APP_MENU_DIALOG_RENAME_TITLE,
                                             GTK_WINDOW (dialog),
@@ -374,6 +371,7 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
 
     gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
                         TREE_MODEL_NAME, name,
+                        TREE_MODEL_LOCALIZED_NAME, name,
                         -1);
 
   }
