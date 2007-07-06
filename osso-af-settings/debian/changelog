@@ -1,3 +1,9 @@
+osso-af-settings (0.9.2-1) unstable; urgency=low
+
+  * Revert back the applications directory to /usr/share/applications/hildon 
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Fri,  6 Jul 2007 10:47:30 +0300
+
 osso-af-settings (0.9.1-1) unstable; urgency=low
 
   * Change the standard applications directory to "/usr/share/applications"
