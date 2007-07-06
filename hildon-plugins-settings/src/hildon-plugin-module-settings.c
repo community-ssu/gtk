@@ -234,6 +234,6 @@ hildon_plugin_module_settings_get_dialog (HildonPluginModuleSettings *module)
     return dialog;
   }    
     
-  return module->priv->settings_func ();
+  return module->priv->settings_func (module->priv->module);
 }
 

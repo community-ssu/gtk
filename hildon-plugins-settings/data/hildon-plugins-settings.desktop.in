@@ -5,3 +5,4 @@ Type=HildonControlPanelPlugin
 Icon=qgn_list_cp_tana
 Categories=personalisation
 X-control-panel-plugin=libhildonpluginsettings.so
+X-Text-Domain=osso-applet-tasknavigator

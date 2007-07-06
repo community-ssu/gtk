@@ -1,3 +1,10 @@
+2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hildon-plugin-module-settings.c:
+	- pass the GModule to the callback so one can use GTypeModule
+	* data/hildon-plugins-settings.desktop.in:
+	- added X-Text-Domain key. Fixes: NB#62315
+
 2007-07-05  Moises Martinez  <moises.martinez@nokia.com>
 
 	* configure.ac: 0.0.3
