@@ -1,3 +1,9 @@
+2007-07-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenushell.c (gtk_menu_shell_insensitive_press): Avoid
+	infinite recursion by not forwarding insensitive press events back to
+	ourself. Fix memory leak. NB#53311
+
 2007-07-04  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup),
