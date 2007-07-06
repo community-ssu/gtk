@@ -6,3 +6,5 @@ etc/osso-af-init
 etc/xdg
 usr/share/dbus-1
 usr/share/applications
+usr/lib/hildon-desktop/*.so
+usr/lib/hildon-desktop/policies/*.so

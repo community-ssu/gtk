@@ -1,3 +1,7 @@
+2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.22
+
 2007-07-05  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c: (hd_desktop_launch_banner_timeout):

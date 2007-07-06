@@ -2,7 +2,7 @@ Source: hildon-desktop
 Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libhildon1-dev | hildon-libs-dev, pkg-config, libosso-dev (>= 0.9.19), libosso-gnomevfs2-dev, osso-af-settings, libhildonfm2-dev | hildon-fm-dev, libhildonhelp-dev | libosso-help-dev, libxtst-dev, libxml2-dev, osso-esd-dev, libxdamage-dev, libsqlite3-dev, mce-dev
+Build-Depends: debhelper (>= 4.0.0), libhildon1-dev | hildon-libs-dev, pkg-config, libosso-dev (>= 0.9.19), libosso-gnomevfs2-dev, osso-af-settings, libhildonfm2-dev | hildon-fm-dev, libhildonhelp-dev | libosso-help-dev, libxtst-dev, libxml2-dev, osso-esd-dev, libxdamage-dev, libxcomposite-dev, libsqlite3-dev, mce-dev
 Standards-Version: 3.6.0
 
 Package: hildon-desktop

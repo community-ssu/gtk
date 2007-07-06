@@ -143,6 +143,7 @@ static void
 hd_desktop_application_frozen (HDWM *hdwm, HDWMWindow *win, gpointer data)
 {
   GtkWidget *note;
+  g_debug ("application frozen");
 
   HDWMApplication *app = hd_wm_window_get_application (win);
 

@@ -1,3 +1,153 @@
+hildon-desktop (1:0.0.22-1) sardine; urgency=low
+
+  * added libxcomposite-dev back as build-dep
+  * include /usr/lib/hildon-desktop in the package
+
+  * src/hd-desktop.c: (hd_desktop_launch_banner_timeout):
+  - Remove the banner as soon as the application has windows.
+
+  * src/hd-applications-menu.c (hd_applications_menu_has_focus):
+  correctly check where the focus is in the menus to avoid keyboard
+  navigation problems. Fixes NB#60958.
+
+  * libhildondesktop/hildon-home-area.c:
+  - sort the stack order after the container is realized,
+  instead of doing it after each child. This was changing the
+  order of the children while the same list was being iterated.
+
+  * libhildondesktop/notification-manager.xml,
+  libhildondesktop/hildon-desktop-notification-manager.c
+  (hildon_desktop_notification_manager_get_server_info): don't return
+  spec version as this is not in the spec.
+
+  * data/statusbar.conf.in:
+  - Renamed usb statusbar plugin.
+
+  * data/desktop.conf.in:
+  - Added X-Load-New-Plugins for statusbar
+  * data/install_sbapplet.sh:
+  - exit 0; script for backward-compatibility
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - disabled sb_debug output
+  * libhildonwm/hd-wm-desktop.c: code cleanup.
+  * libhildonwm/hd-wm-window.c: (hd_wm_window_close):
+  * libhildonwm/hd-wm.[ch]:
+  - gdk_close_all_temporary_windows is MAEMO_CHANGES
+  - Treat menu_button as a gobject not gtkwidget.
+  - Removed unused methods
+  * src/hd-applications-menu.c:
+  * src/hn-others-button.c:
+  - Pass the menu button as a GObject.
+  * src/hd-switcher-menu.c:
+  * src/hn-app-switcher.c:
+  - disabled debug output
+  * src/hn-app-button.c:
+  - Partially fixed size of menu_items
+  - disabled debug ouput
+
+  * src/hd-desktop.c: Explicitely use dgettext when translating
+  the kill application dialog.
+  Fixes: NB#62248, NB#62270
+
+  * libhildondesktop/hildon-home-area.c: fixed build warning.
+
+  * data/Makefile.am, data/notification-groups.conf: new notification
+  grouping configuration file.
+  * libhildondesktop/hildon-desktop-notification-manager.[ch]
+  (hildon_desktop_notification_manager_call_dbus_callback): new method
+  to send a dbus message from a string description. This is used by the
+  notification group menu item to make the dbus call for the group.
+  * src/hd-switcher-menu-item.[ch] (hd_switcher_menu_item_finalize,
+  hd_switcher_menu_item_set_property, hd_switcher_menu_item_get_property,
+  hd_switcher_menu_item_constructor, hd_switcher_menu_item_activate,
+  hd_switcher_menu_item_button_release_event, 
+  hd_switcher_menu_item_class_init, hd_switcher_menu_item_init,
+  hd_switcher_menu_item_new_from_notification_group,
+  hd_switcher_menu_item_compare_ids, hd_switcher_menu_item_has_id):
+  new type of HDSwitcherMenuItem for notification group items.
+  * src/hd-switcher-menu.c (hd_switcher_menu_free_notification_group,
+  hd_switcher_menu_add_notification_group,
+  hd_switcher_menu_add_notification_groups,
+  hd_switcher_menu_reset_notification_group,
+  hd_switcher_menu_reset_notification_groups,
+  hd_switcher_menu_load_notification_groups,
+  hd_switcher_menu_constructor, hd_switcher_menu_finalize,
+  hd_switcher_menu_clear_item_activated,
+  hd_switcher_menu_create_notifications_menu, 
+  hd_switcher_menu_notification_deleted_cb): support for notification
+  grouping based on a configuration file (notification-groups.conf).
+
+  * policies/tasknavigator-policy.c (is_gap_plugin,
+  hd_ui_policy_module_filter_plugin_list): allow setting the position of
+  the applications menu plugin but keep it as mandatory.
+
+  * src/hd-app-menu-dialog.[ch]:
+  - added dialog to manage application menu
+  * src/hd-app-menu-tree.[ch]:
+  - added 2-views tree view to manage application menu
+  * src/hd-applications-menu-settings.c:
+  - exported symbol for the hildon-plugin-settings
+  * src/hd-applications-menu.c:
+  - modified to expect multiple root tree store
+  * libhildondesktop/libhildonmenu.c:
+  - hacked to generate multiple-root tree store
+  * src/Makefile.am: added configuration library for
+  the application menu
+  * data/applications-menu.desktop.in: Changed path
+  to settings library
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  (hildon_desktop_panel_expandable_cadd),
+  (hildon_desktop_panel_expandable_cremove),
+  (hildon_desktop_panel_expandable_add_button),
+  (hildon_desktop_panel_expandable_add_in_extension),
+  (hildon_desktop_panel_expandable_requeue_last_in_panel):
+  - Some further fixes for statusbar.
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Fixed debug macro
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  (hildon_desktop_popup_window_visibility_notify),
+  (hildon_desktop_popup_window_composited_button_release),
+  (hildon_desktop_popup_window_button_release_event):
+  - Added some comments.
+  * src/hd-applications-menu.c: (hd_applications_menu_create_menu):
+  - Not attach the widget in order to be transient for root window and
+  be shown on top of vkb.
+  * src/hd-switcher-menu.c: (hd_switcher_menu_constructor):
+  - Not attach the widget in order to be transient for root window and
+  be shown on top of vkb.
+  - Fixes: NB#62048.
+
+  * src/hd-home-l10n.h: Added NOLOC comments
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  (hildon_desktop_panel_expandable_get_children),
+  (hildon_desktop_panel_expandable_cremove),
+  (hildon_desktop_panel_expandable_add_button),
+  (hildon_desktop_panel_expandable_add_in_extension),
+  (hildon_desktop_panel_expandable_hash_adding),
+  (hildon_desktop_panel_expandable_arrange_items),
+  (hildon_desktop_panel_expandable_add_arrow),
+  (hildon_desktop_panel_remove_embed),
+  (hildon_desktop_panel_embed_applet):
+  - Fixed reloading of configuration. Fixes: NB#59584
+  * libhildonwm/hd-wm.h:
+  - Added hd_wm_debug. By default does nothing.
+  - Removed HN_DBG/HN_MARK
+  * libhildonwm/hd-keys.c:
+  * libhildonwm/hd-wm-application.c:
+  * libhildonwm/hd-wm-memory.c:
+  * libhildonwm/hd-wm-window.c:
+  * libhildonwm/hd-wm.c:
+  - Use of hd_wm_debug instead of g_debug/HN_DBG
+  * src/hd-switcher-menu-item.c:
+  * src/hn-app-button.c:
+  * src/hn-app-tooltip.c:
+  - Use of hd_wm_debug instead of HN_DBG
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  6 Jul 2007 10:28:40 +0300
+
 hildon-desktop (1:0.0.21-2) sardine; urgency=low
 
   * Added initscript to conffiles
