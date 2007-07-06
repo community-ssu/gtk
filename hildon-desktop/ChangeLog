@@ -1,5 +1,12 @@
 2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/libhildonmenu.c: added LOCALIZED_NAME column
+	* src/hd-application-menu.c: use the LOCALIZED_NAME column
+	instead of translating locally.
+	* src/hd-app-menu-tree.c: use the LOCALIZED_NAME column
+
+2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* configure.ac: 0.0.22
 
 2007-07-05  Moises Martinez  <moises.martinez@nokia.com>

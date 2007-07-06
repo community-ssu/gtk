@@ -587,7 +587,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
     item_text_domain = NULL;
      
     gtk_tree_model_get (model, iter,
-		        TREE_MODEL_NAME, &item_name,
+		        TREE_MODEL_LOCALIZED_NAME, &item_name,
 		        TREE_MODEL_ICON, &item_icon,
 		        TREE_MODEL_EXEC, &item_exec,
 		        TREE_MODEL_SERVICE, &item_service,
@@ -611,8 +611,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
       
       hbox = gtk_hbox_new (FALSE, 0);
       
-      label = gtk_label_new ((item_text_domain && *item_text_domain) ?
-      		        dgettext(item_text_domain, item_name) : _(item_name)), 
+      label = gtk_label_new (item_name);
       
       gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       

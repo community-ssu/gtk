@@ -163,7 +163,7 @@ hd_app_menu_tree_constructor (GType                   type,
   gtk_tree_view_column_add_attribute (column,
                                       renderer,
                                       "text",
-                                      TREE_MODEL_NAME);
+                                      TREE_MODEL_LOCALIZED_NAME);
 
   gtk_tree_view_append_column (GTK_TREE_VIEW (priv->navigation_pane),
                                column);
@@ -215,7 +215,7 @@ hd_app_menu_tree_constructor (GType                   type,
   gtk_tree_view_column_add_attribute (column,
                                       renderer,
                                       "text",
-                                      TREE_MODEL_NAME);
+                                      TREE_MODEL_LOCALIZED_NAME);
 
   gtk_tree_view_append_column (GTK_TREE_VIEW (priv->content_pane),
                                column);

@@ -37,6 +37,8 @@
 #include <config.h>
 #endif
 
+#include <glib/gi18n.h>
+
 #include <dirent.h>
 #include <sys/stat.h>
 #include <libxml/xmlreader.h>
@@ -499,6 +501,10 @@ static void add_desktop_entry(desktop_entry_t * item,
                        &child_iter,
                        TREE_MODEL_NAME,
                        item->name,
+                       TREE_MODEL_LOCALIZED_NAME,
+                       (item->text_domain && *item->text_domain)?
+                         g_strdup (dgettext (item->text_domain, item->name)):
+                         g_strdup (dgettext (GETTEXT_PACKAGE,   item->name)),
                        TREE_MODEL_ICON,
                        app_icon,
                        TREE_MODEL_THUMB_ICON,
@@ -635,6 +641,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
 					key,
+                                        TREE_MODEL_LOCALIZED_NAME,
+                                        g_strdup (dgettext (GETTEXT_PACKAGE,
+                                                            key)),
 					TREE_MODEL_ICON,
 					folder_icon,
 					TREE_MODEL_THUMB_ICON,
@@ -825,7 +834,8 @@ GtkTreeModel *get_menu_contents(void)
 
 	contents = gtk_tree_store_new(
 			TREE_MODEL_COLUMNS,
-			G_TYPE_STRING,      /* Name */
+			G_TYPE_STRING,     /* Name */
+			G_TYPE_STRING,     /* Localized name */
 			GDK_TYPE_PIXBUF,   /* Icon */
 			GDK_TYPE_PIXBUF,   /* Thumb Icon */
 			GDK_TYPE_PIXBUF,   /* Icon & expander open emblem */
