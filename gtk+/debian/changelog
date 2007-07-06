@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.12-0osso8) unstable; urgency=low
+
+  * Use gtk-dnd-drag-threshold (which is 30) instead of a hardcoded
+    value of 20 pixels when deciding whether to pop down context menus
+    when the user drags the stylus outside the menu. Fixes: NB#61512
+  * Make Up/Down behave like Up/Down insteaf of TAB_BACKWARD/FORWARD in
+    GtkRadioButton. Fixes: NB#62251
+  * Do not add grabs for GtkEntryCompletion popup. Fixes: NB#60874
+  * Avoid infinite recursion by not forwarding insensitive press events back to
+    GtkMenuShell from GtkMenuShell. Fixes: NB#53311
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri,  6 Jul 2007 15:31:26 +0300
+
 gtk+2.0 (2:2.10.12-0osso7) unstable; urgency=low
 
   * Rename gtk_window_is_temporary to gtk_window_set_is_temporary and
