@@ -1,5 +1,13 @@
 2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hd-app-menu-tree.[ch]:
+	- added "item-selected" signal when a menu item is selected
+	* libhildondesktop/hd-app-menu-dialog.[ch]:
+	- dim the Rename and Delete button when a menu item is selected
+	- set the insensitive messages for these.
+
+2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hd-app-menu-tree.c: use LOCALIZED_NAME for
 	adding and renaming categories
 

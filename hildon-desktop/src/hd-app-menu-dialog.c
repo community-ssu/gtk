@@ -35,6 +35,7 @@
 #include <hildon/hildon-defines.h>
 #include <hildon/hildon-caption.h>
 #include <hildon/hildon-banner.h>
+#include <hildon/hildon-helper.h>
 
 #define HD_APP_MENU_DIALOG_WIDTH        590
 #define HD_APP_MENU_DIALOG_HEIGHT       (8*30 + 2*HILDON_MARGIN_DEFAULT)
@@ -80,11 +81,15 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog);
 static void
 hd_app_menu_dialog_delete_category (HDAppMenuDialog *dialog);
 
+static void
+hd_app_menu_dialog_item_selected (HDAppMenuDialog      *dialog,
+                                  GtkTreeIter          *iter);
+
 struct _HDAppMenuDialogPrivate
 {
   GtkTreeModel         *model;
 
-  GtkWidget            *new_button, *move_button, *delete_button, *done_button;
+  GtkWidget            *new_button, *rename_button, *delete_button, *done_button;
   GtkWidget            *tree;
 };
 
@@ -159,11 +164,15 @@ hd_app_menu_dialog_constructor (GType                   type,
                                                HD_APP_MENU_DIALOG_DELETE,
                                                RESPONSE_DELETE);
   gtk_widget_show (priv->delete_button);
+  hildon_helper_set_insensitive_message (priv->delete_button,
+                                         HD_APP_MENU_DIALOG_NO_APP_DEL);
 
-  priv->move_button = gtk_dialog_add_button (dialog,
-                                             HD_APP_MENU_DIALOG_MOVE,
-                                             RESPONSE_RENAME);
-  gtk_widget_show (priv->move_button);
+  priv->rename_button = gtk_dialog_add_button (dialog,
+                                               HD_APP_MENU_DIALOG_MOVE,
+                                               RESPONSE_RENAME);
+  gtk_widget_show (priv->rename_button);
+  hildon_helper_set_insensitive_message (priv->rename_button,
+                                         HD_APP_MENU_DIALOG_NO_APP_REN);
 
   /* Use CANCEL so the ESC key closes the dialog */
   priv->done_button = gtk_dialog_add_button (dialog,
@@ -176,6 +185,11 @@ hd_app_menu_dialog_constructor (GType                   type,
                              "width-request",  HD_APP_MENU_DIALOG_WIDTH,
                              "height-request", HD_APP_MENU_DIALOG_HEIGHT,
                              NULL);
+
+  g_signal_connect_swapped (priv->tree, "item-selected",
+                            G_CALLBACK (hd_app_menu_dialog_item_selected),
+                            dialog);
+
   gtk_box_pack_end (GTK_BOX (dialog->vbox), priv->tree, TRUE, TRUE, 0);
 
   return object;
@@ -399,6 +413,26 @@ hd_app_menu_dialog_delete_category (HDAppMenuDialog *dialog)
 
   gtk_tree_store_remove (GTK_TREE_STORE (dialog->priv->model), &iter);
 
+}
+
+static void
+hd_app_menu_dialog_item_selected (HDAppMenuDialog      *dialog,
+                                  GtkTreeIter          *iter)
+{
+  HDAppMenuDialogPrivate       *priv;
+
+  priv = dialog->priv;
+
+  if (iter != NULL)
+  {
+    gtk_widget_set_sensitive (priv->delete_button, FALSE);
+    gtk_widget_set_sensitive (priv->rename_button, FALSE);
+  }
+  else
+  {
+    gtk_widget_set_sensitive (priv->delete_button, TRUE);
+    gtk_widget_set_sensitive (priv->rename_button, TRUE);
+  }
 }
 
 void

@@ -35,6 +35,15 @@ enum
   PROP_MODEL = 1
 };
 
+/* Signals */
+enum
+{
+  ITEM_SELECTED,
+  N_SIGNALS
+};
+
+static guint SIGNALS[N_SIGNALS] = {0};
+
 static GObject *
 hd_app_menu_tree_constructor (GType                   type,
                               guint                   n_construct_params,
@@ -54,6 +63,9 @@ hd_app_menu_tree_get_property (GObject         *object,
 
 static void
 hd_app_menu_tree_navigation_changed (HDAppMenuTree *tree);
+
+static void
+hd_app_menu_tree_content_changed (HDAppMenuTree *tree);
 
 static void
 hd_app_menu_tree_content_drag_received (HDAppMenuTree  *tree,
@@ -114,6 +126,19 @@ hd_app_menu_tree_class_init (HDAppMenuTreeClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_MODEL,
                                    pspec);
+
+  SIGNALS[ITEM_SELECTED] = g_signal_new ("item-selected",
+                                         G_OBJECT_CLASS_TYPE (object_class),
+                                         G_SIGNAL_RUN_LAST,
+                                         G_STRUCT_OFFSET (HDAppMenuTreeClass,
+                                                          item_selected),
+                                         NULL,
+                                         NULL,
+                                         g_cclosure_marshal_VOID__OBJECT,
+                                         G_TYPE_NONE,
+                                         1,
+                                         GTK_TYPE_TREE_ITER);
+
 
   g_type_class_add_private (klass, sizeof (HDAppMenuTreePrivate));
 }
@@ -234,6 +259,10 @@ hd_app_menu_tree_constructor (GType                   type,
                             G_CALLBACK (hd_app_menu_tree_content_drag_received),
                             object);
 
+  g_signal_connect_swapped (priv->content_pane, "cursor-changed",
+                            G_CALLBACK (hd_app_menu_tree_content_changed),
+                            object);
+
   priv->content_selection =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->content_pane));
 
@@ -318,6 +347,43 @@ hd_app_menu_tree_navigation_visible (GtkTreeModel      *model,
 }
 
 static void
+hd_app_menu_tree_content_changed (HDAppMenuTree *tree)
+{
+  HDAppMenuTreePrivate *priv;
+  GtkTreeIter           iter;
+  GtkTreePath          *cursor_path, *main_path;
+
+  priv = tree->priv;
+
+  gtk_tree_view_get_cursor (GTK_TREE_VIEW (priv->content_pane),
+                            &cursor_path,
+                            NULL);
+
+  if (!cursor_path)
+  {
+    g_signal_emit (tree, SIGNALS[ITEM_SELECTED], 0, NULL);
+    return;
+  }
+
+  main_path =
+      gtk_tree_model_filter_convert_path_to_child_path (GTK_TREE_MODEL_FILTER (priv->content_model),
+                                                        cursor_path);
+
+  if (!main_path)
+  {
+    gtk_tree_path_free (cursor_path);
+    return;
+  }
+
+  if (gtk_tree_model_get_iter (priv->model, &iter, main_path))
+    g_signal_emit (tree, SIGNALS[ITEM_SELECTED], 0, &iter);
+
+  gtk_tree_path_free (cursor_path);
+  gtk_tree_path_free (main_path);
+  return;
+}
+
+static void
 hd_app_menu_tree_navigation_changed (HDAppMenuTree *tree)
 {
   HDAppMenuTreePrivate *priv;
@@ -342,6 +408,9 @@ hd_app_menu_tree_navigation_changed (HDAppMenuTree *tree)
   priv->content_model = gtk_tree_model_filter_new (priv->model, main_path);
   gtk_tree_view_set_model (GTK_TREE_VIEW (priv->content_pane),
                            priv->content_model);
+
+  /* Content was unselected */
+  g_signal_emit (tree, SIGNALS[ITEM_SELECTED], 0, NULL);
 
   if (gtk_tree_model_get_iter_first (priv->content_model, &iter))
   {
@@ -612,15 +681,12 @@ hd_app_menu_tree_get_selected_category (HDAppMenuTree *tree, GtkTreeIter *iter)
   if (!GTK_IS_TREE_MODEL (priv->model))
     return FALSE;
 
-  g_debug ("Running get_selected");
-
   gtk_tree_view_get_cursor (GTK_TREE_VIEW (priv->navigation_pane),
                             &cursor_path,
                             NULL);
 
   if (!cursor_path)
   {
-    g_debug ("No currently selected cat");
     return FALSE;
   }
 
@@ -630,16 +696,12 @@ hd_app_menu_tree_get_selected_category (HDAppMenuTree *tree, GtkTreeIter *iter)
 
   gtk_tree_path_free (cursor_path);
   if (!main_path)
-  {
-    g_debug ("Could not translate path");
     return FALSE;
-  }
 
   result = gtk_tree_model_get_iter (priv->model, iter, main_path);
 
 
   gtk_tree_path_free (main_path);
-  g_debug ("Returning: %i", result);
 
   return result;
 }

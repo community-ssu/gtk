@@ -51,6 +51,8 @@ struct _HDAppMenuTree
 struct _HDAppMenuTreeClass
 {
   GtkHPanedClass                parent_class;
+  void                          (*item_selected)        (HDAppMenuTree *tree,
+                                                         GtkTreeIter    iter);
 };
 
 GType   hd_app_menu_tree_get_type       (void);

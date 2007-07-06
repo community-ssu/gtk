@@ -49,6 +49,9 @@ G_BEGIN_DECLS
 
 #define HD_APP_MENU_DIALOG_ONLY_EMPTY           _OAT("tncpa_ib_only_empty_fold")
 
+#define HD_APP_MENU_DIALOG_NO_APP_DEL           _OAT("tncpa_ib_no_app_del")
+#define HD_APP_MENU_DIALOG_NO_APP_REN           _OAT("tncpa_ib_no_app_ren")
+
 
 #endif
 
