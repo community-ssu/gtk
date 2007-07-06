@@ -1,9 +1,15 @@
+gtkfilesystemmemory (0.15-1) unstable; urgency=low
+
+  * Make icons work again, but need unreleased Gtk+.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  8 Feb 2007 16:51:15 +0200
+
 gtkfilesystemmemory (0.14-1) unstable; urgency=low
 
   * Changed maintainer, pruned build depends, build depend on Gtk+ 2.10.
-  * Install module into /usr/lib/gtk-2.0/2.10.0/.
+  * Install module into /usr/lib/gtk-2.0/2.10.0.
 
- --
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  8 Feb 2007 16:50:52 +0200
 
 gtkfilesystemmemory (0.13-1) unstable; urgency=low
 
