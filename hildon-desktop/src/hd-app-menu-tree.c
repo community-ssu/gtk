@@ -95,6 +95,11 @@ hd_app_menu_tree_navigation_drag_motion (HDAppMenuTree          *tree,
                                          gint                    y,
                                          guint                   time);
 
+static void
+hd_app_menu_tree_drag_begin (HDAppMenuTree     *tree,
+                             GdkDragContext    *context,
+                             GtkWidget         *widget);
+
 struct _HDAppMenuTreePrivate
 {
   GtkTreeModel         *model, *navigation_model, *content_model;
@@ -225,6 +230,10 @@ hd_app_menu_tree_constructor (GType                   type,
                             G_CALLBACK (hd_app_menu_tree_navigation_drag_received),
                             object);
 
+  g_signal_connect_swapped (priv->navigation_pane, "drag-begin",
+                            G_CALLBACK (hd_app_menu_tree_drag_begin),
+                            object);
+
   g_signal_connect_swapped (priv->navigation_pane, "cursor-changed",
                             G_CALLBACK (hd_app_menu_tree_navigation_changed),
                             object);
@@ -278,6 +287,10 @@ hd_app_menu_tree_constructor (GType                   type,
 
   g_signal_connect_swapped (priv->content_pane, "drag-motion",
                             G_CALLBACK (hd_app_menu_tree_content_drag_motion),
+                            object);
+
+  g_signal_connect_swapped (priv->content_pane, "drag-begin",
+                            G_CALLBACK (hd_app_menu_tree_drag_begin),
                             object);
 
   g_signal_connect_swapped (priv->content_pane, "cursor-changed",
@@ -449,6 +462,51 @@ hd_app_menu_tree_navigation_changed (HDAppMenuTree *tree)
       gtk_paned_add2 (GTK_PANED (tree), priv->empty_label);
     }
   }
+
+}
+
+static void
+hd_app_menu_tree_drag_begin (HDAppMenuTree     *tree,
+                             GdkDragContext    *context,
+                             GtkWidget         *widget)
+{
+  HDAppMenuTreePrivate *priv = tree->priv;
+  GtkTreeIter           iter;
+  GdkPixbuf            *icon = NULL;
+
+  GTK_WIDGET_GET_CLASS (widget)->drag_begin (widget, context);
+
+  if (widget == priv->content_pane)
+  {
+    if (!gtk_tree_selection_get_selected (priv->content_selection,
+                                          NULL,
+                                          &iter))
+      return;
+
+    gtk_tree_model_get (priv->content_model, &iter,
+                        TREE_MODEL_ICON, &icon,
+                        -1);
+  }
+  else if (widget == priv->navigation_pane)
+  {
+    if (!gtk_tree_selection_get_selected (priv->navigation_selection,
+                                          NULL,
+                                          &iter))
+      return;
+
+    gtk_tree_model_get (priv->navigation_model, &iter,
+                        TREE_MODEL_ICON, &icon,
+                        -1);
+  }
+
+  if (icon)
+  {
+    gtk_drag_set_icon_pixbuf (context, icon, 0, 0);
+    g_object_unref (icon);
+  }
+
+  /* Stop the emission or gtk will use the default icon */
+  g_signal_stop_emission_by_name (widget, "drag-begin");
 
 }
 
