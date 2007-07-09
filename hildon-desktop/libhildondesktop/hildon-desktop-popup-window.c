@@ -461,13 +461,16 @@ hildon_desktop_popup_window_leave_notify (GtkWidget        *widget,
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
   gint w,h,x,y,i;
   gboolean in_panes_area = FALSE;
-
- /* We have to ungrab the pointer in here, we should get this when we go to
+ 
+  /* We have to ungrab the pointer in here, we should get this when we go to
   * a composited window
   */
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
   {
+    if (!GTK_WIDGET_VISIBLE (popup->priv->extra_panes[i]))
+      continue; 
+
     w = popup->priv->extra_panes[i]->allocation.width;
     h = popup->priv->extra_panes[i]->allocation.height;
 
