@@ -65,9 +65,6 @@ typedef struct {
 	gboolean allocated;
 } desktop_entry_t;
 
-/* Iterator to extras */
-static GtkTreeIter *extras_iter = NULL;
-
 /* Function for composing an icon with the given emblem */
 static GdkPixbuf *add_emblem_to_icon( GdkPixbuf *icon, GdkPixbuf *emblem );
 
@@ -540,13 +537,11 @@ static void add_desktop_entry(desktop_entry_t * item,
 
 }
 
-
-
 static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		xmlDocPtr doc, xmlNodePtr root_element, GtkTreeIter *iterator,
 		GList *desktop_files)
 {
-	gboolean doc_created = FALSE;
+	gboolean first_level = FALSE;
 	
 	static GdkPixbuf *folder_icon            = NULL;
 	static GdkPixbuf *folder_thumb_icon      = NULL;
@@ -555,6 +550,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	
 	static GdkPixbuf *emblem_expander_open   = NULL;
 	static GdkPixbuf *emblem_expander_closed = NULL;
+
+        static GtkTreeIter extras_iter;
+        GList *l;
 
 	/* Get emblems */
 	if ( !emblem_expander_open ) {
@@ -590,7 +588,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			g_warning( "read_menu_conf: unable to read '%s'", filename );
 			goto check_unallocated;
 		}
-        	doc_created = TRUE;
+ 	        first_level = TRUE;
 	}
 
 	if (root_element == NULL) {
@@ -606,14 +604,13 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	if (xmlStrcmp(root_element->name, (const xmlChar *) "Menu") != 0) {
 		/* Not a menu */
 		g_debug( "read_menu_conf: not a menu.");
-        xmlFreeDoc(doc);
+                xmlFreeDoc(doc);
 		goto check_unallocated;
 	}
 
 
 	xmlNodePtr current_element = NULL;
 	xmlChar *key;
-		
 	GtkTreeIter child_iterator;
 	desktop_entry_t *item;
 
@@ -623,12 +620,15 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			current_element = current_element->next) {
 
 		if (strcmp((const char *) current_element->name, "Menu") == 0) {
-			
 			/* Submenu */
 			gtk_tree_store_append(menu_tree, &child_iterator, iterator);
 
-			read_menu_conf(filename, menu_tree,
-					doc, current_element, &child_iterator, desktop_files);
+			read_menu_conf(filename,
+                                       menu_tree,
+                                       doc,
+                                       current_element,
+                                       &child_iterator,
+                                       desktop_files);
 		} else if (strcmp((const char *) current_element->name, "Name") == 0) {
 
                   key = xmlNodeListGetString(doc,
@@ -636,7 +636,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
                                              1);
 
 
-                  if (iterator && 
+                  if (iterator &&
                       gtk_tree_store_iter_is_valid (menu_tree, iterator))
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
@@ -663,7 +663,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					-1);
 
 			if ( strcmp((const char *) key, EXTRAS_MENU_STRING ) == 0 ) {
-				extras_iter = gtk_tree_iter_copy( iterator );
+				extras_iter = *iterator;
 			}
 
 			xmlFree(key);
@@ -788,16 +788,58 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		}
 
 	}
-			
+check_unallocated:
 
-        if ( doc_created )
+        if ( first_level )
           {
             /* The doc handle was created in this call */
             xmlFreeDoc(doc);
-          }
 
-check_unallocated:
 
+            /* Create the extras menu if it does not exist */
+            if ( !gtk_tree_store_iter_is_valid(menu_tree, &extras_iter ) ) {
+
+                gtk_tree_store_append( menu_tree,
+                                       &extras_iter,
+                                       NULL );
+
+                gtk_tree_store_set(menu_tree,
+                                   &extras_iter,
+                                   TREE_MODEL_NAME,
+                                   EXTRAS_MENU_STRING,
+                                   TREE_MODEL_LOCALIZED_NAME,
+                                   dgettext (GETTEXT_PACKAGE,
+                                             EXTRAS_MENU_STRING),
+                                   TREE_MODEL_ICON,
+                                   folder_icon,
+                                   TREE_MODEL_THUMB_ICON,
+                                   folder_thumb_icon,
+                                   TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+                                   folder_open_icon,
+                                   TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+                                   folder_closed_icon,
+                                   TREE_MODEL_EXEC,
+                                   "",
+                                   TREE_MODEL_SERVICE,
+                                   "",
+                                   TREE_MODEL_DESKTOP_ID,
+                                   "",
+                                   -1 );
+            }
+
+            l = desktop_files;
+            while ( l ) {
+                desktop_entry_t *item;
+
+                item = l->data;
+
+                if ( item->allocated == FALSE ) {
+                        add_desktop_entry( item, menu_tree, &extras_iter );
+                }
+
+                l = l->next;
+            }
+        }
 
         /* We don't need our reference to the folder icon pixbuf anymore */
         if ( folder_icon ) {
@@ -814,11 +856,6 @@ check_unallocated:
           g_object_unref( G_OBJECT( folder_closed_icon ) );
           folder_closed_icon = NULL;
         }
-
-        g_free( extras_iter );
-        extras_iter = NULL;
-
-
 	return;
 }
 

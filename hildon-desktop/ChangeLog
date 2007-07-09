@@ -1,5 +1,10 @@
 2007-07-09  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/libhildonmenu.c:
+	- restored the code to use Extras as default folder
+
+2007-07-09  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-app-menu-tree.c: Added drag-begin applet
 	to set the drag icon as specified
 
