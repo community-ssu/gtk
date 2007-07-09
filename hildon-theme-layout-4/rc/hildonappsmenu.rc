@@ -1,0 +1,74 @@
+# Copyright Nokia Corporation 2007
+# Licensed under Creative Commons Attribution-ShareAlike 2.5 license 
+
+style "hildon-apps-menu" {
+   GtkMenu::horizontal_padding = 18
+   GtkMenu::vertical_padding = 18
+
+   engine "sapwood" {
+      image {
+	 function = FLAT_BOX
+	 state = NORMAL
+	 file = "../images/qgn_plat_panemenu_bg.png"
+	 border = { 20, 20, 20, 20 }
+         shaped = TRUE
+      }
+   }
+}
+
+style "hildon-apps-menu-pane1"
+{
+  bg[NORMAL] = "#555753"
+}
+
+style "hildon-apps-menu-pane1-item"
+{
+  bg[NORMAL] = "#555753"
+
+  engine "sapwood"
+  {
+    # Image for active focus.
+    image
+    {
+      function = BOX
+      state = PRELIGHT
+      file = "../images/qgn_plat_pane1_focus_active.png"
+      border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+style "hildon-apps-menu-pane2"
+{
+  bg[NORMAL] = "#888A85"
+}
+
+style "hildon-apps-menu-pane2-item"
+{
+  bg[NORMAL] = "#888A85"
+
+  engine "sapwood"
+  {
+    # Image for active focus.
+    image
+    {
+      function = BOX
+      state = PRELIGHT
+      file = "../images/qgn_plat_pane1_focus_active.png"
+      border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+style "hildon-apps-menu-pane-label"
+{
+  fg[NORMAL] = "#FFFFFF"
+}
+
+widget "hildon-apps-menu" style "hildon-apps-menu"
+widget "*.hildon-apps-menu-pane1" style "hildon-apps-menu-pane1"
+widget "*.hildon-apps-menu-pane2" style "hildon-apps-menu-pane2"
+widget "*.hildon-apps-menu-pane1-item" style "hildon-apps-menu-pane1-item"
+widget "*.hildon-apps-menu-pane2-item" style "hildon-apps-menu-pane2-item"
+widget "*.hildon-apps-menu-pane1-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"
+widget "*.hildon-apps-menu-pane2-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"

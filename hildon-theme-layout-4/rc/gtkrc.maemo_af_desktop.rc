@@ -8,6 +8,7 @@ include "hildonhome.rc"
 include "hildonnavigator.rc"
 include "hildonnavigatorpopuplist.rc"
 include "hildonstatusbar.rc"
+include "hildonappsmenu.rc"
 
 # Home applets
 include "ossoclock.rc"

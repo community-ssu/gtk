@@ -1,3 +1,8 @@
+2007-07-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* rc/Makefile.am, rc/gtkrc.maemo_af_desktop.rc, rc/hildonappsmenu.rc: new RC 
+	file for applications menu theming.
+
 2007-07-03  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/hildonthumbscrollbar.rc: correct border values for thumbable
