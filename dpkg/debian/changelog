@@ -1,3 +1,12 @@
+dpkg (1.13.25.osso8) unstable; urgency=low
+
+  [ Marius Vollmer, for maemo ]
+
+  * scripts/dpkg-divert.sh: Do not rely on awk understanding
+    multiple '-v' options.  Fixes: NB#59371.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  9 Jul 2007 13:10:10 +0300
+
 dpkg (1.13.25.osso7) unstable; urgency=low
 
   [ Marius Vollmer, for maemo ]

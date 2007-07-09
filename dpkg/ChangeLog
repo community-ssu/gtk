@@ -1,3 +1,10 @@
+2007-07-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.13.25.osso8.
+	
+	* scripts/dpkg-divert.sh: Do not rely on awk understanding
+	multiple '-v' options (N59371, M1628).  Thanks to Santtu Lakkala!
+
 2007-05-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.13.25.osso7.
