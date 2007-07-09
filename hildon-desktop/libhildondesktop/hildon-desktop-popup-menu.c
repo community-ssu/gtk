@@ -176,6 +176,26 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
 
 }
 
+static gboolean
+hildon_desktop_popup_menu_paint (GtkWidget      *widget,
+                                 GdkEventExpose *event,
+                                 gpointer        user_data)
+{
+  gtk_paint_box (widget->style,
+                 widget->window,
+                 GTK_STATE_NORMAL,
+                 GTK_SHADOW_NONE,
+                 NULL,
+                 widget,
+                 NULL,
+                 widget->allocation.x,
+                 widget->allocation.y,
+                 widget->allocation.width,
+                 widget->allocation.height);
+
+  return FALSE;
+}
+
 static GObject *
 hildon_desktop_popup_menu_constructor (GType gtype,
                                        guint n_params,
@@ -236,6 +256,16 @@ hildon_desktop_popup_menu_constructor (GType gtype,
 		      
   gtk_widget_pop_composite_child ();
 
+  g_signal_connect (menu,
+                    "expose_event",
+                    G_CALLBACK (hildon_desktop_popup_menu_paint), 
+                    NULL);
+  
+  g_signal_connect (menu->priv->viewport,
+                    "expose_event",
+                    G_CALLBACK (hildon_desktop_popup_menu_paint), 
+                    NULL);
+  
   return object;
 }
 
@@ -246,6 +276,7 @@ hildon_desktop_popup_menu_finalize (GObject *object)
 	
   G_OBJECT_CLASS (hildon_desktop_popup_menu_parent_class)->finalize (object);	
 }	
+
 static void
 hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {

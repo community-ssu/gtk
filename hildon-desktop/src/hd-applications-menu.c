@@ -69,11 +69,13 @@
 
 G_DEFINE_TYPE (HDApplicationsMenu, hd_applications_menu, TASKNAVIGATOR_TYPE_ITEM);
 
-#define HD_APPS_MENU_POPUP_WINDOW_NAME    ""
-#define HD_APPS_MENU_CAT_MENU_ITEM_NAME   ""
+#define HD_APPS_MENU_POPUP_WINDOW_NAME    "hildon-apps-menu"
+#define HD_APPS_MENU_CAT_MENU_NAME        "hildon-apps-menu-pane1"
+#define HD_APPS_MENU_CAT_MENU_ITEM_NAME   "hildon-apps-menu-pane1-item"
 #define HD_APPS_MENU_CAT_BUTTON_UP_NAME   ""
 #define HD_APPS_MENU_CAT_BUTTON_DOWN_NAME ""
-#define HD_APPS_MENU_APP_MENU_ITEM_NAME   ""
+#define HD_APPS_MENU_APP_MENU_NAME        "hildon-apps-menu-pane2"
+#define HD_APPS_MENU_APP_MENU_ITEM_NAME   "hildon-apps-menu-pane2-item"
 #define HD_APPS_MENU_APP_BUTTON_UP_NAME   ""
 #define HD_APPS_MENU_APP_BUTTON_DOWN_NAME ""
 
@@ -787,7 +789,7 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 {
   HildonDesktopPopupWindow *popup_window;
   const GtkWidget *button_up, *button_down;
-  GtkWidget *box;
+  GtkWidget *box, *alignment;
   
   g_return_if_fail (button);
 
@@ -799,6 +801,10 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 					GTK_ORIENTATION_HORIZONTAL,
 					HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM));
 
+  alignment = gtk_alignment_new (0.0, 0.0, 1.0, 1.0);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 4, 4, 4, 4);
+  gtk_widget_show (alignment);
+  
   gtk_widget_set_name (GTK_WIDGET (popup_window), HD_APPS_MENU_POPUP_WINDOW_NAME);
 
   gtk_widget_set_size_request (GTK_WIDGET (popup_window), 650, 480);
@@ -816,6 +822,9 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 				    	     NULL));
 
   gtk_widget_show (GTK_WIDGET (button->priv->menu_categories));
+
+  gtk_widget_set_name (GTK_WIDGET (button->priv->menu_categories), 
+  		       HD_APPS_MENU_CAT_MENU_NAME);
 
   gtk_box_pack_start (GTK_BOX (box),
 		      GTK_WIDGET (button->priv->menu_categories),
@@ -838,6 +847,9 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 				    	     NULL));
 
   gtk_widget_show (GTK_WIDGET (button->priv->menu_applications));
+
+  gtk_widget_set_name (GTK_WIDGET (button->priv->menu_applications), 
+  		       HD_APPS_MENU_APP_MENU_NAME);
 
   gtk_box_pack_start (GTK_BOX (box),
 		      GTK_WIDGET (button->priv->menu_applications),
@@ -864,8 +876,9 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 		    button);
   
   gtk_widget_show (box);
-  
-  gtk_container_add (GTK_CONTAINER (popup_window), box);
+
+  gtk_container_add (GTK_CONTAINER (alignment), box);
+  gtk_container_add (GTK_CONTAINER (popup_window), alignment);
 
   if (button->priv->popup_window)
   {

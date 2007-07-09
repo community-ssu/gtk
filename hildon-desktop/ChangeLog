@@ -1,3 +1,13 @@
+2007-07-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	(hildon_desktop_popup_menu_paint),
+	(hildon_desktop_popup_menu_constructor): paint box in the
+	HildonDesktopPopupMenu and its internal viewport to make it more
+	friendly for theming.
+	* src/hd-applications-menu.c (hd_applications_menu_create_menu): set
+	the widgets names to enable theming on application menu.
+
 2007-07-09  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
