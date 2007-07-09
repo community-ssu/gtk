@@ -572,7 +572,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
 	  
     if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
       hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
-		      		      GTK_WIDGET (app_button)->allocation.x,
+	      		              GTK_WIDGET (app_button)->allocation.x,
 				      GTK_WIDGET (app_button)->allocation.y,
 				      GTK_WIDGET (app_button)->allocation.width,
 				      GTK_WIDGET (app_button)->allocation.height,
@@ -674,12 +674,15 @@ refresh_buttons (gpointer user_data)
     }
     else
     {
-      hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
-		      		      GTK_WIDGET (app_switcher)->allocation.x,
-				      GTK_WIDGET (app_switcher)->allocation.y,
-				      GTK_WIDGET (app_switcher)->allocation.width,
-				      GTK_WIDGET (app_switcher)->allocation.height,
-				      FALSE);
+      const GList *iter ,*children = hd_wm_entry_info_get_children (HD_WM_ENTRY_INFO (l->data));
+      
+      for (iter = children; iter != NULL; iter = g_list_next (iter))
+	 hd_wm_window_set_icon_geometry (HD_WM_WINDOW (iter->data),	    
+		      		         GTK_WIDGET (app_switcher)->allocation.x,
+				         GTK_WIDGET (app_switcher)->allocation.y,
+				         GTK_WIDGET (app_switcher)->allocation.width,
+				         GTK_WIDGET (app_switcher)->allocation.height,
+				         FALSE);
     }	    
   }
 

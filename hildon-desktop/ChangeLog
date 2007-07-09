@@ -1,5 +1,11 @@
 2007-07-09  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hn-app-switcher.c: (refresh_buttons):
+	- Set icon geometry for children of application (HDWMWindows) not the
+	application itself.
+
+2007-07-09  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-window.c:
 	(hildon_desktop_popup_window_leave_notify):
 	- Check wether we are going to a composited window only if those are
