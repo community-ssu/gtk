@@ -1,3 +1,8 @@
+2007-07-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-app-menu-tree.c: added "drag-motion" handler
+	for both trees
+
 2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hd-app-menu-tree.[ch]:

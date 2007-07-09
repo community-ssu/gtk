@@ -81,6 +81,20 @@ hd_app_menu_tree_navigation_drag_received (HDAppMenuTree          *tree,
                                            gint                    y,
                                            GtkSelectionData       *data);
 
+static gboolean
+hd_app_menu_tree_content_drag_motion (HDAppMenuTree          *tree,
+                                      GdkDragContext         *context,
+                                      gint                    x,
+                                      gint                    y,
+                                      guint                   time);
+
+static gboolean
+hd_app_menu_tree_navigation_drag_motion (HDAppMenuTree          *tree,
+                                         GdkDragContext         *context,
+                                         gint                    x,
+                                         gint                    y,
+                                         guint                   time);
+
 struct _HDAppMenuTreePrivate
 {
   GtkTreeModel         *model, *navigation_model, *content_model;
@@ -204,6 +218,9 @@ hd_app_menu_tree_constructor (GType                   type,
                                         1,
                                         GDK_ACTION_MOVE);
 
+  g_signal_connect_swapped (priv->navigation_pane, "drag-motion",
+                            G_CALLBACK (hd_app_menu_tree_navigation_drag_motion),
+                            object);
   g_signal_connect_swapped (priv->navigation_pane, "drag-data-received",
                             G_CALLBACK (hd_app_menu_tree_navigation_drag_received),
                             object);
@@ -257,6 +274,10 @@ hd_app_menu_tree_constructor (GType                   type,
 
   g_signal_connect_swapped (priv->content_pane, "drag-data-received",
                             G_CALLBACK (hd_app_menu_tree_content_drag_received),
+                            object);
+
+  g_signal_connect_swapped (priv->content_pane, "drag-motion",
+                            G_CALLBACK (hd_app_menu_tree_content_drag_motion),
                             object);
 
   g_signal_connect_swapped (priv->content_pane, "cursor-changed",
@@ -612,6 +633,145 @@ hd_app_menu_tree_navigation_drag_received (HDAppMenuTree          *tree,
     gtk_tree_store_remove (GTK_TREE_STORE (priv->model), &cursor_iter);
 
   }
+}
+
+static gboolean
+hd_app_menu_tree_content_drag_motion (HDAppMenuTree          *tree,
+                                      GdkDragContext         *context,
+                                      gint                    x,
+                                      gint                    y,
+                                      guint                   time)
+{
+  HDAppMenuTreePrivate *priv = tree->priv;
+  GtkWidget            *drag_source;
+
+  drag_source = gtk_drag_get_source_widget (context);
+
+
+  if (drag_source == priv->content_pane)
+  {
+    GtkTreeViewDropPosition     pos;
+    GtkTreePath                *path;
+
+    GTK_WIDGET_CLASS (GTK_TREE_VIEW_GET_CLASS (priv->content_pane))->
+        drag_motion (priv->content_pane,
+                     context,
+                     x, y,
+                     time);
+
+    gtk_tree_view_get_drag_dest_row (GTK_TREE_VIEW (priv->content_pane),
+                                     &path,
+                                     &pos);
+
+    if (path)
+    {
+      if (pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->content_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_BEFORE);
+
+      }
+      else if (pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->content_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_AFTER);
+      }
+
+      gtk_tree_path_free( path );
+    }
+  }
+
+  else if (drag_source == priv->navigation_pane)
+  {
+    gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->content_pane),
+                                     NULL,
+                                     0);
+    gdk_drag_status( context, 0, time );
+  }
+
+  return TRUE;
+}
+static gboolean
+hd_app_menu_tree_navigation_drag_motion (HDAppMenuTree          *tree,
+                                         GdkDragContext         *context,
+                                         gint                    x,
+                                         gint                    y,
+                                         guint                   time)
+{
+  HDAppMenuTreePrivate *priv = tree->priv;
+  GtkWidget            *drag_source;
+  gboolean              valid_location;
+
+  drag_source = gtk_drag_get_source_widget (context);
+
+  valid_location =
+      GTK_WIDGET_CLASS (GTK_TREE_VIEW_GET_CLASS (priv->navigation_pane))->
+                        drag_motion (priv->navigation_pane,
+                                     context,
+                                     x, y,
+                                     time);
+
+  if (drag_source == priv->content_pane)
+  {
+    GtkTreeViewDropPosition     pos;
+    GtkTreePath                *path;
+
+    gtk_tree_view_get_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                     &path,
+                                     &pos);
+
+    if (path)
+    {
+      if (pos == GTK_TREE_VIEW_DROP_BEFORE)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+
+      }
+      else if (pos == GTK_TREE_VIEW_DROP_AFTER)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_INTO_OR_AFTER);
+      }
+
+      gtk_tree_path_free( path );
+    }
+  }
+
+  else if (drag_source == priv->navigation_pane)
+  {
+    GtkTreeViewDropPosition     pos;
+    GtkTreePath                *path;
+
+    gtk_tree_view_get_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                     &path,
+                                     &pos);
+
+    if (path)
+    {
+      if (pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_BEFORE);
+
+      }
+      else if (pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
+      {
+        gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (priv->navigation_pane),
+                                         path,
+                                         GTK_TREE_VIEW_DROP_AFTER);
+      }
+
+      gtk_tree_path_free( path );
+    }
+  }
+
+  return valid_location;
 }
 
 void
