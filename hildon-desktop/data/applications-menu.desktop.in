@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Applications Menu
+Icon=qgn_grid_tasknavigator_others
 Type=builtin
 X-Path=applicationsmenu
 Mandatory=true
