@@ -238,6 +238,8 @@ hildon_desktop_panel_expandable_hide_extension (HildonDesktopPanelExpandable *pa
   gtk_grab_remove (GTK_WIDGET (panel->priv->extension_window));
 
   gtk_widget_hide (GTK_WIDGET (panel->priv->extension_window));
+
+  panel->priv->extension_opened = FALSE;
 }
 
 static gboolean 
@@ -532,6 +534,9 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
   HildonDesktopPanelExpandable *ex_panel = HILDON_DESKTOP_PANEL_EXPANDABLE (panel);
   gint item_width,item_height;
   GtkRequisition req;
+
+  if (ex_panel->priv->extension_opened)
+    hildon_desktop_panel_expandable_hide_extension (ex_panel);	  
 
   g_signal_emit_by_name (ex_panel, "queued-button", button);
 
@@ -884,10 +889,10 @@ hildon_desktop_panel_expandable_requeue_last_in_panel (HildonDesktopPanelExpanda
   if (!children)
     return;
 
-  l = g_list_last (children);
+  l = children;
 
   while (GTK_WIDGET (l->data) == panel->priv->arrow)
-    l = l->prev;	  
+    l = l->next;	  
   
   item = HILDON_DESKTOP_PANEL_ITEM (l->data);
 
