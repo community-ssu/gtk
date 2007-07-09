@@ -170,6 +170,7 @@ hd_app_menu_tree_constructor (GType                   type,
   HDAppMenuTreePrivate *priv;
   GObject              *object;
   GtkTreeViewColumn    *column;
+  GtkWidget            *scrolled_window;
   GtkCellRenderer      *renderer;
   const GtkTargetEntry  target_entries =
   {"HD_APP_MENU_ITEM", GTK_TARGET_SAME_APP, 0x42124212};
@@ -241,7 +242,14 @@ hd_app_menu_tree_constructor (GType                   type,
   priv->navigation_selection =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->navigation_pane));
 
-  gtk_paned_add1 (GTK_PANED (object), priv->navigation_pane);
+  scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+                                  "visible", TRUE,
+                                  "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                                  "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                                  "child", priv->navigation_pane,
+                                  NULL);
+
+  gtk_paned_add1 (GTK_PANED (object), scrolled_window);
 
   priv->content_pane = g_object_new (GTK_TYPE_TREE_VIEW,
                                      "visible", TRUE,
@@ -300,7 +308,14 @@ hd_app_menu_tree_constructor (GType                   type,
   priv->content_selection =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->content_pane));
 
-  gtk_paned_add2 (GTK_PANED (object), priv->empty_label);
+  scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+                                  "visible", TRUE,
+                                  "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                                  "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                                  "child", priv->content_pane,
+                                  NULL);
+
+  gtk_paned_add2 (GTK_PANED (object), scrolled_window);
 
   return object;
 

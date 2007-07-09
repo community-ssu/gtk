@@ -1,3 +1,8 @@
+2007-07-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-app-menu-tree.c:
+	- added missing scrolled window on both tree
+
 2007-07-09  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c: (refresh_buttons):
