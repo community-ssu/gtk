@@ -207,8 +207,8 @@ case $mode in
              file = dfile; alts[file] = divertto; packages[file] = package;
              for (file in alts) { print file; print alts[file]; print packages[file]; }
         } '
-       awk -v dfile=$file -v divertto=$divertto -v package=$package  \
-           "$parser $handler"  < $divs > $divs-new
+       awk \
+           'BEGIN { dfile="'$file'"; divertto='"$divertto"'; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
        ret=$?
        case $ret in
 	   101) 
@@ -242,8 +242,8 @@ case $mode in
              }
              exit 103;
         } '
-       awk -v dfile=$file -v divertto="$divertto" -v package="$package"  \
-           "$parser $handler"  < $divs > $divs-new
+       awk \
+           'BEGIN { dfile="'$file'"; divertto='"$divertto"'; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
        ret=$?
        case $ret in
 	   101) 
