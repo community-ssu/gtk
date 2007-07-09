@@ -1,3 +1,14 @@
+2007-07-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-switcher-menu.c
+	(hd_switcher_menu_add_notification_group,
+	hd_switcher_menu_constructor,
+	hd_switcher_menu_create_notifications_menu,
+	hd_switcher_menu_create_applications_menu): set widget names to
+	prepare the switcher menu for theming. Only use the notification
+	groups if the notifications are associated with them to avoid crashers
+	on desktop.
+
 2007-07-09  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-app-menu-tree.c:

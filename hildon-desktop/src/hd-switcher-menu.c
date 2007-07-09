@@ -110,6 +110,17 @@
 
 #define SWITCHER_N_SLOTS 3	
 
+#define HD_SWITCHER_MENU_APP_WINDOW_NAME      "hildon-switcher-menu-app-window"
+#define HD_SWITCHER_MENU_APP_MENU_NAME        "hildon-switcher-menu-app-menu"
+#define HD_SWITCHER_MENU_APP_MENU_ITEM_NAME   "hildon-switcher-menu-app-item"
+#define HD_SWITCHER_MENU_APP_BUTTON_UP_NAME   ""
+#define HD_SWITCHER_MENU_APP_BUTTON_DOWN_NAME ""
+#define HD_SWITCHER_MENU_NOT_WINDOW_NAME      "hildon-switcher-menu-not-window"
+#define HD_SWITCHER_MENU_NOT_MENU_NAME        "hildon-switcher-menu-not-menu"
+#define HD_SWITCHER_MENU_NOT_MENU_ITEM_NAME   "hildon-switcher-menu-not-item"
+#define HD_SWITCHER_MENU_NOT_BUTTON_UP_NAME   ""
+#define HD_SWITCHER_MENU_NOT_BUTTON_DOWN_NAME ""
+
 enum 
 {
   PROP_MENU_NITEMS = 1,
@@ -574,6 +585,9 @@ hd_switcher_menu_add_notification_group (gpointer key,
     menu_item = hd_switcher_menu_item_new_from_notification_group
       (ngroup->notifications, icon, summary, ngroup->dbus_callback, TRUE);
 
+    gtk_widget_set_name (GTK_WIDGET (menu_item), 
+      		         HD_SWITCHER_MENU_NOT_MENU_ITEM_NAME);
+
     hildon_desktop_popup_menu_add_item
      (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
   }
@@ -827,6 +841,17 @@ hd_switcher_menu_constructor (GType gtype,
     gtk_widget_show (image_down);
   } 
 
+  gtk_widget_set_name (GTK_WIDGET (switcher->priv->popup_window), 
+		       HD_SWITCHER_MENU_APP_WINDOW_NAME);
+  gtk_widget_set_name (GTK_WIDGET (switcher->priv->notifications_window), 
+		       HD_SWITCHER_MENU_NOT_WINDOW_NAME);
+
+  gtk_widget_set_name (GTK_WIDGET (switcher->priv->menu_applications), 
+		       HD_SWITCHER_MENU_APP_MENU_NAME);
+  gtk_widget_set_name (GTK_WIDGET (switcher->priv->menu_notifications), 
+		       HD_SWITCHER_MENU_NOT_MENU_NAME);
+  
+  
   g_signal_connect (switcher->priv->popup_window,
 		    "key-press-event",
 		    G_CALLBACK (hd_switcher_menu_popup_window_keypress_cb),
@@ -927,6 +952,9 @@ hd_switcher_menu_constructor (GType gtype,
   GtkWidget *menu_item = 
     hd_switcher_menu_item_new_from_entry_info 
       (hd_wm_get_home_info (hdwm), FALSE);
+
+  gtk_widget_set_name (GTK_WIDGET (menu_item), 
+      		       HD_SWITCHER_MENU_APP_MENU_ITEM_NAME);
 
   hildon_desktop_popup_menu_add_item
    (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));
@@ -1495,6 +1523,8 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
     {
       do
       {
+	ngroup = NULL;
+	      
         gtk_tree_model_get (nm,
                             &iter,
                             HD_NM_COL_ID, &id,
@@ -1503,9 +1533,10 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
 
 	hint = g_hash_table_lookup (hints, "category");
 
-	ngroup = 
-	  g_hash_table_lookup (switcher->priv->notification_groups, 
-	                       g_value_get_string (hint));
+	if (hint)
+	  ngroup = 
+	    g_hash_table_lookup (switcher->priv->notification_groups, 
+	                         g_value_get_string (hint));
 
 	if (ngroup != NULL)
         {
@@ -1525,6 +1556,8 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
    
     do
     {
+      ngroup = NULL;
+	    
       gtk_tree_model_get (nm,
                           &iter,
                           HD_NM_COL_ID, &id,
@@ -1537,9 +1570,10 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
 
       hint = g_hash_table_lookup (hints, "category");
       
-      ngroup = 
-        g_hash_table_lookup (switcher->priv->notification_groups, 
-                             g_value_get_string (hint));
+      if (hint)
+        ngroup = 
+          g_hash_table_lookup (switcher->priv->notification_groups, 
+                               g_value_get_string (hint));
 
       if (ngroup == NULL || !ngroup->is_active)
       {
@@ -1551,6 +1585,9 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
         menu_item =
           hd_switcher_menu_item_new_from_notification
            (id, icon, summary, body, TRUE);
+
+        gtk_widget_set_name (GTK_WIDGET (menu_item), 
+      		             HD_SWITCHER_MENU_NOT_MENU_ITEM_NAME);
 
         hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), !ack);
 
@@ -1622,6 +1659,9 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
       menu_item = hd_switcher_menu_item_new_from_entry_info (entry, TRUE);
 
+      gtk_widget_set_name (GTK_WIDGET (menu_item), 
+      		           HD_SWITCHER_MENU_APP_MENU_ITEM_NAME);
+
       g_signal_connect_after (menu_item,
 		              "activate",
 			      G_CALLBACK (hd_switcher_menu_item_activated),
@@ -1650,6 +1690,8 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
   g_list_free (apps);
 
   hd_switcher_menu_check_content (switcher); 
+
+  gtk_widget_queue_draw (GTK_WIDGET (switcher->priv->menu_applications));
 }	
 
 static void 
