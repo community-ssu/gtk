@@ -1,3 +1,9 @@
+libhildonmime (1.9.11-1~unreleased) unstable; urgency=low
+
+  * Fixes: NB#62728, Default handling application for "sip" link is incorrect
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri, 13 Jul 2007 17:00:01 +0100
+	
 libhildonmime (1.9.10-1) unstable; urgency=low
 
   * Updated the default application list for mime types with the http scheme.

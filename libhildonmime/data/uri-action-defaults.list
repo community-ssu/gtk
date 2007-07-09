@@ -5,6 +5,7 @@ jabberto=hildon-osso-addressbook.desktop
 voipto=hildon-browser.desktop
 ftp=hildon-browser.desktop
 sipto=hildon-osso-addressbook.desktop
+sip=hildon-voip-ui.desktop 
 mailto=hildon-modest.desktop
 chatto=hildon-chat-ui.desktop
 
