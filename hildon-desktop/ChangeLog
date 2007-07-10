@@ -1,3 +1,7 @@
+2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.23
+
 2007-07-09  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c:

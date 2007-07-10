@@ -1,3 +1,69 @@
+hildon-desktop (1:0.0.23-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  (hildon_desktop_popup_menu_paint),
+  (hildon_desktop_popup_menu_constructor): paint box in the
+  HildonDesktopPopupMenu and its internal viewport to make it more
+  friendly for theming.
+  * src/hd-applications-menu.c (hd_applications_menu_create_menu): set
+  the widgets names to enable theming on application menu.
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  (hildon_desktop_panel_expandable_hide_extension),
+  (hildon_desktop_panel_expandable_add_button),
+  (hildon_desktop_panel_expandable_requeue_last_in_panel):
+  - Hide the extension panel if we are adding a button.
+  - Fixed when reparenting last item when arrow is going to be added.
+
+  * src/hd-switcher-menu.c
+  (hd_switcher_menu_add_notification_group,
+  hd_switcher_menu_constructor,
+  hd_switcher_menu_create_notifications_menu,
+  hd_switcher_menu_create_applications_menu): set widget names to
+  prepare the switcher menu for theming. Only use the notification
+  groups if the notifications are associated with them to avoid crashers
+  on desktop.
+
+  * src/hd-app-menu-tree.c:
+  - added missing scrolled window on both tree
+
+  * src/hn-app-switcher.c: (refresh_buttons):
+  - Set icon geometry for children of application (HDWMWindows) not the
+  application itself.
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  (hildon_desktop_popup_window_leave_notify):
+  - Check wether we are going to a composited window only if those are
+  visible.
+
+  * libhildondesktop/libhildonmenu.c:
+  - restored the code to use Extras as default folder
+
+  * src/hd-app-menu-tree.c: Added drag-begin applet
+  to set the drag icon as specified
+
+  * data/applications-menu.desktop.in: added Icon:
+  * data/Makefile.am: do not install others-button.desktop
+
+  * src/hd-app-menu-tree.c: added "drag-motion" handler
+  for both trees
+
+  * libhildondesktop/hd-app-menu-tree.[ch]:
+  - added "item-selected" signal when a menu item is selected
+  * libhildondesktop/hd-app-menu-dialog.[ch]:
+  - dim the Rename and Delete button when a menu item is selected
+  - set the insensitive messages for these.
+
+  * libhildondesktop/hd-app-menu-tree.c: use LOCALIZED_NAME for
+  adding and renaming categories
+
+  * libhildondesktop/libhildonmenu.c: added LOCALIZED_NAME column
+  * src/hd-application-menu.c: use the LOCALIZED_NAME column
+  instead of translating locally.
+  * src/hd-app-menu-tree.c: use the LOCALIZED_NAME column
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 10 Jul 2007 09:40:18 +0300
+
 hildon-desktop (1:0.0.22-1) sardine; urgency=low
 
   * added libxcomposite-dev back as build-dep
