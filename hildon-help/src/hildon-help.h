@@ -37,7 +37,7 @@
 
 enum {
     HILDON_HELP_SHOW_DIALOG= 0x01,
-    HILDON_HELP_SHOW_JUSTASK= 0x02,
+    HILDON_HELP_SHOW_JUSTASK= 0x02
     };
     
 /**
