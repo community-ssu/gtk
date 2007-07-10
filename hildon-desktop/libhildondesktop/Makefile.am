@@ -35,8 +35,6 @@ pkginclude_HEADERS = \
 	libhildonmenu.h		      \
         hildon-status-bar-item.h	
 
-EXTRA_DIST = .empty
-
 INCLUDES = \
 	$(HILDON_CFLAGS)             \
 	$(GNOME_VFS_CFLAGS)          \
@@ -62,7 +60,7 @@ HILDON_HOME_SOURCES = \
 	hildon-home-area.c           \
 	hildon-home-area.h           \
 	hildon-desktop-home-item.c   \
-	hildon-desktop-home.item.h   \
+	hildon-desktop-home-item.h   \
 	hildon-home-window.c         \
 	hildon-home-window.h         \
 	hildon-home-titlebar.c       \

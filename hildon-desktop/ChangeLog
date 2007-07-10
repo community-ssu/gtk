@@ -1,3 +1,11 @@
+2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	Fixed make dist:
+	* libhildonwm/hd-wm.c: do not include libosso.h (not used)
+	* */Makefile.am: removed legacy EXTRA_DIST rule
+	* libhildondesktop/Makefile.am: fixed typo in source file list
+	Thanks to Richard Hult for poiting these out
+
 2007-07-10  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/Makefile.am, src/hd-panel-window-dialog.[ch]

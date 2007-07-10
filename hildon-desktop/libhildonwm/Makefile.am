@@ -13,9 +13,6 @@ pkginclude_HEADERS = \
 		     hd-wm-window.h \
 		     hd-wm-desktop.h \
 		     hd-wm.h
-		     
-
-EXTRA_DIST = .empty
 
 INCLUDES = \
 	$(HILDON_CFLAGS) \

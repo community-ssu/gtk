@@ -38,10 +38,6 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <glib/gi18n.h>
 
-#ifdef HAVE_LIBOSSO
-#include <libosso.h>
-#endif
-
 #include <hildon/hildon-window.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
@@ -1398,8 +1394,7 @@ hd_wm_top_service (const gchar *service_name)
        guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
        HDWMWindow *h_active_win = hd_wm_application_get_active_window(app);
       
-       hd_wm_debug ("app is hibernating, attempting to reawaken"
-		 "via osso_manager_launch()");
+       hd_wm_debug ("app is hibernating, attempting to reawaken");
 
        if (h_active_win)
          hd_wm_window_awake (h_active_win);

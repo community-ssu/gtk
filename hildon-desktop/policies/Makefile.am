@@ -1,5 +1,3 @@
-EXTRA_DIST = .empty
-
 hildonuipolicylib_LTLIBRARIES = libtasknavigatorpolicy.la
 
 libtasknavigatorpolicy_la_LDFLAGS = -module -avoid-version
