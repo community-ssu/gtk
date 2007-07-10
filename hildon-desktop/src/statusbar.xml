@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/org/hildon/Statusbar">
+
+  <interface name="org.hildon.Statusbar">
+                
+    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="HDPanelWindowDialog"/>
+
+    <method name="RefreshItemsStatus">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_panel_window_dialog_refresh_items_status"/>
+    </method>
+
+  </interface>
+
+</node>

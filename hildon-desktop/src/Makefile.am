@@ -9,6 +9,13 @@ bin_PROGRAMS = hd-hung-app-handler hildon-desktop
 hd_hung_app_handler_SOURCES = hd-hung-app-handler.c
 hd_hung_app_handler_LDADD = $(XLIBS_LIBS)
 
+hd-panel-window-dialog-service.h: statusbar.xml
+	dbus-binding-tool --prefix=hd_panel_window_dialog_service --mode=glib-server --output=hd-panel-window-dialog-service.h $<
+
+
+BUILT_SOURCES = \
+	hd-panel-window-dialog-service.h
+
 hildon_desktop_CPPFLAGS = \
 	$(HILDON_CFLAGS)             					   \
 	$(HILDON_FM_CFLAGS)             				   \
@@ -130,6 +137,6 @@ libhd_applications_menu_settings_la_SOURCES = \
                             hd-applications-menu-settings-l10n.h \
                             hd-applications-menu-settings.c
 
-EXTRA_DIST = notification-manager.xml
+EXTRA_DIST = statusbar.xml
 
 CLEANFILES = *~ $(BUILT_SOURCES)

@@ -1692,7 +1692,7 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
   hd_switcher_menu_check_content (switcher); 
 
   gtk_widget_queue_draw (GTK_WIDGET (switcher->priv->menu_applications));
-}	
+}
 
 static void 
 hd_switcher_menu_add_info_cb (HDWM *hdwm, 

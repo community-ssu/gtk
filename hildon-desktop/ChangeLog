@@ -1,3 +1,15 @@
+2007-07-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/Makefile.am, src/hd-panel-window-dialog.[ch]
+	(hd_panel_window_dialog_notify_condition),
+	(hd_panel_window_dialog_cadd),
+	(hd_panel_window_dialog_constructor),
+	(hd_panel_window_dialog_class_init), (hd_panel_window_dialog_init),
+	(hd_panel_window_dialog_refresh_items_status): add a D-Bus interface
+	to Statusbar in order to be able to refresh the items status from
+	plugins settings applet. 
+	* src/statusbar.xml: Statusbar D-Bus API definition.
+
 2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.23

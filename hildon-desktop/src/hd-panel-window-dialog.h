@@ -44,6 +44,8 @@ typedef struct _HDPanelWindowDialogPrivate HDPanelWindowDialogPrivate;
 struct _HDPanelWindowDialog 
 {
   HildonDesktopPanelWindowDialog parent;
+
+  HDPanelWindowDialogPrivate *priv;
 };
 
 struct _HDPanelWindowDialogClass
@@ -51,7 +53,9 @@ struct _HDPanelWindowDialogClass
   HildonDesktopPanelWindowDialogClass parent_class;
 };
 
-GType  hd_panel_window_dialog_get_type  (void);
+GType     hd_panel_window_dialog_get_type               (void);
+
+gboolean  hd_panel_window_dialog_refresh_items_status   (HDPanelWindowDialog *window);
 
 G_END_DECLS
 
