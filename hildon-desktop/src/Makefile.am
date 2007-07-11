@@ -14,7 +14,9 @@ hd-panel-window-dialog-service.h: statusbar.xml
 
 
 BUILT_SOURCES = \
-	hd-panel-window-dialog-service.h
+	hd-panel-window-dialog-service.h \
+	hd-marshalers.c                  \
+	hd-marshalers.h
 
 hildon_desktop_CPPFLAGS = \
 	$(HILDON_CFLAGS)             					   \
@@ -112,7 +114,6 @@ hildon_desktop_SOURCES = \
 	$(OTHERS_BUTTON_SOURCES)     \
 	hd-desktop.c                 \
 	hd-desktop.h                 \
-	hd-marshalers.c		     \
 	hd-select-plugins-dialog.c   \
 	hd-select-plugins-dialog.h   \
 	hd-panel-window.c            \
@@ -142,7 +143,7 @@ hd-marshalers.c:
 	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --body --header >> hd-marshalers.c
 
 hd-marshalers.h:
-	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --header >| hd-marshalers.h
+	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --header >> hd-marshalers.h
 		
 
 EXTRA_DIST = statusbar.xml
