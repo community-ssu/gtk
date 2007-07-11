@@ -1420,7 +1420,8 @@ hildon_home_area_child_window_filter (GdkXEvent        *xevent,
       XDamageNotifyEvent       *ev = xevent;
       XserverRegion             parts;
       XRectangle               *rects;
-      guint                     i, n_rect;
+      guint                     i;
+      int                       n_rect;
 
       parts = XFixesCreateRegion (GDK_DISPLAY (), 0, 0);
       XDamageSubtract (GDK_DISPLAY (), ev->damage, None, parts);

@@ -1,5 +1,9 @@
 2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-area.c: Fixed compiler warning
+
+2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
+
 	Fixed make dist:
 	* libhildonwm/hd-wm.c: do not include libosso.h (not used)
 	* */Makefile.am: removed legacy EXTRA_DIST rule
