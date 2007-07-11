@@ -629,7 +629,7 @@ gtk_entry_class_init (GtkEntryClass *class)
                                                        HILDON_GTK_INPUT_MODE_FULL |
                                                        HILDON_GTK_INPUT_MODE_AUTOCAP |
                                                        HILDON_GTK_INPUT_MODE_DICTIONARY,
-                                                       GTK_PARAM_READWRITE));
+                                                       GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 #endif /* MAEMO_CHANGES */
  
   signals[POPULATE_POPUP] =

@@ -1,3 +1,16 @@
+2007-07-10  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* gtk/gtktextview.c (gtk_text_view_class_init):
+	* gtk/gtkentry.c (gtk_entry_class_init):
+	* gtk/gtk/gtkimcontext.c (gtk_im_context_class_init),
+	(gtk_im_context_init):
+	Set hildon-input-mode property upon object construction.
+	Fixes NB#62955.
+
+	* gtk/gtktextview.c (gtk_text_view_set_property),
+	(gtk_text_view_get_property): Fix wrong value type being used
+	for hildon-input-mode property.
+
 2007-07-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenushell.c (gtk_menu_shell_insensitive_press): Avoid

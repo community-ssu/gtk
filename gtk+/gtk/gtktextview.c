@@ -676,7 +676,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                        HILDON_GTK_INPUT_MODE_MULTILINE |
                                                        HILDON_GTK_INPUT_MODE_AUTOCAP |
                                                        HILDON_GTK_INPUT_MODE_DICTIONARY,
-                                                       GTK_PARAM_READWRITE));
+                                                       GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 #endif /* MAEMO_CHANGES */
 
   /*
@@ -2697,7 +2697,7 @@ gtk_text_view_set_property (GObject         *object,
 
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_INPUT_MODE:
-      hildon_gtk_text_view_set_input_mode (text_view, g_value_get_int (value));
+      hildon_gtk_text_view_set_input_mode (text_view, g_value_get_flags (value));
       break;
 #endif /* MAEMO_CHANGES */
 
@@ -2777,7 +2777,7 @@ gtk_text_view_get_property (GObject         *object,
 
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_INPUT_MODE:
-      g_value_set_int (value, hildon_gtk_text_view_get_input_mode (text_view));
+      g_value_set_flags (value, hildon_gtk_text_view_get_input_mode (text_view));
       break;
 #endif /* MAEMO_CHANGES */
 
