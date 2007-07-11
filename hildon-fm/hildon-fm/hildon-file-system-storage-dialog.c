@@ -142,6 +142,8 @@ hildon_file_system_storage_dialog_class_init (HildonFileSystemStorageDialogClass
 	object_class->finalize = file_system_storage_dialog_finalize;
 
 	g_type_class_add_private (object_class, sizeof (HildonFileSystemStorageDialogPriv));
+
+	gnome_vfs_init ();
 }
 
 static void 
