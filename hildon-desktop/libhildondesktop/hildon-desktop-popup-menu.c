@@ -807,7 +807,7 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
 
   gtk_widget_set_size_request (menu->priv->box_buttons, 
 		  	       item_width, 
-			       menu->priv->item_height);
+			       menu->priv->item_height - 4);
 
   menu->priv->n_items++;
 

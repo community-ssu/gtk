@@ -1,5 +1,12 @@
 2007-07-11  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-menu.c: reduce 4px on scroll
+	buttons height to make it fit the screen.
+	* src/hd-applications-menu.c: added arrows inside scroll buttons.
+	Several naming fixes in order to make the theming work.
+
+2007-07-11  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/Makefile.am: fix build errors.
 
 2007-07-11  Moises Martinez  <moises.martinez@nokia.com>

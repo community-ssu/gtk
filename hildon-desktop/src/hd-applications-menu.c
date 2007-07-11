@@ -72,12 +72,12 @@ G_DEFINE_TYPE (HDApplicationsMenu, hd_applications_menu, TASKNAVIGATOR_TYPE_ITEM
 #define HD_APPS_MENU_POPUP_WINDOW_NAME    "hildon-apps-menu"
 #define HD_APPS_MENU_CAT_MENU_NAME        "hildon-apps-menu-pane1"
 #define HD_APPS_MENU_CAT_MENU_ITEM_NAME   "hildon-apps-menu-pane1-item"
-#define HD_APPS_MENU_CAT_BUTTON_UP_NAME   ""
-#define HD_APPS_MENU_CAT_BUTTON_DOWN_NAME ""
+#define HD_APPS_MENU_CAT_BUTTON_UP_NAME   "hildon-apps-menu-pane1-button"
+#define HD_APPS_MENU_CAT_BUTTON_DOWN_NAME "hildon-apps-menu-pane1-button"
 #define HD_APPS_MENU_APP_MENU_NAME        "hildon-apps-menu-pane2"
 #define HD_APPS_MENU_APP_MENU_ITEM_NAME   "hildon-apps-menu-pane2-item"
-#define HD_APPS_MENU_APP_BUTTON_UP_NAME   ""
-#define HD_APPS_MENU_APP_BUTTON_DOWN_NAME ""
+#define HD_APPS_MENU_APP_BUTTON_UP_NAME   "hildon-apps-menu-pane2-button"
+#define HD_APPS_MENU_APP_BUTTON_DOWN_NAME "hildon-apps-menu-pane2-button"
 
 #define OTHERS_MENU_ICON_NAME  "qgn_grid_tasknavigator_others"
 #define OTHERS_MENU_ICON_SIZE  64
@@ -789,7 +789,7 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 {
   HildonDesktopPopupWindow *popup_window;
   const GtkWidget *button_up, *button_down;
-  GtkWidget *box, *alignment;
+  GtkWidget *box, *alignment, *arrow;
   
   g_return_if_fail (button);
 
@@ -834,11 +834,21 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
   
   button_up =  
     hildon_desktop_popup_menu_get_scroll_button_up (button->priv->menu_categories);
+
+  gtk_widget_set_name (GTK_WIDGET (button_up), HD_APPS_MENU_CAT_BUTTON_UP_NAME);
+
+  arrow = gtk_arrow_new (GTK_ARROW_UP, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_up), arrow);
+  gtk_widget_show (arrow);
+  
   button_down =
     hildon_desktop_popup_menu_get_scroll_button_down (button->priv->menu_categories);
 
-  gtk_widget_set_name (GTK_WIDGET (button_up), HD_APPS_MENU_CAT_BUTTON_UP_NAME);
   gtk_widget_set_name (GTK_WIDGET (button_down), HD_APPS_MENU_CAT_BUTTON_DOWN_NAME);
+
+  arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_down), arrow);
+  gtk_widget_show (arrow);
 
   button->priv->menu_applications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
@@ -859,11 +869,21 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 
   button_up = 
     hildon_desktop_popup_menu_get_scroll_button_up (button->priv->menu_applications);
+
+  gtk_widget_set_name (GTK_WIDGET (button_up), HD_APPS_MENU_APP_BUTTON_UP_NAME);
+
+  arrow = gtk_arrow_new (GTK_ARROW_UP, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_up), arrow);
+  gtk_widget_show (arrow);
+  
   button_down =
     hildon_desktop_popup_menu_get_scroll_button_down (button->priv->menu_applications);
 
-  gtk_widget_set_name (GTK_WIDGET (button_up), HD_APPS_MENU_APP_BUTTON_UP_NAME);
   gtk_widget_set_name (GTK_WIDGET (button_down), HD_APPS_MENU_APP_BUTTON_DOWN_NAME);
+
+  arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_down), arrow);
+  gtk_widget_show (arrow);
 
   g_signal_connect (G_OBJECT (popup_window), 
 		    "key-press-event",
