@@ -1,3 +1,11 @@
+2007-07-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.13.25.osso9.
+
+	* scripts/dpkg-divert.sh: Corrected quoting when passing $divertto
+	to awk.  Thanks to Leif Ryge!  Changed quotes around version to
+	double quotes so that the Makefile can modify it.
+
 2007-07-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 1.13.25.osso8.
