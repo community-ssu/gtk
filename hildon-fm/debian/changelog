@@ -3,6 +3,8 @@ libhildonfm (1:1.9.34~unreleased) unstable; urgency=low
   * Clarify API doc comments about the storage root URIs for the storage
     details dialog, fix a small unlikely leak and only do fast MIME type
     checking.
+  * Fixes NB#63101. mmc-undefined-name in hildon-file-system-storage-dialog
+    for memory card.
 
  -- Richard Hult <richard@imendio.com>  Wed,  4 Jul 2007 11:53:22 +0200
 

@@ -1,3 +1,9 @@
+2007-07-11  Richard Hult  <richard@imendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	(file_system_storage_dialog_update): Fix NB#63101, wrong
+	translation of unnames MMC cards.
+
 2007-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-storage-dialog.c

@@ -1214,14 +1214,18 @@ file_system_storage_dialog_update (GtkWidget *widget)
 			display_name = gnome_vfs_volume_get_display_name (volume);
 
                         if (display_name) {
-                                if (g_str_has_prefix (display_name, "mmc-undefined-name")) {
-                                        gchar *translated;
-
-                                        translated = g_strdup (_(display_name));
-                                        g_free (display_name);
-
-                                        display_name = translated;
+                                gchar *translated;
+                                
+                                if (strcmp (display_name, "mmc-undefined-name") == 0) {
+                                        translated = g_strdup (_("sfil_li_memorycard_removable"));
                                 }
+                                else if (strcmp (display_name, "mmc-undefined-name-internal") == 0) {
+                                        translated = g_strdup (_("sfil_li_memorycard_internal"));
+                                } else {
+                                        translated = g_strdup (display_name);
+                                }
+                                g_free (display_name);
+                                display_name = translated;
                         }
 
                         gtk_label_set_text (GTK_LABEL (priv->label_name),
