@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version='1.0.11'; # This line modified by Makefile
+version="1.0.11"; # This line modified by Makefile
 admindir="/var/lib/dpkg"; # This line modified by Makefile
 dpkglibdir="/usr/lib/dpkg"; # This line modified by Makefile
 
@@ -208,7 +208,7 @@ case $mode in
              for (file in alts) { print file; print alts[file]; print packages[file]; }
         } '
        awk \
-           'BEGIN { dfile="'$file'"; divertto='"$divertto"'; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
+           'BEGIN { dfile="'$file'"; divertto="'$divertto'"; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
        ret=$?
        case $ret in
 	   101) 
@@ -243,7 +243,7 @@ case $mode in
              exit 103;
         } '
        awk \
-           'BEGIN { dfile="'$file'"; divertto='"$divertto"'; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
+           'BEGIN { dfile="'$file'"; divertto="'$divertto'"; package="'$package'"}'" $parser $handler"  < $divs > $divs-new
        ret=$?
        case $ret in
 	   101) 
