@@ -1,3 +1,9 @@
+2007-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(hildon_file_system_storage_dialog_class_init): Call
+	gnome_vfs_init since we use it.
+
 2007-07-04  Richard Hult  <richard@imendio.com>
 
 	* configure.ac: Bump version.
