@@ -10,6 +10,11 @@
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_panel_window_dialog_refresh_items_status"/>
     </method>
 
+    <signal name="UpdateStatus">
+     <arg type="s" name="id"/>
+     <arg type="b" name="status"/>	    
+    </signal>
+
   </interface>
 
 </node>

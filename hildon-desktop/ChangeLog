@@ -1,3 +1,19 @@
+2007-07-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/Makefile.am:
+	- Added marshaler for container's signal
+	* src/hd-marshalers.list:
+	- New marshaler for hd-panel-window-dialog.c
+	* src/hd-panel-window-dialog.c:
+	(hd_panel_window_dialog_notify_condition),
+	(hd_panel_window_dialog_cadd), (hd_panel_window_dialog_queued),
+	(hd_panel_window_dialog_constructor),
+	(hd_panel_window_dialog_class_init):
+	- Moved signal to gobject code to get advantage of dbus binding.
+	- Connect only if the object hasn't been connected before.
+	* src/statusbar.xml:
+	- added signal
+
 2007-07-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c: Fixed compiler warning

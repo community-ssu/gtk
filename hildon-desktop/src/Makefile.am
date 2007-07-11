@@ -2,7 +2,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgincludedir = $(includedir)/hildon-desktop/hildon-desktop
 pkgconfig_DATA = hildon-desktop.pc
 pkginclude_HEADERS = hd-plugin-loader.h \
-		     hd-config.h
+		     hd-config.h 
 
 bin_PROGRAMS = hd-hung-app-handler hildon-desktop
 
@@ -112,6 +112,7 @@ hildon_desktop_SOURCES = \
 	$(OTHERS_BUTTON_SOURCES)     \
 	hd-desktop.c                 \
 	hd-desktop.h                 \
+	hd-marshalers.c		     \
 	hd-select-plugins-dialog.c   \
 	hd-select-plugins-dialog.h   \
 	hd-panel-window.c            \
@@ -136,6 +137,13 @@ libhd_applications_menu_settings_la_SOURCES = \
                             hd-app-menu-tree.h \
                             hd-applications-menu-settings-l10n.h \
                             hd-applications-menu-settings.c
+
+hd-marshalers.c:
+	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --body --header >> hd-marshalers.c
+
+hd-marshalers.h:
+	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --header >| hd-marshalers.h
+		
 
 EXTRA_DIST = statusbar.xml
 

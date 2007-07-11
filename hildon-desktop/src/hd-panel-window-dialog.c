@@ -38,14 +38,26 @@
 #include "hd-panel-window-dialog.h"
 #include "hd-panel-window-dialog-service.h"
 
+#include "hd-marshalers.h"
+
 #define HD_PANEL_WINDOW_DIALOG_GET_PRIVATE(obj) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HD_TYPE_PANEL_WINDOW_DIALOG, HDPanelWindowDialogPrivate))
+
+enum
+{
+  HD_WD_UPDATE_SB,
+  HD_WD_SIGNALS
+};  
+
+static gint hd_wd_signals [HD_WD_SIGNALS];
 
 G_DEFINE_TYPE (HDPanelWindowDialog, hd_panel_window_dialog, HILDON_DESKTOP_TYPE_PANEL_WINDOW_DIALOG);
 
 struct _HDPanelWindowDialogPrivate
 {
   DBusGConnection *connection;
+
+  GHashTable *plugins;
 };
 
 #undef HD_PANEL_WINDOW_DIALOG_NEW_THEME
@@ -99,46 +111,38 @@ hd_panel_window_dialog_orientation_changed (HildonDesktopPanelWindow *window,
 static void 
 hd_panel_window_dialog_notify_condition (GObject *object, 
 		                         gboolean condition, 
-					 gpointer user_data)
+					 HDPanelWindowDialog *window)
 {
-  HDPanelWindowDialog *window;
-  HildonDesktopItem *item;
-  DBusMessage *message;
-  const gchar *id;
-  
-  window = HD_PANEL_WINDOW_DIALOG (user_data);
-  item = HILDON_DESKTOP_ITEM (object);
-  
-  id = hildon_desktop_item_get_id (item);
-  
-  message = dbus_message_new_signal ("/org/hildon/Statusbar",
-                                     "org.hildon.Statusbar",
-                                     "update-status");
-
-  dbus_message_append_args (message,
-                            DBUS_TYPE_STRING, &id,
-                            DBUS_TYPE_BOOLEAN, &condition,
-                            DBUS_TYPE_INVALID);
-
-  dbus_connection_send (dbus_g_connection_get_connection (window->priv->connection), 
-        	        message, 
-        		NULL);
-  
-  dbus_message_unref (message);
+  g_signal_emit_by_name (window, "update-status", HILDON_DESKTOP_ITEM (object)->id, condition);
 }
 
 static void
 hd_panel_window_dialog_cadd (HildonDesktopPanelExpandable *container,
-		      GtkWidget *widget,
-		      gpointer user_data)
+		      	     GtkWidget *widget,
+		      	     gpointer object)
+{	
+  gulong *previous_id = NULL, *signal_id  = g_new0 (gulong,1);
+
+  previous_id = g_object_get_data (G_OBJECT (widget), "signal-id");
+
+  if (previous_id)
+    return;	  
+	
+  *signal_id = g_signal_connect (G_OBJECT (widget),
+              		         "notify::condition",
+                      		 G_CALLBACK (hd_panel_window_dialog_notify_condition),
+                      		 object);
+
+  g_object_set_data_full (G_OBJECT (widget), "signal-id", signal_id, g_free);
+}
+
+static void
+hd_panel_window_dialog_queued (HildonDesktopPanelExpandable *container,
+		      	       GtkWidget *widget,
+		      	       gpointer object)
 {
   gtk_widget_set_name (widget, HD_PANEL_WINDOW_DIALOG_BUTTON_NAME);
   gtk_widget_set_name (GTK_BIN (widget)->child, HD_PANEL_WINDOW_DIALOG_BUTTON_NAME);
-
-  g_signal_connect (G_OBJECT (widget),
-		    "notify::condition",
-		    G_CALLBACK (hd_panel_window_dialog_notify_condition),
-		    user_data);
 }
 
 static void 
@@ -170,9 +174,19 @@ hd_panel_window_dialog_constructor (GType gtype,
 
   g_signal_connect (G_OBJECT (HILDON_DESKTOP_WINDOW (object)->container), 
                     "queued-button",
+                    G_CALLBACK (hd_panel_window_dialog_queued),
+                    object);
+
+  g_signal_connect (G_OBJECT (HILDON_DESKTOP_WINDOW (object)->container), 
+                    "add",
                     G_CALLBACK (hd_panel_window_dialog_cadd),
                     object);
 
+  g_signal_connect (G_OBJECT (HILDON_DESKTOP_WINDOW (object)->container), 
+                    "remove",
+                    G_CALLBACK (hd_panel_window_dialog_cadd),
+                    object);
+  
   g_signal_connect (G_OBJECT (hdwm),
 		    "fullscreen",
 		    G_CALLBACK (hd_panel_window_dialog_fullscreen),
@@ -205,6 +219,16 @@ hd_panel_window_dialog_class_init (HDPanelWindowDialogClass *window_class)
 #endif
 
   g_type_class_add_private (window_class, sizeof (HDPanelWindowDialogPrivate));
+
+  hd_wd_signals[HD_WD_UPDATE_SB] =
+    g_signal_new ("update-status",
+  		  G_OBJECT_CLASS_TYPE (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  0, NULL, NULL,
+		  g_cclosure_user_marshal_VOID__STRING_BOOLEAN,
+ 		  G_TYPE_NONE,
+		  2, G_TYPE_STRING, G_TYPE_BOOLEAN);
+  
 }
 
 static void
