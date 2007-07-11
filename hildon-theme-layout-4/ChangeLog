@@ -1,3 +1,7 @@
+2007-07-11  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* rc/hildonappsmenu.rc: add theming on scrolling buttons.
+
 2007-07-09  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* rc/hildonappsmenu.rc: set the viewport background color to avoid

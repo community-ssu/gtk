@@ -25,13 +25,97 @@ style "hildon-apps-menu-pane1-item"
 {
   engine "sapwood"
   {
-    # Image for active focus.
     image
     {
       function = BOX
       state = PRELIGHT
       file = "../images/qgn_plat_pane1_focus_active.png"
       border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+style "hildon-apps-menu-pane1-arrow"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu1_up_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu1_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu1_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu1_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu1_up_arrow_normal.png"
+      overlay_stretch = TRUE 
+    }
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu1_down_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu1_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu1_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu1_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu1_down_arrow_normal.png"
+      overlay_stretch = FALSE
     }
   }
 }
@@ -45,7 +129,6 @@ style "hildon-apps-menu-pane2-item"
 {
   engine "sapwood"
   {
-    # Image for active focus.
     image
     {
       function = BOX
@@ -56,9 +139,105 @@ style "hildon-apps-menu-pane2-item"
   }
 }
 
+style "hildon-apps-menu-pane2-arrow"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_normal.png"
+      overlay_stretch = TRUE 
+    }
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_normal.png"
+      overlay_stretch = FALSE
+    }
+  }
+}
+
 style "hildon-apps-menu-pane-label"
 {
   fg[NORMAL] = "#FFFFFF"
+}
+
+style "hildon-apps-menu-pane-button"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function = BOX 
+    }
+  }
 }
 
 widget "hildon-apps-menu" style "hildon-apps-menu"
@@ -70,3 +249,7 @@ widget "*.hildon-apps-menu-pane1-item" style "hildon-apps-menu-pane1-item"
 widget "*.hildon-apps-menu-pane2-item" style "hildon-apps-menu-pane2-item"
 widget "*.hildon-apps-menu-pane1-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"
 widget "*.hildon-apps-menu-pane2-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"
+widget "*.hildon-apps-menu-pane1-button"  style "hildon-apps-menu-pane-button"
+widget "*.hildon-apps-menu-pane2-button"  style "hildon-apps-menu-pane-button"
+widget "*.hildon-apps-menu-pane1.*.GtkArrow"  style "hildon-apps-menu-pane1-arrow"
+widget "*.hildon-apps-menu-pane2.*.GtkArrow"  style "hildon-apps-menu-pane2-arrow"
