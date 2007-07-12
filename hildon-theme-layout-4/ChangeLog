@@ -1,5 +1,11 @@
 2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* rc/gtktoolbar.rc: Use correct style properties and state/shadow
+	states for separators. Fixes toolbar separator item painting.
+	(Fixes: NB#61775)
+
+2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* rc/base.rc: Unbind GtkPaned::cycle-handle-focus default keys (F6, F8)
 	as we use them for Fullscreen and Decrease already. (Fixes: NB#52265)
 

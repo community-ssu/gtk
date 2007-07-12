@@ -11,6 +11,7 @@ style "osso-toolbar"
   GtkToolbar::button-relief = GTK_RELIEF_NORMAL
   GtkToolbar::shadow-type = GTK_SHADOW_NONE
   GtkToolbar::max-child-expand = 800
+  GtkToolbar::space-size = 15
   engine "sapwood"
   {
     image
@@ -23,24 +24,22 @@ class "GtkToolbar" style "osso-toolbar"
 
 style "osso-toolbar-separator"
 {
-	GtkSeparatorToolItem::separator_size = 15
-	GtkSeparatorToolItem::is_image = 1
+	GtkWidget::separator-width = 15
+	GtkWidget::wide-separators = 1
 	engine "sapwood"
 	{	
 
 		image{
 			function = BOX
-			shadow = NONE
-			state = NORMAL
-			detail = "vertical"
+			shadow = ETCHED_OUT
+			detail = "vseparator"
 			file = "../images/qgn_plat_toolbar_separator.png"
 			border = {0,0,0,0}
 		}
 		image{
 			function = BOX
-			shadow = NONE
-			state = NORMAL
-			detail = "horizontal"
+			shadow = ETCHED_OUT
+			detail = "hseparator"
 			file = "../images/qgn_plat_toolbar_separator.png"
 			border = {0,0,0,0}
 		}
