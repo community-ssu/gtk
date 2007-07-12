@@ -116,6 +116,7 @@ struct _HDHomeWindowPrivate
   Picture           background_picture;
 
   gboolean          screen_is_off;
+  gboolean          is_background;
 
   gboolean          selecting_applets;
   guint             save_area_timeout;
@@ -1683,6 +1684,8 @@ hd_home_window_background (HDHomeWindow    *window,
 
   g_debug ("Background state changed, is_background: %i", is_background);
 
+  priv->is_background = is_background;
+
   if (!priv->screen_is_off)
     {
 
@@ -1718,9 +1721,12 @@ hd_home_window_screen_off (HDHomeWindow         *window,
 
   g_debug ("Screen state changed, is_off: %i", is_off);
 
-  gtk_container_foreach (GTK_CONTAINER (area),
-                         (GtkCallback)hildon_desktop_home_item_set_is_background,
-                         (gpointer)is_off);
+  if (!priv->is_background)
+    {
+      gtk_container_foreach (GTK_CONTAINER (area),
+                             (GtkCallback)hildon_desktop_home_item_set_is_background,
+                             (gpointer)is_off);
+    }
 
 }
 

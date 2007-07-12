@@ -1,6 +1,13 @@
 2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:
+	- do not send a foreground event when the screen is turned on
+	but the home is in the background.
+	Fixes: NB#60875
+
+2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
 	- do not send a foreground event when the screen is dimmed
 
 2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
