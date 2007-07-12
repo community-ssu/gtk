@@ -1,5 +1,10 @@
 2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* rc/base.rc: Unbind GtkPaned::cycle-handle-focus default keys (F6, F8)
+	as we use them for Fullscreen and Decrease already. (Fixes: NB#52265)
+
+2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* rc/hildonseekbar.rc
 	* rc/gtkrange.rc: Move arrow-paint-box-layout setting to baseclass,
 	and add arrow-scaling=1.0 which will replace the former once available.

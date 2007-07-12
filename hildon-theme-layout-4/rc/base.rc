@@ -200,3 +200,12 @@ binding "editors-focus"
 
 class "HildonTimeEditor" binding "editors-focus"
 class "HildonDateEditor" binding "editors-focus"
+
+# Unbind default cycle-handle-focus keys F6 (Fullscreen) and F8 (Decrease)
+binding "paned-cycle-focus"
+{
+  unbind "F6"
+  unbind "F8"
+}
+
+class "GtkPaned" binding "paned-cycle-focus"
