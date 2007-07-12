@@ -256,11 +256,22 @@ hd_app_menu_dialog_response (GtkDialog *dialog, gint response)
 }
 
 static void
+hd_app_menu_dialog_entry_changed (GtkEntry *entry, GtkWidget *button)
+{
+  const gchar *name;
+
+  name = gtk_entry_get_text (entry);
+
+  gtk_widget_set_sensitive (button, g_utf8_strlen (name, -1) != 0);
+}
+
+static void
 hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
 {
   GtkWidget            *new_dialog;
   GtkWidget            *entry;
   GtkWidget            *caption;
+  GtkWidget            *ok_button, *cancel_button;
   GtkSizeGroup         *size_group;
   gint                  response;
   const gchar          *name;
@@ -269,14 +280,28 @@ hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
                                             GTK_WINDOW (dialog),
                                             GTK_DIALOG_MODAL |
                                               GTK_DIALOG_DESTROY_WITH_PARENT,
-                                              GTK_STOCK_OK,
-                                              GTK_RESPONSE_OK,
-                                              GTK_STOCK_CANCEL,
-                                              GTK_RESPONSE_CANCEL,
-                                              NULL);
+                                            NULL);
+
+  ok_button = gtk_dialog_add_button (GTK_DIALOG (new_dialog),
+                                     HD_APP_MENU_DIALOG_NEW_OK,
+                                     GTK_RESPONSE_OK);
+  hildon_helper_set_insensitive_message (ok_button,
+                                         HD_APP_MENU_DIALOG_NEW_NAME_FIRST);
+  gtk_widget_set_sensitive (ok_button, FALSE);
+  gtk_widget_show (ok_button);
+
+  cancel_button = gtk_dialog_add_button (GTK_DIALOG (new_dialog),
+                                         HD_APP_MENU_DIALOG_NEW_CANCEL,
+                                         GTK_RESPONSE_CANCEL);
+  gtk_widget_show (cancel_button);
+
   gtk_dialog_set_has_separator (GTK_DIALOG (new_dialog), FALSE);
 
   entry = gtk_entry_new ();
+  g_signal_connect (entry, "changed",
+                    G_CALLBACK (hd_app_menu_dialog_entry_changed),
+                    ok_button);
+
   gtk_widget_show (entry);
 
   size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -302,9 +327,6 @@ hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
     GtkTreeIter         iter;
     GdkPixbuf          *icon;
 
-    if (g_utf8_strlen (name, -1) == 0)
-      return;
-
     icon = get_icon (ICON_FOLDER, ICON_SIZE);
 
     gtk_tree_store_append (GTK_TREE_STORE (dialog->priv->model), &iter, NULL);
@@ -329,6 +351,7 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
   GtkWidget            *new_dialog;
   GtkWidget            *entry;
   GtkWidget            *caption;
+  GtkWidget            *ok_button, *cancel_button;
   GtkSizeGroup         *size_group;
   gint                  response;
   const gchar          *name;
@@ -342,20 +365,37 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
                       TREE_MODEL_LOCALIZED_NAME, &name,
                       -1);
 
+  g_return_if_fail (name);
+
   new_dialog = gtk_dialog_new_with_buttons (HD_APP_MENU_DIALOG_RENAME_TITLE,
                                             GTK_WINDOW (dialog),
                                             GTK_DIALOG_MODAL |
                                               GTK_DIALOG_DESTROY_WITH_PARENT,
-                                              GTK_STOCK_OK,
-                                              GTK_RESPONSE_OK,
-                                              GTK_STOCK_CANCEL,
-                                              GTK_RESPONSE_CANCEL,
                                               NULL);
+
+  ok_button = gtk_dialog_add_button (GTK_DIALOG (new_dialog),
+                                     HD_APP_MENU_DIALOG_RENAME_OK,
+                                     GTK_RESPONSE_OK);
+  hildon_helper_set_insensitive_message (ok_button,
+                                         HD_APP_MENU_DIALOG_RENAME_NAME_FIRST);
+  if (g_utf8_strlen (name, -1) == 0)
+    gtk_widget_set_sensitive (ok_button, FALSE);
+  gtk_widget_show (ok_button);
+
+  cancel_button = gtk_dialog_add_button (GTK_DIALOG (new_dialog),
+                                         HD_APP_MENU_DIALOG_RENAME_CANCEL,
+                                         GTK_RESPONSE_CANCEL);
+  gtk_widget_show (cancel_button);
+
   gtk_dialog_set_has_separator (GTK_DIALOG (new_dialog), FALSE);
 
   entry = gtk_entry_new ();
   gtk_entry_set_text (GTK_ENTRY (entry), name);
+  gtk_entry_select_region (GTK_ENTRY (entry), 0, -1);
   gtk_widget_show (entry);
+  g_signal_connect (entry, "changed",
+                    G_CALLBACK (hd_app_menu_dialog_entry_changed),
+                    ok_button);
 
   size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   caption = hildon_caption_new (size_group,
@@ -377,16 +417,10 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
 
   if (response == GTK_RESPONSE_OK && GTK_IS_TREE_STORE (dialog->priv->model))
   {
-    if (g_utf8_strlen (name, -1) == 0)
-    {
-      /* FIXME: Show banner foo*/
-      return;
-    }
-
-    gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
-                        TREE_MODEL_NAME, name,
-                        TREE_MODEL_LOCALIZED_NAME, name,
-                        -1);
+      gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
+                          TREE_MODEL_NAME, name,
+                          TREE_MODEL_LOCALIZED_NAME, name,
+                          -1);
 
   }
 

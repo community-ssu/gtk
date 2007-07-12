@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /* dgettext macros */
 #define _OAT(a)                     dgettext("osso-applet-tasknavigator", (a))
+#define _HL(a)                      dgettext("hildon-libs", (a))
+#define _HCS(a)                     dgettext("hildon-common-strings", (a))
+#define _HFM(a)                     dgettext("hildon-fm", (a))
 
 #define HD_APP_MENU_DIALOG_TITLE                _OAT("tncpa_ti_of_title")
 
@@ -44,8 +47,14 @@ G_BEGIN_DECLS
 
 #define HD_APP_MENU_DIALOG_NEW_TITLE            _OAT("tncpa_bv_of_new_category")
 #define HD_APP_MENU_DIALOG_NEW_NAME             _OAT("tncpa_lb_name")
+#define HD_APP_MENU_DIALOG_NEW_OK               _HFM("ckdg_bd_new_folder_dialog_ok")
+#define HD_APP_MENU_DIALOG_NEW_CANCEL           _HFM("ckdg_bd_new_folder_dialog_cancel")
+#define HD_APP_MENU_DIALOG_NEW_NAME_FIRST       _HCS("ckdg_ib_enter_name")
 
 #define HD_APP_MENU_DIALOG_RENAME_TITLE         _OAT("tncpa_bv_of_rename_category")
+#define HD_APP_MENU_DIALOG_RENAME_OK            _HL("ckdg_bd_rename_object_dialog_ok")
+#define HD_APP_MENU_DIALOG_RENAME_CANCEL        _HL("ckdg_bd_rename_object_dialog_cancel")
+#define HD_APP_MENU_DIALOG_RENAME_NAME_FIRST    _HCS("ckdg_ib_enter_name")
 
 #define HD_APP_MENU_DIALOG_ONLY_EMPTY           _OAT("tncpa_ib_only_empty_fold")
 

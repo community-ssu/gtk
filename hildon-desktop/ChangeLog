@@ -1,3 +1,12 @@
+2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-app-menu-dialog.c:
+	- make Ok button insensitive in Rename and New dialogs when the
+	entry is empty
+	- add corresponding insensitive message
+	- use correct strings for both.
+	Fixes: NB#63129
+
 2007-07-11  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c: reduce 4px on scroll
