@@ -31,6 +31,8 @@ hd-marshalers.c:
 hd-marshalers.h:
 	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --header >| hd-marshalers.h
 
+BUILT_SOURCES = hd-marshalers.c hd-marshalers.h
+
 libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES) $(LIBHILDON_CFLAGS)
 
 libhildonpluginsettings_la_LIBADD = \
@@ -39,8 +41,7 @@ libhildonpluginsettings_la_LIBADD = \
 
 libhildonpluginsettings_la_SOURCES = \
 	$(HILDON_PLUGIN_SOURCES) \
-	hd-marshalers.h \
-	hd-marshalers.c \
+	$(BUILT_SOURCES) \
 	hildon-plugin-settings.c
 
 bin_PROGRAMS = hildon-plugin-settings

@@ -1,4 +1,8 @@
 2007-07-12  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/Makefile.am: Fixed marshalers creation.
+
+2007-07-12  Moises Martinez  <moises.martinez@nokia.com>
 	
 	* debian/control:
 	* configure.ac:
