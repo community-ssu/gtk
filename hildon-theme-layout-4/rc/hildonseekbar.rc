@@ -23,7 +23,6 @@ style "osso-seekbar"
         HildonSeekbar::autodimmed_steppers = 1
 	HildonSeekbar::draw_trough_under_steppers = 0
         HildonSeekbar::two_part_trough = 1
-	GtkRange::arrow_paint_box_layout = 1
 	GtkRange::stream_indicator_padding = 3
 	
 	engine "sapwood" {

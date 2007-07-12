@@ -11,6 +11,10 @@ style "osso-range"
   GtkRange::hildon_range_editor_entry_alignment = 1
   # Amount of padding to add to each side of the separator
   GtkRange::hildon_range_editor_separator_padding = 6
+
+  # Use all available space for painting the scroll arrows
+  GtkRange::arrow-paint-box-layout = 1
+  GtkRange::arrow-scaling = 1.0
   
   engine "sapwood"
   {

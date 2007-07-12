@@ -1,3 +1,10 @@
+2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* rc/hildonseekbar.rc
+	* rc/gtkrange.rc: Move arrow-paint-box-layout setting to baseclass,
+	and add arrow-scaling=1.0 which will replace the former once available.
+	Fixes unwanted scaling in control bar and volume bars.
+
 2007-07-11  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* rc/hildonappsmenu.rc: add theming on scrolling buttons.
