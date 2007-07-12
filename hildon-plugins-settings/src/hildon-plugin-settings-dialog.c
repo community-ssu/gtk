@@ -983,6 +983,33 @@ hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *s
   return names;
 }
 
+GtkTreeModel *
+hildon_plugin_settings_dialog_get_model_by_name (HildonPluginSettingsDialog *settings,
+						 const gchar *name,
+						 gboolean filter)
+{
+  GList *container_tab = NULL;
+
+
+  container_tab =
+    g_list_find_custom (settings->priv->tabs,
+                        name,
+                        (GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+
+  if (!container_tab)
+    return NULL;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  if (filter && tab->filter)
+    return tab->filter;
+  else
+  if (tab->filter)
+    return gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (tab->filter));
+  else
+    return gtk_tree_view_get_model (GTK_TREE_VIEW (tab->tw));	  
+}
+	
 void
 hildon_plugin_settings_dialog_set_choosing_limit (HildonPluginSettingsDialog *settings,
                                                   const gchar *container_name,

@@ -1,3 +1,31 @@
+hildon-plugins-settings (0.0.4-1) unstable; urgency=low
+
+  * debian/control:
+  * configure.ac:
+  - Added dbus-1-glib
+  * src/Makefile.am:
+  - added marshalers creation
+  * src/hd-marshalers.list:
+  - new file with marshalers needed
+  * src/hildon-plugin-config-parser.c:
+  (hildon_plugin_config_parser_desktop_file):
+  - FLAG set by default to FALSE
+  * src/hildon-plugin-settings-dialog.[ch]:
+  (hildon_plugin_settings_dialog_get_model_by_name):
+  - new method
+  * src/hildon-plugin-settings.c: (_sb_visibility_filter),
+  (_sb_cell_condition_data_func), (_sb_update_status),
+  (_sb_update_flag), (execute):
+  - Implemented visibility and dimmed of different statusbar plugins
+  conditional, temporal and permanent.
+
+  * src/hildon-plugin-module-settings.c:
+  - pass the GModule to the callback so one can use GTypeModule
+  * data/hildon-plugins-settings.desktop.in:
+  - added X-Text-Domain key. Fixes: NB#62315
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Thu, 12 Jul 2007 14:57:59 +0300
+
 hildon-plugins-settings (0.0.3-1) unstable; urgency=low
 
   * src/hildon-plugin-settings-dialog.c:

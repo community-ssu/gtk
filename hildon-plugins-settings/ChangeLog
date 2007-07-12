@@ -1,3 +1,24 @@
+2007-07-12  Moises Martinez  <moises.martinez@nokia.com>
+	
+	* debian/control:
+	* configure.ac:
+	- Added dbus-1-glib
+	* src/Makefile.am:
+	- added marshalers creation
+	* src/hd-marshalers.list:
+	- new file with marshalers needed
+	* src/hildon-plugin-config-parser.c:
+	(hildon_plugin_config_parser_desktop_file):
+	- FLAG set by default to FALSE
+	* src/hildon-plugin-settings-dialog.[ch]:
+	(hildon_plugin_settings_dialog_get_model_by_name):
+	- new method
+	* src/hildon-plugin-settings.c: (_sb_visibility_filter),
+	(_sb_cell_condition_data_func), (_sb_update_status),
+	(_sb_update_flag), (execute):
+	- Implemented visibility and dimmed of different statusbar plugins
+	conditional, temporal and permanent.
+
 2007-07-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hildon-plugin-module-settings.c:

@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-plugins-settings, 0.0.3)
+AM_INIT_AUTOMAKE(hildon-plugins-settings, 0.0.4)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -37,6 +37,8 @@ ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 AC_DEFINE(GETTEXT_PACKAGE, ["osso-applet-tasknavigator"], [Package name for gettext])
+
+AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
 if test foobar${hildon_use_debug} = foobaryes 
 then
@@ -81,6 +83,10 @@ PKG_CHECK_MODULES(LIBHILDONMENU, hildon-1)
 AC_SUBST(LIBHILDON_LIBS)
 AC_SUBST(LIBHILDON_CFLAGS)
 
+PKG_CHECK_MODULES(DBUS_GLIB, dbus-glib-1)
+AC_SUBST(DBUS_GLIB_LIBS)
+AC_SUBST(DBUS_GLIB_CFLAGS)
+_
 pluginlibdir=`pkg-config hildon-control-panel --variable=pluginlibdir`
 AC_SUBST(pluginlibdir)
 desktopentrydir=`pkg-config hildon-control-panel --variable=plugindesktopentrydir`

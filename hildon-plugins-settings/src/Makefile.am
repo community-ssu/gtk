@@ -21,10 +21,15 @@ HILDON_PLUGIN_SOURCES = \
         hildon-plugin-cell-renderer-button.h \
         hildon-plugin-cell-renderer-button.c \
         hildon-plugin-settings-dialog.h \
-        hildon-plugin-settings-dialog.c	
+        hildon-plugin-settings-dialog.c
 
 pluginlib_LTLIBRARIES = libhildonpluginsettings.la
 
+hd-marshalers.c:
+	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --body --header >> hd-marshalers.c
+
+hd-marshalers.h:
+	$(LIBTOOL) --mode=execute $(GLIB_GENMARSHAL) hd-marshalers.list --header >| hd-marshalers.h
 
 libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES) $(LIBHILDON_CFLAGS)
 
@@ -34,6 +39,8 @@ libhildonpluginsettings_la_LIBADD = \
 
 libhildonpluginsettings_la_SOURCES = \
 	$(HILDON_PLUGIN_SOURCES) \
+	hd-marshalers.h \
+	hd-marshalers.c \
 	hildon-plugin-settings.c
 
 bin_PROGRAMS = hildon-plugin-settings

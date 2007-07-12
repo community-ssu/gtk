@@ -312,7 +312,7 @@ hildon_plugin_config_parser_desktop_file (HildonPluginConfigParser *parser,
 		      HP_COL_DESKTOP_FILE, filename,
 		      HP_COL_CHECKBOX, FALSE,
 		      HP_COL_POSITION,0,
-		      HP_COL_FLAG, FALSE,
+		      HP_COL_FLAG, TRUE,
 		      -1);
 
   HPCPData *data = hildon_plugin_config_parser_new_data (0,FALSE);

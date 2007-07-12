@@ -94,6 +94,10 @@ hildon_plugin_settings_dialog_new (void);
 GList *
 hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *settings);
 
+GtkTreeModel *
+hildon_plugin_settings_dialog_get_model_by_name (HildonPluginSettingsDialog *settings,
+						 const gchar *name,
+						 gboolean filter);
 
 void 
 hildon_plugin_settings_dialog_set_choosing_limit (HildonPluginSettingsDialog *settings,
