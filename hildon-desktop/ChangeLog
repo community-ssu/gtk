@@ -1,5 +1,12 @@
 2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-panel-window-composite.[ch],
+	  src/hd-panel-window.[ch]:
+	- moved the compositing part of hd-panel-window to a generic
+	subclass so it can be used by other panels
+
+2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c:
 	- do not send a foreground event when the screen is turned on
 	but the home is in the background.

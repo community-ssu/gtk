@@ -26,13 +26,12 @@
 #define __HD_PANEL_WINDOW_H__
 
 #include <glib-object.h>
-#include <libhildondesktop/hildon-desktop-panel-window.h>
+#include <libhildondesktop/hildon-desktop-panel-window-composite.h>
 
 G_BEGIN_DECLS
 
 typedef struct _HDPanelWindow HDPanelWindow;
 typedef struct _HDPanelWindowClass HDPanelWindowClass;
-typedef struct _HDPanelWindowPrivate HDPanelWindowPrivate;
 
 #define HD_TYPE_PANEL_WINDOW            (hd_panel_window_get_type ())
 #define HD_PANEL_WINDOW(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), HD_TYPE_PANEL_WINDOW, HDPanelWindow))
@@ -43,17 +42,14 @@ typedef struct _HDPanelWindowPrivate HDPanelWindowPrivate;
 
 struct _HDPanelWindow 
 {
-  HildonDesktopPanelWindow parent;
+  HildonDesktopPanelWindowComposite parent;
 
-  HDPanelWindowPrivate    *priv;
 };
 
 struct _HDPanelWindowClass
 {
-  HildonDesktopPanelWindowClass parent_class;
+  HildonDesktopPanelWindowCompositeClass parent_class;
 
-  gboolean                      composite;
-  gint                          xdamage_event_base;
 };
 
 GType  hd_panel_window_get_type  (void);
