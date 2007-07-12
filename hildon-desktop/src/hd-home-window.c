@@ -1519,6 +1519,10 @@ static void
 hd_home_window_osso_display_state_cb (osso_display_state_t      state,
                                       gpointer                  window)
 {
+  /* We don't do anything when the screen is dimmed, only on and off */
+  if (state == OSSO_DISPLAY_DIMMED)
+    return;
+
   g_signal_emit_by_name (G_OBJECT (window),
                          "screen-off",
                          state == OSSO_DISPLAY_OFF);
@@ -1677,6 +1681,8 @@ hd_home_window_background (HDHomeWindow    *window,
   area = GTK_BIN (window)->child;
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
+  g_debug ("Background state changed, is_background: %i", is_background);
+
   if (!priv->screen_is_off)
     {
 
@@ -1709,6 +1715,8 @@ hd_home_window_screen_off (HDHomeWindow         *window,
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
   priv->screen_is_off = is_off;
+
+  g_debug ("Screen state changed, is_off: %i", is_off);
 
   gtk_container_foreach (GTK_CONTAINER (area),
                          (GtkCallback)hildon_desktop_home_item_set_is_background,

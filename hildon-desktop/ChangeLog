@@ -1,5 +1,10 @@
 2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- do not send a foreground event when the screen is dimmed
+
+2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-app-menu-dialog.c:
 	- make Ok button insensitive in Rename and New dialogs when the
 	entry is empty
