@@ -1,3 +1,9 @@
+2007-07-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window-composite.c:
+	- if the panel background size does not match the panel size,
+	stretch it
+
 2007-07-11  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-window-composite.[ch],

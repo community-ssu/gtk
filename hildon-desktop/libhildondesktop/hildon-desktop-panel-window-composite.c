@@ -62,8 +62,12 @@ struct _HildonDesktopPanelWindowCompositePrivate
 
   Picture       background_picture;
   Picture       background_mask;
+  gint          background_width, background_height;
 
   gint          x, y, width, height;
+
+  XTransform    transform;
+  gboolean      scale;
 
 };
 #endif
@@ -280,6 +284,19 @@ hildon_desktop_panel_window_composite_configure (GtkWidget             *widget,
   priv->width = event->width;
   priv->height = event->height;
 
+  if (priv->background_width != priv->width ||
+      priv->background_height != priv->height)
+  {
+    XTransform scale = {{{ XDoubleToFixed ((gdouble)priv->background_width /priv->width), 0, 0},
+                   {0, XDoubleToFixed ((gdouble)priv->background_height / priv->height), 0},
+                   {0, 0, XDoubleToFixed (1.0)}}};
+
+    priv->transform = scale;
+    priv->scale = TRUE;
+  }
+  else
+    priv->scale = FALSE;
+
   return FALSE;
 
 }
@@ -308,6 +325,16 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                        "picture", GINT_TO_POINTER (picture));
 
     if (priv->home_picture != None)
+
+    {
+      g_debug ("paint home on %i, %i, %i, %i, %i, %i, %i, %i",
+                        priv->x + event->area.x, priv->y + event->area.y,
+                        priv->x + event->area.x, priv->y + event->area.y,
+                        event->area.x - x_offset,
+                        event->area.y - y_offset,
+                        event->area.width,
+                        event->area.height);
+
       XRenderComposite (GDK_DISPLAY (),
                         PictOpSrc,
                         priv->home_picture,
@@ -319,8 +346,21 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                         event->area.y - y_offset,
                         event->area.width,
                         event->area.height);
+    }
 
     if (priv->background_picture != None)
+    {
+      if (priv->scale)
+      {
+        XRenderSetPictureTransform (GDK_DISPLAY (),
+                                    priv->background_picture,
+                                    &priv->transform);
+
+        XRenderSetPictureTransform (GDK_DISPLAY (),
+                                    priv->background_mask,
+                                    &priv->transform);
+      }
+
       XRenderComposite (GDK_DISPLAY (),
                         PictOpOver,
                         priv->background_picture,
@@ -332,6 +372,8 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                         event->area.y - y_offset,
                         event->area.width,
                         event->area.height);
+
+    }
 
     result = GTK_WIDGET_CLASS (hildon_desktop_panel_window_composite_parent_class)->
         expose_event (widget, event);
@@ -391,16 +433,22 @@ hildon_desktop_panel_window_composite_style_set (GtkWidget   *widget,
   hildon_desktop_picture_and_mask_from_file (filename,
                                              &priv->background_picture,
                                              &priv->background_mask,
-                                             NULL, NULL);
+                                             &priv->background_width,
+                                             &priv->background_height);
+
+  if (priv->background_width != priv->width ||
+      priv->background_height != priv->height)
+  {
+    XTransform scale = {{{ XDoubleToFixed ((gdouble)priv->background_width /priv->width), 0, 0},
+                   {0, XDoubleToFixed ((gdouble)priv->background_height / priv->height), 0},
+                   {0, 0, XDoubleToFixed (1.0)}}};
+
+    priv->transform = scale;
+    priv->scale = TRUE;
+  }
+  else
+    priv->scale = FALSE;
+
 }
 
 #endif
-
-
-
-
-
-
-
-
-
