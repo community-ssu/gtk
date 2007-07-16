@@ -112,7 +112,7 @@ typedef struct {
          * argument of type MUALI_TYPE_INVALID. args is NULL if the
          * message has no arguments.
          * Note that this is ignored in case of a vararg function. */
-        const muali_arg_t *args;
+        muali_arg_t *args;
 } muali_event_info_t;
 
 typedef void (muali_handler_t)(muali_context_t *context,
