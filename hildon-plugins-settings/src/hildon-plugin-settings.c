@@ -230,7 +230,7 @@ execute (osso_context_t *osso,
   GError *error = NULL;
   GtkTreeModel *sbtm = NULL;
 
-  GtkWidget *dialog = hildon_plugin_settings_dialog_new ();
+  GtkWidget *dialog = hildon_plugin_settings_dialog_new (GTK_WINDOW (user_data));
 
   hildon_plugin_settings_dialog_set_visibility_filter
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),

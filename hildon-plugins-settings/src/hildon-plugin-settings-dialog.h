@@ -89,7 +89,7 @@ GType
 hildon_plugin_settings_dialog_get_type (void);
 
 GtkWidget *
-hildon_plugin_settings_dialog_new (void);
+hildon_plugin_settings_dialog_new (GtkWindow *parent);
 
 GList *
 hildon_plugin_settings_dialog_get_container_names (HildonPluginSettingsDialog *settings);

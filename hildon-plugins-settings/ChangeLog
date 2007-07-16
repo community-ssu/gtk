@@ -1,3 +1,15 @@
+2007-07-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-cell-renderer-button.c:
+	(hildon_plugin_cell_renderer_button_activate):
+	- Set transient for parent dialog window.
+	* src/hildon-plugin-settings-dialog.[ch]:
+	(hildon_plugin_settings_dialog_new):
+	- Set transient for parent.
+	- Set again as MODAL.
+	* src/hildon-plugin-settings.c: (execute):
+	- Parent is user data. Fixes: NB#62322
+
 2007-07-12  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/Makefile.am: Fixed marshalers creation.

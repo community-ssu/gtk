@@ -468,6 +468,18 @@ hildon_plugin_cell_renderer_button_activate (GtkCellRenderer      *cell,
     settings_dialog = 
       hildon_plugin_module_settings_get_dialog (cellbutton->priv->plugin_module);
 
+    GtkWidget *dialog_window = gtk_widget_get_toplevel (widget);
+
+    if (GTK_IS_WINDOW (dialog_window) && GTK_IS_DIALOG (dialog_window))
+    {
+      GtkWindow *transient_for = NULL;
+	      
+      g_object_get (dialog_window, "transient-for", &transient_for, NULL);
+
+      if (transient_for)  
+        g_object_set (settings_dialog, "transient-for", transient_for, NULL);
+    }
+
     if (settings_dialog && GTK_IS_DIALOG (settings_dialog))
       gtk_dialog_run (GTK_DIALOG (settings_dialog));
     

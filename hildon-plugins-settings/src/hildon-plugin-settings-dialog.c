@@ -318,7 +318,7 @@ hildon_plugin_settings_dialog_constructor (GType gtype,
   }
   else 
   {
-    gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
+    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
     gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   }
   
@@ -965,11 +965,16 @@ hildon_desktop_plugin_settings_dialog_switch_nb_cb (GtkNotebook *nb,
 }
 
 GtkWidget *
-hildon_plugin_settings_dialog_new (void)
+hildon_plugin_settings_dialog_new (GtkWindow *parent)
 {
-  return 
+  GtkWidget *dialog =  
     GTK_WIDGET 
       (g_object_new (HILDON_PLUGIN_TYPE_SETTINGS_DIALOG,NULL));
+
+  if (parent && GTK_IS_WINDOW (parent))
+    gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);	    
+
+  return dialog;
 }
 
 GList *
