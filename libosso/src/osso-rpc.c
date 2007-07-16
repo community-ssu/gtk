@@ -966,7 +966,8 @@ _muali_parse_id(const char *id, muali_bus_type *bus, char *sender,
                 int *serial)
 {
         int i;
-        char buf[20], *p;
+        char buf[20];
+        const char *p;
 
         /* get bus type */
         for (i = 0, p = id; *p != ','; ++p, ++i) {
