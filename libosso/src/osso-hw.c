@@ -155,6 +155,11 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 
     dbus_error_init(&error);
 
+    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
+        ULOG_ERR_F("mutex deadlock detected");
+        return OSSO_ERROR;
+    }
+
     if (state->shutdown_ind) {
         osso->hw_cbs.shutdown_ind.cb = cb;
         osso->hw_cbs.shutdown_ind.data = data;
@@ -163,6 +168,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" MCE_SHUTDOWN_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -181,6 +187,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_OFF_SIGNAL_IF "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -188,6 +195,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_ON_SIGNAL_IF "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -213,6 +221,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" MCE_DATA_SAVE_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -230,6 +239,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" MCE_INACTIVITY_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -248,6 +258,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" MCE_DEVICE_MODE_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
+                pthread_mutex_unlock(&osso->mutex);
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
                 return OSSO_ERROR;
@@ -259,6 +270,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         } 
         osso->hw_cbs.sig_device_mode_ind.set = TRUE;
     }
+    pthread_mutex_unlock(&osso->mutex);
 
     if (install_mce_handler) {
         _msg_handler_set_cb_f(osso,
@@ -301,6 +313,10 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 	state = (osso_hw_state_t*) &default_mask;
     }
 
+    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
+        ULOG_ERR_F("mutex deadlock detected");
+        return OSSO_ERROR;
+    }
     _unset_state_cb(shutdown_ind);
     if (state->memory_low_ind && osso->hw_cbs.memory_low_ind.set) {
         osso->hw_cbs.memory_low_ind.cb = NULL;
@@ -310,6 +326,8 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
                 USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
         dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_ON_SIGNAL_IF "'", NULL);
+
+        pthread_mutex_unlock(&osso->mutex);
         _msg_handler_rm_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_SVC,
                              USER_LOWMEM_OFF_SIGNAL_OP,
                              USER_LOWMEM_OFF_SIGNAL_IF,
@@ -320,17 +338,23 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
                              USER_LOWMEM_ON_SIGNAL_IF,
                              (const _osso_handler_f*)lowmem_signal_handler,
                              NULL, FALSE);
+        if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
+            ULOG_ERR_F("mutex deadlock detected");
+            return OSSO_ERROR;
+        }
     }
     _unset_state_cb(save_unsaved_data_ind);
     _unset_state_cb(system_inactivity_ind);
     _unset_state_cb(sig_device_mode_ind);
 
     if (_state_is_unset()) {
+        pthread_mutex_unlock(&osso->mutex);
 	_msg_handler_rm_cb_f(osso, MCE_SERVICE,
                              MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
                              (const _osso_handler_f*)signal_handler,
                              NULL, FALSE);
     }
+    pthread_mutex_unlock(&osso->mutex);
     return OSSO_OK;    
 }
 

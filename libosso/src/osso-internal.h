@@ -36,6 +36,8 @@
 # include <stdarg.h>
 # include <string.h>
 # include <malloc.h>
+# include <pthread.h>
+# include <errno.h>
 
 # include "libosso.h"
 # include "osso-log.h"
@@ -170,6 +172,7 @@ typedef struct osso_af_context_t {
                                context */
     const DBusMessage *reply_dummy, *error_dummy;
     gboolean muali_filters_setup;
+    pthread_mutex_t mutex;
 } _osso_af_context_t, _muali_context_t;
 
 typedef struct _muali_context_t {
@@ -200,6 +203,7 @@ typedef struct _muali_context_t {
                                context */
     const DBusMessage *reply_dummy, *error_dummy;
     gboolean muali_filters_setup;
+    pthread_mutex_t mutex;
 } _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG

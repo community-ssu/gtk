@@ -478,6 +478,11 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
         return OSSO_ERROR;
     }
     
+    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
+        ULOG_ERR_F("mutex deadlock detected");
+        return OSSO_ERROR;
+    }
+
     if (strcmp(service, osso->service) != 0
         || (use_system_bus && !osso->systembus_service_registered)
         || (!use_system_bus && !osso->sessionbus_service_registered)) {
@@ -496,10 +501,12 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
         } else if (ret == DBUS_REQUEST_NAME_REPLY_IN_QUEUE ||
                    ret == DBUS_REQUEST_NAME_REPLY_EXISTS) {
             /* this should be impossible */
+            pthread_mutex_unlock(&osso->mutex);
             ULOG_ERR_F("dbus_bus_request_name is broken");
             free(rpc);
             return OSSO_ERROR;
         } else if (ret == -1) {
+            pthread_mutex_unlock(&osso->mutex);
             ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
                        service, err.message);
             dbus_error_free(&err);
@@ -515,6 +522,7 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
             }
         }
     }
+    pthread_mutex_unlock(&osso->mutex);
 
     rpc->user_cb = cb;
     rpc->user_data = data;

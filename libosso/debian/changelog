@@ -1,3 +1,10 @@
+libosso (2.14~unreleased) unstable; urgency=low
+
+  * Added some thread safety.
+  * Removed -Werror from compilation options.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 16 Jul 2007 15:17:41 +0300
+
 libosso (2.13-1) unstable; urgency=low
 
   * Fix some warnings in osso-state.c when using -pedantic

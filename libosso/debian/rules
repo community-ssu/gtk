@@ -11,7 +11,7 @@
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-CFLAGS += -Wall -g -ansi -Werror -Wshadow -D_GNU_SOURCE
+CFLAGS += -Wall -g -ansi -Wshadow -D_GNU_SOURCE
 CFLAGS += -O$(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),0,2)
 # Use soft-float and thumb mode if it is enabled.
 CFLAGS += $(if $(findstring thumb,$(DEB_BUILD_OPTIONS)),-mthumb)

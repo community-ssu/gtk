@@ -1,7 +1,7 @@
 # -*- sh -*-
 AC_INIT([libosso], [2.0])
 AC_CONFIG_SRCDIR([src/libosso.h])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall])
 AM_CONFIG_HEADER([config.h])
 AC_LANG(C)
 #AC_GNU_SOURCE
@@ -42,7 +42,7 @@ fi
 ## g_array_index gives bogus warnings for -Wcast-align on ARM, so we
 ## don't us that warning as well.
 
-WFLAGS="-Werror -Wall -Wmissing-prototypes -std=c99"
+WFLAGS="-Wall -Wmissing-prototypes -std=c99"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE([LIBOSSO_DEBUG],1,[Build extra debug code])
     OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -rdynamic $WFLAGS"

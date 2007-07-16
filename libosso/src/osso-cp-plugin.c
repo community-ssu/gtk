@@ -95,11 +95,20 @@ try_plugin (osso_context_t *osso, const char *dir, const char *file)
       return NULL;
     }
 
+  if (pthread_mutex_lock (&osso->mutex) == EDEADLK)
+    {
+      ULOG_ERR_F("mutex deadlock detected");
+      return NULL;
+    }
+
   if (osso->cp_plugins)
     handle = g_hash_table_lookup (osso->cp_plugins, libname);
 
   if (handle)
-    return handle;
+    {
+      pthread_mutex_unlock (&osso->mutex);
+      return handle;
+    }
 
   handle = dlopen (libname, RTLD_LAZY | RTLD_LOCAL);
   if (handle == NULL)
@@ -108,6 +117,7 @@ try_plugin (osso_context_t *osso, const char *dir, const char *file)
     }
 
   g_hash_table_insert (osso->cp_plugins, g_strdup (libname), handle);
+  pthread_mutex_unlock (&osso->mutex);
   return handle;
 }
 
@@ -207,9 +217,16 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
         return OSSO_OK;
     }
 
+    if (pthread_mutex_lock (&osso->mutex) == EDEADLK)
+    {
+        ULOG_ERR_F("mutex deadlock detected");
+        return OSSO_ERROR;
+    }
+
     if (osso->cp_plugins)
       handle = g_hash_table_lookup(osso->cp_plugins, filename);
 
+    pthread_mutex_unlock (&osso->mutex);
     if (handle) {
 	osso_return_t ret;
 	osso_cp_plugin_save_state_f *ss = NULL;
