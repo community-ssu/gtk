@@ -1,3 +1,12 @@
+2007-07-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* data/statusbar.conf.in:
+	- Revert old hildon-status-bar-usb.desktop
+	* src/hd-switcher-menu.c: (hd_switcher_menu_check_content):
+	- move the grab to first panel when no notifications.
+	* src/hn-app-button.c: (hn_app_button_create_menu):
+	- Don't attach the widget. Fixes: NB#62048
+
 2007-07-15  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-window-composite.c:

@@ -410,10 +410,12 @@ hn_app_button_create_menu (HNAppButton *app_button)
 
   menu = gtk_menu_new ();
 
+#ifndef MAEMO_CHANGES
+ /* If we attach it doesn't show up with VKB */
   gtk_menu_attach_to_widget (GTK_MENU (menu), 
 		  	     GTK_WIDGET (app_button),
 			     NULL);
-
+#endif  
   children = hd_wm_entry_info_get_children (info);
   for (l = children; l != NULL; l = l->next)
   {
