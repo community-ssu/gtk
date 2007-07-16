@@ -324,7 +324,7 @@ static void free_if_hash_value(gpointer data)
 static osso_context_t *_init(const gchar *application, const gchar *version)
 {
     osso_context_t *osso;
-    pthread_mutex_t mutex_attr;
+    pthread_mutexattr_t mutex_attr;
     
     if (!_validate(application, version)) {
 	ULOG_ERR_F("invalid arguments");
@@ -369,7 +369,7 @@ static osso_context_t *_muali_init(const char *application,
                                    const char *version)
 {
     osso_context_t *osso;
-    pthread_mutex_t mutex_attr;
+    pthread_mutexattr_t mutex_attr;
     
     if (!_validate(application, version)) {
 	ULOG_ERR_F("invalid arguments");
