@@ -157,6 +157,8 @@ AC_SUBST([OUTO_CFLAGS])
 AM_CONDITIONAL([BUILD_UNIT_TESTS], [test "x${build_unit_tests}" = "xyes"])
 
 PKG_CHECK_MODULES([MCE], [mce >= 1.5])
+AC_SUBST([MCE_LIBS])
+AC_SUBST([MCE_CFLAGS])
 
 # Checks for header files.
 AC_HEADER_STDC

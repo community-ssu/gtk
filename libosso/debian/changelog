@@ -2,6 +2,7 @@ libosso (2.14~unreleased) unstable; urgency=low
 
   * Added some thread safety.
   * Removed -Werror from compilation options.
+  * Added MCE_CFLAGS and MCE_LIBS to Makefile.am.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 16 Jul 2007 15:17:41 +0300
 
