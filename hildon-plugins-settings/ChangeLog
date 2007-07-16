@@ -2,7 +2,7 @@
 
 	* src/hildon-plugin-cell-renderer-button.c:
 	(hildon_plugin_cell_renderer_button_activate):
-	- Set transient for parent dialog window.
+	- Set transient for parent dialog window. Fixes: NB#63366
 	* src/hildon-plugin-settings-dialog.[ch]:
 	(hildon_plugin_settings_dialog_new):
 	- Set transient for parent.
