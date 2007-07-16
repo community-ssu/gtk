@@ -45,9 +45,9 @@ fi
 WFLAGS="-Wall -Wmissing-prototypes -std=c99"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE([LIBOSSO_DEBUG],1,[Build extra debug code])
-    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -rdynamic $WFLAGS"
+    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -D_GNU_SOURCE -rdynamic $WFLAGS"
 else
-    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -O2 -rdynamic $WFLAGS"
+    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -D_GNU_SOURCE -O2 -rdynamic $WFLAGS"
 fi
 
 AC_SUBST([OSSO_CFLAGS])

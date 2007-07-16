@@ -1380,7 +1380,7 @@ muali_error_t _muali_send_helper(muali_context_t *context,
         cb_data->message_id = (long)msg_serial;
 
         cb_data->user_cb = reply_handler;
-        cb_data->user_data = user_data;
+        cb_data->user_data = (gpointer)user_data;
         cb_data->match_rule = NULL;
         cb_data->event_type = 0;
         cb_data->bus_type = bus_type;
