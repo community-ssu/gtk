@@ -1,5 +1,9 @@
 2007-07-17  Moises Martinez  <moises.martinez@nokia.com>
 
+	* configure.ac: 0.0.5
+
+2007-07-17  Moises Martinez  <moises.martinez@nokia.com>
+
 	* configure.ac:
 	* debian/control:
 	* src/Makefile.am:

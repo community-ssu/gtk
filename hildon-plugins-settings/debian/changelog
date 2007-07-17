@@ -1,8 +1,32 @@
+hildon-plugins-settings (0.0.5-1) unstable; urgency=low
+
+  * configure.ac:
+  * debian/control:
+  * src/Makefile.am:
+  - Added hildon-help
+  * src/hildon-plugin-settings.c: (_cell_mandatory_data_func),
+  (execute):
+  - Don't show checkboxes in tasknavigator if there are only 3 plugins.
+  Fixes: NB#63295.
+  - Include help dialog support. Fixes: NB62878
+
+  * src/hildon-plugin-cell-renderer-button.c:
+  (hildon_plugin_cell_renderer_button_activate):
+  - Set transient for parent dialog window. Fixes: NB#63366
+  * src/hildon-plugin-settings-dialog.[ch]:
+  (hildon_plugin_settings_dialog_new):
+  - Set transient for parent.
+  - Set again as MODAL.
+  * src/hildon-plugin-settings.c: (execute):
+  - Parent is user data. Fixes: NB#62322
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Tue, 17 Jul 2007 16:29:26 +0300
+
 hildon-plugins-settings (0.0.4-2) unstable; urgency=low
 
   * src/Makefile.am: Fixed marshalers creation. 
 
- -- moimart <moises.martinez@nokia.com>  Thu, 12 Jul 2007 17:34:25 +0300
+ -- Moises Martinez <moises.martinez@nokia.com>  Thu, 12 Jul 2007 17:34:25 +0300
 
 hildon-plugins-settings (0.0.4-1) unstable; urgency=low
 
