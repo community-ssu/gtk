@@ -179,12 +179,9 @@ muali_context_t *muali_init(const char *program_name,
 /************************************************************************/
 void osso_deinitialize(osso_context_t *osso)
 {
-    if(osso == NULL) return;
+    if (osso == NULL) return;
     
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return;
-    }
+    LOCK_OR_RETURN(osso->mutex, );
     _dbus_disconnect(osso, FALSE);
     _dbus_disconnect(osso, TRUE);
     
@@ -415,7 +412,7 @@ static void _deinit(osso_context_t *osso)
 	return;
     }
 
-    LOCK_OR_RETURN(osso->mutex, ());
+    LOCK_OR_RETURN(osso->mutex, );
 
     if (osso->uniq_hash != NULL) {
         g_hash_table_destroy(osso->uniq_hash);
@@ -625,10 +622,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 
     ULOG_DEBUG_F("key = '%s'", interface);
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
+    LOCK_OR_RETURN(osso->mutex, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 
     elem = g_hash_table_lookup(osso->if_hash, interface);
 
@@ -834,10 +828,7 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
     }
     reply_to = dbus_message_get_reply_serial(msg);
 
-    if (pthread_mutex_lock(&muali->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
+    LOCK_OR_RETURN(muali->mutex, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 
     muali->cur_conn = conn;
     elem_list = opm_match(muali, dbus_message_get_path(msg),
@@ -1086,10 +1077,7 @@ static int set_handler_helper(osso_context_t *osso,
     handler->can_free_data = can_free_data;
     handler->handler_id = osso->next_handler_id++;
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return 0;
-    }
+    LOCK_OR_RETURN(osso->mutex, 0);
 
     /* warn about the old element if it exists */
     old = g_hash_table_lookup(osso->uniq_hash, uniq_key);
@@ -1187,10 +1175,7 @@ _muali_set_handler(_muali_context_t *context,
     elem->call_once_per_handler_id = call_once_per_handler_id;
     /* other members are not used and left zero */
 
-    if (pthread_mutex_lock(&context->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return FALSE;
-    }
+    LOCK_OR_RETURN(context->mutex, FALSE);
 
     old = g_hash_table_lookup(context->id_hash, GINT_TO_POINTER(handler_id));
     if (old != NULL) {
@@ -1266,10 +1251,7 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
 
     ULOG_DEBUG_F("context=%p", context);
 
-    if (pthread_mutex_lock(&context->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return FALSE;
-    }
+    LOCK_OR_RETURN(context->mutex, FALSE);
 
     elem = g_hash_table_lookup(context->id_hash, GINT_TO_POINTER(handler_id));
     if (elem == NULL) {
@@ -1396,10 +1378,7 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
 
     compose_hash_key(service, object_path, interface, uniq_key);
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return FALSE;
-    }
+    LOCK_OR_RETURN(osso->mutex, FALSE);
 
     elem = g_hash_table_lookup(osso->uniq_hash, uniq_key);
     if (elem != NULL) {
