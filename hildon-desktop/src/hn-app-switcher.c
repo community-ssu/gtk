@@ -675,13 +675,47 @@ refresh_buttons (gpointer user_data)
     else
     {
       const GList *iter ,*children = hd_wm_entry_info_get_children (HD_WM_ENTRY_INFO (l->data));
+
+      gint real_width, real_height, real_x, real_y;
+      real_x = 0;real_width = real_x; 
+      GtkWidget *panel = gtk_widget_get_toplevel (GTK_WIDGET (app_switcher));
+
+      /* Hack for setting the geometry in some place external in the panel.
+       * Actually for us, this means the application switcher menu button 
+       */
+
+      if (HILDON_DESKTOP_PANEL_ITEM (app_switcher)->orientation == GTK_ORIENTATION_VERTICAL)
+      {	      
+        real_height = panel->allocation.height - 
+       		      GTK_WIDGET (app_switcher)->allocation.y - 
+		      GTK_WIDGET (app_switcher)->allocation.height;
+
+        real_y = GTK_WIDGET (app_switcher)->allocation.y + 
+	         GTK_WIDGET (app_switcher)->allocation.height;
+
+	real_x = GTK_WIDGET (app_switcher)->allocation.x;
+	real_width = GTK_WIDGET (app_switcher)->allocation.width;
+      }
+      else
+      {
+        real_width = panel->allocation.width - 
+       		     GTK_WIDGET (app_switcher)->allocation.x - 
+		     GTK_WIDGET (app_switcher)->allocation.width;
+
+        real_x = GTK_WIDGET (app_switcher)->allocation.x + 
+	         GTK_WIDGET (app_switcher)->allocation.width;
+
+	real_y = GTK_WIDGET (app_switcher)->allocation.y;
+	real_height = GTK_WIDGET (app_switcher)->allocation.height;
+      }	      
       
+
       for (iter = children; iter != NULL; iter = g_list_next (iter))
 	 hd_wm_window_set_icon_geometry (HD_WM_WINDOW (iter->data),	    
 		      		         GTK_WIDGET (app_switcher)->allocation.x,
-				         GTK_WIDGET (app_switcher)->allocation.y,
+				         real_y,
 				         GTK_WIDGET (app_switcher)->allocation.width,
-				         GTK_WIDGET (app_switcher)->allocation.height,
+				         real_height,
 				         FALSE);
     }	    
   }

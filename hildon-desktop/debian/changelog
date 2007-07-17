@@ -1,3 +1,91 @@
+hildon-desktop (1:0.0.24-1) sardine; urgency=low
+
+  * libhildonwm/hd-keys.c: (hd_keys_action_power):
+  - Added sanity check.
+  * src/hn-app-switcher.c: (refresh_buttons):
+  - Set the icon geometry for application switcher menu.
+
+  * src/hd-switcher-menu.c: (hd_switcher_menu_check_content):
+  - Jump to first panel (-1) as soon as we don't have notifications.
+  Fixes: NB#63242
+
+  * data/statusbar.conf.in:
+  - Revert old hildon-status-bar-usb.desktop
+  * src/hd-switcher-menu.c: (hd_switcher_menu_check_content):
+  - move the grab to first panel when no notifications.
+  * src/hn-app-button.c: (hn_app_button_create_menu):
+  - Don't attach the widget. Fixes: NB#62048
+
+  * libhildondesktop/hildon-desktop-panel-window-composite.c:
+  - if the panel background size does not match the panel size,
+  stretch it
+
+  * libhildondesktop/hildon-desktop-panel-window-composite.[ch],
+  src/hd-panel-window.[ch]:
+  - moved the compositing part of hd-panel-window to a generic
+  subclass so it can be used by other panels
+
+  * src/hd-home-window.c:
+  - do not send a foreground event when the screen is turned on
+  but the home is in the background.
+  Fixes: NB#60875
+
+  * src/hd-home-window.c:
+  - do not send a foreground event when the screen is dimmed
+
+  * src/hd-home-window.c:
+  - do not send a foreground event when the screen is dimmed
+
+  * src/hd-app-menu-dialog.c:
+  - make Ok button insensitive in Rename and New dialogs when the
+  entry is empty
+  - add corresponding insensitive message
+  - use correct strings for both.
+  Fixes: NB#63129
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: reduce 4px on scroll
+  buttons height to make it fit the screen.
+  * src/hd-applications-menu.c: added arrows inside scroll buttons.
+  Several naming fixes in order to make the theming work.
+
+  * src/Makefile.am: fix build errors.
+
+  * src/Makefile.am:
+  - Added marshaler for container's signal
+  * src/hd-marshalers.list:
+  - New marshaler for hd-panel-window-dialog.c
+   * src/hd-panel-window-dialog.c:
+  (hd_panel_window_dialog_notify_condition),
+  (hd_panel_window_dialog_cadd), (hd_panel_window_dialog_queued),
+  (hd_panel_window_dialog_constructor),
+  (hd_panel_window_dialog_class_init):
+  - Moved signal to gobject code to get advantage of dbus binding.
+  - Connect only if the object hasn't been connected before.
+  * src/statusbar.xml:
+  - added signal
+
+  * libhildondesktop/hildon-home-area.c: Fixed compiler warning
+
+  Fixed make dist:
+  * libhildonwm/hd-wm.c: do not include libosso.h (not used)
+  * */Makefile.am: removed legacy EXTRA_DIST rule
+  * libhildondesktop/Makefile.am: fixed typo in source file list
+  Thanks to Richard Hult for poiting these out
+
+  * src/Makefile.am, src/hd-panel-window-dialog.[ch]
+  (hd_panel_window_dialog_notify_condition),
+  (hd_panel_window_dialog_cadd),
+  (hd_panel_window_dialog_constructor),
+  (hd_panel_window_dialog_class_init), (hd_panel_window_dialog_init),
+  (hd_panel_window_dialog_refresh_items_status): add a D-Bus interface
+  to Statusbar in order to be able to refresh the items status from
+  plugins settings applet.
+  * src/statusbar.xml: Statusbar D-Bus API definition.
+
+  * Implemented: NR#182576, NR#182575, NR#182393, NR#182392, NR#182391, NR#182390, NR#182389, NR#182388
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Tue, 17 Jul 2007 16:20:44 +0300
+
 hildon-desktop (1:0.0.23-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-popup-menu.c:

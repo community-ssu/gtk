@@ -192,7 +192,7 @@ static void
 hd_keys_action_power (HDKeysConfig *keys,
                       gpointer     *user_data)
 {
-  DBusConnection       *connection;
+  DBusConnection       *connection = NULL;
   DBusError             error;
   DBusMessage          *msg = NULL;
   gboolean              long_press = GPOINTER_TO_INT(user_data);
