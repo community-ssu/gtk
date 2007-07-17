@@ -2,7 +2,7 @@ Source: hildon-plugins-settings
 Section: x11
 Priority: optional
 Maintainer: Moises Martinez <moises.martinez@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libosso-dev (>= 0.9.19), osso-af-settings, hildon-control-panel-dev, hildon-desktop-dev (>= 0.0.16), libhildondesktop-dev (>= 0.0.16), libhildon1-dev, libdbus-glib-1-dev
+Build-Depends: debhelper (>= 4.0.0), libosso-dev (>= 0.9.19), osso-af-settings, hildon-control-panel-dev, hildon-desktop-dev (>= 0.0.16), libhildondesktop-dev (>= 0.0.16), libhildon1-dev, libdbus-glib-1-dev, libhildonhelp-dev
 Standards-Version: 3.6.1
 
 Package: hildon-plugins-settings-cpa

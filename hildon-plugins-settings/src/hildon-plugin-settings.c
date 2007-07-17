@@ -29,6 +29,8 @@
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-bindings.h>
 
+#include <hildon/hildon-help.h>
+
 #include "hd-marshalers.h"
 
 #include "hildon-plugin-settings-dialog.h"
@@ -44,14 +46,14 @@
 #include <libintl.h>
 #define _(a) dgettext(PACKAGE, a)
 
-#define TN_MAX_ITEMS 5
+#define TN_MAX_ITEMS 3
 
 /* HARDCODE_PARTY */
 /* Plugins to not be shown */
 #define HP_APPLICATION_SWITCHER "/usr/share/applications/hildon-navigator/app-switcher.desktop"
 #define HP_SWITCHER_MENU "/usr/share/applications/hildon-navigator/switcher-menu.desktop"
 
-GtkTreeRowReference *selected[TN_MAX_ITEMS];
+#define CPA_TN_HELP_TOPIC  "utilities_controlpanelapplettasknavigator_tana"
 
 static gboolean
 _tn_visibility_filter (GtkTreeModel *model,
@@ -121,6 +123,9 @@ _cell_mandatory_data_func (GtkTreeViewColumn *tc,
 		"sensitive", !mandatory,
 		"activatable", !mandatory,
 		NULL);
+
+  if (gtk_tree_model_iter_n_children (tm, NULL) <= TN_MAX_ITEMS)
+    g_object_set (G_OBJECT (cell), "visible", FALSE, NULL);
 }
 
 static void 
@@ -232,6 +237,8 @@ execute (osso_context_t *osso,
 
   GtkWidget *dialog = hildon_plugin_settings_dialog_new (GTK_WINDOW (user_data));
 
+  hildon_help_dialog_help_enable (GTK_DIALOG (dialog), CPA_TN_HELP_TOPIC, osso);
+
   hildon_plugin_settings_dialog_set_visibility_filter
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
      "Tasknavigator",
@@ -273,7 +280,7 @@ execute (osso_context_t *osso,
   hildon_plugin_settings_dialog_set_choosing_limit 
     (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
      "Tasknavigator",
-     3);
+     TN_MAX_ITEMS);
 
   sbtm = hildon_plugin_settings_dialog_get_model_by_name
           (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),

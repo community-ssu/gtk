@@ -33,11 +33,12 @@ hd-marshalers.h:
 
 BUILT_SOURCES = hd-marshalers.c hd-marshalers.h
 
-libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES) $(LIBHILDON_CFLAGS)
+libhildonpluginsettings_la_CPPFLAGS = $(INCLUDES) $(LIBHILDON_CFLAGS) $(LIBHILDONHELP_CFLAGS)
 
 libhildonpluginsettings_la_LIBADD = \
 	$(CP_LIBS) $(OSSO_LIBS) $(GCONF_LIBS) \
-	$(LIBOSSOHELP_LIBS) $(LIBHILDONMENU_LIBS)
+	$(LIBHILDONMENU_LIBS) \
+	$(LIBHILDONHELP_LIBS)
 
 libhildonpluginsettings_la_SOURCES = \
 	$(HILDON_PLUGIN_SOURCES) \
