@@ -200,6 +200,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                 dbus_error_free(&error);
                 return OSSO_ERROR;
             }
+            pthread_mutex_unlock(&osso->mutex);
             _msg_handler_set_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_SVC,
                                   USER_LOWMEM_OFF_SIGNAL_OP,
                                   USER_LOWMEM_OFF_SIGNAL_IF,
@@ -208,6 +209,10 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                                   USER_LOWMEM_ON_SIGNAL_OP,
                                   USER_LOWMEM_ON_SIGNAL_IF,
                                   lowmem_signal_handler, NULL, FALSE);
+            if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
+                ULOG_ERR_F("mutex deadlock detected");
+                return OSSO_ERROR;
+            }
         }
         osso->hw_cbs.memory_low_ind.set = TRUE;
 

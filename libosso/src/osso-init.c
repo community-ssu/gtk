@@ -650,8 +650,10 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
                 ULOG_DEBUG_F("before calling the handler");
                 ULOG_DEBUG_F(" handler = %p", handler->handler);
                 ULOG_DEBUG_F(" data = %p", handler->data);
+
                 (*handler->handler)(osso, msg, handler->data, 0);
                 ULOG_DEBUG_F("after calling the handler");
+
 #ifdef OSSOLOG_COMPILE
                 found = TRUE;
 #endif
