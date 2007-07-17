@@ -95,11 +95,7 @@ try_plugin (osso_context_t *osso, const char *dir, const char *file)
       return NULL;
     }
 
-  if (pthread_mutex_lock (&osso->mutex) == EDEADLK)
-    {
-      ULOG_ERR_F("mutex deadlock detected");
-      return NULL;
-    }
+  LOCK_OR_RETURN(osso->mutex, NULL);
 
   if (osso->cp_plugins)
     handle = g_hash_table_lookup (osso->cp_plugins, libname);
@@ -217,11 +213,7 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
         return OSSO_OK;
     }
 
-    if (pthread_mutex_lock (&osso->mutex) == EDEADLK)
-    {
-        ULOG_ERR_F("mutex deadlock detected");
-        return OSSO_ERROR;
-    }
+    LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
 
     if (osso->cp_plugins)
       handle = g_hash_table_lookup(osso->cp_plugins, filename);

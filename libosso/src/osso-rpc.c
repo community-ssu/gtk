@@ -478,10 +478,7 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
         return OSSO_ERROR;
     }
     
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return OSSO_ERROR;
-    }
+    LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
 
     if (strcmp(service, osso->service) != 0
         || (use_system_bus && !osso->systembus_service_registered)

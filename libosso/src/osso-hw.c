@@ -155,10 +155,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 
     dbus_error_init(&error);
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return OSSO_ERROR;
-    }
+    LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
 
     if (state->shutdown_ind) {
         osso->hw_cbs.shutdown_ind.cb = cb;
@@ -209,10 +206,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                                   USER_LOWMEM_ON_SIGNAL_OP,
                                   USER_LOWMEM_ON_SIGNAL_IF,
                                   lowmem_signal_handler, NULL, FALSE);
-            if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-                ULOG_ERR_F("mutex deadlock detected");
-                return OSSO_ERROR;
-            }
+            LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
         }
         osso->hw_cbs.memory_low_ind.set = TRUE;
 
@@ -318,10 +312,8 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 	state = (osso_hw_state_t*) &default_mask;
     }
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return OSSO_ERROR;
-    }
+    LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
+
     _unset_state_cb(shutdown_ind);
     if (state->memory_low_ind && osso->hw_cbs.memory_low_ind.set) {
         osso->hw_cbs.memory_low_ind.cb = NULL;
@@ -343,10 +335,7 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
                              USER_LOWMEM_ON_SIGNAL_IF,
                              (const _osso_handler_f*)lowmem_signal_handler,
                              NULL, FALSE);
-        if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-            ULOG_ERR_F("mutex deadlock detected");
-            return OSSO_ERROR;
-        }
+        LOCK_OR_RETURN(osso->mutex, OSSO_ERROR);
     }
     _unset_state_cb(save_unsaved_data_ind);
     _unset_state_cb(system_inactivity_ind);
