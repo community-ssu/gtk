@@ -1,11 +1,11 @@
-libosso (2.14~unreleased) unstable; urgency=low
+libosso (2.14-1) unstable; urgency=low
 
-  * Added some thread safety.
+  * Added some thread safety by adding a mutex for osso_context_t.
   * Removed -Werror from compilation options.
   * Added MCE_CFLAGS and MCE_LIBS to Makefile.am.
   * Fixed some compilation warnings pointed out by Richard Hult.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 16 Jul 2007 15:17:41 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 17 Jul 2007 11:05:37 +0300
 
 libosso (2.13-1) unstable; urgency=low
 
