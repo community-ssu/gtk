@@ -415,10 +415,7 @@ static void _deinit(osso_context_t *osso)
 	return;
     }
 
-    if (pthread_mutex_lock(&osso->mutex) == EDEADLK) {
-        ULOG_ERR_F("mutex deadlock detected");
-        return;
-    }
+    LOCK_OR_RETURN(osso->mutex, ());
 
     if (osso->uniq_hash != NULL) {
         g_hash_table_destroy(osso->uniq_hash);

@@ -82,6 +82,14 @@
 #define MUALI_MAX_ARGS 256
 #define MUALI_MAX_MATCH_SIZE 256
 
+#define LOCK_OR_RETURN(V, R) \
+    if (pthread_mutex_lock(&V) == EDEADLK) { \
+        ULOG_ERR_F("mutex deadlock detected"); \
+        g_critical("mutex deadlock detected"); \
+        return R; \
+    }
+
+
 typedef struct {
     osso_hw_cb_f *cb;
     gpointer data;
