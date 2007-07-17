@@ -1,3 +1,9 @@
+2007-07-17  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: (hd_switcher_menu_check_content):
+	- Jump to first panel (-1) as soon as we don't have notifications. 
+	Fixes: NB#63242
+
 2007-07-16  Moises Martinez  <moises.martinez@nokia.com>
 
 	* data/statusbar.conf.in:

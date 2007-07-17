@@ -1305,10 +1305,7 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
   }
 
   if (!children && switcher->priv->is_open)
-  {
-    g_debug ("This was necessary!!!!!!!!!!!!!!!!");	     
-    hildon_desktop_popup_window_jump_to_pane (switcher->priv->popup_window, 0);
-  }  	     
+    hildon_desktop_popup_window_jump_to_pane (switcher->priv->popup_window, -1);
 
   g_list_free (children);
 }	
