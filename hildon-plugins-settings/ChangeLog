@@ -1,3 +1,8 @@
+2007-07-18  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-settings.c: (execute):
+	- Free DBus stuff.
+
 2007-07-17  Moises Martinez  <moises.martinez@nokia.com>
 
 	* configure.ac: 0.0.5

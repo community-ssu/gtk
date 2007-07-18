@@ -232,6 +232,7 @@ execute (osso_context_t *osso,
 {
   gint ret;
   DBusGConnection *conn = NULL;
+  DBusGProxy *proxy = NULL;
   GError *error = NULL;
   GtkTreeModel *sbtm = NULL;
 
@@ -293,39 +294,45 @@ execute (osso_context_t *osso,
 
   if (!error)
   {
-    DBusGProxy *proxy = dbus_g_proxy_new_for_name (conn,
-		    				   SB_STATUS_NAME,
-						   SB_STATUS_PATH,
-						   SB_STATUS_INTERFACE);
+    dbus_g_connection_ref (conn);
+	  
+    proxy = dbus_g_proxy_new_for_name (conn,
+    				       SB_STATUS_NAME,
+				       SB_STATUS_PATH,
+				       SB_STATUS_INTERFACE);
 
-    dbus_g_object_register_marshaller (g_cclosure_user_marshal_VOID__STRING_BOOLEAN,
-                                        G_TYPE_NONE,
-                                        G_TYPE_STRING,
-                                        G_TYPE_BOOLEAN,
-                                        G_TYPE_INVALID);
+    if (proxy)
+    {	    
 
-    dbus_g_proxy_add_signal (proxy,
-		    	     "UpdateStatus",
-			     G_TYPE_STRING,
-			     G_TYPE_BOOLEAN,
-			     G_TYPE_INVALID);
+      dbus_g_object_register_marshaller (g_cclosure_user_marshal_VOID__STRING_BOOLEAN,
+                                         G_TYPE_NONE,
+                                         G_TYPE_STRING,
+                                         G_TYPE_BOOLEAN,
+                                         G_TYPE_INVALID);
 
-    dbus_g_proxy_connect_signal (proxy,
-				 "UpdateStatus",
-				 G_CALLBACK (_sb_update_status),
-				 sbtm,
-				 NULL);
+      dbus_g_proxy_add_signal (proxy,
+  	  	    	       "UpdateStatus",
+			       G_TYPE_STRING,
+			       G_TYPE_BOOLEAN,
+			       G_TYPE_INVALID);
 
-    dbus_g_proxy_call (proxy,
-		       "RefreshItemsStatus",
-		       &error,
-		       G_TYPE_INVALID);
+      dbus_g_proxy_connect_signal (proxy,
+				   "UpdateStatus",
+				   G_CALLBACK (_sb_update_status),
+				   sbtm,
+				   NULL);
+
+      dbus_g_proxy_call (proxy,
+		         "RefreshItemsStatus",
+		         &error,
+		         G_TYPE_INVALID);
     
-    if (error)
-    {
-      g_warning ("Oops: %s", error->message);
-      g_error_free (error);
-    }		    
+      if (error)
+      {
+        g_warning ("Oops: %s", error->message);
+        g_error_free (error);
+      }		    
+    }
   }
   else
   {
@@ -343,6 +350,12 @@ execute (osso_context_t *osso,
   }
     
   gtk_widget_destroy (dialog);
+
+  if (proxy)
+    g_object_unref (G_OBJECT (proxy));
+  
+  if (conn)
+    dbus_g_connection_unref (conn);
     
   return OSSO_OK;  
 }
