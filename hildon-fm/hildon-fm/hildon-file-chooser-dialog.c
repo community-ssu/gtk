@@ -1120,12 +1120,18 @@ static void create_folder_callback(GtkFileSystemHandle *handle,
 
     if (error) {
         if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,
-              GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
+			    GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
             message = _("ckdg_ib_folder_already_exists");
         else
-            message = _("sfil_ni_operation_failed");
+            message = HCS("sfil_ni_operation_failed");
 
-        ULOG_ERR(error->message);
+	fprintf (stderr, "domain %d (%d)\n",
+		 error->domain, GTK_FILE_SYSTEM_ERROR);
+	fprintf (stderr, "code %d (%d)\n",
+		 error->code, GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS);
+
+        fprintf (stderr, "%s\n", error->message);
+
         hildon_banner_show_information (GTK_WIDGET(self), NULL, message);
         hildon_file_chooser_dialog_select_text(self->priv);
         gtk_dialog_set_response_sensitive(dialog, GTK_RESPONSE_OK, TRUE);
