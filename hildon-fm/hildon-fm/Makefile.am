@@ -77,7 +77,7 @@ hildonincludeinst_DATA =			\
 noinst_PROGRAMS = t
 t_SOURCES = t.c
 t_CFLAGS = $(GTK_CFLAGS) $(GNOMEVFS_CFLAGS)
-t_LDFLAGS = $(GTK_LIBS) $(GNOMEVFS_LIBS)
+t_LDFLAGS = $(GTK_LIBS) $(GNOMEVFS_LIBS) libhildonfm.la
 
 headers_to_scan_for_enums = $(hildonincludeinst_DATA)
  

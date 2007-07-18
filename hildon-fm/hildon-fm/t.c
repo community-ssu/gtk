@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs-init.h>
-#include <hildon-widgets/hildon-file-system-storage-dialog.h>
+#include "hildon-file-system-storage-dialog.h"
 
 int
 main(int argc, char **argv)
