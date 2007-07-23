@@ -320,3 +320,20 @@ style "mediaplayer-tab-left" = "osso-window-background" {
 }
 
 widget "MediaPlayerTabLibrary" style "mediaplayer-tab-left"
+
+# Background images for media player, as application installer,
+# because this behavior is not directly supported by the theming
+# machinery, the media player renders the background image itself.
+# What pixmap to render is specified here, but in a hackish
+# way: the render code will look into bg_pixmap[ACTIVE] and
+# bg_pixmap[NORMAL] to find the pixmap, and will render it always,
+# independent of the state of the widget.
+
+style "osso-mplayer-now-playing-current-clip-mode"
+{
+    bg_pixmap[ACTIVE] = "../images/qgn_plat_application_media_player_image.png"
+    bg_pixmap[NORMAL] = "../images/qgn_plat_application_media_player_image_webradio.png"
+}
+
+widget "*.MediaPlayerCurrentClipDetailsImage" style "osso-mplayer-now-playing-current-clip-mode"
+ 

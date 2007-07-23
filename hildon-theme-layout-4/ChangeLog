@@ -1,3 +1,8 @@
+2007-07-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/ossomediaplayer.rc: Adding rc support for mediaplayer background
+	images. Fixes: NB#62182. 
+
 2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* rc/gtktoolbar.rc: Use correct style properties and state/shadow
