@@ -1,5 +1,10 @@
 2007-07-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonseekbar.rc: Fixing some theming problems in the seekbar. Fixes
+	NB#61733.
+
+2007-07-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/ossomediaplayer.rc: Adding rc support for mediaplayer background
 	images. Fixes: NB#62182. 
 
