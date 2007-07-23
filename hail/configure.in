@@ -5,7 +5,7 @@ AC_INIT(ChangeLog)
 AM_CONFIG_HEADER(config.h)
 
 
-AM_INIT_AUTOMAKE(hail, 1.2.1)
+AM_INIT_AUTOMAKE(hail, 1.2.2)
 
 # libtool versioning
 LT_CURRENT=0
