@@ -13,9 +13,14 @@ DEB_TAR_SRCDIR := dbus-1.0.2
 include /usr/share/cdbs/1/rules/tarball.mk
 
 CFLAGS=-Wall -fPIC -O2 -g
-# Use soft-float and thumb mode if it is enabled.
+# Prefer hardware floating point if enabled
+ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mfpu=vfp -mfloat-abi=softfp
+else
+# Use soft-float and thumb mode if it enabled.
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -mthumb
+endif
 endif
 
 # List any files which are not installed

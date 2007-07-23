@@ -1,0 +1,29 @@
+diff -pur dbus-1.0.2/dbus/dbus-message.c dbus-1.0.2.new/dbus/dbus-message.c
+--- dbus-1.0.2/dbus/dbus-message.c	2006-12-11 21:21:18.000000000 +0200
++++ dbus-1.0.2.new/dbus/dbus-message.c	2007-07-23 17:28:58.150386960 +0300
+@@ -482,10 +482,10 @@ dbus_message_get_cached (void)
+   _dbus_assert (i < MAX_MESSAGE_CACHE_SIZE);
+   _dbus_assert (message != NULL);
+ 
+-  _DBUS_UNLOCK (message_cache);
+-
+   _dbus_assert (message->refcount.value == 0);
+   _dbus_assert (message->size_counters == NULL);
++  
++  _DBUS_UNLOCK (message_cache);
+ 
+   return message;
+ }
+@@ -571,10 +571,10 @@ dbus_message_cache_or_finalize (DBusMess
+ #endif
+ 
+  out:
+-  _DBUS_UNLOCK (message_cache);
+-
+   _dbus_assert (message->refcount.value == 0);
+   
++  _DBUS_UNLOCK (message_cache);
++  
+   if (!was_cached)
+     dbus_message_finalize (message);
+ }
