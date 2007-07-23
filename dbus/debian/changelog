@@ -5,6 +5,8 @@ dbus (1.0.2-0osso9) experimental; urgency=low
     https://bugs.freedesktop.org/show_bug.cgi?id=9164.
   * Fix from the CVS for a connection lock bug (separate bits in a bitfield
     used as locks).
+  * Fix from the CVS to increase default limits in config-parser.c.
+  * Fix from the CVS to increase default limits in session.conf.in.
   * Patch from Leonid to enable hard-floats. Fixes: NB#61974
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 23 Jul 2007 17:31:21 +0300
