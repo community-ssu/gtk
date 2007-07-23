@@ -2,7 +2,8 @@
 	
 	* libhildonwm/hd-wm.c:
 	(hd_wm_x_window_is_watchable):
-	- Removed redundant banner when an HDWApplication is launched.
+	- Removed redundant banner when an HDWApplication is launched. 
+	Fixes: NB#61257
 
 2007-07-17  Moises Martinez  <moises.martinez@nokia.com>
 
