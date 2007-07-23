@@ -1,3 +1,14 @@
+dbus-glib (0.74-0osso1) experimental; urgency=low
+
+  * UNRELEASED
+  * New upstream tarball.
+  * Removed patches included in the new tarball:
+    03-allow-wshadow.patch
+    08-add_dbus_connection_get_g_connection.patch
+    09-support-peer-to-peer-proxies.patch
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 23 Jul 2007 14:46:47 +0300
+
 dbus-glib (0.73-0osso2) experimental; urgency=low
 
   * Added two patches from Ross Burton: one to add
