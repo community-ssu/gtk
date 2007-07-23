@@ -561,7 +561,12 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   gboolean              urgent = FALSE;
   HNAppButton          *app_button = HN_APP_BUTTON (priv->buttons[pos]);
   gboolean 	       update_icon_geometry;
- 
+  gint		       panel_x = 0, panel_y = 0;
+
+  GtkWidget *panel = gtk_widget_get_toplevel (GTK_WIDGET (app_switcher));
+
+  gdk_window_get_position (panel->window, &panel_x, &panel_y);  
+
   update_icon_geometry = 
    (hn_app_button_get_last_entry_info (app_button) != entry) ? TRUE : FALSE;
   
@@ -572,8 +577,8 @@ refresh_app_button (HNAppSwitcher *app_switcher,
 	  
     if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
       hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
-	      		              GTK_WIDGET (app_button)->allocation.x,
-				      GTK_WIDGET (app_button)->allocation.y,
+	      		              GTK_WIDGET (app_button)->allocation.x + panel_x,
+				      GTK_WIDGET (app_button)->allocation.y + panel_y,
 				      GTK_WIDGET (app_button)->allocation.width,
 				      GTK_WIDGET (app_button)->allocation.height,
 				      TRUE);

@@ -1,4 +1,10 @@
 2007-07-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c: (refresh_app_button):
+	- Take into account position of the toplevel window.
+	Fixes: NB#64024
+
+2007-07-23  Moises Martinez  <moises.martinez@nokia.com>
 	
 	* libhildonwm/hd-wm.c:
 	(hd_wm_x_window_is_watchable):
