@@ -1,6 +1,5 @@
 dbus (1.0.2-0osso9) experimental; urgency=low
 
-  * UNRELEASED
   * Fix from the CVS for upstream bug
     https://bugs.freedesktop.org/show_bug.cgi?id=9164.
   * Fix from the CVS for a connection lock bug (separate bits in a bitfield
@@ -9,9 +8,9 @@ dbus (1.0.2-0osso9) experimental; urgency=low
   * Fix from the CVS to increase default limits in session.conf.in.
   * Fix from the CVS for upstream bug
     https://bugs.freedesktop.org/show_bug.cgi?id=10781.
-  * Patch from Leonid to enable hard-floats. Fixes: NB#61974
+  * Patch from Leonid to enable hard-float compilation. Fixes: NB#61974
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 23 Jul 2007 17:31:21 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 23 Jul 2007 18:53:37 +0300
 
 dbus (1.0.2-0osso8) experimental; urgency=low
 
