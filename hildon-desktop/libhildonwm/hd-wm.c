@@ -551,12 +551,6 @@ out:
   if (class_hint.res_name)
     XFree(class_hint.res_name);
 
-  if (app) 
-  {
-    if (!hd_wm_application_is_dummy (app))	  
-      g_signal_emit_by_name (hdwm, "application-starting", app);
-  }
-
   return app;
 }
 
