@@ -1,6 +1,5 @@
 dbus-glib (0.74-0osso1) experimental; urgency=low
 
-  * UNRELEASED
   * New upstream tarball.
   * Removed patches included in the new tarball:
     03-allow-wshadow.patch
