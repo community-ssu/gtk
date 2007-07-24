@@ -1,3 +1,10 @@
+desktop-file-utils (0.12-1osso3) unstable; urgency=low
+
+  * Add defaults.list for older desktop files not using mime open API
+  * Fixes: NB#54919, Default application for images is wrong
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 24 Jul 2007 10:40:00 +0100
+
 desktop-file-utils (0.12-1osso2) unstable; urgency=low
 
   * Add defaults.list for older desktop files not using mime open API
