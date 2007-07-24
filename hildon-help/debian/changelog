@@ -1,6 +1,7 @@
 libhildonhelp (1.9.4-1) unstable; urgency=low
 
   * Skip empty folders
+  * Fixes: NB#32083
 
  -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue, 24 Jul 2007 14:18:51 +0300
 
