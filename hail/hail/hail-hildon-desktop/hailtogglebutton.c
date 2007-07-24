@@ -25,16 +25,16 @@
  * #HailToggleButton implements the required ATK interfaces of #AtkObject.
  * In particular it exposes (for HNAppButton):
  * <itemizedlist>
- * <listitem>The embedded control. It gets the name from the #HDEntryInfo taken the name
+ * <listitem>The embedded control. It gets the name from the #HDWMEntryInfo taken the name
  it represents,
- * taken it from the #HDEntryInfo. When no applications are running, a
+ * taken it from the #HDWMEntryInfo. When no applications are running, a
  * default name is given.</listitem>
  * <listitem>Added behaviour to action of clicking the toggle button</listitem>
  * </itemizedlist>
  */
 
 #include <gtk/gtktogglebutton.h>
-#include <libhildonwm/hd-entry-info.h>
+#include <libhildonwm/hd-wm-entry-info.h>
 #include <libhildonwm/hd-wm.h>
 #include "hailtogglebutton.h"
 
@@ -312,7 +312,7 @@ hail_toggle_button_action_do_action (AtkAction *action,
 	  /* top the selected app:
 	   * see hn-app-button:hn_app_button_pop_menu for details
 	   */
-          HDEntryInfo *info = NULL;
+          HDWMEntryInfo *info = NULL;
 
           /* entry-info is a pointer property,
            * so we mustn't free it with hd_entry_info_free
@@ -351,7 +351,7 @@ hail_toggle_button_real_initialize (AtkObject *obj, gpointer data)
   /* accessibility HNAppButton initialize */
   if (g_type_is_a (G_TYPE_FROM_INSTANCE(toggle_button), hn_app_button_type))
     {
-      HDEntryInfo *info = NULL;
+      HDWMEntryInfo *info = NULL;
 
       /* entry-info is a pointer property,
        * so we mustn't free it with hd_entry_info_free
@@ -363,7 +363,7 @@ hail_toggle_button_real_initialize (AtkObject *obj, gpointer data)
       if (info != NULL)
         {
           /* name of the application */
-          priv->name = hd_entry_info_peek_app_name (info);
+          priv->name = hd_wm_entry_info_peek_app_name (info);
         }
       else
         {
@@ -371,7 +371,7 @@ hail_toggle_button_real_initialize (AtkObject *obj, gpointer data)
           priv->name = HAIL_HN_APP_BUTTON_DEFAULT_NAME;
         }
 
-      /* connect for changes in the HDEntryInfo */
+      /* connect for changes in the HDWMEntryInfo */
       g_signal_connect (G_OBJECT(toggle_button), "notify",
                         G_CALLBACK(hail_toggle_button_app_button_entry_changed_cb), obj); 
     }
@@ -390,10 +390,10 @@ hail_toggle_button_app_button_entry_changed_cb (GObject *toggle_button,
   /* implementation for HNAppButton */
   if (g_type_is_a (G_TYPE_FROM_INSTANCE(toggle_button), hn_app_button_type))
     {
-      /* check for HDEntryInfo property changes */
+      /* check for HDWMEntryInfo property changes */
       if (g_ascii_strcasecmp (spec->name, "entry-info"))
         {
-          HDEntryInfo *info = NULL;
+          HDWMEntryInfo *info = NULL;
 
           /* entry-info is a pointer property,
            * so we mustn't free it with hd_entry_info_free
@@ -405,7 +405,7 @@ hail_toggle_button_app_button_entry_changed_cb (GObject *toggle_button,
           if (info != NULL)
             {
               /* name of the application */
-              priv->name = hd_entry_info_peek_app_name (info);
+              priv->name = hd_wm_entry_info_peek_app_name (info);
             }
 	  else
 	    {

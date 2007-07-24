@@ -1,3 +1,7 @@
+2007-07-24  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hail-hildon-desktop/hailtogglebutton.c: use new libhildonwm API.
+
 2007-07-23  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* configure.in: Release 1.2.2
