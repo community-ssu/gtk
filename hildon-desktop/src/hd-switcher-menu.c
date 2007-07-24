@@ -342,9 +342,13 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
     {
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 
-      GdkWindow *window = gtk_widget_get_parent_window (switcher->priv->toggle_button);
+      GtkWidget *window = gtk_widget_get_toplevel (switcher->priv->toggle_button);
+
+      g_object_set (window, "can-focus", TRUE, NULL);
+      
       gtk_widget_grab_focus (GTK_WIDGET (switcher->priv->toggle_button));
-      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS,window);
+      
+      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS, window->window);
     }
 
     return TRUE;

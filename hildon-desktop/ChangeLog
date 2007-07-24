@@ -1,3 +1,17 @@
+2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window.c:
+	(hildon_desktop_panel_window_in_focus),
+	(hildon_desktop_panel_window_constructor):
+	- Ignore focus-in events for panels that can-focus == FALSE
+	* libhildonwm/hd-wm.c: (hd_wm_reset_focus):
+	- Unset focus for window where others buttons is placed.
+	* src/hd-applications-menu.c: (hd_applications_menu_key_press):
+	* src/hd-switcher-menu.c:
+	(hd_switcher_menu_popup_window_keypress_cb):
+	- set toplevel to can-focus
+	Fixes: N#63854
+
 2007-07-24  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c (hd_applications_menu_init): check if

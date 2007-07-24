@@ -274,10 +274,13 @@ hd_applications_menu_key_press (GtkWidget *menu,
     }
     else
     {
-      GdkWindow *window = gtk_widget_get_parent_window (button->priv->button);
-     
+      GtkWidget *window = gtk_widget_get_toplevel (button->priv->button);
+      
       gtk_widget_grab_focus (GTK_WIDGET (button->priv->button));
-      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS, window);
+      
+      g_object_set (window, "can-focus", TRUE, NULL);
+      
+      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS, window->window);
     }
     
     return TRUE;

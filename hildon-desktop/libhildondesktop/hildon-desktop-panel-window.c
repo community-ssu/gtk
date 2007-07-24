@@ -394,6 +394,19 @@ hildon_desktop_panel_window_force_move (GtkWidget *widget, GdkEventExpose *event
     hildon_desktop_panel_win_move_resize (window,TRUE,TRUE);
 }
 
+static gboolean 
+hildon_desktop_panel_window_in_focus (GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+  gboolean can_focus = FALSE;
+
+  g_object_get (widget, "can-focus", &can_focus, NULL);
+
+  if (can_focus)
+    return FALSE;	  
+
+  return TRUE;
+}	
+
 static GObject *  
 hildon_desktop_panel_window_constructor (GType gtype,
 			                 guint n_params,
@@ -411,7 +424,8 @@ hildon_desktop_panel_window_constructor (GType gtype,
   widget = GTK_WIDGET (object);
   window = HILDON_DESKTOP_PANEL_WINDOW (object);
 
-  
+  g_signal_connect (object, "focus-in-event", G_CALLBACK (hildon_desktop_panel_window_in_focus), NULL); 	  
+ 
   GTK_WINDOW (window)->type = GTK_WINDOW_TOPLEVEL;
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DOCK);

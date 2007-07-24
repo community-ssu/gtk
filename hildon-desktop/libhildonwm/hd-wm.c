@@ -32,6 +32,8 @@
 #include <dirent.h>
 #include <X11/Xatom.h>
 
+#include <gtk/gtkwindow.h>
+
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkevents.h>
@@ -2218,7 +2220,7 @@ hd_wm_reset_focus (HDWM *hdwm)
   {
     hd_wm_debug ("Making TN unfocusable");
     hdwm->priv->has_focus = FALSE;
-    hd_wm_debug ("%s: %d, hn_window_set_focus (tasknav,FALSE);",__FILE__,__LINE__);
+    hd_wm_set_window_focus (GTK_WIDGET (hdwm->priv->all_menu)->window, FALSE);
   }
 }
 
