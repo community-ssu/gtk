@@ -617,7 +617,7 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
 {
   HDHomeBackgroundDialogPrivate    *priv;
   GtkTreeIter                       iter;
-  gchar                            *filename;
+  gchar                            *filename = NULL;
   
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
@@ -629,6 +629,9 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
                       BG_IMAGE_FILENAME, &filename,
                       -1);
 
+  if (!priv->background)
+    goto out;	  
+  
   if (filename)
     g_object_set (G_OBJECT (priv->background),
                   "filename", filename,
@@ -637,7 +640,7 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
     g_object_set (G_OBJECT (priv->background),
                   "filename", HD_HOME_BACKGROUND_NO_IMAGE,
                   NULL);
-
+out:
   g_free (filename);
 }
 

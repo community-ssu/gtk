@@ -1,5 +1,12 @@
 2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-home-background-dialog.c:
+	(hd_home_background_dialog_filename_changed):
+	- Check for priv->background before doing anything.
+	Fixes: NB#63855
+
+2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hn-app-switcher.c: (refresh_app_button), (refresh_buttons):
 	- Set always icon geometry for windows.
 	- When not in slot, take also into account the panel position.
