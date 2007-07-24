@@ -1,5 +1,12 @@
 2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hn-app-switcher.c: (refresh_app_button), (refresh_buttons):
+	- Set always icon geometry for windows.
+	- When not in slot, take also into account the panel position.
+	Fixes: NB#64082
+
+2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-window.c:
 	(hildon_desktop_panel_window_in_focus),
 	(hildon_desktop_panel_window_constructor):

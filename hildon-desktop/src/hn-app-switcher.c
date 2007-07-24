@@ -560,28 +560,25 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   const GList          *l, *children = hd_wm_entry_info_get_children (entry);
   gboolean              urgent = FALSE;
   HNAppButton          *app_button = HN_APP_BUTTON (priv->buttons[pos]);
-  gboolean 	       update_icon_geometry;
   gint		       panel_x = 0, panel_y = 0;
 
   GtkWidget *panel = gtk_widget_get_toplevel (GTK_WIDGET (app_switcher));
 
   gdk_window_get_position (panel->window, &panel_x, &panel_y);  
 
-  update_icon_geometry = 
-   (hn_app_button_get_last_entry_info (app_button) != entry) ? TRUE : FALSE;
-  
   /* deal with urgency flags */
   for (l = children; l != NULL; l = l->next)
   {
     HDWMEntryInfo *_info = HD_WM_ENTRY_INFO (l->data);	  
 	  
-    if (update_icon_geometry || app_switcher->priv->orientation_changed)	    
+    {	    
       hd_wm_window_set_icon_geometry (HD_WM_WINDOW (l->data),	    
 	      		              GTK_WIDGET (app_button)->allocation.x + panel_x,
 				      GTK_WIDGET (app_button)->allocation.y + panel_y,
 				      GTK_WIDGET (app_button)->allocation.width,
 				      GTK_WIDGET (app_button)->allocation.height,
 				      TRUE);
+    }
     /*
      * If the entry is urgent and the ignore flag is not set, the button
      * should blink
@@ -684,6 +681,9 @@ refresh_buttons (gpointer user_data)
       gint real_width, real_height, real_x, real_y;
       real_x = 0;real_width = real_x; 
       GtkWidget *panel = gtk_widget_get_toplevel (GTK_WIDGET (app_switcher));
+      gint panel_x = 0, panel_y = 0;
+
+      gdk_window_get_position (panel->window, &panel_x, &panel_y);  
 
       /* Hack for setting the geometry in some place external in the panel.
        * Actually for us, this means the application switcher menu button 
@@ -717,8 +717,8 @@ refresh_buttons (gpointer user_data)
 
       for (iter = children; iter != NULL; iter = g_list_next (iter))
 	 hd_wm_window_set_icon_geometry (HD_WM_WINDOW (iter->data),	    
-		      		         GTK_WIDGET (app_switcher)->allocation.x,
-				         real_y,
+		      		         GTK_WIDGET (app_switcher)->allocation.x + panel_x,
+				         real_y + panel_y,
 				         GTK_WIDGET (app_switcher)->allocation.width,
 				         real_height,
 				         FALSE);
