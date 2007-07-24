@@ -1190,10 +1190,11 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
   g_free (dir);
       
   g_free (conf_file);
-  
+
   /* Monitor the .desktop directories, so we can regenerate the menu
    * when a new application is installed */
-  if (gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
+  if (g_file_test (HD_DESKTOP_ENTRY_PATH, G_FILE_TEST_EXISTS) &&
+      gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
                              HD_DESKTOP_ENTRY_PATH,
                              GNOME_VFS_MONITOR_DIRECTORY,
                              (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,
@@ -1205,8 +1206,10 @@ hd_applications_menu_register_monitors (HDApplicationsMenu * button)
   }
 
   /* Monitor the hildon .desktop directories, so we can regenerate the 
-   * menu when a new application is installed */
-  if (gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
+   * menu when a new application is installed. Do this only if the default
+   * directory is the standard one ($datadir/applications) */
+  if (g_file_test (HD_DESKTOP_ENTRY_PATH "/hildon", G_FILE_TEST_EXISTS) &&
+      gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
                              HD_DESKTOP_ENTRY_PATH "/hildon",
                              GNOME_VFS_MONITOR_DIRECTORY,
                              (GnomeVFSMonitorCallback) hd_applications_menu_dir_changed,

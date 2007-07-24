@@ -1,3 +1,9 @@
+2007-07-24  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c (hd_applications_menu_init): check if
+	directories exists before adding monitors in order to avoid desktop
+	process from waking up every now and then. Fixes NB#62159.
+
 2007-07-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c: (refresh_app_button):
