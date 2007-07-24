@@ -719,6 +719,20 @@ osso_return_t hildon_help_show( osso_context_t* osso,
     return ret;
 }
 
+static gboolean
+is_folder_empty(const char *branch)
+{
+  gboolean is_empty = TRUE;
+  h_OssoHelpWalker h = g_new0(struct s_OssoHelpWalker, 1);
+
+  g_assert(h);
+
+  is_empty = !contents(h, branch);
+
+  g_free(h);
+
+  return is_empty;
+}
 
 /*---( docs in header )---*/
 const char *ossohelp_next( h_OssoHelpWalker* h_ref,
@@ -732,16 +746,28 @@ const char *ossohelp_next( h_OssoHelpWalker* h_ref,
         g_assert(*h_ref);   /* 'g_new0()' always returns non-NULL */
     }
 
-    str = contents( *h_ref, branch );
-    if (str) {
-        /* Why do we need this strcpy_safe_auto?
-        contents() basically returns this value, doesn't it */
-        /*strcpy_safe_auto( (*h_ref)->key, str );*/ /* name of the next one */
-        return (*h_ref)->key;
-    } else {    /* end of looping (free resources) */
-        g_free(*h_ref);
-        *h_ref= NULL;
-        return NULL;
+    while (TRUE) {
+      str = contents( *h_ref, branch );
+      if (str) {
+          const char *key = (*h_ref)->key;
+
+          /* Skip empty folders */
+          if ((*key) != 0)
+            if (str[strlen(key) - 1] == '/')
+              if (is_folder_empty(key)) {
+                g_warning("ossohelp_next: folder '%s' is empty\n", key);
+                continue;
+              }
+              
+          /* Why do we need this strcpy_safe_auto?
+          contents() basically returns this value, doesn't it */
+          /*strcpy_safe_auto( (*h_ref)->key, str );*/ /* name of the next one */
+          return key;
+      } else {    /* end of looping (free resources) */
+          g_free(*h_ref);
+          *h_ref= NULL;
+          return NULL;
+      }
     }
 }
 

@@ -1,5 +1,10 @@
 2007-07-02 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
+	* Version 1.9.4
+	* Skip empty folders
+
+2007-07-02 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
 	* Remove direct dependency on libpng and libjpeg via gdk_pixbuf_get_file_info()
 	* Patch from Tommi Komulainen
 
