@@ -1,8 +1,7 @@
-/* -*- mode:C; c-file-style:"gnu"; -*- */
 /*
  * This file is part of hildon-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2006, 2007 Nokia Corporation.
  *
  * Author:  Johan Bilien <johan.bilien@nokia.com>
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
@@ -62,7 +61,7 @@ struct _HDHomeBackgroundDialogClass
 
 GType  hd_home_background_dialog_get_type  (void);
 
-HDHomeBackground *    hd_home_background_dialog_get_background
+HildonDesktopBackground *       hd_home_background_dialog_get_background
                                             (HDHomeBackgroundDialog *dialog);
 
 G_END_DECLS

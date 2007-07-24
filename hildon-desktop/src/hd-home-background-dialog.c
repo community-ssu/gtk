@@ -62,9 +62,10 @@
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkcelllayout.h>
 
+#include <libhildondesktop/hildon-desktop-background.h>
+
 #include "hd-home-background-dialog.h"
 #include "hd-home-l10n.h"
-#include "hd-home-background.h"
 #include "background-manager/hildon-background-manager.h"
 
 #define BG_DESKTOP_GROUP           "Desktop Entry"
@@ -110,15 +111,15 @@ enum
 
 struct _HDHomeBackgroundDialogPrivate
 {
-  gchar            *background_dir;
-  GtkListStore     *combobox_contents;
-  GtkTreePath      *custom_image;
-  GtkWidget        *color_button;
-  GtkWidget        *img_combo;
-  GtkWidget        *mode_combo;
-  gpointer          osso_context;
+  gchar                        *background_dir;
+  GtkListStore                 *combobox_contents;
+  GtkTreePath                  *custom_image;
+  GtkWidget                    *color_button;
+  GtkWidget                    *img_combo;
+  GtkWidget                    *mode_combo;
+  gpointer                      osso_context;
 
-  HDHomeBackground *background;
+  HildonDesktopBackground      *background;
 };
 
 static void
@@ -135,7 +136,7 @@ hd_home_background_dialog_get_property (GObject      *gobject,
 
 
 static void
-hd_home_background_dialog_response (GtkDialog *dialog, 
+hd_home_background_dialog_response (GtkDialog *dialog,
                                     gint       arg);
 static void
 hd_home_background_dialog_set_background_dir (HDHomeBackgroundDialog *dialog,
@@ -146,8 +147,8 @@ hd_home_background_dialog_background_dir_changed
                                     (HDHomeBackgroundDialog *dialog);
 
 static void
-hd_home_background_dialog_set_background (HDHomeBackgroundDialog *dialog,
-                                          HDHomeBackground *background);
+hd_home_background_dialog_set_background (HDHomeBackgroundDialog   *dialog,
+                                          HildonDesktopBackground  *background);
 static void
 hd_home_background_dialog_sync_from_background (HDHomeBackgroundDialog *dialog);
 
@@ -171,13 +172,10 @@ imagename_from_filename (const gchar *filename)
   gchar *last_dot, *c;
 
   tmp = g_filename_from_uri (filename, NULL, NULL);
-  g_debug ("Got filename %s", tmp);
   if (!tmp)
     tmp = g_strdup (filename);
 
   imagename = g_filename_display_basename (tmp);
-
-  g_debug ("Got imagename %s", imagename);
 
   c = imagename;
   last_dot = NULL;
@@ -244,7 +242,7 @@ hd_home_background_dialog_class_init (HDHomeBackgroundDialogClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_BACKGROUND_DIR,
                                    pspec);
-  
+
   pspec = g_param_spec_pointer ("osso-context",
                                 "OSSO Context",
                                 "OSSO Context",
@@ -253,11 +251,11 @@ hd_home_background_dialog_class_init (HDHomeBackgroundDialogClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_OSSO_CONTEXT,
                                    pspec);
-  
+
   pspec = g_param_spec_object ("background",
                                "Background",
                                "Current background",
-                               HD_TYPE_HOME_BACKGROUND,
+                               HILDON_DESKTOP_TYPE_BACKGROUND,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
@@ -919,7 +917,7 @@ hd_home_background_dialog_set_background_dir (HDHomeBackgroundDialog *dialog,
   g_return_if_fail (HD_IS_HOME_BACKGROUND_DIALOG (dialog) && dir);
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
-  if (!priv->background_dir 
+  if (!priv->background_dir
       || !g_str_equal (dir, priv->background_dir))
   {
     g_free (priv->background_dir);
@@ -931,27 +929,29 @@ hd_home_background_dialog_set_background_dir (HDHomeBackgroundDialog *dialog,
 }
 
 static void
-hd_home_background_dialog_set_background (HDHomeBackgroundDialog *dialog,
-                                          HDHomeBackground *background)
+hd_home_background_dialog_set_background (HDHomeBackgroundDialog  *dialog,
+                                          HildonDesktopBackground *background)
 {
   HDHomeBackgroundDialogPrivate *priv;
-  
+
   g_return_if_fail (HD_IS_HOME_BACKGROUND_DIALOG (dialog) &&
-                    HD_IS_HOME_BACKGROUND (background));
+                    HILDON_DESKTOP_IS_BACKGROUND (background));
 
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
   if (priv->background)
     g_object_unref (priv->background);
 
-  priv->background = hd_home_background_copy (background);
+  g_debug ("Copying background");
+  priv->background = hildon_desktop_background_copy (background);
+  g_debug ("Copying background done");
 
   g_object_notify (G_OBJECT (dialog), "background");
   hd_home_background_dialog_sync_from_background (dialog);
 
 }
 
-HDHomeBackground *
+HildonDesktopBackground *
 hd_home_background_dialog_get_background (HDHomeBackgroundDialog *dialog)
 {
   HDHomeBackgroundDialogPrivate *priv;
@@ -959,5 +959,5 @@ hd_home_background_dialog_get_background (HDHomeBackgroundDialog *dialog)
   g_return_val_if_fail (HD_IS_HOME_BACKGROUND_DIALOG (dialog), NULL);
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
-  return hd_home_background_copy (priv->background);
+  return hildon_desktop_background_copy (priv->background);
 }

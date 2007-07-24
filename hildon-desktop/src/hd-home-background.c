@@ -56,181 +56,41 @@
 #define HD_HOME_BACKGROUND_VALUE_TILED          "Tiled"
 #define HD_HOME_BACKGROUND_VALUE_CROPPED        "Cropped"
 
-enum
-{
-  PROP_FILENAME = 1,
-  PROP_MODE,
-  PROP_COLOR
+struct _HDHomeBackgroundPrivate {
+  gboolean      cancelled;
 };
 
-struct _HDHomeBackgroundPrivate
-{
-  GdkColor             *color;
-  BackgroundMode        mode;
-  gchar                *filename;
-  gboolean              cancelled;
-
-};
-
-G_DEFINE_TYPE (HDHomeBackground, hd_home_background, G_TYPE_OBJECT);
-
-static void hd_home_background_finalize (GObject *object);
-
-static void hd_home_background_set_property (GObject       *object,
-                                             guint          property_id,
-                                             const GValue  *value,
-                                             GParamSpec    *pspec);
-
-static void hd_home_background_get_property (GObject       *object,
-                                             guint          property_id,
-                                             GValue  *value,
-                                             GParamSpec    *pspec);
+G_DEFINE_TYPE (HDHomeBackground, hd_home_background, HILDON_DESKTOP_TYPE_BACKGROUND);
 
 static void
-hd_home_background_init (HDHomeBackground *background)
-{
-  background->priv =
-      G_TYPE_INSTANCE_GET_PRIVATE ((background),
-                                   HD_TYPE_HOME_BACKGROUND,
-                                   HDHomeBackgroundPrivate);
-}
-
-static void
-hd_home_background_class_init (HDHomeBackgroundClass *klass)
-{
-  GObjectClass *object_class;
-  GParamSpec   *pspec;
-
-  object_class = G_OBJECT_CLASS (klass);
-  object_class->finalize = hd_home_background_finalize;
-  object_class->set_property = hd_home_background_set_property;
-  object_class->get_property = hd_home_background_get_property;
-
-  pspec = g_param_spec_string ("filename",
-                               "filename",
-                               "Image filename",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_FILENAME,
-                                   pspec);
-
-  pspec = g_param_spec_int ("mode",
-                            "Mode",
-                            "Background stretching mode",
-                            BACKGROUND_CENTERED,
-                            BACKGROUND_CROPPED,
-                            BACKGROUND_CENTERED,
-                            G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-  g_object_class_install_property (object_class,
-                                   PROP_MODE,
-                                   pspec);
-
-  pspec = g_param_spec_pointer ("color",
-                                "Color",
-                                "Background color",
-                                G_PARAM_READWRITE);
-  g_object_class_install_property (object_class,
-                                   PROP_COLOR,
-                                   pspec);
-
-  g_type_class_add_private (klass, sizeof (HDHomeBackgroundPrivate));
-}
-
-static void
-hd_home_background_finalize (GObject *object)
-{
-  HDHomeBackgroundPrivate  *priv;
-
-  g_return_if_fail (HD_IS_HOME_BACKGROUND (object));
-  priv = HD_HOME_BACKGROUND (object)->priv;
-
-  g_free (priv->filename);
-  priv->filename = NULL;
-
-  if (priv->color)
-    gdk_color_free (priv->color);
-  priv->color = NULL;
-
-}
-
-static void
-hd_home_background_set_property (GObject       *object,
-                                 guint          property_id,
-                                 const GValue  *value,
-                                 GParamSpec    *pspec)
-{
-  HDHomeBackgroundPrivate  *priv = HD_HOME_BACKGROUND (object)->priv;
-
-  switch (property_id)
-    {
-      case PROP_FILENAME:
-          g_free (priv->filename);
-          if (g_str_equal (g_value_get_string (value),
-                           HD_HOME_BACKGROUND_NO_IMAGE))
-            priv->filename = g_strdup ("");
-          else
-            priv->filename = g_strdup (g_value_get_string (value));
-          break;
-      case PROP_MODE:
-          priv->mode = g_value_get_int (value);
-          break;
-      case PROP_COLOR:
-          if (priv->color)
-            gdk_color_free (priv->color);
-          priv->color = gdk_color_copy (g_value_get_pointer (value));
-          break;
-      default:
-          G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-    }
-}
-
-static void
-hd_home_background_get_property (GObject       *object,
-                                 guint          property_id,
-                                 GValue        *value,
-                                 GParamSpec    *pspec)
-{
-  HDHomeBackgroundPrivate  *priv = HD_HOME_BACKGROUND (object)->priv;
-
-  switch (property_id)
-    {
-      case PROP_FILENAME:
-          g_value_set_string (value, priv->filename);
-          break;
-      case PROP_MODE:
-          g_value_set_int (value, priv->mode);
-          break;
-      case PROP_COLOR:
-          g_value_set_pointer (value, priv->color);
-          break;
-      default:
-          G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-    }
-}
-
-void
-hd_home_background_save (HDHomeBackground *background,
-                         const gchar *filename,
+hd_home_background_save (HildonDesktopBackground *background,
+                         const gchar *file,
                          GError **error)
 {
-  HDHomeBackgroundPrivate  *priv;
-  GKeyFile                 *keyfile;
-  GError                   *local_error = NULL;
-  gchar                    *buffer;
-  gssize                    buffer_length;
+  GKeyFile                     *keyfile;
+  GError                       *local_error = NULL;
+  gchar                        *buffer;
+  gssize                        buffer_length;
+  gchar                        *filename;
+  GdkColor                     *color;
+  HildonDesktopBackgroundMode   mode;
 
-  g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && filename);
-  priv = background->priv;
+  g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && file);
 
   keyfile = g_key_file_new ();
 
+  g_object_get (background,
+                "filename", &filename,
+                "color",    &color,
+                "mode",     &mode,
+                NULL);
+
   /* Image files */
-  if (priv->filename)
+  if (filename)
     g_key_file_set_string (keyfile,
                            HD_HOME_BACKGROUND_KEY_GROUP,
                            HD_HOME_BACKGROUND_KEY_URI,
-                           priv->filename);
+                           filename);
 
   else
     g_key_file_set_string (keyfile,
@@ -240,50 +100,50 @@ hd_home_background_save (HDHomeBackground *background,
 
 
   /* Color */
-  if (priv->color)
+  if (color)
     {
       g_key_file_set_integer (keyfile,
                               HD_HOME_BACKGROUND_KEY_GROUP,
                               HD_HOME_BACKGROUND_KEY_RED,
-                              priv->color->red);
+                              color->red);
       g_key_file_set_integer (keyfile,
                               HD_HOME_BACKGROUND_KEY_GROUP,
                               HD_HOME_BACKGROUND_KEY_GREEN,
-                              priv->color->green);
+                              color->green);
       g_key_file_set_integer (keyfile,
                               HD_HOME_BACKGROUND_KEY_GROUP,
                               HD_HOME_BACKGROUND_KEY_BLUE,
-                              priv->color->blue);
+                              color->blue);
     }
 
   /* Mode */
-  switch (priv->mode)
+  switch (mode)
     {
-      case BACKGROUND_CENTERED:
+      case HILDON_DESKTOP_BACKGROUND_CENTERED:
           g_key_file_set_string (keyfile,
                                  HD_HOME_BACKGROUND_KEY_GROUP,
                                  HD_HOME_BACKGROUND_KEY_MODE,
                                  HD_HOME_BACKGROUND_VALUE_CENTERED);
           break;
-      case BACKGROUND_SCALED:
+      case HILDON_DESKTOP_BACKGROUND_SCALED:
           g_key_file_set_string (keyfile,
                                  HD_HOME_BACKGROUND_KEY_GROUP,
                                  HD_HOME_BACKGROUND_KEY_MODE,
                                  HD_HOME_BACKGROUND_VALUE_SCALED);
           break;
-      case BACKGROUND_STRETCHED:
+      case HILDON_DESKTOP_BACKGROUND_STRETCHED:
           g_key_file_set_string (keyfile,
                                  HD_HOME_BACKGROUND_KEY_GROUP,
                                  HD_HOME_BACKGROUND_KEY_MODE,
                                  HD_HOME_BACKGROUND_VALUE_STRETCHED);
           break;
-      case BACKGROUND_TILED:
+      case HILDON_DESKTOP_BACKGROUND_TILED:
           g_key_file_set_string (keyfile,
                                  HD_HOME_BACKGROUND_KEY_GROUP,
                                  HD_HOME_BACKGROUND_KEY_MODE,
                                  HD_HOME_BACKGROUND_VALUE_TILED);
           break;
-      case BACKGROUND_CROPPED:
+      case HILDON_DESKTOP_BACKGROUND_CROPPED:
           g_key_file_set_string (keyfile,
                                  HD_HOME_BACKGROUND_KEY_GROUP,
                                  HD_HOME_BACKGROUND_KEY_MODE,
@@ -296,7 +156,7 @@ hd_home_background_save (HDHomeBackground *background,
                                &local_error);
   if (local_error) goto cleanup;
 
-  g_file_set_contents (filename,
+  g_file_set_contents (file,
                        buffer,
                        buffer_length,
                        &local_error);
@@ -310,42 +170,34 @@ cleanup:
     g_propagate_error (error, local_error);
 }
 
-void
-hd_home_background_load (HDHomeBackground *background,
-                         const gchar *filename,
+static void
+hd_home_background_load (HildonDesktopBackground *background,
+                         const gchar *file,
                          GError **error)
 {
-  HDHomeBackgroundPrivate  *priv;
-  GKeyFile                 *keyfile;
-  GError                   *local_error = NULL;
-  gint                      component;
-  gchar                    *mode = NULL;
+  GKeyFile                     *keyfile;
+  GError                       *local_error = NULL;
+  gint                          component;
+  gchar                        *smode = NULL;
+  gchar                        *filename = NULL;
+  HildonDesktopBackgroundMode   mode;
+  GdkColor                      color;
 
-  g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && filename);
-  priv = background->priv;
-
-  g_debug ("Loading background from %s", filename);
+  g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && file);
 
   keyfile = g_key_file_new ();
   g_key_file_load_from_file (keyfile,
-                             filename,
+                             file,
                              G_KEY_FILE_NONE,
                              &local_error);
   if (local_error) goto cleanup;
 
-  g_free (priv->filename);
-  priv->filename = g_key_file_get_string (keyfile,
-                                          HD_HOME_BACKGROUND_KEY_GROUP,
-                                          HD_HOME_BACKGROUND_KEY_URI,
-                                          &local_error);
+  filename = g_key_file_get_string (keyfile,
+                                    HD_HOME_BACKGROUND_KEY_GROUP,
+                                    HD_HOME_BACKGROUND_KEY_URI,
+                                    &local_error);
 
   if (local_error) goto cleanup;
-
-  if (g_str_equal (priv->filename, HD_HOME_BACKGROUND_VALUE_NO_IMAGE))
-    {
-      g_free (priv->filename);
-      priv->filename = NULL;
-    }
 
   /* Color */
   component = g_key_file_get_integer (keyfile,
@@ -353,16 +205,13 @@ hd_home_background_load (HDHomeBackground *background,
                                       HD_HOME_BACKGROUND_KEY_RED,
                                       &local_error);
 
-  if (!priv->color)
-    priv->color = g_new0 (GdkColor, 1);
-
   if (local_error)
     {
-      priv->color->red = 0;
+      color.red = 0;
       g_clear_error (&local_error);
     }
   else
-    priv->color->red = component;
+    color.red = component;
 
   component = g_key_file_get_integer (keyfile,
                                       HD_HOME_BACKGROUND_KEY_GROUP,
@@ -370,11 +219,11 @@ hd_home_background_load (HDHomeBackground *background,
                                       &local_error);
   if (local_error)
     {
-      priv->color->green = 0;
+      color.green = 0;
       g_clear_error (&local_error);
     }
   else
-    priv->color->green = component;
+    color.green = component;
 
   component = g_key_file_get_integer (keyfile,
                                       HD_HOME_BACKGROUND_KEY_GROUP,
@@ -382,58 +231,72 @@ hd_home_background_load (HDHomeBackground *background,
                                       &local_error);
   if (local_error)
     {
-      priv->color->blue = 0;
+      color.blue = 0;
       g_clear_error (&local_error);
     }
   else
-    priv->color->blue = component;
+    color.blue = component;
 
   /* Mode */
-  mode = g_key_file_get_string (keyfile,
-                                HD_HOME_BACKGROUND_KEY_GROUP,
-                                HD_HOME_BACKGROUND_KEY_MODE,
-                                NULL);
+  smode = g_key_file_get_string (keyfile,
+                                 HD_HOME_BACKGROUND_KEY_GROUP,
+                                 HD_HOME_BACKGROUND_KEY_MODE,
+                                 NULL);
 
-  if (!mode)
+  if (!smode)
     {
-      priv->mode = BACKGROUND_TILED;
+      mode = HILDON_DESKTOP_BACKGROUND_TILED;
       goto cleanup;
     }
 
-  if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_CENTERED))
-    priv->mode = BACKGROUND_CENTERED;
-  else if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_SCALED))
-    priv->mode = BACKGROUND_SCALED;
-  else if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_STRETCHED))
-    priv->mode = BACKGROUND_STRETCHED;
-  else if (g_str_equal (mode, HD_HOME_BACKGROUND_VALUE_CROPPED))
-    priv->mode = BACKGROUND_CROPPED;
+  if (g_str_equal (smode, HD_HOME_BACKGROUND_VALUE_CENTERED))
+    mode = HILDON_DESKTOP_BACKGROUND_CENTERED;
+  else if (g_str_equal (smode, HD_HOME_BACKGROUND_VALUE_SCALED))
+    mode = HILDON_DESKTOP_BACKGROUND_SCALED;
+  else if (g_str_equal (smode, HD_HOME_BACKGROUND_VALUE_STRETCHED))
+    mode = HILDON_DESKTOP_BACKGROUND_STRETCHED;
+  else if (g_str_equal (smode, HD_HOME_BACKGROUND_VALUE_CROPPED))
+    mode = HILDON_DESKTOP_BACKGROUND_CROPPED;
   else
-    priv->mode = BACKGROUND_TILED;
+    mode = HILDON_DESKTOP_BACKGROUND_TILED;
+
+  g_object_set (background,
+                "filename", filename,
+                "mode", mode,
+                "color", &color,
+                NULL);
 
 cleanup:
-  g_free (mode);
+  g_free (smode);
+  g_free (filename);
   g_key_file_free (keyfile);
   if (local_error)
     g_propagate_error (error, local_error);
 }
 
-void
-hd_home_background_apply (HDHomeBackground *background,
+static void
+hd_home_background_apply (HildonDesktopBackground *background,
                           GdkWindow        *window,
                           GdkRectangle     *area,
                           GError          **error)
 {
-  HDHomeBackgroundPrivate  *priv;
   DBusGProxy           *background_manager_proxy;
   DBusGConnection      *connection;
   GError               *local_error = NULL;
   gint                  pixmap_xid;
   GdkPixmap            *pixmap = NULL;
   gint32                top_offset, bottom_offset, right_offset, left_offset;
+  gchar                *filename;
+  GdkColor             *color;
+  HildonDesktopBackgroundMode   mode;
 
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && window);
-  priv = background->priv;
+
+  g_object_get (background,
+                "filename", &filename,
+                "color", &color,
+                "mode", &mode,
+                NULL);
 
   connection = dbus_g_bus_get (DBUS_BUS_SESSION, &local_error);
   if (local_error)
@@ -463,11 +326,11 @@ hd_home_background_apply (HDHomeBackground *background,
 #define S(string) (string?string:"")
   org_maemo_hildon_background_manager_set_background (background_manager_proxy,
                                                       GDK_WINDOW_XID (window),
-                                                      S(priv->filename),
-                                                      priv->color->red,
-                                                      priv->color->green,
-                                                      priv->color->blue,
-                                                      priv->mode,
+                                                      S(filename),
+                                                      color->red,
+                                                      color->green,
+                                                      color->blue,
+                                                      mode,
                                                       top_offset,
                                                       bottom_offset,
                                                       left_offset,
@@ -491,10 +354,10 @@ hd_home_background_apply (HDHomeBackground *background,
 
 struct cb_data
 {
-  HDHomeBackground                 *background;
-  HDHomeBackgroundApplyCallback     callback;
-  gpointer                          user_data;
-  GdkWindow                        *window;
+  HDHomeBackground                     *background;
+  HildonDesktopBackgroundApplyCallback  callback;
+  gpointer                              user_data;
+  GdkWindow                            *window;
 };
 
 
@@ -506,7 +369,6 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
 {
   if (data->background->priv->cancelled)
     {
-      g_debug ("background is cancelled");
       g_free (data);
       return;
     }
@@ -525,18 +387,21 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
 
 cleanup:
   if (data->callback)
-    data->callback (data->background, picture_id, error, data->user_data);
+    data->callback (HILDON_DESKTOP_BACKGROUND (data->background),
+                    picture_id,
+                    error,
+                    data->user_data);
 
   if (G_IS_OBJECT (data->background))
       g_object_unref (data->background);
   g_free (data);
 }
 
-void
-hd_home_background_apply_async (HDHomeBackground               *background,
+static void
+hd_home_background_apply_async (HildonDesktopBackground        *background,
                                 GdkWindow                      *window,
                                 GdkRectangle                   *area,
-                                HDHomeBackgroundApplyCallback   cb,
+                                HildonDesktopBackgroundApplyCallback   cb,
                                 gpointer                        user_data)
 {
   HDHomeBackgroundPrivate  *priv;
@@ -545,15 +410,24 @@ hd_home_background_apply_async (HDHomeBackground               *background,
   GError                   *local_error = NULL;
   struct cb_data           *data;
   gint32                    top_offset, bottom_offset, right_offset, left_offset;
+  gchar                *filename;
+  GdkColor             *color;
+  HildonDesktopBackgroundMode   mode;
 
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && window);
-  priv = background->priv;
+  priv = HD_HOME_BACKGROUND (background)->priv;
+
+  g_object_get (background,
+                "filename", &filename,
+                "color", &color,
+                "mode", &mode,
+                NULL);
 
   connection = dbus_g_bus_get (DBUS_BUS_SESSION, &local_error);
   if (local_error)
     {
       if (cb)
-        cb (background, 0, local_error, user_data);
+        cb (HILDON_DESKTOP_BACKGROUND (background), 0, local_error, user_data);
       g_error_free (local_error);
       return;
     }
@@ -584,20 +458,20 @@ hd_home_background_apply_async (HDHomeBackground               *background,
     }
 
   g_debug ("Applying background %s aynchronously",
-           priv->filename);
+           filename);
 
   priv->cancelled = FALSE;
 
   /* Here goes */
 #define S(string) (string?string:"")
-  org_maemo_hildon_background_manager_set_background_async 
+  org_maemo_hildon_background_manager_set_background_async
                                                 (background_manager_proxy,
                                                  GDK_WINDOW_XID (window),
-                                                 S(priv->filename),
-                                                 priv->color->red,
-                                                 priv->color->green,
-                                                 priv->color->blue,
-                                                 priv->mode,
+                                                 S(filename),
+                                                 color->red,
+                                                 color->green,
+                                                 color->blue,
+                                                 mode,
                                                  top_offset,
                                                  bottom_offset,
                                                  left_offset,
@@ -607,53 +481,62 @@ hd_home_background_apply_async (HDHomeBackground               *background,
 #undef S
 }
 
-HDHomeBackground *
-hd_home_background_copy (const HDHomeBackground *src)
-{
-  HDHomeBackgroundPrivate  *priv;
-  HDHomeBackground         *dest;
-
-  g_return_val_if_fail (HD_IS_HOME_BACKGROUND (src), NULL);
-
-  priv = src->priv;
-
-  dest = g_object_new (HD_TYPE_HOME_BACKGROUND,
-                       "mode", priv->mode,
-                       "color", priv->color,
-                       "filename", priv->filename,
-                       NULL);
-
-  return dest;
-
-}
-
-gboolean
-hd_home_background_equal (const HDHomeBackground *background1,
-                          const HDHomeBackground *background2)
-{
-  HDHomeBackgroundPrivate      *priv1;
-  HDHomeBackgroundPrivate      *priv2;
-
-  g_return_val_if_fail (HD_IS_HOME_BACKGROUND (background1) &&
-                        HD_IS_HOME_BACKGROUND (background2),
-                        FALSE);
-
-  priv1 = background1->priv;
-  priv2 = background2->priv;
-
-#define equal_or_null(s, t) ((!s && !t) || ((s && t) && g_str_equal (s,t)))
-  return (equal_or_null (priv1->filename,         priv2->filename)        &&
-          gdk_color_equal (priv1->color,          priv2->color)           &&
-          priv1->mode == priv2->mode);
-#undef equal_or_null
-
-}
-
-void
-hd_home_background_cancel (HDHomeBackground *background)
+static void
+hd_home_background_cancel (HildonDesktopBackground *background)
 {
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background));
 
-  background->priv->cancelled = TRUE;
+  HD_HOME_BACKGROUND (background)->priv->cancelled = TRUE;
 
 }
+
+static HildonDesktopBackground *
+hd_home_background_copy (HildonDesktopBackground *src)
+{
+  HildonDesktopBackground              *dest;
+  HildonDesktopBackgroundMode           mode;
+  gchar                                *filename;
+  GdkColor                             *color;
+
+  g_return_val_if_fail (HD_IS_HOME_BACKGROUND (src), NULL);
+
+  g_object_get (src,
+                "filename", &filename,
+                "color",    &color,
+                "mode",     &mode,
+                NULL);
+
+  dest = g_object_new (HD_TYPE_HOME_BACKGROUND,
+                       "mode",          mode,
+                       "color",         color,
+                       "filename",      filename,
+                       NULL);
+
+  return dest;
+}
+
+static void
+hd_home_background_init (HDHomeBackground *background)
+{
+  background->priv = G_TYPE_INSTANCE_GET_PRIVATE (background,
+                                                  HD_TYPE_HOME_BACKGROUND,
+                                                  HDHomeBackgroundPrivate);
+}
+
+static void
+hd_home_background_class_init (HDHomeBackgroundClass *klass)
+{
+  HildonDesktopBackgroundClass *background_class;
+
+  background_class = HILDON_DESKTOP_BACKGROUND_CLASS (klass);
+
+  background_class->save = hd_home_background_save;
+  background_class->load = hd_home_background_load;
+  background_class->cancel = hd_home_background_cancel;
+  background_class->apply = hd_home_background_apply;
+  background_class->apply_async = hd_home_background_apply_async;
+  background_class->copy = hd_home_background_copy;
+
+  g_type_class_add_private (klass, sizeof (HDHomeBackgroundPrivate));
+}
+

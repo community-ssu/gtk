@@ -1,3 +1,17 @@
+2007-07-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-background.[ch]:
+	- made the Background class available to others
+	* src/hd-home-background.[ch]:
+	- inherit from DesktopBackground and implement save/load and
+	apply
+	* background-manager/hbm-background.[ch]:
+	- added server side background object
+	- scale the pixbuf before uploading to X
+	* background/background-manager.c:
+	- use the new object
+	Fixes: NB#62469
+
 2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-home-background-dialog.c:

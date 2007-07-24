@@ -23,6 +23,7 @@ pkginclude_HEADERS = \
 	hildon-desktop-notification-manager.h \
         hildon-desktop-toggle-button.h\
 	hildon-desktop-picture.h      \
+	hildon-desktop-background.h   \
 	statusbar-item.h              \
 	statusbar-item-socket.h       \
 	tasknavigator-item.h          \
@@ -114,6 +115,8 @@ libhildondesktop_la_SOURCES = \
         hildon-desktop-toggle-button.c       \
 	hildon-desktop-picture.c             \
 	hildon-desktop-picture.h             \
+	hildon-desktop-background.c          \
+	hildon-desktop-background.h          \
 	statusbar-item.h                     \
 	statusbar-item.c                     \
 	statusbar-item-socket.h              \

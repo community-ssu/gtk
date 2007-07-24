@@ -44,6 +44,8 @@ hildon_background_manager_LDFLAGS  = @GNOME_VFS_LIBS@ \
 hildon_background_manager_SOURCES = $(BUILT_SOURCES) \
 				    background-manager.c \
 				    background-manager.h \
+				    hbm-background.c     \
+				    hbm-background.h     \
 				    main.c
 
 hildon_background_manager_servicedir = $(datadir)/dbus-1/services

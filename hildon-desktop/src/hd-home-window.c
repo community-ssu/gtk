@@ -95,36 +95,36 @@ G_DEFINE_TYPE (HDHomeWindow, hd_home_window, HILDON_TYPE_HOME_WINDOW);
 struct _HDHomeWindowPrivate
 {
 #ifdef HAVE_LIBOSSO
-  osso_context_t   *osso_context;
+  osso_context_t               *osso_context;
 #endif
 
-  gboolean          layout_mode_sucks;
+  gboolean                     layout_mode_sucks;
 
-  GtkWidget        *normal_menu;
-  GtkWidget        *layout_menu;
+  GtkWidget                    *normal_menu;
+  GtkWidget                    *layout_menu;
 
-  GtkWidget        *settings_item;
-  GtkWidget        *settings_menu;
-  GtkWidget        *layout_mode_item;
+  GtkWidget                    *settings_item;
+  GtkWidget                    *settings_menu;
+  GtkWidget                    *layout_mode_item;
 
-  GtkWidget        *layout_mode_banner;
-  gint              layout_mode_banner_to;
+  GtkWidget                    *layout_mode_banner;
+  gint                          layout_mode_banner_to;
 
-  HDHomeBackground *background;
-  HDHomeBackground *previous_background;
+  HildonDesktopBackground      *background;
+  HildonDesktopBackground      *previous_background;
 
-  Picture           background_picture;
+  Picture                       background_picture;
 
-  gboolean          screen_is_off;
-  gboolean          is_background;
+  gboolean                      screen_is_off;
+  gboolean                      is_background;
 
-  gboolean          selecting_applets;
-  guint             save_area_timeout;
+  gboolean                      selecting_applets;
+  guint                         save_area_timeout;
 
   /* Cancelling the background loading */
-  GtkWidget        *cancel_note;
-  guint             background_loading_timeout;
-  guint             cancel_note_update_timeout;
+  GtkWidget                    *cancel_note;
+  guint                         background_loading_timeout;
+  guint                         cancel_note_update_timeout;
 };
 
 /* Properties */
@@ -215,7 +215,7 @@ hd_home_window_destroy_banner (HDHomeWindow *window);
 
 static void
 hd_home_window_set_background (HDHomeWindow *window,
-                               HDHomeBackground *background);
+                               HildonDesktopBackground *background);
 
 static gboolean
 hd_home_window_map_event (GtkWidget    *widget,
@@ -289,7 +289,7 @@ hd_home_window_cancel_note_hide (HDHomeWindow *window);
 
 static void
 hd_home_window_cancel_note_show (HDHomeWindow *window,
-                                 HDHomeBackground *background);
+                                 HildonDesktopBackground *background);
 
 #if 0
 static void
@@ -338,7 +338,7 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   pspec = g_param_spec_object ("background",
                                "background",
                                "Current background applied",
-                               HD_TYPE_HOME_BACKGROUND,
+                               HILDON_DESKTOP_TYPE_BACKGROUND,
                                (G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (object_class,
                                    PROP_BACKGROUND,
@@ -435,14 +435,14 @@ hd_home_window_constructor (GType                   gtype,
                             guint                   n_params,
                             GObjectConstructParam  *params)
 {
-  GObject              *retval;
-  HDHomeWindow         *window;
-  HDHomeWindowPrivate  *priv;
-  HildonHomeWindow     *hhwindow;
-  GtkWidget            *area;
-  HDHomeBackground     *background = NULL;
-  GError               *error = NULL;
-  gchar                *conffile;
+  GObject                      *retval;
+  HDHomeWindow                 *window;
+  HDHomeWindowPrivate          *priv;
+  HildonHomeWindow             *hhwindow;
+  GtkWidget                    *area;
+  HildonDesktopBackground      *background = NULL;
+  GError                       *error = NULL;
+  gchar                        *conffile;
 
   retval = G_OBJECT_CLASS (hd_home_window_parent_class)->constructor (gtype,
                                                                       n_params,
@@ -503,9 +503,9 @@ hd_home_window_constructor (GType                   gtype,
                            HD_HOME_BACKGROUND_CONF_FILE,
                            NULL);
 
-  hd_home_background_load (background,
-                           conffile,
-                           &error);
+  hildon_desktop_background_load (background,
+                                  conffile,
+                                  &error);
 
   g_free (conffile);
 
@@ -516,6 +516,9 @@ hd_home_window_constructor (GType                   gtype,
       gchar            *filename = NULL;
 
       g_clear_error (&error);
+
+      g_debug ("Got an error when loading background configuration, "
+               "reverting to default background.");
 
       /* Revert to the default background file */
       keyfile = g_key_file_new ();
@@ -632,10 +635,10 @@ hd_home_window_get_property (GObject    *gobject,
 }
 
 static void
-background_apply_callback (HDHomeBackground *background,
-                           Picture           picture,
-                           GError           *error,
-                           HDHomeWindow     *window)
+background_apply_callback (HildonDesktopBackground     *background,
+                           Picture                      picture,
+                           GError                      *error,
+                           HDHomeWindow                *window)
 {
   HDHomeWindowPrivate  *priv;
   g_debug ("Background applied!");
@@ -701,10 +704,10 @@ background_apply_callback (HDHomeBackground *background,
 }
 
 static void
-background_apply_and_save_callback (HDHomeBackground *background,
-                                    Picture           picture,
-                                    GError           *error,
-                                    HDHomeWindow     *window)
+background_apply_and_save_callback (HildonDesktopBackground    *background,
+                                    Picture                     picture,
+                                    GError                     *error,
+                                    HDHomeWindow               *window)
 {
   HDHomeWindowPrivate  *priv;
   gchar                *conffile;
@@ -724,9 +727,9 @@ background_apply_and_save_callback (HDHomeBackground *background,
                            HD_HOME_BACKGROUND_CONF_FILE,
                            NULL);
 
-  hd_home_background_save (priv->background,
-                           conffile,
-                           &save_error);
+  hildon_desktop_background_save (priv->background,
+                                  conffile,
+                                  &save_error);
 
   if (save_error)
     {
@@ -902,17 +905,17 @@ hd_home_window_map_event (GtkWidget    *widget,
                           GdkEventAny  *event)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (widget);
-  GdkRectangle         *workarea;
-
-  g_object_get (widget, "work-area", &workarea, NULL);
 
   if (priv->background)
-    hd_home_background_apply_async (priv->background,
-                                    widget->window,
-                                    workarea,
-                                    (HDHomeBackgroundApplyCallback)
-                                    background_apply_callback,
-                                    widget);
+  {
+    g_debug ("About to apply %p", (gpointer)priv->background);
+    hildon_desktop_background_apply_async (priv->background,
+                                           widget->window,
+                                           NULL,
+                                           (HildonDesktopBackgroundApplyCallback)
+                                           background_apply_callback,
+                                           widget);
+  }
 
   return GTK_WIDGET_CLASS (hd_home_window_parent_class)->map_event (widget,
                                                                     event);
@@ -1731,13 +1734,10 @@ hd_home_window_screen_off (HDHomeWindow         *window,
 }
 
 static void
-hd_home_window_set_background (HDHomeWindow *window,
-                               HDHomeBackground *background)
+hd_home_window_set_background (HDHomeWindow            *window,
+                               HildonDesktopBackground *background)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  GdkRectangle *workarea;
-
-  g_object_get (window, "work-area", &workarea, NULL);
 
   if (priv->background)
     g_object_unref (priv->background);
@@ -1749,12 +1749,12 @@ hd_home_window_set_background (HDHomeWindow *window,
 
   if (background && GTK_WIDGET_MAPPED (window))
     {
-      hd_home_background_apply_async (background,
-                                      GTK_WIDGET (window)->window,
-                                      workarea,
-                                      (HDHomeBackgroundApplyCallback)
-                                      background_apply_callback,
-                                      window);
+      hildon_desktop_background_apply_async (background,
+                                             GTK_WIDGET (window)->window,
+                                             NULL,
+                                             (HildonDesktopBackgroundApplyCallback)
+                                             background_apply_callback,
+                                             window);
     }
 
 }
@@ -1799,7 +1799,7 @@ hd_home_window_accept_layout (HDHomeWindow *window)
 typedef struct
 {
   HDHomeWindow         *window;
-  HDHomeBackground     *background;
+  HildonDesktopBackground     *background;
 } BackgroundTimeoutData;
 
 static gboolean
@@ -1819,11 +1819,8 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                        gint response,
                                        GtkDialog *dialog)
 {
-  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  HDHomeBackground     *background;
-  GdkRectangle         *workarea;
-
-  g_object_get (window, "work-area", &workarea, NULL);
+  HDHomeWindowPrivate          *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  HildonDesktopBackground      *background;
 
   background =
       hd_home_background_dialog_get_background (HD_HOME_BACKGROUND_DIALOG (dialog));
@@ -1832,8 +1829,8 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
     {
       case GTK_RESPONSE_OK:
           gtk_widget_hide (GTK_WIDGET(dialog));
-          if (!hd_home_background_equal (priv->background,
-                                         background))
+          if (!hildon_desktop_background_equal (priv->background,
+                                                background))
             {
               BackgroundTimeoutData *data = g_new (BackgroundTimeoutData, 1);
               data->window = window;
@@ -1843,11 +1840,11 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                  (GSourceFunc)
                                    hd_home_window_set_background_timeout,
                                  data);
-              hd_home_background_apply_async
+              hildon_desktop_background_apply_async
                   (background,
                    GTK_WIDGET (window)->window,
-                   workarea,
-                   (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
+                   NULL,
+                   (HildonDesktopBackgroundApplyCallback)background_apply_and_save_callback,
                    window);
             }
           g_object_unref (priv->previous_background);
@@ -1863,25 +1860,27 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                  (GSourceFunc)
                                    hd_home_window_set_background_timeout,
                                  data);
-              hd_home_background_apply_async
-                   (background,
+              hildon_desktop_background_apply_async
+                  (background,
                    GTK_WIDGET (window)->window,
-                   workarea,
-                   (HDHomeBackgroundApplyCallback)background_apply_callback,
+                   NULL,
+                   (HildonDesktopBackgroundApplyCallback)
+                     background_apply_callback,
                    window);
             }
 
           break;
       case GTK_RESPONSE_CANCEL:
       case GTK_RESPONSE_DELETE_EVENT:
-          if (!hd_home_background_equal (priv->background,
-                                         priv->previous_background))
+          if (!hildon_desktop_background_equal (priv->background,
+                                                priv->previous_background))
             {
-              hd_home_background_apply_async
+              hildon_desktop_background_apply_async
                   (priv->previous_background,
                    GTK_WIDGET (window)->window,
-                   workarea,
-                   (HDHomeBackgroundApplyCallback)background_apply_callback,
+                   NULL,
+                   (HildonDesktopBackgroundApplyCallback)
+                     background_apply_callback,
                    window);
             }
 
@@ -1913,7 +1912,7 @@ hd_home_window_set_background_activate (HDHomeWindow *window)
   HDHomeWindowPrivate      *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
   GtkWidget                *dialog;
 
-  priv->previous_background = hd_home_background_copy (priv->background);
+  priv->previous_background = hildon_desktop_background_copy (priv->background);
 
   dialog = g_object_new (HD_TYPE_HOME_BACKGROUND_DIALOG,
 #ifdef HAVE_LIBOSSO
@@ -1978,13 +1977,13 @@ hd_home_window_cancel_note_hide (HDHomeWindow *window)
 static void
 hd_home_window_cancel_note_response (HDHomeWindow *window)
 {
-  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  HDHomeBackground     *background;
+  HDHomeWindowPrivate          *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  HildonDesktopBackground      *background;
 
   background = g_object_get_data (G_OBJECT (priv->cancel_note), "background");
 
-  if (HD_IS_HOME_BACKGROUND (background))
-    hd_home_background_cancel (background);
+  if (HILDON_DESKTOP_IS_BACKGROUND (background))
+    hildon_desktop_background_cancel (background);
 
   hd_home_window_cancel_note_hide (window);
 
@@ -2001,8 +2000,8 @@ hd_home_window_cancel_note_update (GtkWidget *prog_bar)
 }
 
 static void
-hd_home_window_cancel_note_show (HDHomeWindow          *window,
-                                 HDHomeBackground      *background)
+hd_home_window_cancel_note_show (HDHomeWindow                  *window,
+                                 HildonDesktopBackground       *background)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
   GtkWidget            *label, *prog_bar;

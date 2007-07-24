@@ -25,8 +25,7 @@
 #ifndef __HD_HOME_BACKGROUND_H__
 #define __HD_HOME_BACKGROUND_H__
 
-#include <glib-object.h>
-#include <gdk/gdkwindow.h>
+#include <libhildondesktop/hildon-desktop-background.h>
 
 G_BEGIN_DECLS
 
@@ -45,48 +44,20 @@ typedef struct _HDHomeBackgroundPrivate HDHomeBackgroundPrivate;
 
 struct _HDHomeBackground
 {
-  GObject                       parent;
+  HildonDesktopBackground        parent;
 
-  HDHomeBackgroundPrivate  *priv;
+  HDHomeBackgroundPrivate       *priv;
 
 };
 
 struct _HDHomeBackgroundClass
 {
-  GObjectClass                  parent_class;
+  HildonDesktopBackgroundClass  parent_class;
 
 };
 
-typedef void    (*HDHomeBackgroundApplyCallback)  (HDHomeBackground *bg,
-                                                   gint              pixmap_xid,
-                                                   GError           *error,
-                                                   gpointer          user_data);
 
 GType       hd_home_background_get_type         (void) G_GNUC_CONST;
-void        hd_home_background_save             (HDHomeBackground *background,
-                                                 const gchar      *filename,
-                                                 GError          **error);
-void        hd_home_background_load             (HDHomeBackground *background,
-                                                 const gchar      *filename,
-                                                 GError          **error);
-void        hd_home_background_apply            (HDHomeBackground *background,
-                                                 GdkWindow        *window,
-                                                 GdkRectangle     *region,
-                                                 GError          **error);
-void        hd_home_background_apply_async      (HDHomeBackground *background,
-                                                 GdkWindow        *window,
-                                                 GdkRectangle     *region,
-                                                 HDHomeBackgroundApplyCallback
-                                                                   cb,
-                                                 gpointer          user_data);
-
-HDHomeBackground *
-            hd_home_background_copy             (const HDHomeBackground *src);
-
-gboolean    hd_home_background_equal            (const HDHomeBackground *bg1,
-                                                 const HDHomeBackground *bg2);
-
-void        hd_home_background_cancel           (HDHomeBackground *background);
 
 G_END_DECLS
 
