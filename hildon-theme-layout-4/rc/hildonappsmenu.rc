@@ -32,6 +32,13 @@ style "hildon-apps-menu-pane1-item"
       file = "../images/qgn_plat_pane1_focus_active.png"
       border = { 6, 6, 6, 6 }
     }
+    image
+    {
+      function = BOX
+      state = SELECTED
+      file = "../images/qgn_plat_pane1_focus_passive.png"
+      border = { 6, 6, 6, 6 }
+    }
   }
 }
 
@@ -133,7 +140,14 @@ style "hildon-apps-menu-pane2-item"
     {
       function = BOX
       state = PRELIGHT
-      file = "../images/qgn_plat_pane1_focus_active.png"
+      file = "../images/qgn_plat_pane2_focus_active.png"
+      border = { 6, 6, 6, 6 }
+    }
+    image
+    {
+      function = BOX
+      state = PRELIGHT
+      file = "../images/qgn_plat_pane2_focus_passive.png"
       border = { 6, 6, 6, 6 }
     }
   }

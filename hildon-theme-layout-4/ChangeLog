@@ -1,3 +1,10 @@
+2007-07-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonappsmenu.rc: Adding the proper styling for passive/active focus
+	for the new application menu. Now just needs a little hacks in the
+	application menu code itself to simulate the hackish sapwood menuitem
+	behaviour. Refs NB#60575.
+
 2007-07-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonseekbar.rc: Fixing some theming problems in the seekbar. Fixes
