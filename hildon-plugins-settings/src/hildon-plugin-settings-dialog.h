@@ -127,6 +127,11 @@ hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *se
                                                   gpointer func_data,
                                                   GtkDestroyNotify destroy);
 
+void
+hildon_plugin_settings_dialog_rename_tab (HildonPluginSettingsDialog *settings,
+                                          const gchar *container_name,
+                                          const gchar *new_name);
+
 G_END_DECLS
 
 #endif/*__HILDON_PLUGIN_SETTINGS_DIALOG_H__*/

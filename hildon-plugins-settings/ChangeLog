@@ -1,3 +1,14 @@
+2007-07-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hildon-plugin-cell-renderer-button.c:
+	(hildon_plugin_cell_renderer_button_constructor):
+	- "Organise button is localized".
+	* src/hildon-plugin-settings-dialog.[ch]:
+	(hildon_plugin_settings_dialog_rename_tab):
+	- new method for having different name for tabs
+	* src/hildon-plugin-settings.c: (execute):
+	- Fixed localization of tabs. Fixes: NB#64281
+
 2007-07-18  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-settings.c: (execute):

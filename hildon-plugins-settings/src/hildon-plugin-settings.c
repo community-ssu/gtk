@@ -290,6 +290,14 @@ execute (osso_context_t *osso,
 
   _sb_update_flag (sbtm);
 
+  hildon_plugin_settings_dialog_rename_tab (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+		             		    "Statusbar",
+					    "tncpa_ti_tnsb_statusbar");
+
+  hildon_plugin_settings_dialog_rename_tab (HILDON_PLUGIN_SETTINGS_DIALOG (dialog),
+		             		    "Tasknavigator",
+					    "tncpa_ti_tnsb_tasknavigator");
+
   conn = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 
   if (!error)

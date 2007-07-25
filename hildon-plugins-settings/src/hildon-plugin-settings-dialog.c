@@ -1163,3 +1163,33 @@ hildon_plugin_settings_dialog_set_cell_data_func (HildonPluginSettingsDialog *se
   g_list_free (renderers);
 }
 
+void 
+hildon_plugin_settings_dialog_rename_tab (HildonPluginSettingsDialog *settings,
+					  const gchar *container_name,
+					  const gchar *new_name)
+{
+  GList *container_tab = NULL;
+
+  if (!container_name || !new_name)
+    return;	  
+
+  container_tab =
+    g_list_find_custom (settings->priv->tabs,
+                        container_name,
+                        (GCompareFunc)hildon_plugin_settings_dialog_compare_tab);
+  
+  if (!container_tab)
+    return;
+
+  HPSDTab *tab = (HPSDTab *)container_tab->data;
+
+  if (tab->tw)
+  { g_debug ("hello %s %s",container_name, _(new_name));
+    GtkWidget *page = gtk_widget_get_parent (GTK_WIDGET (tab->tw));
+
+    gtk_notebook_set_tab_label (GTK_NOTEBOOK (settings->priv->notebook),
+		    		page,
+				gtk_label_new (_(new_name)));
+  }
+}
+

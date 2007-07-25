@@ -29,6 +29,9 @@
 #include <gtk/gtkwindow.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkdialog.h>
+#include <glib/gi18n.h>
+
+#define CELL_RENDERER_ORGANISE _("tncpa_bv_tnsb_organise")
 
 static void hildon_plugin_cell_renderer_button_get_property  (GObject                    *object,
 						    	      guint                       param_id,
@@ -246,7 +249,7 @@ hildon_plugin_cell_renderer_button_constructor (GType gtype,
                                                                                    params);
 
   g_object_set (object, 
-		"text", "Organize", 
+		"text", CELL_RENDERER_ORGANISE, 
 		/*"size", 9*20,*/
 		/*"ellipsize", PANGO_ELLIPSIZE_END,*/
 		NULL);
