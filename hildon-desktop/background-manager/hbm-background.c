@@ -81,7 +81,7 @@ struct _HBMBackgroundPrivate
   GnomeVFSHandle               *handle;
 
   GdkPixbuf                    *pixbuf;
-  guint                         pixbuf_width, pixbuf_height;
+  gint                          pixbuf_width, pixbuf_height;
 
   gboolean                      oom;
   gboolean                      on_mmc;
@@ -250,8 +250,8 @@ hbm_background_size_prepared (HBMBackground    *background,
         x_ratio = (gdouble)width  / priv->width;
         y_ratio = (gdouble)height / priv->height;
         ratio = MIN (x_ratio, y_ratio);
-        priv->pixbuf_width  = (guint) (width  / ratio);
-        priv->pixbuf_height = (guint) (height / ratio);
+        priv->pixbuf_width  = (gint) (width  / ratio);
+        priv->pixbuf_height = (gint) (height / ratio);
         break;
     case HILDON_DESKTOP_BACKGROUND_TILED:
     case HILDON_DESKTOP_BACKGROUND_CENTERED:
@@ -268,8 +268,8 @@ hbm_background_size_prepared (HBMBackground    *background,
 
         if (ratio)
         {
-          priv->pixbuf_width  = (guint) ((gdouble)width  / ratio);
-          priv->pixbuf_height = (guint) ((gdouble)height / ratio);
+          priv->pixbuf_width  = (gint) ((gdouble)width  / ratio);
+          priv->pixbuf_height = (gint) ((gdouble)height / ratio);
         }
         else
         {
@@ -622,6 +622,68 @@ hbm_background_create_picture (HBMBackground *background)
 }
 
 static void
+hbm_background_crop_pixbuf (HBMBackground *background)
+{
+  HBMBackgroundPrivate         *priv = background->priv;
+  HildonDesktopBackgroundMode   mode;
+  GdkPixbuf                    *cropped;
+
+  g_object_get (background,
+                "mode", &mode,
+                NULL);
+
+  if (priv->pixbuf_width > priv->width ||
+      priv->pixbuf_height > priv->height)
+  {
+    switch (mode)
+    {
+        case HILDON_DESKTOP_BACKGROUND_CENTERED:
+        case HILDON_DESKTOP_BACKGROUND_CROPPED:
+        case HILDON_DESKTOP_BACKGROUND_SCALED:
+            cropped = gdk_pixbuf_new (GDK_COLORSPACE_RGB,
+                                      gdk_pixbuf_get_has_alpha (priv->pixbuf),
+                                      gdk_pixbuf_get_bits_per_sample (priv->pixbuf),
+                                      MIN (priv->pixbuf_width,  priv->width),
+                                      MIN (priv->pixbuf_height, priv->height));
+
+            gdk_pixbuf_copy_area (priv->pixbuf,
+                                  MAX ((priv->pixbuf_width -
+                                        priv->width) / 2, 0),
+                                  MAX ((priv->pixbuf_height -
+                                        priv->height) / 2,
+                                       0),
+                                  MIN (priv->pixbuf_width,  priv->width),
+                                  MIN (priv->pixbuf_height, priv->height),
+                                  cropped,
+                                  0, 0);
+
+            gdk_pixbuf_unref (priv->pixbuf);
+            priv->pixbuf = cropped;
+            break;
+
+        case HILDON_DESKTOP_BACKGROUND_TILED:
+            cropped = gdk_pixbuf_new (GDK_COLORSPACE_RGB,
+                                      gdk_pixbuf_get_has_alpha (priv->pixbuf),
+                                      gdk_pixbuf_get_bits_per_sample (priv->pixbuf),
+                                      MIN (priv->pixbuf_width,  priv->width),
+                                      MIN (priv->pixbuf_height, priv->height));
+
+            gdk_pixbuf_copy_area (priv->pixbuf,
+                                  0, 0,
+                                  MIN (priv->pixbuf_width, priv->width),
+                                  MIN (priv->pixbuf_height, priv->height),
+                                  cropped,
+                                  0, 0);
+            gdk_pixbuf_unref (priv->pixbuf);
+            priv->pixbuf = cropped;
+            break;
+        default:
+            break;
+    }
+  }
+}
+
+static void
 hbm_background_composite_pixbuf (HBMBackground *background)
 {
   HBMBackgroundPrivate         *priv = background->priv;
@@ -675,10 +737,10 @@ hbm_background_composite_pixbuf (HBMBackground *background)
 
   switch (mode)
   {
-      case BACKGROUND_CENTERED:
-      case BACKGROUND_SCALED:
-      case BACKGROUND_STRETCHED:
-      case BACKGROUND_CROPPED:
+      case HILDON_DESKTOP_BACKGROUND_CENTERED:
+      case HILDON_DESKTOP_BACKGROUND_SCALED:
+      case HILDON_DESKTOP_BACKGROUND_STRETCHED:
+      case HILDON_DESKTOP_BACKGROUND_CROPPED:
           off_x = (priv->width  - priv->pixbuf_width)  / 2;
           off_y = (priv->height - priv->pixbuf_height) / 2;
 
@@ -689,12 +751,12 @@ hbm_background_composite_pixbuf (HBMBackground *background)
                             priv->picture,
                             0, 0,
                             0, 0,
-                            off_x, off_y,
+                            MAX (off_x, 0), MAX (off_y, 0),
                             priv->pixbuf_width,
                             priv->pixbuf_height);
 
           break;
-      case BACKGROUND_TILED:
+      case HILDON_DESKTOP_BACKGROUND_TILED:
           XRenderComposite (xdisplay,
                             PictOpOver,
                             image_picture,
@@ -727,12 +789,13 @@ hbm_background_render (HBMBackground *background, GError **error)
   hbm_background_load_pixbuf (background, &local_error);
   if (local_error) goto error;
 
+  if (priv->pixbuf)
+    hbm_background_crop_pixbuf (background);
+
   hbm_background_create_picture (background);
 
   if (priv->pixbuf)
-  {
     hbm_background_composite_pixbuf (background);
-  }
 
   return priv->picture;
 

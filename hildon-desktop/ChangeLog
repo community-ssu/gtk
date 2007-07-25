@@ -1,3 +1,8 @@
+2007-07-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/hbm-background.c:
+	- added cropping before uploading to X
+
 2007-07-25  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/Makefile.am: added built sources to clean list.
