@@ -1184,7 +1184,7 @@ hildon_plugin_settings_dialog_rename_tab (HildonPluginSettingsDialog *settings,
   HPSDTab *tab = (HPSDTab *)container_tab->data;
 
   if (tab->tw)
-  { g_debug ("hello %s %s",container_name, _(new_name));
+  {
     GtkWidget *page = gtk_widget_get_parent (GTK_WIDGET (tab->tw));
 
     gtk_notebook_set_tab_label (GTK_NOTEBOOK (settings->priv->notebook),
