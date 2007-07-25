@@ -1,3 +1,9 @@
+2007-07-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: (hd_switcher_menu_switcher_keypress_cb):
+	- Fixed toggle button's key handler to allow navigation focus. 
+	Fixes: NB#63180
+
 2007-07-24  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-background.[ch]:

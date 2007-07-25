@@ -416,11 +416,23 @@ hd_switcher_menu_switcher_keypress_cb (GtkWidget      *widget,
   {
     gtk_toggle_button_set_active
       (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
-	  
-    g_signal_emit_by_name (switcher->priv->toggle_button, "toggled");
-  }	  
 
-  return TRUE;
+    return TRUE;
+  }	  
+  else if (event->keyval == GDK_Left ||
+           event->keyval == GDK_KP_Left)
+  {
+    gtk_widget_grab_focus (widget);
+
+    GdkWindow *w =
+      gtk_widget_get_parent_window (GTK_WIDGET (switcher->priv->toggle_button));
+
+    hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS, w);
+
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 #ifdef HAVE_MCE
