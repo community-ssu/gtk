@@ -1,3 +1,10 @@
+2007-07-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (HILDON_DEPENDS): Remove clinkcav, hildon-base-lib and
+	hildon-status-bar-lib. Replace libossomime with libhildonmime,
+	hildon-fm with hildon-fm-2, libhildonmenu with libhildondesktop and
+	hildon-libs with hildon-1.
+
 2007-06-14  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c (launch_process): Move load_prog after adjusting

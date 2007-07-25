@@ -71,16 +71,13 @@ GTK_DEPENDS="
 HILDON_DEPENDS="$GTK_DEPENDS
 	gnome-vfs-2.0 >= 2.8.0
 	clinkc
-	clinkcav
 	libgtkhtml-3.8
 	libosso
 	libossohelp
-	libossomime
-	hildon-base-lib
-	hildon-fm
-	hildon-status-bar-lib
-	libhildonmenu
-	hildon-libs >= 0.7.5
+	libhildonmime
+	hildon-fm-2
+	libhildondesktop
+	hildon-1
 "
 
 if test x$hildon_booster = xtrue
