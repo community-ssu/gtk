@@ -320,7 +320,7 @@ hildon_file_system_storage_dialog_init (HildonFileSystemStorageDialog *widget)
                           (GtkAttachOptions) (0), 0, 0);
 
         page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 0);
-        label_common = gtk_label_new ("Common"); /* FIXME: Need logical ID here. */
+        label_common = gtk_label_new (_("sfil_ti_storage_details_common"));
         gtk_widget_show (label_common);
         gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), page, label_common);
 
@@ -341,7 +341,7 @@ hildon_file_system_storage_dialog_init (HildonFileSystemStorageDialog *widget)
          */
 
         page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 1);
-        label_data = gtk_label_new ("Data"); /* FIXME: Need logical ID here. */
+        label_data = gtk_label_new (_("sfil_ti_storage_details_data"));
         gtk_widget_show (label_data);
         gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), page, label_data);
 

@@ -5,6 +5,7 @@ libhildonfm (1:1.9.35~unreleased) unstable; urgency=low
     /system/osso/af/mmc-mount-point and /system/osso/af/mmc-device-name
     Fixes: NB#62440, NB#60259, NB#51728, NB#59097, NB#61292
   * Added a check for a NULL pointer. Fixes: NB#63350
+  * Add two logical IDs that were added to the UI spec ("Common", "Data")
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 25 Jul 2007 11:33:08 +0300
 
