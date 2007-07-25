@@ -263,7 +263,7 @@ hd_plugin_manager_sync (HDPluginManager *pm,
     children = hildon_desktop_container_get_children (HILDON_DESKTOP_CONTAINER (container));
   else
     children = gtk_container_get_children (container);
-
+  
   /* If keeping the order, we need to temporaly remove the loaded
      plugins from the container. */
   for (iter = children; keep_order && iter; iter = g_list_next (iter))
