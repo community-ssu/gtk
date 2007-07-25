@@ -5,6 +5,13 @@ maemo-launcher (0.22~-1) UNRELEASED; urgency=low
     for the boosters and the pkgconfig file. (Fixes: NM#1027)
   * Load the program binary after having adjusted the process priority and
     oom_adj value. (Fixes: NB#59173)
+  * Remove clinkc-av-dev, hildon-base-lib-dev and hildon-status-bar-lib-dev
+    Build-Depends.
+  * Update Build-Depends to the new counterparts:
+    - Replace hildon-libs-dev with libhildon1-dev.
+    - Replace hildon-fm-dev with libhildonfm2-dev.
+    - Replace libossomime-dev with libhildonmime-dev.
+    - Replace libhildonmenu-dev with libhildondesktop-dev.
 
  -- Guillem Jover <guillem.jover@nokia.com>  Wed, 21 Feb 2007 14:41:33 +0200
 
