@@ -143,4 +143,4 @@ libhildondesktop_la_LIBADD =                      \
 	$(XDAMAGE_LIBS)                           \
 	$(top_srcdir)/libhildonwm/libhildonwm.la
 
-CLEANFILES = *~
+CLEANFILES = *~ $(BUILT_SOURCES)

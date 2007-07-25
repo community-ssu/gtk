@@ -1,3 +1,7 @@
+2007-07-25  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/Makefile.am: added built sources to clean list.
+
 2007-07-25  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: (hd_switcher_menu_switcher_keypress_cb):
