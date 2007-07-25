@@ -1,3 +1,8 @@
+2007-07-25  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmain.c (gtk_main_do_event): send insensitive-press only
+	if the grab widget is our ancestor. Fixes: NB#63196
+
 2007-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkrange.c (gtk_range_class_init, draw_stepper): Replace
