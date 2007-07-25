@@ -1,5 +1,13 @@
 2007-07-25  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background.[ch],
+	  libhildondesktop/hildon-desktop-background.[ch]:
+	- removed unused area argument
+	* background-manager/background-manager.{c,h,xml.in}:
+	- removed corresponding _offset arguments
+
+2007-07-25  Johan Bilien  <johan.bilien@nokia.com>
+
 	* background-manager/hbm-background.c:
 	- added cropping before uploading to X
 

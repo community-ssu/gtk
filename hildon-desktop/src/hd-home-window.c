@@ -908,10 +908,8 @@ hd_home_window_map_event (GtkWidget    *widget,
 
   if (priv->background)
   {
-    g_debug ("About to apply %p", (gpointer)priv->background);
     hildon_desktop_background_apply_async (priv->background,
                                            widget->window,
-                                           NULL,
                                            (HildonDesktopBackgroundApplyCallback)
                                            background_apply_callback,
                                            widget);
@@ -1751,7 +1749,6 @@ hd_home_window_set_background (HDHomeWindow            *window,
     {
       hildon_desktop_background_apply_async (background,
                                              GTK_WIDGET (window)->window,
-                                             NULL,
                                              (HildonDesktopBackgroundApplyCallback)
                                              background_apply_callback,
                                              window);
@@ -1843,7 +1840,6 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
               hildon_desktop_background_apply_async
                   (background,
                    GTK_WIDGET (window)->window,
-                   NULL,
                    (HildonDesktopBackgroundApplyCallback)background_apply_and_save_callback,
                    window);
             }
@@ -1863,7 +1859,6 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
               hildon_desktop_background_apply_async
                   (background,
                    GTK_WIDGET (window)->window,
-                   NULL,
                    (HildonDesktopBackgroundApplyCallback)
                      background_apply_callback,
                    window);
@@ -1878,7 +1873,6 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
               hildon_desktop_background_apply_async
                   (priv->previous_background,
                    GTK_WIDGET (window)->window,
-                   NULL,
                    (HildonDesktopBackgroundApplyCallback)
                      background_apply_callback,
                    window);

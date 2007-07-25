@@ -277,7 +277,6 @@ cleanup:
 static void
 hd_home_background_apply (HildonDesktopBackground *background,
                           GdkWindow        *window,
-                          GdkRectangle     *area,
                           GError          **error)
 {
   DBusGProxy           *background_manager_proxy;
@@ -312,17 +311,6 @@ hd_home_background_apply (HildonDesktopBackground *background,
                                  HILDON_BACKGROUND_MANAGER_INTERFACE);
 
   top_offset = bottom_offset = right_offset = left_offset = 0;
-  if (area)
-    {
-      gint width, height;
-      gdk_drawable_get_size (GDK_DRAWABLE (window), &width, &height);
-
-      top_offset = area->y;
-      bottom_offset = MAX (0, height - area->height - area->y);
-      left_offset = area->x;
-      right_offset = MAX (0, width- area->width - area->x);
-    }
-
 #define S(string) (string?string:"")
   org_maemo_hildon_background_manager_set_background (background_manager_proxy,
                                                       GDK_WINDOW_XID (window),
@@ -331,10 +319,6 @@ hd_home_background_apply (HildonDesktopBackground *background,
                                                       color->green,
                                                       color->blue,
                                                       mode,
-                                                      top_offset,
-                                                      bottom_offset,
-                                                      left_offset,
-                                                      right_offset,
                                                       &pixmap_xid,
                                                       error);
 #undef S
@@ -400,7 +384,6 @@ cleanup:
 static void
 hd_home_background_apply_async (HildonDesktopBackground        *background,
                                 GdkWindow                      *window,
-                                GdkRectangle                   *area,
                                 HildonDesktopBackgroundApplyCallback   cb,
                                 gpointer                        user_data)
 {
@@ -409,9 +392,8 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
   DBusGConnection          *connection;
   GError                   *local_error = NULL;
   struct cb_data           *data;
-  gint32                    top_offset, bottom_offset, right_offset, left_offset;
-  gchar                *filename;
-  GdkColor             *color;
+  gchar                    *filename;
+  GdkColor                 *color;
   HildonDesktopBackgroundMode   mode;
 
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && window);
@@ -445,18 +427,6 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
   data->user_data = user_data;
   data->window = window;
 
-  top_offset = bottom_offset = right_offset = left_offset = 0;
-  if (area)
-    {
-      gint width, height;
-      gdk_drawable_get_size (GDK_DRAWABLE (window), &width, &height);
-
-      top_offset = area->y;
-      bottom_offset = MAX (0, height - area->height - area->y);
-      left_offset = area->x;
-      right_offset = MAX (0, width- area->width - area->x);
-    }
-
   g_debug ("Applying background %s aynchronously",
            filename);
 
@@ -472,10 +442,6 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
                                                  color->green,
                                                  color->blue,
                                                  mode,
-                                                 top_offset,
-                                                 bottom_offset,
-                                                 left_offset,
-                                                 right_offset,
                                                  (org_maemo_hildon_background_manager_set_background_reply) hd_home_background_apply_async_dbus_callback,
                                                  data);
 #undef S

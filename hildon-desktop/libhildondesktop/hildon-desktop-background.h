@@ -84,12 +84,10 @@ struct _HildonDesktopBackgroundClass
 
   void                  (*apply) (HildonDesktopBackground      *bg,
                                   GdkWindow                    *window,
-                                  GdkRectangle                 *area,
                                   GError                      **error);
 
   void                  (*apply_async) (HildonDesktopBackground      *bg,
                                   GdkWindow                    *window,
-                                  GdkRectangle                 *area,
                                   HildonDesktopBackgroundApplyCallback cb,
                                   gpointer                      user_data);
   HildonDesktopBackground *
@@ -107,12 +105,10 @@ void        hildon_desktop_background_load      (HildonDesktopBackground *bg,
                                                  GError          **error);
 void        hildon_desktop_background_apply     (HildonDesktopBackground *bg,
                                                  GdkWindow        *window,
-                                                 GdkRectangle     *region,
                                                  GError          **error);
 void        hildon_desktop_background_apply_async
                                                 (HildonDesktopBackground *bg,
                                                  GdkWindow        *window,
-                                                 GdkRectangle     *region,
                                                  HildonDesktopBackgroundApplyCallback
                                                                    cb,
                                                  gpointer          user_data);

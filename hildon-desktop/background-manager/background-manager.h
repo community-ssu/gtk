@@ -101,10 +101,6 @@ gboolean              background_manager_set_background
                              guint16              green,
                              guint16              blue,
                              BackgroundMode       mode,
-                             gint32               top_offset,
-                             gint32               bottom_offset,
-                             gint32               left_offset,
-                             gint32               right_offset,
                              gint                *pixmap_xid,
                              GError             **error);
 

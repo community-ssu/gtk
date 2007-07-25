@@ -207,11 +207,10 @@ hildon_desktop_background_class_init (HildonDesktopBackgroundClass *klass)
                                      apply),
                     NULL,
                     NULL,
-                    g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER,
+                    g_cclosure_user_marshal_VOID__POINTER_POINTER,
                     G_TYPE_NONE,
-                    3,
+                    2,
                     GDK_TYPE_WINDOW,
-                    GDK_TYPE_RECTANGLE,
                     G_TYPE_POINTER);
 
   SIGNALS[APPLY_ASYNC] =
@@ -222,11 +221,10 @@ hildon_desktop_background_class_init (HildonDesktopBackgroundClass *klass)
                                      apply_async),
                     NULL,
                     NULL,
-                    g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER_POINTER,
+                    g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER,
                     G_TYPE_NONE,
-                    4,
+                    3,
                     GDK_TYPE_WINDOW,
-                    GDK_TYPE_RECTANGLE,
                     G_TYPE_POINTER,
                     G_TYPE_POINTER);
 
@@ -369,9 +367,8 @@ hildon_desktop_background_load (HildonDesktopBackground *background,
 
 void
 hildon_desktop_background_apply (HildonDesktopBackground *background,
-                          GdkWindow        *window,
-                          GdkRectangle     *area,
-                          GError          **error)
+                                 GdkWindow        *window,
+                                 GError          **error)
 {
   g_return_if_fail (HILDON_DESKTOP_IS_BACKGROUND (background));
 
@@ -379,14 +376,12 @@ hildon_desktop_background_apply (HildonDesktopBackground *background,
                  SIGNALS[APPLY],
                  0,
                  window,
-                 area,
                  error);
 }
 
 void
 hildon_desktop_background_apply_async (HildonDesktopBackground *background,
                                        GdkWindow               *window,
-                                       GdkRectangle            *area,
                                        HildonDesktopBackgroundApplyCallback
                                                                 cb,
                                        gpointer                 user_data)
@@ -397,7 +392,6 @@ hildon_desktop_background_apply_async (HildonDesktopBackground *background,
                  SIGNALS[APPLY_ASYNC],
                  0,
                  window,
-                 area,
                  cb,
                  user_data);
 }

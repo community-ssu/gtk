@@ -8,10 +8,6 @@
       <arg type="i" name="red"/>
       <arg type="i" name="green"/>
       <arg type="i" name="blue"/>
-      <arg type="i" name="top_offset"/>
-      <arg type="i" name="bottom_offset"/>
-      <arg type="i" name="left_offset"/>
-      <arg type="i" name="right_offset"/>
       <arg type="i" name="mode"/>
       <arg type="i" direction="out" name="pixmap_id"/>
     </method>
