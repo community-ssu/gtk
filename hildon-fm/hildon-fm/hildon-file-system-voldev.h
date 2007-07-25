@@ -27,6 +27,7 @@
 #include "hildon-file-system-remote-device.h"
 
 #include <libgnomevfs/gnome-vfs.h>
+#include <gconf/gconf-client.h>
 
 G_BEGIN_DECLS
 
@@ -47,11 +48,15 @@ struct _HildonFileSystemVoldev
   HildonFileSystemSpecialLocation parent_instance;
   GnomeVFSVolume *volume;
   GnomeVFSDrive *drive;
+  gboolean used_over_usb;
+  gboolean internal_card;
+  gboolean card_type_valid;
 };
 
 struct _HildonFileSystemVoldevClass
 {
     HildonFileSystemRemoteDeviceClass parent_class;
+    GConfClient *gconf;
 };
 
 GType hildon_file_system_voldev_get_type (void) G_GNUC_CONST;

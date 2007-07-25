@@ -1,3 +1,25 @@
+2007-07-25  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-private.c
+	(_hildon_file_system_create_display_name): Add check for NULL
+	mime_type. Fixes: NB#63350
+
+	* hildon-file-system-voldev.h: Add new members to struct
+	_HildonFileSystemVoldev: used_over_usb, internal_card,
+	card_type_valid. Add a member to the class struct to store the GConf
+	client.
+
+	* hildon-file-system-voldev.c: Add init_card_type and
+	gconf_value_changed functions.
+	(hildon_file_system_voldev_class_init): Get default GConf client
+	and call gconf_client_add_dir for the relevant directory.
+	(hildon_file_system_voldev_init): Install GConf notification callback.
+	(hildon_file_system_voldev_is_visible): Check the GConf keys to
+	determine whether the memory cards are used over USB.
+	(hildon_file_system_voldev_volumes_changed): Use the new struct
+	member internal_card instead of the earlier hacky way.
+	Fixes: NB#62440, NB#60259, NB#51728, NB#59097, NB#61292
+
 2007-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.34

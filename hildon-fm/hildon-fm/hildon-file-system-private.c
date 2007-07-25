@@ -600,13 +600,14 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
        to gtk_file_info_get_is_folder, but have a mime-type of
        x-directory/normal.
 
-       This is a VERY gross hack and I appologize formally.  My only
+       This is a VERY gross hack and I apologize formally.  My only
        defense is that I don't want to mess with the
        GtkFileSystemMemory itself at this point.  I only feel
        comfortable changing what is displayed and not what the
        filesystem tells is stored in it.
     */
-    if (!is_folder && strcmp (mime_type, "x-directory/normal") == 0)
+    if (!is_folder && mime_type &&
+        strcmp (mime_type, "x-directory/normal") == 0)
       only_known = FALSE;
 
     dot = _hildon_file_system_search_extension (str, only_known, is_folder);
