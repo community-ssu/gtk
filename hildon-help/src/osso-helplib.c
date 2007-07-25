@@ -168,9 +168,12 @@ static void gtk_dialog_set_has_help(GtkDialog * dialog, gboolean has_help)
 
     g_return_if_fail(GTK_IS_DIALOG(dialog));
 
-    g_signal_handlers_disconnect_matched (dialog, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, dialog_on_realize, NULL) ;
-
-    g_signal_connect (G_OBJECT (dialog), "realize", (GCallback)dialog_on_realize, (gpointer)has_help) ;
+    if (!GTK_WIDGET_REALIZED(GTK_WIDGET(dialog))) {
+      g_signal_handlers_disconnect_matched (dialog, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, dialog_on_realize, NULL) ;
+      g_signal_connect (G_OBJECT (dialog), "realize", (GCallback)dialog_on_realize, (gpointer)has_help) ;
+    } else {
+      dialog_on_realize(dialog, (gpointer)has_help);
+    }
 }
 
 static gboolean ossohelp_file2_private( const char *basename, int basename_len,

@@ -1,4 +1,9 @@
-2007-07-02 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+2007-07-25 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Version 1.9.5
+	* Allow changing the help icon after the dialog is realized
+
+2007-07-24 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Version 1.9.4
 	* Skip empty folders

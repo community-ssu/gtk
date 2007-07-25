@@ -7,7 +7,7 @@
 
 # Mandatory, initializes autoconf.
 #
-AC_INIT(libhildonhelp, 1.9.4)
+AC_INIT(libhildonhelp, 1.9.5)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR(src/hildon-help.h)

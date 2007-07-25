@@ -1,3 +1,9 @@
+libhildonhelp (1.9.5-1) unstable; urgency=low
+
+  * Allow changing the help icon after the dialog is realized
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Wed, 25 Jul 2007 15:31:20 +0300
+
 libhildonhelp (1.9.4-1) unstable; urgency=low
 
   * Skip empty folders

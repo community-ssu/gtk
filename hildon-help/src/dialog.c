@@ -170,8 +170,6 @@ osso_return_t system_dialog( osso_context_t *osso,
     osso_return_t ret = OSSO_OK ;
     gchar *dialog_title = NULL;
 
-    g_print ("system_dialog: Entering\n") ;
-
     const gchar *file_url= "file://" HELP_HTML_TMPFILE;
 
     if (!osso || !topic_key) return OSSO_ERROR;
@@ -213,14 +211,10 @@ osso_return_t system_dialog( osso_context_t *osso,
     if (!browser_show (help_dialog.browser, file_url, TRUE))
       return OSSO_ERROR;
 
-    g_print ("system_dialog: Calling gtk_dialog_run\n") ;
-
     /* Stay here until 'close' is pressed (easiest for the application) */
     gtk_dialog_run (GTK_DIALOG (help_dialog.dialog)) ;
 
     gtk_widget_hide (help_dialog.dialog) ;
-
-    g_print ("system_dialog: Dialog is now hidden\n") ;
 
     return OSSO_OK;
 }
