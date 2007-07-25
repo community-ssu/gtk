@@ -1,3 +1,21 @@
+hildon-theme-layout-4 (0.10.1-1) unstable; urgency=low
+
+  * New application menu theming
+  * Fixing seekbar theming
+  * Rc support for mediaplayer background
+  * State/shadow types for separators
+  * Correct border values for finger scrollbar
+
+  * Fixes: NB#61802 Wrong border values used in thumb size scrollbar
+  * Fixes: NB#52265 inconsistent change of highlight mode when toggling screen
+  * Fixes: NB#62182 Request to add a style to gtkrc
+  * Fixes: NB#61733 Seekbar looks broken 
+  * Fixes: NB#61775 Wrong separator seen in toolbars
+  * Fixes: NB#52265 Inconsistent change of highlight mode when toggling screen
+  * Fixes: NB#61802 Wrong border values used in thumb size scrollbar
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 25 Jul 2007 10:22:44 +0300
+
 hildon-theme-layout-4 (0.10.0-1) unstable; urgency=low
 
   * Removing button displacement

@@ -1,3 +1,10 @@
+[0.10.1-1]
+* New application menu theming
+* Fixing seekbar theming
+* Rc support for mediaplayer background
+* State/shadow types for separators
+* Correct border values for finger scrollbar
+
 [0.10.0-1]
 * Removing button displacement
 * Fixed border values for RSS reader 
