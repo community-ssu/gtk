@@ -138,6 +138,7 @@ struct _HildonFileSelectionPrivate {
     GtkWidget *scroll_thumb;
     GtkWidget *dir_tree;
     GtkWidget *view[4]; /* List, thumbnail, empty, repair */
+    int cur_view;
     GtkWidget *hpaned;
 
     GtkTreeModel *main_model;
@@ -148,7 +149,7 @@ struct _HildonFileSelectionPrivate {
     GtkTreeModel *view_filter;
 
     GtkTreeRowReference *current_folder;
-    GtkNotebook *view_selector;
+    GtkWidget *view_selector;
     GtkFileFilter *filter;
 
     HildonFileSelectionMode mode;       /* User requested mode. Actual
@@ -270,13 +271,13 @@ static gboolean
 hildon_file_selection_content_pane_visible(HildonFileSelectionPrivate *
                                            priv)
 {
-    return GTK_WIDGET_VISIBLE(GTK_WIDGET(priv->view_selector));
+    return GTK_WIDGET_VISIBLE(priv->view_selector);
 }
 
 static GtkWidget *get_current_view(HildonFileSelectionPrivate * priv)
 {
     if (hildon_file_selection_content_pane_visible(priv))
-      return priv->view[gtk_notebook_get_current_page(priv->view_selector)];
+      return priv->view[priv->cur_view];
 
     return NULL;
 }
@@ -318,7 +319,7 @@ static gint get_view_to_be_displayed(HildonFileSelectionPrivate *priv)
       if (is_drive)
 	result = 3;
       else if (!ready)
-	result = gtk_notebook_get_current_page(priv->view_selector);
+	result = priv->cur_view;
       else
 	result = 2;
     }
@@ -401,6 +402,19 @@ static gboolean expand_cursor_row(GtkTreeView *tree)
   return result;
 }
 
+static GtkWidget *
+view_widget (HildonFileSelectionPrivate *priv, int view)
+{
+  /* Horrible...
+   */
+  if (view == 0)
+    return priv->scroll_list;
+  else if (view == 1)
+    return priv->scroll_thumb;
+  else
+    return priv->view[view];
+}
+
 static void
 hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
 {
@@ -411,15 +425,19 @@ hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
     if (!hildon_file_selection_content_pane_visible(priv))
         return;
 
-    current_page = gtk_notebook_get_current_page(priv->view_selector);
+    current_page = priv->cur_view;
     target_page = get_view_to_be_displayed(priv);
-    view = get_current_view(priv);
+    view = get_current_view (priv);
 
     if (current_page != target_page)
     {
       content_focused = GTK_WIDGET_HAS_FOCUS(view) ||
           priv->force_content_pane || priv->content_pane_last_used;
-      gtk_notebook_set_current_page(priv->view_selector, target_page);
+      gtk_widget_hide (view_widget (priv, current_page));
+      gtk_widget_show (view_widget (priv, target_page));
+      priv->cur_view = target_page;
+
+      fprintf (stderr, "SHOWING %d -> %d\n", current_page, target_page);
 
       if (current_page == HILDON_FILE_SELECTION_MODE_THUMBNAILS &&
         target_page == HILDON_FILE_SELECTION_MODE_LIST)
@@ -1442,7 +1460,7 @@ static gboolean delayed_select_idle(gpointer data)
   hildon_file_selection_set_current_folder_iter(self, &main_iter);
 
   /* Keep the focus in right side if possible */
-  activate_view(gtk_notebook_get_current_page(priv->view_selector) == 2 ?
+  activate_view(priv->cur_view == 2 ?
                 priv->dir_tree : get_current_view(priv));
 
   /* We have to return TRUE, because cancel removes the handler now */
@@ -1763,7 +1781,7 @@ static void hildon_file_selection_check_scroll(GtkWidget *widget, gboolean type,
   grab_widget = gtk_grab_get_current();
 
   if (grab_widget && GTK_IS_SCROLLBAR(grab_widget) &&
-      gtk_widget_is_ancestor(grab_widget, GTK_WIDGET(priv->view_selector)))
+      gtk_widget_is_ancestor(grab_widget, priv->view_selector))
   {
     ULOG_INFO("User scrolled the window, cancelling autoscrolling");
     priv->user_scrolled = TRUE;
@@ -2306,7 +2324,7 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     gtk_tree_view_column_set_title(col, _("sfil_li_header_name"));
     /* Setting sizing to fixed with no "fixed-width" set makes column
         to truncate nicely, but still take all available space. */
-  /*    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);*/
+    /* gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED); */
     gtk_tree_view_column_set_expand(col, TRUE);
     gtk_tree_view_column_set_sort_column_id(col, HILDON_FILE_SELECTION_SORT_NAME);
     gtk_tree_view_column_set_clickable(col, TRUE);
@@ -2942,16 +2960,13 @@ static void hildon_file_selection_init(HildonFileSelection * self)
     self->priv->scroll_dir = gtk_scrolled_window_new(NULL, NULL);
     self->priv->scroll_list = gtk_scrolled_window_new(NULL, NULL);
     self->priv->scroll_thumb = gtk_scrolled_window_new(NULL, NULL);
-    self->priv->view_selector = GTK_NOTEBOOK(gtk_notebook_new());
+    self->priv->view_selector = gtk_hbox_new (FALSE, 0);
     self->priv->hpaned = gtk_hpaned_new();
 
     gtk_container_set_border_width(GTK_CONTAINER(self->priv->scroll_dir),
         HILDON_MARGIN_DEFAULT);
     gtk_container_set_border_width(GTK_CONTAINER(self->priv->view_selector),
         HILDON_MARGIN_DEFAULT);
-
-    gtk_notebook_set_show_tabs(self->priv->view_selector, FALSE);
-    gtk_notebook_set_show_border(self->priv->view_selector, FALSE);
 
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW
                                    (self->priv->scroll_dir),
@@ -2986,7 +3001,8 @@ static void hildon_file_selection_init(HildonFileSelection * self)
     /* This needs to exist before set properties are called */
     self->priv->view[2] = gtk_label_new(_("hfil_li_no_files_folders_to_show"));
     gtk_misc_set_alignment(GTK_MISC(self->priv->view[2]), 0.5f, 0.0f);
-    gtk_notebook_append_page(self->priv->view_selector, self->priv->view[2], NULL);
+    gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
+			self->priv->view[2], TRUE, TRUE, 0);
 
     {
       GtkWidget *vbox, *label, *button;
@@ -3005,8 +3021,8 @@ static void hildon_file_selection_init(HildonFileSelection * self)
       gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 10);
       
       self->priv->view[3] = vbox;
-      gtk_notebook_append_page(self->priv->view_selector,
-			       self->priv->view[3], NULL);
+      gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
+			  self->priv->view[3], TRUE, TRUE, 0);
     }
 
     g_signal_connect(self, "grab-notify",
@@ -3056,12 +3072,17 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_container_add(GTK_CONTAINER(priv->scroll_list), priv->view[0]);
     gtk_container_add(GTK_CONTAINER(priv->scroll_thumb), priv->view[1]);
 
-    gtk_notebook_prepend_page(priv->view_selector, priv->scroll_thumb,
-                              NULL);
-    gtk_notebook_prepend_page(priv->view_selector, priv->scroll_list,
-                              NULL);
+    gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
+			self->priv->scroll_list, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
+			self->priv->scroll_thumb, TRUE, TRUE, 0);
 
-    gtk_widget_show_all(priv->hpaned);
+    gtk_widget_show_all (priv->hpaned);
+    priv->cur_view = 0;
+    gtk_widget_hide (priv->scroll_thumb);
+    gtk_widget_hide (priv->view[2]);
+    gtk_widget_hide (priv->view[3]);
+
 
     /* Also the views of the navigation pane are trees (and this is
        needed). Let's deny expanding */
@@ -3841,7 +3862,7 @@ _hildon_file_selection_unselect_path (HildonFileSelection *self,
 void hildon_file_selection_hide_content_pane(HildonFileSelection * self)
 {
     g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
-    gtk_widget_hide(GTK_WIDGET(self->priv->view_selector));
+    gtk_widget_hide(self->priv->view_selector);
 }
 
 /**
@@ -3855,7 +3876,7 @@ void hildon_file_selection_hide_content_pane(HildonFileSelection * self)
 void hildon_file_selection_show_content_pane(HildonFileSelection * self)
 {
     g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
-    gtk_widget_show(GTK_WIDGET(self->priv->view_selector));
+    gtk_widget_show (self->priv->view_selector);
     hildon_file_selection_selection_changed
         (gtk_tree_view_get_selection(GTK_TREE_VIEW(self->priv->dir_tree)),
          self);    /* Update content pane */
