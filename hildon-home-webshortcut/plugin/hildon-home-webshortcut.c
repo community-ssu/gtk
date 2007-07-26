@@ -22,10 +22,11 @@
  */
 
 #include "hildon-home-webshortcut.h"
-#include "hhwsloader.h"
 #include "hhws-l10n.h"
+#include "hhws-background.h"
 
 #include <libhildondesktop/libhildondesktop.h>
+#include <libhildondesktop/hildon-desktop-picture.h>
 
 #include <gtk/gtkmain.h>
 #include <gtk/gtkeventbox.h>
@@ -49,50 +50,39 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <gconf/gconf-client.h>
 
+#include <dbus/dbus-glib.h>
+
 #include <hildon/hildon-file-chooser-dialog.h>
 #include <hildon/hildon-caption.h>
 #include <hildon/hildon-defines.h>
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-note.h>
 
+#include <string.h> /* strlen */
+
 #define HHWS_GCONF_IAP          "/apps/osso/apps/hhws/iap"
 #define HHWS_GCONF_URI          "/apps/osso/apps/hhws/uri"
+#define HHWS_GCONF_IMAGE_URI    "/apps/osso/apps/hhws/image_uri"
 
 #define HILDON_HOME_WS_WIDTH            300
 #define HILDON_HOME_WS_HEIGHT           100
 #define HILDON_HOME_WS_MINIMUM_WIDTH    120
 #define HILDON_HOME_WS_MINIMUM_HEIGHT   60
-#define HILDON_HOME_WS_ENV_HOME "HOME"
-#define HILDON_HOME_WS_SYSTEM_DIR ".osso/hildon-home"
-#define HILDON_HOME_WS_USER_FILE "hildon_home_wshortcut.png"
-#define HILDON_HOME_WS_ORGINAL_FILE "wshortcut_image_filename.txt"
-#define HILDON_HOME_WS_URL_FILE "wshortcut_url_path.txt"
 
 #define HILDON_HOME_WS_USER_IMAGE_DIR "MyDocs/.images"
-#define HILDON_HOME_WS_DEFAULT_URL "http://www.nokia.com/"
 
-#define HILDON_HOME_WS_NAME "WebShortcut"
-#define HILDON_HOME_WS_VERSION "1.0.0"
-#define BUF_SIZE 8192
-
-#define HILDON_HOME_WS_DIALOG_PADDING 10
-#define HILDON_HOME_WS_GCONF_MMC_COVER_OPEN "/system/osso/af/mmc-cover-open"
-#define HILDON_HOME_WS_ENV_MMC_MOUNTPOINT   "MMC_MOUNTPOINT"
-#define HILDON_HOME_WS_IMAGE_FORMAT         "png"
-
-#define HILDON_HOME_WS_IMAGE_FILLCOLOR 0xffffffff
 
 struct _HhwsPrivate {
-  HhwsLoader       *loader;
+  Picture           picture;
   GtkWidget        *applet_widget;
-  GtkWidget        *image;
   GtkWidget        *entry_url;
   GtkWidget        *image_cbox;
   GtkWidget        *csm;
   GtkWidget        *home_win;
   gchar            *iap;
   gchar            *uri;
-  gchar            *image_uri;
+  gchar            *image;
+  gchar            *default_image;
   gchar            *selected_image_uri;
   guint             old_width;
   guint             old_height;
@@ -100,7 +90,7 @@ struct _HhwsPrivate {
   gdouble           click_x, click_y;
 };
 
-HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_DESKTOP_TYPE_HOME_ITEM, hhws_loader_register_type (module);)
+HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_DESKTOP_TYPE_HOME_ITEM, hhws_background_register_type (module);)
 
 static void
 hhws_show_information_note (Hhws *hhws,
@@ -119,16 +109,53 @@ hhws_show_information_note (Hhws *hhws,
     gtk_widget_destroy (GTK_WIDGET (note));
 }
 
+static gchar *
+hhws_file_to_name (const gchar *filename)
+{
+  gchar *tmp;
+  gchar *imagename;
+  gchar *last_dot, *c;
+
+  tmp = g_filename_from_uri (filename, NULL, NULL);
+  if (!tmp)
+    tmp = g_strdup (filename);
+
+  imagename = g_filename_display_basename (tmp);
+
+  c = imagename;
+  last_dot = NULL;
+
+  while (*c)
+  {
+    if (*c == '.')
+    {
+      last_dot = c;
+    }
+
+    c++;
+  }
+
+  if(last_dot)
+    *last_dot = '\0';
+
+  /* We need a special case for our wonderful sketch program */
+  if (g_str_has_suffix (imagename, ".sketch"))
+  {
+    tmp = imagename;
+    imagename = g_strndup (tmp, strlen (tmp) - 7);
+    g_free (tmp);
+  }
+
+  return imagename;
+}
+
 static void
-hhws_loader_error_cb (HhwsLoader *loader,
-                      GError *error,
-                      Hhws *hhws)
+hhws_process_error (Hhws *hhws,
+                    GError *error)
 {
   gchar *text = NULL;
-  g_return_if_fail (error);
 
-  g_warning ("Loading of image failed: %s", error->message);
-
+#if 0
   if (error->domain == hhws_loader_error_quark ())
     {
       switch (error->code)
@@ -185,9 +212,103 @@ hhws_loader_error_cb (HhwsLoader *loader,
               break;
         }
     }
+#endif
+
+  dbus_g_error_get_name (error);
+
+  if (dbus_g_error_has_name (error,
+                             "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code2"))
+    text = HHWS_CORRUPTED_TEXT;
+  else if ((dbus_g_error_has_name (error,
+                                   "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code1")))
+    text = HHWS_NO_CONNECTION_TEXT;
+  else if ((dbus_g_error_has_name (error,
+                                   "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code4")))
+    text = HHWS_MMC_NOT_OPEN_TEXT;
+  else if ((dbus_g_error_has_name (error,
+                                   "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code7")))
+    text = HHWS_NO_CONNECTION_TEXT;
 
   if (text)
     hhws_show_information_note (hhws, text);
+
+}
+
+static void
+hhws_apply_background_callback (HildonDesktopBackground        *background,
+                                Picture                         picture,
+                                GError                         *error,
+                                Hhws                           *hhws)
+{
+  HhwsPrivate  *priv = hhws->priv;
+
+  g_debug ("webshortcut background applied");
+
+  if (error)
+  {
+    g_debug ("Error occurred: %s", error->message);
+    hhws_process_error (hhws, error);
+    return;
+  }
+
+  if (priv->picture)
+    XRenderFreePicture (GDK_DISPLAY (), priv->picture);
+
+  priv->picture = picture;
+
+  gtk_widget_queue_draw (GTK_WIDGET (hhws));
+
+}
+
+static void
+hhws_apply_and_save_background_callback (HildonDesktopBackground *background,
+                                         Picture                  picture,
+                                         GError                  *error,
+                                         Hhws                    *hhws)
+{
+  GError       *save_error = NULL;
+
+  hhws_apply_background_callback (background, picture, error, hhws);
+
+  if (error) return;
+
+  hildon_desktop_background_save (background,
+                                  NULL,
+                                  &save_error);
+
+  if (save_error)
+  {
+    g_warning ("Error when saving background: %s", save_error->message);
+    g_error_free (save_error);
+  }
+
+}
+
+static void
+hhws_apply_and_save_background (Hhws *hhws, HildonDesktopBackground *background)
+{
+  if (!GTK_WIDGET_REALIZED (hhws))
+    return;
+
+  hildon_desktop_background_apply_async (background,
+                                         GTK_WIDGET (hhws)->window,
+                                         (HildonDesktopBackgroundApplyCallback)
+                                         hhws_apply_and_save_background_callback,
+                                         hhws);
+
+}
+
+static void
+hhws_apply_background (Hhws *hhws, HildonDesktopBackground *background)
+{
+  if (!GTK_WIDGET_REALIZED (hhws))
+    return;
+
+  hildon_desktop_background_apply_async (background,
+                                         GTK_WIDGET (hhws)->window,
+                                         (HildonDesktopBackgroundApplyCallback)
+                                         hhws_apply_background_callback,
+                                         hhws);
 
 }
 
@@ -196,6 +317,7 @@ hhws_load_configuration (Hhws *hhws)
 {
   HhwsPrivate  *priv = hhws->priv;
   GError       *error = NULL;
+  GConfValue   *gconfval=NULL;
 
   g_return_if_fail (priv && priv->gconf_client);
 
@@ -210,6 +332,16 @@ hhws_load_configuration (Hhws *hhws)
                                        &error);
 
   if (error) goto error;
+
+  gconfval = gconf_client_get_default_from_schema (priv->gconf_client,
+                                                   HHWS_GCONF_IMAGE_URI,
+                                                   &error);
+  if (error) goto error;
+  if (gconfval)
+  {
+    priv->default_image = g_strdup (gconf_value_get_string (gconfval));
+    gconf_value_free (gconfval);
+  }
 
 error:
   if (error)
@@ -252,7 +384,7 @@ hhws_get_user_image_dir()
   gchar *image_dir;
 
   image_dir = g_build_path("/",
-                           g_getenv ("HOME"), 
+                           g_getenv ("HOME"),
                            HILDON_HOME_WS_USER_IMAGE_DIR,
                            NULL);
 
@@ -297,10 +429,10 @@ hhws_select_file_dialog (Hhws *hhws)
   if (response == GTK_RESPONSE_OK)
     {
       g_free (priv->selected_image_uri);
-      priv->selected_image_uri = 
+      priv->selected_image_uri =
           gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
 
-      label_str = hhws_url_to_filename (priv->selected_image_uri);
+      label_str = hhws_file_to_name (priv->selected_image_uri);
 
       if (label_str && label_str[0] != '\0')
         {
@@ -340,13 +472,13 @@ hhws_settings_dialog_response (GtkWidget *dialog,
             }
           else
             {
-              const gchar  *new_image_path = NULL;
-              gulong        error_handler = 0;
+              const gchar              *new_image_path = NULL;
+              HildonDesktopBackground  *background;
 
               if (gtk_combo_box_get_active (GTK_COMBO_BOX (priv->image_cbox)) == 0)
                 {
                   /* Use the original image */
-                  new_image_path = hhws_loader_get_default_uri (priv->loader);
+                  new_image_path = priv->default_image;
                 }
               else
                 {
@@ -354,16 +486,16 @@ hhws_settings_dialog_response (GtkWidget *dialog,
                   if (priv->selected_image_uri)
                     new_image_path = priv->selected_image_uri;
                   else
-                    new_image_path = hhws_loader_get_uri (priv->loader);
+                    new_image_path = priv->image;
                 }
 
-              error_handler = g_signal_connect (priv->loader,
-                                                "loading-failed",
-                                                G_CALLBACK (hhws_loader_error_cb),
-                                                hhws);
+              /* DO THE MAGIC HERE */
+              background = g_object_new (HHWS_TYPE_BACKGROUND,
+                                         "filename", new_image_path,
+                                         NULL);
 
-              hhws_loader_set_uri (priv->loader, new_image_path);
-              g_signal_handler_disconnect (priv->loader, error_handler);
+              hhws_apply_and_save_background (hhws, background);
+              g_object_unref (background);
 
               g_free (priv->uri);
 
@@ -409,9 +541,6 @@ hhws_settings_dialog (Hhws *hhws)
 
   GtkWidget    *caption_url;
 
-  const gchar  *default_image_name;
-  const gchar  *image_name;
-
   dialog = gtk_dialog_new_with_buttons (HHWS_SET_TITLE,
                                         GTK_WINDOW (priv->home_win),
                                         GTK_DIALOG_MODAL |
@@ -430,18 +559,25 @@ hhws_settings_dialog (Hhws *hhws)
 
   priv->image_cbox = gtk_combo_box_new_text ();
 
-  default_image_name = hhws_loader_get_default_image_name (priv->loader);
-  image_name = hhws_loader_get_image_name (priv->loader);
+  if (priv->default_image)
+  {
+    gchar *name = hhws_file_to_name (priv->default_image);
 
-  if (default_image_name)
     gtk_combo_box_append_text (GTK_COMBO_BOX(priv->image_cbox),
-                               default_image_name);
+                               name);
 
-  if (image_name && !g_str_equal (default_image_name, image_name))
+    g_free (name);
+  }
+
+  if (priv->image && !(priv->default_image &&
+                       g_str_equal (priv->default_image, priv->image)))
     {
+      gchar *name = hhws_file_to_name (priv->image);
+
       gtk_combo_box_append_text (GTK_COMBO_BOX(priv->image_cbox),
-                                 image_name);
+                                 name);
       gtk_combo_box_set_active(GTK_COMBO_BOX(priv->image_cbox), 1);
+      g_free (name);
     }
   else
     gtk_combo_box_set_active (GTK_COMBO_BOX(priv->image_cbox), 0);
@@ -549,24 +685,38 @@ hhws_button_release (GtkWidget         *widget,
                                                                      event);
 }
 
+static void
+hhws_realize (GtkWidget *widget)
+{
+  HildonDesktopBackground      *background;
+  HhwsPrivate                  *priv = HHWS (widget)->priv;
+
+  GTK_WIDGET_CLASS (hhws_parent_class)->realize (widget);
+
+  background = g_object_new (HHWS_TYPE_BACKGROUND,
+                             NULL);
+
+  hildon_desktop_background_load (background, NULL, NULL);
+  priv->image = g_strdup (hildon_desktop_background_get_filename (background));
+  hhws_apply_background (HHWS (widget), background);
+
+  g_object_unref (background);
+
+}
+
 static gboolean
 hhws_expose (GtkWidget         *widget,
              GdkEventExpose    *event)
 {
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      gint x, y;
+      HhwsPrivate      *priv = HHWS (widget)->priv;
+      GdkDrawable      *drawable;
+      gint              x_offset, y_offset;
 
-      if (GTK_WIDGET_NO_WINDOW (widget))
-        {
-          x = widget->allocation.x;
-          y = widget->allocation.y;
-        }
-      else
-        {
-          x = 0;
-          y = 0;
-        }
+      gdk_window_get_internal_paint_info (widget->window,
+                                          &drawable,
+                                          &x_offset, &y_offset);
 
       gtk_paint_box (widget->style,
                      widget->window,
@@ -575,49 +725,39 @@ hhws_expose (GtkWidget         *widget,
                      &event->area,
                      widget,
                      NULL,
-                     x,
-                     y,
+                     0,
+                     0,
                      widget->allocation.width,
                      widget->allocation.height
                     );
 
-      return GTK_WIDGET_CLASS (hhws_parent_class)->expose_event (widget,
-                                                                 event);
-    }
+      if (priv->picture != None)
+      {
+        Picture           widget_picture;
+
+        widget_picture = hildon_desktop_picture_from_drawable (drawable);
+
+        if (widget_picture == None)
+          return FALSE;
+
+        XRenderComposite (GDK_DISPLAY (),
+                          PictOpSrc,
+                          priv->picture,
+                          None,
+                          widget_picture,
+                          15, 15,
+                          15, 15,
+                          15, 15,
+                          widget->allocation.width  - 30,
+                          widget->allocation.height - 30);
+
+      }
+
+        return GTK_WIDGET_CLASS (hhws_parent_class)->expose_event (widget,
+                                                                   event);
+      }
 
   return FALSE;
-}
-
-static void
-hhws_reload_pixbuf (Hhws *hhws)
-{
-  HhwsPrivate      *priv = hhws->priv;
-  GdkPixbuf        *pixbuf;
-
-  pixbuf = hhws_loader_request_pixbuf (priv->loader,
-                                       priv->image->allocation.width,
-                                       priv->image->allocation.height);
-
-  if (pixbuf)
-    {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), pixbuf);
-      g_object_unref (pixbuf);
-    }
-}
-
-static void
-hhws_image_size_allocate (Hhws             *hhws,
-                          GtkAllocation    *allocation)
-{
-  HhwsPrivate  *priv = hhws->priv;
-
-  if (priv->old_width  != allocation->width ||
-      priv->old_height != allocation->height)
-    {
-      priv->old_width  = allocation->width;
-      priv->old_height = allocation->height;
-      hhws_reload_pixbuf (hhws);
-    }
 }
 
 static GtkWidget *
@@ -665,11 +805,11 @@ hhws_destroy (GtkObject *object)
   g_free (priv->selected_image_uri);
   priv->selected_image_uri = NULL;
 
-  if (priv->loader)
-    {
-      g_object_unref (priv->loader);
-      priv->loader = NULL;
-    }
+  if (priv->picture != None)
+  {
+    XRenderFreePicture (GDK_DISPLAY (), priv->picture);
+    priv->picture = None;
+  }
 
   if (priv->gconf_client)
     {
@@ -700,27 +840,9 @@ static void
 hhws_init (Hhws *hhws)
 {
   HhwsPrivate  *priv;
-  GtkWidget    *alignment;
-  gchar        *cache_file = NULL;
-
-  cache_file = g_build_path (G_DIR_SEPARATOR_S,
-                             g_getenv ("HOME"),
-                             HILDON_HOME_WS_SYSTEM_DIR,
-                             HILDON_HOME_WS_USER_FILE,
-                             NULL);
 
   priv = hhws->priv =
       G_TYPE_INSTANCE_GET_PRIVATE ((hhws), HILDON_TYPE_HHWS, HhwsPrivate);
-
-  priv->loader = g_object_new (HHWS_TYPE_LOADER,
-                               "cache-file", cache_file, 
-                               NULL);
-
-  g_free (cache_file);
-
-  g_signal_connect_swapped (priv->loader, "pixbuf-changed",
-                            G_CALLBACK (hhws_reload_pixbuf),
-                            hhws);
 
   priv->gconf_client = gconf_client_get_default ();
   hhws_load_configuration (hhws);
@@ -728,25 +850,6 @@ hhws_init (Hhws *hhws)
   gtk_widget_set_size_request (GTK_WIDGET (hhws),
                                HILDON_HOME_WS_WIDTH,
                                HILDON_HOME_WS_HEIGHT);
-
-  priv->image = gtk_image_new();
-
-  g_signal_connect_swapped (priv->image, "size-allocate",
-                            G_CALLBACK (hhws_image_size_allocate),
-                            hhws);
-
-  alignment = gtk_alignment_new (0.5,
-                                 0.5,
-                                 1.0,
-                                 1.0);
-
-  gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 15, 15, 15, 15);
-
-  gtk_container_add (GTK_CONTAINER (alignment), priv->image);
-  gtk_container_add (GTK_CONTAINER (hhws), alignment);
-
-  gtk_widget_show (priv->image);
-  gtk_widget_show (alignment);
 
   priv->csm = hhws_create_csm (hhws);
 
@@ -780,6 +883,7 @@ hhws_class_init (HhwsClass *klass)
   widget_class->button_press_event   = hhws_button_press;
   widget_class->button_release_event = hhws_button_release;
   widget_class->expose_event         = hhws_expose;
+  widget_class->realize              = hhws_realize;
 
   object_class->destroy = hhws_destroy;
 

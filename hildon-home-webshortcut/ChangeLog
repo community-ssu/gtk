@@ -1,3 +1,14 @@
+2007-06-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hhws-background.[ch]:
+	- inherit from HildonDesktopBackground
+	- implement save/load with gconf
+	- implement apply with the background manager
+	* plugin/hildon-home-webshortcut.c:
+	- use a HHWSBackground to load the picture (via
+	the background manager).
+	Fixes: NB#62469, NB#61206, NB#20497, NB#49229
+
 2007-06-19  Johan Bilien  <johan.bilien@nokia.com>
 
 	* plugin/hhws-l10n.h: use the strings provided by Home

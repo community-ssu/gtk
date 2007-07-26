@@ -45,7 +45,7 @@ libhildon_home_webshortcut_la_LIBADD = $(HILDON_LIBS) \
 
 libhildon_home_webshortcut_la_SOURCES = hildon-home-webshortcut.c \
 				        hildon-home-webshortcut.h \
-				       	hhwsloader.c \
-				        hhwsloader.h \
+				       	hhws-background.c \
+				        hhws-background.h \
 				        hhws-l10n.h
 
