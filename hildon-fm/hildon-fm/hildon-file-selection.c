@@ -109,17 +109,6 @@ hildon_file_selection_select_iter (HildonFileSelection *self,
                                    GtkTreeIter *iter,
                                    GError **error);
 
-#ifdef HILDON_FM_HPANED
-
-static void
-position_change_event(GObject *g_object,
-                      GParamSpec *pspec,
-                      gpointer *data);
-
-static gint prev_handle_pos;
-
-#endif
-
 static guint signal_folder_changed,
              signal_file_activated,
              signal_selection_changed; /* Signal ids */
@@ -139,7 +128,8 @@ enum {
     PROP_VISIBLE_COLUMNS,
     PROP_SAFE_FOLDER,
     PROP_ACTIVE_PANE,
-    PROP_SHOW_UPNP
+    PROP_SHOW_UPNP,
+    PROP_PANE_POSITION
 };
 
 struct _HildonFileSelectionPrivate {
@@ -148,11 +138,7 @@ struct _HildonFileSelectionPrivate {
     GtkWidget *scroll_thumb;
     GtkWidget *dir_tree;
     GtkWidget *view[4]; /* List, thumbnail, empty, repair */
-#ifndef HILDON_FM_HPANED
-    GtkWidget *separator;
-#else
     GtkWidget *hpaned;
-#endif
 
     GtkTreeModel *main_model;
     GtkTreeModel *sort_model;   /* HildonFileSystemModel doesn't implement */
@@ -472,13 +458,7 @@ static void hildon_file_selection_forall(GtkContainer * self,
         HildonFileSelectionPrivate *priv =
             HILDON_FILE_SELECTION(self)->priv;
 
-#ifndef HILDON_FM_HPANED
-        (*callback) (priv->scroll_dir, callback_data);
-        (*callback) (priv->separator, callback_data);
-        (*callback) (GTK_WIDGET(priv->view_selector), callback_data);
-#else
         (*callback) (priv->hpaned, callback_data);
-#endif
     }
 }
 
@@ -486,83 +466,21 @@ static void hildon_file_selection_size_request(GtkWidget * self,
                                                GtkRequisition *
                                                requisition)
 {
-#ifndef HILDON_FM_HPANED
-    GtkWidget *content_view;
-    GtkRequisition l_req, m_req, r_req;
-    HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(self)->priv;
-
-    /* We call child requisition of our own children, but we ignore the
-       results completely (scrolls don't return good values) */
-    gtk_widget_size_request(priv->scroll_dir, &l_req);
-    gtk_widget_size_request(priv->separator, &m_req);
-    gtk_widget_size_request(GTK_WIDGET(priv->view_selector), &r_req);
-
-    /* Trees know the needed sizes */
-    content_view = get_current_view(priv);
-    gtk_widget_get_child_requisition(priv->dir_tree, &l_req);
-
-    if (content_view) {
-        gtk_widget_get_child_requisition(content_view, &r_req);
-        requisition->width = l_req.width + r_req.width;
-        requisition->height = (l_req.height > r_req.height
-                               ? l_req.height
-                               : r_req.height);
-        /* Separator height is not a concern */
-
-        requisition->width += 25;       /* Scrollbar width */
-    } else {
-        requisition->width = l_req.width;
-        requisition->height = l_req.height;
-    }
-#else
     GtkRequisition req;
     HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(self)->priv;
 
     gtk_widget_size_request(GTK_WIDGET(priv->hpaned), &req);
     requisition->width = req.width;
     requisition->height = req.height;
-#endif
 }
 
 static void hildon_file_selection_size_allocate(GtkWidget * self,
                                                 GtkAllocation * allocation)
 {
-#ifndef HILDON_FM_HPANED
-    GtkAllocation alloc;
-    GtkRequisition req;
-    HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(self)->priv;
-
-    self->allocation = *allocation;
-
-    if (hildon_file_selection_content_pane_visible(priv)) {
-        alloc.x = allocation->x;
-        alloc.y = allocation->y;
-        alloc.width = (35 * allocation->width) / 100; /* 35% of space to
-                                                      navigation pane */
-        alloc.height = allocation->height;
-
-        if (GTK_WIDGET_DRAWABLE(priv->separator)) {
-          gtk_widget_get_child_requisition(priv->separator, &req);
-          alloc.width -= req.width;
-          gtk_widget_size_allocate(priv->scroll_dir, &alloc);
-          alloc.x += alloc.width;
-          alloc.width = req.width;
-          gtk_widget_size_allocate(priv->separator, &alloc);
-       }
-        else
-          gtk_widget_size_allocate(priv->scroll_dir, &alloc);
-
-        alloc.x += alloc.width;
-        alloc.width = allocation->width - (alloc.x - allocation->x);
-        gtk_widget_size_allocate(GTK_WIDGET(priv->view_selector), &alloc);
-    } else
-        gtk_widget_size_allocate(priv->scroll_dir, allocation);
-#else
     HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(self)->priv;
 
     self->allocation = *allocation;
     gtk_widget_size_allocate(priv->hpaned, allocation);
-#endif
 }
 
 /* We need to move to the safe folder if our current folder
@@ -648,17 +566,9 @@ static void hildon_file_selection_finalize(GObject * obj)
 
     hildon_file_selection_cancel_delayed_select(priv);
     g_source_remove_by_user_data(self); /* Banner checking timeout */
-#ifndef HILDON_FM_HPANED
-    gtk_widget_unparent(priv->scroll_dir);
-    gtk_widget_unparent(priv->separator);
-
-    gtk_widget_unparent(GTK_WIDGET(priv->view_selector));
-#endif
     /* This gives warnings to console about unref_tree_helpers */
     /* This have homething to do with content pane filter model */
-#ifdef HILDON_FM_HPANED
     gtk_widget_unparent(priv->hpaned);
-#endif
 
     /* Works also with NULLs */
     gtk_tree_row_reference_free(priv->current_folder);
@@ -996,6 +906,10 @@ static void hildon_file_selection_set_property(GObject * object,
         }
         break;
     }
+    case PROP_PANE_POSITION:
+      gtk_paned_set_position (GTK_PANED (priv->hpaned), 
+			      g_value_get_int (value));
+      break;
 
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -1039,6 +953,10 @@ static void hildon_file_selection_get_property(GObject * object,
     case PROP_SHOW_UPNP:
         g_value_set_boolean(value, priv->show_upnp);
         break;
+    case PROP_PANE_POSITION:
+        g_value_set_int (value, 
+			 gtk_paned_get_position (GTK_PANED (priv->hpaned)));
+	break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -1255,6 +1173,12 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
                            "Whether or not to show UPNP devices",
                            TRUE, G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 
+    g_object_class_install_property(object, PROP_PANE_POSITION,
+      g_param_spec_int ("pane-position", "Pane position",
+                        "The position of the division between "
+			"the both panes",
+                        0, INT_MAX, 10,
+			G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 }
 
 static gboolean
@@ -3019,11 +2943,7 @@ static void hildon_file_selection_init(HildonFileSelection * self)
     self->priv->scroll_list = gtk_scrolled_window_new(NULL, NULL);
     self->priv->scroll_thumb = gtk_scrolled_window_new(NULL, NULL);
     self->priv->view_selector = GTK_NOTEBOOK(gtk_notebook_new());
-#ifndef HILDON_FM_HPANED
-    self->priv->separator = gtk_vseparator_new();
-#else
     self->priv->hpaned = gtk_hpaned_new();
-#endif
 
     gtk_container_set_border_width(GTK_CONTAINER(self->priv->scroll_dir),
         HILDON_MARGIN_DEFAULT);
@@ -3039,10 +2959,10 @@ static void hildon_file_selection_init(HildonFileSelection * self)
                                    GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW
                                    (self->priv->scroll_list),
-                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW
                                    (self->priv->scroll_thumb),
-                                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW
                                         (self->priv->scroll_dir),
@@ -3054,19 +2974,12 @@ static void hildon_file_selection_init(HildonFileSelection * self)
                                         (self->priv->scroll_thumb),
                                         GTK_SHADOW_NONE);
 
-#ifndef HILDON_FM_HPANED
-    gtk_widget_set_parent(self->priv->scroll_dir, GTK_WIDGET(self));
-    gtk_widget_set_parent(self->priv->separator, GTK_WIDGET(self));
-    gtk_widget_set_parent(GTK_WIDGET(self->priv->view_selector),
-                          GTK_WIDGET(self));
-#else
     gtk_paned_pack1(GTK_PANED(self->priv->hpaned),
                     GTK_WIDGET(self->priv->scroll_dir), TRUE, FALSE);
     gtk_paned_pack2(GTK_PANED(self->priv->hpaned),
                     GTK_WIDGET(self->priv->view_selector), TRUE, FALSE);
 
     gtk_widget_set_parent(self->priv->hpaned, GTK_WIDGET(self));
-#endif
 
     self->priv->column_headers_visible = FALSE;
 
@@ -3100,18 +3013,6 @@ static void hildon_file_selection_init(HildonFileSelection * self)
       G_CALLBACK(hildon_file_selection_check_scroll), NULL);
 }
 
-#ifdef HILDON_FM_HPANED
-static void
-position_change_event(GObject *g_object, GParamSpec *pspec, gpointer *data)
-{
-    if (gtk_paned_get_position(GTK_PANED(g_object)) != prev_handle_pos)
-    {
-      prev_handle_pos = gtk_paned_get_position(GTK_PANED(g_object));
-      gtk_paned_set_position(GTK_PANED(g_object), prev_handle_pos);
-    }
-}
-#endif
-
 static GObject *hildon_file_selection_constructor(GType type,
                                                   guint
                                                   n_construct_properties,
@@ -3122,9 +3023,6 @@ static GObject *hildon_file_selection_constructor(GType type,
     HildonFileSelection *self;
     HildonFileSelectionPrivate *priv;
     GtkTreePath *temp_path;
-#ifndef HILDON_FM_HPANED
-    GObject *dir_scroll;
-#endif
 
     obj =
         G_OBJECT_CLASS(hildon_file_selection_parent_class)->
@@ -3163,15 +3061,7 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_notebook_prepend_page(priv->view_selector, priv->scroll_list,
                               NULL);
 
-#ifndef HILDON_FM_HPANED
-    gtk_widget_show_all(GTK_WIDGET(priv->view_selector));
-    gtk_widget_show_all(priv->scroll_dir);
-#else
     gtk_widget_show_all(priv->hpaned);
-
-    g_signal_connect (G_OBJECT(priv->hpaned), "notify::position",
-                      G_CALLBACK(position_change_event), NULL);
-#endif
 
     /* Also the views of the navigation pane are trees (and this is
        needed). Let's deny expanding */
@@ -3230,19 +3120,6 @@ static GObject *hildon_file_selection_constructor(GType type,
       G_CALLBACK(hildon_file_selection_check_location), self, 0);
 
     hildon_file_selection_set_select_multiple(self, FALSE);
-
-#ifndef HILDON_FM_HPANED
-    /* Make the separator show up when scrolbar is hidden and vice versa */
-    dir_scroll =
-        G_OBJECT(GTK_SCROLLED_WINDOW(priv->scroll_dir)->vscrollbar);
-    g_signal_connect_swapped(dir_scroll, "show",
-                             G_CALLBACK(gtk_widget_hide), priv->separator);
-    g_signal_connect_swapped(dir_scroll, "hide",
-                             G_CALLBACK(gtk_widget_show), priv->separator);
-
-    if (!GTK_WIDGET_VISIBLE(dir_scroll))
-        gtk_widget_show(priv->separator);
-#endif
 
     /* GtkTreeModelSort implements just GtkDragSource, not
        GtkDragDest. We have to implement from scratch. */
