@@ -40,7 +40,8 @@ enum
 {
   PROP_FILENAME = 1,
   PROP_MODE,
-  PROP_COLOR
+  PROP_COLOR,
+  PROP_CACHE
 };
 
 enum
@@ -61,6 +62,7 @@ struct _HildonDesktopBackgroundPrivate
   GdkColor                     *color;
   HildonDesktopBackgroundMode   mode;
   gchar                        *filename;
+  gchar                        *cache;
 };
 
 G_DEFINE_TYPE (HildonDesktopBackground, hildon_desktop_background, G_TYPE_OBJECT);
@@ -140,6 +142,16 @@ hildon_desktop_background_class_init (HildonDesktopBackgroundClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_FILENAME,
                                    pspec);
+
+  pspec = g_param_spec_string ("cache",
+                               "cache",
+                               "Image local cache, for remote filesystems",
+                               "",
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+  g_object_class_install_property (object_class,
+                                   PROP_CACHE,
+                                   pspec);
+
 
   pspec = g_param_spec_enum ("mode",
                              "Mode",
@@ -254,6 +266,9 @@ hildon_desktop_background_finalize (GObject *object)
   g_free (priv->filename);
   priv->filename = NULL;
 
+  g_free (priv->cache);
+  priv->cache = NULL;
+
   if (priv->color)
     gdk_color_free (priv->color);
   priv->color = NULL;
@@ -278,6 +293,10 @@ hildon_desktop_background_set_property (GObject       *object,
             priv->filename = g_strdup ("");
           else
             priv->filename = g_strdup (g_value_get_string (value));
+          break;
+      case PROP_CACHE:
+          g_free (priv->cache);
+          priv->cache = g_strdup (g_value_get_string (value));
           break;
       case PROP_MODE:
           priv->mode = g_value_get_enum (value);
@@ -306,6 +325,9 @@ hildon_desktop_background_get_property (GObject       *object,
       case PROP_FILENAME:
           g_value_set_string (value, priv->filename);
           break;
+      case PROP_CACHE:
+          g_value_set_string (value, priv->cache);
+          break;
       case PROP_MODE:
           g_value_set_enum (value, priv->mode);
           break;
@@ -331,6 +353,7 @@ hildon_desktop_background_copy_real (HildonDesktopBackground *src)
                        "mode", priv->mode,
                        "color", priv->color,
                        "filename", priv->filename,
+                       "cache", priv->cache,
                        NULL);
 
   return dest;

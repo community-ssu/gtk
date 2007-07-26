@@ -97,6 +97,7 @@ gboolean              background_manager_set_background
                             (BackgroundManager   *manager,
                              gint                 window_xid,
                              const gchar         *filename,
+                             const gchar         *cache,
                              guint16              red,
                              guint16              green,
                              guint16              blue,

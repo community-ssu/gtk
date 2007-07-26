@@ -98,6 +98,7 @@ enum
 {
   BG_IMAGE_NAME,
   BG_IMAGE_FILENAME,
+  BG_IMAGE_CACHE,
   BG_IMAGE_PRIORITY
 };
 
@@ -301,18 +302,18 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   gtk_window_set_title (GTK_WINDOW (dialog), HH_SET_BG_TITLE);
-  
+
   /* Hildon Caption HBoxes */
   hbox_color = gtk_hbox_new (FALSE, 10);
   hbox_image = gtk_hbox_new (FALSE, 10);
   hbox_mode  = gtk_hbox_new (FALSE, 10);
-  
+
   priv->color_button = hildon_color_button_new ();
-  
+
   g_signal_connect_swapped (priv->color_button, "notify::color",
                             G_CALLBACK (hd_home_background_dialog_color_changed),
                             dialog);
-  
+
   priv->img_combo = gtk_combo_box_new ();
 
   g_signal_connect_swapped (priv->img_combo, "changed",
@@ -321,26 +322,26 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (priv->img_combo),
-                              renderer, 
+                              renderer,
                               TRUE);
 
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (priv->img_combo),
-                                  renderer, "text", 
+                                  renderer, "text",
                                   BG_IMAGE_NAME, NULL);
-  
+
   priv->mode_combo = gtk_combo_box_new_text ();
-  
-  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo),
                              image_modes[BACKGROUND_CENTERED]);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo),
                              image_modes[BACKGROUND_SCALED]);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo),
                              image_modes[BACKGROUND_STRETCHED]);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo),
                              image_modes[BACKGROUND_TILED]);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo), 
+  gtk_combo_box_append_text (GTK_COMBO_BOX (priv->mode_combo),
                              image_modes[BACKGROUND_CROPPED]);
-  
+
   g_signal_connect_swapped (priv->mode_combo, "changed",
                             G_CALLBACK (hd_home_background_dialog_mode_changed),
                             dialog);
@@ -365,9 +366,9 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
                           priv->mode_combo,
                           NULL,
                           HILDON_CAPTION_OPTIONAL);
-     
+
   gtk_box_pack_start (GTK_BOX (hbox_color), color_caption,
-                      FALSE, FALSE, 0); 
+                      FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (hbox_image), image_caption,
                       TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (hbox_mode), mode_caption,
@@ -382,7 +383,7 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
 
   hildon_caption_set_child_expand (HILDON_CAPTION (image_caption), TRUE);
   hildon_caption_set_child_expand (HILDON_CAPTION (mode_caption), TRUE);
-  
+
   /* Let the WM take care of the positioning */
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_NONE);
 
@@ -418,7 +419,7 @@ hd_home_background_dialog_set_property (GObject      *gobject,
                                           priv->osso_context);
 #endif
         break;
-        
+
     case PROP_BACKGROUND:
         hd_home_background_dialog_set_background (
                            HD_HOME_BACKGROUND_DIALOG (gobject),
@@ -512,18 +513,18 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
   fdialog = gtk_file_chooser_dialog_new (HILDON_HOME_FILE_CHOOSER_TITLE,
 					 GTK_WINDOW (dialog),
 					 GTK_FILE_CHOOSER_ACTION_OPEN,
-                                         HILDON_HOME_FILE_CHOOSER_SELECT, GTK_RESPONSE_OK, 
-                                         HILDON_HOME_FILE_CHOOSER_EMPTY, GTK_RESPONSE_CANCEL, 
+                                         HILDON_HOME_FILE_CHOOSER_SELECT, GTK_RESPONSE_OK,
+                                         HILDON_HOME_FILE_CHOOSER_EMPTY, GTK_RESPONSE_CANCEL,
 					 NULL);
 #endif
-  
+
 #ifdef HAVE_LIBHILDONHELP
   if (priv->osso_context)
-    hildon_help_dialog_help_enable (GTK_DIALOG(fdialog), 
+    hildon_help_dialog_help_enable (GTK_DIALOG(fdialog),
                                     HH_HELP_SELECT_IMAGE,
                                     priv->osso_context);
 #endif
-        
+
   mime_type_filter = gtk_file_filter_new();
   gtk_file_filter_add_mime_type (mime_type_filter, "image/jpeg");
   gtk_file_filter_add_mime_type (mime_type_filter, "image/gif");
@@ -541,23 +542,23 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
 
   if (!gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (fdialog),
                                             image_dir))
-    g_warning ("Couldn't set default image dir for dialog %s", 
+    g_warning ("Couldn't set default image dir for dialog %s",
                image_dir);
 
   g_free (image_dir);
-  
+
   response = gtk_dialog_run (GTK_DIALOG (fdialog));
-    
-  if (response == GTK_RESPONSE_OK) 
+
+  if (response == GTK_RESPONSE_OK)
     {
       const gchar  *filename;
 
       filename = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (fdialog));
 
-      if (filename) 
+      if (filename)
         {
           GtkTreeModel *model;
-          GtkTreeIter   iter;            
+          GtkTreeIter   iter;
           gchar        *name;
 
           name = imagename_from_filename (filename);
@@ -576,7 +577,7 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
 
           gtk_list_store_append (priv->combobox_contents,
                                  &iter);
-          
+
           priv->custom_image = gtk_tree_model_get_path (model,
                                                         &iter);
 
@@ -584,6 +585,7 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
                               &iter,
                               BG_IMAGE_NAME, name?name:filename,
                               BG_IMAGE_FILENAME, filename,
+                              BG_IMAGE_CACHE, "",
                               BG_IMAGE_PRIORITY, G_MAXINT,
                               -1);
 
@@ -592,7 +594,7 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
           g_free (name);
         }
 
-    }  
+    }
 
   gtk_widget_destroy (fdialog);
 
@@ -616,7 +618,8 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
   HDHomeBackgroundDialogPrivate    *priv;
   GtkTreeIter                       iter;
   gchar                            *filename = NULL;
-  
+  gchar                            *cache = NULL;
+
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
   gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->img_combo),
@@ -625,11 +628,12 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
   gtk_tree_model_get (GTK_TREE_MODEL (priv->combobox_contents),
                       &iter,
                       BG_IMAGE_FILENAME, &filename,
+                      BG_IMAGE_CACHE, &cache,
                       -1);
 
   if (!priv->background)
-    goto out;	  
-  
+    goto out;
+
   if (filename)
     g_object_set (G_OBJECT (priv->background),
                   "filename", filename,
@@ -638,8 +642,18 @@ hd_home_background_dialog_filename_changed (HDHomeBackgroundDialog *dialog)
     g_object_set (G_OBJECT (priv->background),
                   "filename", HD_HOME_BACKGROUND_NO_IMAGE,
                   NULL);
+
+  if (cache)
+    g_object_set (G_OBJECT (priv->background),
+                  "cache", cache,
+                  NULL);
+  else
+    g_object_set (G_OBJECT (priv->background),
+                  "cache", "",
+                  NULL);
 out:
   g_free (filename);
+  g_free (cache);
 }
 
 static void
@@ -687,15 +701,13 @@ hd_home_background_dialog_mode_changed (HDHomeBackgroundDialog *dialog)
 
   mode = gtk_combo_box_get_active (GTK_COMBO_BOX (priv->mode_combo));
 
-  g_debug ("Setting mode on dialog background to %i", mode);
-
   g_object_set (G_OBJECT (priv->background),
                 "mode", mode,
                 NULL);
 }
 
 static void
-hd_home_background_dialog_background_dir_changed 
+hd_home_background_dialog_background_dir_changed
                                     (HDHomeBackgroundDialog *dialog)
 {
   HDHomeBackgroundDialogPrivate *priv;
@@ -713,10 +725,12 @@ hd_home_background_dialog_background_dir_changed
   else
     {
       priv->combobox_contents =
-          gtk_list_store_new (3,
+          gtk_list_store_new (4,
                               G_TYPE_STRING, /*localised descriptive name */
                               G_TYPE_STRING, /* image file path & name */
-                              G_TYPE_INT     /* image priority */);
+                              G_TYPE_STRING, /* image local cache */
+                              G_TYPE_INT);   /* image priority */
+
       gtk_combo_box_set_model (GTK_COMBO_BOX (priv->img_combo),
                                GTK_TREE_MODEL (priv->combobox_contents));
     }
@@ -726,8 +740,10 @@ hd_home_background_dialog_background_dir_changed
   gtk_list_store_set (priv->combobox_contents,
                       &iterator,
                       BG_IMAGE_NAME, HH_SET_BG_IMAGE_NONE,
-                      BG_IMAGE_FILENAME, NULL,
-                      BG_IMAGE_PRIORITY, 0, -1);
+                      BG_IMAGE_FILENAME, "",
+                      BG_IMAGE_CACHE, "",
+                      BG_IMAGE_PRIORITY, 0,
+                      -1);
 
   /* It's the default */
   gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->img_combo),
@@ -804,6 +820,7 @@ hd_home_background_dialog_background_dir_changed
                            * empty strings */
                           ((image_name && *image_name) ? _(image_name) : image_path),
                           BG_IMAGE_FILENAME, image_path,
+                          BG_IMAGE_CACHE, "",
                           BG_IMAGE_PRIORITY, image_order,
                           -1);
 
@@ -816,15 +833,15 @@ end_of_loop:
       g_free (filename);
       g_free (image_name);
       g_free (image_path);
-    } 
+    }
 
-  if (dir) 
-    g_dir_close (dir);             
-      
+  if (dir)
+    g_dir_close (dir);
+
   g_key_file_free (kfile);
 
   gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (priv->combobox_contents),
-                                        BG_IMAGE_PRIORITY, 
+                                        BG_IMAGE_PRIORITY,
                                         GTK_SORT_ASCENDING);
 }
 
@@ -833,6 +850,7 @@ hd_home_background_dialog_sync_from_background (HDHomeBackgroundDialog *dialog)
 {
   HDHomeBackgroundDialogPrivate    *priv;
   gchar                            *filename;
+  gchar                            *cache;
   GdkColor                         *color;
   BackgroundMode                    mode;
 
@@ -841,14 +859,15 @@ hd_home_background_dialog_sync_from_background (HDHomeBackgroundDialog *dialog)
 
   if (!priv->background)
     return;
-  
+
   g_object_get (G_OBJECT (priv->background),
                 "color", &color,
                 "filename", &filename,
+                "cache", &cache,
                 "mode", &mode,
                 NULL);
 
-  if (filename && *filename && 
+  if (filename && *filename &&
       !g_str_equal (filename, HD_HOME_BACKGROUND_NO_IMAGE))
     {
       gboolean      valid;
@@ -872,6 +891,8 @@ hd_home_background_dialog_sync_from_background (HDHomeBackgroundDialog *dialog)
             break;
 
           valid = gtk_tree_model_iter_next (model, &iter);
+
+          g_free (existing_filename);
         }
 
       if (!valid)
@@ -883,6 +904,7 @@ hd_home_background_dialog_sync_from_background (HDHomeBackgroundDialog *dialog)
           gtk_list_store_set (priv->combobox_contents,
                               &iter,
                               BG_IMAGE_FILENAME, filename,
+                              BG_IMAGE_CACHE, cache,
                               BG_IMAGE_NAME, image_name,
                               BG_IMAGE_PRIORITY, G_MAXINT,
                               -1);
@@ -942,9 +964,7 @@ hd_home_background_dialog_set_background (HDHomeBackgroundDialog  *dialog,
   if (priv->background)
     g_object_unref (priv->background);
 
-  g_debug ("Copying background");
   priv->background = hildon_desktop_background_copy (background);
-  g_debug ("Copying background done");
 
   g_object_notify (G_OBJECT (dialog), "background");
   hd_home_background_dialog_sync_from_background (dialog);

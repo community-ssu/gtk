@@ -1,3 +1,19 @@
+2007-07-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/background-manager.{c,h,xml.in}:
+	- added cache argument, to tell the background manager
+	to keep a local copy of the image file
+	* libhildondesktop/hildon-desktop-background.c:
+	- added cache property
+	* background-manager/hbm-background.c:
+	- if the cache property is set, copy the image file to it
+	* src/hd-home-background.c:
+	- before applying, check if the file is on a remote
+	filesystem or an MMC, in which case ask the background
+	manager to cache the file
+	- when saving, clean the background cache directory.
+	Fixes: NB#61734
+
 2007-07-25  Moises Martinez  <moises.martinez@nokia.com>
 
 	* data/applications-menu.desktop.in:

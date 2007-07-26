@@ -39,10 +39,12 @@
 #include <gdk/gdkx.h>
 
 #include <glib/gkeyfile.h>
+#include <glib/gstdio.h>
 
 /* Key used in the home-background.conf */
 #define HD_HOME_BACKGROUND_KEY_GROUP            "Hildon Home"
 #define HD_HOME_BACKGROUND_KEY_URI              "BackgroundImage"
+#define HD_HOME_BACKGROUND_KEY_CACHE            "CachedAs"
 #define HD_HOME_BACKGROUND_KEY_RED              "Red"
 #define HD_HOME_BACKGROUND_KEY_GREEN            "Green"
 #define HD_HOME_BACKGROUND_KEY_BLUE             "Blue"
@@ -56,11 +58,58 @@
 #define HD_HOME_BACKGROUND_VALUE_TILED          "Tiled"
 #define HD_HOME_BACKGROUND_VALUE_CROPPED        "Cropped"
 
+#define HD_ENV_MMC_MOUNTPOINT                   "MMC_MOUNTPOINT"
+#define HD_HOME_BACKGROUND_CACHE_DIR             ".background-cache"
+
 struct _HDHomeBackgroundPrivate {
   gboolean      cancelled;
 };
 
 G_DEFINE_TYPE (HDHomeBackground, hd_home_background, HILDON_DESKTOP_TYPE_BACKGROUND);
+
+static void
+hd_home_background_clean_up_cache (HDHomeBackground *background)
+{
+  gchar        *cache_dir;
+  gchar        *cache;
+  GDir         *dir;
+  GError       *error = NULL;
+  const gchar  *filename;
+
+  g_object_get (background,
+                "cache",    &cache,
+                NULL);
+
+  cache_dir = g_build_path (G_DIR_SEPARATOR_S,
+                            g_get_home_dir (),
+                            HD_HOME_BACKGROUND_CACHE_DIR,
+                            NULL);
+  dir = g_dir_open (cache_dir, 0, &error);
+
+  if (error)
+  {
+    g_warning ("Error when opening cache dir for cleaning: %s",
+               error->message);
+    g_error_free (error);
+    g_free (cache_dir);
+    return;
+  }
+
+  while ((filename = g_dir_read_name (dir)))
+  {
+    gchar *path = g_build_path (G_DIR_SEPARATOR_S, cache_dir, filename, NULL);
+
+    if (cache && g_str_equal (path, cache))
+      continue;
+
+    g_unlink (path);
+    g_free (path);
+  }
+
+  g_dir_close (dir);
+  g_free (cache_dir);
+
+}
 
 static void
 hd_home_background_save (HildonDesktopBackground *background,
@@ -72,6 +121,7 @@ hd_home_background_save (HildonDesktopBackground *background,
   gchar                        *buffer;
   gssize                        buffer_length;
   gchar                        *filename;
+  gchar                        *cache;
   GdkColor                     *color;
   HildonDesktopBackgroundMode   mode;
 
@@ -81,6 +131,7 @@ hd_home_background_save (HildonDesktopBackground *background,
 
   g_object_get (background,
                 "filename", &filename,
+                "cache",    &cache,
                 "color",    &color,
                 "mode",     &mode,
                 NULL);
@@ -97,6 +148,13 @@ hd_home_background_save (HildonDesktopBackground *background,
                            HD_HOME_BACKGROUND_KEY_GROUP,
                            HD_HOME_BACKGROUND_KEY_URI,
                            HD_HOME_BACKGROUND_VALUE_NO_IMAGE);
+
+  if (cache)
+    g_key_file_set_string (keyfile,
+                           HD_HOME_BACKGROUND_KEY_GROUP,
+                           HD_HOME_BACKGROUND_KEY_CACHE,
+                           cache);
+
 
 
   /* Color */
@@ -161,6 +219,8 @@ hd_home_background_save (HildonDesktopBackground *background,
                        buffer_length,
                        &local_error);
 
+  hd_home_background_clean_up_cache (HD_HOME_BACKGROUND (background));
+
 cleanup:
   g_key_file_free (keyfile);
 
@@ -180,6 +240,7 @@ hd_home_background_load (HildonDesktopBackground *background,
   gint                          component;
   gchar                        *smode = NULL;
   gchar                        *filename = NULL;
+  gchar                        *cache = NULL;
   HildonDesktopBackgroundMode   mode;
   GdkColor                      color;
 
@@ -198,6 +259,17 @@ hd_home_background_load (HildonDesktopBackground *background,
                                     &local_error);
 
   if (local_error) goto cleanup;
+
+  cache = g_key_file_get_string (keyfile,
+                                 HD_HOME_BACKGROUND_KEY_GROUP,
+                                 HD_HOME_BACKGROUND_KEY_CACHE,
+                                 &local_error);
+
+  if (local_error)
+  {
+    g_clear_error (&local_error);
+    cache = NULL;
+  }
 
   /* Color */
   component = g_key_file_get_integer (keyfile,
@@ -264,6 +336,7 @@ hd_home_background_load (HildonDesktopBackground *background,
                 "filename", filename,
                 "mode", mode,
                 "color", &color,
+                cache?"cache":NULL, cache,
                 NULL);
 
 cleanup:
@@ -272,6 +345,45 @@ cleanup:
   g_key_file_free (keyfile);
   if (local_error)
     g_propagate_error (error, local_error);
+}
+
+/* We need to cache the file locally if the file is loaded from a
+ * memory card or a remote FS (samba, bluetooth...)
+ */
+static gboolean
+hd_home_background_requires_caching (HDHomeBackground *background)
+{
+  gchar        *filename = NULL;
+  const gchar  *mmc_mount_point;
+  gchar        *mmc_mount_point_uri = NULL;
+  gboolean      on_internal_mmc = FALSE, on_external_fs = FALSE;
+
+  g_object_get (background,
+                "filename", &filename,
+                NULL);
+
+  g_return_val_if_fail (filename, FALSE);
+
+  mmc_mount_point = g_getenv (HD_ENV_MMC_MOUNTPOINT);
+  mmc_mount_point_uri = g_strdup_printf ("file://%s", mmc_mount_point);
+
+  if (mmc_mount_point &&
+      (g_str_has_prefix (filename, mmc_mount_point) ||
+       g_str_has_prefix (filename, mmc_mount_point_uri)))
+    on_internal_mmc = TRUE;
+
+  g_free (mmc_mount_point_uri);
+
+  on_external_fs = filename[0] != G_DIR_SEPARATOR &&
+      (!g_str_has_prefix (filename, "file://"));
+
+  g_debug ("filename %s requires caching: %i",
+           filename,
+           (on_internal_mmc || on_external_fs));
+
+  return (on_internal_mmc || on_external_fs);
+
+
 }
 
 static void
@@ -283,19 +395,15 @@ hd_home_background_apply (HildonDesktopBackground *background,
   DBusGConnection      *connection;
   GError               *local_error = NULL;
   gint                  pixmap_xid;
-  GdkPixmap            *pixmap = NULL;
   gint32                top_offset, bottom_offset, right_offset, left_offset;
   gchar                *filename;
+  gchar                *cache;
+  gchar                *new_cache = NULL;
+  gchar                *file_to_use;
   GdkColor             *color;
   HildonDesktopBackgroundMode   mode;
 
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && window);
-
-  g_object_get (background,
-                "filename", &filename,
-                "color", &color,
-                "mode", &mode,
-                NULL);
 
   connection = dbus_g_bus_get (DBUS_BUS_SESSION, &local_error);
   if (local_error)
@@ -303,6 +411,29 @@ hd_home_background_apply (HildonDesktopBackground *background,
       g_propagate_error (error, local_error);
       return;
     }
+
+  g_object_get (background,
+                "filename", &filename,
+                "cache", &cache,
+                "color", &color,
+                "mode", &mode,
+                NULL);
+
+  if (cache && *cache)
+    file_to_use = cache;
+  else
+  {
+    if (hd_home_background_requires_caching (HD_HOME_BACKGROUND (background)))
+    {
+      new_cache = g_strdup_printf ("%s/%s/%x",
+                                   g_get_home_dir (),
+                                   HD_HOME_BACKGROUND_CACHE_DIR,
+                                   g_random_int ());
+      cache = new_cache;
+    }
+
+    file_to_use = filename;
+  }
 
   background_manager_proxy =
       dbus_g_proxy_new_for_name (connection,
@@ -314,7 +445,8 @@ hd_home_background_apply (HildonDesktopBackground *background,
 #define S(string) (string?string:"")
   org_maemo_hildon_background_manager_set_background (background_manager_proxy,
                                                       GDK_WINDOW_XID (window),
-                                                      S(filename),
+                                                      S(file_to_use),
+                                                      S(cache),
                                                       color->red,
                                                       color->green,
                                                       color->blue,
@@ -323,16 +455,12 @@ hd_home_background_apply (HildonDesktopBackground *background,
                                                       error);
 #undef S
 
-  if (pixmap_xid)
-    pixmap = gdk_pixmap_foreign_new (pixmap_xid);
+  if (new_cache && !error)
+    g_object_set (background,
+                  "cache", new_cache,
+                  NULL);
 
-  if (pixmap)
-    {
-      gdk_window_set_back_pixmap (window, pixmap, FALSE);
-      g_object_unref (pixmap);
-    }
-  else
-    g_warning ("No such pixmap: %i", pixmap_xid);
+  g_free (new_cache);
 
 }
 
@@ -342,6 +470,7 @@ struct cb_data
   HildonDesktopBackgroundApplyCallback  callback;
   gpointer                              user_data;
   GdkWindow                            *window;
+  gchar                                *new_cache;
 };
 
 
@@ -370,6 +499,11 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
 
 
 cleanup:
+  if (!error && data->new_cache)
+    g_object_set (data->background,
+                  "cache", data->new_cache,
+                  NULL);
+
   if (data->callback)
     data->callback (HILDON_DESKTOP_BACKGROUND (data->background),
                     picture_id,
@@ -378,6 +512,8 @@ cleanup:
 
   if (G_IS_OBJECT (data->background))
       g_object_unref (data->background);
+
+  g_free (data->new_cache);
   g_free (data);
 }
 
@@ -393,17 +529,14 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
   GError                   *local_error = NULL;
   struct cb_data           *data;
   gchar                    *filename;
+  gchar                    *cache;
+  gchar                    *new_cache = NULL;
+  gchar                    *file_to_use;
   GdkColor                 *color;
   HildonDesktopBackgroundMode   mode;
 
   g_return_if_fail (HD_IS_HOME_BACKGROUND (background) && window);
   priv = HD_HOME_BACKGROUND (background)->priv;
-
-  g_object_get (background,
-                "filename", &filename,
-                "color", &color,
-                "mode", &mode,
-                NULL);
 
   connection = dbus_g_bus_get (DBUS_BUS_SESSION, &local_error);
   if (local_error)
@@ -420,15 +553,44 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
                                  HILDON_BACKGROUND_MANAGER_OBJECT_PATH,
                                  HILDON_BACKGROUND_MANAGER_INTERFACE);
 
+  g_object_get (background,
+                "filename", &filename,
+                "cache", &cache,
+                "color", &color,
+                "mode", &mode,
+                NULL);
+
+  g_debug ("Applying background %s aynchronously, cache: %s",
+           filename, cache);
+
+
+  if (cache && *cache)
+  {
+    file_to_use = cache;
+    cache = NULL;
+  }
+  else
+  {
+    if (hd_home_background_requires_caching (HD_HOME_BACKGROUND (background)))
+    {
+      new_cache = g_strdup_printf ("%s/%s/%x",
+                                   g_get_home_dir (),
+                                   HD_HOME_BACKGROUND_CACHE_DIR,
+                                   g_random_int ());
+      cache = new_cache;
+
+    }
+
+    file_to_use = filename;
+  }
+
   data = g_new (struct cb_data, 1);
 
   data->callback = cb;
   data->background = g_object_ref (background);
   data->user_data = user_data;
   data->window = window;
-
-  g_debug ("Applying background %s aynchronously",
-           filename);
+  data->new_cache = new_cache;
 
   priv->cancelled = FALSE;
 
@@ -437,7 +599,8 @@ hd_home_background_apply_async (HildonDesktopBackground        *background,
   org_maemo_hildon_background_manager_set_background_async
                                                 (background_manager_proxy,
                                                  GDK_WINDOW_XID (window),
-                                                 S(filename),
+                                                 S(file_to_use),
+                                                 S(cache),
                                                  color->red,
                                                  color->green,
                                                  color->blue,
@@ -462,12 +625,14 @@ hd_home_background_copy (HildonDesktopBackground *src)
   HildonDesktopBackground              *dest;
   HildonDesktopBackgroundMode           mode;
   gchar                                *filename;
+  gchar                                *cache;
   GdkColor                             *color;
 
   g_return_val_if_fail (HD_IS_HOME_BACKGROUND (src), NULL);
 
   g_object_get (src,
                 "filename", &filename,
+                "cache",    &cache,
                 "color",    &color,
                 "mode",     &mode,
                 NULL);
@@ -476,6 +641,7 @@ hd_home_background_copy (HildonDesktopBackground *src)
                        "mode",          mode,
                        "color",         color,
                        "filename",      filename,
+                       "cache",         cache,
                        NULL);
 
   return dest;
@@ -493,6 +659,7 @@ static void
 hd_home_background_class_init (HDHomeBackgroundClass *klass)
 {
   HildonDesktopBackgroundClass *background_class;
+  gchar                        *cache_dir = NULL;
 
   background_class = HILDON_DESKTOP_BACKGROUND_CLASS (klass);
 
@@ -502,6 +669,13 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
   background_class->apply = hd_home_background_apply;
   background_class->apply_async = hd_home_background_apply_async;
   background_class->copy = hd_home_background_copy;
+
+  cache_dir = g_build_path (G_DIR_SEPARATOR_S,
+                            g_get_home_dir (),
+                            HD_HOME_BACKGROUND_CACHE_DIR,
+                            NULL);
+  g_mkdir (cache_dir, 0755);
+  g_free (cache_dir);
 
   g_type_class_add_private (klass, sizeof (HDHomeBackgroundPrivate));
 }

@@ -325,16 +325,6 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                        "picture", GINT_TO_POINTER (picture));
 
     if (priv->home_picture != None)
-
-    {
-      g_debug ("paint home on %i, %i, %i, %i, %i, %i, %i, %i",
-                        priv->x + event->area.x, priv->y + event->area.y,
-                        priv->x + event->area.x, priv->y + event->area.y,
-                        event->area.x - x_offset,
-                        event->area.y - y_offset,
-                        event->area.width,
-                        event->area.height);
-
       XRenderComposite (GDK_DISPLAY (),
                         PictOpSrc,
                         priv->home_picture,
@@ -346,7 +336,6 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                         event->area.y - y_offset,
                         event->area.width,
                         event->area.height);
-    }
 
     if (priv->background_picture != None)
     {

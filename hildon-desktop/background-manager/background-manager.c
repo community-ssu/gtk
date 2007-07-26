@@ -95,6 +95,7 @@ gboolean
 background_manager_set_background (BackgroundManager   *manager,
                                    gint                 window_xid,
                                    const gchar         *filename,
+                                   const gchar         *cache,
                                    guint16              red,
                                    guint16              green,
                                    guint16              blue,
@@ -110,7 +111,7 @@ background_manager_set_background (BackgroundManager   *manager,
   gint                          width, height;
   const gchar                  *display_name;
 
-  g_debug ("set_background on %s", filename);
+  g_debug ("set_background on %s, cache as %s", filename, cache);
 
   display_name = g_getenv ("DISPLAY");
   if (!display_name)
@@ -119,6 +120,7 @@ background_manager_set_background (BackgroundManager   *manager,
                    background_manager_error_quark (),
                    BACKGROUND_MANAGER_ERROR_DISPLAY,
                    "Could not open display");
+      g_idle_add ((GSourceFunc)g_main_loop_quit, main_loop);
       return FALSE;
     }
 
@@ -130,6 +132,7 @@ background_manager_set_background (BackgroundManager   *manager,
                    BACKGROUND_MANAGER_ERROR_DISPLAY,
                    "Could not open display %s",
                    display_name);
+      g_idle_add ((GSourceFunc)g_main_loop_quit, main_loop);
       return FALSE;
     }
 
@@ -153,6 +156,7 @@ background_manager_set_background (BackgroundManager   *manager,
 
   background = g_object_new (HBM_TYPE_BACKGROUND,
                              "filename", filename,
+                             "cache", cache,
                              "mode", mode,
                              "color", &color,
                              "width", width,
@@ -161,6 +165,7 @@ background_manager_set_background (BackgroundManager   *manager,
                              NULL);
 
   *picture_xid = hbm_background_render (background, &local_error);
+  g_idle_add ((GSourceFunc)g_main_loop_quit, main_loop);
 
   if (local_error)
     {
@@ -173,6 +178,5 @@ background_manager_set_background (BackgroundManager   *manager,
 
   gdk_display_close (display);
 
-  g_idle_add ((GSourceFunc)g_main_loop_quit, main_loop);
   return TRUE;
 }

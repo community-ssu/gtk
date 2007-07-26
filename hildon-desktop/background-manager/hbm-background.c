@@ -50,6 +50,12 @@
 #define BUFFER_SIZE                     8192
 #define HBM_GCONF_MMC_COVER_OPEN        "/system/osso/af/mmc-cover-open"
 #define HBM_ENV_MMC_MOUNTPOINT          "MMC_MOUNTPOINT"
+#define HBM_CACHE_PERMISSION (GNOME_VFS_PERM_USER_READ | \
+                              GNOME_VFS_PERM_USER_WRITE | \
+                              GNOME_VFS_PERM_GROUP_READ | \
+                              GNOME_VFS_PERM_GROUP_WRITE | \
+                              GNOME_VFS_PERM_OTHER_READ)
+
 
 static void hbm_background_set_property (GObject            *object,
                                          guint               property_id,
@@ -79,9 +85,14 @@ struct _HBMBackgroundPrivate
   GConfClient                  *gconf_client;
   gint                          width, height;
   GnomeVFSHandle               *handle;
+  GnomeVFSHandle               *cache_handle;
+
+  GnomeVFSFileSize              bytes_read;
 
   GdkPixbuf                    *pixbuf;
   gint                          pixbuf_width, pixbuf_height;
+
+  gboolean                      caching;
 
   gboolean                      oom;
   gboolean                      on_mmc;
@@ -360,6 +371,42 @@ hbm_background_open_file (HBMBackground *background, GError **error)
   }
 }
 
+static gboolean
+hbm_background_open_cache_file (HBMBackground *background, GError **error)
+{
+  HBMBackgroundPrivate *priv = background->priv;
+  gchar                *cache = NULL;
+  GnomeVFSResult        result;
+
+  g_object_get (background,
+                "cache", &cache,
+                NULL);
+
+  if (!cache || !*cache)
+    /* No caching */
+    return FALSE;
+
+  result = gnome_vfs_create (&priv->cache_handle,
+                             cache,
+                             GNOME_VFS_OPEN_WRITE,
+                             FALSE,
+                             HBM_CACHE_PERMISSION);
+
+  if (result != GNOME_VFS_OK)
+  {
+    g_set_error (error,
+                 BACKGROUND_MANAGER_ERROR,
+                 BACKGROUND_MANAGER_ERROR_UNREADABLE,
+                 "Unable to open `%s': %s",
+                 cache,
+                 gnome_vfs_result_to_string (result));
+
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 static void
 hbm_background_is_oom (HBMBackground *background, GError **error)
 {
@@ -416,7 +463,6 @@ hbm_background_read (HBMBackground *background, GError **error)
 {
   HBMBackgroundPrivate *priv = background->priv;
   GnomeVFSResult        result;
-  GnomeVFSFileSize      bytes_read;
 
   hbm_background_is_oom (background, error);
   if (*error) return FALSE;
@@ -430,7 +476,7 @@ hbm_background_read (HBMBackground *background, GError **error)
   result = gnome_vfs_read (priv->handle,
                            priv->buffer,
                            BUFFER_SIZE,
-                           &bytes_read);
+                           &priv->bytes_read);
 
   hbm_background_is_oom (background, error);
   if (*error) return FALSE;
@@ -440,7 +486,7 @@ hbm_background_read (HBMBackground *background, GError **error)
     GError     *local_error = NULL;
     gdk_pixbuf_loader_write (priv->loader,
                              priv->buffer,
-                             bytes_read,
+                             priv->bytes_read,
                              &local_error);
 
     if (local_error)
@@ -471,7 +517,7 @@ hbm_background_read (HBMBackground *background, GError **error)
     return FALSE;
   }
 
-  if (result == GNOME_VFS_ERROR_EOF || bytes_read == 0)
+  if (result == GNOME_VFS_ERROR_EOF || priv->bytes_read == 0)
     return TRUE;
 
   return FALSE;
@@ -479,11 +525,49 @@ hbm_background_read (HBMBackground *background, GError **error)
 }
 
 static void
+hbm_background_write_to_cache (HBMBackground *background, GError **error)
+{
+  HBMBackgroundPrivate *priv = background->priv;
+  GnomeVFSResult        result;
+  GnomeVFSFileSize      bytes_written;
+  GnomeVFSFileSize      to_write = priv->bytes_read;
+
+  hbm_background_is_oom (background, error);
+  if (*error) return;
+
+  result = GNOME_VFS_OK;
+
+  while (result == GNOME_VFS_OK && to_write > 0)
+  {
+    result = gnome_vfs_write (priv->cache_handle,
+                              priv->buffer,
+                              to_write,
+                              &bytes_written);
+
+    to_write -= bytes_written;
+  }
+
+  hbm_background_is_oom (background, error);
+  if (*error) return;
+
+  if (result != GNOME_VFS_OK)
+  {
+    g_set_error (error,
+                 BACKGROUND_MANAGER_ERROR,
+                 BACKGROUND_MANAGER_ERROR_IO,
+                 "Unable to write to cache: write failed");
+  }
+
+  return;
+}
+
+static void
 hbm_background_load_pixbuf (HBMBackground *background, GError **error)
 {
   HBMBackgroundPrivate *priv = background->priv;
-  gchar                *filename;
+  gchar                *filename = NULL;
   GError               *local_error = NULL;
+  gboolean              do_cache;
 
   g_object_get (background,
                 "filename", &filename,
@@ -512,6 +596,9 @@ hbm_background_load_pixbuf (HBMBackground *background, GError **error)
   hbm_background_open_file (background, &local_error);
   if (local_error) goto error;
 
+  do_cache = hbm_background_open_cache_file (background, &local_error);
+  if (local_error) goto error;
+
   while (TRUE)
   {
     gboolean eof;
@@ -519,6 +606,13 @@ hbm_background_load_pixbuf (HBMBackground *background, GError **error)
     eof = hbm_background_read (background, &local_error);
     if (local_error)
       goto error;
+
+    if (do_cache)
+    {
+      hbm_background_write_to_cache (background, &local_error);
+      if (local_error)
+        goto error;
+    }
 
     if (eof)
       break;
