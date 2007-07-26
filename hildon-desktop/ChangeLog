@@ -1,3 +1,9 @@
+2007-07-26  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-desktop.c: (hd_desktop_ping_timeout_dialog_response):
+	- If the application is recovered and Ok is pressed destroy the dialog
+	because the HDWMWindow doesn't exist anymore. Fixes: NB#64333
+
 2007-07-26  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/background-manager.{c,h,xml.in}:

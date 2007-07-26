@@ -126,6 +126,18 @@ static void
 hd_desktop_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
 {
   HDWMWindow *win = (HDWMWindow *)data;
+
+  /* This is for NB#64333: If the application recover once the dialog 
+   * has been shown we end up having the situation where we try to kill an 
+   * application that has already been gone, hence destroyed.
+   */
+
+  if (!HD_WM_IS_WINDOW (win))
+  {	  
+    gtk_widget_destroy (GTK_WIDGET(note));
+    return;
+  }
+	  
   HDWMApplication *app = hd_wm_window_get_application (win);
 
   gtk_widget_destroy (GTK_WIDGET(note));
@@ -133,7 +145,7 @@ hd_desktop_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer dat
 
   if (ret == GTK_RESPONSE_OK)
   {
-    /* Kill the app */
+    /* Kill the app */	  
     if (!hd_wm_window_attempt_signal_kill (win, SIGKILL, FALSE))
       g_debug ("hd_wm_ping_timeout:failed to kill application '%s'.", hd_wm_window_get_name (win));
   }
