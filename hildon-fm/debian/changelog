@@ -7,7 +7,8 @@ libhildonfm (1:1.9.35~unreleased) unstable; urgency=low
   * Added a check for a NULL pointer. Fixes: NB#63350
   * Add two logical IDs that were added to the UI spec ("Common", "Data")
   * Add two instances of missing GDK_THREADS_ENTER/GDK_THREADS_LEAVE pairs.
-
+  * Fixes: NB#63995.
+  
  -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 25 Jul 2007 11:33:08 +0300
 
 libhildonfm (1:1.9.34) unstable; urgency=low

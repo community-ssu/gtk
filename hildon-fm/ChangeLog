@@ -1,3 +1,9 @@
+2007-07-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): Save and restore sort
+	parameters across recreation of priv->sort_model (N63995).
+
 2007-07-26  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	* hildon-file-system-root.c (deliver_get_folder_callback): Add
