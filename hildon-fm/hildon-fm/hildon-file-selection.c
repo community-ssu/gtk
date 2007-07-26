@@ -1195,7 +1195,7 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
       g_param_spec_int ("pane-position", "Pane position",
                         "The position of the division between "
 			"the both panes",
-                        0, INT_MAX, 10,
+                        0, INT_MAX, 250,
 			G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 }
 
