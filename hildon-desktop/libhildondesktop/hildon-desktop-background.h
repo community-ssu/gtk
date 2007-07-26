@@ -121,6 +121,9 @@ gboolean    hildon_desktop_background_equal     (const HildonDesktopBackground *
 
 void        hildon_desktop_background_cancel    (HildonDesktopBackground *bg);
 
+const gchar *hildon_desktop_background_get_filename
+                                                (HildonDesktopBackground *bg);
+
 G_END_DECLS
 
 #endif /* __HildonDesktop_BACKGROUND_H__ */

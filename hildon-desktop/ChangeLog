@@ -1,3 +1,8 @@
+2007-07-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-desktop-background.[ch]:
+	- added _get_filename method
+
 2007-07-26  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c: (hd_desktop_ping_timeout_dialog_response):

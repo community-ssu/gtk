@@ -463,3 +463,11 @@ hildon_desktop_background_copy (HildonDesktopBackground *src)
   return dest;
 
 }
+
+const gchar *
+hildon_desktop_background_get_filename (HildonDesktopBackground *background)
+{
+  g_return_val_if_fail (HILDON_DESKTOP_IS_BACKGROUND (background), NULL);
+
+  return background->priv->filename;
+}
