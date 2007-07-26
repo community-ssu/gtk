@@ -1,3 +1,10 @@
+2007-07-26  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-root.c (deliver_get_folder_callback): Add
+	GDK_THREADS_ENTER/GDK_THREADS_LEAVE calls, because it's an idle
+	callback and it calls Gtk functions. This could be related to the
+	crasher bug NB#63224.
+
 2007-07-25  Richard Hult  <richard@imendio.com>
 
 	* hildon-fm/hildon-file-system-storage-dialog.c

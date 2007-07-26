@@ -265,8 +265,10 @@ static gboolean
 deliver_get_folder_callback (gpointer data)
 {
   struct get_folder_clos *clos = (struct get_folder_clos *)data;
+  GDK_THREADS_ENTER ();
   clos->callback (clos->handle, GTK_FILE_FOLDER (clos->root_folder),
                   NULL, clos->data);
+  GDK_THREADS_LEAVE ();
   g_free (clos);
   return FALSE;
 }
