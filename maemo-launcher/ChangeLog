@@ -1,3 +1,11 @@
+2007-07-26  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/Makefile.am (dist_pkgconfig_DATA): Add
+	'maemo-launcher-app.pc'.
+	* configure.ac (PIC): New variable.
+	(AC_CONFIG_FILES): Generate 'maemo-launcher-app.pc'.
+	* launcher/launcher.pc.in: New file.
+
 2007-07-25  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac (HILDON_DEPENDS): Remove clinkcav, hildon-base-lib and

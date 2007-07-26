@@ -1,2 +1,4 @@
+usr/bin/dh_*
 usr/include
 usr/lib/pkgconfig
+usr/share/man/man1/dh_*

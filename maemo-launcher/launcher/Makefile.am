@@ -33,7 +33,9 @@ booster_gtk_so_LDADD = $(BOOSTER_GTK_LIBS)
 bin_PROGRAMS = maemo-launcher maemo-invoker maemo-summoner
 
 pkgconfigdir = $(libdir)/pkgconfig
-dist_pkgconfig_DATA = maemo-launcher-booster.pc
+dist_pkgconfig_DATA = \
+	maemo-launcher-app.pc \
+	maemo-launcher-booster.pc
 
 maemo_launcherdir = $(pkgincludedir)
 maemo_launcher_HEADERS = booster_api.h

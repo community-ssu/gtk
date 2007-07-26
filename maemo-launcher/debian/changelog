@@ -12,6 +12,10 @@ maemo-launcher (0.22~-1) UNRELEASED; urgency=low
     - Replace hildon-fm-dev with libhildonfm2-dev.
     - Replace libossomime-dev with libhildonmime-dev.
     - Replace libhildonmenu-dev with libhildondesktop-dev.
+  * Add a dh_maemolauncher to automate launcherizing packages.
+    - Add a Build-Depends on debhelper to maemo-launcher-dev.
+    - Generate and install the manpage from the perl script.
+  * Add an pkgconfig file for launcherized applications. (Fixes: NB#52992)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Wed, 21 Feb 2007 14:41:33 +0200
 

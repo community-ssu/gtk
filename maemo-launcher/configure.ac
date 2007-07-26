@@ -105,6 +105,9 @@ AC_SUBST([BOOSTER_GTK_LIBS])
 # Test client program
 #
 
+PIC="-fPIC"
+AC_SUBST([PIC])
+
 AC_ARG_ENABLE([pie],
 	[AS_HELP_STRING([--enable-pie],
 			[link the client as a PIE])],
@@ -140,6 +143,7 @@ fi
 AC_CONFIG_FILES([
 	Makefile
 	launcher/Makefile
+	launcher/maemo-launcher-app.pc:launcher/launcher.pc.in
 	launcher/maemo-launcher-booster.pc:launcher/booster.pc.in
 	launcher/maemo-invoker.1:launcher/invoker.1.in
 	launcher/maemo-summoner.1:launcher/summoner.1.in
