@@ -38,6 +38,10 @@
 
 2007-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-chooser-dialog.c (create_folder_callback):
+	Take sfil_ni_operation_failed from the hildon-common-strings
+	domain, stupid.
+
 	Released 1.9.34
 
 2007-07-11  Richard Hult  <richard@imendio.com>
