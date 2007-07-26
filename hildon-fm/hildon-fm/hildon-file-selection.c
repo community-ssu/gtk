@@ -1641,8 +1641,15 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             priv->current_folder = gtk_tree_row_reference_new(priv->dir_sort, sort_path);
 
         if (hildon_file_selection_content_pane_visible(priv)) {
+	    gint sort_column = GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID;
+	    GtkSortType sort_order = GTK_SORT_ASCENDING;
+
             if (priv->sort_model)
               {
+		gtk_tree_sortable_get_sort_column_id
+		  (GTK_TREE_SORTABLE (priv->sort_model),
+		   &sort_column,
+		   &sort_order);
                 hildon_file_selection_disable_cursor_magic (self,
                                                             priv->sort_model);
                 g_object_unref(priv->sort_model);
@@ -1655,6 +1662,10 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
             priv->sort_model = hildon_file_selection_create_sort_model
               (self, content_pane_sort_function, priv->view_filter);
+	    gtk_tree_sortable_set_sort_column_id 
+	      (GTK_TREE_SORTABLE (priv->sort_model),
+	       sort_column,
+	       sort_order);
 
             hildon_file_selection_enable_cursor_magic (self, priv->sort_model);
 
