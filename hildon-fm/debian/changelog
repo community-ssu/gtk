@@ -19,8 +19,6 @@ libhildonfm (1:1.9.34) unstable; urgency=low
   * Fixes: NB#63101. mmc-undefined-name in hildon-file-system-storage-dialog
     for memory card.
 
-  [ Marius Vollmer ]
-
  -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 18 Jul 2007 19:43:44 +0300
 
 libhildonfm (1:1.9.33) unstable; urgency=low
