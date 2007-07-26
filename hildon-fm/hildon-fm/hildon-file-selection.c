@@ -4419,12 +4419,14 @@ set_cursor_idle_handler (gpointer data)
 {
   struct idle_cursor_data *c = (struct idle_cursor_data *)data;
 
+  GDK_THREADS_ENTER ();
   if (c->stubbornly)
     hildon_file_selection_set_cursor_stubbornly (c->view, c->path);
   else
     gtk_tree_view_set_cursor (c->view, c->path, NULL, FALSE);
 
   gtk_tree_path_free (c->path);
+  GDK_THREADS_LEAVE ();
   g_free (c);
 
   return FALSE;

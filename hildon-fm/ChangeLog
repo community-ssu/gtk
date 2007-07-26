@@ -5,6 +5,9 @@
 	callback and it calls Gtk functions. This could be related to the
 	crasher bug NB#63224.
 
+	* hildon-file-selection.c (set_cursor_idle_handler): Add missing
+	GDK_THREADS_ENTER/GDK_THREADS_LEAVE calls.
+
 2007-07-25  Richard Hult  <richard@imendio.com>
 
 	* hildon-fm/hildon-file-system-storage-dialog.c
