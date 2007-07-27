@@ -9,6 +9,10 @@
 	* hildon-file-common-private.h: Add 'FM' macro for strings from
 	File manager's localisation domain.
 
+	* hildon-file-selection.c (hildon_file_selection_row_activated):
+	Apply Markku's patch to consume Gtk events before trying to change
+	the selected row, fixes focus behaviour. Fixes: NB#49941
+
 2007-07-26  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-selection.c

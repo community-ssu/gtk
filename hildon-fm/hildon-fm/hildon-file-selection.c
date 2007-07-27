@@ -1695,10 +1695,17 @@ static void hildon_file_selection_row_activated(GtkTreeView * view,
                                                 GtkTreeViewColumn * col,
                                                 gpointer data)
 {
+	
     GtkTreeIter iter;
     GtkTreeModel *model;
     GtkTreePath *filter_path = NULL, *base_path = NULL, *dir_path = NULL;
     gboolean is_folder, is_available;
+
+    /* Consume all events before activating a row
+       because there might be unfinished selection change
+       => wrong row might be activated */
+    while (gtk_events_pending())
+        gtk_main_iteration();
 
     model = gtk_tree_view_get_model(view); /* Content pane filter model */
 
