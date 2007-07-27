@@ -1,8 +1,8 @@
-osso-gnome-vfs2 (2.16.3-1osso23~unreleased) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso23) unstable; urgency=low
 
   * Fixes: NB#62068, GnomeVFS gives wrong device names for GnomeVFS drives
 
- -- Richard Hult <richard@imendio.com>  Fri, 27 Jul 2007 17:00:00 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 27 Jul 2007 18:14:56 +0200
 
 osso-gnome-vfs2 (2.16.3-1osso22) unstable; urgency=low
 
