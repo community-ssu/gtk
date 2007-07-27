@@ -1,0 +1,36 @@
+# Planned changes to the hildon-fm API for the Hildon Consolidation.
+
+# Build cruft
+
+hildon-fm-dev   |major| The new -dev package is named libhildonfm2-dev.  Also, the pkg-config name is now hildon-fm-2.
+hildon-widgets  |major| The header files have been moved to <hildon/...>
+
+# hildon-file-selection.h
+
+"items-dropped" |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use the new "uris-dropped" signal instead.
+
+"items_dropped" |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use the new "uris-dropped" signal instead.
+
+hildon_file_selection_set_current_folder  |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use gtk_file_chooser_set_current_folder_uri instead with the dialog widget if possible.  Otherwise use the new hildon_file_selection_set_current_folder_uri.
+
+hildon_file_selection_get_current_folder  |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use gtk_file_chooser_get_current_folder_uri instead with the dialog widget if possible.  Otherwise use the new hildon_file_selection_get_current_folder_uri.
+
+hildon_file_selection_select_path         |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use gtk_file_chooser_select_uri instead with the dialog widget if possible.  Otherwise use the new hildon_file_selection_select_uri.
+
+hildon_file_selection_unselect_path       |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use gtk_file_chooser_unselect_uri instead with the dialog widget if possible.  Otherwise use the new hildon_file_selection_unselect_uri.
+
+hildon_file_selection_get_selected_paths  |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use gtk_file_chooser_get_uris instead with the dialog widget if possible.  Otherwise use the new hildon_file_selection_get_selected_uris.
+
+# hildon-file-system-model.h
+
+HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH |minor| GtkFilePath is internal to Gtk+ and should not be used.  Use HILDON_FILE_SYSTEM_MODEL_COLUMN_URI instead.
+
+# hildon-file-chooser-dialog.h
+
+"show-upnp"                              |minor| The "show-upnp" property should be avoided.  Talk to Marius Vollmer for alternatives.
+hildon_file_chooser_dialog_set_show_upnp |minor| The "show-upnp" property should be avoided.  Talk to Marius Vollmer for alternatives.
+hildon_file_chooser_dialog_get_show_upnp |minor| The "show-upnp" property should be avoided.  Talk to Marius Vollmer for alternatives.
+
+# hildon-file-system-info.h
+
+# hildon-file-details-dialog.h

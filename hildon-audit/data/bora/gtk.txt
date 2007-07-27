@@ -1,0 +1,35 @@
+# GtkButton
+gtk_button_new_from_stock	|minor|	gtk-button-images is set to FALSE by default with gtk+ 2.10, so images won't be shown on GtkButtons | see http://maemo.org/maemowiki/MaemoGtk210Migration#M68
+
+_gtk_button_set_depressed		      |minor|  Removed with no replacement, there is no need for this outside gtk+
+hildon_gtk_button_set_depressed		      |minor|  Removed with no replacement, there is no need for this outside gtk+
+
+\"automatic.detail\"		|medium| GtkButton::automatic-detail property is removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+\"detail\"			|medium| Gtkbutton::detail property is removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+
+osso_gtk_button_set_detail_from_attach_flags  |medium| Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+
+# GtkCellView
+gtk_cell_view_set_cell_data	|minor|	Removed with no replacement, there is no need for this outside gtk+	|	see http://maemo.org/maemowiki/MaemoGtk210Migration#M33
+
+# GtkIMContext (GtkEntry, GtkTextView)
+\"autocap\"	|medium| [GtkEntry,GtkTextView] autocap property removed - use HILDON_GTK_INPUT_MODE_AUTOCAP	|	see http://maemo.org/maemowiki/MaemoGtk210Migration#M24
+gtk_im_context_hide					|minor|	Deprecated, use hildon_gtk_im_context_hide
+gtk_im_context_show					|minor|	Deprecated, use hildon_gtk_im_context_show
+
+# GtkTable
+osso_gtk_table_find_button_detail	|medium|	Going to be deprecated, no replacement API yet
+
+# GtkWidget
+\"tap-and-hold-state\"	                |minor|	GtkWidget::tap-and-hold-state property does nothing, you can remove it safely.
+
+# GtkWindow
+gtk_window_get_prev_focus_widget	|minor|	This function does nothing, you can remove it safely.
+gtk_window_set_prev_focus_widget	|minor|	This function does nothign, you can remove it safely.
+
+# OssoGtkButtonAttachFlags
+OSSO_GTK_BUTTON_ATTACH_NORTH	|medium|	Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+OSSO_GTK_BUTTON_ATTACH_EAST	|medium|	Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+OSSO_GTK_BUTTON_ATTACH_SOUTH	|medium|	Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+OSSO_GTK_BUTTON_ATTACH_WEST	|medium|	Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37
+OSSO_GTK_BUTTON_ATTACH_ENUM_END	|medium|	Removed, view buttons are not supported | http://maemo.org/maemowiki/MaemoGtk210Migration#M37

@@ -1,0 +1,6 @@
+Known issues/bugs in hildon-audit
+=================================
+
+* hildon-audit scans also hidden folders. When scanning a directory checked out
+  from svn (or git or similar) the reported files and number of instances is
+  slightly misleading.

@@ -1,0 +1,70 @@
+# This contains stuff that has been deprecated a while back. 
+# Most likely nobody is really using that
+
+# Home dialog
+        
+hildon_add_home_dialog_new                      |major|       Historical widget. Not supported. Removed with no replacement.
+
+# File handling note
+
+hildon_file_handling_note_new_moving            |major|       	Historical widget. Not supported. Removed with no replacement.
+hildon_file_handling_note_new_deleting          |major|       	Historical widget. Not supported. Removed with no replacement.
+hildon_file_handling_note_new_saving            |major|       	Historical widget. Not supported. Removed with no replacement.
+hildon_file_handling_note_new_opening           |major|       	Historical widget. Not supported. Removed with no replacement.
+
+# Telephone editor
+
+hildon_telephone_editor_new                     |major|       	Historical widget. Not supported. Removed with no replacement.
+hildon_telephone_editor_new_with_strings        |major|       	Historical widget. Not supported. Removed with no replacement.
+HILDON_TELEPHONE_EDITOR_FORMAT_FREE             |major|       	Historical widget. Not supported. Removed with no replacement.
+HILDON_TELEPHONE_EDITOR_FORMAT_COERC            |major|       	Historical widget. Not supported. Removed with no replacement.
+HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_COUNTRY   |major|       	Historical widget. Not supported. Removed with no replacement.
+HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_AREA      |major|       	Historical widget. Not supported. Removed with no replacement.
+
+# Hildon grid
+
+hildon_grid_new                                 |major|       	HildonGrid is removed, use GtkIconView
+hildon_grid_item_new                            |major|       	HildonGrid is removed, use GtkIconView
+hildon_grid_item_new_with_label                 |major|       	HildonGrid is removed, use GtkIconView
+HILDON_GRID_ITEM_LABEL_POS_BOTTOM               |major|       	HildonGrid is removed, use GtkIconView
+HILDON_GRID_ITEM_LABEL_POS_RIGHT                |major|       	HildonGrid is removed, use GtkIconView
+HILDON_GRID_ITEM_ICON_27x27                     |major|       	HildonGrid is removed, use GtkIconView
+HILDON_GRID_ITEM_ICON_128x128                   |major|       	HildonGrid is removed, use GtkIconView
+
+# Timer
+
+timer_start                                     |normal|       	Historical functionality. Not supported. Removed with no replacement.
+timer_stop                                      |normal|       	Historical functionality. Not supported. Removed with no replacement.
+print_timestamp                                 |normal|       	Historical functionality. Not supported. Removed with no replacement.
+
+# Deprecated types (already marked as deprecated a while back)
+
+HILDON_CALENDAR_POPUP_TYPE			|minor|		Please use HILDON_TYPE_CALENDAR_POPUP
+HILDON_DATE_EDITOR_TYPE 			|minor|		Please use HILDON_TYPE_DATE_EDITOR
+HILDON_RANGE_EDITOR_TYPE			|minor|		Please use HILDON_TYPE_RANGE_EDITOR
+HILDON_VOLUMEBAR_RANGE_TYPE			|minor|		Please use HILDON_TYPE_VOLUMEBAR_RANGE
+HILDON_WEEKDAY_PICKER_TYPE			|minor|		Please use HILDON_TYPE_WEEKDAY_PICKER
+
+# Deprecated object functions (already marked as deprecated a while back)
+
+hildon_caption_get_sizegroup 			|minor|		Please use hildon_caption_set_size_group
+hildon_caption_set_sizegroup 			|minor|		Please use hildon_caption_get_size_group
+hildon_caption_get_control 			|minor|		Please use stock gtk_container_ functions
+hildon_caption_set_control 			|minor|		Please use stock gtk_container_ functions
+hildon_font_selection_dialog_get_font 		|normal|	Functionality known to be broken. Use property access directly
+hildon_font_selection_dialog_set_font 		|normal|	Functionality known to be broken. Use property access directly
+hildon_font_selection_dialog_set_buffer 	|normal|	Functionality known to be broken. Use property access directly
+hildon_font_selection_dialog_get_text_tag	|normal|	Functionality known to be broken. Use property access directly
+hildon_get_password_dialog_set_title		|minor|		Please use stock gtk_window functions
+hildon_note_new_confirmation_with_icon_stock	|minor|		Removed, use hildon_note_new_confirmation_with_icon_name
+hildon_note_new_information_with_icon_stock 	|minor|		Removed, use hildon_note_new_information_with_icon_name
+hildon_note_new_information_with_icon_theme	|minor|		Removed, use hildon_note_new_information_with_icon_name
+hildon_program_new				|minor|		Removed, please use hildon_program_get_instance
+hildon_time_editor_show_seconds			|minor|		Removed, please use hildon_time_editor_set_show_seconds
+hildon_time_editor_enable_duration_mode		|minor|		Removed, please use hildon_time_editor_set_duration_mode
+
+# Accidentally exposed
+
+hildon_composite_widget_focus                   |normal|        This function is private and was exposed accidentally. Don't use it.
+
+# end of file

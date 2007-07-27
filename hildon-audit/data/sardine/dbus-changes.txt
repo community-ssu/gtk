@@ -1,0 +1,5 @@
+# D-Bus
+
+dbus_connection_disconnect	|minor| Remove calling of dbus_connection_disconnect, it's not needed.
+dbus_g_thread_init		|minor| Note that dbus_g_thread_init is now in libdbus-glib-1, instead of libdbus-1.
+libdbus-1-2			|minor| Package libdbus-1-2 has been renamed to libdbus-1-3.

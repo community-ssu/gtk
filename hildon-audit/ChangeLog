@@ -1,0 +1,239 @@
+2007-07-26  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[1.1-1 release]
+
+	* AUTHORS:
+	* BUGS:
+	* README:
+	* data/README:
+	* debian/changelog: Adding some missing stuff, fixing the documentation.
+
+2007-07-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* debian/control: Changing the package architecture to all.
+
+2007-07-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile: Making the install target not install the .svn directories.
+
+2007-07-20  Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* data/sardine/jakub.txt: put changes I needed - this will need to be
+	spread over other files I guess.
+
+2007-03-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* data/bora/hildon-libs-infoprints.txt: Fix links to bora API
+
+2007-03-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* data/sardine/{gtk,gtk-dep}.txt
+	* data/bora/gtk.txt: move items to bora
+
+2007-03-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* data/{planning,ready}: renamed to bora and sardine indicating which
+	release is required to test the changes and distributed the files
+	accordingly
+	* hildon-audit: update the usage example
+
+2007-03-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* Makefile: Use 'install' and more conventional variables. Don't fail
+	on clean rule.
+
+2007-03-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-audit: Read all rules files, not just the last one.
+
+2007-03-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding a note about the
+	hildon_program_set_can_hibernate and
+	hildon_window_set_can_hibernate_property even though no one should
+	be really using those.
+
+2007-03-07  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Removing the 'HildonTimePicker
+	now returns minutes/hours separately' notice. It wasn't implemented as
+	it doesn't make much sense after all.
+
+2007-03-05  Xan Lopez  <xan.lopez@nokia.com> 
+
+	* data/planning/gtk-dep.txt: Add warning about gtk-button-images being
+	FALSE by default now.
+
+2007-02-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding the actual dev package
+	names to db so that the debian/control files got picked up.
+
+2007-02-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* data/planning/gtk-dep.txt
+	* data/ready/gtk.txt: Update and move viewbutton removal related hints
+	to ready.
+
+2007-02-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding the deprecated (and now
+	totally removed) duplicate hildon input-method enums with their gtk
+	eqivs.
+
+2007-02-14  Xan Lopez  <xan.lopez@nokia.com>
+
+	* data/planning/gtk-dep.txt:
+	Add information about GtkComboBox not being fixed height anymore.
+
+2007-02-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding the number editor and
+	icon sizes deprecated symbols. Adding a reference/link to new menu
+	bahavior when added to HildonWindow.
+
+2007-02-02  Xan Lopez  <xan.lopez@nokia.com>
+
+	* data/ready/gtk.txt: Add GTK_OBJECT_FLOATING.
+
+2007-01-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* data/ready/gtk.txt: Add deprecated functions from upstream.
+
+2007-01-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding an info about the
+	hildon_finger_ which has been now moved to hildon_helper_ functionset.
+
+2007-01-18  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding color stuff and helper
+	function changes.
+
+	* data/planning/hildon-libs-unused.txt: Adding the accidentally
+	exposed private functions that will be not availible now (prolly
+	nobody cares).
+
+2007-01-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* data/ready/gtk-empty-deprecated.txt: renamed to gtk.txt
+
+	* data/planning/gtk-dep.txt
+	* data/ready/gtk.txt: Moved _gtk_button_set_depressed,
+	hildon_gtk_button_set_depressed, "checkbox-mode",
+	gtk_cell_view_set_cell_data, hildon_gtk_file_system_create,
+	gtk_hash_table_new, "autocap", "stream-indicator", "stream-position",
+	osso_gtk_range_get_stream_indicator,
+	osso_gtk_range_set_stream_indicator,
+	osso_gtk_range_get_stream_position, 
+	osso_gtk_range_set_stream_position, GTK_RC_TOKEN_LOGICAL_COLOR,
+	"gtk-initial-timeout", "gtk-update-timeout",
+	gtk_style_lookup_logical_color, "can-paste-rich-text",
+	"rich-text-format", gtk_text_buffer_deserialize_rich_text,
+	gtk_text_buffer_get_can_paste_rich_text,
+	gtk_text_buffer_get_rich_text_format,
+	gtk_text_buffer_serialize_rich_text,
+	gtk_text_buffer_set_can_paste_rich_text,
+	gtk_text_buffer_set_rich_text_format, "allow-checkbox-mode",
+	"dotted-line", "force-list-kludge"
+	from planning to ready.
+	
+2007-01-15  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Being more 'brutal'
+	in some messages. Adding the changes that happened to the 
+	*PasswordDialogs. Removing HildonNote message (no action required).
+
+2007-01-15  Xan Lopez  <xan.lopez@nokia.com>
+
+	* data/planning/gtk-dep.txt: Update messages with latest information.
+
+2007-01-10  Xan Lopez  <xan.lopez@nokia.com>
+
+	* data/planning/gtk-dep.txt: s/-/./g in property names so we'll
+	catch all the - vs. _ variants.
+
+2007-01-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-audit (usage): added svn keywords $Revision$ $Date$
+
+2007-01-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* data/planning/hildon-libs-others.txt: removed ref to hildon-lgpl, this is ready to migrate (already in data/ready)
+
+2007-01-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-audit (foreach $rule): add space between output elements. Makes it "gcc like", and more readable.
+
+2007-01-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* data/ready/hildon-lgpl.txt: don't use "#" in message, it is the comment marker.
+
+2007-01-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-audit: GPL'ed
+
+2006-12-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* data/ready/gtk-empty-deprecated.txt
+	* data/planning/gtk-dep.txt: various updates
+	  - quote signal and property names to reduce false positives
+	  - for signals and properties include the object name in the message
+	  to give more context, in case of false positives
+	  - removed duplicate autocap, input-mode and hildon-input-mode symbols
+	  - use 'renamed to xyz' message for simple renames
+	  - rephrasing
+
+2006-12-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-audit: sort statistics (by symbol) to improve readability
+
+2006-12-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-audit: print a warning if a symbol is defined multiple times
+
+2006-12-12  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt: Adding info about two
+	"private" functions in HildonVolumeBar that were exposed in the past
+	by mistake. They're going to be hidden now, but nobody should be using
+	them anyways.
+	Adding info about the missing API for HildonScrollArea replacement.
+
+2006-12-07  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* data/ready/hildon-lgpl.txt: new file, about hildon-lgpl to be removed.
+
+2006-12-07  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* data/ready/hildon-window.txt: added link to migration guide in maemo wiki. Minor rephrasing.
+	* data/ready/hildon-libs-infoprints.txt: added link to API doc
+	* data/ready/gtk-empty-deprecated.txt: minor rephrasing
+
+	* data/planning/gtk-dep.txt: s/http/see http/
+	* data/planning/hildon-libs-unused.txt: copy paste glitch
+	* data/planning/hildon-libs-others.txt: white spaces
+	* data/planning/hildon-fm-consolidation.txt: white spaces
+
+2006-12-06  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-audit
+	(usage()): improved help message
+	(print_csv_header()): print '\n' at the end
+	(if_csv_summary): likewise
+	(if_csv_summary): print the audited folder in first column, so we
+	know what we audited, and it matches the columns given by
+	csv-header.
+
+2006-12-01 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-audit: output severity and better help for --verbose
+
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/planning/hildon-libs-others.txt:
+	* data/planning/hildon-libs-unused.txt:
+	* data/ready/hildon-libs-infoprints.txt:
+	* data/ready/hildon-window.txt: Removing windows line-breaks (dos ->
+	unix).
+

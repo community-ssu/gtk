@@ -1,0 +1,41 @@
+hildon-audit (1.1-1) unstable; urgency=low
+
+  * Do not install the .svn dirs
+  * Better README file with a little explanation 
+  * Package is now ALL architecture
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 26 Jul 2007 12:19:30 +0300
+
+hildon-audit (1.0-4) unstable; urgency=low
+
+  * debian/control: fix description
+  * debian/rules: remove unneeded dh_* calls
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 26 Mar 2007 11:01:11 +0300
+
+hildon-audit (1.0-3) unstable; urgency=low
+
+  * debian/control: updated description
+  * debian/copyright: GPL'ed
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon,  8 Jan 2007 15:26:03 +0200
+
+hildon-audit (1.0-2) unstable; urgency=low
+
+  * including proper copyright and license information, code cleanups +
+    manpage
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 24 Nov 2006 09:38:28 +0200
+
+hildon-audit (1.0-1) unstable; urgency=low
+
+  * fixes to symbol files, bump up version
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 23 Nov 2006 16:29:31 +0200
+
+hildon-audit (0.9-1) unstable; urgency=low
+
+  * initial debianized version
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 23 Nov 2006 14:34:39 +0200
+

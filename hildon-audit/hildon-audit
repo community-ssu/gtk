@@ -1,0 +1,355 @@
+#!/usr/bin/perl
+
+#  This file is part of hildon-audit,
+#  a tool to scan a package and grep specific symbols
+# 
+#  Copyright (C) 2007 Nokia Corporation. All Rights reserved.
+# 
+#  Contact: Tapani Palli <tapani.palli@nokia.com>
+# 
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License version
+#  2 as published by the Free Software Foundation.
+# 
+#  This program is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+#  02110-1301 USA
+#  
+
+use locale; # for locale defined sorting
+
+my $verb_lvl   = 3;
+my $show_stats = 0;
+
+my $columns_expected = 3;
+my $correct_format = "[symbol | severity | instruction]";
+
+my @rules;
+
+if ($#ARGV < 0 || @ARGV[0] eq "--help")
+{
+  usage();
+}
+
+# --- parse args
+chomp(@ARGV);
+foreach $arg(@ARGV)
+{
+    if (-d $arg)
+    {
+	$directory = $arg;
+    }
+    elsif (-f $arg)
+    {
+	$rulesfile = $arg;
+
+        # --- read rules from config file
+	open(RULES, $rulesfile);
+	foreach $rule (<RULES>)
+	{
+		push (@rules, $rule);
+	}
+	close(RULES);
+    }
+    elsif (grep /verbose/i, $arg)
+    {
+	$verb_lvl = $arg; $verb_lvl =~ s/^.*=//;
+    }
+    elsif (grep /stats/i, $arg)
+    {
+	$show_stats=1;
+    }
+    elsif (grep /csv-summary/i, $arg)
+    {
+	$csv_summary=1;
+    }
+    elsif (grep /csv-header/i, $arg)
+    {
+	$csv_header=1;
+    }
+}
+
+# --- check if user is using <STDIN> for rules
+vec($incoming, fileno(STDIN), 1) = 1;
+$nfound = select($outgoing=$incoming, "", "", 1);
+if ($nfound > 0)
+{
+    # --- use <STDIN> as @rules
+    @rules = <STDIN>;
+}
+
+if (!@rules)
+{
+    # TODO: if no rules, check 'default', /usr/share/hildon-audit/something.txt (?)
+    usage();
+}
+
+# --- cleanup rules
+chomp(@rules);
+
+# --- clean up rules, weed out comments + empty lines
+@rules = grep(!/^#/, @rules);
+
+# paranoid check
+foreach $rule(@rules)
+{
+    $rule =~ s/^ *//g;
+}
+
+@rules = grep(!/^ *$/, @rules);
+@rules = grep(!/^.$/, @rules);
+
+
+# --- parse rules
+# --- TODO: make hash and print later on (sorted!)
+foreach $rule(@rules)
+{
+    $rule =~ s/\t//g;            # all tabs
+    $rule =~ s/ #.*$//g;         # comment after content
+    $rule =~ s/ *\|/|/g;         # spaces ..
+    $rule =~ s/\| */|/g;         # ..
+
+    @tmp = split /\|/, $rule;    # extract components
+
+    if ($#tmp + 1 < $columns_expected)
+    {
+	print "::: $rule :::\n";
+	print "sorry, your rules file is not supported by this version of the tool.\nthis version expects $columns_expected columns.\ncorrect format is : $correct_format\n\n";
+	 exit;
+    }
+
+    $rule = $tmp[0];
+    $sev  = $tmp[1];
+    $fix  = $tmp[2];
+    $uri  = $tmp[3];
+
+    if (defined($rulehash->{$rule}))
+    {
+	print STDERR "WARNING: multiple definitions of symbol $rule\n";
+	next;
+    }
+
+    # --- make table of rules and hash of other information
+    push (@ruletable, $rule);
+
+    $rulehash -> {$rule} -> {'severity'} = $sev;
+    $rulehash -> {$rule} -> {'howtofix'} = $fix;
+    $rulehash -> {$rule} -> {'uri'} = $uri;
+}
+
+
+# --- output only symbols in csv format
+if ($csv_header)
+{
+    print_csv_header();
+    exit;
+}
+
+# --- only csv output wanted
+if ($csv_summary)
+{
+    $verb_lvl=0;
+}
+
+if (!$directory)
+{
+    usage();
+}
+
+
+# --- loop through all rules and recursively
+# --- grep source directory for matches
+foreach $rule(@ruletable)
+{
+    $result = `grep -Irn "$rule" "$directory" | grep -v svn`;
+    
+    if ($result)
+    {
+	@rows = split /\n/, $result;
+
+	$count = $#rows + 1; # --- how many times found
+	$statistics -> {$rule} += $count;
+
+	foreach $row(@rows)
+	{
+	    @tmp = split /:/, $row;
+	    $statistics -> {$tmp[0]} ++; # total
+	    $statistics -> {$tmp[0]} -> {$rule} ++; # per rule
+
+	    # --- slightly different output for verbose levels
+	    if ($verb_lvl == 1)
+	    {
+		print "$tmp[0]:$tmp[1]: $rule\n";
+	    }
+	    elsif ($verb_lvl >= 2)
+	    {
+		print "$tmp[0]:$tmp[1]: $rule: ";
+
+		print $rulehash -> {$rule} -> {'severity'};
+
+		print ": ";
+
+		print $rulehash -> {$rule} -> {'howtofix'};
+
+		if ($verb_lvl == 3)
+		{
+		    $uri = $rulehash -> {$rule} -> {'uri'};
+		    if ($uri)
+		    {
+			print ": $uri";
+		    }
+		}
+		print "\n";
+	    }
+	}
+    }
+}
+
+
+# --- print out findings in csv format
+if ($csv_summary)
+{
+    print "$directory, ";
+
+    while (@ruletable)
+    {
+	$rule = shift(@ruletable);
+	if ($statistics->{$rule})
+	{
+	    print "$statistics->{$rule}";
+	}
+	else
+	{
+	    print "0";
+	}
+
+	if (@ruletable)
+	{
+	    print ", ";
+	}
+    }
+    print "\n";
+    exit;
+}
+
+
+# --- print simple stats if wanted
+if (!$show_stats)
+{
+    exit;
+}
+
+print "\nstatistics\n------------------------------\n";
+$errors=0;
+foreach $rule (sort @ruletable)
+{
+  if ($statistics->{$rule} > 0)
+  {
+      print "symbol $rule found $statistics->{$rule} time(s)\n";
+      $errors ++;
+  }
+}
+
+# --- congratulate a good coder :-)
+if (!$errors)
+{
+    $amount = $#rules+1;
+    print "$amount symbols audited and no rules matched, good job!\n";
+}
+
+
+print "\n";
+
+# --- main program ends here, functions below ---
+# -----------------------------------------------
+sub print_csv_header()
+{
+    print "SOURCE/SYMBOL,";
+    foreach (@ruletable)
+    {
+	print "$_,";
+    }
+    print "\n";
+}
+
+
+# --- help!
+sub usage()
+{
+    print<<STOP;
+
+    hildon-audit ($Revision: 25243 $ $Date: 2007-07-20 11:46:31 +0300 (Fri, 20 Jul 2007) $)
+
+    hildon-audit is a tool to scan a folder (recursively) and grep
+    _symbols_ specified in _rule_ files. For each instance found
+    hildon-audit displays a _message_ specified in the _rule_ files.
+
+    hildon-audit was first written to audit source packages and spot
+    use of deprecated symbols/APIs.
+
+    USAGE:
+
+    hildon-audit <rules> <folder_to_audit> [--verbose=[1/2/3]] [--stats]
+
+
+    OPTIONS:
+
+    --verbose=[level]: specifies the verbosity level. By default it uses level 3.
+
+      0 -> Nothing. Usefull if you want only the stats (--stats)
+      1 -> file : line number : symbol
+      2 -> file : line number : symbol : level : message
+      3 -> file : line number : symbol : level : message : complementary message
+
+    --stats: output a summary of instances found
+
+    --csv-summary: output number of instances found in a comma separated value (CSV) format
+
+    --csv-header: output the rules considered  in a comma separated value (CSV) format
+
+    --help: display this message
+
+
+    RULE FILES FORMAT:
+
+    # Rule files have the following format,
+    # they accept comments preceeded by a '#'
+
+    <symbol> | <level> | <message> [| <complementary message>]
+
+    # the complementary message is optional, it is shown with the
+    # highest level of verbosity.
+
+
+    EXAMPLES:
+
+    Default rules are installed in /usr/share/hildon-audit.
+    Most users want to run it in default mode:
+    
+    \$ hildon-audit /usr/share/hildon-audit/*/*.txt .
+    
+    This will check the code in current directory by using all
+    rules found in the default directory.
+    
+    You can also feed the tool with your own rules (FIXME?).
+
+    \$ hildon-audit /usr/share/hildon-audit/*/*.txt ./my-code
+
+    You can also take the rules from <stdin>:
+
+    \$ cat rules/*.txt | grep 'major' | hildon-audit ./my-code
+
+
+STOP
+    exit;
+}
+
+
+
+__END__

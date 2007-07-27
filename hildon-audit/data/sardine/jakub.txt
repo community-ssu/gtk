@@ -1,0 +1,20 @@
+# Jakub's changes - this might need to be spread over more change files later
+
+#Control file changes
+hildon-status-bar-lib-dev	|major| hildon-status-bar-lib-dev deprecated and replaced by libhildondesktop-dev
+libosso-help-dev		|minor| libosso-help-dev deprecated, use libhildonhelp-dev
+
+#configure.ac
+libossohelp			|minor| libossohelp deprecated, use hildon-help >= 1.9.0
+hildon-status-bar-lib		|major| hildon-status-bar-lib deprecated and replaced by libhildondesktop >= 0.0.5
+pluginlibdir			|major| Plugin directory is not provided anymore by "pkg-config hildon-status-bar-lib --variable=pluginlibdir", use "pkg-config osso-af-settings --variable=legacystatusbarlibdir" instead.
+
+
+#Includes
+osso-helplib.h			|minor| osso-helplib.h deprecated, use hildon/hildon-help.h
+hildon-widgets/gtk-infoprint.h	|major| hildon-widgets/gtk-infoprint.h deprecated and replaced by hildon/hildon-banner.h #has some vague and wrong  message already - FIX IT ELSEWHERE!
+hildon-status-bar-lib/hildon-status-bar-item.h	|major| hildon-status-bar-lib/hildon-status-bar-item.h deprecated and replaced by libhildondesktop/hildon-status-bar-item.h
+hildon-widgets/hildon-input-mode-hint.h	|major| hildon-widgets/hildon-input-mode-hint.h deprecated and replaced by standard gtk/gtkenums.h #has some vague and wrong message already - FIX IT ELSEWHERE!
+
+#Code
+ossohelp_dialog_help_enable	|minor| ossohelp_dialog_help_enable() deprecated, use hildon_help_dialog_help_enable()

@@ -1,0 +1,15 @@
+Source: hildon-audit
+Section: devel
+Priority: optional
+Maintainer: Tapani Palli <tapani.palli@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: hildon-audit
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, perl
+Description: Tool for scanning files for specific symbols
+ This tool scans a folder (recursively) and grep for symbols specified in rule
+ files. For each instance found the corresponding message in the rule file is
+ displayed. hildon-audit was first written to audit source packages and spot
+ use of deprecated symbols/APIs.

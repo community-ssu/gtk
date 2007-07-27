@@ -1,0 +1,11 @@
+# App and AppView
+
+hildon_app_new                                  |major|         HildonApp is deprecated. Use HildonProgram and HildonWindow instead     | See http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram
+hildon_app_new_with_appview                     |major|         HildonApp is deprecated. Use HildonProgram and HildonWindow instead     | See http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram
+hildon_appview_new                              |major|         HildonAppView is deprecated. Use HildonProgram and HildonWindow instead | See http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram
+
+# As a consequence of removing HildonApp...
+
+HILDON_ZOOM_SMALL                               |major|         HildonZoomLevel is deprecated (came from HildonApp). To be removed or replaced. | You should not use this symbol anymore after proper migration to HildonProgram (see http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram). If you used it for other purpose, you need to provide a replacement.
+HILDON_ZOOM_MEDIUM                              |major|         HildonZoomLevel is deprecated (came from HildonApp). To be removed or replaced. | You should not use this symbol anymore after proper migration to HildonProgram (see http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram). If you used it for other purpose, you need to provide a replacement.
+HILDON_ZOOM_LARGE                               |major|         HildonZoomLevel is deprecated (came from HildonApp). To be removed or replaced. | You should not use this symbol anymore after proper migration to HildonProgram (see http://maemo.org/maemowiki/HAF/API/MigrationHildonProgram). If you used it for other purpose, you need to provide a replacement.

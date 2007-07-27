@@ -1,0 +1,45 @@
+Purpose
+=======
+
+Hildon-audit is a tool meant to assist the developer in the Chinook API
+migration process. Reasons for API break are explained in detail on the
+www.maemo.org website:
+
+    http://maemo.org/news/view/1184675758.html
+
+Hildon-audit is a simple source-code scanner. It'll analyze the code and
+highlight the parts (lines) that require changes. Smaller changes (syntax
+changes) are explained directly in the hildon-audit output. Bigger changes 
+are reported with links to web documentation/explanation.
+
+A lot of the API changes are about removing widgets that were already marked as
+deprecated in the previous maemo releases. If your application was written
+against the latest and greatest Bora API's, chances are you don't need to do
+much work.
+
+
+Usage
+=====
+
+Hildon audit tool works with a rule set and a directory (source directory). It
+comes with a debian package and after installing the package you can use it in
+the following way:
+
+    $ cd your-source-code
+    $ hildon-audit /usr/share/hildon-audit/*/*.txt .
+
+This will scan the current working directory (your applicaton directory) with
+all the API migration rules. You can also use the tool locally (without the
+need to install the package). 
+
+    $ ./hildon-audit data/*/*.txt /your/source/code/directory
+
+
+Rules files
+===========
+
+bora:       Contains rules which can be implemented using the Maemo 3.0 'bora' SDK
+
+sardine:    Contains rules which require bleeding edge packages from Sardine to be
+            implemented <http://sardine.garage.maemo.org/>. These changes are going 
+            to Chinook platform and SDK release.

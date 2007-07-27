@@ -1,0 +1,10 @@
+# Libosso
+osso_tasknav_mail_add			|minor| Remove call to osso_tasknav_mail_add.
+osso_tasknav_mail_del			|minor| Remove call to osso_tasknav_mail_del.
+osso_tasknav_mail_set_outbox_count	|minor| Remove call to osso_tasknav_mail_set_outbox_count.
+osso_application_initialize		|minor| Remove call to osso_application_initialize, use osso_initialize instead. Note that parameters have changed.
+osso_application_exit_cb		|minor| Remove use of type osso_application_exit_cb. (callback is not being called.)
+osso_application_set_exit_cb		|minor| Remove call to osso_application_set_exit_cb. (callback is not begin called.)
+osso_state_open_write			|minor| Use osso_state_write instead of osso_state_open_write. Note that parameters have changed.
+osso_state_open_read			|minor| Use osso_state_read instead of osso_state_open_read. Note that parameters have changed.
+osso_state_close			|minor| Remove call to osso_state_close, it is not needed.
