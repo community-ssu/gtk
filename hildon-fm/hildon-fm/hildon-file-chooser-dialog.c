@@ -1247,7 +1247,8 @@ static gboolean hildon_file_chooser_dialog_location_pressed(GtkWidget
 {
   HildonFileChooserDialog *self = HILDON_FILE_CHOOSER_DIALOG(data);
 
-  if (self->priv->action == GTK_FILE_CHOOSER_ACTION_SAVE)
+  if (self->priv->action == GTK_FILE_CHOOSER_ACTION_SAVE ||
+	self->priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
     handle_folder_popup(self);
 
   return FALSE;

@@ -3,6 +3,8 @@
 	* hildon-file-chooser-dialog.c (response_handler): Show
 	information note sfil_ni_target_foldername_long instead of
 	information banner file_ib_name_too_long. Fixes: NB#36630
+	(hildon_file_chooser_dialog_location_pressed): Patch from Markku
+	to handle also GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER. Fixes: NB#59274
 
 	* hildon-file-common-private.h: Add 'FM' macro for strings from
 	File manager's localisation domain.
