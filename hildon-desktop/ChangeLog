@@ -1,6 +1,11 @@
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
+	close switcher menu when a notification is activated. Fixes NB#63102
+
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
 	correctly set the switcher menu icon with the latest notification
 	icon. Fixes NB#63134
 
