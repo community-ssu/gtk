@@ -1,3 +1,12 @@
+2007-07-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	(hildon_desktop_panel_expandable_add_in_extension),
+	(hildon_desktop_panel_expandable_arrange_items):
+	- Fixed positioning on extension panel
+	- If not positioned don't unref the object.
+	Fixes: NB#63894
+
 2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/hbm-background.c: treat storage full

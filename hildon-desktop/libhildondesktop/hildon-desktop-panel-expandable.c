@@ -40,7 +40,7 @@
 #define SYSTEM_TRAY_CANCEL_MESSAGE  2
 #endif
 
-#define STATUSBAR_DEBUG 0
+#define STATUSBAR_DEBUG 1
 #if (STATUSBAR_DEBUG)
 #define sb_debug(o,a...) g_debug("sb: " o,##a)
 #else
@@ -637,6 +637,7 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 
   division = ((guint)((n_items+1) / panel->priv->items_p_row));
 
+g_debug ("fivision is %d and n_items is %d", division, n_items);
   n_rows = division + (((n_items+1) % panel->priv->items_p_row) != 0) ? 1 : 0;
   
   g_object_get (panel->priv->extension_table, "n-rows", &table_rows, NULL);
@@ -654,11 +655,21 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
   }
 
   if (1)/*HILDON_DESKTOP_PANEL (panel)->orient == GTK_ORIENTATION_HORIZONTAL)*/
-  {	  
+  {	 
+    gint mod = ((guint)((n_items+1) % panel->priv->items_p_row));
+
     top_attach    = division - 1;
     bottom_attach = division;
+    
+    if (mod == 0)
+    {
+      top_attach--;
+      bottom_attach--;
 
-    left_attach = (((n_items+1) % panel->priv->items_p_row)) - 1;
+      left_attach = panel->priv->items_p_row - 1;
+    }	    
+    else   
+      left_attach = (((n_items+1) % panel->priv->items_p_row)) - 1;
 
     right_attach = left_attach + 1;
 
@@ -738,8 +749,8 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
     if (!STATUSBAR_IS_ITEM_SOCKET (l->data))
     {	    
       g_object_ref (G_OBJECT (l->data));
-      gtk_container_parent_remove (GTK_CONTAINER (panel->priv->extension_table),
-		    	           GTK_WIDGET (l->data));
+      gtk_container_remove (GTK_CONTAINER (panel->priv->extension_table),
+		            GTK_WIDGET (l->data));
     }
   }
 
@@ -763,7 +774,12 @@ hildon_desktop_panel_expandable_arrange_items (HildonDesktopPanelExpandable *pan
     else if (STATUSBAR_IS_ITEM (l->data) && HILDON_DESKTOP_ITEM (l->data)->mandatory)
       sb_debug ("not unreffing");
     else
-      g_object_unref (G_OBJECT (l->data));
+    {
+      if (gtk_widget_get_parent (GTK_WIDGET (l->data)))
+        g_object_unref (G_OBJECT (l->data));
+      else
+        g_warning ("The plugin couldn't be attached to parent MEMORY LEAK!!!!!!");	      
+    }
   }	  
 
   g_list_free (panel->priv->queued_items);
