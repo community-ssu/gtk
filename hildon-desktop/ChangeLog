@@ -1,4 +1,8 @@
-2007-07-26  Lucas Rocha  <lucas.rocha@nokia.com>
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* background-manager/Makefile.am: fixed typo and a build warning.
+
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-plugin-manager.c (hd_plugin_manager_sync): fixed object
 	references leaks on plugins when syncing. Fixes NB#62321  

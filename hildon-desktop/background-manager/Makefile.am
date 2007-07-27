@@ -22,7 +22,7 @@ hildon-background-manager.h: background-manager.xml background-manager-dbus.h
 			   background-manager.xml
 	cat background-manager.h background-manager-dbus.h hildon-background-manager-tmp.h |\
 	sed 's/dbus_g_proxy_begin_call/dbus_g_proxy_begin_call_with_timeout/' |\
-        sed 's/g_free, /g_free, 60000, /' \	
+        sed 's/g_free, /g_free, 60000, /' \
 	> hildon-background-manager.h
 
 pkgincludedir = $(includedir)/libhildondesktop/libhildondesktop
