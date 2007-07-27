@@ -2104,7 +2104,7 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   while (n_groups > 0)
     {
       GtkWidget     *applet = NULL;
-      gint           x,y,width,height, stack_index;
+      gint           x,y,width = -1,height = -1, stack_index = G_MAXINT;
       GList         *list_element;
 
       x = g_key_file_get_integer (keyfile,
@@ -2119,17 +2119,17 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
       width = g_key_file_get_integer (keyfile,
                                       groups[n_groups-1],
                                       HH_APPLET_KEY_WIDTH,
-                                      &local_error);
+                                      NULL);
 
       height = g_key_file_get_integer (keyfile,
                                        groups[n_groups-1],
                                        HH_APPLET_KEY_HEIGHT,
-                                       &local_error);
+                                       NULL);
 
       stack_index = g_key_file_get_integer (keyfile,
                                             groups[n_groups-1],
                                             HH_APPLET_KEY_STACK_INDEX,
-                                            &local_error);
+                                            NULL);
 
       if (local_error) goto cleanup;
 

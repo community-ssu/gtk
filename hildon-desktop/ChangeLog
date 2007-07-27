@@ -1,3 +1,12 @@
+2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- when loading layout, width, height and stack order are not
+	mandatory
+	* data/home-layout.conf, data/home.conf.in, data/desktop.conf.in:
+	- fixed initial home layout.
+	Fixes: NB#64422
+
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
@@ -16,7 +25,7 @@
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-plugin-manager.c (hd_plugin_manager_sync): fixed object
-	references leaks on plugins when syncing. Fixes NB#62321  
+	references leaks on plugins when syncing. Fixes NB#62321
 
 2007-07-26  Johan Bilien  <johan.bilien@nokia.com>
 
