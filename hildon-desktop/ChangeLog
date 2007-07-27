@@ -1,3 +1,9 @@
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.c
+	(hildon_desktop_popup_window_realize): set background pixmap to NULL
+	to avoid flicking when showing the window. Fixes NB#64459
+
 2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.25

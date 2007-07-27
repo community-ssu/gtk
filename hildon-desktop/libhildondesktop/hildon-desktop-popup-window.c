@@ -344,6 +344,8 @@ hildon_desktop_popup_window_realize (GtkWidget *widget)
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
     gtk_widget_realize (popup->priv->extra_panes[i]);
+
+  gdk_window_set_back_pixmap (widget->window, NULL, FALSE);
 }	
 
 static void 
