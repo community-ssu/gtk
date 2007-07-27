@@ -1519,7 +1519,7 @@ hd_desktop_init (HDDesktop *desktop)
 
   if (g_mkdir_with_parents (user_conf_dir, 0755) < 0)
   {
-    g_error ("Error on creating desktop user configuration directory");
+    g_critical ("Error on creating desktop user configuration directory");
   }
 
   env_config_file = getenv ("HILDON_DESKTOP_CONFIG_FILE");

@@ -1,5 +1,10 @@
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-desktop.c (hd_desktop_init): do not abord if it's not
+	possible to create the user configuration directory.
+
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-applications-menu.c (hd_applications_menu_create_menu,
 	hd_applications_menu_categories_motion_notify): make the categories
 	pane behave like normal menus by activating menu items when the
