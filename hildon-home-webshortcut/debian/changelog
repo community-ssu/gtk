@@ -1,3 +1,32 @@
+hildon-home-webshortcut (1:1.9.4-1) sardine; urgency=low
+
+  * updated build-dep on libhildondesktop-dev
+  * added dependency on hildon-desktop
+
+  * plugin/hildon-home-webshortcut.c:
+  - added _set_uri
+  - use hildon_uri to check if the uri is valid.
+  Fixes: NB#48685
+
+  * plugin/hildon-home-webshortcut.c:
+  - fixed expose event, use the offsets in case of double buffering
+  * plugin/hildon-home-webshortcut.h:
+  - removed wrong include
+
+  * plugin/hhws-background.[ch]:
+  - inherit from HildonDesktopBackground
+  - implement save/load with gconf
+  - implement apply with the background manager
+  * plugin/hildon-home-webshortcut.c:
+  - use a HHWSBackground to load the picture (via
+  the background manager).
+  Fixes: NB#62469, NB#61206, NB#20497, NB#49229
+
+  * plugin/hhws-l10n.h: use the strings provided by Home
+  when available. Fixes: NB#61208
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 27 Jul 2007 16:54:03 +0300
+
 hildon-home-webshortcut (1:1.9.3-1) sardine; urgency=low
 
   * plugin/hildon-home-webshortcut.c:

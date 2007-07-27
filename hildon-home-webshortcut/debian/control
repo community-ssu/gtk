@@ -2,13 +2,13 @@ Source: hildon-home-webshortcut
 Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libhildon1-dev, libosso-dev (>= 0.9.18), osso-af-settings, libconic0-dev, libhildonfm2-dev, libhildonmime-dev, libhildondesktop-dev (>= 0.0.0-30), hildon-desktop-dev
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libhildon1-dev, libosso-dev (>= 0.9.18), osso-af-settings, libconic0-dev, libhildonfm2-dev, libhildonmime-dev, libhildondesktop-dev (>= 0.0.25), hildon-desktop-dev
 Standards-Version: 3.6.0
 
 Package: hildon-home-webshortcut
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, hildon-home-image-viewer-l10n-mr | hildon-home-image-viewer-l10n-mr0
+Depends: ${shlibs:Depends}, hildon-home-image-viewer-l10n-mr | hildon-home-image-viewer-l10n-mr0, hildon-desktop (>= 0.0.25)
 Replaces: hildon-home-image-viewer
 Conflicts: hildon-home-image-viewer
 Description: Hildon Home Webshortcut plugin
