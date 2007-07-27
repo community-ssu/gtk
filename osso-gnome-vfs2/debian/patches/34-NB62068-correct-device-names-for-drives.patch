@@ -1,0 +1,53 @@
+Index: libgnomevfs/gnome-vfs-hal-mounts.c
+===================================================================
+--- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 12829)
++++ libgnomevfs/gnome-vfs-hal-mounts.c	(working copy)
+@@ -973,7 +973,7 @@ _hal_add_volume (GnomeVFSVolumeMonitorDa
+ 	/* if we had a drive from here but where we weren't mounted, just use that drive since nothing actually
+ 	 * changed 
+ 	 */
+-	drive = _gnome_vfs_volume_monitor_find_drive_by_hal_udi (volume_monitor, libhal_volume_get_udi (hal_volume));
++	drive = _gnome_vfs_volume_monitor_find_drive_by_hal_udi (volume_monitor, libhal_drive_get_udi (hal_drive));
+ 	if (drive == NULL && allowed_by_policy) {
+ 		drive = g_object_new (GNOME_VFS_TYPE_DRIVE, NULL);
+ 		if (libhal_volume_disc_has_audio (hal_volume)) {
+@@ -991,7 +991,7 @@ _hal_add_volume (GnomeVFSVolumeMonitorDa
+ 			drive->priv->activation_uri = g_strdup ("");
+ 		}
+ 		drive->priv->is_connected = TRUE;
+-		drive->priv->device_path = g_strdup (libhal_volume_get_device_file (hal_volume));
++		drive->priv->device_path = g_strdup (libhal_drive_get_device_file (hal_drive));
+ 		drive->priv->device_type = _hal_get_gnome_vfs_device_type (hal_drive);
+ 	
+ 		/* TODO: could add an icon of a drive with media in it since this codepath only
+@@ -1006,7 +1006,7 @@ _hal_add_volume (GnomeVFSVolumeMonitorDa
+ 		g_free (name);
+ 		drive->priv->is_user_visible = allowed_by_policy;
+ 		drive->priv->volumes = NULL;
+-		drive->priv->hal_udi = g_strdup (libhal_volume_get_udi (hal_volume));
++		drive->priv->hal_udi = g_strdup (libhal_drive_get_udi (hal_drive));
+ 		drive->priv->hal_drive_udi = g_strdup (libhal_drive_get_udi (hal_drive));
+ 		drive->priv->hal_backing_crypto_volume_udi = g_strdup (backing_udi);
+                 drive->priv->must_eject_at_unmount = libhal_drive_requires_eject (hal_drive);
+@@ -1581,6 +1581,7 @@ _gnome_vfs_hal_mounts_modify_volume (Gno
+ 	GnomeVFSVolume *result;
+ 	LibHalContext *hal_ctx; 
+ 	LibHalDrive *hal_drive;
++	LibHalVolume *hal_volume;
+ 	char path[PATH_MAX + 5] = "/dev/";
+ 	char *target = path + 5;
+ 	int ret;
+@@ -1601,9 +1602,11 @@ _gnome_vfs_hal_mounts_modify_volume (Gno
+ 	 */
+ 	hal_drive = libhal_drive_from_device_file (hal_ctx, volume->priv->device_path);
+ 	if (hal_drive != NULL) {
++		hal_volume = libhal_volume_from_device_file (hal_ctx, volume->priv->device_path);
+ 
+ 		/* handle drives that HAL can't poll and the user can still mount */
+-		if (libhal_device_get_property_bool (hal_ctx, 
++		if (hal_volume == NULL &&
++		    libhal_device_get_property_bool (hal_ctx, 
+ 						     libhal_drive_get_udi (hal_drive),
+ 						     "storage.media_check_enabled",
+ 						     NULL) == FALSE) {
+
