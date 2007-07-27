@@ -673,6 +673,9 @@ background_apply_callback (HildonDesktopBackground     *background,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code4")))
         text = HH_MMC_OPEN_TEXT;
       else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code6")))
+        text = HH_FLASH_FULL_TEXT;
+      else if ((dbus_g_error_has_name (error,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code7")))
         text = HH_NO_CONNECTION_TEXT;
 
@@ -736,6 +739,8 @@ background_apply_and_save_callback (HildonDesktopBackground    *background,
       g_warning ("Error when saving background settings to %s: %s",
                  conffile,
                  save_error->message);
+      /* Assume flash full */
+      hd_home_window_show_information_note (window, HH_FLASH_FULL_TEXT);
       g_error_free (save_error);
     }
 

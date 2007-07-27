@@ -550,6 +550,14 @@ hbm_background_write_to_cache (HBMBackground *background, GError **error)
   hbm_background_is_oom (background, error);
   if (*error) return;
 
+  if (result == GNOME_VFS_ERROR_NO_SPACE)
+  {
+    g_set_error (error,
+                 BACKGROUND_MANAGER_ERROR,
+                 BACKGROUND_MANAGER_ERROR_FLASH_FULL,
+                 "Unable to write to cache: device is full");
+  }
+
   if (result != GNOME_VFS_OK)
   {
     g_set_error (error,

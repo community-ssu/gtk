@@ -1,3 +1,12 @@
+2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/hbm-background.c: treat storage full
+	in a special case
+	* src/hd-home-window.c: show a "flash full" banner,
+	if the cache could not be written or if the background settings
+	could not be saved.
+	Fixes: NB#62511
+
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-desktop.c (hd_desktop_init): do not abord if it's not
