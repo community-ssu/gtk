@@ -72,7 +72,7 @@ enum {
 };
 
 #ifndef MAEMO_CHANGES
-#define TOGGLE_WIDTH 12
+#define TOGGLE_WIDTH 13
 #else  /* MAEMO_CHANGES */
 #define TOGGLE_WIDTH 26
 #endif /* MAEMO_CHANGES */
@@ -375,7 +375,7 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
                         expose_area, widget, "cellradio",
                         cell_area->x + x_offset + cell->xpad,
                         cell_area->y + y_offset + cell->ypad,
-                        width - 1, height - 1);
+                        width, height);
     }
   else
     {
@@ -385,7 +385,7 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
                        expose_area, widget, "cellcheck",
                        cell_area->x + x_offset + cell->xpad,
                        cell_area->y + y_offset + cell->ypad,
-                       width - 1, height - 1);
+                       width, height);
     }
 }
 
