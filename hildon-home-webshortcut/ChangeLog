@@ -1,3 +1,10 @@
+2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.c:
+	- fixed expose event, use the offsets in case of double buffering
+	* plugin/hildon-home-webshortcut.h:
+	- removed wrong include
+
 2007-06-26  Johan Bilien  <johan.bilien@nokia.com>
 
 	* plugin/hhws-background.[ch]:

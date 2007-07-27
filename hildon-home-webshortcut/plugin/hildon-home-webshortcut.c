@@ -747,7 +747,7 @@ hhws_expose (GtkWidget         *widget,
                           widget_picture,
                           15, 15,
                           15, 15,
-                          15, 15,
+                          15 - x_offset, 15 - y_offset,
                           widget->allocation.width  - 30,
                           widget->allocation.height - 30);
 

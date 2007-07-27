@@ -25,7 +25,6 @@
 #ifndef __HILDON_HOME_WEBSHORTCUT_H__
 #define __HILDON_HOME_WEBSHORTCUT_H__
 
-#include "hhwsloader.h"
 #include <libhildondesktop/hildon-desktop-home-item.h>
 
 G_BEGIN_DECLS
