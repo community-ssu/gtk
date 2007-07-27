@@ -1,6 +1,13 @@
 2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* plugin/hildon-home-webshortcut.c:
+	- added _set_uri
+	- use hildon_uri to check if the uri is valid.
+	Fixes: NB#48685
+
+2007-06-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.c:
 	- fixed expose event, use the offsets in case of double buffering
 	* plugin/hildon-home-webshortcut.h:
 	- removed wrong include

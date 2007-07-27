@@ -313,6 +313,44 @@ hhws_apply_background (Hhws *hhws, HildonDesktopBackground *background)
 }
 
 static void
+hhws_set_uri (Hhws *hhws, const gchar *uri)
+{
+  HhwsPrivate  *priv = hhws->priv;
+  GSList       *actions         = NULL;
+  GError       *error           = NULL;
+
+  if (!g_strrstr (uri, ":"))
+  {
+    /* No : in the URL, adding http:// */
+    gchar *http_url = g_strconcat("http://", uri, NULL);
+
+    g_free (priv->uri);
+    priv->uri = http_url;
+
+    return;
+  }
+
+  actions = hildon_uri_get_actions_by_uri (uri,
+                                           HILDON_URI_ACTION_NEUTRAL,
+                                           &error);
+
+  if (error)
+  {
+    hhws_show_information_note (hhws, HHWS_INVALID_URL);
+    g_error_free (error);
+  }
+  else
+  {
+    g_free (priv->uri);
+    priv->uri = g_strdup (uri);
+  }
+
+  if (actions)
+    hildon_uri_free_actions (actions);
+
+}
+
+static void
 hhws_load_configuration (Hhws *hhws)
 {
   HhwsPrivate  *priv = hhws->priv;
@@ -497,18 +535,7 @@ hhws_settings_dialog_response (GtkWidget *dialog,
               hhws_apply_and_save_background (hhws, background);
               g_object_unref (background);
 
-              g_free (priv->uri);
-
-              if (!g_strrstr (new_url_str, ":"))
-                {
-                  /* No : in the URL, adding http:// */
-                  gchar *http_url = g_strconcat("http://", new_url_str, NULL);
-
-                  priv->uri = http_url;
-                }
-              else
-                priv->uri = g_strdup (new_url_str);
-
+              hhws_set_uri (hhws, new_url_str);
               hhws_save_configuration (hhws);
 
               g_free (priv->selected_image_uri);
