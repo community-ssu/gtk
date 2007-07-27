@@ -669,7 +669,7 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
   gint screen_height = gdk_screen_height ();
 
   GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (menu));
-
+ 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
   for (l = children; l != NULL; l = g_list_next (l))

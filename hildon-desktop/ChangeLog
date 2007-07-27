@@ -1,3 +1,10 @@
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c (hd_applications_menu_create_menu,
+	hd_applications_menu_categories_motion_notify): make the categories
+	pane behave like normal menus by activating menu items when the
+	pointer passes over. Fixes NB#62108
+
 2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
