@@ -1,3 +1,134 @@
+hildon-desktop (1:0.0.25-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  (hildon_desktop_panel_expandable_add_in_extension),
+  (hildon_desktop_panel_expandable_arrange_items):
+  - Fixed positioning on extension panel
+  - If not positioned don't unref the object.
+  Fixes: NB#63894
+
+  * background-manager/hbm-background.c: treat storage full
+  in a special case
+  * src/hd-home-window.c: show a "flash full" banner,
+  if the cache could not be written or if the background settings
+  could not be saved.
+  Fixes: NB#62511
+
+  * src/hd-desktop.c (hd_desktop_init): do not abord if it's not
+  possible to create the user configuration directory.
+
+  * src/hd-applications-menu.c (hd_applications_menu_create_menu,
+  hd_applications_menu_categories_motion_notify): make the categories
+  pane behave like normal menus by activating menu items when the
+  pointer passes over. Fixes NB#62108
+
+  * libhildondesktop/hildon-home-area.c:
+  - when loading layout, width, height and stack order are not
+  mandatory
+  * data/home-layout.conf, data/home.conf.in, data/desktop.conf.in:
+  - fixed initial home layout.
+  Fixes: NB#64422
+
+  * src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
+  close switcher menu when a notification is activated. Fixes NB#63102
+
+  * src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
+  correctly set the switcher menu icon with the latest notification
+  icon. Fixes NB#63134
+
+  * background-manager/Makefile.am: fixed typo and a build warning.
+
+  * src/hd-plugin-manager.c (hd_plugin_manager_sync): fixed object
+  references leaks on plugins when syncing. Fixes NB#62321
+
+  * hildon-desktop-background.[ch]:
+  - added _get_filename method
+
+  * src/hd-desktop.c: (hd_desktop_ping_timeout_dialog_response):
+  - If the application is recovered and Ok is pressed destroy the dialog
+  because the HDWMWindow doesn't exist anymore. Fixes: NB#64333
+
+  * background-manager/background-manager.{c,h,xml.in}:
+  - added cache argument, to tell the background manager
+  to keep a local copy of the image file
+  * libhildondesktop/hildon-desktop-background.c:
+  - added cache property
+  * background-manager/hbm-background.c:
+  - if the cache property is set, copy the image file to it
+  * src/hd-home-background.c:
+  - before applying, check if the file is on a remote
+  filesystem or an MMC, in which case ask the background
+  manager to cache the file
+  - when saving, clean the background cache directory.
+  Fixes: NB#61734
+
+  * data/applications-menu.desktop.in:
+  - Changed name to localized one. Fixes: NB#64295
+
+  * src/hd-home-background.[ch],
+    libhildondesktop/hildon-desktop-background.[ch]:
+  - removed unused area argument
+  * background-manager/background-manager.{c,h,xml.in}:
+  - removed corresponding _offset arguments
+
+  * background-manager/hbm-background.c:
+  - added cropping before uploading to X
+
+  * libhildondesktop/Makefile.am: added built sources to clean list.
+
+  * src/hd-switcher-menu.c: (hd_switcher_menu_switcher_keypress_cb):
+  - Fixed toggle button's key handler to allow navigation focus.
+  Fixes: NB#63180
+
+  * libhildondesktop/hildon-desktop-background.[ch]:
+  - made the Background class available to others
+  * src/hd-home-background.[ch]:
+  - inherit from DesktopBackground and implement save/load and
+  apply
+  * background-manager/hbm-background.[ch]:
+  - added server side background object
+  - scale the pixbuf before uploading to X
+  * background/background-manager.c:
+  - use the new object
+  Fixes: NB#62469, NB#59343
+
+  * src/hd-home-background-dialog.c:
+  (hd_home_background_dialog_filename_changed):
+  - Check for priv->background before doing anything.
+  Fixes: NB#63855
+
+  * src/hn-app-switcher.c: (refresh_app_button), (refresh_buttons):
+  - Set always icon geometry for windows.
+  - When not in slot, take also into account the panel position.
+  Fixes: NB#64082
+
+  * libhildondesktop/hildon-desktop-panel-window.c:
+  (hildon_desktop_panel_window_in_focus),
+  (hildon_desktop_panel_window_constructor):
+  - Ignore focus-in events for panels that can-focus == FALSE
+  * libhildonwm/hd-wm.c: (hd_wm_reset_focus):
+  - Unset focus for window where others buttons is placed.
+  * src/hd-applications-menu.c: (hd_applications_menu_key_press):
+  * src/hd-switcher-menu.c:
+  (hd_switcher_menu_popup_window_keypress_cb):
+  - set toplevel to can-focus
+  Fixes: N#63854
+
+  * src/hd-applications-menu.c (hd_applications_menu_init): check if
+  directories exists before adding monitors in order to avoid desktop
+  process from waking up every now and then. Fixes NB#62159.
+
+  * src/hn-app-switcher.c: (refresh_app_button):
+  - Take into account position of the toplevel window.
+  Fixes: NB#64024
+
+  * libhildonwm/hd-wm.c:
+  (hd_wm_x_window_is_watchable):
+  - Removed redundant banner when an HDWApplication is launched.
+  Fixes: NB#61257
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 27 Jul 2007 16:57:28 +0300
+
 hildon-desktop (1:0.0.24-1) sardine; urgency=low
 
   * libhildonwm/hd-keys.c: (hd_keys_action_power):

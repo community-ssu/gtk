@@ -1,3 +1,7 @@
+2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.25
+
 2007-07-27  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
@@ -124,7 +128,7 @@
 	- scale the pixbuf before uploading to X
 	* background/background-manager.c:
 	- use the new object
-	Fixes: NB#62469
+	Fixes: NB#62469, NB#59343
 
 2007-07-24  Moises Martinez  <moises.martinez@nokia.com>
 
