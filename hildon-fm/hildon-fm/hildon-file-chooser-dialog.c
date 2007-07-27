@@ -55,6 +55,7 @@
 #include <hildon/hildon-defines.h>
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-helper.h>
+#include <hildon/hildon-note.h>
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
@@ -1310,10 +1311,13 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
 
                     if (path_length > self->priv->max_full_path_length)
                     {
+                        GtkWidget *w;
                         g_signal_stop_emission_by_name(widget, "response");
                         hildon_file_chooser_dialog_select_text(priv);
-                        hildon_banner_show_information
-                          (widget, NULL, HCS("file_ib_name_too_long"));
+                        w = hildon_note_new_information(GTK_WINDOW(widget),
+                                FM("sfil_ni_target_foldername_long"));
+                        gtk_dialog_run(GTK_DIALOG(w));
+                        gtk_widget_destroy(w);
                     }
                     g_free(uri);
                 }

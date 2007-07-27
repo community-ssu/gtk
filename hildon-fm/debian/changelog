@@ -8,8 +8,10 @@ libhildonfm (1:1.9.35~unreleased) unstable; urgency=low
   * Add two logical IDs that were added to the UI spec ("Common", "Data")
   * Add two instances of missing GDK_THREADS_ENTER/GDK_THREADS_LEAVE pairs.
   * Fixes: NB#63995.
+  * Show information note sfil_ni_target_foldername_long instead of
+    information banner file_ib_name_too_long. Fixes: NB#36630
   
- -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 25 Jul 2007 11:33:08 +0300
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 27 Jul 2007 14:09:28 +0300
 
 libhildonfm (1:1.9.34) unstable; urgency=low
 
