@@ -1,6 +1,6 @@
 AC_INIT(Makefile.am)
 
-AM_INIT_AUTOMAKE(hildon-desktop, 0.0.25)
+AM_INIT_AUTOMAKE(hildon-desktop, 0.0.26)
 
 AM_CONFIG_HEADER(config.h)
 
