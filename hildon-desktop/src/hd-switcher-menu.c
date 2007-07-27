@@ -775,6 +775,12 @@ hd_switcher_menu_constructor (GType gtype,
     HILDON_DESKTOP_POPUP_WINDOW 
       (hildon_desktop_popup_window_new (1,GTK_ORIENTATION_HORIZONTAL,HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM));	     
 
+#if 0
+  g_object_set (G_OBJECT (switcher->priv->popup_window), 
+		"border-width", 4,
+		NULL);
+#endif  
+ 
   /* We don't attach the widget because if we do it, we cannot be on top of 
    * virtual keyboard. Anyway it should be transient to button
    */
@@ -785,6 +791,12 @@ hd_switcher_menu_constructor (GType gtype,
   switcher->priv->notifications_window = 
     hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 0);
 
+#if 0
+  g_object_set (G_OBJECT (switcher->priv->notifications_window), 
+		"border-width", 4,
+		NULL);
+#endif
+  
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->popup_window),
 			       340, 100);
   
@@ -803,6 +815,7 @@ hd_switcher_menu_constructor (GType gtype,
 
   gtk_container_add (GTK_CONTAINER (switcher->priv->popup_window),
 		     GTK_WIDGET (switcher->priv->menu_applications));
+
   gtk_container_add (GTK_CONTAINER (switcher->priv->notifications_window),
 		     GTK_WIDGET (switcher->priv->menu_notifications));
 
@@ -1535,7 +1548,7 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
     GHashTable *hints;
     GValue *hint;
     gchar *summary, *body;
-    gboolean ack;
+    gboolean ack, icon_is_set = FALSE;
     gint id;
 
     if (switcher->priv->clear_events_menu_item)
@@ -1613,9 +1626,12 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
         hildon_desktop_popup_menu_add_item
          (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
 
-        if (!ack)
+        if (!ack && !icon_is_set)
+        {
           hd_switcher_menu_replace_blinking_icon (switcher, icon);
-
+          icon_is_set = TRUE;
+	}
+	  
         if (!first_item)
 	  first_item = menu_item;
       }

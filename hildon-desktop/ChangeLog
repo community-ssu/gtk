@@ -1,5 +1,11 @@
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-switcher-menu.c (hd_switcher_menu_create_notifications_menu):
+	correctly set the switcher menu icon with the latest notification
+	icon. Fixes NB#63134
+
+2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* background-manager/Makefile.am: fixed typo and a build warning.
 
 2007-07-27  Lucas Rocha  <lucas.rocha@nokia.com>
