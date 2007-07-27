@@ -1,3 +1,8 @@
+2007-07-26  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-manager.c (hd_plugin_manager_sync): fixed object
+	references leaks on plugins when syncing. Fixes NB#62321  
+
 2007-07-26  Johan Bilien  <johan.bilien@nokia.com>
 
 	* hildon-desktop-background.[ch]:

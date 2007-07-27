@@ -269,9 +269,10 @@ hd_plugin_manager_sync (HDPluginManager *pm,
   for (iter = children; keep_order && iter; iter = g_list_next (iter))
   {
     g_object_ref (iter->data);
+
     if (HILDON_DESKTOP_IS_CONTAINER (container))
       hildon_desktop_container_remove (HILDON_DESKTOP_CONTAINER (container), GTK_WIDGET (iter->data));	    
-    else	     
+    else
       gtk_container_remove (container, GTK_WIDGET (iter->data));
   }
 
@@ -290,7 +291,9 @@ hd_plugin_manager_sync (HDPluginManager *pm,
         {
 	  gtk_widget_show (GTK_WIDGET (found->data));
           gtk_container_add (container, GTK_WIDGET (found->data));
+          g_object_unref (found->data);
 	}
+
         children = g_list_remove_link (children, found);
       }
       else if (policy != NULL)
@@ -315,6 +318,7 @@ hd_plugin_manager_sync (HDPluginManager *pm,
   for (iter = children; iter; iter = g_list_next (iter))
   {
     gtk_widget_destroy (GTK_WIDGET (iter->data));
+    g_object_unref (iter->data);
   }
 
   g_list_foreach (f_plugin_list, (GFunc) g_free, NULL);
