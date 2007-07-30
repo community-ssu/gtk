@@ -59,6 +59,7 @@
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
+#include <glib.h>
 
 #include "hildon-file-common-private.h"
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345
@@ -281,6 +282,39 @@ get_path_length_from_uri(const char *uri)
   g_free(unescaped);
 
   return len;
+}
+
+static gint
+get_global_pane_position ()
+{
+  GError *error = NULL;
+  GKeyFile *keys;
+  gint pos;
+
+  keys = hildon_file_system_open_user_settings ();
+  pos = g_key_file_get_integer (keys, "default", "pane_position", &error);
+  if (error)
+    {
+      pos = 250;
+      if (!g_error_matches (error, G_KEY_FILE_ERROR,
+			    G_KEY_FILE_ERROR_KEY_NOT_FOUND)
+	  && !g_error_matches (error, G_KEY_FILE_ERROR,
+			       G_KEY_FILE_ERROR_GROUP_NOT_FOUND))
+	fprintf (stderr, "%s\n", error->message);
+      g_error_free (error);
+    }
+
+  g_key_file_free (keys);
+  return pos;
+}
+
+static void
+set_global_pane_position (gint pos)
+{
+  GKeyFile *keys = hildon_file_system_open_user_settings ();
+  g_key_file_set_integer (keys, "default", "pane_position", pos);
+  hildon_file_system_write_user_settings (keys);
+  g_key_file_free (keys);
 }
 
 static void
@@ -1572,10 +1606,21 @@ static void hildon_file_chooser_dialog_show(GtkWidget * widget)
 static void hildon_file_chooser_dialog_destroy(GtkObject * obj)
 {
     HildonFileChooserDialog *dialog;
+    gint pos;
 
     ULOG_DEBUG_F("entered");
 
     dialog = HILDON_FILE_CHOOSER_DIALOG(obj);
+    
+    if (dialog->priv->filetree)
+      {
+	pos = -1;
+	g_object_get (dialog->priv->filetree,
+		      "pane-position", &pos,
+		      NULL);
+	if (pos >= 0)
+	  set_global_pane_position (pos);
+      }
 
     /* We need sometimes to break cyclic references */
 
@@ -1588,6 +1633,8 @@ static void hildon_file_chooser_dialog_destroy(GtkObject * obj)
         g_object_unref(dialog->priv->model);
         dialog->priv->model = NULL;
     }
+
+    dialog->priv->filetree = NULL;
 
     GTK_OBJECT_CLASS(hildon_file_chooser_dialog_parent_class)->
         destroy(obj);
@@ -1962,9 +2009,12 @@ hildon_file_chooser_dialog_constructor(GType type,
     priv = HILDON_FILE_CHOOSER_DIALOG(obj)->priv;
 
     g_assert(priv->model);
-    priv->filetree = g_object_new(HILDON_TYPE_FILE_SELECTION,
-      "model", priv->model, "visible-columns",
-      HILDON_FILE_SELECTION_SHOW_NAME | HILDON_FILE_SELECTION_SHOW_MODIFIED,
+    priv->filetree = g_object_new
+      (HILDON_TYPE_FILE_SELECTION,
+       "model", priv->model,
+       "visible-columns", (HILDON_FILE_SELECTION_SHOW_NAME
+			   | HILDON_FILE_SELECTION_SHOW_MODIFIED),
+       "pane-position", get_global_pane_position (),
       NULL);
 
     gtk_box_pack_start(GTK_BOX(GTK_DIALOG(obj)->vbox),
