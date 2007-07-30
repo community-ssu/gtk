@@ -1,3 +1,6 @@
+2007-07-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+
 2007-07-30  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	Released 1.9.35
@@ -18,6 +21,14 @@
 	the selected row, fixes focus behaviour. Fixes: NB#49941
 
 2007-07-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c: Removed all !HILDON_FM_HPANED
+	code.
+	(PROP_PANE_POSITION): New.
+	(hildon_file_selection_init): view_selector is a GtkHBox now.
+	Using a GtkNotebook would use the space required by the invisible
+	tabs to calculate the minimum size of the content pane.  Changed
+	all users.
 
 	* hildon-fm/hildon-file-selection.c
 	(hildon_file_selection_selection_changed): Save and restore sort
