@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.35~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.35) unstable; urgency=low
 
   * Added code to detect whether memory cards are shared over USB and should
     not be visible. This requires two new GConf keys from ke-recv:
@@ -13,7 +13,7 @@ libhildonfm (1:1.9.35~unreleased) unstable; urgency=low
   * Fixes: NB#59274
   * Patch from Markku for irritating focus bug. Fixes: NB#49941
   
- -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 27 Jul 2007 14:09:28 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jul 2007 10:10:11 +0300
 
 libhildonfm (1:1.9.34) unstable; urgency=low
 

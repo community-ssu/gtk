@@ -1,3 +1,7 @@
+2007-07-30  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.35
+
 2007-07-27  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	* hildon-file-chooser-dialog.c (response_handler): Show
