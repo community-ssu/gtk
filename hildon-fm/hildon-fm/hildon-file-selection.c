@@ -423,7 +423,7 @@ hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
     gboolean content_focused = FALSE;
 
     if (!hildon_file_selection_content_pane_visible(priv))
-        return;
+      return;
 
     current_page = priv->cur_view;
     target_page = get_view_to_be_displayed(priv);
@@ -433,11 +433,10 @@ hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
     {
       content_focused = GTK_WIDGET_HAS_FOCUS(view) ||
           priv->force_content_pane || priv->content_pane_last_used;
-      gtk_widget_hide (view_widget (priv, current_page));
+      if (current_page >= 0)
+	gtk_widget_hide (view_widget (priv, current_page));
       gtk_widget_show (view_widget (priv, target_page));
       priv->cur_view = target_page;
-
-      fprintf (stderr, "SHOWING %d -> %d\n", current_page, target_page);
 
       if (current_page == HILDON_FILE_SELECTION_MODE_THUMBNAILS &&
         target_page == HILDON_FILE_SELECTION_MODE_LIST)
@@ -464,7 +463,6 @@ hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
     if (priv->force_content_pane)
       expand_cursor_row(GTK_TREE_VIEW(priv->dir_tree));
 }
-
 static void hildon_file_selection_forall(GtkContainer * self,
                                          gboolean include_internals,
                                          GtkCallback callback,
@@ -3084,13 +3082,6 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
 			self->priv->scroll_thumb, TRUE, TRUE, 0);
 
-    gtk_widget_show_all (priv->hpaned);
-    priv->cur_view = 0;
-    gtk_widget_hide (priv->scroll_thumb);
-    gtk_widget_hide (priv->view[2]);
-    gtk_widget_hide (priv->view[3]);
-
-
     /* Also the views of the navigation pane are trees (and this is
        needed). Let's deny expanding */
     g_signal_connect(priv->view[0], "test-expand-row",
@@ -3156,6 +3147,15 @@ static GObject *hildon_file_selection_constructor(GType type,
         hildon_file_selection_setup_dnd_view(self, priv->view[1]);
         hildon_file_selection_setup_dnd_view(self, priv->dir_tree);
     }
+
+    gtk_widget_show_all (priv->hpaned);
+    priv->cur_view = -1;
+    gtk_widget_hide (priv->scroll_list);
+    gtk_widget_hide (priv->scroll_thumb);
+    gtk_widget_hide (priv->view[2]);
+    gtk_widget_hide (priv->view[3]);
+
+    hildon_file_selection_inspect_view (priv);
 
     return obj;
 }
