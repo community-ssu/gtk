@@ -1,3 +1,7 @@
+2007-07-30  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* rc/hildonnavigator.rc: added theming for new switcher menu.
+
 2007-07-30  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* rc/hildonkeyboard.rc: Add a style for the FKB menuitems.

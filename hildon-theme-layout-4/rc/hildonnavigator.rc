@@ -291,3 +291,290 @@ style "hildon-navigator"
 }
 
 class "HDPanelWindow" style "hildon-navigator"
+
+style "hildon-switcher-menu-app-window" {
+   GtkMenu::horizontal_padding = 18
+   GtkMenu::vertical_padding = 18
+
+   engine "sapwood" {
+      image {
+	 function = FLAT_BOX
+	 state = NORMAL
+	 file = "../images/qgn_plat_task_switcher_notification_menu_bg.png"
+	 file = "../images/qgn_plat_task_switcher_menu_bg.png"
+	 border = { 20, 20, 20, 20 }
+         shaped = TRUE
+      }
+   }
+}
+
+style "hildon-switcher-menu-app-menu"
+{
+  bg[NORMAL] = "#555753"
+}
+
+style "hildon-switcher-menu-app-item"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function = BOX
+      state = PRELIGHT
+      file = "../images/qgn_plat_task_switcher_focus_active.png"
+      border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+style "hildon-switcher-menu-app-arrow"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_normal.png"
+      overlay_stretch = TRUE 
+    }
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_normal.png"
+      overlay_stretch = FALSE
+    }
+  }
+}
+
+style "hildon-switcher-menu-app-label"
+{
+  fg[NORMAL] = "#FFFFFF"
+}
+
+style "hildon-switcher-menu-app-button"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function = BOX 
+    }
+  }
+}
+
+widget "hildon-switcher-menu-app-window" style "hildon-switcher-menu-app-window"
+widget "*.hildon-switcher-menu-app-menu" style "hildon-switcher-menu-app-menu"
+widget "*.hildon-switcher-menu-app-menu.GtkViewport"  style "hildon-switcher-menu-app-menu"
+widget "*.hildon-switcher-menu-app-item" style "hildon-switcher-menu-app-item"
+widget "*.hildon-switcher-menu-app-item.*.GtkLabel"  style "hildon-switcher-menu-app-label"
+widget "*.hildon-switcher-menu-app-button"  style "hildon-switcher-menu-app-button"
+widget "*.hildon-switcher-menu-app-menu.*.GtkArrow"  style "hildon-switcher-menu-app-arrow"
+
+style "hildon-switcher-menu-not-window" {
+   GtkMenu::horizontal_padding = 18
+   GtkMenu::vertical_padding = 18
+
+   engine "sapwood" {
+      image {
+	 function = FLAT_BOX
+	 state = NORMAL
+	 file = "../images/qgn_plat_task_switcher_notification_menu_bg.png"
+	 border = { 20, 20, 20, 20 }
+         shaped = TRUE
+      }
+   }
+}
+
+style "hildon-switcher-menu-not-menu"
+{
+  bg[NORMAL] = "#EDCD00"
+}
+
+style "hildon-switcher-menu-not-item"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function = BOX
+      state = PRELIGHT
+      file = "../images/qgn_plat_task_switcher_focus_active.png"
+      border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+style "hildon-switcher-menu-not-arrow"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = UP 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_normal.png"
+      overlay_stretch = TRUE 
+    }
+    image
+    {
+      function        = ARROW
+      state           = INSENSITIVE
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_disabled.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = PRELIGHT 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = SELECTED 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      state           = ACTIVE 
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_pressed.png"
+      overlay_stretch = FALSE
+    }
+    image
+    {
+      function        = ARROW
+      arrow_direction = DOWN 
+      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_normal.png"
+      overlay_stretch = FALSE
+    }
+  }
+}
+
+style "hildon-switcher-menu-not-label"
+{
+  fg[NORMAL] = "#000000"
+}
+
+style "hildon-switcher-menu-not-button"
+{
+  engine "sapwood"
+  {
+    image
+    {
+      function = BOX 
+    }
+  }
+}
+
+widget "hildon-switcher-menu-not-window" style "hildon-switcher-menu-not-window"
+widget "*.hildon-switcher-menu-not-menu" style "hildon-switcher-menu-not-menu"
+widget "*.hildon-switcher-menu-not-menu.GtkViewport"  style "hildon-switcher-menu-not-menu"
+widget "*.hildon-switcher-menu-not-item" style "hildon-switcher-menu-not-item"
+widget "*.hildon-switcher-menu-not-item.*.GtkLabel"  style "hildon-switcher-menu-not-label"
+widget "*.hildon-switcher-menu-not-button"  style "hildon-switcher-menu-not-button"
+widget "*.hildon-switcher-menu-not-menu.*.GtkArrow"  style "hildon-switcher-menu-not-arrow"
