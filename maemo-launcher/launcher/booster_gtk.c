@@ -30,8 +30,7 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 #include <fontconfig/fontconfig.h>
-#include <pango/pangoxft.h>
-#include <X11/Xft/Xft.h>
+#include <pango/pangocairo.h>
 
 #include "booster.h"
 #include "booster_gtk.h"
@@ -130,11 +129,26 @@ init_gquarks(void)
   return 0;
 }
 
+static void
+init_cairo(void)
+{
+  cairo_surface_t *surface;
+  cairo_t *cairo;
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoFontMap *font_map;
+
+  surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, 1, 1);
+  cairo = cairo_create(surface);
+  font_map = pango_cairo_font_map_get_default();
+  context = pango_cairo_font_map_create_context(font_map);
+  layout = pango_layout_new(context);
+  pango_cairo_show_layout(cairo, layout);
+}
+
 static booster_state_t
 booster_gtk_preinit(int *argc, char ***argv)
 {
-  GdkDisplay *display;
-  GtkSettings *settings;
   GtkStyle *style;
 #ifdef DEBUG
   GTimer *timer;
@@ -142,22 +156,10 @@ booster_gtk_preinit(int *argc, char ***argv)
   timer = g_timer_new();
 #endif
 
-  /* This one is actually called from XftInit, but we should not assume
-     indirect dependencies. */
   if (!FcInit())
     error("FcInit() failed");
 
   debug("FcInit() took %f seconds\n", g_timer_elapsed(timer, NULL));
-
-  if (!XftInit(0))
-    error("XftInit() failed");
-
-  debug("XftInit() took %f seconds\n", g_timer_elapsed(timer, NULL));
-
-  if (!XftInitFtLibrary())
-    error("XftInitFtLibrary() failed");
-
-  debug("XftInitFtLibrary() took %f seconds\n", g_timer_elapsed(timer, NULL));
 
   if (!gtk_parse_args(argc, argv))
     error("gtk_parse_args() failed");
@@ -173,105 +175,16 @@ booster_gtk_preinit(int *argc, char ***argv)
 
   debug("init_gquarks() took %f seconds\n", g_timer_elapsed(timer, NULL));
 
-  display = gdk_display_open(gdk_get_display_arg_name());
-  gdk_display_manager_set_default_display(gdk_display_manager_get(), display);
+  init_cairo();
+
+  debug("init_cairo() took %f seconds\n", g_timer_elapsed(timer, NULL));
+
   style = gtk_style_new();
   g_object_unref(style);
 
   debug("gtk_style_new() took %f seconds\n", g_timer_elapsed(timer, NULL));
 
-  settings = gtk_settings_get_default();
-
-  debug("gtk_settings_get_default() took %f seconds\n",
-        g_timer_elapsed(timer, NULL));
-
-  gdk_display_close(display);
-
-  debug("gdk_display_close() took %f seconds\n", g_timer_elapsed(timer, NULL));
-
-  return settings;
-}
-
-/*
- * Keep in sync with gtk/gtksetting.c (gtk_default_substitute).
- */
-static void
-pango_default_substitute(FcPattern *pattern, gpointer data)
-{
-  GtkSettings *settings = data;
-  gint antialias;
-  gint hinting;
-  char *rgba;
-  char *hintstyle;
-  gint dpi;
-  FcValue v;
-
-  g_object_get(settings,
-	       "gtk-xft-antialias", &antialias,
-	       "gtk-xft-hinting", &hinting,
-	       "gtk-xft-hintstyle", &hintstyle,
-	       "gtk-xft-rgba", &rgba,
-	       "gtk-xft-dpi", &dpi,
-	       NULL);
-
-  if (antialias >= 0 &&
-      FcPatternGet(pattern, FC_ANTIALIAS, 0, &v) == FcResultNoMatch)
-    FcPatternAddBool(pattern, FC_ANTIALIAS, antialias != 0);
-
-  if (hinting >= 0 &&
-      FcPatternGet(pattern, FC_HINTING, 0, &v) == FcResultNoMatch)
-    FcPatternAddBool(pattern, FC_HINTING, hinting != 0);
-
-#ifdef FC_HINT_STYLE
-  if (hintstyle &&
-      FcPatternGet(pattern, FC_HINT_STYLE, 0, &v) == FcResultNoMatch)
-  {
-    int val = FC_HINT_FULL;	/* Quiet GCC. */
-    gboolean found = TRUE;
-
-    if (strcmp(hintstyle, "hintnone") == 0)
-      val = FC_HINT_NONE;
-    else if (strcmp(hintstyle, "hintslight") == 0)
-      val = FC_HINT_SLIGHT;
-    else if (strcmp(hintstyle, "hintmedium") == 0)
-      val = FC_HINT_MEDIUM;
-    else if (strcmp(hintstyle, "hintfull") == 0)
-      val = FC_HINT_FULL;
-    else
-      found = FALSE;
-
-    if (found)
-      FcPatternAddInteger(pattern, FC_HINT_STYLE, val);
-  }
-#endif /* FC_HINT_STYLE */
-
-  if (rgba && FcPatternGet(pattern, FC_RGBA, 0, &v) == FcResultNoMatch)
-  {
-    int val = FC_RGBA_NONE;	/* Quiet GCC. */
-    gboolean found = TRUE;
-
-    if (strcmp(rgba, "none") == 0)
-      val = FC_RGBA_NONE;
-    else if (strcmp(rgba, "rgb") == 0)
-      val = FC_RGBA_RGB;
-    else if (strcmp(rgba, "bgr") == 0)
-      val = FC_RGBA_BGR;
-    else if (strcmp(rgba, "vrgb") == 0)
-      val = FC_RGBA_VRGB;
-    else if (strcmp(rgba, "vbgr") == 0)
-      val = FC_RGBA_VBGR;
-    else
-      found = FALSE;
-
-    if (found)
-      FcPatternAddInteger(pattern, FC_RGBA, val);
-  }
-
-  if (dpi >= 0 && FcPatternGet(pattern, FC_DPI, 0, &v) == FcResultNoMatch)
-    FcPatternAddDouble(pattern, FC_DPI, dpi/1024.);
-
-  g_free(hintstyle);
-  g_free(rgba);
+  return NULL;
 }
 
 #ifdef DEBUG
@@ -291,9 +204,6 @@ static void
 booster_gtk_init(const char *progfilename, const booster_state_t state)
 {
   char *progname;
-  GtkSettings *settings = state;
-  GdkDisplay *display;
-  GdkScreen *screen;
 #ifdef DEBUG
   GTimer *ltimer;
 
@@ -310,43 +220,11 @@ booster_gtk_init(const char *progfilename, const booster_state_t state)
   gdk_set_program_class(progname);
 
   free(progname);
-
-  /* Open a new display, i.e. a new X connection and make it the default. */
-  display = gdk_display_open(gdk_get_display_arg_name());
-  gdk_display_manager_set_default_display(gdk_display_manager_get(),
-					  display);
-
-  screen = gdk_screen_get_default();
-
-  /* Associate the old settings with the new display's default screen. */
-  settings->screen = screen;
-  g_object_set_data(G_OBJECT(screen), "gtk-settings", settings);
-
-  pango_xft_set_default_substitute(GDK_DISPLAY_XDISPLAY(display),
-				   GDK_SCREEN_XNUMBER(screen),
-				   pango_default_substitute,
-				   settings, NULL);
 }
 
 static void
 booster_gtk_reload(booster_state_t state)
 {
-  GtkSettings *settings = state;
-  GdkDisplay *display;
-  GdkScreen *screen;
-
-  display = gdk_display_open(gdk_get_display_arg_name());
-  gdk_display_manager_set_default_display(gdk_display_manager_get(), display);
-
-  screen = gdk_screen_get_default();
-
-  /* Associate the old settings with the new display's default screen. */
-  settings->screen = screen;
-  g_object_set_data(G_OBJECT(screen), "gtk-settings", settings);
-
-  gtk_rc_reparse_all_for_settings(settings, FALSE);
-
-  gdk_display_close(display);
 }
 
 booster_api_t booster_gtk_api = {

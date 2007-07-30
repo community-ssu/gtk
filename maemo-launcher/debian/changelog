@@ -1,6 +1,10 @@
 maemo-launcher (0.22~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
+    - Update gtk booster module to support gtk+ 2.10. (Fixes: NM#952)
+      Thanks to Johannes Schmid <johannes.schmid@openismus.com> for the
+      initial patch.
+  * Remove Build-Depends on libxft-dev.
   * Add new package maemo-launcher-dev and include the header file
     for the boosters and the pkgconfig file. (Fixes: NM#1027)
   * Load the program binary after having adjusted the process priority and

@@ -1,3 +1,18 @@
+2007-07-27  Johannes Schmid  <johannes.schmid@openismus.com>
+            Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/booster_gtk.c: Stop including <pango/pangoxft.h> and
+	<X11/Xft/Xft.h>. Include <pango/pangocairo.h>.
+	(init_cairo): New function.
+	(booster_gtk_preinit): Stop initializing Xft, and storing the
+	GtkSettings. Call init_cairo.
+	(pango_default_substitute): Remove function. Remove all callers.
+	(booster_gtk_init): Do not restore the GtkSettings from state.
+	(booster_gtk_reload): Empty function.
+	* launcher/booster_gtk.h (gquark_name_list): Remove Xft related
+	strings.
+	* README: Update.
+
 2007-07-26  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/Makefile.am (dist_pkgconfig_DATA): Add

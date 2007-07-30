@@ -11,21 +11,13 @@ the ones in charge of preinitializing and keeping the interesting state.
 
 The only current useful booster module is for gtk, with an option to
 link against the hildon library to speedup symbol resolving. This module
-opens a new GdkDisplay, makes it the default and forces all gtkrc files
-to be parsed and initializes some other components like pango, stores the
-GtkSettings object that was associated with the display's default screen
-(this is a hack, the settings and all cached gtkrc stuff should be deleted
-if display/screen closing was implemented correctly, but they aren't because
-display/screen closing is not supported at the moment), then it closes the
-GdkDisplay.
+preinitializes components like pango and cairo.
 
-When an application is invoked it forks, tries to restore the environment as
-if it had been started directy, dynamically opens the application, opens a
-new display and associates its screen with the stored state (the GtkSettings;
-this is the second hack which only works because we *know* the new display's
-properties are identical to the old display's ones). And afterwards launches
-the application by calling the "main" function. The maemo-invoker will proxy
-the application exit status back by default.
+When an application is invoked, it forks, tries to restore the state it
+might have saved during the preinitialization step and the environment as
+if it had been started directy, dynamically opens the application, and
+afterwards launches the application by calling the "main" function. The
+maemo-invoker will proxy the application exit status back by default.
 
 The launcher is listening to a unix socket for notifications of new
 applications to be launched. The maemo-invoker is the program in charge to
@@ -48,10 +40,6 @@ Binaries intended to be run by maemo-launcher must be linked with the
 executables and dlopen()-able objects. If running them as executable is not
 a requirement, "-rdynamic" or "-shared" is good enough.
 
-Transferring the GtkSettings to the child's screen is a hack, therefore it
-will only work if we open the "same" display again (the same display on the
-same server with the same visuals and colormaps).
-
 gnome_vfs_init() cannot be called by the daemon because it opens a pipe to
 the vfs daemon.
 
@@ -61,9 +49,6 @@ Children using GThread should use
     g_thread_init(NULL);
 
 to be safe against possible future changes in maemo-launcher.
-
-Until display/screen closing is fully supported, we should not do anything
-with the original display, esp. not opening windows on it.
 
 The children are dlopen()ed using RTLD_LAZY, so symbol relocation errors are
 not caught at the time we call dlopen(). Instead, the child will crash
@@ -170,10 +155,6 @@ following command line:
 
 Install the package, and start the application from the Task Navigator.
 Check as much as possible for extraneous behaviour.
-
-WARNING: The launcher requires a modified libgdk, if it's not present
-the launcher itself will segfault. That version is present on w2005-24
-release.
 
 
 Enabling the launcher after checking that it works

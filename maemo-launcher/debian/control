@@ -2,7 +2,7 @@ Source: maemo-launcher
 Section: embedded
 Priority: optional
 Maintainer: Guillem Jover <guillem.jover@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.4-1), libxft-dev,
+Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.4-1),
  libfontconfig1-dev, libpango1.0-dev, libdbus-1-dev (>= 0.60-1),
  gtkhtml-dev, clinkc-dev, libosso-dev, libosso-help-dev,
  libosso-gnomevfs2-dev (>= 2.8.0-1), libhildonmime-dev, libhildonfm2-dev,
