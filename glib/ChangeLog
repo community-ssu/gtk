@@ -1,3 +1,23 @@
+2007-07-30  Michael Natterer  <mitch@imendio.com>
+
+	* glib/gslice.[ch]: replace with versions from upstream trunk,
+	merging the following changes:
+
+    Thu Jul 12 15:46:40 2007  Tim Janik  <timj@imendio.com>
+
+	* glib/gslice.c: migrate per-thread magazine caches from single-thread
+	scenario to first thread using GSlice after g_thread_init(); based on
+	a patch by Tor Lillqvist, fixes #331853.
+	removed warning about g_thread_init() being called after other glib
+	functions (in particular g_slice* calls), because GSlice can cope
+	with this now and the rest of glib is believed to cope as well.
+
+    2007-06-13  Sven Neumann  <sven@gimp.org>
+
+	* glib/gslice.[ch] added g_slice_copy() and g_slice_dup() (#442029).
+
+	* glib/glib.symbols: updated.
+
 2007-06-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* m4macros/glib-2.0.m4: Revert last upstream change and use 
