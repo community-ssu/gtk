@@ -1,3 +1,17 @@
+hildon-plugins-settings (0.0.6-1) unstable; urgency=low
+
+  * configure.ac: 0.0.6
+  * src/hildon-plugin-cell-renderer-button.c:
+  (hildon_plugin_cell_renderer_button_constructor):
+  - "Organise button is localized".
+  * src/hildon-plugin-settings-dialog.[ch]:
+  (hildon_plugin_settings_dialog_rename_tab):
+  - new method for having different name for tabs
+  * src/hildon-plugin-settings.c: (execute):
+  - Fixed localization of tabs. Fixes: NB#64281
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Mon, 30 Jul 2007 15:26:05 +0300
+
 hildon-plugins-settings (0.0.5-2) unstable; urgency=low
 
   * src/hildon-plugin-settings.c: (execute):

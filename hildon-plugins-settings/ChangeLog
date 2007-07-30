@@ -1,3 +1,7 @@
+2007-07-30  Moises Martinez  <moises.martinez@nokia.com>
+
+	* configure.ac: 0.0.6
+
 2007-07-25  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hildon-plugin-cell-renderer-button.c:
