@@ -1,3 +1,7 @@
+2007-07-30  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* rc/hildonkeyboard.rc: Add a style for the FKB menuitems.
+
 2007-07-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.10.1-1 release]

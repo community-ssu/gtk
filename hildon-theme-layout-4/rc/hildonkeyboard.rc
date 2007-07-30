@@ -529,6 +529,11 @@ style "osso-input-method-fkb-tab-label" = "osso-logical-colors" {
 }
 widget "*.osso-im-fkb-tab.*" style "osso-input-method-fkb-tab-label"
 
+style "osso-input-method-fkb-menu-label" {
+  font_name = "Nokia Sans 24"
+}
+widget "*.fkb-menu-item.*" style "osso-input-method-fkb-menu-label"
+
 #finger keyboard common buttons
 style "osso-input-method-fkb-common-button" {
   engine "sapwood" {
