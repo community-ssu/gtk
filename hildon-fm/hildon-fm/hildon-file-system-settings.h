@@ -75,8 +75,8 @@ HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void);
 /* Returns TRUE, if async queries have finished */
 gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self);
 
-GKeyFile *hildon_file_system_open_user_settings ();
-void hildon_file_system_write_user_settings ();
+GKeyFile *hildon_file_system_open_user_settings (void);
+void hildon_file_system_write_user_settings (GKeyFile *);
 
 G_END_DECLS
 
