@@ -1,3 +1,10 @@
+2007-07-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c:
+	- added safegard against uninitialized widget in statusbar plugin
+	initialization.
+	Fixes: NB#64509
+
 2007-07-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.26

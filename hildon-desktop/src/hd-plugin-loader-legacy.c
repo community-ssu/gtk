@@ -434,7 +434,7 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
                                                   &state_data_length,
                                                   &module_widget);
 
-  if (!module_widget || !GTK_IS_WIDGET (module_widget))
+  if (!GTK_IS_WIDGET (module_widget))
   {
     g_set_error (error,
                  hd_plugin_loader_error_quark (),
@@ -556,7 +556,7 @@ hd_plugin_loader_legacy_navigator_init (HDPluginLoaderLegacy    *loader,
 
   module_widget = ((NavigatorGetButtonFn)symbol) (priv->module_data);
   
-  if (!module_widget || !GTK_IS_WIDGET (module_widget))
+  if (!GTK_IS_WIDGET (module_widget))
   {
     g_set_error (error,
                  hd_plugin_loader_error_quark (),
@@ -644,7 +644,7 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
   GKeyFile         *keyfile;
   struct SBSymbols symbols = {0};
   gpointer          module_data;
-  GtkWidget        *module_widget;
+  GtkWidget        *module_widget = NULL;
   GError           *local_error = NULL;
   
   priv = HD_PLUGIN_LOADER_LEGACY_GET_PRIVATE (loader);
@@ -711,7 +711,7 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
 
   module_data = symbols.initialize (item, &module_widget);
 
-  if (module_widget)
+  if (GTK_IS_WIDGET (module_widget))
     {
       gtk_widget_show_all (module_widget);
       gtk_container_add (GTK_CONTAINER (item), module_widget);
