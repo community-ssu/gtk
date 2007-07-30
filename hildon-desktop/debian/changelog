@@ -1,9 +1,9 @@
 hildon-desktop (1:0.0.27-1) sardine; urgency=low
 
-	* src/hd-plugin-loader-legacy.c:
-	- added safegard against uninitialized widget in statusbar plugin
-	initialization.
-	Fixes: NB#64509
+  * src/hd-plugin-loader-legacy.c:
+  - added safegard against uninitialized widget in statusbar plugin
+  initialization.
+  Fixes: NB#64509
 
  -- Johan Bilien <johan.bilien@nokia.com>  Mon, 30 Jul 2007 14:43:27 +0300
 
