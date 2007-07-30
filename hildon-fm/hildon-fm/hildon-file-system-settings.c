@@ -849,3 +849,47 @@ gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
          self->priv->gconf_ready &&
          self->priv->flightmode_ready;
 }
+
+GKeyFile *
+hildon_file_system_open_user_settings ()
+{
+  GError *error = NULL;
+  gchar *file = g_strdup_printf ("%s/.osso/hildon-fm", g_get_home_dir ());
+  GKeyFile *keys = g_key_file_new ();
+
+  if (!g_key_file_load_from_file (keys, file, 0, &error))
+    {
+      if (!g_error_matches (error, G_FILE_ERROR, 
+			    G_FILE_ERROR_NOENT))
+	fprintf (stderr, "%s: %s\n", file, error->message);
+      g_error_free (error);
+    }
+  g_free (file);
+  return keys;
+}
+
+void
+hildon_file_system_write_user_settings (GKeyFile *keys)
+{
+  GError *error = NULL;
+  gssize len;
+  gchar *data = g_key_file_to_data (keys, &len, &error);
+
+  if (error)
+    {
+      fprintf (stderr, "%s\n", error->message);
+      g_error_free (error);
+    }
+  else
+    {
+      gchar *file = g_strdup_printf ("%s/.osso/hildon-fm", g_get_home_dir ());
+      g_file_set_contents (file, data, len, &error);
+      if (error)
+	{
+	  fprintf (stderr, "%s: %s\n", file, error->message);
+	  g_error_free (error);
+	}
+      g_free (file);
+    }
+  g_free (data);
+}
