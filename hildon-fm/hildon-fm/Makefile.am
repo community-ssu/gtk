@@ -2,8 +2,7 @@ INCLUDES = $(GTK_CFLAGS) $(GCONF_CFLAGS) $(HILDON_THUMBNAIL_CFLAGS)	\
 	   $(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS) $(GNOMEVFS_CFLAGS)	\
            $(LIBOSSO_CFLAGS)						\
            $(MCE_CFLAGS) -DLOCALEDIR=\"$(localedir)\"			\
-           $(LIBOSSOMIME_CFLAGS) -I$(srcdir)/..				\
-           -DHILDON_FM_HPANED
+           $(LIBOSSOMIME_CFLAGS) -I$(srcdir)/..
 
 lib_LTLIBRARIES = libhildonfm.la
 
