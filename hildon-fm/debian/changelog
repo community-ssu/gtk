@@ -1,8 +1,10 @@
-libhildonfm (1:1.9.36~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.36) unstable; urgency=low
 
   * Save pane position of file chooser dialog.
+  * Initialize HildonFileSelection widget properly so that File Manager
+    doesn't show empty content pane on startup.
 
- -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 17:37:52 +0300
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 18:10:27 +0300
 
 libhildonfm (1:1.9.35) unstable; urgency=low
 

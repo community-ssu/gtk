@@ -1,5 +1,7 @@
 2007-07-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Release 1.9.36
+	
 	* hildon-fm/hildon-file-chooser-dialog.c
 	(get_global_pane_position, set_global_pane_position): New.
 	(hildon_file_chooser_dialog_constructor,
