@@ -1,3 +1,9 @@
+posix-locales (2.5.0-0osso2) unstable; urgency=low
+
+  * Updated libc and locales version in dependency.
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 30 Jul 2007 16:57:22 +0300
+
 posix-locales (2.5.0-0osso1) unstable; urgency=low
 
   * Bump the version then recompiled.
