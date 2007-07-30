@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.36~unreleased) unstable; urgency=low
+
+  * Save pane position of file chooser dialog.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 17:37:52 +0300
+
 libhildonfm (1:1.9.35) unstable; urgency=low
 
   * Added code to detect whether memory cards are shared over USB and should
