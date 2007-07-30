@@ -40,6 +40,7 @@
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
 #include "hildon-file-system-private.h"
+#include "hildon-file-system-settings.h"
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkbox.h>
 #include <gtk/gtkentry.h>
