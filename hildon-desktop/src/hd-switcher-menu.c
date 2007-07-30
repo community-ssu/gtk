@@ -87,8 +87,8 @@
 #define AS_MENU_BORDER_WIDTH    20
 #define AS_TIP_BORDER_WIDTH 	20
 #define AS_BUTTON_HEIGHT        38
-#define AS_MENU_BUTTON_HEIGHT  116
-#define AS_ROW_HEIGHT 		    30
+#define AS_MENU_BUTTON_HEIGHT   116
+#define AS_ROW_HEIGHT 		30
 #define AS_ICON_SIZE            26
 #define AS_TOOLTIP_WIDTH        360
 #define AS_MENU_ITEM_WIDTH      360
@@ -102,8 +102,6 @@
 #define SWITCHER_BUTTON_UP "qgn_list_tasknavigator_appswitcher"
 #define SWITCHER_BUTTON_DOWN "qgn_list_tasknavigator_appswitcher"
 
-#define SWITCHER_BUTTON_NAME ""
-
 #define SWITCHER_TOGGLE_BUTTON GTK_BIN(switcher)->child
 
 #define SWITCHER_DETTACHED_TIMEOUT 5000
@@ -113,13 +111,13 @@
 #define HD_SWITCHER_MENU_APP_WINDOW_NAME      "hildon-switcher-menu-app-window"
 #define HD_SWITCHER_MENU_APP_MENU_NAME        "hildon-switcher-menu-app-menu"
 #define HD_SWITCHER_MENU_APP_MENU_ITEM_NAME   "hildon-switcher-menu-app-item"
-#define HD_SWITCHER_MENU_APP_BUTTON_UP_NAME   ""
-#define HD_SWITCHER_MENU_APP_BUTTON_DOWN_NAME ""
+#define HD_SWITCHER_MENU_APP_BUTTON_UP_NAME   "hildon-switcher-menu-app-button"
+#define HD_SWITCHER_MENU_APP_BUTTON_DOWN_NAME "hildon-switcher-menu-app-button"
 #define HD_SWITCHER_MENU_NOT_WINDOW_NAME      "hildon-switcher-menu-not-window"
 #define HD_SWITCHER_MENU_NOT_MENU_NAME        "hildon-switcher-menu-not-menu"
 #define HD_SWITCHER_MENU_NOT_MENU_ITEM_NAME   "hildon-switcher-menu-not-item"
-#define HD_SWITCHER_MENU_NOT_BUTTON_UP_NAME   ""
-#define HD_SWITCHER_MENU_NOT_BUTTON_DOWN_NAME ""
+#define HD_SWITCHER_MENU_NOT_BUTTON_UP_NAME   "hildon-switcher-menu-not-button"
+#define HD_SWITCHER_MENU_NOT_BUTTON_DOWN_NAME "hildon-switcher-menu-not-button"
 
 enum 
 {
@@ -278,6 +276,18 @@ hd_switcher_menu_resize_menu (HildonDesktopPopupMenu *menu, HDSwitcherMenu *swit
 { 
   hildon_desktop_popup_recalculate_position (switcher->priv->popup_window);  
 }	
+
+static GtkWidget *
+hd_switcher_menu_create_separator ()
+{
+  GtkWidget *separator;
+
+  separator = gtk_separator_menu_item_new ();
+
+  gtk_widget_set_size_request (separator, -1, 1);
+
+  return separator;
+}
 
 static GdkPixbuf *
 hd_switcher_menu_get_icon_from_theme (HDSwitcherMenu *switcher,
@@ -596,7 +606,7 @@ hd_switcher_menu_add_notification_group (gpointer key,
     
     hildon_desktop_popup_menu_add_item
       (switcher->priv->menu_notifications,
-      GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+      GTK_MENU_ITEM (hd_switcher_menu_create_separator ()));
 
     menu_item = hd_switcher_menu_item_new_from_notification_group
       (ngroup->notifications, icon, summary, ngroup->dbus_callback, TRUE);
@@ -744,9 +754,10 @@ hd_switcher_menu_constructor (GType gtype,
 {
   GObject *object;
   HDSwitcherMenu *switcher;
-  GtkWidget *button;
   HDWM *hdwm = hd_wm_get_singleton ();
-  GdkPixbuf *pixbuf, *icon_up = NULL, *icon_down = NULL;
+  const GtkWidget *button_up, *button_down;
+  GdkPixbuf *pixbuf;
+  GtkWidget *button, *arrow;
 
   object = G_OBJECT_CLASS (hd_switcher_menu_parent_class)->constructor (gtype,
            	                                                        n_params,
@@ -775,11 +786,9 @@ hd_switcher_menu_constructor (GType gtype,
     HILDON_DESKTOP_POPUP_WINDOW 
       (hildon_desktop_popup_window_new (1,GTK_ORIENTATION_HORIZONTAL,HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM));	     
 
-#if 0
   g_object_set (G_OBJECT (switcher->priv->popup_window), 
 		"border-width", 4,
 		NULL);
-#endif  
  
   /* We don't attach the widget because if we do it, we cannot be on top of 
    * virtual keyboard. Anyway it should be transient to button
@@ -791,11 +800,9 @@ hd_switcher_menu_constructor (GType gtype,
   switcher->priv->notifications_window = 
     hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 0);
 
-#if 0
   g_object_set (G_OBJECT (switcher->priv->notifications_window), 
 		"border-width", 4,
 		NULL);
-#endif
   
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->popup_window),
 			       340, 100);
@@ -806,11 +813,13 @@ hd_switcher_menu_constructor (GType gtype,
   switcher->priv->menu_applications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
 		  		    	     "item-height", 72,
+		  		    	     "parent", switcher->priv->popup_window,
 				    	     NULL));	    
 
   switcher->priv->menu_notifications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
 		  			     "item-height", 72,
+		  		    	     "parent", switcher->priv->notifications_window,
 					     NULL));
 
   gtk_container_add (GTK_CONTAINER (switcher->priv->popup_window),
@@ -822,53 +831,41 @@ hd_switcher_menu_constructor (GType gtype,
   gtk_widget_show (GTK_WIDGET (switcher->priv->menu_applications));
   gtk_widget_show (GTK_WIDGET (switcher->priv->menu_notifications));
 
-  icon_up = 
-    hd_switcher_menu_get_icon_from_theme (switcher,
-		                          SWITCHER_BUTTON_UP,
-		    			  -1);
+  button_up = 
+    hildon_desktop_popup_menu_get_scroll_button_up (switcher->priv->menu_applications);
 
-  icon_down = 
-    hd_switcher_menu_get_icon_from_theme (switcher,
-		    			  SWITCHER_BUTTON_DOWN,
-		    			  -1);
-	  
-  if (icon_up && icon_down)
-  {
-    const GtkWidget *button_up, *button_down;
-    GtkWidget *image_up, *image_down;
-
-    button_up = 
-      hildon_desktop_popup_menu_get_scroll_button_up (switcher->priv->menu_applications);
-    button_down =
-      hildon_desktop_popup_menu_get_scroll_button_down (switcher->priv->menu_applications);
-
-    gtk_widget_set_name (GTK_WIDGET (button_up), SWITCHER_BUTTON_NAME);
-    gtk_widget_set_name (GTK_WIDGET (button_down), SWITCHER_BUTTON_NAME);
-    
-    image_up   = gtk_image_new_from_pixbuf (icon_up);
-    image_down = gtk_image_new_from_pixbuf (icon_down);
+  gtk_widget_set_name (GTK_WIDGET (button_up), HD_SWITCHER_MENU_APP_BUTTON_UP_NAME);
+  
+  arrow = gtk_arrow_new (GTK_ARROW_UP, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_up), arrow);
+  gtk_widget_show (arrow);
  
-    gtk_container_add (GTK_CONTAINER (button_up),   image_up);
-    gtk_container_add (GTK_CONTAINER (button_down), image_down);
-    gtk_widget_show (image_up);
-    gtk_widget_show (image_down);
-    
-    button_up = 
-      hildon_desktop_popup_menu_get_scroll_button_up (switcher->priv->menu_notifications);
-    button_down =
-      hildon_desktop_popup_menu_get_scroll_button_down (switcher->priv->menu_notifications);
+  button_down =
+    hildon_desktop_popup_menu_get_scroll_button_down (switcher->priv->menu_applications);
 
-    gtk_widget_set_name (GTK_WIDGET (button_up), SWITCHER_BUTTON_NAME);
-    gtk_widget_set_name (GTK_WIDGET (button_down), SWITCHER_BUTTON_NAME);
+  gtk_widget_set_name (GTK_WIDGET (button_down), HD_SWITCHER_MENU_APP_BUTTON_DOWN_NAME);
+  
+  arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_down), arrow);
+  gtk_widget_show (arrow);
+ 
+  button_up = 
+    hildon_desktop_popup_menu_get_scroll_button_up (switcher->priv->menu_notifications);
 
-    image_up   = gtk_image_new_from_pixbuf (icon_up);
-    image_down = gtk_image_new_from_pixbuf (icon_down);
+  gtk_widget_set_name (GTK_WIDGET (button_up), HD_SWITCHER_MENU_NOT_BUTTON_UP_NAME);
+  
+  arrow = gtk_arrow_new (GTK_ARROW_UP, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_up), arrow);
+  gtk_widget_show (arrow);
+ 
+  button_down =
+    hildon_desktop_popup_menu_get_scroll_button_down (switcher->priv->menu_notifications);
 
-    gtk_container_add (GTK_CONTAINER (button_up),   image_up);
-    gtk_container_add (GTK_CONTAINER (button_down), image_down);
-    gtk_widget_show (image_up);
-    gtk_widget_show (image_down);
-  } 
+  gtk_widget_set_name (GTK_WIDGET (button_down), HD_SWITCHER_MENU_NOT_BUTTON_DOWN_NAME);
+  
+  arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_NONE);
+  gtk_container_add (GTK_CONTAINER (button_down), arrow);
+  gtk_widget_show (arrow);
 
   gtk_widget_set_name (GTK_WIDGET (switcher->priv->popup_window), 
 		       HD_SWITCHER_MENU_APP_WINDOW_NAME);
@@ -879,7 +876,6 @@ hd_switcher_menu_constructor (GType gtype,
 		       HD_SWITCHER_MENU_APP_MENU_NAME);
   gtk_widget_set_name (GTK_WIDGET (switcher->priv->menu_notifications), 
 		       HD_SWITCHER_MENU_NOT_MENU_NAME);
-  
   
   g_signal_connect (switcher->priv->popup_window,
 		    "key-press-event",
@@ -1612,7 +1608,7 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
         if (first_item)
           hildon_desktop_popup_menu_add_item
             (switcher->priv->menu_notifications,
-            GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+            GTK_MENU_ITEM (hd_switcher_menu_create_separator ()));
 
         menu_item =
           hd_switcher_menu_item_new_from_notification
@@ -1687,7 +1683,7 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
     if (l == apps)
     {
-      separator = gtk_separator_menu_item_new ();
+      separator = hd_switcher_menu_create_separator ();
 
       hildon_desktop_popup_menu_add_item
        (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
@@ -1720,7 +1716,7 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     /* Append the separator for this app*/
     if (l->next != NULL)
     {
-      separator = gtk_separator_menu_item_new ();
+      separator = hd_switcher_menu_create_separator ();
 
       hildon_desktop_popup_menu_add_item
         (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));

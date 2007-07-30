@@ -86,7 +86,7 @@ G_DEFINE_TYPE (HDApplicationsMenu, hd_applications_menu, TASKNAVIGATOR_TYPE_ITEM
 #define MENU_ITEM_SUBMENU_ICON        "qgn_list_gene_fldr_cls"
 #define MENU_ITEM_SUBMENU_ICON_DIMMED "qgn_list_gene_nonreadable_fldr"
 #define MENU_ITEM_DEFAULT_APP_ICON    "qgn_list_gene_default_app"
-#define MENU_ITEM_ICON_SIZE           26
+#define MENU_ITEM_ICON_SIZE           64
 
 #define MENU_ITEM_EMPTY_SUBMENU_STRING _("tana_li_of_noapps")
 
@@ -164,6 +164,9 @@ hd_applications_menu_init (HDApplicationsMenu *button)
   button->priv->desktop_dir_monitor = NULL;
   
   priv->button = hildon_desktop_toggle_button_new ();
+
+  gtk_widget_set_extension_events (GTK_WIDGET (priv->button),
+                                   GDK_EXTENSION_EVENTS_ALL);
 
   icon = gtk_image_new_from_pixbuf (get_icon (OTHERS_MENU_ICON_NAME,
 				 	      OTHERS_MENU_ICON_SIZE));
@@ -532,11 +535,13 @@ hd_applications_menu_activate_app (GtkMenuItem *item, HDApplicationsMenu *button
                  "Unable to launch.");
     }
   }
-  
+
+  hildon_desktop_popup_window_popdown (button->priv->popup_window);
+#if 0  
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button->priv->button), 
 		                FALSE);
-
-  g_free(program);
+#endif
+  g_free (program);
 }
 
 static void
@@ -563,7 +568,8 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
   gchar *item_service = NULL;
   gchar *item_desktop_id = NULL;
   gchar *item_text_domain = NULL;
-
+  gboolean first_item = TRUE;
+  
   if (model == NULL)
   {
     model = get_menu_contents ();
@@ -593,7 +599,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
      
     gtk_tree_model_get (model, iter,
 		        TREE_MODEL_LOCALIZED_NAME, &item_name,
-		        TREE_MODEL_ICON, &item_icon,
+		        TREE_MODEL_THUMB_ICON, &item_icon,
 		        TREE_MODEL_EXEC, &item_exec,
 		        TREE_MODEL_SERVICE, &item_service,
 		        TREE_MODEL_DESKTOP_ID, &item_desktop_id,
@@ -624,7 +630,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
       		          label,
       		          TRUE, 
       		          TRUE, 
-      		          15);
+      		          6);
       
       gtk_container_add (GTK_CONTAINER (menu_item), hbox);
       
@@ -670,6 +676,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
     {
       /* Separator */
       menu_item = gtk_separator_menu_item_new ();
+      gtk_widget_set_size_request (GTK_WIDGET (menu_item), -1, 1);
     }
     else if (level > 0)
     {
@@ -706,11 +713,13 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
 
 	image = gtk_image_new_from_pixbuf (item_icon);
 	
+        gtk_misc_set_alignment (GTK_MISC (image), 0.0, 0.5);
+
 	gtk_box_pack_start (GTK_BOX (hbox),
 			    image, 
 			    FALSE, 
 			    FALSE, 
-			    15);
+			    10);
 
         label = gtk_label_new ((item_text_domain && *item_text_domain) ?
 			        dgettext(item_text_domain, item_name) : _(item_name)), 
@@ -747,6 +756,19 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
 
     if (menu_item)
     {
+      if (!first_item)
+      {
+        GtkWidget *separator = gtk_separator_menu_item_new ();
+
+	gtk_widget_set_size_request (GTK_WIDGET (separator), -1, 1);
+
+        menu_items = g_list_prepend (menu_items, separator);
+      }
+      else
+      {
+        first_item = FALSE;
+      }
+
       menu_items = g_list_prepend (menu_items, menu_item);
     }
       
@@ -853,18 +875,18 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
   
   gtk_widget_set_name (GTK_WIDGET (popup_window), HD_APPS_MENU_POPUP_WINDOW_NAME);
 
-  gtk_widget_set_size_request (GTK_WIDGET (popup_window), 650, 480);
+  gtk_widget_set_size_request (GTK_WIDGET (popup_window), 640, 445);
 
   /* We don't attach the widget because if we do it, we cannot be on top of 
    * virtual keyboard. Anyway it should be transient to button->priv->button
    */
-  
   hildon_desktop_popup_window_attach_widget (popup_window, NULL);
   
   button->priv->menu_categories =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
-		  		    	     "item-height", 68,
+		  		    	     "item-height", 72,
 		  		    	     "resize-parent", FALSE,
+					     "parent", popup_window,
 				    	     NULL));
 
   g_signal_connect (G_OBJECT (button->priv->menu_categories),
@@ -903,8 +925,9 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 
   button->priv->menu_applications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
-		  		    	     "item-height", 68,
+		  		    	     "item-height", 72,
 		  		    	     "resize-parent", FALSE,
+					     "parent", popup_window,
 				    	     NULL));
 
   gtk_widget_show (GTK_WIDGET (button->priv->menu_applications));

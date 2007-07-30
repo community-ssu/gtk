@@ -68,19 +68,19 @@
 #define ANIM_FPS      2
 
 /* Hardcoded pixel perfecting values */
-#define AS_BUTTON_BORDER_WIDTH  0
-#define AS_MENU_BORDER_WIDTH    20
-#define AS_TIP_BORDER_WIDTH 	20
-#define AS_BUTTON_HEIGHT        38
-#define AS_ROW_HEIGHT 		30
-#define AS_ICON_SIZE            26
-#define AS_CLOSE_BUTTON_SIZE    16
+#define AS_BUTTON_BORDER_WIDTH     0
+#define AS_MENU_BORDER_WIDTH       20
+#define AS_TIP_BORDER_WIDTH 	   20
+#define AS_BUTTON_HEIGHT           38
+#define AS_ROW_HEIGHT 		   30
+#define AS_ICON_SIZE               26
+#define AS_CLOSE_BUTTON_SIZE       16
 #define AS_CLOSE_BUTTON_THUMB_SIZE 40
-#define AS_TOOLTIP_WIDTH        360
-#define AS_MENU_ITEM_WIDTH      360
-#define AS_INTERNAL_PADDING     10
-#define AS_SEPARATOR_HEIGHT     10
-#define AS_BUTTON_BOX_PADDING   10
+#define AS_TOOLTIP_WIDTH           360
+#define AS_MENU_ITEM_WIDTH         360
+#define AS_INTERNAL_PADDING        10
+#define AS_SEPARATOR_HEIGHT        10
+#define AS_BUTTON_BOX_PADDING      10
 
 /*
  * HDSwitcherMenuItem
