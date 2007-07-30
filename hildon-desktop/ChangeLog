@@ -1,5 +1,10 @@
 2007-07-30  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-menu.c: small layout fix on
+	the viewport height.
+
+2007-07-30  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-switcher-menu.c, src/hd-applications-menu.c: use new "parent"
 	property of HildonDesktopPopupMenu to correctly handle scroll buttons. 
 	Several layout fixes. Use separator between menu items. Set names of

@@ -714,7 +714,7 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
   {
     hildon_desktop_popup_menu_show_controls (menu);	  
     gtk_widget_set_size_request 
-       (menu->priv->viewport, -1, max_height - menu->priv->item_height - 8);
+       (menu->priv->viewport, -1, max_height - menu->priv->item_height - 9);
   }
   else
   {
