@@ -60,6 +60,7 @@ G_BEGIN_DECLS
 
 #define HD_APP_MENU_DIALOG_NO_APP_DEL           _OAT("tncpa_ib_no_app_del")
 #define HD_APP_MENU_DIALOG_NO_APP_REN           _OAT("tncpa_ib_no_app_ren")
+#define HD_APP_MENU_DIALOG_ALREADY_IN_USE       _HCS("ckdg_ib_folder_already_exists")
 
 
 #endif

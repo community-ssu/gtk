@@ -1,5 +1,12 @@
 2007-07-30  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-app-menu-dialog.c:
+	- do not allow adding an existing category
+	- show the corresponding info banner.
+	Fixes: NB#63132
+
+2007-07-30  Johan Bilien  <johan.bilien@nokia.com>
+
 	* configure.ac: 0.0.27
 
 2007-07-30  Johan Bilien  <johan.bilien@nokia.com>

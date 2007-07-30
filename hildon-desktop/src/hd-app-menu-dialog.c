@@ -265,6 +265,39 @@ hd_app_menu_dialog_entry_changed (GtkEntry *entry, GtkWidget *button)
   gtk_widget_set_sensitive (button, g_utf8_strlen (name, -1) != 0);
 }
 
+static gboolean
+hd_app_menu_dialog_category_exists (HDAppMenuDialog    *dialog,
+                                    const gchar        *category)
+{
+  HDAppMenuDialogPrivate       *priv = dialog->priv;
+  GtkTreeIter                   iter;
+  gboolean                      valid;
+  gboolean                      found = FALSE;
+
+  valid = gtk_tree_model_get_iter_first (priv->model, &iter);
+
+  while (valid)
+  {
+    gchar      *name = NULL;
+
+    gtk_tree_model_get (priv->model, &iter,
+                        TREE_MODEL_LOCALIZED_NAME, &name,
+                        -1);
+
+    if (name && g_str_equal (name, category))
+    {
+      found = TRUE;
+      g_free (name);
+      break;
+    }
+
+    g_free (name);
+    valid = gtk_tree_model_iter_next (priv->model, &iter);
+  }
+
+  return found;
+}
+
 static void
 hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
 {
@@ -318,26 +351,38 @@ hd_app_menu_dialog_new_category (HDAppMenuDialog *dialog)
                     FALSE,
                     0);
 
-  response = gtk_dialog_run (GTK_DIALOG (new_dialog));
-
-  name = gtk_entry_get_text (GTK_ENTRY (entry));
-
-  if (response == GTK_RESPONSE_OK && GTK_IS_TREE_STORE (dialog->priv->model))
+  while (TRUE)
   {
-    GtkTreeIter         iter;
-    GdkPixbuf          *icon;
+    response = gtk_dialog_run (GTK_DIALOG (new_dialog));
 
-    icon = get_icon (ICON_FOLDER, ICON_SIZE);
+    name = gtk_entry_get_text (GTK_ENTRY (entry));
 
-    gtk_tree_store_append (GTK_TREE_STORE (dialog->priv->model), &iter, NULL);
+    if (response == GTK_RESPONSE_OK && GTK_IS_TREE_STORE (dialog->priv->model))
+    {
+      GtkTreeIter         iter;
+      GdkPixbuf          *icon;
 
-    gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
-                        TREE_MODEL_NAME, g_strdup (name),
-                        TREE_MODEL_LOCALIZED_NAME, g_strdup (name),
-                        TREE_MODEL_ICON, icon,
-                        -1);
+      if (hd_app_menu_dialog_category_exists (dialog, name))
+      {
+        hildon_banner_show_information (GTK_WIDGET (dialog),
+                                        NULL,
+                                        HD_APP_MENU_DIALOG_ALREADY_IN_USE);
+        continue;
+      }
 
-    g_object_unref (icon);
+      icon = get_icon (ICON_FOLDER, ICON_SIZE);
+
+      gtk_tree_store_append (GTK_TREE_STORE (dialog->priv->model), &iter, NULL);
+
+      gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
+                          TREE_MODEL_NAME, g_strdup (name),
+                          TREE_MODEL_LOCALIZED_NAME, g_strdup (name),
+                          TREE_MODEL_ICON, icon,
+                          -1);
+
+      g_object_unref (icon);
+    }
+    break;
 
   }
 
@@ -410,18 +455,29 @@ hd_app_menu_dialog_rename_category (HDAppMenuDialog *dialog)
                     FALSE,
                     FALSE,
                     0);
-
-  response = gtk_dialog_run (GTK_DIALOG (new_dialog));
-
-  name = gtk_entry_get_text (GTK_ENTRY (entry));
-
-  if (response == GTK_RESPONSE_OK && GTK_IS_TREE_STORE (dialog->priv->model))
+  while (TRUE)
   {
+    response = gtk_dialog_run (GTK_DIALOG (new_dialog));
+
+    name = gtk_entry_get_text (GTK_ENTRY (entry));
+
+    if (response == GTK_RESPONSE_OK && GTK_IS_TREE_STORE (dialog->priv->model))
+    {
+      if (hd_app_menu_dialog_category_exists (dialog, name))
+      {
+        hildon_banner_show_information (GTK_WIDGET (dialog),
+                                        NULL,
+                                        HD_APP_MENU_DIALOG_ALREADY_IN_USE);
+        continue;
+      }
+
       gtk_tree_store_set (GTK_TREE_STORE (dialog->priv->model), &iter,
                           TREE_MODEL_NAME, name,
                           TREE_MODEL_LOCALIZED_NAME, name,
                           -1);
+    }
 
+    break;
   }
 
   gtk_widget_destroy (new_dialog);
