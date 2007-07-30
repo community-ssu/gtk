@@ -1,5 +1,16 @@
 2007-07-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(get_global_pane_position, set_global_pane_position): New.
+	(hildon_file_chooser_dialog_constructor,
+	hildon_file_chooser_dialog_destroy): Use them to set and store the
+	pane position permanently.
+
+	* hildon-fm/hildon-file-system-settings.c
+	(hildon_file_system_write_user_settings,
+	hildon_file_system_open_user_settings): New.
+
+	* hildon-fm/Makefile.am (INCLUDES): Removed -DHILDON_FM_PANED.
 
 2007-07-30  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
