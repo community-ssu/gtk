@@ -1,3 +1,10 @@
+posix-locales (2.5.0-0osso1) unstable; urgency=low
+
+  * Bump the version then recompiled.
+  * Fixes: NB#64563 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 30 Jul 2007 16:35:21 +0300
+
 posix-locales (2.3.2-13osso43) unstable; urgency=low
 
   * Fixes: NB#48669. 
