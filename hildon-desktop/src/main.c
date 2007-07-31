@@ -32,15 +32,25 @@
 #include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
 
+#include <sys/types.h> // Required for file io (creat etc.)
+#include <sys/stat.h> // required for file io
+#include <fcntl.h> // required for file io
+
 #include "hd-desktop.h"
+#include "hd-crash-manager.h"
 
 #define OSSO_USER_DIR        ".osso"
 #define HILDON_DESKTOP_GTKRC "current-gtk-theme.maemo_af_desktop"
+
+#define STAMP_DIR                     "/tmp/osso-appl-states/"
+#define HILDON_DESKTOP_STAMP_DIR      "/tmp/osso-appl-states/hildon-desktop/"
+#define HILDON_DESKTOP_STAMP_FILE     HILDON_DESKTOP_STAMP_DIR"/stamp"
 
 int main (int argc, char **argv)
 {
   GObject *desktop;
   gchar *gtkrc = NULL;
+  gboolean safe_mode = FALSE;
 
   g_thread_init (NULL);
   setlocale (LC_ALL, "");
@@ -50,6 +60,26 @@ int main (int argc, char **argv)
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
   textdomain (GETTEXT_PACKAGE);
+
+  /* Check for safe mode */
+  /* Added by karoliina 31.7.2007 */
+  if (g_file_test (HILDON_DESKTOP_STAMP_FILE, G_FILE_TEST_EXISTS))
+  {
+      g_warning ("hildon-desktop did not exit properly on the previous "
+                  "session. All home plugins will be disabled.");
+      safe_mode = TRUE;
+  }
+  else
+  {
+      int fd;
+      mkdir (STAMP_DIR, 0755);
+      mkdir (HILDON_DESKTOP_STAMP_DIR, 0755);
+      fd = creat(HILDON_DESKTOP_STAMP_FILE, S_IRUSR|S_IWUSR);
+      if (fd >= 0)
+          close (fd);
+  }
+
+
 
   /* Read the maemo-af-desktop gtkrc file */
   gtkrc = g_build_filename (g_get_home_dir (), 
