@@ -1426,7 +1426,7 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
       val = (guint32*)data;
 
-      for (i = 0, j = 0; i < nitems_return; i+=4, j++)
+      for (i = 0, j = 0; j < n_rects; i+=4, j++)
         {
           rectangles[j].x = val[i];
           rectangles[j].y = val[i+1];
@@ -1475,20 +1475,16 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
       /* If the popup fits below the entry we will put it there, otherwise it will
          go above it. If it does not fit in either direction we will put it below
          anyway. This is not exactly right, but we don't have other options */
-      if (popup_req.height <= to_bottom)
+      if (popup_req.height <= to_bottom ||
+          popup_req.height > to_top)
         {
           above = FALSE;
           y += entry_req.height;
-        }
-      else if (popup_req.height <= to_top)
-        {
-          above = TRUE;
-          y -= popup_req.height;
         }
       else
         {
-          above = FALSE;
-          y += entry_req.height;
+          above = TRUE;
+          y -= popup_req.height;
         }
 
       g_slice_free1 (sizeof(GdkRectangle)*n_rects, rectangles);
