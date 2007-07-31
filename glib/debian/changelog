@@ -1,3 +1,9 @@
+glib2.0 (2.12.12-1osso6) unstable; urgency=low
+
+  * backport glib upstream trunk fixes for GSLice late thread initialization.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Tue, 31 Jul 2007 15:48:41 +0300
+
 glib2.0 (2.12.12-1osso5) unstable; urgency=low
 
   * Released a new package including just one m4 revert beacuse scratchbox
