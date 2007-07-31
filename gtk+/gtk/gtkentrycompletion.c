@@ -1331,8 +1331,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   gint width;
 
 #if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
-  GdkWindow *window = completion->priv->popup_window->window;
-  GdkDisplay *display = gdk_drawable_get_display (window);
+  GdkWindow *window;
+  GdkDisplay *display;
   Atom type_return;
   int format_return, ret_val, n_rects;
   gulong nitems_return, bytes_after_return;
@@ -1401,6 +1401,9 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
     x = monitor.x + monitor.width - popup_req.width;
 
 #if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+  window = completion->priv->popup_window->window;
+  display  = gdk_drawable_get_display (window);
+
   ret_val = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display),
                                 GDK_WINDOW_XWINDOW (gtk_widget_get_root_window (completion->priv->popup_window)),
                                 gdk_x11_get_xatom_by_name_for_display (display, "_NET_INPUT_AREAS"),
