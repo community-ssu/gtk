@@ -1597,7 +1597,7 @@ gtk_entry_size_allocate (GtkWidget     *widget,
 #if defined(MAEMO_CHANGES)
       completion = gtk_entry_get_completion (entry);
       if (completion && GTK_WIDGET_MAPPED (completion->priv->popup_window))
-        gtk_widget_queue_resize (completion->priv->popup_window);
+        _gtk_entry_completion_resize_popup (completion);
 #endif
     }
 }
