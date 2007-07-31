@@ -1,3 +1,9 @@
+2007-07-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_size_allocate): do a
+	_gtk_entry_completion_resize_popup on the entry's size_allocate.
+	Fixes: NB#63404
+
 2007-07-27  Michael Natterer  <mitch@imendio.com>
 
 	Merge from trunk:
