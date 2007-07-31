@@ -814,40 +814,12 @@ hd_applications_menu_categories_motion_notify (GtkWidget      *widget,
 					       GdkEventMotion *event,
 					       HDApplicationsMenu *button)
 {
-  HildonDesktopPopupMenu *menu = HILDON_DESKTOP_POPUP_MENU (widget);
-  GList *menu_items = NULL, *l;
-  gint w,h,x,y;
+  GtkMenuItem *selected = 
+    hildon_desktop_popup_menu_get_selected_item (HILDON_DESKTOP_POPUP_MENU (widget));
 
-  gtk_widget_get_pointer (GTK_WIDGET (widget), &x, &y);
+  button->priv->focus_applications = TRUE;
 
-  w = widget->allocation.width;
-  h = widget->allocation.height;
-
-  if (!((x >= 0) && (x <= w) && (y >= 0) && (y <= h)))
-    return TRUE;    	 
-
-  menu_items = 
-    hildon_desktop_popup_menu_get_children (menu);
-
-  for (l = menu_items; l != NULL; l = g_list_next (l))
-    gtk_item_deselect (GTK_ITEM (l->data));	  
-
-  for (l = menu_items; l != NULL; l = g_list_next (l))
-  {
-    gtk_widget_get_pointer (GTK_WIDGET (l->data), &x, &y);
-
-    w = GTK_WIDGET (l->data)->allocation.width;
-    h = GTK_WIDGET (l->data)->allocation.height;
-
-    if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
-    {	    
-      hildon_desktop_popup_menu_select_item (menu, GTK_MENU_ITEM (l->data));
-      button->priv->focus_applications = TRUE;
-      gtk_menu_item_activate (GTK_MENU_ITEM (l->data));
-    }
-  }
-
-  g_list_free (menu_items);
+  gtk_menu_item_activate (selected);
 
   return TRUE;
 }
@@ -889,10 +861,10 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
 					     "parent", popup_window,
 				    	     NULL));
 
-  g_signal_connect (G_OBJECT (button->priv->menu_categories),
-		    "motion-notify-event",
-		    G_CALLBACK (hd_applications_menu_categories_motion_notify),
-		    button);
+  g_signal_connect_after (G_OBJECT (button->priv->menu_categories),
+		          "motion-notify-event",
+		          G_CALLBACK (hd_applications_menu_categories_motion_notify),
+		          button);
   
   gtk_widget_show (GTK_WIDGET (button->priv->menu_categories));
 
@@ -1124,6 +1096,7 @@ hd_applications_menu_show (HDApplicationsMenu * button)
 		                     GDK_CURRENT_TIME);
 
   hildon_desktop_popup_menu_select_first_item (button->priv->menu_categories);
+  hildon_desktop_popup_menu_scroll_to_selected (button->priv->menu_categories);
 
   menu_items = hildon_desktop_popup_menu_get_children (button->priv->menu_categories);
 

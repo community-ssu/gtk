@@ -1,3 +1,11 @@
+2007-07-31  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c
+	(hd_applications_menu_categories_motion_notify): make the motion
+	notify handler lighter so that it doesn't bring performance problems.
+	* libhildondesktop/hildon-desktop-popup-menu.c
+	(hildon_desktop_popup_menu_motion_notify): propagate the motion event
+
 2007-07-31  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-app-menu-tree.c:

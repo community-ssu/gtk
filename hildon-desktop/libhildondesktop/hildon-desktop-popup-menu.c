@@ -476,7 +476,7 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
 
   g_list_free (menu_items);
 
-  return TRUE;
+  return FALSE;
 }
 
 static void 
@@ -991,7 +991,7 @@ hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu)
     {
       do
       {	      
-        hildon_desktop_popup_menu_scroll_cb (menu->priv->scroll_down, menu);
+        hildon_desktop_popup_menu_scroll_cb (menu->priv->scroll_up, menu);
 	position -= menu->priv->item_height;
       }	
       while (position > screen_height);
