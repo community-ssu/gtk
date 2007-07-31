@@ -1834,6 +1834,9 @@ static const char *get_date_string(GtkFileTime file_time,
     struct tm *time_struct;
     time_t time_val;
 
+    if (file_time == 0)
+      return "-";
+
     /* Bad, but this was also used in GtkFileChooserDefault */
     g_date_set_time(&ftime, (GTime) file_time);
     g_date_set_time(&now, (GTime) time(NULL));
@@ -1908,10 +1911,10 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
     }
     else
     {
-        line2 = get_date_string(file_time,
-                                _("sfil_li_modified_today"),
-                                _("sfil_li_modified_thisyear"),
-                                _("sfil_li_modified_earlier"));
+      line2 = get_date_string(file_time,
+			      _("sfil_li_modified_today"),
+			      _("sfil_li_modified_thisyear"),
+			      _("sfil_li_modified_earlier"));
     }
 
     if(thumb_title && thumb_title[0] )

@@ -1,5 +1,11 @@
 2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_set_file_iter): Set date and time to
+	"-" when file time is exactly zero.
+	* hildon-fm/hildon-file-selection.c (get_date_string): Return "-"
+	when time is exactly zero. (N52599)
+
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_add_node): Set file_info of model_node
 	even if the model_node was already present since the file_info

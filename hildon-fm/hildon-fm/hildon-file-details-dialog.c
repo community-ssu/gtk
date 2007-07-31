@@ -764,22 +764,30 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
 
   g_object_set(self->priv->file_size, "label", buffer, NULL);
 
-  /* Too bad. We cannot use GDate function, because it doesn't handle
-      time, just dates */
-  time_val = (time_t) time_stamp;
-  time_struct = localtime(&time_val);
-
-  /* There are no more logical names for these. We are allowed
-      to hardcode */
-  strftime(buffer, sizeof(buffer), "%X", time_struct);
-  g_object_set(self->priv->file_time, "label", buffer, NULL);
-
-  /* If format is passed directly to strftime, gcc complains about
-      that some locales use only 2 digit year numbers. Using
-      a temporary disable this warning (from strftime man page) */
-  fmt = "%x";
-  strftime(buffer, sizeof(buffer), fmt, time_struct);
-  g_object_set(self->priv->file_date, "label", buffer, NULL);
+  if (time_stamp != 0)
+    {
+      /* Too bad. We cannot use GDate function, because it doesn't handle
+	 time, just dates */
+      time_val = (time_t) time_stamp;
+      time_struct = localtime(&time_val);
+      
+      /* There are no more logical names for these. We are allowed
+	 to hardcode */
+      strftime(buffer, sizeof(buffer), "%X", time_struct);
+      g_object_set(self->priv->file_time, "label", buffer, NULL);
+      
+      /* If format is passed directly to strftime, gcc complains about
+	 that some locales use only 2 digit year numbers. Using
+	 a temporary disable this warning (from strftime man page) */
+      fmt = "%x";
+      strftime(buffer, sizeof(buffer), fmt, time_struct);
+      g_object_set(self->priv->file_date, "label", buffer, NULL);
+    }
+  else
+    {
+      g_object_set(self->priv->file_time, "label", "-", NULL);
+      g_object_set(self->priv->file_date, "label", "-", NULL);
+    }
 
   {
     GdkPixbuf *icon;
