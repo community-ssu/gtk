@@ -1,3 +1,12 @@
+2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+ 	* gtk/gtkfilesystem.h, gtk/gtkfilesystem.c [MAEMO_CHANGES]
+ 	(_GtkFileInfo): Added icon_pixbuf field.
+ 	(gtk_file_info_copy, gtk_file_info_free): Maintain it.
+ 	(gtk_file_info_set_icon_pixbuf): New.
+ 	(gtk_file_info_render_icon): Use icon_pixbuf when we have one.
+	Fixes: NB#N64277
+	
 2007-07-31  Michael Natterer  <mitch@imendio.com>
 
 	Merge from trunk:

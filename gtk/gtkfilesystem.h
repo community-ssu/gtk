@@ -118,6 +118,11 @@ GdkPixbuf            *gtk_file_info_render_icon           (const GtkFileInfo *in
 							   gint               pixel_size,
 							   GError           **error);
 
+#ifdef MAEMO_CHANGES
+void                  gtk_file_info_set_icon_pixbuf       (GtkFileInfo *info,
+							   GdkPixbuf   *icon_pixbuf);
+#endif /* MAEMO_CHANGES */
+
 /* GtkFileSystemHandle
  */
 
