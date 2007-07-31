@@ -148,18 +148,29 @@ class "GtkComboBox" binding "combo"
 
 binding "dialog"
 {
+  bind "Up"    { "move-focus" (tab-backward) }
+  bind "Down"  { "move-focus" (tab-forward)  }
+}
+
+class "GtkDialog" binding "dialog"
+
+binding "buttonbox"
+{
   bind "Left"  { "move-focus" (tab-backward) }
   bind "Up"    { "move-focus" (tab-backward) }
   bind "Right" { "move-focus" (tab-forward)  }
   bind "Down"  { "move-focus" (tab-forward)  }
 }
 
-class "GtkDialog" binding "dialog"
+class "GtkHButtonBox" binding "buttonbox"
+class "GtkVButtonBox" binding "buttonbox"
 
 binding "treeview"
 {
   bind "Left"  { "expand-collapse-cursor-row" (1, 0, 0) }
   bind "Right" { "expand-collapse-cursor-row" (1, 1, 0) }
+  unbind "<control>F"
+  unbind "<control>f"
 }
 
 class "GtkTreeView" binding "treeview"

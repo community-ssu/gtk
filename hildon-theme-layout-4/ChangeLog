@@ -1,3 +1,12 @@
+2007-07-31  Xan Lopez  <xan@gnome.org>
+
+	* rc/base.rc:
+
+	Remove bindings for Left and Right in dialog, only do it for bboxes.
+	Fixes: NB#63406
+
+	Unbind Ctrl+F in GtkTreeView to disable interactive search, Fixes: MB#1724
+
 2007-07-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkcombobox.rc: Fixing the theming for derrived GtkComboBox objects.
