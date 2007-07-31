@@ -1,3 +1,12 @@
+matchbox-window-manager (2:1.2-osso8) unstable; urgency=low
+
+  * use "_MB_NUM_SYSTEM_MODAL_WINDOWS_PRESENT" hint for system modal dialogs +
+    upstream fixes
+  * main_client.c: grabpointer before animation
+  * Fixes: NB#56489
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 19 Jul 2007 11:51:23 +0300
+
 matchbox-window-manager (2:1.2-osso7) unstable; urgency=low
 
   * main_client.c: attempt to determine position for close animation dst
