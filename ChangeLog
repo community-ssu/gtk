@@ -1,5 +1,22 @@
 2007-07-31  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup):
+	Use _NET_INPUT_AREAS to decide GtkEntryCompletion popup positioning.
+
+	The matchbox version on Sardine has a new X property for the root window
+	called _NET_INPUT_AREAS. It's supposed to contain an array of rectangles
+	which are reserved for user interaction and should never be obscured
+
+	I've modified the GtkEntryCompletion popup position code to:
+	* Get a list of the available input areas.
+	* Compute the intersections with the rectangle composed with
+	X = entry's X, Y = 0, WIDTH = entry's WIDTH, HEIGHT = monitors' HEIGHT
+	* From that data gather which one is the nearest intersecting area above
+	and below the entry.
+	* Based on the distances to those areas, decide where to show the popup.
+
+2007-07-31  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkentry.c (gtk_entry_size_allocate): do a
 	_gtk_entry_completion_resize_popup on the entry's size_allocate.
 	Fixes: NB#63404
