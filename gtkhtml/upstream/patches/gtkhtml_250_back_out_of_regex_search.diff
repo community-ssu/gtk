@@ -1,0 +1,40 @@
+diff -ru gtkhtml-3.13.91/src/htmlengine-search.c gtkhtml-3.13.91.mod/src/htmlengine-search.c
+--- gtkhtml-3.13.91/src/htmlengine-search.c	2007-07-31 14:25:35.000000000 +0300
++++ gtkhtml-3.13.91.mod/src/htmlengine-search.c	2007-07-31 14:27:45.000000000 +0300
+@@ -153,6 +153,9 @@
+ 	}
+ 
+ 	info = e->search_info = html_search_new (e, text, case_sensitive, forward, regular);
++	if (!info) {
++		return FALSE;
++	}
+ 
+ 	p = e->search_info->stack ? HTML_OBJECT (e->search_info->stack->data)->parent : NULL;
+ 	o = p ? p : e->clue;
+diff -ru gtkhtml-3.13.91/src/htmlsearch.c gtkhtml-3.13.91.mod/src/htmlsearch.c
+--- gtkhtml-3.13.91/src/htmlsearch.c	2007-07-31 14:25:34.000000000 +0300
++++ gtkhtml-3.13.91.mod/src/htmlsearch.c	2007-07-31 14:28:24.000000000 +0300
+@@ -100,6 +100,11 @@
+ 		rv = re_compile_pattern (ns->text, ns->text_bytes, ns->reb);
+ 		if (rv) {
+ 			g_warning (rv);
++
++			g_free(ns->reb);
++			ns->reb = NULL;
++			html_search_destroy(ns);
++			ns = NULL;
+ 		}
+ #else
+ 		int rv_int;
+@@ -114,6 +119,11 @@
+ 			} else {
+ 				g_warning ("regcomp failed, error code %d", rv_int);
+ 			}
++
++			g_free(ns->reb);
++			ns->reb = NULL;
++			html_search_destroy(ns);
++			ns = NULL;
+ 		}
+ #endif
+ 	} else {

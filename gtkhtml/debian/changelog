@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-3osso12) unstable; urgency=low
+
+  * Back out of regex search and report FALSE if regcomp fails
+  * Fixes: NB#64191, NB#64261
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue, 31 Jul 2007 14:57:12 +0300
+
 gtkhtml (3.9.1-3osso11) unstable; urgency=low
 
   * Added patch from Jose Dapena Paz for exporting last search selected area
