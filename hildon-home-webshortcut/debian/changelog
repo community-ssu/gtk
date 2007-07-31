@@ -1,3 +1,9 @@
+hildon-home-webshortcut (1:1.9.4-2) sardine; urgency=low
+
+  * Fixed epoch in dependency to libhildondesktop-dev
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 31 Jul 2007 12:53:48 +0300
+
 hildon-home-webshortcut (1:1.9.4-1) sardine; urgency=low
 
   * updated build-dep on libhildondesktop-dev
