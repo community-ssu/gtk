@@ -1074,7 +1074,6 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
       g_value_set_object(value, model_node->icon_cache);
       update_cache_queue(priv, node);
       break;
-      /* Fall thru... */
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED:
         if (!model_node->icon_cache_collapsed)
             model_node->icon_cache_collapsed =
@@ -1856,20 +1855,6 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
 
     ULOG_INFO("Adding %s", (const char *) path);
 
-    /* First check if this item is already part of the model */
-    {
-      node =
-        hildon_file_system_model_search_path_internal (parent_node,
-                                                       path, FALSE);
-
-        if (node) {
-            HildonFileSystemModelNode *model_node = node->data;
-            g_assert(model_node);
-            model_node->present_flag = TRUE;
-            return NULL;
-        }
-    }
-
     if (parent_folder) {
         GError *error = NULL;
         /* This can cause main loop execution on vfs backend */
@@ -1896,6 +1881,23 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         }
 
         g_assert(file_info != NULL);
+    }
+
+    /* First check if this item is already part of the model */
+    {
+      node =
+        hildon_file_system_model_search_path_internal (parent_node,
+                                                       path, FALSE);
+
+        if (node) {
+            HildonFileSystemModelNode *model_node = node->data;
+            g_assert(model_node);
+            model_node->present_flag = TRUE;
+	    if (model_node->info)
+	      gtk_file_info_free (model_node->info);
+	    model_node->info = file_info;
+            return NULL;
+        }
     }
 
     model_node = g_new0(HildonFileSystemModelNode, 1);

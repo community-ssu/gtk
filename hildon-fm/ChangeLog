@@ -1,3 +1,10 @@
+2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Set file_info of model_node
+	even if the model_node was already present since the file_info
+	might have been NULL (N62101).
+	
 2007-07-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Release 1.9.36
