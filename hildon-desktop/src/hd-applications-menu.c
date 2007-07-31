@@ -814,13 +814,19 @@ hd_applications_menu_categories_motion_notify (GtkWidget      *widget,
 					       GdkEventMotion *event,
 					       HDApplicationsMenu *button)
 {
-  GtkMenuItem *selected = 
+  static GtkMenuItem *selected_item = NULL;
+
+  GtkMenuItem *menu_item = 
     hildon_desktop_popup_menu_get_selected_item (HILDON_DESKTOP_POPUP_MENU (widget));
 
-  button->priv->focus_applications = TRUE;
+  if (menu_item != selected_item)
+  {
+    selected_item = menu_item;
 
-  gtk_menu_item_activate (selected);
-
+    button->priv->focus_applications = TRUE;
+    gtk_menu_item_activate (selected_item);
+  }
+  
   return TRUE;
 }
 

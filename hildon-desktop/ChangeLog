@@ -1,6 +1,12 @@
 2007-07-31  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c
+	(hd_applications_menu_categories_motion_notify): only activate item
+	when the selected menu item has changed.
+
+2007-07-31  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c
 	(hd_applications_menu_categories_motion_notify): make the motion
 	notify handler lighter so that it doesn't bring performance problems.
 	* libhildondesktop/hildon-desktop-popup-menu.c
