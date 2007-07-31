@@ -1,3 +1,7 @@
+2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 0.16
+
 2007-02-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* gtkfilesystemmemory/Makefile.am (libfilesystemmemory_la_CFLAGS):
@@ -7,7 +11,7 @@
 	__GNUC__.
 	(gtk_file_folder_memory_get_info): Use
 	gtk_file_info_set_icon_pixbuf to set the icon in the GtkFileInfo
-	structure.
+	structure (N57076).
 
 2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
 

@@ -1,3 +1,10 @@
+gtkfilesystemmemory (0.16) unstable; urgency=low
+
+  * Build-Depend on gtk+ that has gtk_file_info_set_icon_pixbuf.
+    Fixes: NB#57076.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 31 Jul 2007 17:25:44 +0300
+
 gtkfilesystemmemory (0.15-1) unstable; urgency=low
 
   * Make icons work again, but need unreleased Gtk+.
