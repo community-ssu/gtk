@@ -39,6 +39,9 @@ struct _GtkFileInfo
   gchar *icon_name;
   guint is_folder : 1;
   guint is_hidden : 1;
+#ifdef MAEMO_CHANGES
+  GdkPixbuf *icon_pixbuf;
+#endif
 };
 
 static void gtk_file_system_base_init (gpointer g_class);
@@ -94,6 +97,10 @@ gtk_file_info_copy (GtkFileInfo *info)
     new_info->icon_name = g_strdup (new_info->icon_name);
   if (new_info->display_key)
     new_info->display_key = g_strdup (new_info->display_key);
+#ifdef MAEMO_CHANGES
+  if (new_info->icon_pixbuf)
+    g_object_ref (new_info->icon_pixbuf);
+#endif
 
   return new_info;
 }
@@ -111,6 +118,10 @@ gtk_file_info_free (GtkFileInfo *info)
     g_free (info->display_key);
   if (info->icon_name)
     g_free (info->icon_name);
+#ifdef MAEMO_CHANGES
+  if (info->icon_pixbuf)
+    g_object_unref (info->icon_pixbuf);
+#endif
 
   g_free (info);
 }
@@ -278,6 +289,20 @@ gtk_file_info_get_icon_name (const GtkFileInfo *info)
   return info->icon_name;
 }
 
+#ifdef MAEMO_CHANGES
+void
+gtk_file_info_set_icon_pixbuf (GtkFileInfo *info,
+			       GdkPixbuf *icon_pixbuf)
+{
+  g_return_if_fail (info != NULL);
+  
+  g_object_ref (icon_pixbuf);
+  if (info->icon_pixbuf)
+    g_object_unref (info->icon_pixbuf);
+  info->icon_pixbuf = icon_pixbuf;
+}
+#endif
+
 GdkPixbuf *
 gtk_file_info_render_icon (const GtkFileInfo  *info,
 			   GtkWidget          *widget,
@@ -289,7 +314,15 @@ gtk_file_info_render_icon (const GtkFileInfo  *info,
   g_return_val_if_fail (info != NULL, NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
 
-  if (info->icon_name)
+#ifdef MAEMO_CHANGES
+  if (info->icon_pixbuf)
+    {
+      pixbuf = info->icon_pixbuf;
+      gdk_pixbuf_ref (pixbuf);
+    }
+#endif
+
+  if (info->icon_name && !pixbuf)
     {
       if (g_path_is_absolute (info->icon_name))
 	pixbuf = gdk_pixbuf_new_from_file_at_size (info->icon_name,
