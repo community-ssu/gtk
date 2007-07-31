@@ -1330,6 +1330,16 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   gboolean above;
   gint width;
 
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+  GdkWindow *window = completion->priv->popup_window->window;
+  GdkDisplay *display = gdk_drawable_get_display (window);
+  Atom type_return;
+  int format_return, ret_val, n_rects;
+  gulong nitems_return, bytes_after_return;
+  guchar *data;
+  guint32 *val;
+#endif
+
   if (!completion->priv->entry->window)
     return FALSE;
 
@@ -1391,14 +1401,6 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
     x = monitor.x + monitor.width - popup_req.width;
 
 #if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
-  GdkWindow *window = completion->priv->popup_window->window;
-  GdkDisplay *display = gdk_drawable_get_display (window);
-  Atom type_return;
-  int format_return, ret_val, n_rects;
-  gulong nitems_return, bytes_after_return;
-  guchar *data;
-  guint32 *val;
-
   ret_val = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display),
                                 GDK_WINDOW_XWINDOW (gtk_widget_get_root_window (completion->priv->popup_window)),
                                 gdk_x11_get_xatom_by_name_for_display (display, "_NET_INPUT_AREAS"),
@@ -1414,7 +1416,7 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
     {
       int i, j;
       GdkRectangle widget_rect;
-      GdkRectangle *rectangles = (GdkRectangle*)g_slice_alloc (sizeof(GdkRectangle)*n_rects);
+      GdkRectangle *rectangles = g_slice_alloc (sizeof(GdkRectangle)*n_rects);
       gint root_x, root_y;
       GdkRectangle *top = NULL, *bottom = NULL;
       gint to_top = -1, to_bottom = -1;
@@ -1444,8 +1446,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
           if (gdk_rectangle_intersect (&widget_rect, &rectangles[i], &dest))
             {
-              if (rectangles[i].y < root_y &&
-                  (top == NULL || top->y < rectangles[i].y))
+              if (rectangles[i].y + rectangles[i].height < root_y &&
+                  (top == NULL || top->y + top->height < rectangles[i].y + rectangles[i].height))
                 {
                   top = &rectangles[i];
                 }
@@ -1467,6 +1469,9 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
       else
         to_bottom = monitor.height - (root_y + completion->priv->entry->allocation.y);
 
+      /* If the popup fits below the entry we will put it there, otherwise it will
+         go above it. If it does not fit in either direction we will put it below
+         anyway. This is not exactly right, but we don't have other options */
       if (popup_req.height <= to_bottom)
         {
           above = FALSE;
@@ -1479,7 +1484,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
         }
       else
         {
-          /* Doesn't fit (what should we do?) */
+          above = FALSE;
+          y += entry_req.height;
         }
 
       g_slice_free1 (sizeof(GdkRectangle)*n_rects, rectangles);
