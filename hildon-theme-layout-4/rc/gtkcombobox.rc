@@ -44,7 +44,7 @@ style "osso-combobox-button" {
         }
     }
 }
-widget_class "*.GtkComboBox.GtkToggleButton" style "osso-combobox-button"
+widget_class "*.<GtkComboBox>.GtkToggleButton" style "osso-combobox-button"
 
 
 style "osso-combobox-frame" {
@@ -68,7 +68,7 @@ style "osso-combobox-frame" {
         }
     }
 }
-widget_class "*.GtkComboBox.GtkFrame" style "osso-combobox-frame"
+widget_class "*.<GtkComboBox>.GtkFrame" style "osso-combobox-frame"
 
 ###################################################
 #
@@ -84,7 +84,7 @@ style "osso-combobox-entry-base" {
   GtkEntry::inner-border = { 4, 4, 0, 0 }
 }
 
-widget_class "*.GtkComboBoxEntry.GtkEntry" style "osso-combobox-entry-base"
+widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "osso-combobox-entry-base"
 
 style "osso-combobox-entry-arrow"
 {
@@ -106,8 +106,8 @@ style "osso-combobox-entry-arrow"
     }
 }
 
-widget_class "*.GtkComboBox.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
-widget_class "*.GtkComboBoxEntry.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
+widget_class "*.<GtkComboBox>.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
+widget_class "*.<GtkComboBoxEntry>.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
 
 
 style "osso-combobox-entry-entry" {
@@ -130,7 +130,7 @@ style "osso-combobox-entry-entry" {
     }
 }
 
-widget_class "*.GtkComboBoxEntry.GtkEntry" style  "osso-combobox-entry-entry"
+widget_class "*.<GtkComboBoxEntry>.GtkEntry" style  "osso-combobox-entry-entry"
 
 style "osso-combobox-entry-button-down" {
 
@@ -154,6 +154,6 @@ style "osso-combobox-entry-button-down" {
 		}
 	}
 }
-widget_class "*.GtkComboBoxEntry.GtkToggleButton" style "osso-combobox-entry-button-down"
+widget_class "*.<GtkComboBoxEntry>.GtkToggleButton" style "osso-combobox-entry-button-down"
 
 	
