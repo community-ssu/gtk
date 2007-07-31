@@ -1,11 +1,7 @@
 2007-07-31  Karoliina Salminen <karoliina.t.salminen@nokia.com>
 
 	* libhildondesktop/libhildonmenu.c: line 645: fixed signedness compilation 
-          warning which occurs on newer gcc compilers. Added cast to (gchar *) to key.
-        * src/main.c: added stamp file creation & required includes for creat
-	  The stamp file will be created as follows:
-          Stamp directory: "/tmp/osso-appl-states/hildon-desktop/"
-          Stamp file in the stamp directory: HILDON_DESKTOP_STAMP_DIR"/stamp"
+	warning which occurs on newer gcc compilers. Added cast to (gchar *) to key.
 
 2007-07-30  Lucas Rocha  <lucas.rocha@nokia.com>
 
