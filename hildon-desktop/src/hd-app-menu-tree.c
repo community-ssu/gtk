@@ -108,6 +108,7 @@ struct _HDAppMenuTreePrivate
   GtkWidget            *content_pane;
 
   GtkWidget            *empty_label;
+  GtkWidget            *content_scrolled_window;
 
   GtkTreeSelection     *navigation_selection;
   GtkTreeSelection     *content_selection;
@@ -170,8 +171,8 @@ hd_app_menu_tree_constructor (GType                   type,
   HDAppMenuTreePrivate *priv;
   GObject              *object;
   GtkTreeViewColumn    *column;
-  GtkWidget            *scrolled_window;
   GtkCellRenderer      *renderer;
+  GtkWidget            *scrolled_window;
   const GtkTargetEntry  target_entries =
   {"HD_APP_MENU_ITEM", GTK_TARGET_SAME_APP, 0x42124212};
 
@@ -308,14 +309,16 @@ hd_app_menu_tree_constructor (GType                   type,
   priv->content_selection =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->content_pane));
 
-  scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
-                                  "visible", TRUE,
-                                  "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
-                                  "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
-                                  "child", priv->content_pane,
-                                  NULL);
+  priv->content_scrolled_window =
+      g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+                    "visible", TRUE,
+                    "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                    "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                    "child", priv->content_pane,
+                    NULL);
 
-  gtk_paned_add2 (GTK_PANED (object), scrolled_window);
+  gtk_paned_add2 (GTK_PANED (object), priv->content_scrolled_window);
+  g_object_ref (priv->content_scrolled_window);
 
   return object;
 
@@ -463,17 +466,18 @@ hd_app_menu_tree_navigation_changed (HDAppMenuTree *tree)
 
   if (gtk_tree_model_get_iter_first (priv->content_model, &iter))
   {
-    if (priv->content_pane->parent != GTK_WIDGET (tree))
+    if (priv->content_scrolled_window->parent != GTK_WIDGET (tree))
     {
       gtk_container_remove (GTK_CONTAINER (tree), priv->empty_label);
-      gtk_paned_add2 (GTK_PANED (tree), priv->content_pane);
+      gtk_paned_add2 (GTK_PANED (tree), priv->content_scrolled_window);
     }
   }
   else
   {
     if (priv->empty_label->parent != GTK_WIDGET (tree))
     {
-      gtk_container_remove (GTK_CONTAINER (tree), priv->content_pane);
+      gtk_container_remove (GTK_CONTAINER (tree),
+                            priv->content_scrolled_window);
       gtk_paned_add2 (GTK_PANED (tree), priv->empty_label);
     }
   }
@@ -847,6 +851,19 @@ hd_app_menu_tree_navigation_drag_motion (HDAppMenuTree          *tree,
   return valid_location;
 }
 
+static void
+hd_app_menu_tree_navigation_row_deleted (HDAppMenuTree *tree,
+                                         GtkTreePath   *path)
+{
+  HDAppMenuTreePrivate *priv = tree->priv;
+
+  gtk_tree_path_prev (path);
+  gtk_tree_view_set_cursor (GTK_TREE_VIEW (priv->navigation_pane),
+                            path,
+                            NULL,
+                            FALSE);
+}
+
 void
 hd_app_menu_tree_set_model (HDAppMenuTree *tree, GtkTreeModel *model)
 {
@@ -881,6 +898,7 @@ hd_app_menu_tree_set_model (HDAppMenuTree *tree, GtkTreeModel *model)
 
     priv->navigation_model = gtk_tree_model_filter_new (priv->model, NULL);
 
+
     gtk_tree_model_filter_set_visible_func (
                            GTK_TREE_MODEL_FILTER (priv->navigation_model),
                            (GtkTreeModelFilterVisibleFunc)
@@ -896,6 +914,10 @@ hd_app_menu_tree_set_model (HDAppMenuTree *tree, GtkTreeModel *model)
                               FALSE);
 
     gtk_tree_path_free (path);
+    g_signal_connect_swapped (priv->navigation_model, "row-deleted",
+                              G_CALLBACK (hd_app_menu_tree_navigation_row_deleted),
+                              tree);
+
 
   }
 
