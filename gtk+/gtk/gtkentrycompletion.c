@@ -40,6 +40,10 @@
 
 #include <string.h>
 
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+#include "x11/gdkx.h"
+#include <X11/Xatom.h>
+#endif
 
 /* signals */
 enum
@@ -1385,7 +1389,103 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
     x = monitor.x;
   else if (x + popup_req.width > monitor.x + monitor.width)
     x = monitor.x + monitor.width - popup_req.width;
-  
+
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+  GdkWindow *window = completion->priv->popup_window->window;
+  GdkDisplay *display = gdk_drawable_get_display (window);
+  Atom type_return;
+  int format_return, ret_val, n_rects;
+  gulong nitems_return, bytes_after_return;
+  guchar *data;
+  guint32 *val;
+
+  ret_val = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display),
+                                GDK_WINDOW_XWINDOW (gtk_widget_get_root_window (completion->priv->popup_window)),
+                                gdk_x11_get_xatom_by_name_for_display (display, "_NET_INPUT_AREAS"),
+                                0, G_MAXULONG,
+                                False,
+                                XA_CARDINAL,
+                                &type_return, &format_return, &nitems_return, &bytes_after_return,
+                                &data);
+
+  n_rects = nitems_return/4;
+
+  if (ret_val == Success && n_rects > 0)
+    {
+      int i, j;
+      GdkRectangle widget_rect;
+      GdkRectangle *rectangles = (GdkRectangle*)g_slice_alloc (sizeof(GdkRectangle)*n_rects);
+      gint root_x, root_y;
+      GdkRectangle *top = NULL, *bottom = NULL;
+      gint to_top = -1, to_bottom = -1;
+
+      val = (guint32*)data;
+
+      for (i = 0, j = 0; i < nitems_return; i+=4, j++)
+        {
+          rectangles[j].x = val[i];
+          rectangles[j].y = val[i+1];
+          rectangles[j].width = val[i+2];
+          rectangles[j].height = val[i+3];
+        }
+
+      XFree (data);
+
+      gdk_window_get_origin (completion->priv->entry->window, &root_x, &root_y);
+
+      widget_rect.x = root_x;
+      widget_rect.y = 0;
+      widget_rect.width = completion->priv->entry->allocation.width;
+      widget_rect.height = monitor.height;
+
+      for (i = 0; i < n_rects; i++)
+        {
+          GdkRectangle dest;
+
+          if (gdk_rectangle_intersect (&widget_rect, &rectangles[i], &dest))
+            {
+              if (rectangles[i].y < root_y &&
+                  (top == NULL || top->y < rectangles[i].y))
+                {
+                  top = &rectangles[i];
+                }
+              else if (rectangles[i].y > root_y &&
+                       (bottom == NULL || bottom->y > rectangles[i].y))
+                {
+                  bottom = &rectangles[i];
+                }
+            }
+        }
+      /* Which one is nearer */
+      if (top)
+        to_top = root_y - (top->y + top->height);
+      else
+        to_top = root_y;
+
+      if (bottom)
+          to_bottom = bottom->y - (root_y + completion->priv->entry->allocation.y);
+      else
+        to_bottom = monitor.height - (root_y + completion->priv->entry->allocation.y);
+
+      if (popup_req.height <= to_bottom)
+        {
+          above = FALSE;
+          y += entry_req.height;
+        }
+      else if (popup_req.height <= to_top)
+        {
+          above = TRUE;
+          y -= popup_req.height;
+        }
+      else
+        {
+          /* Doesn't fit (what should we do?) */
+        }
+
+      g_slice_free1 (sizeof(GdkRectangle)*n_rects, rectangles);
+    }
+  else
+#endif /* MAEMO_CHANGES && GDK_WINDOWING_X11 */
   if (y + entry_req.height + popup_req.height <= monitor.y + monitor.height ||
       y - monitor.y < (monitor.y + monitor.height) - (y + entry_req.height))
     {
