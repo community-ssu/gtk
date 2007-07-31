@@ -15,6 +15,8 @@
 	and below the entry.
 	* Based on the distances to those areas, decide where to show the popup.
 
+	Fixes: NB#55607
+
 2007-07-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_size_allocate): do a
