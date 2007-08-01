@@ -215,7 +215,7 @@ hildon_desktop_panel_expandable_init (HildonDesktopPanelExpandable *panel)
   
   panel->priv->items = g_hash_table_new_full (g_str_hash,
 		  			      g_str_equal,
-					      (GDestroyNotify) g_free,
+					      NULL,
 					      (GDestroyNotify) gtk_widget_destroy);
 
 
