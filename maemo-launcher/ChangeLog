@@ -1,5 +1,10 @@
 2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/summoner.c (summon_process) [DEBUG]: Move contents to ...
+	[!DEBUG]: ... here. Replace print_env_args with print_prog_env_argv.
+
+2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/search.c: New file.
 	* launcher/search.h: Likewise.
 	* launcher/prog.c (set_progname): Add a fourth argument specifying

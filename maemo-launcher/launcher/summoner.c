@@ -38,11 +38,9 @@ summon_process(prog_t *prog)
 {
   load_main(prog);
 
-#ifdef DEBUG
-  print_env_args(prog);
+  print_prog_env_argv(prog);
 
   debug("summoning process: '%s'\n", prog->filename);
-#endif
 
   _exit(prog->entry(prog->argc, prog->argv));
 }
