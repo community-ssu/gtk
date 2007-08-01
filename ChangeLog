@@ -1,3 +1,8 @@
+2007-08-01  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenuitem.c (_gtk_menu_item_popup_submenu): sync with
+	upstream (only indentation was broken, no code changes).
+
 2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
  	* gtk/gtkfilesystem.h, gtk/gtkfilesystem.c [MAEMO_CHANGES]
