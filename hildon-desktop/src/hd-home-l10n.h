@@ -98,7 +98,6 @@ G_BEGIN_DECLS
 #define HH_FLASH_FULL_TEXT          _KE_RECV("cerm_device_memory_full")
 #define HH_NO_CONNECTION_TEXT       _HCS("sfil_ni_cannot_open_no_connection")
 #define HH_FILE_CORRUPTED_TEXT      _HCS("ckct_ni_unable_to_open_file_corrupted")
-#define HH_MMC_OPEN_TEXT            _HCS("sfil_ni_cannot_open_mmc_cover_open")
 
 
 /* help topics */

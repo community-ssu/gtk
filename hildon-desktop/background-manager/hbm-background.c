@@ -33,8 +33,6 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk/gdkx.h>
 
-#include <gconf/gconf-client.h>
-
 #include <libgnomevfs/gnome-vfs.h>
 
 #include <X11/extensions/Xrender.h>
@@ -48,8 +46,6 @@
 #define MAXIMUM_WIDTH                   1600
 #define MAXIMUM_HEIGHT                  960
 #define BUFFER_SIZE                     8192
-#define HBM_GCONF_MMC_COVER_OPEN        "/system/osso/af/mmc-cover-open"
-#define HBM_ENV_MMC_MOUNTPOINT          "MMC_MOUNTPOINT"
 #define HBM_CACHE_PERMISSION (GNOME_VFS_PERM_USER_READ | \
                               GNOME_VFS_PERM_USER_WRITE | \
                               GNOME_VFS_PERM_GROUP_READ | \
@@ -82,7 +78,6 @@ struct _HBMBackgroundPrivate
   GdkDisplay                   *display;
 
   GdkPixbufLoader              *loader;
-  GConfClient                  *gconf_client;
   gint                          width, height;
   GnomeVFSHandle               *handle;
   GnomeVFSHandle               *cache_handle;
@@ -95,7 +90,6 @@ struct _HBMBackgroundPrivate
   gboolean                      caching;
 
   gboolean                      oom;
-  gboolean                      on_mmc;
 
   guchar                        buffer[BUFFER_SIZE];
 
@@ -111,7 +105,6 @@ hbm_background_init (HBMBackground *background)
                                                   HBM_TYPE_BACKGROUND,
                                                   HBMBackgroundPrivate);
 
-  background->priv->gconf_client = gconf_client_get_default ();
 }
 
 static void
@@ -168,13 +161,6 @@ hbm_background_class_init (HBMBackgroundClass *klass)
 static void
 hbm_background_finalize (GObject *object)
 {
-  HBMBackgroundPrivate *priv = HBM_BACKGROUND (object)->priv;
-
-  if (priv->gconf_client)
-  {
-    g_object_unref (priv->gconf_client);
-    priv->gconf_client = NULL;
-  }
 
 }
 
@@ -292,59 +278,6 @@ hbm_background_size_prepared (HBMBackground    *background,
 
   gdk_pixbuf_loader_set_size (priv->loader,
                               priv->pixbuf_width, priv->pixbuf_height);
-}
-
-static gboolean
-hbm_background_is_on_mmc (HBMBackground *background)
-{
-  HBMBackgroundPrivate *priv = background->priv;
-  gchar                *filename = NULL;
-  gchar                *mmc_mount_point = NULL;
-
-  g_object_get (background,
-                "filename", &filename,
-                NULL);
-  g_return_val_if_fail (filename, FALSE);
-
-  mmc_mount_point = g_strconcat ("file://",
-                                 g_getenv (HBM_ENV_MMC_MOUNTPOINT),
-                                 NULL);
-
-
-  priv->on_mmc = g_str_has_prefix (filename, mmc_mount_point);
-  g_free (mmc_mount_point);
-
-  return priv->on_mmc;
-
-}
-
-static void
-hbm_background_is_mmc_open (HBMBackground *background, GError **error)
-{
-  HBMBackgroundPrivate *priv = background->priv;
-  GError               *gconf_error = NULL;
-  gboolean              mmc_cover_open;
-
-  mmc_cover_open = gconf_client_get_bool (priv->gconf_client,
-                                          HBM_GCONF_MMC_COVER_OPEN,
-                                          &gconf_error);
-  if (gconf_error)
-  {
-    g_propagate_error (error, gconf_error);
-
-    return;
-  }
-
-  if (mmc_cover_open)
-  {
-    g_set_error (error,
-                 BACKGROUND_MANAGER_ERROR,
-                 BACKGROUND_MANAGER_ERROR_MMC_OPEN,
-                 "MMC cover is open");
-  }
-
-  return;
-
 }
 
 static void
@@ -467,12 +400,6 @@ hbm_background_read (HBMBackground *background, GError **error)
   hbm_background_is_oom (background, error);
   if (*error) return FALSE;
 
-  if (priv->on_mmc)
-  {
-    hbm_background_is_mmc_open (background, error);
-    if (*error) return FALSE;
-  }
-
   result = gnome_vfs_read (priv->handle,
                            priv->buffer,
                            BUFFER_SIZE,
@@ -588,11 +515,6 @@ hbm_background_load_pixbuf (HBMBackground *background, GError **error)
     g_object_unref (priv->loader);
 
   hbm_background_enable_memory_cap (background);
-
-  hbm_background_is_on_mmc (background);
-
-  if (priv->on_mmc)
-    hbm_background_is_mmc_open (background, &local_error);
 
   if (local_error) goto error;
 

@@ -29,14 +29,12 @@ pkgincludedir = $(includedir)/libhildondesktop/libhildondesktop
 pkginclude_HEADERS = hildon-background-manager.h
 
 hildon_background_manager_CPPFLAGS = @GNOME_VFS_CFLAGS@ \
-				     @GCONF_CFLAGS@ \
 				     @DBUS_GLIB_CFLAGS@ \
 				     @OSSO_CFLAGS@ \
 				     @GTK_CFLAGS@
 				     
 				     
 hildon_background_manager_LDFLAGS  = @GNOME_VFS_LIBS@ \
-				     @GCONF_LIBS@ \
 				     @DBUS_GLIB_LIBS@ \
 				     @OSSO_LIBS@ \
 				     @GTK_LIBS@

@@ -1,3 +1,14 @@
+2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/hbm-background.c:
+	- do not check if the MMC bay is opened anymore, the
+	volume will not be unmounted if it is anyway
+	* src/hd-home-window.c, src/hd-home-l10n.h:
+	- remove handling of the "MMC cover open" error
+	* background-manager/Makefile.am:
+	- do not link against gconf anymore
+	Fixes: NB#63137
+
 2007-08-01  Mohammad Anwari  <mdamt@maemo.org>
 
 	Right-to-left dance:

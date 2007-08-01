@@ -673,9 +673,6 @@ background_apply_callback (HildonDesktopBackground     *background,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code1")))
         text = HH_NO_CONNECTION_TEXT;
       else if ((dbus_g_error_has_name (error,
-                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code4")))
-        text = HH_MMC_OPEN_TEXT;
-      else if ((dbus_g_error_has_name (error,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code6")))
         text = HH_FLASH_FULL_TEXT;
       else if ((dbus_g_error_has_name (error,
