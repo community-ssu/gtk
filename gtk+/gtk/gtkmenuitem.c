@@ -1105,22 +1105,22 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget,
       gint popup_delay = get_popup_delay (widget);
 
       if (popup_delay > 0)
-      {
-        GdkEvent *event = gtk_get_current_event ();
+        {
+          GdkEvent *event = gtk_get_current_event ();
 
-        menu_item->timer = g_timeout_add (popup_delay,
-                                          gtk_menu_item_popup_timeout,
-                                          menu_item);
+          menu_item->timer = g_timeout_add (popup_delay,
+                                            gtk_menu_item_popup_timeout,
+                                            menu_item);
 
-        if (event &&
-            event->type != GDK_BUTTON_PRESS &&
-            event->type != GDK_ENTER_NOTIFY)
-          menu_item->timer_from_keypress = TRUE;
-        else
-          menu_item->timer_from_keypress = FALSE;
+          if (event &&
+              event->type != GDK_BUTTON_PRESS &&
+              event->type != GDK_ENTER_NOTIFY)
+            menu_item->timer_from_keypress = TRUE;
+          else
+            menu_item->timer_from_keypress = FALSE;
 
-        if (event)
-          gdk_event_free (event);
+          if (event)
+            gdk_event_free (event);
 
           return;
         }
