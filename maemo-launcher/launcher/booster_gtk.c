@@ -141,7 +141,7 @@ init_cairo(void)
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, 1, 1);
   cairo = cairo_create(surface);
   font_map = pango_cairo_font_map_get_default();
-  context = pango_cairo_font_map_create_context(font_map);
+  context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(font_map));
   layout = pango_layout_new(context);
   pango_cairo_show_layout(cairo, layout);
 }

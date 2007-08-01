@@ -1,5 +1,10 @@
 2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/booster_gtk.c (init_cairo): Use PANGO_CAIRO_FONT_MAP to
+	cast the PangoFontMap.
+
+2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/summoner.c (summon_process) [DEBUG]: Move contents to ...
 	[!DEBUG]: ... here. Replace print_env_args with print_prog_env_argv.
 
