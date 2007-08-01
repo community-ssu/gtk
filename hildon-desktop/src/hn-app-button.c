@@ -537,10 +537,24 @@ menu_button_release_cb (GtkWidget      *widget,
 static gboolean
 menu_keypress_cb (GtkWidget *menu, GdkEventKey *event, HNAppButton * app_button)
 {
+  gboolean cancel_menu = FALSE;
+
   g_return_val_if_fail(event, FALSE);
 
-  if (event->keyval == GDK_Left ||
-      event->keyval == GDK_KP_Left ||
+  if (gtk_widget_get_direction (menu) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }  
+
+  if (cancel_menu ||
       event->keyval == GDK_Escape)
     {
       gtk_menu_shell_deactivate (GTK_MENU_SHELL (menu));

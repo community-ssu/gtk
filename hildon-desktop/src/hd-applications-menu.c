@@ -246,10 +246,29 @@ hd_applications_menu_key_press (GtkWidget *menu,
 			        GdkEventKey *event,
 			        HDApplicationsMenu *button)
 {
+  gboolean activate_menu = FALSE, cancel_menu = FALSE;
+  
   HDWM *hdwm = hd_wm_get_singleton ();
 
-  if (event->keyval == GDK_Left    ||
-      event->keyval == GDK_KP_Left ||
+  if (gtk_widget_get_direction (menu) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Left ||
+        event->keyval == GDK_KP_Left)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Right)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }  
+
+  if (cancel_menu ||
       event->keyval == GDK_Escape)
   {
     if (hd_applications_menu_has_focus (button->priv->menu_applications))
@@ -291,8 +310,7 @@ hd_applications_menu_key_press (GtkWidget *menu,
   else if (event->keyval == GDK_Return    ||
 	   event->keyval == GDK_KP_Enter  ||
 	   event->keyval == GDK_ISO_Enter ||
-	   event->keyval == GDK_Right     ||
-           event->keyval == GDK_KP_Right)
+	   activate_menu)
   {
     if (hd_applications_menu_has_focus (button->priv->menu_categories))
     {
@@ -397,7 +415,7 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
   {
     gtk_widget_grab_focus (GTK_WIDGET (item));
   }
-
+ 
   button->priv->focus_applications = FALSE;
 }
 
@@ -1131,17 +1149,37 @@ hd_applications_menu_button_key_press (GtkWidget *widget,
 		                       GdkEventKey *event,
 			               HDApplicationsMenu *button)
 {
+  gboolean activate_button = FALSE, cancel_button = FALSE;
+  
   g_return_val_if_fail (button, FALSE);
 
-  if (event->keyval == GDK_Right ||
-      event->keyval == GDK_KP_Enter)
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Left ||
+        event->keyval == GDK_KP_Left ||
+        event->keyval == GDK_KP_Enter)
+      activate_button = TRUE;
+    else if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_button = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Right ||
+        event->keyval == GDK_KP_Enter)
+      activate_button = TRUE;
+    else if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_button = TRUE;
+  }
+
+  if (activate_button)
   {
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button->priv->button), TRUE); 
 
     return TRUE;
   }
-  else if (event->keyval == GDK_Left || 
-           event->keyval == GDK_KP_Left)
+  else if (cancel_button)
   {
     gtk_widget_grab_focus (widget);
 	  

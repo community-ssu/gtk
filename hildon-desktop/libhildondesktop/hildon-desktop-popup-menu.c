@@ -76,6 +76,8 @@ struct _HildonDesktopPopupMenuPrivate
   gboolean      resize_parent;
 
   guint         toggle_size;
+
+  gboolean      rtl;
 };
 
 static GObject *hildon_desktop_popup_menu_constructor (GType gtype,
@@ -223,6 +225,7 @@ hildon_desktop_popup_menu_constructor (GType gtype,
      										 params);
   menu = HILDON_DESKTOP_POPUP_MENU (object);
 
+  menu->priv->rtl = (gtk_widget_get_direction (GTK_WIDGET (menu)) == GTK_TEXT_DIR_RTL);
   menu->priv->viewport = gtk_viewport_new (NULL, NULL);
 
   gtk_box_pack_start (GTK_BOX (menu),
@@ -319,9 +322,14 @@ hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *alloc
 
       child_allocation.width = allocation->width;
       child_allocation.height = child_requisition.height;
-      child_allocation.x = 0;
+
+      if (priv->rtl)
+        child_allocation.x = child_allocation.width;
+      else
+        child_allocation.x = 0;
+
       child_allocation.y = height;
-	    
+
       gtk_menu_item_toggle_size_allocate (GTK_MENU_ITEM (child),
                                           priv->toggle_size);
 
@@ -772,7 +780,7 @@ hildon_desktop_popup_menu_select_next_prev_item (HildonDesktopPopupMenu *menu, g
   previous_selected_item = menu->priv->selected_item;
 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
-
+  
   if (children)
   {
     l = item = g_list_find (children, menu->priv->selected_item);
@@ -937,7 +945,7 @@ hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuIt
   {
     if (l->data == item)
     {
-      gtk_menu_item_activate (GTK_MENU_ITEM (item));
+      gtk_menu_item_activate (GTK_MENU_ITEM (item));      
       break;
     }
   }

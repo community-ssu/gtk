@@ -1149,7 +1149,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
                                         "height", height,
                                         "orientation", orientation,
                                         "stretch", TRUE,
-                                         NULL);
+                                         NULL);        
       }
       else if (!g_ascii_strcasecmp (type, HD_CONTAINER_TYPE_PANEL_EXPANDABLE))
       {
@@ -1166,6 +1166,24 @@ hd_desktop_load_containers (HDDesktop *desktop)
 					"use-old-titlebar", TRUE, 
 					"move", FALSE, 
                                          NULL);
+      }
+
+      if (gtk_widget_get_direction (info->container) == GTK_TEXT_DIR_RTL)
+      {
+        HildonDesktopPanelWindowOrientation new_orientation;
+        gint new_x;
+      
+        /* Mirror the values in RTL mode */
+        new_x = gdk_screen_get_width (gdk_screen_get_default ()) - x - width;
+
+        new_orientation = (orientation == HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT ? 
+                           HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_RIGHT :
+                           HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT);
+
+        g_object_set (info->container, 
+                      "x", new_x, 
+                      "orientation", new_orientation, 
+                      NULL);
       }
 
       g_free (orientation_str);

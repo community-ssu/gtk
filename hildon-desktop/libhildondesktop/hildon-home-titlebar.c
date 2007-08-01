@@ -174,7 +174,14 @@ titlebar_menu_position_func (GtkMenu  *menu,
 			"vertical-offset", &v_offset,
 			NULL);
 
-  *x += widget->allocation.x + h_offset;
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    *x += widget->allocation.width - GTK_WIDGET (menu)->allocation.width - h_offset;
+  } 
+  else
+  {
+    *x += widget->allocation.x + h_offset;
+  }
   *y += widget->allocation.y + widget->allocation.height + v_offset;
 
   *push_in = FALSE;

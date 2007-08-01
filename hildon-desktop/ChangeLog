@@ -1,3 +1,17 @@
+2007-08-01  Mohammad Anwari  <mdamt@maemo.org>
+
+	Right-to-left dance:
+	* src/hd-desktop.c:
+	- Mirror the x value and the orientation.
+	* src/hd-applications-menu.c, src/hn-app-button.c,
+	  src/hn-others-button.c, src/hd-switcher-menu.c:
+	- Mirror the keypress (e.g. you press right button in LTR but
+	it should be left button in RTL).
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Adjust the x position of the child widget in RTL.
+	* libhildondesktop/hildon-home-titlebar.c:
+	- Mirror the x position of the menu in RTL.
+
 2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.28

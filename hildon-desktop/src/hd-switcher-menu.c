@@ -332,11 +332,30 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
 			                   GdkEventKey    *event,
 			                   HDSwitcherMenu *switcher)
 {
+  gboolean activate_menu = FALSE, cancel_menu = FALSE;
+  
   HildonDesktopPopupWindow *window =
     HILDON_DESKTOP_POPUP_WINDOW (widget);
 
-  if (event->keyval == GDK_Left ||
-      event->keyval == GDK_KP_Left ||
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Left ||
+        event->keyval == GDK_KP_Left)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Right)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }  
+
+  if (cancel_menu ||
       event->keyval == GDK_Escape)
   {
     hildon_desktop_popup_window_popdown (window);
@@ -364,8 +383,7 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
     return TRUE;
   }
   else
-  if (event->keyval == GDK_Right ||
-      event->keyval == GDK_KP_Right)
+  if (activate_menu)
   {
     GList *notifications =
      hildon_desktop_popup_menu_get_children 
@@ -398,8 +416,22 @@ hd_switcher_menu_popup_window_pane_keypress_cb (GtkWidget      *widget,
 	                                        GdkEventKey    *event,
         	                                HDSwitcherMenu *switcher)
 {
-  if (event->keyval == GDK_Left ||
-      event->keyval == GDK_KP_Left)
+  gboolean cancel_menu = FALSE;
+  
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Right || 
+        event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Left || 
+        event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }  
+
+  if (cancel_menu)
   {
     hildon_desktop_popup_window_jump_to_pane
       (switcher->priv->popup_window, -1);
@@ -421,16 +453,34 @@ hd_switcher_menu_switcher_keypress_cb (GtkWidget      *widget,
 				       GdkEventKey    *event,
 				       HDSwitcherMenu *switcher)
 {
-  if (event->keyval == GDK_Right ||
-      event->keyval == GDK_KP_Right)
+  gboolean activate_menu = FALSE, cancel_menu = FALSE;
+  
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Left ||
+        event->keyval == GDK_KP_Left)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Right)
+      activate_menu = TRUE;
+    else if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }  
+
+  if (activate_menu)
   {
     gtk_toggle_button_set_active
       (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
 
     return TRUE;
   }	  
-  else if (event->keyval == GDK_Left ||
-           event->keyval == GDK_KP_Left)
+  else if (cancel_menu)
   {
     gtk_widget_grab_focus (widget);
 

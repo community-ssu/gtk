@@ -247,10 +247,22 @@ hn_others_menu_key_press(GtkWidget *menu,
 			 GdkEventKey *event,
 			 HNOthersButton *button)
 {
+  gboolean cancel_menu = FALSE;
   HDWM *hdwm = hd_wm_get_singleton ();
 
-  if (event->keyval == GDK_Left    ||
-      event->keyval == GDK_KP_Left ||
+  if (gtk_widget_get_direction (menu) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Right    ||
+        event->keyval == GDK_KP_Right)
+      cancel_menu = TRUE;
+  } else
+  {
+    if (event->keyval == GDK_Left    ||
+        event->keyval == GDK_KP_Left)
+      cancel_menu = TRUE;
+  }
+
+  if (cancel_menu ||
       event->keyval == GDK_Escape)
   {
     gtk_menu_shell_deactivate (GTK_MENU_SHELL (menu));
@@ -873,10 +885,31 @@ hn_others_button_key_press (GtkWidget *widget,
 		            GdkEventKey *event,
 			    HNOthersButton *button)
 {
+  gboolean activate_button = FALSE, cancel_button = FALSE;
+  
   g_return_val_if_fail (button, FALSE);
 
-  if (event->keyval == GDK_Right ||
-      event->keyval == GDK_KP_Enter)
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+  {
+    if (event->keyval == GDK_Left ||
+        event->keyval == GDK_KP_Left ||
+        event->keyval == GDK_KP_Enter)
+      activate_button = TRUE;
+    else if (event->keyval == GDK_Right || 
+             event->keyval == GDK_KP_Right)
+      cancel_button = TRUE;
+  } 
+  else 
+  {
+    if (event->keyval == GDK_Right ||
+        event->keyval == GDK_KP_Enter)
+      activate_button = TRUE;
+    else if (event->keyval == GDK_Left || 
+             event->keyval == GDK_KP_Left)
+      cancel_button = TRUE;
+  }
+
+  if (activate_button)
   {
     hn_others_button_menu_show (button);
  
@@ -884,8 +917,7 @@ hn_others_button_key_press (GtkWidget *widget,
 
     return TRUE;
   }
-  else if (event->keyval == GDK_Left || 
-           event->keyval == GDK_KP_Left)
+  else if (cancel_button)
   {
     gtk_widget_grab_focus (widget);
 	  
