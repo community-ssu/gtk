@@ -1,5 +1,9 @@
 2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.22.
+
+2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/booster_gtk.c (init_cairo): Use PANGO_CAIRO_FONT_MAP to
 	cast the PangoFontMap.
 

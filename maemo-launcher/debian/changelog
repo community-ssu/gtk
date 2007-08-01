@@ -1,4 +1,4 @@
-maemo-launcher (0.22~-1) UNRELEASED; urgency=low
+maemo-launcher (0.22-1) unstable; urgency=low
 
   * New Upstream Release.
     - Update gtk booster module to support gtk+ 2.10. (Fixes: NM#952)
@@ -28,7 +28,7 @@ maemo-launcher (0.22~-1) UNRELEASED; urgency=low
     - Generate and install the manpage from the perl script.
   * Do not ignore errors from "make distclean".
 
- -- Guillem Jover <guillem.jover@nokia.com>  Wed, 21 Feb 2007 14:41:33 +0200
+ -- Guillem Jover <guillem.jover@nokia.com>  Thu, 02 Aug 2007 01:47:36 +0300
 
 maemo-launcher (0.21-1) unstable; urgency=low
 
