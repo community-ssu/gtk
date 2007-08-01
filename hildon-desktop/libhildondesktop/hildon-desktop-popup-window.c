@@ -509,6 +509,9 @@ hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
 {
   gint w,h,x,y,i;
   gboolean in_panes_area = FALSE;
+
+  if (!popup->priv->open)
+    return TRUE;	  
   
   for (i=0; i < popup->priv->n_extra_panes; i++)
   {

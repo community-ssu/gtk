@@ -1,3 +1,12 @@
+2007-08-01  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	(hildon_desktop_popup_window_composited_leave_notify):
+	- Check if the menu has been already closed in order to not grab
+	anything just when we don't have to.
+	* src/hd-switcher-menu.c: (hd_switcher_menu_toggled_cb):
+	- Don't call popdown if not necessary.
+
 2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/hbm-background.c:

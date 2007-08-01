@@ -1438,7 +1438,8 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
 
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button)))
   {
-    hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
+    if (switcher->priv->is_open)	  
+      hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
     switcher->priv->is_open = FALSE;
     return;
   }   
