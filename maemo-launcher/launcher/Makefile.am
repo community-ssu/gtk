@@ -54,10 +54,14 @@ maemo_launcher_LDADD = -ldl $(DBUS_LIBS)
 #        functions.
 maemo_launcher_LDFLAGS = -rdynamic
 
-maemo_invoker_SOURCES = invoker.c invokelib.c invokelib.h report.c report.h
+maemo_invoker_SOURCES = \
+	invoker.c invokelib.c invokelib.h report.c report.h \
+	search.c search.h
 maemo_invoker_CPPFLAGS = -DPROG_NAME="\"maemo-invoker\""
 
-maemo_summoner_SOURCES = summoner.c report.c report.h prog.c prog.h
+maemo_summoner_SOURCES = \
+	summoner.c report.c report.h prog.c prog.h \
+	search.c search.h
 maemo_summoner_CPPFLAGS = -DPROG_NAME="\"maemo-summoner\""
 maemo_summoner_LDADD = -ldl
 

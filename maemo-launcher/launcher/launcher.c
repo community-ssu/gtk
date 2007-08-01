@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005, 2006 Nokia Corporation
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation
  *
  * Authors: Michael Natterer <mitch@imendio.com>
  *	    Guillem Jover <guillem.jover@nokia.com>
@@ -820,7 +820,7 @@ main(int argc, char *argv[])
       if (prog.filename)
       {
         info("invoking '%s'\n", prog.filename);
-        set_progname(prog.argv[0], argc, argv);
+        set_progname(prog.argv[0], argc, argv, -1);
 
 	boosters_init(boosters, prog.argv[0]);
 

@@ -1,9 +1,9 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005, 2006, 2007 Nokia Corporation
+ * Copyright (C) 2007 Nokia Corporation
  *
- * Authors: Guillem Jover <guillem.jover@nokia.com>
+ * Contact: Guillem Jover <guillem.jover@nokia.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,10 @@
  *
  */
 
-#ifndef PROG_H
-#define PROG_H
+#ifndef SEARCH_H
+#define SEARCH_H
 
-typedef int (*entry_t)(int, char **);
-
-typedef struct
-{
-  int options;
-  int argc;
-  char **argv;
-  char *filename;
-  char *name;
-  int prio;
-  entry_t entry;
-} prog_t;
-
-void load_main(prog_t *prog);
-void print_prog_env_argv(prog_t *prog);
-
-void set_progname(char *progname, int argc, char **argv, int copy_index);
+char *search_program(const char *progname);
 
 #endif
 

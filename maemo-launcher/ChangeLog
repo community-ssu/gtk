@@ -1,3 +1,20 @@
+2007-08-02  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/search.c: New file.
+	* launcher/search.h: Likewise.
+	* launcher/prog.c (set_progname): Add a fourth argument specifying
+	the argv index to start copying from. Fix all callers. Use memmove
+	instead of strncpy to support overlapping memory.
+	* launcher/prog.h (set_progname): Fix prototype.
+	* launcher/invoker.c: Include "search.h".
+	(main): Strip '.launch' from argv. Support searching binaries on the
+	path.
+	* launcher/summoner.c: Likewise. Do not offset the argv assigned to
+	prog.argv, as it's being fixed afterwards by set_progname.
+	* launcher/Makefile.am (maemo_invoker_SOURCES): Add 'search.c' and
+	'search.h'.
+	(maemo_summoner_SOURCES): Likewise.
+
 2007-07-27  Johannes Schmid  <johannes.schmid@openismus.com>
             Guillem Jover  <guillem.jover@nokia.com>
 

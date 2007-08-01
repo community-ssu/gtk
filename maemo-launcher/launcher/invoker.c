@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005, 2006 Nokia Corporation
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation
  *
  * Author: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -37,6 +37,7 @@
 #include "config.h"
 #include "report.h"
 #include "invokelib.h"
+#include "search.h"
 
 #define DEFAULT_DELAY 0
 
@@ -347,7 +348,12 @@ main(int argc, char *argv[])
 	usage(1);
       else
       {
-	prog_name = argv[i];
+	char *period;
+
+	prog_name = search_program(argv[i]);
+	period = strstr(argv[i], ".launch");
+	if (period)
+		*period = '\0';
 	prog_argc = argc - i;
 	prog_argv = &argv[i];
 	break;
@@ -360,7 +366,7 @@ main(int argc, char *argv[])
      * Do not try to parse any arguments. */
     if (asprintf(&launch, "%s.launch", argv[0]) < 0)
       die(1, "allocating program name buffer");
-    prog_name = launch;
+    prog_name = search_program(launch);
     prog_argc = argc;
     prog_argv = argv;
 
@@ -391,6 +397,8 @@ main(int argc, char *argv[])
 
   if (launch)
     free(launch);
+  if (prog_name)
+    free(prog_name);
 
   if (delay)
   {

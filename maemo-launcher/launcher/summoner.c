@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2006 Nokia
+ * Copyright (C) 2006, 2007 Nokia Corporation
  *
  * Authors: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -31,6 +31,7 @@
 #include "config.h"
 #include "report.h"
 #include "prog.h"
+#include "search.h"
 
 static void
 summon_process(prog_t *prog)
@@ -75,6 +76,8 @@ main(int argc, char *argv[])
 
   if (strstr(argv[0], PROG_NAME))
   {
+    char *argv0 = NULL;
+
     /* Called with our default name. Parse arguments. */
     for (i = 1; i < argc; ++i)
     {
@@ -86,9 +89,16 @@ main(int argc, char *argv[])
 	usage(1);
       else
       {
-	prog.filename = strdup(argv[i]);
+	char *period;
+
+	argv0 = strdup(argv[i]);
+	period = strstr(argv0, ".launch");
+	if (period)
+		*period = '\0';
+
+	prog.filename = search_program(argv[i]);
 	prog.argc = argc - i;
-	prog.argv = &argv[i];
+	prog.argv = argv;
 	break;
       }
     }
@@ -96,7 +106,9 @@ main(int argc, char *argv[])
     if (!prog.filename)
       usage(1);
 
-    set_progname(prog.argv[0], argc, argv);
+    set_progname(argv0, argc, argv, i + 1);
+
+    free(argv0);
   }
   else
   {
@@ -106,9 +118,11 @@ main(int argc, char *argv[])
      * Do not try to parse any arguments. */
     if (asprintf(&launch, "%s.launch", argv[0]) < 0)
       die(1, "allocating program name buffer");
-    prog.filename = launch;
+    prog.filename = search_program(launch);
     prog.argc = argc;
     prog.argv = argv;
+
+    free(launch);
   }
 
   /* Summon it. */

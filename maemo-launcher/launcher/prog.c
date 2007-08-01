@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005, 2006 Nokia Corporation
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation
  *
  * Authors: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -85,16 +85,34 @@ set_process_name(const char *progname)
 #endif
 
 void
-set_progname(char *progname, int argc, char **argv)
+set_progname(char *progname, int argc, char **argv, int copy_index)
 {
   int argvlen = 0;
+  int proglen = strlen(progname) + 1;
   int i;
 
   for (i = 0; i < argc; i++)
     argvlen += strlen(argv[i]) + 1;
 
-  memset(argv[0], 0, argvlen);
-  strncpy(argv[0], progname, argvlen - 1);
+  if (proglen > argvlen)
+    proglen = argvlen;
+
+  memmove(argv[0], progname, proglen);
+
+  if (copy_index > 0) {
+    int j;
+
+    for (j = 0; j + copy_index < argc; j++)
+    {
+      int arglen = strlen(argv[j + copy_index]) + 1;
+
+      argv[j + 1] = argv[0] + proglen;
+      memmove(argv[j + 1], argv[j + copy_index], arglen);
+      proglen += arglen;
+    }
+  }
+
+  memset(&argv[0][proglen], 0, argvlen - proglen);
 
   set_process_name(progname);
 
