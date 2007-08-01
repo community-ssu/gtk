@@ -1,3 +1,10 @@
+2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/Makefile.am:
+	- increase timeout to 2 minutes
+	* src/hd-home-window.c:
+	- handle the out-of-memory situation more gracefully
+
 2007-07-31  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-applications-menu.c

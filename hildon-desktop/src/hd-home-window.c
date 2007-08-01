@@ -667,6 +667,9 @@ background_apply_callback (HildonDesktopBackground     *background,
                                  "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code2"))
         text = HH_FILE_CORRUPTED_TEXT;
       else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code0")))
+        text = HH_LOW_MEMORY_TEXT;
+      else if ((dbus_g_error_has_name (error,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code1")))
         text = HH_NO_CONNECTION_TEXT;
       else if ((dbus_g_error_has_name (error,
@@ -678,6 +681,9 @@ background_apply_callback (HildonDesktopBackground     *background,
       else if ((dbus_g_error_has_name (error,
                                        "org.freedesktop.DBus.GLib.UnmappedError.BackgroundManagerErrorQuark.Code7")))
         text = HH_NO_CONNECTION_TEXT;
+      else if ((dbus_g_error_has_name (error,
+                                       "org.freedesktop.DBus.GLib.UnmappedError.GdkPixbufErrorQuark.Code1")))
+        text = HH_LOW_MEMORY_TEXT;
 
       if (text)
         hd_home_window_show_information_note (window, text);
