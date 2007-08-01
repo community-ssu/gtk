@@ -1,3 +1,9 @@
+posix-locales (2.5.0-1osso1) unstable; urgency=low
+
+  * Fixes: NB#61486 
+
+ -- Mohammad Anwari <mdamt@maemo.org>  Wed,  1 Aug 2007 11:58:15 +0300
+
 posix-locales (2.5.0-0osso2) unstable; urgency=low
 
   * Updated libc and locales version in dependency.
