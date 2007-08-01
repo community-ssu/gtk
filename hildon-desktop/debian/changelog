@@ -1,3 +1,63 @@
+hildon-desktop (1:0.0.28-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  (hildon_desktop_popup_window_composited_leave_notify):
+  - Check if the menu has been already closed in order to not grab
+  anything just when we don't have to.
+  * src/hd-switcher-menu.c: (hd_switcher_menu_toggled_cb):
+  - Don't call popdown if not necessary.
+
+  * background-manager/hbm-background.c:
+  - report error in opening the cache for writing as
+  device full
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - do not free the keys used in the hash table as they
+  are owned by the desktop item
+
+  * background-manager/Makefile.am:
+  - increase timeout to 2 minutes
+  * src/hd-home-window.c:
+  - handle the out-of-memory situation more gracefully
+
+  * src/hd-applications-menu.c
+  (hd_applications_menu_categories_motion_notify): only activate item
+  when the selected menu item has changed.
+
+  * src/hd-applications-menu.c
+  (hd_applications_menu_categories_motion_notify): make the motion
+  notify handler lighter so that it doesn't bring performance problems.
+  * libhildondesktop/hildon-desktop-popup-menu.c
+  (hildon_desktop_popup_menu_motion_notify): propagate the motion event
+
+  * src/hd-app-menu-tree.c:
+  - set the cursor to the previous one when deleting
+  a category. Fixes: NB#63457
+
+  * libhildondesktop/libhildonmenu.c: line 645: fixed signedness
+  compilation warning which occurs on newer gcc compilers. Added
+  cast to (gchar *) to key.
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: small layout fix on
+  the viewport height.
+
+  * src/hd-switcher-menu.c, src/hd-applications-menu.c: use new "parent"
+  property of HildonDesktopPopupMenu to correctly handle scroll buttons.
+  Several layout fixes. Use separator between menu items. Set names of
+  scroll buttons in order to make the menu themable.
+  * src/hd-switcher-menu-item.c: several layout fixes.
+  * libhildondesktop/hildon-desktop-popup-menu.c: added "parent"
+  property which holds the parent widget which defines the maximum
+  height for the menu. Take the border-width from "parent" widget into
+  account when setting its size. Several fixes in the sizing behavior.
+
+  * src/hd-app-menu-dialog.c:
+  - do not allow adding an existing category
+  - show the corresponding info banner.
+  Fixes: NB#63132
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  1 Aug 2007 17:37:53 +0300
+
 hildon-desktop (1:0.0.27-1) sardine; urgency=low
 
   * src/hd-plugin-loader-legacy.c:
