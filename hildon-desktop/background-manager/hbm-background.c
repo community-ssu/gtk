@@ -396,7 +396,7 @@ hbm_background_open_cache_file (HBMBackground *background, GError **error)
   {
     g_set_error (error,
                  BACKGROUND_MANAGER_ERROR,
-                 BACKGROUND_MANAGER_ERROR_UNREADABLE,
+                 BACKGROUND_MANAGER_ERROR_FLASH_FULL,
                  "Unable to open `%s': %s",
                  cache,
                  gnome_vfs_result_to_string (result));

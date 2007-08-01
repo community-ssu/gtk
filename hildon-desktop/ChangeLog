@@ -1,5 +1,11 @@
 2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* background-manager/hbm-background.c:
+	- report error in opening the cache for writing as
+	device full
+
+2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
 	- do not free the keys used in the hash table as they
 	are owned by the desktop item
