@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.12-0osso9) unstable; urgency=low
+
+  * Set hildon-input-mode property upon object construction. Fixes: NB#6295
+  * Send insensitive-press only	if the grab widget is our ancestor. Fixes: NB#63196
+  * Do a _gtk_entry_completion_resize_popup on the entry's size_allocate. Fixes: NB#63404
+  * Use _NET_INPUT_AREAS to decide GtkEntryCompletion popup positioning. Fixes: NB#55607
+  * Add gtk_file_info_set_icon_pixbuf. Fixes: NB#N64277
+  * Allow to use accelerators while the menu is open. Fixes NB#63378.
+  * Close all temporary windows each time a window is mapped, excluding
+    the new window if it were a temporary window itself. Fixes: NB#52664
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  2 Aug 2007 18:59:08 +0300
+
 gtk+2.0 (2:2.10.12-0osso8) unstable; urgency=low
 
   * Use gtk-dnd-drag-threshold (which is 30) instead of a hardcoded
