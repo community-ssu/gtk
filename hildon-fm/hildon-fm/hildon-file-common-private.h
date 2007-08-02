@@ -54,6 +54,7 @@ G_BEGIN_DECLS
 #define SORT_WEIGHT_DEVICE -5
 #define SORT_WEIGHT_INTERNAL_MMC -8
 #define SORT_WEIGHT_EXTERNAL_MMC -7
+#define SORT_WEIGHT_REMOTE_DEVICE -4
 
 /* An easy way to add tracing to functions, used while debugging */
 #if 0

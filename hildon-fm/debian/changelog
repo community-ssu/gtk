@@ -1,6 +1,10 @@
 libhildonfm (1:1.9.37~unreleased) unstable; urgency=low
 
-  * Fixes: NB#62101, NB#52599.
+  * Removed most of the video game character of folder listing by relying
+    on the asynchronous GtkFilesystem API instead of doing our own magic.
+  * Fixes: NB#62101, NB#52599, NB#62546, NB#62972, NB#55972, NB#60272.
+    Fixes: NB#64004, NB#64453, NB#52827, NB#53155, NB61730, NB#58786.
+    Fixes: NB#59520.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 20:09:58 +0300
 

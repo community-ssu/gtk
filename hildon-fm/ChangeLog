@@ -1,3 +1,41 @@
+2007-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_property): Update CSM menu items
+	when selection mode changes (N58786).
+	(check_for_location_update): New.
+	(hildon_file_chooser_dialog_constructor): Connect it (N59520).
+
+	* hildon-fm/hildon-file-common-private.h
+	(SORT_WEIGHT_REMOTE_DEVICE): New.
+        * hildon-fm/hildon-file-system-remote-device.c: Use it to show
+	remote devices together and below MMC cards (N61730).
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Set width of dialog to 400
+	pixels, enable horizontal scrolling and disable ellipsization
+	(N53155).
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_close_load_banner): Set cursor to first row
+	also when user hasn't touched the list yet (N52827).
+
+	* hildon-fm/hildon-file-system-model.c: Removed machinery for
+	delaying node adding and reloads.  The GtkFilesystem API is now
+	sufficiently asynchronous to make our own trick unnecessary.
+	(hildon_file_system_model_load_uri): Wait for scan of root folder
+	to be complete (N62546, N62972).
+	(hildon_file_system_model_load_path): Wait for the parent to be
+	fully loaded and then expect to find the path instead of just
+	adding a 'ghost' node.
+
+	* hildon-fm/hildon-file-system-smb.c (struct _MyFileFolder): Added
+	n_children_waiting.
+	(my_file_folder_child_files_added,
+	my_file_folder_root_files_added): Maintain it.
+	(my_file_folder_is_finished_loading): Return FALSE as long as
+	there are still child folders outstanding.
+	
 2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-details-dialog.c

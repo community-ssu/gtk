@@ -1351,7 +1351,7 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
         GtkTreePath *cursor_path;
 
         gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
-        if (cursor_path == NULL)
+        if (cursor_path == NULL || priv->user_touched == FALSE)
           {
             GtkTreePath *path = gtk_tree_path_new_first ();
             gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), path,

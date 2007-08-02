@@ -358,9 +358,10 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
 
     priv->file_device = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_location = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
-    gtk_label_set_ellipsize(GTK_LABEL(priv->file_location), PANGO_ELLIPSIZE_END);
+    gtk_label_set_ellipsize(GTK_LABEL(priv->file_location), 
+			    PANGO_ELLIPSIZE_NONE);
     priv->file_name = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
-    gtk_label_set_ellipsize(GTK_LABEL(priv->file_name), PANGO_ELLIPSIZE_END);
+    gtk_label_set_ellipsize(GTK_LABEL(priv->file_name), PANGO_ELLIPSIZE_NONE);
     priv->file_type = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_size = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_date = g_object_new(GTK_TYPE_LABEL,"xalign", 0.0f, NULL);
@@ -436,7 +437,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
 
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll), vbox);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-        GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(scroll),
         HILDON_MARGIN_DEFAULT);
     /* Both scrolled window and viewport have separate shadows... */
@@ -482,6 +483,8 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     priv->toggle_handler = g_signal_connect(priv->file_readonly, "toggled",
       G_CALLBACK(hildon_file_details_dialog_read_only_toggled),
       self);
+    
+    gtk_widget_set_usize (GTK_WIDGET (self), 400, -1);
 }
 
 static void

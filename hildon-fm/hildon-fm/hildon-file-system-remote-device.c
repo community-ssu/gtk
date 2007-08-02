@@ -73,8 +73,12 @@ static void
 hildon_file_system_remote_device_init (HildonFileSystemRemoteDevice *device)
 {
     HildonFileSystemSettings *fs_settings;
+    HildonFileSystemSpecialLocation *location;
 
     fs_settings = _hildon_file_system_settings_get_instance ();
+
+    location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
+    location->sort_weight = SORT_WEIGHT_REMOTE_DEVICE;
 
     g_object_get (fs_settings, "flight-mode", &device->accessible, NULL);
     device->accessible = !device->accessible;

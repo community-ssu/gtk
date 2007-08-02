@@ -647,6 +647,40 @@ static void hildon_file_chooser_dialog_current_folder_changed(GtkWidget *
     hildon_file_chooser_dialog_do_autonaming(priv);
 }
 
+/* If a row changes in the model, we check if the location label
+   should be updated */
+
+static void
+check_for_location_update (GtkTreeModel *model,
+			   GtkTreePath *path,
+			   GtkTreeIter *iter,
+			   gpointer data)
+{
+  HildonFileChooserDialogPrivate *priv = data;
+  GtkTreeIter current_iter;
+  GtkTreePath *current_path = NULL;	
+  
+  if (!priv)
+    return;
+  
+  if (!path)
+    return;
+  
+  if (!model)
+    return;
+  
+  if (priv->filetree && HILDON_IS_FILE_SELECTION (priv->filetree)) 
+    {
+      hildon_file_selection_get_current_folder_iter (priv->filetree,
+						     &current_iter);
+      current_path = gtk_tree_model_get_path (model, &current_iter);
+    }
+  
+  if (current_path
+      && gtk_tree_path_compare (path, current_path) == 0) 
+    hildon_file_chooser_dialog_update_location_info(priv);
+}
+
 static gboolean
 hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
                                               const GtkFilePath * path,
@@ -1491,6 +1525,12 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
       g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
       hildon_file_selection_set_mode(priv->filetree,
                                      g_value_get_enum (value));
+      if (g_value_get_enum (value) == HILDON_FILE_SELECTION_MODE_LIST)
+    	gtk_check_menu_item_set_active
+	  (GTK_CHECK_MENU_ITEM(priv->mode_list), TRUE);
+      else
+    	gtk_check_menu_item_set_active
+	  (GTK_CHECK_MENU_ITEM(priv->mode_thumbnails), TRUE);
       break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2036,6 +2076,8 @@ hildon_file_chooser_dialog_constructor(GType type,
     g_signal_connect_object(priv->model, "finished-loading",
                      G_CALLBACK(hildon_file_chooser_dialog_finished_loading),
                      obj, 0);
+    g_signal_connect (G_OBJECT (priv->model), "row-changed", 
+		      G_CALLBACK (check_for_location_update), priv);
 
     gtk_dialog_set_has_separator(GTK_DIALOG(obj), FALSE);
     hildon_file_chooser_dialog_set_limit(HILDON_FILE_CHOOSER_DIALOG(obj));
