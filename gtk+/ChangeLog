@@ -1,3 +1,14 @@
+2007-08-02  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmenu.c:
+	* gtk/gtkwindow.c:
+	* gtk/gtkwindow.h:
+
+	Close all temporary windows each time a window is mapped, excluding
+	the new window if it were a temporary window itself.
+
+	Fixes: NB#52664, NB#57562
+
 2007-08-02  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenu.c (gtk_menu_key_press): added code that invokes

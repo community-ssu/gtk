@@ -844,13 +844,14 @@ gtk_menu_window_event (GtkWidget *window,
     case GDK_KEY_RELEASE:
       handled = gtk_widget_event (menu, event);
       break;
-#ifdef MAEMO_CHANGES
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
     case GDK_CLIENT_EVENT:
       /* Close down the whole hierarchy, but not if we're torn off. Don't call
        * cancel if the menu isn't visible to avoid extra selection-done
        * signals.
        */
       if (event->client.message_type == gdk_atom_intern_static_string ("_GTK_DELETE_TEMPORARIES") &&
+          _gtk_window_is_on_client_data (GTK_WINDOW (window), event) == FALSE &&
 	  window == GTK_MENU (menu)->toplevel &&
 	  GTK_WIDGET_MAPPED (GTK_MENU (menu)->toplevel))
 	{

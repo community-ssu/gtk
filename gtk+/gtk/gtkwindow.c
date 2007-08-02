@@ -289,6 +289,9 @@ static GtkKeyHash *gtk_window_get_key_hash        (GtkWindow   *window);
 static void        gtk_window_free_key_hash       (GtkWindow   *window);
 static void	   gtk_window_on_composited_changed (GdkScreen *screen,
 						     GtkWindow *window);
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+static void        gtk_window_close_other_temporaries (GtkWindow *window);
+#endif
 
 static GSList      *toplevel_list = NULL;
 static guint        window_signals[LAST_SIGNAL] = { 0 };
@@ -4120,6 +4123,8 @@ gtk_window_map (GtkWidget *widget)
   GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (window);
   GdkWindow *toplevel;
 
+  gtk_window_close_other_temporaries (window);
+
   GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
 
   if (window->bin.child &&
@@ -4927,11 +4932,12 @@ gtk_window_get_is_temporary (GtkWindow *window)
 }
 
 static void
-delete_if_temporary (GtkWidget *widget)
+delete_if_temporary (GtkWidget *widget, GdkEventClient *client)
 {
   GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (widget);
 
-  if (priv->is_temporary)
+  if (priv->is_temporary &&
+      _gtk_window_is_on_client_data (GTK_WINDOW (widget), client) == FALSE)
     {
       /* synthesize delete-event to close the window */
       GdkEvent *event;
@@ -4976,7 +4982,7 @@ gtk_window_client_event (GtkWidget	*widget,
   if (event->message_type == atom_temporaries)
     {
       send_client_message_to_embedded_windows (widget, atom_temporaries);
-      delete_if_temporary (widget);
+      delete_if_temporary (widget, event);
     }
 #endif /* MAEMO_CHANGES */
 
@@ -7987,7 +7993,37 @@ void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget )
 {
 }
 
-#endif /* MAEMO_CHANGES */
+#endif
+
+#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
+gboolean
+_gtk_window_is_on_client_data (GtkWindow *window, GdkEventClient *event)
+{
+  XID xid = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
+  return memcmp (&xid, (XID*)(&event->data.b[12]), sizeof(XID)) == 0;
+}
+
+/**
+ * gtk_window_close_other_temporaries:
+ * 
+ * Sends a _GTK_DELETE_TEMPORARIES ClientEvent to all other toplevel windows
+ *
+ * Since: 2.12
+ * Stability: Unstable
+ */
+static void
+gtk_window_close_other_temporaries (GtkWindow *window)
+{
+  GdkEventClient client;
+  XID xid = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
+
+  memset(&client, 0, sizeof(client));
+  client.message_type = gdk_atom_intern ("_GTK_DELETE_TEMPORARIES", FALSE);
+  client.data_format = 8;
+  memcpy (((XID*)(&client.data.b[12])),&xid, sizeof(XID));
+  gdk_event_send_clientmessage_toall ((GdkEvent*)&client);
+}
+#endif /* MAEMO_CHANGES && GDK_WINDOWING_X11 */
 
 #define __GTK_WINDOW_C__
 #include "gtkaliasdef.c"

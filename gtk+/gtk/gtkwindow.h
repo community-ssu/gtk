@@ -271,6 +271,8 @@ gboolean   gtk_window_get_deletable            (GtkWindow *window);
 void       gtk_window_set_is_temporary	        (GtkWindow *window,
 						 gboolean  setting);
 gboolean   gtk_window_get_is_temporary	        (GtkWindow *window);
+gboolean   _gtk_window_is_on_client_data        (GtkWindow *window,
+                                                 GdkEventClient *event);
 #endif
 
 void       gtk_window_set_icon_list                (GtkWindow  *window,
