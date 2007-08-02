@@ -223,6 +223,9 @@ struct _MyFileFolder
   GtkFileInfoType types;
   GtkFileFolder *root;
   GList *children;
+  int n_children_waiting;    /* The number of child folders we have
+                                asked for but not yet received.
+			     */
 };
 
 static GType my_file_folder_get_type (void);
@@ -335,6 +338,9 @@ my_file_folder_is_finished_loading (GtkFileFolder *folder)
   if (!gtk_file_folder_is_finished_loading (GTK_FILE_FOLDER (my_folder->root)))
     return FALSE;
 
+  if (my_folder->n_children_waiting > 0)
+    return FALSE;
+
   for (c = my_folder->children; c; c = c->next)
     {
       if (!gtk_file_folder_is_finished_loading (GTK_FILE_FOLDER (c->data)))
@@ -373,9 +379,6 @@ my_file_folder_collaps_path (GtkFilePath *from)
   char *last_slash = strchr_reverse (new_str, NULL, '/');
   char *second_last_slash = strchr_reverse (new_str, last_slash, '/');
 
-  fprintf (stderr, "/ %s\n", last_slash);
-  fprintf (stderr, "// %s\n", second_last_slash);
-
   if (second_last_slash)
     strcpy (second_last_slash + 1, last_slash + 1);
 
@@ -388,8 +391,6 @@ my_file_folder_child_files_added (GtkFileFolder *folder,
                                  gpointer data)
 {
   MyFileFolder *my_folder = MY_FILE_FOLDER (data);
-
-  fprintf (stderr, "CHILD_FILES_ADDED\n");
 
   GSList *my_paths;
   my_paths = NULL;
@@ -426,6 +427,7 @@ my_file_folder_child_folder_added (GtkFileSystemHandle *handle,
     {
       my_folder->children = g_list_append (my_folder->children,
                                            folder);
+      my_folder->n_children_waiting--;
       g_signal_connect (folder, "files-added",
                         G_CALLBACK (my_file_folder_child_files_added),
                         my_folder);
@@ -440,11 +442,10 @@ my_file_folder_root_files_added (GtkFileFolder *folder,
 {
   MyFileFolder *my_folder = MY_FILE_FOLDER (data);
 
-  fprintf (stderr, "ROOT_FILES_ADDED\n");
-
   while (paths)
     {
       GtkFilePath *p = paths->data;
+      my_folder->n_children_waiting++;
       gtk_file_system_get_folder (my_folder->filesystem,
                                   p,
                                   my_folder->types,
