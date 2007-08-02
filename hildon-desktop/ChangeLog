@@ -1,3 +1,10 @@
+2007-08-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	- use "_MB_NUM_SYSTEM_MODAL_WINDOWS_PRESENT" instead of
+	"_MB_NUM_MODAL_WINDOWS_PRESENT" to track toplevel windows
+	Fixes: NB#63808
+
 2007-08-01  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/hbm-background.c:

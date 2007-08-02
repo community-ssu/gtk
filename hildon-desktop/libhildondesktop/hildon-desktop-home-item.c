@@ -215,6 +215,11 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     HildonDesktopHomeItemState   state,
                                     GdkEventButton              *button);
 
+static gboolean
+hildon_desktop_home_item_event (GtkWidget      *widget,
+                                GdkEvent       *event);
+
+
 
 GType
 hildon_desktop_home_item_resize_type_get_type (void)
@@ -302,6 +307,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   widget_class->map = hildon_desktop_home_item_map;
   widget_class->unmap = hildon_desktop_home_item_unmap;
   widget_class->tap_and_hold = hildon_desktop_home_item_tap_and_hold;
+  widget_class->event = hildon_desktop_home_item_event;
 
   /* We override remove to destroy the applet when it's child is destroyed */
   container_class->remove = hildon_desktop_home_item_remove;
@@ -1530,6 +1536,14 @@ hildon_desktop_home_item_button_release_event (GtkWidget       *widget,
 
 
   return TRUE;
+}
+
+static gboolean
+hildon_desktop_home_item_event (GtkWidget      *widget,
+                                GdkEvent       *event)
+{
+  g_debug ("HildonDesktopHomeItem got event of type %i", event->type);
+  return FALSE;
 }
 
 static gboolean

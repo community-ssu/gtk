@@ -300,7 +300,7 @@ hd_wm_atoms_init (HDWM *hdwm)
     "_MB_COMMAND",              /* FIXME: Unused */
     "_MB_CURRENT_APP_WINDOW",
     "_MB_APP_WINDOW_LIST_STACKING",
-    "_MB_NUM_MODAL_WINDOWS_PRESENT",
+    "_MB_NUM_SYSTEM_MODAL_WINDOWS_PRESENT",
     
     "UTF8_STRING",
 
