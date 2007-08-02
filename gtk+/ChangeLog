@@ -1,3 +1,10 @@
+2007-08-02  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenu.c (gtk_menu_key_press): added code that invokes
+	accelerators on the window the menu is attached to so they work
+	even when a menu is open. Based on a patch by Xan Lopez. Fixes
+	NB#63378.
+
 2007-08-01  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c (_gtk_menu_item_popup_submenu): sync with
