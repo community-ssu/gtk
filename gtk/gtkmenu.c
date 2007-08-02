@@ -3122,7 +3122,35 @@ gtk_menu_key_press (GtkWidget	*widget,
 	    }
 	}
     }
-  
+#ifdef MAEMO_CHANGES
+  else if (!can_change_accels)
+    {
+      GtkWidget *toplevel = gtk_menu_get_toplevel (widget);
+
+      if (toplevel)
+        {
+          GSList *accel_groups;
+          GSList *list;
+
+          accel_groups = gtk_accel_groups_from_object (G_OBJECT (toplevel));
+
+          for (list = accel_groups; list; list = list->next)
+            {
+              GtkAccelGroup *accel_group = list->data;
+
+              if (gtk_accel_group_query (accel_group, accel_key, accel_mods,
+                                         NULL))
+                {
+                  gtk_menu_shell_cancel (GTK_MENU_SHELL (widget));
+                  gtk_window_activate_key (GTK_WINDOW (toplevel), event);
+
+                  break;
+                }
+            }
+        }
+    }
+#endif /* MAEMO_CHANGES */
+
   return TRUE;
 }
 
