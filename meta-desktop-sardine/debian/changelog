@@ -1,3 +1,9 @@
+meta-desktop-sardine (1.1.0-4) unstable; urgency=low
+
+  * Removed from dependencies product themes (alpha, beta, delta and gamma) and added hildon-theme-test
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu,  2 Aug 2007 11:33:00 +0300
+
 meta-desktop-sardine (1.1.0-3) unstable; urgency=low
 
   * Added to dependency packages hildon-theme-gamma and hildon-theme-delta

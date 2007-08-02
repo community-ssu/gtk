@@ -8,6 +8,6 @@ Standards-Version: 3.5.9
 Package: meta-desktop-sardine
 Section: x11
 Architecture: all
-Depends: hildon-theme-plankton, osso-icons-default, hildon-theme-alpha, hildon-theme-beta, hildon-theme-gamma, hildon-theme-delta
+Depends: hildon-theme-plankton, hildon-theme-test
 Description: Sardine desktop configuration. 
 
