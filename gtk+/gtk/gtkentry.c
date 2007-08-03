@@ -2582,7 +2582,8 @@ hildon_gtk_input_mode_is_valid_char (HildonGtkInputMode mode,
 static gboolean
 gtk_entry_filter_text (GtkEntry    *entry,
                        const gchar *str,
-                       gint         length)
+                       gint         length,
+                       gint         nbytes)
 {
   HildonGtkInputMode input_mode;
 
@@ -2591,7 +2592,7 @@ gtk_entry_filter_text (GtkEntry    *entry,
   if (!length || !str)
     return FALSE;
 
-  if (!g_utf8_validate (str, -1, NULL))
+  if (!g_utf8_validate (str, nbytes, NULL))
     return FALSE;
 
   input_mode = hildon_gtk_entry_get_input_mode (entry);
@@ -2630,7 +2631,7 @@ gtk_entry_real_insert_text (GtkEditable *editable,
   n_chars = g_utf8_strlen (new_text, new_text_length);
 
 #ifdef MAEMO_CHANGES
-  if (!gtk_entry_filter_text (entry, new_text, n_chars))
+  if (!gtk_entry_filter_text (entry, new_text, n_chars, new_text_length))
     {
       g_signal_emit (entry, signals[INVALID_INPUT], 0,
                      GTK_INVALID_INPUT_MODE_RESTRICTION);
