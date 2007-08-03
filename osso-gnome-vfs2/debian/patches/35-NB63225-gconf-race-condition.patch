@@ -1,0 +1,35 @@
+--- ../orig/osso-gnome-vfs-2.16.3/modules/http-proxy.c	2007-01-09 11:32:55.000000000 +0000
++++ modules/http-proxy.c	2007-08-03 16:26:13.000000000 +0100
+@@ -524,7 +524,8 @@ notify_gconf_value_changed(GConfClient *
+     }
+ }
+ 
+-void proxy_init(void)
++static gboolean 
++proxy_init_cb (gpointer user_data)
+ {
+     GError *gconf_error = NULL;
+     gboolean use_proxy;
+@@ -578,6 +579,22 @@ void proxy_init(void)
+     } else {
+ 	set_proxy_auth(use_proxy_auth);
+     }
++
++    return FALSE;
++}
++
++void proxy_init(void)
++{
++    /* This fixes NB#63225:
++     *
++     * This is a work around to a race condition caused by the GConf
++     * API being used in a thread, which shouldn't happen since GConf
++     * isn't thread safe. We use g_idle_add() here to do the GConf
++     * calls from the main thread. Note, this is fine where we have a
++     * main loop, but in cases where we don't have a main loop this
++     * work arround is not effective. 
++     */
++    g_idle_add (proxy_init_cb, NULL);
+ }
+ 
+ 

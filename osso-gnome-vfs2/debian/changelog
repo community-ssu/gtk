@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso24) unstable; urgency=low
+
+  * Fixes: NB#63225, File manager crashes on opening
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri,  3 Aug 2007 16:45:00 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso23) unstable; urgency=low
 
   * Fixes: NB#62068, GnomeVFS gives wrong device names for GnomeVFS drives
