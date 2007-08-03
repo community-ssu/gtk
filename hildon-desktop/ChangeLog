@@ -1,3 +1,12 @@
+2007-08-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-home-item.[ch]:
+	- added _lower / _raise
+	- create an event box on top of the applet. Catch all clicks,
+	and propagate them if they are later found not to be drags
+	- handle context-sensitive menu
+	Fixes: NB#61309
+
 2007-08-03  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c: activate menu item on

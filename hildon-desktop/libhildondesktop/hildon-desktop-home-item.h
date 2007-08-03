@@ -132,7 +132,8 @@ gboolean    hildon_desktop_home_item_get_overlaps
 void        hildon_desktop_home_item_set_is_background
                                                 (HildonDesktopHomeItem *applet,
                                                  gboolean is_background);
-        
+void        hildon_desktop_home_item_raise      (HildonDesktopHomeItem *item);
+void        hildon_desktop_home_item_lower      (HildonDesktopHomeItem *item);
 
 G_END_DECLS
 #endif /* HILDON_DESKTOP_HOME_ITEM_H */

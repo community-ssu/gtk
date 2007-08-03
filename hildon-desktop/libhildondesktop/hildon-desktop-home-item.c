@@ -30,6 +30,8 @@
 #include "hildon-home-area.h"
 #include "hildon-desktop-marshalers.h"
 
+#include <glib/gi18n.h>
+
 #include <gtk/gtkicontheme.h>
 
 #include <X11/extensions/Xrender.h>
@@ -58,6 +60,9 @@
 
 #define LAYOUT_MODE_HIGHLIGHT_WIDTH 4
 
+#define HH_CLOSE                  (dgettext("hildon-home-image-viewer", "ws_me_close"))
+#define HH_SETTINGS               (dgettext("hildon-home-image-viewer", "ws_me_settings"))
+
 #define HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE(obj) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_DESKTOP_TYPE_HOME_ITEM, HildonDesktopHomeItemPriv));
 
@@ -84,6 +89,8 @@ typedef struct HildonDesktopHomeItemPriv_
 {
   gboolean      layout_mode;
   HildonDesktopHomeItemResizeType resize_type;
+
+  GtkWidget    *menu;
 
   GdkPixbuf    *close_button;
   GdkWindow    *close_button_window;
@@ -214,7 +221,6 @@ static void
 hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     HildonDesktopHomeItemState   state,
                                     GdkEventButton              *button);
-
 
 GType
 hildon_desktop_home_item_resize_type_get_type (void)
@@ -464,6 +470,8 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
       error = NULL;
     }
 
+
+
 }
 
 static void
@@ -471,6 +479,7 @@ hildon_desktop_home_item_init (HildonDesktopHomeItem * self)
 {
   HildonDesktopHomeItemPriv    *priv;
   HildonDesktopHomeItemClass   *klass;
+  GtkWidget                    *menu_item;
 
   klass = G_TYPE_INSTANCE_GET_CLASS ((self),
                                      HILDON_DESKTOP_TYPE_HOME_ITEM,
@@ -486,7 +495,18 @@ hildon_desktop_home_item_init (HildonDesktopHomeItem * self)
       priv->close_button = klass->close_button;
     }
 
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_VISIBILITY_NOTIFY_MASK);
+  priv->menu = gtk_menu_new ();
+  menu_item = gtk_menu_item_new_with_label (HH_CLOSE);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (gtk_widget_destroy),
+                            self);
+  gtk_menu_shell_append (GTK_MENU_SHELL (priv->menu), menu_item);
+  gtk_widget_show (menu_item);
+
+  gtk_widget_tap_and_hold_setup (GTK_WIDGET (self),
+                                 priv->menu,
+                                 NULL,
+                                 0);
 
 }
 
@@ -643,7 +663,8 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
           | GDK_BUTTON_RELEASE_MASK
           | GDK_EXPOSURE_MASK
           | GDK_ENTER_NOTIFY_MASK
-          | GDK_LEAVE_NOTIFY_MASK;
+          | GDK_LEAVE_NOTIFY_MASK
+          | GDK_SUBSTRUCTURE_MASK;
 
       attributes.wclass = GDK_INPUT_OUTPUT;
       attributes.colormap = gtk_widget_get_colormap (widget);
@@ -656,6 +677,14 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                                        attributes_mask);
 
       gdk_window_set_user_data (widget->window, widget);
+
+      attributes.wclass = GDK_INPUT_ONLY;
+      attributes_mask = GDK_WA_X | GDK_WA_Y;
+
+      priv->event_window = gdk_window_new (parent_window,
+                                           &attributes,
+                                           attributes_mask);
+      gdk_window_set_user_data (priv->event_window, widget);
 
       if (priv->layout_mode_sucks)
         {
@@ -700,12 +729,11 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                priv->resize_handle_height
               );
 
-          gdk_window_set_events (widget->window,
-                                 gdk_window_get_events(widget->window) |
-                                 GDK_SUBSTRUCTURE_MASK);
+#if 0
           gdk_window_add_filter (widget->window,
                                  (GdkFilterFunc)window_event_filter,
                                  widget);
+#endif
         }
 
     }
@@ -781,8 +809,23 @@ static void
 hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
 {
   HildonDesktopHomeItemPriv    *priv;
+  static GtkWidget             *menu_item = NULL;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
+
+  if (!menu_item)
+  {
+    menu_item = hildon_desktop_home_item_get_settings_menu_item (HILDON_DESKTOP_HOME_ITEM (widget));
+
+    if (GTK_IS_MENU_ITEM (menu_item))
+    {
+      gtk_label_set_text (GTK_LABEL (GTK_BIN (menu_item)->child),
+                          HH_SETTINGS);
+      gtk_menu_shell_prepend (GTK_MENU_SHELL (priv->menu), menu_item);
+      gtk_widget_show (menu_item);
+    }
+  }
+
 
   /* If we were in moving or resizing, we should stop */
   if (priv->state != HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
@@ -897,7 +940,7 @@ hildon_desktop_home_item_size_allocate (GtkWidget *widget,
                                         GtkAllocation *allocation)
 {
   HildonDesktopHomeItemPriv      *priv;
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM(widget));
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
 
   widget->allocation = *allocation;
 
@@ -919,11 +962,13 @@ hildon_desktop_home_item_size_allocate (GtkWidget *widget,
                                 allocation->height);
 
       if (GDK_IS_WINDOW (priv->event_window))
+      {
         gdk_window_move_resize (priv->event_window,
-                                0,
-                                0,
+                                allocation->x,
+                                allocation->y,
                                 allocation->width,
                                 allocation->height);
+      }
 
     }
 
@@ -962,7 +1007,7 @@ hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
                                              gint width,
                                              gint height)
 {
-  HildonDesktopHomeItemPriv      *priv;
+  HildonDesktopHomeItemPriv *priv;
   GdkWindowAttr              attributes;
   gint                       attributes_mask;
   GdkWindow                 *window;
@@ -980,7 +1025,7 @@ hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
   attributes.wclass = icon?GDK_INPUT_OUTPUT:GDK_INPUT_ONLY;
   attributes_mask = GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
-  window = gdk_window_new (w->window,
+  window = gdk_window_new (priv->event_window,
                            &attributes,
                            attributes_mask);
 
@@ -1037,7 +1082,8 @@ window_event_filter (GdkXEvent *xevent,
 
   if (aevent->type == MapNotify)
     {
-      HildonDesktopHomeItemPriv *priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+      HildonDesktopHomeItemPriv *priv =
+          HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
       /* The applet created a child window, we need to make sure that
        * we remain on top */
       if (GDK_IS_WINDOW (priv->event_window))
@@ -1434,6 +1480,168 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
     }
 }
 
+static GList *
+get_ordered_children (GdkWindow *window)
+{
+  Window      *children, root, parent;
+  guint        i, n_children = 0;
+  GList        *ret = NULL;
+
+  gdk_error_trap_push ();
+  XQueryTree (GDK_DISPLAY (),
+              GDK_WINDOW_XID (window),
+              &root,
+              &parent,
+              &children,
+              &n_children);
+
+  if (gdk_error_trap_pop ())
+    return NULL;
+
+  for (i = 0; i < n_children; i++)
+  {
+    GdkWindow *window = gdk_window_lookup (children[i]);
+    if (window)
+      ret = g_list_append (ret, window);
+  }
+
+  XFree (children);
+  return ret;
+}
+
+/* Borrowed from libmokoui */
+static GdkWindow *
+hildon_desktop_home_item_get_window_at (HildonDesktopHomeItem *item,
+                                        gint x, gint y,
+                                        gint *tx, gint *ty)
+{
+  /* Find the GdkWindow at the given point, by recursing from a given
+   * parent GdkWindow. Optionally return the co-ordinates transformed
+   * relative to the child window.
+   */
+  gint width, height;
+  GdkWindow    *window;
+
+  if (!GTK_WIDGET_REALIZED (item))
+    return NULL;
+
+  window = GTK_WIDGET (item)->window;
+
+  gdk_drawable_get_size (window, &width, &height);
+
+  if ((x < 0) || (x >= width) || (y < 0) || (y >= height))
+    return NULL;
+
+  /*g_debug ("Finding window at (%d, %d) in %p", x, y, window);*/
+
+  while (window)
+  {
+    gint        child_x = 0, child_y = 0;
+    GList      *c, *children = get_ordered_children (window);
+    GdkWindow  *old_window = window;
+
+    for (c = children; c; c = c->next)
+    {
+      GdkWindow *child = c->data;
+      gint wx, wy;
+
+      gdk_window_get_geometry (child,
+                               &wx, &wy,
+                               &width, &height,
+                               NULL);
+      /*g_debug ("Child: %p, (%dx%d+%d,%d) click: %d,%d", child,
+        width, height, wx, wy, x, y);*/
+
+      if ((x >= wx) && (x < (wx + width)) &&
+          (y >= wy) && (y < (wy + height)))
+      {
+        child_x = x - wx;
+        child_y = y - wy;
+        window = child;
+      }
+    }
+
+    g_list_free (children);
+    /*g_debug ("\\|/");*/
+    if (window == old_window)
+    {
+      break;
+    }
+
+    x = child_x;
+    y = child_y;
+  }
+
+  if (tx) *tx = x;
+  if (ty) *ty = y;
+
+  /*g_debug ("Returning: %p", window);*/
+
+  return window;
+}
+
+static void
+hildon_desktop_home_item_propagate_button (HildonDesktopHomeItem *item)
+{
+  HildonDesktopHomeItemPriv    *priv =
+      HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+  gint                  x, y;
+  GdkEventCrossing     *crossing_event;
+  GdkEventButton       *event;
+  GdkWindow            *child;
+
+  gdk_window_raise (GTK_WIDGET (item)->window);
+  gdk_window_raise (priv->event_window);
+
+  child = hildon_desktop_home_item_get_window_at (item,
+                                                  priv->last_click_event->x,
+                                                  priv->last_click_event->y,
+                                                  &x, &y);
+
+  if (!child)
+    return;
+
+  event = priv->last_click_event;
+
+  event->x = x;
+  event->y = y;
+
+  /* Send synthetic enter event */
+  crossing_event = (GdkEventCrossing *) gdk_event_new (GDK_ENTER_NOTIFY);
+  ((GdkEventAny *)crossing_event)->type = GDK_ENTER_NOTIFY;
+  ((GdkEventAny *)crossing_event)->window = g_object_ref (child);
+  ((GdkEventAny *)crossing_event)->send_event = FALSE;
+  crossing_event->subwindow = g_object_ref (child);
+  crossing_event->time = event->time;
+  crossing_event->x = event->x;
+  crossing_event->y = event->y;
+  crossing_event->x_root = event->x_root;
+  crossing_event->y_root = event->y_root;
+  crossing_event->mode = GDK_CROSSING_NORMAL;
+  crossing_event->detail = GDK_NOTIFY_UNKNOWN;
+  crossing_event->focus = FALSE;
+  crossing_event->state = 0;
+  gdk_event_put ((GdkEvent *)crossing_event);
+
+  /* Send synthetic click (button press/release) event */
+  ((GdkEventAny *)event)->window = g_object_ref (child);
+  ((GdkEventAny *)event)->type = GDK_BUTTON_PRESS;
+  gdk_event_put ((GdkEvent *)event);
+  ((GdkEventAny *)event)->window = g_object_ref (child);
+  ((GdkEventAny *)event)->type = GDK_BUTTON_RELEASE;
+  gdk_event_put ((GdkEvent *)event);
+
+  /* Send synthetic leave event */
+  ((GdkEventAny *)crossing_event)->type = GDK_LEAVE_NOTIFY;
+  ((GdkEventAny *)crossing_event)->window = g_object_ref (child);
+  crossing_event->subwindow = g_object_ref (child);
+  crossing_event->window = g_object_ref (child);
+  crossing_event->detail = GDK_NOTIFY_UNKNOWN;
+  gdk_event_put ((GdkEvent *)crossing_event);
+  gdk_event_free ((GdkEvent *)crossing_event);
+
+}
+
 static gboolean
 hildon_desktop_home_item_click_timeout (HildonDesktopHomeItem *item)
 {
@@ -1454,6 +1662,10 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM (w));
 
+  if (event->window != priv->event_window &&
+      event->window != priv->resize_handle_window)
+    return FALSE;
+
   if (!priv->layout_mode_sucks && !priv->layout_mode)
     {
       if (GTK_WIDGET_CLASS (parent_class)->button_press_event)
@@ -1461,6 +1673,7 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
       else
         return FALSE;
     }
+
 
   /* Check if we clicked the close button */
   if (event->window == priv->close_button_window)
@@ -1506,13 +1719,25 @@ hildon_desktop_home_item_button_release_event (GtkWidget       *widget,
   HildonDesktopHomeItemPriv      *priv;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
+  hildon_desktop_home_item_raise (HILDON_DESKTOP_HOME_ITEM (widget));
+
+  if (event->window != priv->event_window &&
+      event->window != priv->resize_handle_window)
+    return FALSE;
 
   if (priv->click_timeout)
     {
       g_source_remove (priv->click_timeout);
       priv->click_timeout = 0;
+      hildon_desktop_home_item_propagate_button (HILDON_DESKTOP_HOME_ITEM (widget));
       return FALSE;
     }
+
+  if (priv->last_click_event)
+  {
+    gdk_event_free ((GdkEvent *)priv->last_click_event);
+    priv->last_click_event = NULL;
+  }
 
   if (!priv->layout_mode_sucks && !priv->layout_mode)
     {
@@ -1622,7 +1847,6 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
 
           if (event)
             {
-              gdk_window_raise (widget->window);
               gdk_pointer_grab (event->window,
                                 FALSE,
                                 GDK_BUTTON_PRESS_MASK |
@@ -1652,6 +1876,7 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
           if (event)
             {
               gdk_window_raise (widget->window);
+              gdk_window_raise (priv->event_window);
               gdk_pointer_grab (event->window,
                                 FALSE,
                                 GDK_BUTTON_PRESS_MASK |
@@ -1802,16 +2027,20 @@ hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
 GtkWidget *
 hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet)
 {
-  HildonDesktopHomeItemPriv      *priv;
-  GtkWindow                 *window;
-  GtkWidget                 *item = NULL;
-  g_return_val_if_fail (applet, NULL);
+  HildonDesktopHomeItemPriv    *priv;
+  GtkWidget                    *top_level;
+  GtkWidget                    *item = NULL;
+
+  g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (applet), NULL);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
 
-  window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (applet)));
+  top_level = gtk_widget_get_toplevel (GTK_WIDGET (applet));
 
-  g_signal_emit_by_name (applet, "settings", window, &item);
+  g_signal_emit_by_name (applet,
+                         "settings",
+                         GTK_IS_WINDOW (top_level)?top_level:NULL,
+                         &item);
 
   return item;
 }
@@ -1840,4 +2069,38 @@ hildon_desktop_home_item_set_is_background (HildonDesktopHomeItem *applet,
     g_signal_emit_by_name (applet, "background");
   else
     g_signal_emit_by_name (applet, "foreground");
+}
+
+void
+hildon_desktop_home_item_raise (HildonDesktopHomeItem *item)
+{
+  HildonDesktopHomeItemPriv *priv;
+  g_return_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item));
+
+  if (!GTK_WIDGET_REALIZED (item))
+    return;
+
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+
+  gdk_window_raise (GTK_WIDGET (item)->window);
+  gdk_window_raise (priv->event_window);
+  gtk_widget_queue_draw (GTK_WIDGET (item));
+
+}
+
+void
+hildon_desktop_home_item_lower (HildonDesktopHomeItem *item)
+{
+  HildonDesktopHomeItemPriv *priv;
+  g_return_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item));
+
+  if (!GTK_WIDGET_REALIZED (item))
+    return;
+
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+
+  gdk_window_lower (priv->event_window);
+  gdk_window_lower (GTK_WIDGET (item)->window);
+  gtk_widget_queue_draw (GTK_WIDGET (item));
+
 }

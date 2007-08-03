@@ -1531,8 +1531,8 @@ hildon_home_area_sort_stack (HildonHomeArea *area)
   for (child = priv->children_data; child ; child = child->next)
     {
       ChildData        *data = child->data;
-      if (GTK_WIDGET_REALIZED (data->widget))
-        gdk_window_raise (data->widget->window);
+      if (HILDON_DESKTOP_IS_HOME_ITEM (data->widget))
+        hildon_desktop_home_item_raise (HILDON_DESKTOP_HOME_ITEM (data->widget));
     }
 }
 
