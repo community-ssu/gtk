@@ -1,3 +1,9 @@
+2007-08-03  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_filter_text): do not validate the whole string
+	unconditionally. Use the new_text_lenght parameter from gtk_entry_real_insert_text
+	as the limit for g_utf8_validate. Fixes: NB#64785
+
 2007-08-02  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenu.c:
