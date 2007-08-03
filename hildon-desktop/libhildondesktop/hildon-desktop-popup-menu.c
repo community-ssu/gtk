@@ -99,6 +99,7 @@ static void hildon_desktop_popup_menu_set_property (GObject *object,
 static void hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req);
 static void hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *allocation);
 static gboolean hildon_desktop_popup_menu_motion_notify (GtkWidget *widget, GdkEventMotion *event);
+static gboolean hildon_desktop_popup_menu_press_event (GtkWidget *widget, GdkEventButton *event);
 static gboolean hildon_desktop_popup_menu_release_event (GtkWidget *widget, GdkEventButton *event);
 static gboolean hildon_desktop_popup_menu_key_press_event (GtkWidget *widget, GdkEventKey *event);
 static void hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *menu);
@@ -135,6 +136,7 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
   object_class->set_property = hildon_desktop_popup_menu_set_property;
 
   widget_class->motion_notify_event  = hildon_desktop_popup_menu_motion_notify;
+  widget_class->button_press_event = hildon_desktop_popup_menu_press_event;
   widget_class->button_release_event = hildon_desktop_popup_menu_release_event;
   widget_class->key_press_event      = hildon_desktop_popup_menu_key_press_event;
   
@@ -520,12 +522,17 @@ static gboolean
 hildon_desktop_popup_menu_release_event (GtkWidget      *widget,
                                          GdkEventButton *event)
 {
+  return TRUE;
+} 
+	
+static gboolean 
+hildon_desktop_popup_menu_press_event (GtkWidget      *widget,
+                                       GdkEventButton *event)
+{
   HildonDesktopPopupMenu *menu = HILDON_DESKTOP_POPUP_MENU (widget);
   GList *menu_items = NULL, *l;
   gint w,h,x,y;
 
-  g_debug ("release event for popup menu");
-  
   menu_items =
     gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
@@ -544,7 +551,7 @@ hildon_desktop_popup_menu_release_event (GtkWidget      *widget,
         break;
       }
     }
-   }
+  }
 
   g_list_free (menu_items);
 

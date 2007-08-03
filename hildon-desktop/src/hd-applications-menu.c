@@ -105,7 +105,6 @@ struct _HDApplicationsMenuPrivate
   GnomeVFSMonitorHandle    *home_dir_monitor;
   GnomeVFSMonitorHandle    *desktop_dir_monitor;
   guint                     monitor_update_timeout;
-  gboolean                  focus_applications;
 };
 
 static void hd_applications_menu_register_monitors (HDApplicationsMenu *button);
@@ -193,8 +192,6 @@ hd_applications_menu_init (HDApplicationsMenu *button)
   
   priv->monitor_update_timeout = 0;
 
-  priv->focus_applications = TRUE;
-  
   priv->popup_window = NULL;
   
   gtk_container_add (GTK_CONTAINER (button), priv->button);
@@ -237,8 +234,6 @@ hd_applications_menu_popdown (GtkWidget *menu, HDApplicationsMenu *button)
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button->priv->button),
 			        FALSE);
-
-  button->priv->focus_applications = TRUE;
 }
 
 static gboolean
@@ -362,18 +357,6 @@ hd_applications_menu_key_press (GtkWidget *menu,
   return FALSE;
 }
 
-static gboolean 
-hd_applications_menu_button_release_category (GtkMenuItem *item, 
-					    GdkEventButton *event,
-					    HDApplicationsMenu *button)
-{
-  button->priv->focus_applications = TRUE;
-
-  gtk_menu_item_activate (item);
-
-  return TRUE;
-}
-
 static void
 hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *button)
 {
@@ -405,8 +388,7 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
       (button->priv->menu_applications, child);
   }
 
-  if (button->priv->focus_applications &&
-      GTK_WIDGET_IS_SENSITIVE (sub_items->data))
+  if (GTK_WIDGET_IS_SENSITIVE (sub_items->data))
   {
     hildon_desktop_popup_menu_select_first_item (button->priv->menu_applications);
     gtk_widget_grab_focus (GTK_WIDGET (sub_items->data));
@@ -415,8 +397,6 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
   {
     gtk_widget_grab_focus (GTK_WIDGET (item));
   }
- 
-  button->priv->focus_applications = FALSE;
 }
 
 static void
@@ -681,11 +661,6 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
 			      (GDestroyNotify) hd_applications_menu_free_menu_items);
 
       g_signal_connect (G_OBJECT (menu_item), 
-		        "button-release-event",
-      		        G_CALLBACK (hd_applications_menu_button_release_category),
-      		        button);
-
-      g_signal_connect (G_OBJECT (menu_item), 
 		        "activate",
       		        G_CALLBACK (hd_applications_menu_activate_category),
       		        button);
@@ -841,7 +816,6 @@ hd_applications_menu_categories_motion_notify (GtkWidget      *widget,
   {
     selected_item = menu_item;
 
-    button->priv->focus_applications = TRUE;
     gtk_menu_item_activate (selected_item);
   }
   
@@ -955,10 +929,10 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
   gtk_container_add (GTK_CONTAINER (button_down), arrow);
   gtk_widget_show (arrow);
 
-  g_signal_connect (G_OBJECT (popup_window), 
-		    "key-press-event",
-		    G_CALLBACK (hd_applications_menu_key_press),
-		    button);
+   g_signal_connect (G_OBJECT (popup_window),
+                     "key-press-event",
+                     G_CALLBACK (hd_applications_menu_key_press),
+                     button);
   
   g_signal_connect (G_OBJECT (popup_window), 
 		    "popdown-window",
