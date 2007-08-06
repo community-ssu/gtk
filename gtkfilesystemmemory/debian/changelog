@@ -1,3 +1,9 @@
+gtkfilesystemmemory (0.17) unstable; urgency=low
+
+  * Make building from svn work in the standard way.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 06 Aug 2007 18:48:09 +0300
+
 gtkfilesystemmemory (0.16) unstable; urgency=low
 
   * Build-Depend on gtk+ that has gtk_file_info_set_icon_pixbuf.

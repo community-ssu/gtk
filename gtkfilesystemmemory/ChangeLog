@@ -1,3 +1,10 @@
+2007-08-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 0.17
+	
+	* Makefile.am (AUTOMAKE_OPTIONS): Added.
+	* autogen.sh: New.
+
 2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 0.16
