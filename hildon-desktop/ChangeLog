@@ -1,3 +1,8 @@
+2007-08-06  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-applications-menu.c: re-estabilished the correct focus/selection
+	handling between panes.
+
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* data/applications.menu:

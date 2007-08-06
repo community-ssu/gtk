@@ -105,6 +105,7 @@ struct _HDApplicationsMenuPrivate
   GnomeVFSMonitorHandle    *home_dir_monitor;
   GnomeVFSMonitorHandle    *desktop_dir_monitor;
   guint                     monitor_update_timeout;
+  gboolean                  focus_applications;
 };
 
 static void hd_applications_menu_register_monitors (HDApplicationsMenu *button);
@@ -158,9 +159,11 @@ hd_applications_menu_init (HDApplicationsMenu *button)
 
   button->priv = priv;
 
-  button->priv->system_dir_monitor = NULL;
-  button->priv->home_dir_monitor = NULL;
-  button->priv->desktop_dir_monitor = NULL;
+  priv->system_dir_monitor = NULL;
+  priv->home_dir_monitor = NULL;
+  priv->desktop_dir_monitor = NULL;
+
+  priv->focus_applications = FALSE;
   
   priv->button = hildon_desktop_toggle_button_new ();
 
@@ -388,7 +391,8 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
       (button->priv->menu_applications, child);
   }
 
-  if (GTK_WIDGET_IS_SENSITIVE (sub_items->data))
+  if (button->priv->focus_applications &&
+      GTK_WIDGET_IS_SENSITIVE (sub_items->data))
   {
     hildon_desktop_popup_menu_select_first_item (button->priv->menu_applications);
     gtk_widget_grab_focus (GTK_WIDGET (sub_items->data));
@@ -397,6 +401,8 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
   {
     gtk_widget_grab_focus (GTK_WIDGET (item));
   }
+
+  button->priv->focus_applications = FALSE;
 }
 
 static void
@@ -816,6 +822,7 @@ hd_applications_menu_categories_motion_notify (GtkWidget      *widget,
   {
     selected_item = menu_item;
 
+    button->priv->focus_applications = TRUE;
     gtk_menu_item_activate (selected_item);
   }
   
@@ -1100,6 +1107,7 @@ hd_applications_menu_show (HDApplicationsMenu * button)
 
   if (menu_items != NULL)
   {
+    button->priv->focus_applications = TRUE;
     gtk_menu_item_activate (GTK_MENU_ITEM (menu_items->data));
   }
 
