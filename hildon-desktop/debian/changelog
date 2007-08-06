@@ -1,3 +1,69 @@
+hildon-desktop (1:0.0.29-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-panel-window-composite.c:
+  - propagate configure event to parent class
+
+  * libhildondesktop/hildon-desktop-home-item.c: do not create
+  the resize window if resize_type == NONE
+
+  * src/hd-home-window.c:
+  - handle some more errors from GdkPixbugLoader as corrupted images
+
+  * src/hd-home-background.c:
+  - empty background do not require caching
+
+  * libhildondesktop/hildon-desktop-panel-window-composite.[ch]:
+  - make the tracking of the home window base-class specific,
+  so it's done once for all instances of the subclasses.
+  * libhildondesktop/hildon-desktop-panel-window-dialog.[ch]:
+  - inherit from HildonDesktopPanelWindowComposite. This enables
+  transparency in the statusbar.
+
+  * src/hd-applications-menu.c: re-estabilished the correct focus/selection
+  handling between panes.
+
+  * data/applications.menu:
+  - added some apps to My selection
+
+  * libhildondesktop/hildon-desktop-home-item.[ch]:
+  - added _lower / _raise
+  - create an event box on top of the applet. Catch all clicks,
+  and propagate them if they are later found not to be drags
+  - handle context-sensitive menu
+  Fixes: NB#61309
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: activate menu item on
+  button press.
+  * src/hd-applications-menu.c: polished the focus-handling code.
+
+  * libhildonwm/hd-wm.c:
+  - use "_MB_NUM_SYSTEM_MODAL_WINDOWS_PRESENT" instead of
+  "_MB_NUM_MODAL_WINDOWS_PRESENT" to track toplevel windows
+  Fixes: NB#63808
+
+  * background-manager/hbm-background.c:
+  - do not check if the MMC bay is opened anymore, the
+  volume will not be unmounted if it is anyway
+  * src/hd-home-window.c, src/hd-home-l10n.h:
+  - remove handling of the "MMC cover open" error
+  * background-manager/Makefile.am:
+  - do not link against gconf anymore
+  Fixes: NB#63137
+
+  Right-to-left dance:
+  * src/hd-desktop.c:
+  - Mirror the x value and the orientation.
+  * src/hd-applications-menu.c, src/hn-app-button.c,
+    src/hn-others-button.c, src/hd-switcher-menu.c:
+  - Mirror the keypress (e.g. you press right button in LTR but
+  it should be left button in RTL).
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Adjust the x position of the child widget in RTL.
+  * libhildondesktop/hildon-home-titlebar.c:
+  - Mirror the x position of the menu in RTL.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Aug 2007 20:22:28 +0300
+
 hildon-desktop (1:0.0.28-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-popup-window.c:

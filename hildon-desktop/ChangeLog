@@ -1,5 +1,9 @@
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.29
+
+2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-window-composite.c:
 	- propagate configure event to parent class
 
