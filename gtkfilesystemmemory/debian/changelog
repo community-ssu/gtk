@@ -1,3 +1,9 @@
+gtkfilesystemmemory (0.18~unreleased) unstable; urgency=low
+
+  * 
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 06 Aug 2007 19:15:12 +0300
+
 gtkfilesystemmemory (0.17) unstable; urgency=low
 
   * Make building from svn work in the standard way.

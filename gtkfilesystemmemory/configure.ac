@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(gtkfilesystemmemory, 0.17)
+AM_INIT_AUTOMAKE(gtkfilesystemmemory, 0.18)
 AC_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
