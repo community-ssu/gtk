@@ -1,5 +1,10 @@
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c:
+	- handle some more errors from GdkPixbugLoader as corrupted images
+
+2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background.c:
 	- empty background do not require caching
 
