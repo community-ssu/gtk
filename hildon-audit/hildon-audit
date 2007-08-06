@@ -251,7 +251,7 @@ foreach $rule (sort @ruletable)
 {
   if ($statistics->{$rule} > 0)
   {
-      print "symbol $rule found $statistics->{$rule} time(s)\n";
+      print "$statistics->{$rule} time(s) symbol $rule\n";
       $errors ++;
   }
 }
