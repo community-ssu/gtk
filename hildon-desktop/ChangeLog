@@ -1,5 +1,10 @@
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background.c:
+	- empty background do not require caching
+
+2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-window-composite.[ch]:
 	- make the tracking of the home window base-class specific,
 	so it's done once for all instances of the subclasses.

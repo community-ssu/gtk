@@ -364,6 +364,9 @@ hd_home_background_requires_caching (HDHomeBackground *background)
 
   g_return_val_if_fail (filename, FALSE);
 
+  if (filename[0] == '\0')
+    return FALSE;
+
   mmc_mount_point = g_getenv (HD_ENV_MMC_MOUNTPOINT);
   mmc_mount_point_uri = g_strdup_printf ("file://%s", mmc_mount_point);
 
