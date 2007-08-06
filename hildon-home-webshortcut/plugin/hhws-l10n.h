@@ -43,7 +43,7 @@
 #define HHWS_INVALID_URL            _("home_ib_invalid_url")
 #define HHWS_CLOSE                  _("ws_me_close")
 #define HHWS_SETTINGS               _("ws_me_settings")
-#define HHWS_FLASH_FULL             _KE("cerm_device_memory_full")
+#define HHWS_FLASH_FULL_TEXT        _KE("cerm_device_memory_full")
 #define HHWS_CORRUPTED_TEXT         _CS("ckct_ni_unable_to_open_file_corrupted")
 #define HHWS_COULD_NOT_OPEN         _CS("sfil_ni_unable_to_open_file_not_found")
 #define HHWS_NOT_SUPPORTED          _CS("ckct_ni_unable_to_open_unsupported_file_format")
@@ -51,5 +51,6 @@
 #define HHWS_MMC_NOT_OPEN_TEXT      _CS("sfil_ni_cannot_open_mmc_cover_open")
 #define HHWS_MMC_NOT_OPEN_CLOSE     _("sfil_ni_cannot_open_mmc_cover_open_ok")
 #define HHWS_NO_CONNECTION_TEXT     _CS("sfil_ni_cannot_open_no_connection")
+#define HHWS_LOW_MEMORY_TEXT        _KE("memr_ib_operation_disabled")
         
 #endif
