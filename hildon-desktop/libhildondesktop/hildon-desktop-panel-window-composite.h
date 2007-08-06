@@ -28,6 +28,11 @@
 
 #include <libhildondesktop/hildon-desktop-panel-window.h>
 
+#ifdef HAVE_X_COMPOSITE
+#include <X11/extensions/Xdamage.h>
+#include <X11/extensions/Xrender.h>
+#endif
+
 G_BEGIN_DECLS
 
 #define HILDON_DESKTOP_TYPE_PANEL_WINDOW_COMPOSITE   (hildon_desktop_panel_window_composite_get_type ())
@@ -45,6 +50,9 @@ G_BEGIN_DECLS
 typedef struct _HildonDesktopPanelWindowComposite HildonDesktopPanelWindowComposite;
 typedef struct _HildonDesktopPanelWindowCompositeClass HildonDesktopPanelWindowCompositeClass;
 typedef struct _HildonDesktopPanelWindowCompositePrivate HildonDesktopPanelWindowCompositePrivate;
+#ifdef HAVE_X_COMPOSITE
+typedef struct _DesktopWindowData DesktopWindowData;
+#endif
 
 struct _HildonDesktopPanelWindowComposite {
   HildonDesktopPanelWindow                      parent;
@@ -55,8 +63,9 @@ struct _HildonDesktopPanelWindowComposite {
 struct _HildonDesktopPanelWindowCompositeClass {
   HildonDesktopPanelWindowClass         parent_class;
 
-  gboolean                              composite;
-  gint                                  xdamage_event_base;
+#ifdef HAVE_X_COMPOSITE
+  DesktopWindowData                    *desktop_window_data;
+#endif
 
 };
 

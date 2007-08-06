@@ -23,6 +23,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <libhildonwm/hd-wm.h>
@@ -35,7 +39,7 @@
 #define HILDON_DESKTOP_PANEL_WINDOW_DIALOG_GET_PRIVATE(o) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((o), HILDON_DESKTOP_TYPE_PANEL_WINDOW_DIALOG, HildonDesktopPanelWindowDialogPrivate))
 
-G_DEFINE_TYPE (HildonDesktopPanelWindowDialog, hildon_desktop_panel_window_dialog, HILDON_DESKTOP_TYPE_PANEL_WINDOW);
+G_DEFINE_TYPE (HildonDesktopPanelWindowDialog, hildon_desktop_panel_window_dialog, HILDON_DESKTOP_TYPE_PANEL_WINDOW_COMPOSITE);
 
 enum
 {

@@ -28,7 +28,7 @@
 
 #include <gtk/gtkwindow.h>
 
-#include <libhildondesktop/hildon-desktop-panel-window.h>
+#include <libhildondesktop/hildon-desktop-panel-window-composite.h>
 
 G_BEGIN_DECLS
 
@@ -44,14 +44,14 @@ typedef struct _HildonDesktopPanelWindowDialogPrivate HildonDesktopPanelWindowDi
 
 struct _HildonDesktopPanelWindowDialog
 {
-  HildonDesktopPanelWindow parent;
+  HildonDesktopPanelWindowComposite parent;
 
   HildonDesktopPanelWindowDialogPrivate  *priv;
 };
 
 struct _HildonDesktopPanelWindowDialogClass
 {
-  HildonDesktopPanelWindowClass parent_class;
+  HildonDesktopPanelWindowCompositeClass parent_class;
   
 };
 

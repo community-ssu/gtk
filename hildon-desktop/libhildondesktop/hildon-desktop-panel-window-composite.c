@@ -48,18 +48,17 @@ hildon_desktop_panel_window_composite_expose (GtkWidget             *widget,
 static void
 hildon_desktop_panel_window_composite_realize (GtkWidget       *widget);
 
+static void
+hildon_desktop_panel_window_composite_unrealize (GtkWidget       *widget);
+
 static gboolean
 hildon_desktop_panel_window_composite_configure (GtkWidget             *widget,
                                                  GdkEventConfigure     *event);
 static void
-hildon_desktop_panel_window_composite_desktop_window_changed (HildonDesktopPanelWindowComposite *window);
+desktop_window_changed (DesktopWindowData *data);
 
 struct _HildonDesktopPanelWindowCompositePrivate
 {
-  Picture       home_picture;
-  Damage        home_damage;
-  GdkWindow    *home_gwindow;
-
   Picture       background_picture;
   Picture       background_mask;
   gint          background_width, background_height;
@@ -70,9 +69,125 @@ struct _HildonDesktopPanelWindowCompositePrivate
   gboolean      scale;
 
 };
+
+struct _DesktopWindowData
+{
+  gboolean      composite;
+  Window        home_window;
+  Damage        home_damage;
+  GdkWindow    *home_gwindow;
+  Picture       home_picture;
+  gint          ref_count;
+  guint         desktop_window_changed_handler;
+  GSList       *instances;
+  int           xdamage_event_base;
+
+};
 #endif
 
-G_DEFINE_TYPE (HildonDesktopPanelWindowComposite, hildon_desktop_panel_window_composite, HILDON_DESKTOP_TYPE_PANEL_WINDOW)
+static void
+hildon_desktop_panel_window_composite_class_init (HildonDesktopPanelWindowCompositeClass *klass);
+
+static void
+hildon_desktop_panel_window_composite_base_init (HildonDesktopPanelWindowCompositeClass *klass);
+
+static void
+hildon_desktop_panel_window_composite_base_finalize (HildonDesktopPanelWindowCompositeClass *klass);
+
+static void
+hildon_desktop_panel_window_composite_init (HildonDesktopPanelWindowComposite *window);
+
+static HildonDesktopPanelWindowClass   *parent_class = NULL;
+
+GType hildon_desktop_panel_window_composite_get_type(void)
+{
+  static GType window_type = 0;
+
+  if (!window_type) {
+    static const GTypeInfo window_info = {
+      sizeof(HildonDesktopPanelWindowCompositeClass),
+      (GBaseInitFunc) hildon_desktop_panel_window_composite_base_init,
+      (GBaseFinalizeFunc) hildon_desktop_panel_window_composite_base_finalize,
+      (GClassInitFunc) hildon_desktop_panel_window_composite_class_init,
+      NULL,       /* class_finalize */
+      NULL,       /* class_data */
+      sizeof(HildonDesktopPanelWindowComposite),
+      0,  /* n_preallocs */
+      (GInstanceInitFunc) hildon_desktop_panel_window_composite_init,
+    };
+    window_type = g_type_register_static(HILDON_DESKTOP_TYPE_PANEL_WINDOW,
+                                         "HildonDesktopPanelWindowComposite",
+                                         &window_info, 0);
+  }
+  return window_type;
+}
+
+static void
+hildon_desktop_panel_window_composite_base_init (HildonDesktopPanelWindowCompositeClass *klass)
+{
+#ifdef HAVE_X_COMPOSITE
+  static DesktopWindowData     *data = NULL;
+
+  if (!data)
+  {
+    gint        damage_error, composite_error;
+    gint        composite_event_base;
+
+    data = g_new0 (DesktopWindowData, 1);
+
+    if (XDamageQueryExtension (GDK_DISPLAY (),
+                               &data->xdamage_event_base,
+                               &damage_error) &&
+
+        XCompositeQueryExtension (GDK_DISPLAY (),
+                                  &composite_event_base,
+                                  &composite_error))
+    {
+      HDWM *wm;
+
+      data->composite = TRUE;
+
+      gdk_x11_register_standard_event_type (gdk_display_get_default (),
+                                            data->xdamage_event_base +
+                                            XDamageNotify,
+                                            1);
+      wm = hd_wm_get_singleton ();
+
+      data->desktop_window_changed_handler =
+          g_signal_connect_swapped (wm, "notify::desktop-window",
+                                    G_CALLBACK (desktop_window_changed),
+                                    data);
+    }
+  }
+
+  klass->desktop_window_data = data;
+  data->ref_count ++;
+#endif
+}
+
+static void
+hildon_desktop_panel_window_composite_base_finalize (HildonDesktopPanelWindowCompositeClass *klass)
+{
+#ifdef HAVE_X_COMPOSITE
+  if (klass->desktop_window_data)
+  {
+    klass->desktop_window_data->ref_count --;
+    if (klass->desktop_window_data->ref_count == 0)
+    {
+      if (klass->desktop_window_data->composite)
+      {
+        HDWM     *wm = hd_wm_get_singleton ();
+        g_signal_handler_disconnect (wm,
+                                     klass->desktop_window_data->desktop_window_changed_handler);
+      }
+      g_free (klass->desktop_window_data);
+    }
+
+    klass->desktop_window_data = NULL;
+  }
+#endif
+
+}
 
 static void
 hildon_desktop_panel_window_composite_init (HildonDesktopPanelWindowComposite *window)
@@ -80,17 +195,7 @@ hildon_desktop_panel_window_composite_init (HildonDesktopPanelWindowComposite *w
 #ifdef HAVE_X_COMPOSITE
   window->priv = G_TYPE_INSTANCE_GET_PRIVATE (window, HILDON_DESKTOP_TYPE_PANEL_WINDOW_COMPOSITE, HildonDesktopPanelWindowCompositePrivate);
 
-  if (HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE_GET_CLASS (window)->composite)
-  {
-    HDWM *wm;
-
-    wm = hd_wm_get_singleton ();
-
-    g_signal_connect_swapped (wm, "notify::desktop-window",
-                              G_CALLBACK (hildon_desktop_panel_window_composite_desktop_window_changed),
-                              window);
-  }
-
+  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
 #endif
 
 
@@ -101,38 +206,22 @@ hildon_desktop_panel_window_composite_class_init (HildonDesktopPanelWindowCompos
 {
 #ifdef HAVE_X_COMPOSITE
   {
-    gint damage_error, composite_error;
-    gint composite_event_base;
-
-    if (XDamageQueryExtension (GDK_DISPLAY (),
-                               &klass->xdamage_event_base,
-                               &damage_error) &&
-
-        XCompositeQueryExtension (GDK_DISPLAY (),
-                                  &composite_event_base,
-                                  &composite_error))
+    if (klass->desktop_window_data->composite)
     {
-      GtkWidgetClass *widget_class;
+      GtkWidgetClass   *widget_class;
 
       widget_class = GTK_WIDGET_CLASS (klass);
 
-      klass->composite = TRUE;
-
-      gdk_x11_register_standard_event_type (gdk_display_get_default (),
-                                            klass->xdamage_event_base +
-                                            XDamageNotify,
-                                            1);
       widget_class->style_set =
           hildon_desktop_panel_window_composite_style_set;
       widget_class->realize = hildon_desktop_panel_window_composite_realize;
+      widget_class->unrealize = hildon_desktop_panel_window_composite_unrealize;
       widget_class->expose_event =
           hildon_desktop_panel_window_composite_expose;
       widget_class->configure_event       =
           hildon_desktop_panel_window_composite_configure;
 
     }
-    else
-      klass->composite = FALSE;
 
     g_type_class_add_private (klass,
                               sizeof (HildonDesktopPanelWindowCompositePrivate));
@@ -140,27 +229,20 @@ hildon_desktop_panel_window_composite_class_init (HildonDesktopPanelWindowCompos
   }
 #endif
 
+  parent_class = g_type_class_peek_parent (klass);
+
 }
 
 #ifdef HAVE_X_COMPOSITE
 
 static GdkFilterReturn
-hildon_desktop_panel_window_composite_home_window_filter
-                                   (GdkXEvent                          *xevent,
-                                    GdkEvent                           *event,
-                                    HildonDesktopPanelWindowComposite  *window)
+home_window_filter (GdkXEvent          *xevent,
+                    GdkEvent           *event,
+                    DesktopWindowData  *data)
 {
   XEvent                                       *e = xevent;
-  HildonDesktopPanelWindowCompositeClass       *klass;
-  HildonDesktopPanelWindowCompositePrivate     *priv;
 
-  klass = HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE_GET_CLASS (window);
-  priv  = window->priv;
-
-  if (!GTK_WIDGET_REALIZED (GTK_WIDGET (window)))
-    return GDK_FILTER_CONTINUE;
-
-  if (e->type == klass->xdamage_event_base + XDamageNotify)
+  if (e->type == data->xdamage_event_base + XDamageNotify)
   {
     XserverRegion             parts;
     XDamageNotifyEvent       *ev = xevent;
@@ -180,21 +262,28 @@ hildon_desktop_panel_window_composite_home_window_filter
 
     for (i = 0; i < n_rect; i++)
     {
-      if (priv->x + priv->width >= rects[i].x       &&
-          priv->x <= rects[i].x + rects[i].width   &&
-          priv->y + priv->height >= rects[i].y      &&
-          priv->y <= rects[i].y + rects[i].height)
-
+      GSList   *w;
+      for (w = data->instances; w ; w = w->next)
       {
-        GdkRectangle rect;
+        HildonDesktopPanelWindowComposite              *window = w->data;
+        HildonDesktopPanelWindowCompositePrivate       *priv = window->priv;
 
-        rect.x = rects[i].x;
-        rect.y = rects[i].y;
-        rect.width = rects[i].width;
-        rect.height = rects[i].height;
-        gdk_window_invalidate_rect (GTK_WIDGET (window)->window,
-                                    &rect,
-                                    TRUE);
+        if (priv->x + priv->width >= rects[i].x      &&
+            priv->x <= rects[i].x + rects[i].width   &&
+            priv->y + priv->height >= rects[i].y     &&
+            priv->y <= rects[i].y + rects[i].height)
+
+        {
+          GdkRectangle rect;
+
+          rect.x = rects[i].x;
+          rect.y = rects[i].y;
+          rect.width = rects[i].width;
+          rect.height = rects[i].height;
+          gdk_window_invalidate_rect (GTK_WIDGET (window)->window,
+                                      &rect,
+                                      TRUE);
+        }
       }
     }
 
@@ -205,11 +294,10 @@ hildon_desktop_panel_window_composite_home_window_filter
 }
 
 static void
-hildon_desktop_panel_window_composite_desktop_window_changed (HildonDesktopPanelWindowComposite *window)
+desktop_window_changed (DesktopWindowData      *data)
 {
-  HildonDesktopPanelWindowCompositePrivate         *priv = window->priv;
-  HDWM  *wm;
-  Window desktop_window;
+  HDWM         *wm;
+  Window        desktop_window;
 
   wm = hd_wm_get_singleton ();
 
@@ -217,23 +305,28 @@ hildon_desktop_panel_window_composite_desktop_window_changed (HildonDesktopPanel
                 "desktop-window", &desktop_window,
                 NULL);
 
-  if (priv->home_picture != None)
+  if (desktop_window == data->home_window)
+    return;
+
+  data->home_window = desktop_window;
+
+  if (data->home_picture != None)
   {
-    XRenderFreePicture (GDK_DISPLAY (), priv->home_picture);
-    priv->home_picture = None;
+    XRenderFreePicture (GDK_DISPLAY (), data->home_picture);
+    data->home_picture = None;
   }
 
-  if (priv->home_damage != None)
+  if (data->home_damage != None)
   {
     XDamageDestroy (GDK_DISPLAY (),
-                    priv->home_damage);
-    priv->home_damage = None;
+                    data->home_damage);
+    data->home_damage = None;
   }
 
-  if (GDK_IS_WINDOW (priv->home_gwindow))
+  if (GDK_IS_WINDOW (data->home_gwindow))
   {
-    g_object_unref (priv->home_gwindow);
-    priv->home_gwindow = NULL;
+    g_object_unref (data->home_gwindow);
+    data->home_gwindow = NULL;
   }
 
   if (desktop_window != None)
@@ -244,7 +337,7 @@ hildon_desktop_panel_window_composite_desktop_window_changed (HildonDesktopPanel
                               desktop_window,
                               CompositeRedirectAutomatic);
 
-    priv->home_damage = XDamageCreate (GDK_DISPLAY (),
+    data->home_damage = XDamageCreate (GDK_DISPLAY (),
                                        desktop_window,
                                        XDamageReportNonEmpty);
 
@@ -255,17 +348,17 @@ hildon_desktop_panel_window_composite_desktop_window_changed (HildonDesktopPanel
       return;
     }
 
-    priv->home_gwindow = gdk_window_foreign_new (desktop_window);
+    data->home_gwindow = gdk_window_foreign_new (desktop_window);
 
-    if (GDK_IS_WINDOW (priv->home_gwindow))
+    if (GDK_IS_WINDOW (data->home_gwindow))
     {
-      priv->home_picture =
-          hildon_desktop_picture_from_drawable (priv->home_gwindow);
+      data->home_picture =
+          hildon_desktop_picture_from_drawable (data->home_gwindow);
 
-      gdk_window_add_filter (priv->home_gwindow,
+      gdk_window_add_filter (data->home_gwindow,
                              (GdkFilterFunc)
-                             hildon_desktop_panel_window_composite_home_window_filter,
-                             window);
+                             home_window_filter,
+                             data);
     }
   }
 
@@ -307,8 +400,12 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
 {
   if (GTK_WIDGET_DRAWABLE (widget))
   {
+    HildonDesktopPanelWindowCompositeClass     *klass =
+        HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE_GET_CLASS (widget);
     HildonDesktopPanelWindowCompositePrivate   *priv =
         HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE (widget)->priv;
+    DesktopWindowData                          *data =
+        klass->desktop_window_data;
     GdkDrawable *drawable;
     gint x_offset, y_offset;
     Picture picture;
@@ -324,10 +421,10 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
     g_object_set_data (G_OBJECT (drawable),
                        "picture", GINT_TO_POINTER (picture));
 
-    if (priv->home_picture != None)
+    if (data->home_picture != None)
       XRenderComposite (GDK_DISPLAY (),
                         PictOpSrc,
-                        priv->home_picture,
+                        data->home_picture,
                         None,
                         picture,
                         priv->x + event->area.x, priv->y + event->area.y,
@@ -355,8 +452,10 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
                         priv->background_picture,
                         priv->background_mask,
                         picture,
-                        priv->x + event->area.x, priv->y + event->area.y,
-                        priv->x + event->area.x, priv->y + event->area.y,
+                        event->area.x,
+                        event->area.y,
+                        event->area.x,
+                        event->area.y,
                         event->area.x - x_offset,
                         event->area.y - y_offset,
                         event->area.width,
@@ -364,8 +463,7 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
 
     }
 
-    result = GTK_WIDGET_CLASS (hildon_desktop_panel_window_composite_parent_class)->
-        expose_event (widget, event);
+    result = GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
 
     XRenderFreePicture (GDK_DISPLAY (),
                         picture);
@@ -383,7 +481,27 @@ hildon_desktop_panel_window_composite_expose (GtkWidget *widget,
 static void
 hildon_desktop_panel_window_composite_realize (GtkWidget     *widget)
 {
-  GTK_WIDGET_CLASS (hildon_desktop_panel_window_composite_parent_class)->realize (widget);
+  HildonDesktopPanelWindowCompositeClass       *klass;
+  GTK_WIDGET_CLASS (parent_class)->realize (widget);
+
+  klass = HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE_GET_CLASS (widget);
+
+  klass->desktop_window_data->instances =
+      g_slist_append (klass->desktop_window_data->instances, widget);
+
+  hildon_desktop_panel_window_composite_style_set (widget, widget->style);
+}
+
+static void
+hildon_desktop_panel_window_composite_unrealize (GtkWidget *widget)
+{
+  HildonDesktopPanelWindowCompositeClass       *klass;
+  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+
+  klass = HILDON_DESKTOP_PANEL_WINDOW_COMPOSITE_GET_CLASS (widget);
+
+  klass->desktop_window_data->instances =
+      g_slist_remove (klass->desktop_window_data->instances, widget);
 
   hildon_desktop_panel_window_composite_style_set (widget, widget->style);
 }
