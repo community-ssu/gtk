@@ -686,7 +686,8 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                                            attributes_mask);
       gdk_window_set_user_data (priv->event_window, widget);
 
-      if (priv->layout_mode_sucks)
+      if (priv->layout_mode_sucks &&
+          priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
         {
           if (priv->resize_handle)
             {
