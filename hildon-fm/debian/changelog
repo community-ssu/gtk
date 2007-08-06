@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.37~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.37) unstable; urgency=low
 
   * Removed most of the video game character of folder listing by relying
     on the asynchronous GtkFilesystem API instead of doing our own magic.

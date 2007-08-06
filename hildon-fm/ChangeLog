@@ -1,5 +1,7 @@
 2007-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.9.37
+	
 	* hildon-fm/hildon-file-chooser-dialog.c
 	(hildon_file_chooser_dialog_set_property): Update CSM menu items
 	when selection mode changes (N58786).
