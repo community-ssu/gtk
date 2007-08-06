@@ -14,6 +14,9 @@
   <Menu>
     <Name>tana_fi_my_selection</Name>
     <Include>
+      <Filename>navicore.desktop</Filename>
+      <Filename>skype.desktop</Filename>
+      <Filename>rhapsody.desktop</Filename>
       <Filename>mp_ui.desktop</Filename>
       <Filename>image-viewer.desktop</Filename>
       <Filename>osso_help.desktop</Filename>

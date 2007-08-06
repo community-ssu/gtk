@@ -1,3 +1,8 @@
+2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/applications.menu:
+	- added some apps to My selection
+
 2007-08-03  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-home-item.[ch]:
