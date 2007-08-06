@@ -1,3 +1,8 @@
+[0.10.2-1]
+* FKB menuitems style
+* Theming for new switcher menu
+* Bugfixes
+
 [0.10.1-1]
 * New application menu theming
 * Fixing seekbar theming

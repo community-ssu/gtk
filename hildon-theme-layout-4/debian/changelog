@@ -1,3 +1,17 @@
+hildon-theme-layout-4 (0.10.2-1) unstable; urgency=low
+
+  * FKB menuitems style
+  * Theming for new switcher menu
+  * Bugfixes
+
+  * Fixes: NB#64458 Widgets deriving from GtkComboBox themed wrongly
+  * Fixes: NB#64446 Application menu gets distorted on applying plankton theme again 
+  * Fixes: NB#63183 Switcher button background is white after switcher menu is closed without tapping on the incoming event
+  * Fixes: NB#63406 Key navigation in notebook broken 
+  * Fixes: MB#1724 GtkTreeView must not respond to <Control>F by popping up a GtkEntry
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 06 Aug 2007 09:59:48 +0300
+
 hildon-theme-layout-4 (0.10.1-1) unstable; urgency=low
 
   * New application menu theming
