@@ -390,7 +390,7 @@ hildon_desktop_panel_window_composite_configure (GtkWidget             *widget,
   else
     priv->scale = FALSE;
 
-  return FALSE;
+  return GTK_WIDGET_CLASS (parent_class)->configure_event (widget, event);
 
 }
 
