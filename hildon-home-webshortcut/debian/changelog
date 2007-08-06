@@ -1,3 +1,12 @@
+hildon-home-webshortcut (1:1.9.5-1) sardine; urgency=low
+
+  * plugin/hildon-home-webshortcut.c:
+  - hildon-desktop code style
+  - added missing error cases
+  - set the currently set image when saving
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Aug 2007 19:35:52 +0300
+
 hildon-home-webshortcut (1:1.9.4-2) sardine; urgency=low
 
   * Fixed epoch in dependency to libhildondesktop-dev
