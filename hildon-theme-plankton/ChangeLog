@@ -1,3 +1,11 @@
+2007-08-07  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: moved the vkbd space "glyph" around a
+	bit, and made it lighter in appearance.  Fixes: NB#59978.
+
+	* template/template.svg: changed WCIndicatorFNColor match the
+	style of the rest of the theme. Fixes: NB#64373
+	
 2007-08-06  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* wallpaper/wallpaper.png: updated the wallpaper to a nicer one
