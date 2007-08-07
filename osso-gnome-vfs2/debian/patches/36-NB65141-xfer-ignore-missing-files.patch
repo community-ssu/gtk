@@ -1,0 +1,17 @@
+Index: libgnomevfs/gnome-vfs-xfer.c
+===================================================================
+--- libgnomevfs/gnome-vfs-xfer.c	(revision 13054)
++++ libgnomevfs/gnome-vfs-xfer.c	(working copy)
+@@ -2407,6 +2407,12 @@ gnome_vfs_xfer_uri_internal (const GList
+ 			result = gnome_vfs_check_same_fs_uris ((GnomeVFSURI *)source_uri->data, 
+ 				target_dir_uri, &same_fs);
+ 
++			if (result == GNOME_VFS_ERROR_NOT_FOUND) {
++				/* Missing source files is not an error here. */
++				result = GNOME_VFS_OK;
++				continue;
++			}
++			
+ 			if (result != GNOME_VFS_OK) {
+ 				break;
+ 			}

@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso25~unreleased) unstable; urgency=low
+
+  * Fixes: NB#65141, GnomeVFS stops copy operation if even one of the source files
+	
+ -- Martyn Russell <martyn@imendio.com>  Fri,  3 Aug 2007 16:45:00 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso24) unstable; urgency=low
 
   * Fixes: NB#63225, File manager crashes on opening
