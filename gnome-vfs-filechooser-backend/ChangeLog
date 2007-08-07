@@ -1,3 +1,10 @@
+2007-08-07  Richard Hult  <richard@imendio.com>
+
+	* configure.ac: Bump version.
+
+	* src/gtkfilesystemgnomevfs.c (set_vfs_error): Map
+	GNOME_VFS_ERROR_FILE_EXISTS to GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS.
+
 2007-05-18  Richard Hult  <richard@imendio.com>
 
 	* Release 1.9.2.

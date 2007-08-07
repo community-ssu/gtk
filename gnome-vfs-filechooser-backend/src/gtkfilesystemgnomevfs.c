@@ -3187,6 +3187,9 @@ set_vfs_error (GnomeVFSResult result,
     case GNOME_VFS_ERROR_NOT_A_DIRECTORY:
       errcode = GTK_FILE_SYSTEM_ERROR_NOT_FOLDER;
       break;
+    case GNOME_VFS_ERROR_FILE_EXISTS:
+      errcode = GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS;
+      break;
     default:
       break;
     }
