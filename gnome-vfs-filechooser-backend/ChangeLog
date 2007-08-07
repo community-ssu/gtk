@@ -1,5 +1,11 @@
 2007-08-07  Richard Hult  <richard@imendio.com>
 
+	* src/gtkfilesystemgnomevfs.c
+	(gtk_file_system_gnome_vfs_create_folder): Don't silently abort
+	the xfer job on errors.
+
+2007-08-07  Richard Hult  <richard@imendio.com>
+
 	* configure.ac: Bump version.
 
 	* src/gtkfilesystemgnomevfs.c (set_vfs_error): Map
