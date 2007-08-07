@@ -8,6 +8,7 @@ sipto=hildon-osso-addressbook.desktop
 sip=hildon-voip-ui.desktop 
 mailto=hildon-modest.desktop
 chatto=hildon-chat-ui.desktop
+xmpp=hildon-chat-ui.desktop
 
 # For new actions
 [X-Osso-URI-Scheme http]

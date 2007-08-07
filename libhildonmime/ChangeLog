@@ -1,3 +1,10 @@
+2007-08-07  Martyn Russell  <martyn@imendio.com>
+
+	* data/uri-action-defaults.list: Added xmpp scheme to the default
+	applications list so the chat-ui is used before the address book.
+	
+	* tests/test-uri.c: Call g_thread_init() to stop warnings.
+
 2007-07-13  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.9.11.

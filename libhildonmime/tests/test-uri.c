@@ -110,7 +110,9 @@ main (int argc, char **argv)
 {
 	GOptionContext *context;
 	GError         *error = NULL;
-	
+
+	g_thread_init (NULL);
+
 	context = g_option_context_new ("- test the hildon-uri API.");
 	g_option_context_add_main_entries (context, entries, NULL);
 	g_option_context_parse (context, &argc, &argv, NULL);
