@@ -21,6 +21,7 @@
 
 	* src/hd-home-background.c:
 	- empty background do not require caching
+	Fixes: NB#65134
 
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
