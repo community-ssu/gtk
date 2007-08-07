@@ -9,6 +9,7 @@ include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
 
 DEB_DH_ALWAYS_EXCLUDE=*.la
+DEB_DH_STRIP_ARGS := --dbg-package=gnome-vfs-filechooser-backend
 
 post-patches:: debian/stamp-autothings-update
 debian/stamp-autothings-update:

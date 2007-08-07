@@ -12,3 +12,11 @@ Depends: ${shlibs:Depends}
 Description: GnomeVFS filechooser backend for GTK+
  This package contains the GnomeVFS filechooser backend for use in the
  filechooser in GTK+.
+
+Package: gnome-vfs-filechooser-backend-dbg
+Section: libdevel
+Architecture: any
+Depends: gnome-vfs-filechooser-backend (= ${Source-Version})
+Description: Debug synbols for GnomeVFS filechooser backend for GTK+
+ This package contains debug symbols for the GnomeVFS filechooser
+ backend for use in the filechooser in GTK+.
