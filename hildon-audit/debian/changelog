@@ -1,3 +1,11 @@
+hildon-audit (1.2-1) unstable; urgency=low
+
+  * Reversed output in "stat"mode
+  * Removed "severity" field
+  * tons of updates to data files
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed,  8 Aug 2007 16:43:05 +0300
+
 hildon-audit (1.1-1) unstable; urgency=low
 
   * Do not install the .svn dirs

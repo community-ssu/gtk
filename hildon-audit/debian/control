@@ -1,7 +1,7 @@
 Source: hildon-audit
 Section: devel
 Priority: optional
-Maintainer: Tapani Palli <tapani.palli@nokia.com>
+Maintainer: Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
