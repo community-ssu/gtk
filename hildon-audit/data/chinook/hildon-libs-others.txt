@@ -90,7 +90,7 @@ hildon_button_event_is_finger                   | Use hildon_helper_event_button
 
 # Menu memory chage
 
-hildon_window_set_menu                          | Menus are now owned by HildonWindow. Do not unref | See http://maemo.org/maemowiki/HildonMigrationOverview
+hildon_window_set_menu                          | Menus are now owned by HildonWindow. Do not unref | See http://live.gnome.org/Hildon/TwoPointZero/ChangesOverview
 
 # Icon sizes
 

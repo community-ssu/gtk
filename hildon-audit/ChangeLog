@@ -1,3 +1,8 @@
+2007-08-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* data/bora/hildon-window.txt: updated doc URL to live.gnome.org
+	* data/chinook/hildon-libs-others.txt: likewise.
+
 2007-08-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	* data/chinook/gtk-dep.txt: update with latest state of GTK+.
