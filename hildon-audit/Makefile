@@ -14,9 +14,9 @@ install :
 	# symbol files
 	install -d $(DESTDIR)$(datadir)
 	install -d $(DESTDIR)$(datadir)/bora
-	install -d $(DESTDIR)$(datadir)/sardine
+	install -d $(DESTDIR)$(datadir)/chinook
 	cp -fr data/bora/* $(DESTDIR)$(datadir)/bora
-	cp -fr data/sardine/* $(DESTDIR)$(datadir)/sardine
+	cp -fr data/chinook/* $(DESTDIR)$(datadir)/chinook
 
 clean :
 	rm -f *~

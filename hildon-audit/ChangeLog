@@ -1,3 +1,7 @@
+2007-08-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile: s/sardine/chinook
+
 2007-08-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	* data/chinook/hildon-libs-others.txt: fix some small issues.
