@@ -7310,7 +7310,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="3253.3412"
+     inkscape:cx="453.32382"
      inkscape:cy="413.3878"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
@@ -7319,8 +7319,8 @@
      showgrid="false"
      borderlayer="true"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="980"
+     inkscape:window-width="1600"
+     inkscape:window-height="1130"
      inkscape:window-x="0"
      inkscape:window-y="24"
      gridempspacing="5"
@@ -9910,8 +9910,8 @@
        height="40"
        x="108"
        y="513"
-       rx="0"
-       ry="0" />
+       rx="6"
+       ry="6" />
     <text
        id="text6338"
        y="570"
@@ -15770,8 +15770,8 @@
          style="opacity:1;fill:#eeeeec;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1;display:inline" />
     </g>
     <rect
-       ry="0"
-       rx="0"
+       ry="7"
+       rx="7"
        y="513"
        x="168"
        height="40"
@@ -18596,8 +18596,8 @@
     <path
        sodipodi:nodetypes="cccccccc"
        id="path9034"
-       d="M 64.48437,193.27503 L 60.4359,200.28719 L 57.85708,195.9528 L 55,196.25447 L 59.97723,204.25 L 60.94374,203.91371 L 67.17487,193.12108 L 64.48437,193.27503 z"
-       style="opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
+       d="M 65.48437,192.27503 L 61.4359,199.28719 L 58.85708,194.9528 L 56,195.25447 L 60.97723,203.25 L 61.94374,202.91371 L 68.17487,192.12108 L 65.48437,192.27503 z"
+       style="opacity:1;color:#000000;fill:#eeeeec;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible" />
     <rect
        style="opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
        id="rect8772"
