@@ -1,5 +1,9 @@
 2007-08-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* data/sardine: Changing the name from 'sardine' to 'chinook'.
+
+2007-08-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* data/sardine/desktop-related.txt:
 	* data/bora/gtk.txt:
 	* data/bora/hildon-lgpl.txt:
