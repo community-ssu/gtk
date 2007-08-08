@@ -1,50 +1,50 @@
 # GtkCellRendererToggle
-\"checkbox.mode\"	|major|	GtkCellRendererToggle::checkbox-mode property is removed. Use a GtkCellRendererToggle in the treeview instead | see http://live.gnome.org/Maemo/Gtk210Migration#M42
+\"checkbox.mode\"	| GtkCellRendererToggle::checkbox-mode property is removed. Use a GtkCellRendererToggle in the treeview instead | see http://live.gnome.org/Maemo/Gtk210Migration#M42
 
 # GtkFileChooser
-hildon_gtk_file_system_create			|minor|	Renamed to gtk_file_system_create	| see  http://live.gnome.org/Maemo/Gtk210Migration#M34
+hildon_gtk_file_system_create | Renamed to gtk_file_system_create	| see  http://live.gnome.org/Maemo/Gtk210Migration#M34
 
 # GtkHashTable
-gtk_hash_table_new	|minor| Removed, use GHashTable with the new ref functions instead	| see  http://live.gnome.org/Maemo/Gtk210Migration#M10
+gtk_hash_table_new	| Removed, use GHashTable with the new ref functions instead	| see  http://live.gnome.org/Maemo/Gtk210Migration#M10
 
 # GtkRange
-\"stream.indicator\"			|medium| GtkRange::stream-indicator property renamed to "show-fill-level" 			| see http://live.gnome.org/Maemo/Gtk210Migration#M31
-\"stream.position\"			|medium| GtkRange::stream-position property renamed to "fill-level"			| see http://live.gnome.org/Maemo/Gtk210Migration#M31
-osso_gtk_range_get_stream_indicator	|medium| Renamed to gtk_range_get_show_fill_level	| see http://live.gnome.org/Maemo/Gtk210Migration#M31
-osso_gtk_range_get_stream_position	|medium| Renamed to gtk_range_get_fill_level		| see http://live.gnome.org/Maemo/Gtk210Migration#M31
-osso_gtk_range_set_stream_indicator	|medium| Renamed to gtk_range_set_show_fill_level	| see http://live.gnome.org/Maemo/Gtk210Migration#M31
-osso_gtk_range_set_stream_position	|medium| Renamed to gtk_range_set_fill_level		| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+\"stream.indicator\"			| GtkRange::stream-indicator property renamed to "show-fill-level" 			| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+\"stream.position\"			| GtkRange::stream-position property renamed to "fill-level"			| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+osso_gtk_range_get_stream_indicator	| Renamed to gtk_range_get_show_fill_level	| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+osso_gtk_range_get_stream_position	| Renamed to gtk_range_get_fill_level		| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+osso_gtk_range_set_stream_indicator	| Renamed to gtk_range_set_show_fill_level	| see http://live.gnome.org/Maemo/Gtk210Migration#M31
+osso_gtk_range_set_stream_position	| Renamed to gtk_range_set_fill_level		| see http://live.gnome.org/Maemo/Gtk210Migration#M31
 
 # GtkRcTokenType
-GTK_RC_TOKEN_LOGICAL_COLOR	|minor|	Renamed to GTK_RC_TOKEN_COLOR	| see http://live.gnome.org/Maemo/Gtk210Migration#M28
+GTK_RC_TOKEN_LOGICAL_COLOR	| Renamed to GTK_RC_TOKEN_COLOR	| see http://live.gnome.org/Maemo/Gtk210Migration#M28
 
 # GtkSettings
-\"gtk.initial.timeout\"	|medium| GtkSettings::gtk-initial-timeout property renamed to "gtk-timeout-initial"	| see http://live.gnome.org/Maemo/Gtk210Migration#M02
-\"gtk.update.timeout\"	|medium| GtkSettings::gtk-update-timeout property renamed to "gtk-timeout-update"	| see http://live.gnome.org/Maemo/Gtk210Migration#M02
+\"gtk.initial.timeout\"	| GtkSettings::gtk-initial-timeout property renamed to "gtk-timeout-initial"	| see http://live.gnome.org/Maemo/Gtk210Migration#M02
+\"gtk.update.timeout\"	| GtkSettings::gtk-update-timeout property renamed to "gtk-timeout-update"	| see http://live.gnome.org/Maemo/Gtk210Migration#M02
 
 # GtkStyle
-gtk_style_lookup_logical_color	|minor|	Renamed to gtk_style_lookup_color
+gtk_style_lookup_logical_color	| Renamed to gtk_style_lookup_color
 
 # GtkTextBuffer
-\"can.paste.rich.text\"	|major|	GtkTextBuffer::can-paste-rich-text property removed, use new implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-\"rich.text.format\"	|major|	GtkTextBuffer::rich-text-format property removed, use new implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
+\"can.paste.rich.text\"	| GtkTextBuffer::can-paste-rich-text property removed, use new implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+\"rich.text.format\"	| GtkTextBuffer::rich-text-format property removed, use new implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
 
-gtk_text_buffer_deserialize_rich_text	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-gtk_text_buffer_get_can_paste_rich_text	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-gtk_text_buffer_get_rich_text_format	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-gtk_text_buffer_serialize_rich_text	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-gtk_text_buffer_set_can_paste_rich_text	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
-gtk_text_buffer_set_rich_text_format	|major|	Removed, use new 2.10 API and implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_deserialize_rich_text	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_get_can_paste_rich_text	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_get_rich_text_format	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_serialize_rich_text	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_set_can_paste_rich_text	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
+gtk_text_buffer_set_rich_text_format	| Removed, use new 2.10 API and implementation	| see http://live.gnome.org/Maemo/Gtk210Migration#M30
 
 # GtkTreeView
-\"allow.checkbox.mode\"	|major|	GtkTreeView::allow-checkbox-mode property removed. Use a GtkCellRendererToggle in the treeview instead | see http://live.gnome.org/Maemo/Gtk210Migration#M42
-\"dotted.lines\"	|medium|GtkTreeView::dotted-lines style property removed. Use upstream new implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M09
-\"force.list.kludge\"	|minor|	GtkTreeView::force-list-kludge property removed with no replacement, there is no need for this
+\"allow.checkbox.mode\"	| GtkTreeView::allow-checkbox-mode property removed. Use a GtkCellRendererToggle in the treeview instead | see http://live.gnome.org/Maemo/Gtk210Migration#M42
+\"dotted.lines\"	| GtkTreeView::dotted-lines style property removed. Use upstream new implementation	|	see http://live.gnome.org/Maemo/Gtk210Migration#M09
+\"force.list.kludge\"	| GtkTreeView::force-list-kludge property removed with no replacement, there is no need for this
 
 # New deprecated symbols
-gtk_calendar_freeze			|minor| This function does nothing, you can remove it safely
-gtk_calendar_thaw			|minor| This function does nothing, you can remove it safely.
-gtk_cell_rendering_editing_canceled	|minor| Deprecated, use gtk_cell_renderer_stop_editing.
-gtk_object_sink				|minor| Deprecated, use g_object_ref_sink instead. | http://live.gnome.org/Maemo/Gtk210Migration#M64
-GTK_OBJECT_FLOATING			|minor| Deprecated, use g_object_is_floating_instead.
-gtk_selection_clear			|minor| Instead of calling this function, chain up from your selection_clear_event handler. Calling this function from any other context is illegal.
+gtk_calendar_freeze			| This function does nothing, you can remove it safely
+gtk_calendar_thaw			| This function does nothing, you can remove it safely.
+gtk_cell_rendering_editing_canceled	| Deprecated, use gtk_cell_renderer_stop_editing.
+gtk_object_sink				| Deprecated, use g_object_ref_sink instead. | see http://live.gnome.org/Maemo/Gtk210Migration#M64
+GTK_OBJECT_FLOATING			| Deprecated, use g_object_is_floating_instead.
+gtk_selection_clear			| Instead of calling this function, chain up from your selection_clear_event handler. Calling this function from any other context is illegal.

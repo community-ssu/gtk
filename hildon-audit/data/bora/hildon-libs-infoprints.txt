@@ -1,8 +1,8 @@
 # Infoprints are totally deprecated and can be 
 # easily replaced with hildon_banner functions
 
-gtk_infoprint                                   |minor|  infoprints are deprecated, use HildonBanner instead (same functionality)                                 | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html
-gtk_confirmation_banner                         |minor|  confirmation banners are deprecated, use HildonBanner with bold text markup instead | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html#hildon-banner-show-information-with-markup
-gtk_banner                                      |minor|  gtk_banners are deprecated, use HildonBanner instead                                | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html
-hildon-widgets/gtk-infoprint.h	|major| hildon-widgets/gtk-infoprint.h deprecated and replaced by hildon/hildon-banner.h
-hildon-widgets/hildon-input-mode-hint.h	|major| hildon-widgets/hildon-input-mode-hint.h deprecated and replaced by standard gtk/gtkenums.h 
+gtk_infoprint                                   | infoprints are deprecated, use HildonBanner instead (same functionality)                                 | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html
+gtk_confirmation_banner                         | confirmation banners are deprecated, use HildonBanner with bold text markup instead | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html#hildon-banner-show-information-with-markup
+gtk_banner                                      | gtk_banners are deprecated, use HildonBanner instead                                | see https://stage.maemo.org/svn/maemo/projects/haf/doc/api/hildon/HildonBanner.html
+hildon-widgets/gtk-infoprint.h	                | hildon-widgets/gtk-infoprint.h deprecated and replaced by hildon/hildon-banner.h
+hildon-widgets/hildon-input-mode-hint.h	        | hildon-widgets/hildon-input-mode-hint.h deprecated and replaced by standard gtk/gtkenums.h 

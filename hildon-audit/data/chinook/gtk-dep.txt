@@ -1,72 +1,70 @@
 # GTK+ deprecated symbols
 
-# Migration points without decision are marked as severity minor by default
-
 # Commented symbols are not yet sure to be deprecated or completely useless until hildon-audit has some
 # kind of regexp support (for example, GtkMenuShell::close())
 
 # GtkCalendar
 
-gtk_calendar_new	|minor|	GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
-GTK_TYPE_CALENDAR	|minor|	GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
-gtk_calendar_get_type	|minor|	GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
+gtk_calendar_new	| GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
+GTK_TYPE_CALENDAR	| GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
+gtk_calendar_get_type	| GtkCalendar is deprecated, use HildonCalendar from hildon-1 | see http://live.gnome.org/Maemo/Gtk210Migration#M14
 
 
 # GtkComboBox
 
-\"propagate.lr.keys\"	|medium| GtkComboBox::propagate-lr-keys property is deprecated, you can connect to the key_event signal to reproduce this behaviour.
+\"propagate.lr.keys\"	| GtkComboBox::propagate-lr-keys property is deprecated, you can connect to the key_event signal to reproduce this behaviour.
 
-gtk_combo_box_new			|medium| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
-gtk_combo_box_new_text			|medium| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
-gtk_combo_box_new_with_model		|medium|  This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67 
-gtk_combo_box_entry_new			|medium| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
-gtk_combo_box_entry_new_text		|medium| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
-gtk_combo_box_entry_new_with_model	|medium| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
+gtk_combo_box_new			| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
+gtk_combo_box_new_text			| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
+gtk_combo_box_new_with_model		| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67 
+gtk_combo_box_entry_new			| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
+gtk_combo_box_entry_new_text		| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
+gtk_combo_box_entry_new_with_model	| This widget is not fixed height anymore | see http://live.gnome.org/Maemo/Gtk210Migration#M67
 
 # GtkEntry (autocap, input-mode, hildon-input-mode - see GtkIMContext)
 
 # Most probably won't change name, commenting
-#\"invalid.input\"			|minor|	GtkEntry::invalid-input signal might change name
-#hildon_gtk_entry_get_input_mode		|minor|	    Might change name
-#hildon_gtk_entry_set_input_mode		|minor|	    Might change name
+#\"invalid.input\"			| GtkEntry::invalid-input signal might change name
+#hildon_gtk_entry_get_input_mode	| Might change name
+#hildon_gtk_entry_set_input_mode	| Might change name
 
 # GtkFileChooser
 
-# hildon_gtk_file_chooser_install_properties	|minor|	No decision yet (might go to hildon_fm_*)
+# hildon_gtk_file_chooser_install_properties	| No decision yet (might go to hildon_fm_*)
 
 # GtkIMContext (GtkEntry, GtkTextView)
 #
-#\"hildon.input.mode\"	|minor| [GtkEntry,GtkTextView,GtkIMContext] hildon-input-mode property - Might change name
-#\"input.mode\"		|minor| [GtkEntry,GtkTextView] input-mode property - Might change name
+#\"hildon.input.mode\"	| [GtkEntry,GtkTextView,GtkIMContext] hildon-input-mode property - Might change name
+#\"input.mode\"		| [GtkEntry,GtkTextView] input-mode property - Might change name
 
-\"clipboard.operation\"	|minor|	GtkIMContext::clipboard-operation - No decision yet
-\"has.selection\"	|minor|	GtkIMContext::has-selection - No decision yet
-#hildon_gtk_im_context_copy				|minor|	No decision yet
-#hildon_gtk_im_context_cut				|minor|	No decision yet
-#hildon_gtk_im_context_filter_event			|minor|	No decision yet
-#hildon_gtk_im_context_has_selection			|minor|	No decision yet
-#hildon_gtk_im_context_hide				|minor|	No decision yet
-#hildon_gtk_im_context_paste				|minor|	No decision yet
-#hildon_gtk_im_context_show				|minor|	No decision yet
+\"clipboard.operation\"	| GtkIMContext::clipboard-operation - No decision yet
+\"has.selection\"	| GtkIMContext::has-selection - No decision yet
+#hildon_gtk_im_context_copy		| No decision yet
+#hildon_gtk_im_context_cut		| No decision yet
+#hildon_gtk_im_context_filter_event	| No decision yet
+#hildon_gtk_im_context_has_selection	| No decision yet
+#hildon_gtk_im_context_hide		| No decision yet
+#hildon_gtk_im_context_paste		| No decision yet
+#hildon_gtk_im_context_show		| No decision yet
 
 # GtkIMContextClipboardOperation
 
-#GTK_IM_CONTEXT_CLIPBOARD_OP_COPY	|minor|	No decision yet
-#GTK_IM_CONTEXT_CLIPBOARD_OP_CUT	|minor|	No decision yet
-#GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE	|minor|	No decision yet
+#GTK_IM_CONTEXT_CLIPBOARD_OP_COPY	| No decision yet
+#GTK_IM_CONTEXT_CLIPBOARD_OP_CUT	| No decision yet
+#GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE	| No decision yet
 
 # GtkIconSize
 
-HILDON_ICON_SIZE_26	|minor|	Removed, see http://live.gnome.org/Maemo/Gtk210Migration#M40
-HILDON_ICON_SIZE_40	|minor|	Removed, see http://live.gnome.org/Maemo/Gtk210Migration#M40
-HILDON_ICON_SIZE_50	|minor|	Removed, see http://live.gnome.org/Maemo/Gtk210Migration#M40
-HILDON_ICON_SIZE_64	|minor|	Removed, see http://live.gnome.org/Maemo/Gtk210Migration#M40
+HILDON_ICON_SIZE_26	| Removed | see http://live.gnome.org/Maemo/Gtk210Migration#M40
+HILDON_ICON_SIZE_40	| Removed | see http://live.gnome.org/Maemo/Gtk210Migration#M40
+HILDON_ICON_SIZE_50	| Removed | see http://live.gnome.org/Maemo/Gtk210Migration#M40
+HILDON_ICON_SIZE_64	| Removed | see http://live.gnome.org/Maemo/Gtk210Migration#M40
 
 # GtkInvalidInputType
 
 # Probably won't go away, commenting
-#GTK_INVALID_INPUT_MAX_CHARS_REACHED	|minor|	No decision yet
-#GTK_INVALID_INPUT_MODE_RESTRICTION	|minor|	No decision yet
+#GTK_INVALID_INPUT_MAX_CHARS_REACHED	| No decision yet
+#GTK_INVALID_INPUT_MODE_RESTRICTION	| No decision yet
 
 # GtkMenuShell
 
@@ -74,40 +72,40 @@ HILDON_ICON_SIZE_64	|minor|	Removed, see http://live.gnome.org/Maemo/Gtk210Migra
 
 # GtkNotebook
 
-gtk_notebook_new	|minor|	GtkNotebook::scrollable default value changed to FALSE | Use gtk_notebook_set_scrollable if you have many tabs and want to use tab scrolling
-GTK_TYPE_NOTEBOOK	|minor|	GtkNotebook::scrollable default value changed to FALSE | Use gtk_notebook_set_scrollable if you have many tabs and want to use tab scrolling
+gtk_notebook_new	| GtkNotebook::scrollable default value changed to FALSE | Use gtk_notebook_set_scrollable if you have many tabs and want to use tab scrolling
+GTK_TYPE_NOTEBOOK	| GtkNotebook::scrollable default value changed to FALSE | Use gtk_notebook_set_scrollable if you have many tabs and want to use tab scrolling
 
 # GtkRange
 
-\"minimum.visible.bars\"		|minor|	 GtkRange::minimum-visible-bars property is deprecated. HildonControlBar now behaves as if it had the property with value "1".
+\"minimum.visible.bars\"	| GtkRange::minimum-visible-bars property is deprecated. HildonControlBar now behaves as if it had the property with value "1".
 
 # GtkSettings
 
-\"hildon.keyboard.navigation\"	|minor|	GtkSettings::hildon-keyboard-navigation property - No decision yet
-\"hildon.keyboard.shortcuts\"	|minor|	GtkSettings::hildon-keyboard-shortcuts property - No decision yet
+\"hildon.keyboard.navigation\"	| GtkSettings::hildon-keyboard-navigation property - No decision yet
+\"hildon.keyboard.shortcuts\"	| GtkSettings::hildon-keyboard-shortcuts property - No decision yet
 
 # GtkTextView (autocap, input-mode, hildon-input-mode - see GtkIMContext)
 
-# hildon_gtk_text_view_get_input_mode	|minor|	Might change name
-# hildon_gtk_text_view_set_input_mode	|minor|	Might change name
+# hildon_gtk_text_view_get_input_mode	| Might change name
+# hildon_gtk_text_view_set_input_mode	| Might change name
 
 # GtkTreeView
 
-\"row.insensitive\"	|minor| GtkTreeView::row-insensitive signal - No decision yet
+\"row.insensitive\"	| GtkTreeView::row-insensitive signal - No decision yet
 
 # GtkViewport
 
-\"shadow.type\"	|minor|	GtkViewport::shadow-type property default value changed	|	see http://live.gnome.org/Maemo/Gtk210Migration#M19
+\"shadow.type\"	| GtkViewport::shadow-type property default value changed	|	see http://live.gnome.org/Maemo/Gtk210Migration#M19
 
 # GtkWidget
 
-\"insensitive.press\"	|major|	GtkWidget::insensitive-press signal is deprecated, use hildon-1 helper routines to display information about insensitive widgets | see http://live.gnome.org/Maemo/Gtk210Migration#M22
+\"insensitive.press\"	| GtkWidget::insensitive-press signal is deprecated, use hildon-1 helper routines to display information about insensitive widgets | see http://live.gnome.org/Maemo/Gtk210Migration#M22
 #tap-and-hold
 
 #tap-and-hold-query
 #tap-and-hold-setup
 
-gtk_widget_insensitive_press	|major|	This function is deprecated, use hildon-1 helper routines to display information about insensitive widgets | see http://live.gnome.org/Maemo/Gtk210Migration#M22
+gtk_widget_insensitive_press	| This function is deprecated, use hildon-1 helper routines to display information about insensitive widgets | see http://live.gnome.org/Maemo/Gtk210Migration#M22
 #gtk_widget_set_direction_recursive
 #gtk_widget_tap_and_hold_menu_position_top
 #gtk_widget_tap_and_hold_setup
@@ -121,12 +119,12 @@ gtk_widget_insensitive_press	|major|	This function is deprecated, use hildon-1 h
 
 # HildonGtkInputMode
 
-#HILDON_GTK_INPUT_MODE_ALPHA		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_NUMERIC		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_SPECIAL		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_HEXA		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_TELE		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_FULL		|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_INVISIBLE	|minor|	Might change name
-#HILDON_GTK_INPUT_MODE_AUTOCAP		|minor|	Might change name
+#HILDON_GTK_INPUT_MODE_ALPHA		| Might change name
+#HILDON_GTK_INPUT_MODE_NUMERIC		| Might change name
+#HILDON_GTK_INPUT_MODE_SPECIAL		| Might change name
+#HILDON_GTK_INPUT_MODE_HEXA		| Might change name
+#HILDON_GTK_INPUT_MODE_TELE		| Might change name
+#HILDON_GTK_INPUT_MODE_FULL		| Might change name
+#HILDON_GTK_INPUT_MODE_INVISIBLE	| Might change name
+#HILDON_GTK_INPUT_MODE_AUTOCAP		| Might change name
 

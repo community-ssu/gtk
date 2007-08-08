@@ -1,162 +1,162 @@
 # More API changes. This prolly has an effect on
 # many apps. 
 
-hildon_name_password_dialog_new                 |normal|   	HildonSetPasswordDialog has become HildonLoginDialog (name change)
-hildon_name_password_dialog_new_with_default    |normal|	HildonSetPasswordDialog has become HildonLoginDialog (name change)
-hildon_name_password_dialog_get_name            |normal|        Use hildon_login_dialog_get_username
+hildon_name_password_dialog_new                 | HildonSetPasswordDialog has become HildonLoginDialog (name change)
+hildon_name_password_dialog_new_with_default    | HildonSetPasswordDialog has become HildonLoginDialog (name change)
+hildon_name_password_dialog_get_name            | Use hildon_login_dialog_get_username
 
 # So-called 'domain' changed to 'message'
 
-hildon_name_password_dialog_set_domain          |normal|        Use hildon_login_dialog_set_message
-hildon_get_password_dialog_set_domain           |normal|        Use hildon_get_password_dialog_set_message
-hildon_set_password_dialog_set_domain           |normal|        Use hildon_set_password_dialog_set_message
+hildon_name_password_dialog_set_domain          | Use hildon_login_dialog_set_message
+hildon_get_password_dialog_set_domain           | Use hildon_get_password_dialog_set_message
+hildon_set_password_dialog_set_domain           | Use hildon_set_password_dialog_set_message
 
 # Enum name changes
 
-HildonTimeEditorErrorType                       |minor|  	Please use HildonDateTimeEditorError
-HildonDateEditorErrorType                       |minor|		Please use HildonDateTimeEditorError
+HildonTimeEditorErrorType                       | Please use HildonDateTimeEditorError
+HildonDateEditorErrorType                       | Please use HildonDateTimeEditorError
 
 # Broken time-editor enums
 
-NO_TIME_ERROR					|minor|		Please use HILDON_DATE_TIME_ERROR_NO_ERROR
-MAX_HOURS					|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_HOURS
-MAX_MINS					|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_MINS
-MAX_SECS					|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_SECS
-MIN_HOURS					|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_HOURS
-MIN_MINS					|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_MINS
-MIN_SECS					|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_SECS
-EMPTY_HOURS					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_HOURS
-EMPTY_MINS					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_MINS
-EMPTY_SECS					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_SECS
-MIN_DUR						|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_DURATION
-MAX_DUR						|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_DURATION
-INVALID_TIME					|minor|		Please use HILDON_DATE_TIME_ERROR_INVALID_TIME
-INVALID_CHAR					|minor|		Please use HILDON_DATE_TIME_ERROR_INVALID_CHAR
+NO_TIME_ERROR					| Please use HILDON_DATE_TIME_ERROR_NO_ERROR
+MAX_HOURS					| Please use HILDON_DATE_TIME_ERROR_MAX_HOURS
+MAX_MINS					| Please use HILDON_DATE_TIME_ERROR_MAX_MINS
+MAX_SECS					| Please use HILDON_DATE_TIME_ERROR_MAX_SECS
+MIN_HOURS					| Please use HILDON_DATE_TIME_ERROR_MIN_HOURS
+MIN_MINS					| Please use HILDON_DATE_TIME_ERROR_MIN_MINS
+MIN_SECS					| Please use HILDON_DATE_TIME_ERROR_MIN_SECS
+EMPTY_HOURS					| Please use HILDON_DATE_TIME_ERROR_EMPTY_HOURS
+EMPTY_MINS					| Please use HILDON_DATE_TIME_ERROR_EMPTY_MINS
+EMPTY_SECS					| Please use HILDON_DATE_TIME_ERROR_EMPTY_SECS
+MIN_DUR						| Please use HILDON_DATE_TIME_ERROR_MIN_DURATION
+MAX_DUR						| Please use HILDON_DATE_TIME_ERROR_MAX_DURATION
+INVALID_TIME					| Please use HILDON_DATE_TIME_ERROR_INVALID_TIME
+INVALID_CHAR					| Please use HILDON_DATE_TIME_ERROR_INVALID_CHAR
 
 # Broken date-editor enums
 
-NO_ERROR					|minor|		Please use HILDON_DATE_TIME_ERROR_NO_ERROR
-MAX_DAY						|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_DAY
-MAX_MONTH					|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_MONTH
-MAX_YEAR					|minor|		Please use HILDON_DATE_TIME_ERROR_MAX_YEAR
-MIN_DAY						|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_DAY
-MIN_MONTH					|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_MONTH
-MIN_YEAR					|minor|		Please use HILDON_DATE_TIME_ERROR_MIN_YEAR
-EMPTY_DAY					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_DAY
-EMPTY_MONTH					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_MONTH
-EMPTY_YEAR					|minor|		Please use HILDON_DATE_TIME_ERROR_EMPTY_YEAR
-INVALID_DATE					|minor|		Please use HILDON_DATE_TIME_ERROR_INVALID_DATE
+NO_ERROR					| Please use HILDON_DATE_TIME_ERROR_NO_ERROR
+MAX_DAY						| Please use HILDON_DATE_TIME_ERROR_MAX_DAY
+MAX_MONTH					| Please use HILDON_DATE_TIME_ERROR_MAX_MONTH
+MAX_YEAR					| Please use HILDON_DATE_TIME_ERROR_MAX_YEAR
+MIN_DAY						| Please use HILDON_DATE_TIME_ERROR_MIN_DAY
+MIN_MONTH					| Please use HILDON_DATE_TIME_ERROR_MIN_MONTH
+MIN_YEAR					| Please use HILDON_DATE_TIME_ERROR_MIN_YEAR
+EMPTY_DAY					| Please use HILDON_DATE_TIME_ERROR_EMPTY_DAY
+EMPTY_MONTH					| Please use HILDON_DATE_TIME_ERROR_EMPTY_MONTH
+EMPTY_YEAR					| Please use HILDON_DATE_TIME_ERROR_EMPTY_YEAR
+INVALID_DATE					| Please use HILDON_DATE_TIME_ERROR_INVALID_DATE
 
 # Number editor broken enums
 
-MAXIMUM_VALUE_EXCEED                            |minor|         Use HILDON_NUMBER_EDITOR_ERROR_MAXIMUM_VALUE_EXCEED
-MINIMUM_VALUE_EXCEED                            |minor|         Use HILDON_NUMBER_EDITOR_ERROR_MINIMUM_VALUE_EXCEED
-ERRONEOUS_VALUE                                 |minor|         USe HILDON_NUMBER_EDITOR_ERROR_ERRONEOUS_VALUE
+MAXIMUM_VALUE_EXCEED                            | Use HILDON_NUMBER_EDITOR_ERROR_MAXIMUM_VALUE_EXCEED
+MINIMUM_VALUE_EXCEED                            | Use HILDON_NUMBER_EDITOR_ERROR_MINIMUM_VALUE_EXCEED
+ERRONEOUS_VALUE                                 | USe HILDON_NUMBER_EDITOR_ERROR_ERRONEOUS_VALUE
 
 # General
 
-gtk_dialog_help_enable                          |normal|	Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
-gtk_dialog_help_disable                         |normal|	Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
+gtk_dialog_help_enable                          | Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
+gtk_dialog_help_disable                         | Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
 
 # Changed prop/behaviour
         
-hildon_sort_dialog_new                          |minor|       	HildonSortDialog has changed property names (sort-key => key, sort-order => order)
+hildon_sort_dialog_new                          | HildonSortDialog has changed property names (sort-key => key, sort-order => order)
 
 # Signal changes
 
-range-error                                     |minor|       	Use "error" signal for HildonNumberEditor instead of "range-error"
+range-error                                     | Use "error" signal for HildonNumberEditor instead of "range-error"
 
 # Controversial
 
-hildon_scroll_area_new                          |major|      	HildonScrollArea is deprecated | Provide your own implementation if you need this kind of functionality. 
+hildon_scroll_area_new                          | HildonScrollArea is deprecated | Provide your own implementation if you need this kind of functionality. 
 
 # Borken API that was exposed by mistake
 
-hildon_volumebar_level_change                   |normal|        This API is no longer exposed | You have to use VVolumeBar or HVolumeBar
-hildon_volumebar_mute_toggled                   |normal|        This API is no longer exposed | You have to use VVolumeBar or HVolumeBar
+hildon_volumebar_level_change                   | This API is no longer exposed | You have to use VVolumeBar or HVolumeBar
+hildon_volumebar_mute_toggled                   | This API is no longer exposed | You have to use VVolumeBar or HVolumeBar
 
 # Defines -> helper
 
-hildon_gtk_widget_set_logical_font              |normal|        Use hildon_helper_set_logical_font  | Include <hildon/hildon-helper.h>
-hildon_gtk_widget_set_logical_color             |normal|        Use hildon_helper_set_logical_color | Include <hildon/hildon-helper.h>
+hildon_gtk_widget_set_logical_font              | Use hildon_helper_set_logical_font  | Include <hildon/hildon-helper.h>
+hildon_gtk_widget_set_logical_color             | Use hildon_helper_set_logical_color | Include <hildon/hildon-helper.h>
 
 # Color API changes
 
-hildon_color_button_get_color                   |normal|        The function now takes pointer to color struct like other gtk_ color functions
+hildon_color_button_get_color                   | The function now takes pointer to color struct like other gtk_ color functions
 
 # Finger stuff. Introduced very recently as a quick hack. 
 
-hildon_button_event_is_finger                   |minor|         Use hildon_helper_event_button_is_finger
+hildon_button_event_is_finger                   | Use hildon_helper_event_button_is_finger
 
 # Menu memory chage
 
-hildon_window_set_menu                          |normal|        Menus are now owned by HildonWindow. Do not unref | See http://maemo.org/maemowiki/HildonMigrationOverview
+hildon_window_set_menu                          | Menus are now owned by HildonWindow. Do not unref | See http://maemo.org/maemowiki/HildonMigrationOverview
 
 # Icon sizes
 
-HILDON_ICON_PIXEL_SIZE_GRID 64                  |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_WIDG_WIZARD 50           |minor|         Define to 50 if needed
-HILDON_ICON_PIXEL_SIZE_STATUSBAR 40             |minor|         Define to 40 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_VIDEO_PLAYER_PRE_ROLL |minor|       Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_KEY_PAD_LOCK        |minor|         Define to 50 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_COPY                |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_DELETE              |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_PROCESS             |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_PROGRESSBALL        |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_SEND                |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_OFFMODE_CHARGING    |minor|         Define to 50 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_TAP_AND_HOLD        |minor|         Define to 34 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_SEND_RECEIVE        |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_INDI_WLAN_STRENGTH       |minor|         Define to 64 if needed
-HILDON_IMAGE_PIXEL_SIZE_INDI_NOKIA_LOGO         |minor|         Define to 64 if needed
-HILDON_IMAGE_PIXEL_SIZE_INDI_STARTUP_FAILED     |minor|         Define to 64 if needed
-HILDON_IMAGE_PIXEL_SIZE_INDI_STARTUP_NOKIA_LOGO |minor|         Define to 64 if needed
-HILDON_IMAGE_PIXEL_SIZE_INDI_NOKIA_HANDS        |minor|         Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_LIST                     |minor|         Define to 64 if needed
-HILDON_ICON_SIZE_CHECK_AND_GET                  |minor|         Do not use directly
+HILDON_ICON_PIXEL_SIZE_GRID 64                  | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_WIDG_WIZARD 50           | Define to 50 if needed
+HILDON_ICON_PIXEL_SIZE_STATUSBAR 40             | Define to 40 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_VIDEO_PLAYER_PRE_ROLL | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_KEY_PAD_LOCK        | Define to 50 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_COPY                | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_DELETE              | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_PROCESS             | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_PROGRESSBALL        | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_SEND                | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_OFFMODE_CHARGING    | Define to 50 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_TAP_AND_HOLD        | Define to 34 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_SEND_RECEIVE        | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_INDI_WLAN_STRENGTH       | Define to 64 if needed
+HILDON_IMAGE_PIXEL_SIZE_INDI_NOKIA_LOGO         | Define to 64 if needed
+HILDON_IMAGE_PIXEL_SIZE_INDI_STARTUP_FAILED     | Define to 64 if needed
+HILDON_IMAGE_PIXEL_SIZE_INDI_STARTUP_NOKIA_LOGO | Define to 64 if needed
+HILDON_IMAGE_PIXEL_SIZE_INDI_NOKIA_HANDS        | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_LIST                     | Define to 64 if needed
+HILDON_ICON_SIZE_CHECK_AND_GET                  | Do not use directly
 
-HILDON_ICON_SIZE_WIDGEY                         |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_WIDGET                         |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_WIDG_WIZARD                    |minor|         Register the icon yourself, size 50x50
-HILDON_ICON_SIZE_GRID                           |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_STATUSBAR                      |minor|         Register the icon yourself, size 40x40
-HILDON_ICON_SIZE_INDI_VIDEO_PLAYER_PRE_ROLL     |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_COPY                      |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_DELETE                    |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_PROCESS                   |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_PROGRESSBALL              |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_SEND                      |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_OFFMODE_CHARGING          |minor|         Register the icon yourself, size 50x50
-HILDON_ICON_SIZE_INDI_TAP_AND_HOLD              |minor|         Register the icon yourself, size 34x34
-HILDON_ICON_SIZE_INDI_SEND_RECEIVE              |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_INDI_WLAN_STRENGTH             |minor|         Register the icon yourself, size 64x64
-HILDON_IMAGE_SIZE_INDI_NOKIA_LOGO               |minor|         Register the icon yourself, size 64x64
-HILDON_IMAGE_SIZE_INDI_STARTUP_FAILED           |minor|         Register the icon yourself, size 64x64
-HILDON_IMAGE_SIZE_INDI_STARTUP_NOKIA_LOGO       |minor|         Register the icon yourself, size 64x64
-HILDON_IMAGE_SIZE_INDI_NOKIA_HAND               |minor|         Register the icon yourself, size 64x64
-HILDON_ICON_SIZE_LIST                           |minor|         Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_WIDGEY                         | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_WIDGET                         | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_WIDG_WIZARD                    | Register the icon yourself, size 50x50
+HILDON_ICON_SIZE_GRID                           | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_STATUSBAR                      | Register the icon yourself, size 40x40
+HILDON_ICON_SIZE_INDI_VIDEO_PLAYER_PRE_ROLL     | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_COPY                      | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_DELETE                    | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_PROCESS                   | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_PROGRESSBALL              | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_SEND                      | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_OFFMODE_CHARGING          | Register the icon yourself, size 50x50
+HILDON_ICON_SIZE_INDI_TAP_AND_HOLD              | Register the icon yourself, size 34x34
+HILDON_ICON_SIZE_INDI_SEND_RECEIVE              | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_INDI_WLAN_STRENGTH             | Register the icon yourself, size 64x64
+HILDON_IMAGE_SIZE_INDI_NOKIA_LOGO               | Register the icon yourself, size 64x64
+HILDON_IMAGE_SIZE_INDI_STARTUP_FAILED           | Register the icon yourself, size 64x64
+HILDON_IMAGE_SIZE_INDI_STARTUP_NOKIA_LOGO       | Register the icon yourself, size 64x64
+HILDON_IMAGE_SIZE_INDI_NOKIA_HAND               | Register the icon yourself, size 64x64
+HILDON_ICON_SIZE_LIST                           | Register the icon yourself, size 64x64
 
 # Depracted (duplicated) input-methods things
 
-HILDON_INPUT_MODE_HINT_ALPHANUMERICSPECIAL      |minor|         Use HILDON_GTK_INPUT_MODE_FULL from gtkenums.h
-HILDON_INPUT_MODE_HINT_NUMERIC                  |minor|         Use HILDON_GTK_INPUT_MODE_NUMERIC from gtkenums.h
-HILDON_INPUT_MODE_HINT_ALPHA                    |minor|         Use HILDON_GTK_INPUT_MODE_ALPHA from gtkenums.h
-HILDON_INPUT_MODE_HINT_NUMERICSPECIAL           |minor|         Use HILDON_GTK_INPUT_MODE_NUMERIC | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
-HILDON_INPUT_MODE_HINT_ALPHASPECIAL             |minor|         Use HILDON_GTK_INPUT_MODE_ALPHA | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
-HILDON_INPUT_MODE_HINT_ALPHANUMERIC             |minor|         Use HILDON_GTK_INPUT_MODE_ALPHA | HILDON_GTK_INPUT_MODE_NUMERIC from gtkenums.h 
-HILDON_INPUT_MODE_HINT_HEXA                     |minor|         Use HILDON_GTK_INPUT_MODE_HEXA from gtkenums.h
-HILDON_INPUT_MODE_HINT_HEXASPECIAL              |minor|         Use HILDON_GTK_INPUT_MODE_HEXA | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
-HILDON_INPUT_MODE_HINT_TELE                     |minor|         Use HILDON_GTK_INPUT_MODE_TELE from gtkenums.h
-HILDON_INPUT_MODE_HINT_TELESPECIAL              |monor|         Use HILDON_GTK_INPUT_MODE_TELE | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
+HILDON_INPUT_MODE_HINT_ALPHANUMERICSPECIAL      | Use HILDON_GTK_INPUT_MODE_FULL from gtkenums.h
+HILDON_INPUT_MODE_HINT_NUMERIC                  | Use HILDON_GTK_INPUT_MODE_NUMERIC from gtkenums.h
+HILDON_INPUT_MODE_HINT_ALPHA                    | Use HILDON_GTK_INPUT_MODE_ALPHA from gtkenums.h
+HILDON_INPUT_MODE_HINT_NUMERICSPECIAL           | Use HILDON_GTK_INPUT_MODE_NUMERIC | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
+HILDON_INPUT_MODE_HINT_ALPHASPECIAL             | Use HILDON_GTK_INPUT_MODE_ALPHA   | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
+HILDON_INPUT_MODE_HINT_ALPHANUMERIC             | Use HILDON_GTK_INPUT_MODE_ALPHA   | HILDON_GTK_INPUT_MODE_NUMERIC from gtkenums.h 
+HILDON_INPUT_MODE_HINT_HEXA                     | Use HILDON_GTK_INPUT_MODE_HEXA from gtkenums.h
+HILDON_INPUT_MODE_HINT_HEXASPECIAL              | Use HILDON_GTK_INPUT_MODE_HEXA    | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
+HILDON_INPUT_MODE_HINT_TELE                     | Use HILDON_GTK_INPUT_MODE_TELE from gtkenums.h
+HILDON_INPUT_MODE_HINT_TELESPECIAL              | Use HILDON_GTK_INPUT_MODE_TELE    | HILDON_GTK_INPUT_MODE_SPECIAL from gtkenums.h
 
 # Naming changes
 
-hildon-libs-dev                                 |major|         Use libhildon1-dev as dependency
-hildon-lgpl-dev                                 |major|         Use libhildon1-dev as dependency
+hildon-libs-dev                                 | Use libhildon1-dev as dependency
+hildon-lgpl-dev                                 | Use libhildon1-dev as dependency
 
 # Hibernation
 
-hildon_window_set_can_hibernate_property        |major|         Use hildon_program_set_can_hibernate on the parent HildonProgram instead
+hildon_window_set_can_hibernate_property        | Use hildon_program_set_can_hibernate on the parent HildonProgram instead
 
 
 # end of file

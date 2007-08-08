@@ -27,8 +27,8 @@ use locale; # for locale defined sorting
 my $verb_lvl   = 3;
 my $show_stats = 0;
 
-my $columns_expected = 3;
-my $correct_format = "[symbol | severity | instruction]";
+my $columns_expected = 2;
+my $correct_format = "[symbol | message]";
 
 my @rules;
 
@@ -124,10 +124,9 @@ foreach $rule(@rules)
 	 exit;
     }
 
-    $rule = $tmp[0];
-    $sev  = $tmp[1];
-    $fix  = $tmp[2];
-    $uri  = $tmp[3];
+    $rule   = $tmp[0];
+    $mess1  = $tmp[1];
+    $mess2  = $tmp[2];
 
     if (defined($rulehash->{$rule}))
     {
@@ -138,9 +137,8 @@ foreach $rule(@rules)
     # --- make table of rules and hash of other information
     push (@ruletable, $rule);
 
-    $rulehash -> {$rule} -> {'severity'} = $sev;
-    $rulehash -> {$rule} -> {'howtofix'} = $fix;
-    $rulehash -> {$rule} -> {'uri'} = $uri;
+    $rulehash -> {$rule} -> {'message1'} = $mess1;
+    $rulehash -> {$rule} -> {'message2'} = $mess2;
 }
 
 
@@ -185,24 +183,20 @@ foreach $rule(@ruletable)
 	    # --- slightly different output for verbose levels
 	    if ($verb_lvl == 1)
 	    {
-		print "$tmp[0]:$tmp[1]: $rule\n";
+		print "$tmp[0]:$tmp[1]: $rule\n";  # "file:line#: symbol"
 	    }
 	    elsif ($verb_lvl >= 2)
 	    {
 		print "$tmp[0]:$tmp[1]: $rule: ";
 
-		print $rulehash -> {$rule} -> {'severity'};
-
-		print ": ";
-
-		print $rulehash -> {$rule} -> {'howtofix'};
+		print $rulehash -> {$rule} -> {'message1'};
 
 		if ($verb_lvl == 3)
 		{
-		    $uri = $rulehash -> {$rule} -> {'uri'};
-		    if ($uri)
+		    $mess2 = $rulehash -> {$rule} -> {'message2'};
+		    if ($mess2)
 		    {
-			print ": $uri";
+			print ": $mess2";
 		    }
 		}
 		print "\n";
@@ -300,12 +294,14 @@ sub usage()
 
     OPTIONS:
 
-    --verbose=[level]: specifies the verbosity level. By default it uses level 3.
+    --verbose=[level]: specifies the verbosity level.
 
       0 -> Nothing. Usefull if you want only the stats (--stats)
-      1 -> file : line number : symbol
-      2 -> file : line number : symbol : level : message
-      3 -> file : line number : symbol : level : message : complementary message
+      1 -> "file : line number : symbol"
+      2 -> "file : line number : symbol: message"
+      3 -> "file : line number : symbol: message : complementary message"
+
+      By default it uses level 3.
 
     --stats: output a summary of instances found
 
@@ -321,7 +317,7 @@ sub usage()
     # Rule files have the following format,
     # they accept comments preceeded by a '#'
 
-    <symbol> | <level> | <message> [| <complementary message>]
+    <symbol> | <message> [| <complementary message>]
 
     # the complementary message is optional, it is shown with the
     # highest level of verbosity.
@@ -343,7 +339,7 @@ sub usage()
 
     You can also take the rules from <stdin>:
 
-    \$ cat rules/*.txt | grep 'major' | hildon-audit ./my-code
+    \$ cat rules/*.txt | hildon-audit ./my-code
 
 
 STOP

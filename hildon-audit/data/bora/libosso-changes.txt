@@ -1,10 +1,10 @@
 # Libosso
-osso_tasknav_mail_add			|minor| This is not needed anymore, remove this function call.
-osso_tasknav_mail_del			|minor| This is not needed anymore, remove this function call.
-osso_tasknav_mail_set_outbox_count	|minor| This is not needed anymore, remove this function call.
-osso_application_initialize		|minor| Remove call to osso_application_initialize, use osso_initialize instead. Note that parameters have changed.
-osso_application_exit_cb		|minor| Remove use of type osso_application_exit_cb. (callback is not being called.)
-osso_application_set_exit_cb		|minor| Remove call to osso_application_set_exit_cb. (callback is not begin called.)
-osso_state_open_write			|minor| Use osso_state_write instead of osso_state_open_write. Note that parameters have changed.
-osso_state_open_read			|minor| Use osso_state_read instead of osso_state_open_read. Note that parameters have changed.
-osso_state_close			|minor| Remove call to osso_state_close, it is not needed.
+osso_tasknav_mail_add			| This is not needed anymore, remove this function call.
+osso_tasknav_mail_del			| This is not needed anymore, remove this function call.
+osso_tasknav_mail_set_outbox_count	| This is not needed anymore, remove this function call.
+osso_application_initialize		| Remove call to osso_application_initialize, use osso_initialize instead. Note that parameters have changed.
+osso_application_exit_cb		| Remove use of type osso_application_exit_cb. (callback is not being called.)
+osso_application_set_exit_cb		| Remove call to osso_application_set_exit_cb. (callback is not begin called.)
+osso_state_open_write			| Use osso_state_write instead of osso_state_open_write. Note that parameters have changed.
+osso_state_open_read			| Use osso_state_read instead of osso_state_open_read. Note that parameters have changed.
+osso_state_close			| Remove call to osso_state_close, it is not needed.

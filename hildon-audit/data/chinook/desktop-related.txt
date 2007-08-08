@@ -1,5 +1,5 @@
-hildon-status-bar-lib-dev	|major| hildon-status-bar-lib-dev deprecated and replaced by libhildondesktop-dev
-hildon-status-bar-lib		|major| hildon-status-bar-lib deprecated and replaced by libhildondesktop >= 0.0.5
-pluginlibdir			|major| Plugin directory is not provided anymore by "pkg-config hildon-status-bar-lib --variable=pluginlibdir", use "pkg-config osso-af-settings --variable=legacystatusbarlibdir" instead.
-hildon-status-bar-lib/hildon-status-bar-item.h	|major| hildon-status-bar-lib/hildon-status-bar-item.h deprecated and replaced by libhildondesktop/hildon-status-bar-item.h
+hildon-status-bar-lib-dev	| hildon-status-bar-lib-dev deprecated and replaced by libhildondesktop-dev
+hildon-status-bar-lib		| hildon-status-bar-lib deprecated and replaced by libhildondesktop >= 0.0.5
+pluginlibdir			| Plugin directory is not provided anymore by "pkg-config hildon-status-bar-lib --variable=pluginlibdir", use "pkg-config osso-af-settings --variable=legacystatusbarlibdir" instead.
+hildon-status-bar-lib/hildon-status-bar-item.h	| hildon-status-bar-lib/hildon-status-bar-item.h deprecated and replaced by libhildondesktop/hildon-status-bar-item.h
 
