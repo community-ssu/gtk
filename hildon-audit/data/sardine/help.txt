@@ -1,0 +1,5 @@
+ossohelp_dialog_help_enable	|minor| ossohelp_dialog_help_enable() deprecated, use hildon_help_dialog_help_enable()
+osso-helplib.h			|minor| osso-helplib.h deprecated, use hildon/hildon-help.h
+libossohelp			|minor| libossohelp deprecated, use hildon-help >= 1.9.0
+libosso-help-dev		|minor| libosso-help-dev deprecated, use libhildonhelp-dev
+

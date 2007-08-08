@@ -1,1 +1,1 @@
-hildon-lgpl  |minor| hildon-lgpl is an empty package and will be removed. Widgets were moved to hildon-libs | Remove dependencies to hildon-lgpl, and use proper "include" directives.
+hildon-lgpl  |minor| hildon-lgpl is an empty package and is removed. Widgets were moved to hildon-1 | Remove dependencies to hildon-lgpl, and use proper "include" directives.

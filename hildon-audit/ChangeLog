@@ -1,3 +1,17 @@
+2007-08-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/sardine/desktop-related.txt:
+	* data/bora/gtk.txt:
+	* data/bora/hildon-lgpl.txt:
+	* data/bora/hildon-libs-infoprints.txt:
+	* data/bora/libosso-changes.txt:
+	* data/sardine/gtk-dep.txt:
+	* data/sardine/gtk.txt:
+	* data/sardine/help.txt:
+	* data/sardine/hildon-libs-others.txt: Updating the data files. Making
+	some messages more clear, changing the links to point to live.gnome.org,
+	spreading the stuff coming from Jakub to more convienient places.
+
 2007-08-06  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-audit: reversed output in "stat" mode, to have occurence

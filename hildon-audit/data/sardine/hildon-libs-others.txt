@@ -55,8 +55,8 @@ ERRONEOUS_VALUE                                 |minor|         USe HILDON_NUMBE
 
 # General
 
-gtk_dialog_help_enable                          |normal|	Help routines moved to libosso-help. Use ossohelp_dialog_help_enable
-gtk_dialog_help_disable                         |normal|	Help routines moved to libosso-help. Use ossohelp_dialog_help_enable
+gtk_dialog_help_enable                          |normal|	Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
+gtk_dialog_help_disable                         |normal|	Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
 
 # Changed prop/behaviour
         
