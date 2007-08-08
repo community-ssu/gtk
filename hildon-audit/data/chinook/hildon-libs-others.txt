@@ -55,8 +55,8 @@ ERRONEOUS_VALUE                                 | USe HILDON_NUMBER_EDITOR_ERROR
 
 # General
 
-gtk_dialog_help_enable                          | Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
-gtk_dialog_help_disable                         | Help routines moved to libosso-help. Use hildonhelp_dialog_help_enable
+gtk_dialog_help_enable                          | Help routines moved to libhildon-help. Use hildonhelp_dialog_help_enable
+gtk_dialog_help_disable                         | Help routines moved to libhildon-help. Use hildonhelp_dialog_help_enable
 
 # Changed prop/behaviour
         
@@ -94,9 +94,9 @@ hildon_window_set_menu                          | Menus are now owned by HildonW
 
 # Icon sizes
 
-HILDON_ICON_PIXEL_SIZE_GRID 64                  | Define to 64 if needed
-HILDON_ICON_PIXEL_SIZE_WIDG_WIZARD 50           | Define to 50 if needed
-HILDON_ICON_PIXEL_SIZE_STATUSBAR 40             | Define to 40 if needed
+HILDON_ICON_PIXEL_SIZE_GRID                    | Define to 64 if needed
+HILDON_ICON_PIXEL_SIZE_WIDG_WIZARD             | Define to 50 if needed
+HILDON_ICON_PIXEL_SIZE_STATUSBAR               | Define to 40 if needed
 HILDON_ICON_PIXEL_SIZE_INDI_VIDEO_PLAYER_PRE_ROLL | Define to 64 if needed
 HILDON_ICON_PIXEL_SIZE_INDI_KEY_PAD_LOCK        | Define to 50 if needed
 HILDON_ICON_PIXEL_SIZE_INDI_COPY                | Define to 64 if needed
