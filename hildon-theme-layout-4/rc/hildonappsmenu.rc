@@ -170,7 +170,7 @@ style "hildon-apps-menu-pane2-arrow"
       function        = ARROW
       state           = PRELIGHT 
       arrow_direction = UP 
-      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_pressed.png"
+      overlay_file    = "../images/qgn_plat_pane_menu2_up_arrow_normal.png"
       overlay_stretch = FALSE
     }
     image
@@ -209,7 +209,7 @@ style "hildon-apps-menu-pane2-arrow"
       function        = ARROW
       state           = PRELIGHT 
       arrow_direction = DOWN 
-      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_pressed.png"
+      overlay_file    = "../images/qgn_plat_pane_menu2_down_arrow_normal.png"
       overlay_stretch = FALSE
     }
     image

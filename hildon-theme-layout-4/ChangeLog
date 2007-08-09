@@ -1,5 +1,10 @@
 2007-08-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonappsmenu.rc: Removing the prelight state from the arrow
+	buttons. Fixes NB#63886.
+
+2007-08-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/ossomediaplayer.rc: Swapping the webradio and now playing images.
 	Fixes: NB#65089.
 
