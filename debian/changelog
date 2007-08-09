@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.12-0osso10) unstable; urgency=low
+
+  * Do not validate all the whole string unconditionally in
+    gtk_entry_filter_text. Fixes: NB#6478
+  * Revert the closing of all the temporary windows on window map. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  9 Aug 2007 16:23:27 +0300
+
 gtk+2.0 (2:2.10.12-0osso9) unstable; urgency=low
 
   * Set hildon-input-mode property upon object construction. Fixes: NB#6295
@@ -10,6 +18,7 @@ gtk+2.0 (2:2.10.12-0osso9) unstable; urgency=low
     the new window if it were a temporary window itself. Fixes: NB#52664
 
  -- Xan Lopez <xan.lopez@nokia.com>  Thu,  2 Aug 2007 18:59:08 +0300
+
 
 gtk+2.0 (2:2.10.12-0osso8) unstable; urgency=low
 

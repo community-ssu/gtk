@@ -1,3 +1,9 @@
+2007-08-09  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkwindow.c (gtk_window_map): do not close all other temporary windows
+	on map, it's too disrupting.
+	(gtk_window_close_other_temporaries): Make public.
+
 2007-08-03  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_filter_text): do not validate the whole string
