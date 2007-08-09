@@ -84,7 +84,6 @@ typedef struct
 
 typedef struct HildonHomeAreaPriv_
 {
-  gboolean      layout_mode;
   gboolean      layout_changed;
 
   gboolean      snap_to_grid;
@@ -119,12 +118,6 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass);
 
 static void
 hildon_home_area_init (HildonHomeArea *area);
-
-static void
-hildon_home_area_layout_mode_start (HildonHomeArea *area);
-
-static void
-hildon_home_area_layout_mode_end (HildonHomeArea *area);
 
 static void
 hildon_home_area_layout_changed (HildonHomeArea *area);
@@ -326,8 +319,6 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
 
   g_type_class_add_private (klass, sizeof (HildonHomeAreaPriv));
 
-  klass->layout_mode_start = hildon_home_area_layout_mode_start;
-  klass->layout_mode_end   = hildon_home_area_layout_mode_end;
   klass->layout_changed    = hildon_home_area_layout_changed;
   klass->applet_added      = hildon_home_area_applet_added;
 
@@ -352,46 +343,6 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
   object_class->set_property = hildon_home_area_set_property;
   object_class->get_property = hildon_home_area_get_property;
   object_class->finalize = hildon_home_area_finalize;
-
-  g_signal_new ("layout-mode-start",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_LAST,
-                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_start),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
-
-  g_signal_new ("layout-mode-started",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_FIRST,
-                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_started),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
-
-  g_signal_new ("layout-mode-end",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_FIRST,
-                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_end),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
-
-  g_signal_new ("layout-mode-ended",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_LAST,
-                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_ended),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
 
   g_signal_new ("applet-added",
                 G_OBJECT_CLASS_TYPE (object_class),
@@ -563,11 +514,6 @@ hildon_home_area_set_property (GObject      *object,
 
   switch (property_id)
     {
-      case PROP_LAYOUT_MODE:
-          hildon_home_area_set_layout_mode (HILDON_HOME_AREA (object),
-                                            g_value_get_boolean (value));
-           break;
-
       case PROP_SNAP_TO_GRID:
            priv->snap_to_grid = g_value_get_boolean (value);
            break;
@@ -597,10 +543,6 @@ hildon_home_area_get_property (GObject      *object,
 
   switch (property_id)
     {
-      case PROP_LAYOUT_MODE:
-          g_value_set_boolean (value, priv->layout_mode);
-          break;
-
       case PROP_SNAP_TO_GRID:
            g_value_set_boolean (value, priv->snap_to_grid);
            break;
@@ -853,34 +795,6 @@ hildon_home_area_unrealize (GtkWidget *widget)
 #endif
 
 static void
-hildon_home_area_layout_mode_start (HildonHomeArea *area)
-{
-  HildonHomeAreaPriv      *priv;
-  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-
-  gtk_container_foreach (GTK_CONTAINER (area),
-                         (GtkCallback)hildon_desktop_home_item_set_layout_mode,
-                         (gpointer)TRUE);
-
-  g_signal_emit_by_name (area, "layout-mode-started");
-}
-
-static void
-hildon_home_area_layout_mode_end (HildonHomeArea *area)
-{
-  HildonHomeAreaPriv      *priv;
-  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-
-  gtk_container_foreach (GTK_CONTAINER (area),
-                        (GtkCallback)hildon_desktop_home_item_set_layout_mode,
-                         (gpointer)FALSE);
-  g_signal_emit_by_name (area, "layout-mode-ended");
-
-  priv->layout_changed = FALSE;
-
-}
-
-static void
 hildon_home_area_layout_changed (HildonHomeArea *area)
 {
   HildonHomeAreaPriv      *priv;
@@ -897,13 +811,6 @@ hildon_home_area_applet_added (HildonHomeArea *area, GtkWidget *applet)
   g_return_if_fail (area);
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-  if (priv->layout_mode)
-    {
-      if (HILDON_DESKTOP_IS_HOME_ITEM (applet))
-        hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
-                                                  TRUE);
-      g_signal_emit_by_name (area, "layout-changed");
-    }
 }
 
 static void
@@ -951,10 +858,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
           hildon_home_area_put (HILDON_HOME_AREA (area), applet, 0, 0, G_MAXINT);
         }
 
-
-      if (priv->layout_mode)
-        hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
-                                            TRUE);
     }
 }
 
@@ -1853,11 +1756,6 @@ hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
   g_return_if_fail (area);
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-  if (priv->layout_mode)
-    {
-      g_signal_emit_by_name (area, "layout-changed");
-    }
-
   gtk_container_child_get (area, applet,
                            "child-data", &child_data,
                            NULL);
@@ -1891,39 +1789,6 @@ GtkWidget *
 hildon_home_area_new ()
 {
   return g_object_new (HILDON_TYPE_HOME_AREA, NULL);
-}
-
-void
-hildon_home_area_set_layout_mode (HildonHomeArea *area, gboolean layout_mode)
-{
-  HildonHomeAreaPriv      *priv;
-  g_return_if_fail (area);
-
-  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-
-  if (priv->layout_mode != layout_mode)
-    {
-      g_object_notify (G_OBJECT (area), "layout-mode");
-      priv->layout_mode = layout_mode;
-
-      if (priv->layout_mode)
-        g_signal_emit_by_name (G_OBJECT (area), "layout-mode-start");
-      else
-        g_signal_emit_by_name (G_OBJECT (area), "layout-mode-end");
-
-    }
-}
-
-gboolean
-hildon_home_area_get_layout_mode (HildonHomeArea *area)
-{
-  HildonHomeAreaPriv      *priv;
-
-  g_return_val_if_fail (area, FALSE);
-
-  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-
-  return priv->layout_mode;
 }
 
 static void
@@ -2201,32 +2066,6 @@ hildon_home_area_get_layout_changed (HildonHomeArea *area)
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
   return priv->layout_changed;
-}
-
-gboolean
-hildon_home_area_get_overlaps (HildonHomeArea *area)
-{
-  gboolean overlap;
-  GList *applets, *l;
-
-  g_return_val_if_fail (area, FALSE);
-
-  overlap = FALSE;
-
-  applets = gtk_container_get_children (GTK_CONTAINER (area));
-
-  for (l = applets; l && !overlap; l = g_list_next (l))
-    {
-      if (!HILDON_DESKTOP_IS_HOME_ITEM (l->data))
-        continue;
-
-      overlap = hildon_desktop_home_item_get_overlaps
-          (HILDON_DESKTOP_HOME_ITEM (l->data));
-    }
-
-  g_list_free (applets);
-
-  return overlap;
 }
 
 void

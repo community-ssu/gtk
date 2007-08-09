@@ -87,7 +87,6 @@ enum
 
 typedef struct HildonDesktopHomeItemPriv_
 {
-  gboolean      layout_mode;
   HildonDesktopHomeItemResizeType resize_type;
 
   GtkWidget    *menu;
@@ -116,8 +115,6 @@ typedef struct HildonDesktopHomeItemPriv_
   gboolean      overlaps;
   GtkAllocation old_allocation;
 
-  gboolean      layout_mode_sucks;
-
 } HildonDesktopHomeItemPriv;
 
 static GtkEventBoxClass *parent_class;
@@ -130,22 +127,12 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class);
 static void
 hildon_desktop_home_item_destroy (GtkObject *applet);
 
-static gboolean
-hildon_desktop_home_item_expose (GtkWidget * widget,
-                                 GdkEventExpose * event);
-
 static void
 hildon_desktop_home_item_size_allocate (GtkWidget *widget,
                                         GtkAllocation *allocation);
 
 static void
 hildon_desktop_home_item_remove (GtkContainer *applet, GtkWidget *child);
-
-static void
-hildon_desktop_home_item_layout_mode_start (HildonDesktopHomeItem *applet);
-
-static void
-hildon_desktop_home_item_layout_mode_end (HildonDesktopHomeItem *applet);
 
 static GdkWindow *
 hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
@@ -191,14 +178,6 @@ static void
 hildon_desktop_home_item_tap_and_hold (GtkWidget *widget);
 
 static void
-hildon_desktop_home_item_check_overlap (HildonDesktopHomeItem *applet1,
-                                        HildonDesktopHomeItem *applet2);
-
-static gboolean
-hildon_desktop_home_item_visibility_notify_event (GtkWidget *applet,
-                                                  GdkEventVisibility *event);
-
-static void
 hildon_desktop_home_item_set_property (GObject      *object,
                                        guint         property_id,
                                        const GValue *value,
@@ -209,10 +188,6 @@ hildon_desktop_home_item_get_property (GObject      *object,
                                        guint         property_id,
                                        GValue       *value,
                                        GParamSpec   *pspec);
-static GdkFilterReturn
-window_event_filter (GdkXEvent *xevent,
-                     GdkEvent *event,
-                     HildonDesktopHomeItem *applet);
 
 static void
 hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *item);
@@ -294,12 +269,9 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   gtkobject_class->destroy = hildon_desktop_home_item_destroy;
 
   /* Set the widgets virtual functions */
-  widget_class->expose_event = hildon_desktop_home_item_expose;
   widget_class->size_allocate = hildon_desktop_home_item_size_allocate;
   widget_class->button_press_event = hildon_desktop_home_item_button_press_event;
   widget_class->button_release_event = hildon_desktop_home_item_button_release_event;
-  widget_class->visibility_notify_event =
-      hildon_desktop_home_item_visibility_notify_event;
   widget_class->key_press_event   = hildon_desktop_home_item_key_press_event;
   widget_class->key_release_event = hildon_desktop_home_item_key_release_event;
   widget_class->motion_notify_event = hildon_desktop_home_item_motion_notify;
@@ -312,30 +284,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   /* We override remove to destroy the applet when it's child is destroyed */
   container_class->remove = hildon_desktop_home_item_remove;
 
-  applet_class->layout_mode_start     = hildon_desktop_home_item_layout_mode_start;
-  applet_class->layout_mode_end       = hildon_desktop_home_item_layout_mode_end;
-
   parent_class = g_type_class_peek_parent (applet_class);
-
-  g_signal_new ("layout-mode-start",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_FIRST,
-                G_STRUCT_OFFSET (HildonDesktopHomeItemClass, layout_mode_start),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
-
-  g_signal_new ("layout-mode-end",
-                G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_FIRST,
-                G_STRUCT_OFFSET (HildonDesktopHomeItemClass, layout_mode_end),
-                NULL,
-                NULL,
-                g_cclosure_marshal_VOID__VOID,
-                G_TYPE_NONE,
-                0);
 
   g_signal_new ("background",
                 G_OBJECT_CLASS_TYPE (object_class),
@@ -379,24 +328,6 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   g_object_class_install_property (object_class,
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE,
                                    pspec);
-
-  pspec =  g_param_spec_boolean ("layout-mode",
-                                 "Layout mode",
-                                 "Whether the applet is in layout "
-                                 "mode",
-                                 FALSE,
-                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-
-  g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE,
-                                   pspec);
-
-  pspec =  g_param_spec_boolean ("layout-mode-sucks",
-                                 "Layout mode sucks",
-                                 "Whether or not the layout mode "
-                                 "is considered to suck",
-                                 TRUE,
-                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS,
@@ -487,8 +418,6 @@ hildon_desktop_home_item_init (HildonDesktopHomeItem * self)
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (self);
 
-  priv->layout_mode = FALSE;
-
   if (klass->close_button)
     {
       g_object_ref (klass->close_button);
@@ -571,15 +500,6 @@ hildon_desktop_home_item_set_property (GObject      *object,
           hildon_desktop_home_item_set_resize_type (item,
                                                     g_value_get_enum (value));
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE:
-          hildon_desktop_home_item_set_layout_mode (item,
-                                                    g_value_get_boolean (value));
-          break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS:
-          priv->layout_mode_sucks = g_value_get_boolean (value);
-          if (priv->layout_mode_sucks)
-            GTK_WIDGET_UNSET_FLAGS (GTK_WIDGET (object), GTK_NO_WINDOW);
-          break;
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH:
           g_object_notify (object, "minimum-width");
           priv->minimum_width = g_value_get_int (value);
@@ -613,12 +533,6 @@ hildon_desktop_home_item_get_property (GObject      *object,
     {
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE:
           g_value_set_enum (value, priv->resize_type);
-          break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE:
-          g_value_set_boolean (value, priv->layout_mode);
-          break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS:
-          g_value_set_boolean (value, priv->layout_mode_sucks);
           break;
       case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH:
           g_value_set_int (value, priv->minimum_width);
@@ -686,8 +600,7 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                                            attributes_mask);
       gdk_window_set_user_data (priv->event_window, widget);
 
-      if (priv->layout_mode_sucks &&
-          priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
+      if (priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
         {
           if (priv->resize_handle)
             {
@@ -868,74 +781,6 @@ hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
     GTK_WIDGET_CLASS (parent_class)->tap_and_hold(widget);
 }
 
-
-
-static gboolean
-hildon_desktop_home_item_expose (GtkWidget *w, GdkEventExpose *event)
-{
-  HildonDesktopHomeItemPriv    *priv;
-
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (w);
-
-  if (GTK_WIDGET_CLASS (parent_class)->expose_event)
-    GTK_WIDGET_CLASS (parent_class)->expose_event (w, event);
-
-  if (w->parent && (priv->layout_mode || priv->layout_mode_sucks))
-    {
-      /* Draw the rectangle around */
-
-      if (priv->overlaps && !priv->layout_mode_sucks)
-        {
-
-          gdk_gc_set_line_attributes (w->style->fg_gc[GTK_STATE_PRELIGHT],
-                                      LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                      GDK_LINE_SOLID,
-                                      GDK_CAP_BUTT,
-                                      GDK_JOIN_MITER);
-          gdk_draw_rectangle (w->window,
-                              w->style->fg_gc[GTK_STATE_PRELIGHT], FALSE,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              w->allocation.width-LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                              w->allocation.height-LAYOUT_MODE_HIGHLIGHT_WIDTH);
-        }
-      else if (priv->state == HILDON_DESKTOP_HOME_ITEM_STATE_RESIZING)
-        {
-
-          gdk_gc_set_line_attributes (w->style->fg_gc[GTK_STATE_ACTIVE],
-                                      LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                      GDK_LINE_SOLID,
-                                      GDK_CAP_BUTT,
-                                      GDK_JOIN_MITER);
-
-          gdk_draw_rectangle (w->window,
-                              w->style->fg_gc[GTK_STATE_ACTIVE], FALSE,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              w->allocation.width-LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                              w->allocation.height-LAYOUT_MODE_HIGHLIGHT_WIDTH);
-        }
-      else if (!priv->layout_mode_sucks)/* Normal */
-        {
-          gdk_gc_set_line_attributes (w->style->fg_gc[GTK_STATE_NORMAL],
-                                      LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                      GDK_LINE_SOLID,
-                                      GDK_CAP_BUTT,
-                                      GDK_JOIN_MITER);
-
-          gdk_draw_rectangle (w->window,
-                              w->style->fg_gc[GTK_STATE_NORMAL], FALSE,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              LAYOUT_MODE_HIGHLIGHT_WIDTH/2,
-                              w->allocation.width-LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                              w->allocation.height-LAYOUT_MODE_HIGHLIGHT_WIDTH);
-        }
-    }
-
-
-  return FALSE;
-}
-
 static void
 hildon_desktop_home_item_size_allocate (GtkWidget *widget,
                                         GtkAllocation *allocation)
@@ -1074,179 +919,6 @@ hildon_desktop_home_item_create_icon_window (HildonDesktopHomeItem *applet,
   return window;
 }
 
-static GdkFilterReturn
-window_event_filter (GdkXEvent *xevent,
-                     GdkEvent *event,
-                     HildonDesktopHomeItem *applet)
-{
-  XAnyEvent *aevent = (XAnyEvent *)xevent;
-
-  if (aevent->type == MapNotify)
-    {
-      HildonDesktopHomeItemPriv *priv =
-          HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-      /* The applet created a child window, we need to make sure that
-       * we remain on top */
-      if (GDK_IS_WINDOW (priv->event_window))
-        gdk_window_raise (priv->event_window);
-
-      if (priv->close_button_window)
-          gdk_window_raise (priv->close_button_window);
-      if (priv->resize_handle_window)
-        gdk_window_raise (priv->resize_handle_window);
-
-      if (!priv->layout_mode_sucks && GTK_IS_WIDGET (GTK_BIN (applet)->child))
-        {
-          gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
-          gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
-        }
-    }
-
-  return GDK_FILTER_CONTINUE;
-
-}
-
-
-static void
-hildon_desktop_home_item_layout_mode_start (HildonDesktopHomeItem *applet)
-{
-  HildonDesktopHomeItemPriv      *priv;
-  GtkWidget                 *widget;
-  gboolean                   visible;
-
-  widget = GTK_WIDGET (applet);
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-
-  if (priv->layout_mode_sucks)
-    return;
-
-  priv->layout_mode = TRUE;
-
-  visible = GTK_WIDGET_VISIBLE (widget);
-
-  if (visible)
-    gtk_widget_hide (widget);
-
-  gtk_widget_unrealize (widget);
-  GTK_WIDGET_UNSET_FLAGS (widget, GTK_NO_WINDOW);
-  gtk_widget_realize (widget);
-
-  if (visible)
-    gtk_widget_show (widget);
-
-  if (GTK_WIDGET_VISIBLE (widget))
-    gtk_widget_queue_resize (widget);
-
-  if (priv->close_button)
-    {
-      priv->close_button_window = hildon_desktop_home_item_create_icon_window
-          (applet,
-           priv->close_button,
-           HILDON_MARGIN_DEFAULT,
-           HILDON_MARGIN_DEFAULT,
-           gdk_pixbuf_get_width (priv->close_button),
-           gdk_pixbuf_get_height (priv->close_button));
-    }
-
-  if (priv->resize_handle &&
-      priv->resize_type != HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE)
-    {
-      priv->resize_handle_window = hildon_desktop_home_item_create_icon_window
-          (applet,
-           priv->resize_handle,
-           widget->allocation.width - APPLET_RESIZE_HANDLE_WIDTH,
-           widget->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT,
-           gdk_pixbuf_get_width (priv->resize_handle),
-           gdk_pixbuf_get_height (priv->resize_handle));
-    }
-
-  if (GTK_IS_WIDGET (GTK_BIN (applet)->child))
-    gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
-
-  gdk_window_set_events (widget->window,
-                         gdk_window_get_events(widget->window) |
-                           GDK_SUBSTRUCTURE_MASK);
-  gdk_window_add_filter (widget->window,
-                         (GdkFilterFunc)window_event_filter,
-                         applet);
-
-}
-
-static void
-hildon_desktop_home_item_layout_mode_end (HildonDesktopHomeItem *applet)
-{
-  HildonDesktopHomeItemPriv      *priv;
-  gboolean                   visible;
-  GtkWidget                 *widget;
-
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  widget = GTK_WIDGET (applet);
-
-  if (priv->layout_mode_sucks)
-    return;
-
-  priv->layout_mode = FALSE;
-
-  if (priv->close_button_window)
-    {
-      gdk_window_destroy (priv->close_button_window);
-      priv->close_button_window = NULL;
-    }
-
-  if (priv->resize_handle_window)
-    {
-      gdk_window_destroy (priv->resize_handle_window);
-      priv->resize_handle_window = NULL;
-    }
-
-  if (GTK_IS_WIDGET (GTK_BIN (applet)->child))
-    gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
-
-  gdk_window_remove_filter (GTK_WIDGET (applet)->window,
-                            (GdkFilterFunc)window_event_filter,
-                            applet);
-
-  visible = GTK_WIDGET_VISIBLE (widget);
-
-  if (visible)
-    gtk_widget_hide (widget);
-
-  gtk_widget_unrealize (widget);
-  GTK_WIDGET_SET_FLAGS (widget, GTK_NO_WINDOW);
-  gtk_widget_realize (widget);
-
-  if (visible)
-    gtk_widget_show (widget);
-
-}
-
-static gboolean
-hildon_desktop_home_item_visibility_notify_event (GtkWidget *applet,
-                                                  GdkEventVisibility *event)
-{
-  HildonDesktopHomeItemPriv *priv;
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM (applet));
-
-  if (priv->layout_mode)
-    {
-      priv->overlaps = FALSE;
-        {
-          /* This is necessary, because it may overlapping with an underlying
-           * window */
-          gtk_container_foreach (GTK_CONTAINER (GTK_WIDGET (applet)->parent),
-                                 (GtkCallback)hildon_desktop_home_item_check_overlap,
-                                 applet);
-        }
-      gtk_widget_queue_draw (GTK_WIDGET (applet));
-    }
-
-  if (GTK_WIDGET_CLASS (parent_class)->visibility_notify_event)
-    return GTK_WIDGET_CLASS (parent_class)->visibility_notify_event (applet,
-                                                                     event);
-  return FALSE;
-}
-
-
 static gboolean
 hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
                                         GdkEventMotion         *event)
@@ -1255,7 +927,6 @@ hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
   gint                  x_applet, y_applet;
   GdkModifierType       mod;
   GtkWidget            *area;
-  gboolean              used_to_overlap;
 
   if (!widget->parent)
     return FALSE;
@@ -1365,40 +1036,7 @@ hildon_desktop_home_item_motion_notify (GtkWidget              *widget,
       gtk_widget_set_size_request (widget, width, height);
     }
 
-  if (!priv->layout_mode_sucks)
-    {
-      used_to_overlap = priv->overlaps;
-      priv->overlaps = FALSE;
-      gtk_container_foreach (GTK_CONTAINER (widget->parent),
-                             (GtkCallback)hildon_desktop_home_item_check_overlap,
-                             widget);
-      if (used_to_overlap != priv->overlaps)
-        gtk_widget_queue_draw (widget);
-    }
-
   return TRUE;
-}
-
-static void
-hildon_desktop_home_item_check_overlap (HildonDesktopHomeItem *applet1,
-                                        HildonDesktopHomeItem *applet2)
-{
-  HildonDesktopHomeItemPriv      *priv2;
-  GdkRectangle               r;
-
-  if (applet1 == applet2)
-    return;
-
-  priv2 = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet2);
-
-  if (gdk_rectangle_intersect (&GTK_WIDGET (applet1)->allocation,
-                               &(GTK_WIDGET (applet2)->allocation),
-                               &r))
-    {
-      priv2->overlaps = TRUE;
-    }
-
-
 }
 
 static void
@@ -1667,15 +1305,6 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
       event->window != priv->resize_handle_window)
     return FALSE;
 
-  if (!priv->layout_mode_sucks && !priv->layout_mode)
-    {
-      if (GTK_WIDGET_CLASS (parent_class)->button_press_event)
-        return GTK_WIDGET_CLASS (parent_class)->button_press_event (w, event);
-      else
-        return FALSE;
-    }
-
-
   /* Check if we clicked the close button */
   if (event->window == priv->close_button_window)
     {
@@ -1740,15 +1369,6 @@ hildon_desktop_home_item_button_release_event (GtkWidget       *widget,
     priv->last_click_event = NULL;
   }
 
-  if (!priv->layout_mode_sucks && !priv->layout_mode)
-    {
-      if  (GTK_WIDGET_CLASS (parent_class)->button_release_event)
-        return GTK_WIDGET_CLASS (parent_class)->button_release_event (widget,
-                                                                      event);
-      else
-        return FALSE;
-    }
-
   if (priv->state != HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
     hildon_desktop_home_item_set_state (HILDON_DESKTOP_HOME_ITEM (widget),
                                         HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL,
@@ -1765,9 +1385,6 @@ hildon_desktop_home_item_key_press_event (GtkWidget *widget,
   HildonDesktopHomeItemPriv      *priv;
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM(widget));
 
-  if (priv->layout_mode)
-    return TRUE;
-
   if (GTK_WIDGET_CLASS (parent_class)->key_press_event)
     return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
 
@@ -1780,9 +1397,6 @@ hildon_desktop_home_item_key_release_event (GtkWidget *widget,
 {
   HildonDesktopHomeItemPriv      *priv;
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (HILDON_DESKTOP_HOME_ITEM(widget));
-
-  if (priv->layout_mode)
-    return TRUE;
 
   if (GTK_WIDGET_CLASS (parent_class)->key_release_event)
     return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, event);
@@ -1918,40 +1532,6 @@ hildon_desktop_home_item_new (void)
   return GTK_WIDGET(newapplet);
 }
 
-gboolean
-hildon_desktop_home_item_get_layout_mode (HildonDesktopHomeItem *applet)
-{
-  HildonDesktopHomeItemPriv      *priv;
-
-  g_return_val_if_fail (applet, FALSE);
-
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-
-  return priv->layout_mode;
-}
-
-void
-hildon_desktop_home_item_set_layout_mode (HildonDesktopHomeItem *applet,
-                                          gboolean layout_mode)
-{
-  HildonDesktopHomeItemPriv      *priv;
-  g_return_if_fail (applet);
-
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-
-  if (priv->layout_mode != layout_mode)
-    {
-      g_object_notify (G_OBJECT (applet), "layout-mode");
-      priv->layout_mode = layout_mode;
-
-      if (priv->layout_mode)
-        g_signal_emit_by_name (G_OBJECT (applet), "layout-mode-start");
-      else
-        g_signal_emit_by_name (G_OBJECT (applet), "layout-mode-end");
-
-    }
-}
-
 HildonDesktopHomeItemResizeType
 hildon_desktop_home_item_get_resize_type (HildonDesktopHomeItem *applet)
 {
@@ -2044,17 +1624,6 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet)
                          &item);
 
   return item;
-}
-
-gboolean
-hildon_desktop_home_item_get_overlaps (HildonDesktopHomeItem *applet)
-{
-  HildonDesktopHomeItemPriv      *priv;
-  g_return_val_if_fail (applet, FALSE);
-
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-
-  return priv->overlaps;
 }
 
 void

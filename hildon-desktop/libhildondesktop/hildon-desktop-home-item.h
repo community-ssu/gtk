@@ -82,8 +82,6 @@ struct _HildonDesktopHomeItem {
 struct _HildonDesktopHomeItemClass {
   HildonDesktopItemClass        parent_class;
 
-  void (* layout_mode_start)    (HildonDesktopHomeItem *applet);
-  void (* layout_mode_end)      (HildonDesktopHomeItem *applet);
   void (* desktop_file_changed) (HildonDesktopHomeItem *applet);
 
   void (* background)           (HildonDesktopHomeItem *applet);
@@ -109,13 +107,6 @@ GType hildon_desktop_home_item_get_type (void);
  **/
 GtkWidget      *hildon_desktop_home_item_new (void);
 
-void            hildon_desktop_home_item_set_layout_mode
-                                                (HildonDesktopHomeItem *a,
-                                                 gboolean          layout_mode);
-
-gboolean    hildon_desktop_home_item_get_layout_mode
-                                                (HildonDesktopHomeItem *applet);
-
 void        hildon_desktop_home_item_set_resize_type
                                                 (HildonDesktopHomeItem *applet,
                                                  HildonDesktopHomeItemResizeType rt);
@@ -125,9 +116,6 @@ hildon_desktop_home_item_get_resize_type        (HildonDesktopHomeItem *applet);
 
 GtkWidget *
 hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet);
-
-gboolean    hildon_desktop_home_item_get_overlaps
-                                                (HildonDesktopHomeItem *applet);
 
 void        hildon_desktop_home_item_set_is_background
                                                 (HildonDesktopHomeItem *applet,
