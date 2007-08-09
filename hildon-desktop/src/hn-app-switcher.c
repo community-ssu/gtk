@@ -1044,7 +1044,6 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDWMEntryInfo *entry_info, gpointe
   gboolean               active_found = FALSE;
 
   hd_wm_debug ("In hn_app_switcher_real_changed_stack");
-
   
   if (!entry_info || !hd_wm_entry_info_is_active (entry_info))
   {

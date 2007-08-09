@@ -1203,7 +1203,6 @@ hd_wm_top_item (HDWMEntryInfo *info)
     XSync (GDK_DISPLAY(),FALSE);
     
     gdk_error_trap_pop();
-
   }
 
   if (HD_WM_IS_DESKTOP (info))
@@ -1630,7 +1629,6 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
   HDWMWindow *win;
   Window            *app_xwin;
 
-  
   if(hdwm->priv->active_window)
     previous_app_xwin = hd_wm_window_get_x_win (hdwm->priv->active_window);
   
@@ -1919,7 +1917,7 @@ hd_wm_process_x_client_list (HDWM *hdwm)
 {
   struct xwinv xwins;
   int     i;
- 
+  
   /* Try to get desktop home window the first this function is called 
    * This is f*ck*ng expensive but it is supposed to work at the startup and 
    * you should forget about it 
@@ -2043,7 +2041,8 @@ hd_wm_process_x_client_list (HDWM *hdwm)
     
       /* if the window does not have attached info yet, then it is new
        * and needs to be added to AS; if it has one, then it is coming
-       * out of hibernation, in which case it must not be added
+       * out of hibernation, in which case it must not be added but the
+       * stack change is notified
        */
       info = HD_WM_ENTRY_INFO (win);
 	   
@@ -2051,8 +2050,12 @@ hd_wm_process_x_client_list (HDWM *hdwm)
       {
         hd_wm_debug ("Adding AS entry for view-less window\n");
         hd_wm_add_applications (hdwm,info);
-        g_signal_emit_by_name (hdwm,"entry_info_added",info);		
-       }
+        g_signal_emit_by_name (hdwm,"entry_info_added",info);
+      }
+      else
+      {
+        g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
+      }
     }
   }
 

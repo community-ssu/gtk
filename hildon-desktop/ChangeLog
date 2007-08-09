@@ -1,3 +1,9 @@
+2007-08-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildonwm/hd-wm.c (hd_wm_process_x_client_list): notify stack
+	changes when an application comes is activated from hibernation.
+	Fixes NB#51276.
+
 2007-08-09  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.[ch],
