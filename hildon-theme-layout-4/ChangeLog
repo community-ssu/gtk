@@ -1,3 +1,8 @@
+2007-08-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/ossomediaplayer.rc: Swapping the webradio and now playing images.
+	Fixes: NB#65089.
+
 2007-08-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.10.2-1 release]
