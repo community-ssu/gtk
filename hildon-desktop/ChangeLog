@@ -1,3 +1,8 @@
+2007-08-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-switcher-menu.c: changed switcher menu icon size to 40px.
+	Fixes NB#61606.
+
 2007-08-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.29

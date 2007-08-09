@@ -89,7 +89,7 @@
 #define AS_BUTTON_HEIGHT        38
 #define AS_MENU_BUTTON_HEIGHT   116
 #define AS_ROW_HEIGHT 		30
-#define AS_ICON_SIZE            26
+#define AS_ICON_SIZE            40
 #define AS_TOOLTIP_WIDTH        360
 #define AS_MENU_ITEM_WIDTH      360
 #define AS_INTERNAL_PADDING     10
