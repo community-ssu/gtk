@@ -4123,8 +4123,6 @@ gtk_window_map (GtkWidget *widget)
   GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (window);
   GdkWindow *toplevel;
 
-  gtk_window_close_other_temporaries (window);
-
   GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
 
   if (window->bin.child &&
@@ -8011,7 +8009,7 @@ _gtk_window_is_on_client_data (GtkWindow *window, GdkEventClient *event)
  * Since: 2.12
  * Stability: Unstable
  */
-static void
+void
 gtk_window_close_other_temporaries (GtkWindow *window)
 {
   GdkEventClient client;
