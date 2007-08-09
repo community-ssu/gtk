@@ -24,6 +24,8 @@ AC_SUBST(X_CFLAGS)
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 AC_PATH_PROG(DBUS_BINDING_TOOL, dbus-binding-tool)
 
+GTK_DOC_CHECK([1.3])
+
 #++++++++++++++++++
 # Misc build flags
 #++++++++++++++++++
@@ -285,4 +287,5 @@ data/others-button.desktop
 data/applications-menu.desktop 
 data/switcher-menu.desktop
 policies/Makefile
+doc/Makefile
 ])

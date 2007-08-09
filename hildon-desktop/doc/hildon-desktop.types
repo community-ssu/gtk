@@ -1,0 +1,6 @@
+#include <libhildondesktop/hildon-desktop-item.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
+#include <libhildondesktop/hildon-desktop-panel-item.h>
+#include <libhildondesktop/statusbar-item.h>
+#include <libhildondesktop/tasknavigator-item.h>
+
