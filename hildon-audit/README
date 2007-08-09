@@ -7,7 +7,7 @@ www.maemo.org website:
 
     http://maemo.org/news/view/1184675758.html
 
-Hildon-audit is a simple source-code scanner. It'll analyze the code and
+Hildon-audit is a simple source-code scanner. It will grep the code and
 highlight the parts (lines) that require changes. Smaller changes (syntax
 changes) are explained directly in the hildon-audit output. Bigger changes 
 are reported with links to web documentation/explanation.
@@ -32,7 +32,7 @@ This will scan the current working directory (your applicaton directory) with
 all the API migration rules. You can also use the tool locally (without the
 need to install the package). 
 
-    $ ./hildon-audit data/*/*.txt /your/source/code/directory
+    $ ./hildon-audit ./data/*/*.txt /your/source/code/directory
 
 
 Rules files
@@ -40,6 +40,7 @@ Rules files
 
 bora:       Contains rules which can be implemented using the Maemo 3.0 'bora' SDK
 
+chinook:    Contains rules which can be implemented using the Maemo 4.0 'chinook' SDK
+
 sardine:    Contains rules which require bleeding edge packages from Sardine to be
-            implemented <http://sardine.garage.maemo.org/>. These changes are going 
-            to Chinook platform and SDK release.
+            implemented <http://sardine.garage.maemo.org/>.

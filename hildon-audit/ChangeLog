@@ -1,3 +1,9 @@
+2007-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* README:
+	  - the tool 'greps' (not 'analyses') 
+	  - added ref to chinook
+
 2007-08-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile: s/sardine/chinook
