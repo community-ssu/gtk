@@ -1,6 +1,11 @@
 2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-home-item.c:
+	- fixed adding the settings menu to the context-sensitive menu
+
+2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-home-item.c:
 	- set the widget as having a window in _init
 	- clean up of properties
 

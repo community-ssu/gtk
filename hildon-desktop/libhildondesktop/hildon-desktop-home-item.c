@@ -79,6 +79,7 @@
 #define HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE(obj) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_DESKTOP_TYPE_HOME_ITEM, HildonDesktopHomeItemPriv));
 
+static GtkContainerClass *parent_class = NULL;
 
 typedef enum
 {
@@ -100,6 +101,7 @@ typedef struct HildonDesktopHomeItemPriv_
   HildonDesktopHomeItemResizeType resize_type;
 
   GtkWidget    *menu;
+  GtkWidget    *settings_menu_item;
 
   GdkPixbuf    *close_button;
   GdkWindow    *close_button_window;
@@ -126,8 +128,6 @@ typedef struct HildonDesktopHomeItemPriv_
   GtkAllocation old_allocation;
 
 } HildonDesktopHomeItemPriv;
-
-static GtkEventBoxClass *parent_class;
 
 static void
 hildon_desktop_home_item_init (HildonDesktopHomeItem * self);
@@ -236,7 +236,8 @@ hildon_desktop_home_item_resize_type_get_type (void)
 }
 
 
-GType hildon_desktop_home_item_get_type(void)
+GType
+hildon_desktop_home_item_get_type (void)
 {
   static GType applet_type = 0;
 
@@ -690,11 +691,6 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                priv->resize_handle_height
               );
 
-#if 0
-          gdk_window_add_filter (widget->window,
-                                 (GdkFilterFunc)window_event_filter,
-                                 widget);
-#endif
         }
 
     }
@@ -770,23 +766,8 @@ static void
 hildon_desktop_home_item_tap_and_hold (GtkWidget *widget)
 {
   HildonDesktopHomeItemPriv    *priv;
-  static GtkWidget             *menu_item = NULL;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (widget);
-
-  if (!menu_item)
-  {
-    menu_item = hildon_desktop_home_item_get_settings_menu_item (HILDON_DESKTOP_HOME_ITEM (widget));
-
-    if (GTK_IS_MENU_ITEM (menu_item))
-    {
-      gtk_label_set_text (GTK_LABEL (GTK_BIN (menu_item)->child),
-                          HH_SETTINGS);
-      gtk_menu_shell_prepend (GTK_MENU_SHELL (priv->menu), menu_item);
-      gtk_widget_show (menu_item);
-    }
-  }
-
 
   /* If we were in moving or resizing, we should stop */
   if (priv->state != HILDON_DESKTOP_HOME_ITEM_STATE_NORMAL)
@@ -1690,20 +1671,36 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *item)
 {
   HildonDesktopHomeItemPriv    *priv;
   GtkWidget                    *top_level;
-  GtkWidget                    *menu_item = NULL;
 
   g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item), NULL);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+
+  if (GTK_IS_WIDGET (priv->settings_menu_item))
+    return priv->settings_menu_item;
 
   top_level = gtk_widget_get_toplevel (GTK_WIDGET (item));
 
   g_signal_emit_by_name (item,
                          "settings",
                          GTK_IS_WINDOW (top_level)?top_level:NULL,
-                         &menu_item);
+                         &priv->settings_menu_item);
 
-  return menu_item;
+  if (GTK_IS_MENU_ITEM (priv->settings_menu_item))
+  {
+    GtkWidget *settings_item;
+
+    g_debug ("Adding to applet menu");
+    settings_item = gtk_menu_item_new_with_label (HH_SETTINGS);
+    gtk_menu_shell_prepend (GTK_MENU_SHELL (priv->menu), settings_item);
+    gtk_widget_show (settings_item);
+
+    g_signal_connect_swapped (settings_item, "activate",
+                              G_CALLBACK (gtk_widget_activate),
+                              priv->settings_menu_item);
+  }
+
+  return priv->settings_menu_item;
 }
 
 /**
