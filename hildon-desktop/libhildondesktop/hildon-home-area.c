@@ -42,6 +42,19 @@
 #include <string.h>
 #include <stdlib.h> /* malloc */
 
+/* .desktop keys */
+#define HH_APPLET_GROUP                 "Desktop Entry"
+#define HH_APPLET_KEY_NAME              "Name"
+#define HH_APPLET_KEY_LIBRARY           "X-home-applet"
+#define HH_APPLET_KEY_X                 "X"
+#define HH_APPLET_KEY_Y                 "Y"
+#define HH_APPLET_KEY_WIDTH             "X-home-applet-width"
+#define HH_APPLET_KEY_HEIGHT            "X-home-applet-height"
+#define HH_APPLET_KEY_STACK_INDEX       "X-home-applet-stack-index"
+#define HH_APPLET_KEY_MINWIDTH          "X-home-applet-minwidth"
+#define HH_APPLET_KEY_MINHEIGHT         "X-home-applet-minheight"
+#define HH_APPLET_KEY_RESIZABLE         "X-home-applet-resizable"
+
 enum
 {
   PROP_SNAP_TO_GRID = 1,

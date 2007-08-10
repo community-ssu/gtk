@@ -45,25 +45,6 @@ G_BEGIN_DECLS
 #define HILDON_DESKTOP_TYPE_HOME_ITEM_RESIZE_TYPE \
                                         (hildon_desktop_home_item_resize_type_get_type())
 
-
- 
-/* FIXME: This will go in a style property, and use an alignment */
-#define APPLET_ADD_X_STEP 20
-#define APPLET_ADD_Y_STEP 20
-
-/* .desktop keys */
-#define HH_APPLET_GROUP                 "Desktop Entry"
-#define HH_APPLET_KEY_NAME              "Name"
-#define HH_APPLET_KEY_LIBRARY           "X-home-applet"
-#define HH_APPLET_KEY_X                 "X"
-#define HH_APPLET_KEY_Y                 "Y"
-#define HH_APPLET_KEY_WIDTH             "X-home-applet-width"
-#define HH_APPLET_KEY_HEIGHT            "X-home-applet-height"
-#define HH_APPLET_KEY_STACK_INDEX       "X-home-applet-stack-index"
-#define HH_APPLET_KEY_MINWIDTH          "X-home-applet-minwidth"
-#define HH_APPLET_KEY_MINHEIGHT         "X-home-applet-minheight"
-#define HH_APPLET_KEY_RESIZABLE         "X-home-applet-resizable"
-
 /**
  * HildonDesktopHomeItemResizeType:
  * @HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE: cannot be resized.
