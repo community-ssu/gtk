@@ -1,5 +1,10 @@
 2007-08-10  Martyn Russell  <martyn@imendio.com>
 
+	* tests/test-uri.c: (main): Add switch to get the mime type from
+	an URI name (i.e. no probing, simple URI extension guess work).
+
+2007-08-10  Martyn Russell  <martyn@imendio.com>
+
 	* debian/rules: Fix building with the new Scratchbox toolchain,
 	fixes NB#65400.
 

@@ -38,6 +38,7 @@ static gchar     *set_default = NULL;
 static gchar     *set_default_by_uri = NULL;
 static gchar     *set_default_to_nothing = NULL;
 static gchar     *get_scheme = NULL;
+static gchar     *get_mime_type = NULL;
 static gchar    **open_uris = NULL;
 
 static GOptionEntry entries[] = 
@@ -97,6 +98,11 @@ static GOptionEntry entries[] =
 	  &get_scheme, 
 	  "Get the scheme from a URI like \"http://www.google.com\"",
 	  NULL },
+	{ "get-mime-type", 'y', 
+	  0, G_OPTION_ARG_STRING, 
+	  &get_mime_type, 
+	  "Get the mime type from a URI like \"file:///home/martyn/file.swf\"",
+	  NULL },
 	{ "open-uri", 'u', 
 	  0, G_OPTION_ARG_STRING_ARRAY, 
 	  &open_uris, 
@@ -121,7 +127,7 @@ main (int argc, char **argv)
 	if ((!use_default && !get_actions && !get_actions_by_uri &&
 	     !get_default && !get_default_by_uri && 
 	     !set_default && !set_default_by_uri && !set_default_to_nothing && 
-	     !get_scheme && !open_uris) ||
+	     !get_scheme && !get_mime_type && !open_uris) ||
 	    (set_default && !get_default) || 
 	    (is_default && !get_actions)) {
  		g_printerr ("Usage: %s --help\n", argv[0]); 
@@ -420,6 +426,21 @@ main (int argc, char **argv)
 		g_print ("Scheme for URI:'%s' is '%s'\n", 
 			 get_scheme, scheme);
 		g_free (scheme);
+	}
+
+	if (get_mime_type) {
+		const gchar *mime_type = NULL;
+
+		mime_type = gnome_vfs_get_mime_type_for_name (get_mime_type);
+
+		if (!mime_type) {
+			g_printerr ("Could not get mime type from uri:'%s'\n", 
+				    get_mime_type);
+			return EXIT_FAILURE;
+		}
+
+		g_print ("Mime type for URI:'%s' is '%s'\n", 
+			 get_mime_type, mime_type);
 	}
 
 	if (open_uris) {
