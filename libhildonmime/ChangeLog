@@ -1,3 +1,8 @@
+2007-08-10  Martyn Russell  <martyn@imendio.com>
+
+	* debian/rules: Fix building with the new Scratchbox toolchain,
+	fixes NB#65400.
+
 2007-08-07  Martyn Russell  <martyn@imendio.com>
 
 	* data/uri-action-defaults.list: Added xmpp scheme to the default
