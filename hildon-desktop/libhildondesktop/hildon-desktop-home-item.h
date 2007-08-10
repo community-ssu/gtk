@@ -64,6 +64,16 @@ G_BEGIN_DECLS
 #define HH_APPLET_KEY_MINHEIGHT         "X-home-applet-minheight"
 #define HH_APPLET_KEY_RESIZABLE         "X-home-applet-resizable"
 
+/**
+ * HildonDesktopHomeItemResizeType:
+ * @HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE: cannot be resized.
+ * @HILDON_DESKTOP_HOME_ITEM_RESIZE_HORIZONTAL: can only be resized horizontally
+ * @HILDON_DESKTOP_HOME_ITEM_RESIZE_VERTICAL: can only be resized vertically
+ * @HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH: can be resized both horizontally and vertically
+ *
+ * Enum values used to specify how a HildonDesktopHomeItem can be resized.
+ *
+ **/
 typedef enum
 {
   HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE,
@@ -98,27 +108,20 @@ GType hildon_desktop_home_item_resize_type_get_type (void);
 
 GType hildon_desktop_home_item_get_type (void);
 
-/**
- * hildon_desktop_home_item_new: 
- * 
- * Use this function to create a new application view.
- * 
- * Return value: A @HildonDesktopHomeItem.
- **/
 GtkWidget      *hildon_desktop_home_item_new (void);
 
 void        hildon_desktop_home_item_set_resize_type
-                                                (HildonDesktopHomeItem *applet,
-                                                 HildonDesktopHomeItemResizeType rt);
+                                                (HildonDesktopHomeItem *item,
+                                                 HildonDesktopHomeItemResizeType resize_type);
 
 HildonDesktopHomeItemResizeType
-hildon_desktop_home_item_get_resize_type        (HildonDesktopHomeItem *applet);
+hildon_desktop_home_item_get_resize_type        (HildonDesktopHomeItem *item);
 
 GtkWidget *
-hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet);
+hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *item);
 
 void        hildon_desktop_home_item_set_is_background
-                                                (HildonDesktopHomeItem *applet,
+                                                (HildonDesktopHomeItem *item,
                                                  gboolean is_background);
 void        hildon_desktop_home_item_raise      (HildonDesktopHomeItem *item);
 void        hildon_desktop_home_item_lower      (HildonDesktopHomeItem *item);

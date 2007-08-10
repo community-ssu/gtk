@@ -22,6 +22,19 @@
  *
  */
 
+/**
+ * SECTION:hildon-desktop-home-item
+ * @short_description: A widget to be used as base class for the #HildonHomeArea children
+ *
+ * The HildonDesktopHomeItem is the base class implemented by Home plugin
+ * writers. It implements the dragging and resizing of the item.
+ *
+ * It also provides commodities for the plugin writer to know whether
+ * the item is in foreground or background, and allows providing
+ * a @GtkMenuItem, which when activated can open a "settings" dialog for
+ * the item.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -197,6 +210,7 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     HildonDesktopHomeItemState   state,
                                     GdkEventButton              *button);
 
+
 GType
 hildon_desktop_home_item_resize_type_get_type (void)
 {
@@ -286,6 +300,14 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
 
   parent_class = g_type_class_peek_parent (applet_class);
 
+  /**
+   * HildonDesktopHomeItem::background:
+   * @widget: the widget that received the signal
+   *
+   * The ::background signal is emitted when the Home View has
+   * gone in the background. The widget should reduce its activity
+   * to save energy, for instance stop animations.
+   **/
   g_signal_new ("background",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
@@ -296,6 +318,13 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                 G_TYPE_NONE,
                 0);
 
+  /**
+   * HildonDesktopHomeItem::foreground:
+   * @widget: the widget that received the signal
+   *
+   * The ::foreground signal is emitted when the Home View has
+   * comes back in the foreground.
+   **/
   g_signal_new ("foreground",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
@@ -306,6 +335,16 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                 G_TYPE_NONE,
                 0);
 
+  /**
+   * HildonDesktopHomeItem::settings:
+   * @widget: the widget that received the signal
+   * @returns: A GtkMenuItem, or NULL.
+   *
+   * The ::settings signal is emitted when the desktop requests
+   * the item for a "Settings" menu item. The item can provide
+   * such a menu item, which when activated shows a settings
+   * dialog.
+   **/
   g_signal_new ("settings",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_LAST,
@@ -317,6 +356,11 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                 1,
                 GTK_TYPE_WIDGET);
 
+  /**
+   * HildonDesktopHomeItem::resize-type
+   *
+   * Defines how the item can be resized.
+   **/
   pspec =  g_param_spec_enum  ("resize-type",
                                "Type of resizability",
                                "Whether the applet can be resized "
@@ -333,6 +377,11 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS,
                                    pspec);
 
+  /**
+   * HildonDesktopHomeItem::minimum-width
+   *
+   * Defines the minimum width which this item accepts.
+   **/
   pspec =  g_param_spec_int ("minimum-width",
                              "Minimum width",
                              "Minimum width for this applet",
@@ -345,6 +394,11 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH,
                                    pspec);
 
+  /**
+   * HildonDesktopHomeItem::minimum-height
+   *
+   * Defines the minimum height which this item accepts.
+   **/
   pspec =  g_param_spec_int ("minimum-height",
                              "Minimum height",
                              "Minimum height for this applet",
@@ -357,6 +411,12 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT,
                                    pspec);
 
+  /**
+   * HildonDesktopHomeItem::state
+   *
+   * Current state of the item, whether it is being moved, resized,
+   * or left to rest.
+   **/
   pspec =  g_param_spec_int ("state",
                              "state",
                              "state of the applet",
@@ -368,14 +428,6 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   g_object_class_install_property (object_class,
                                    HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE,
                                    pspec);
-
-  pspec = g_param_spec_string ("background",
-                               "Background",
-                               "Background file, may include alpha channel",
-                               "",
-                               G_PARAM_READABLE);
-
-  gtk_widget_class_install_style_property (widget_class, pspec);
 
   pspec = g_param_spec_boxed ("background-borders",
                               "Background borders",
@@ -1523,6 +1575,12 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
 /* public functions */
 /********************/
 
+/**
+ * hildon_desktop_home_item_new:
+ * @returns: A new HildonDesktopHomeItem.
+ *
+ * Creates a new HildonDesktopHomeItem.
+ **/
 GtkWidget *
 hildon_desktop_home_item_new (void)
 {
@@ -1532,31 +1590,49 @@ hildon_desktop_home_item_new (void)
   return GTK_WIDGET(newapplet);
 }
 
+/**
+ * hildon_desktop_home_item_get_resize_type:
+ * @item: A #HildonDesktopHomeItem.
+ * @returns: The resize type for the item.
+ *
+ * Returns whether the item is set to be resized horizontally,
+ * vertically, both, or if it cannot be resized.
+ **/
 HildonDesktopHomeItemResizeType
-hildon_desktop_home_item_get_resize_type (HildonDesktopHomeItem *applet)
+hildon_desktop_home_item_get_resize_type (HildonDesktopHomeItem *item)
 {
   HildonDesktopHomeItemPriv      *priv;
-  g_return_val_if_fail (applet, FALSE);
+  g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item),
+                        HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE);
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
 
   return priv->resize_type;
 }
 
+/**
+ * hildon_desktop_home_item_set_resize_type:
+ * @item: A #HildonDesktopHomeItem.
+ * @resize_type: A #HildonDesktopHomeItemResizeType
+ *
+ * Sets whether the item can be resized horizontally,
+ * vertically, both, or if it cannot be resized.
+ **/
 void
-hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
+hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *item,
                                           HildonDesktopHomeItemResizeType resize_type)
 {
   HildonDesktopHomeItemPriv    *priv;
   GtkWidget                    *widget;
-  g_return_if_fail (applet);
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  widget = GTK_WIDGET (applet);
+  g_return_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item));
+
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
+  widget = GTK_WIDGET (item);
 
   if (priv->resize_type != resize_type)
     {
-      g_object_notify (G_OBJECT (applet), "resize-type");
+      g_object_notify (G_OBJECT (item), "resize-type");
       priv->resize_type = resize_type;
 
       if (GTK_WIDGET_REALIZED (widget) &&
@@ -1593,7 +1669,7 @@ hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
 
           priv->resize_handle_window =
               hildon_desktop_home_item_create_icon_window
-              (applet,
+              (item,
                priv->resize_handle,
                widget->allocation.width  - icon_width,
                widget->allocation.height - icon_height,
@@ -1605,42 +1681,66 @@ hildon_desktop_home_item_set_resize_type (HildonDesktopHomeItem *applet,
     }
 }
 
+/**
+ * hildon_desktop_home_item_get_settings_menu_item:
+ * @item: A #HildonDesktopHomeItem.
+ * @returns: A #GtkMenuItem to use for settings, or NULL
+ *
+ * Returns a menu item which can be used to show a dialog
+ * with settings related to this item. If the item has no settings,
+ * the function returns NULL.
+ **/
 GtkWidget *
-hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet)
+hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *item)
 {
   HildonDesktopHomeItemPriv    *priv;
   GtkWidget                    *top_level;
-  GtkWidget                    *item = NULL;
+  GtkWidget                    *menu_item = NULL;
 
-  g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (applet), NULL);
+  g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item), NULL);
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
 
-  top_level = gtk_widget_get_toplevel (GTK_WIDGET (applet));
+  top_level = gtk_widget_get_toplevel (GTK_WIDGET (item));
 
-  g_signal_emit_by_name (applet,
+  g_signal_emit_by_name (item,
                          "settings",
                          GTK_IS_WINDOW (top_level)?top_level:NULL,
-                         &item);
+                         &menu_item);
 
-  return item;
+  return menu_item;
 }
 
+/**
+ * hildon_desktop_home_item_set_is_background:
+ * @item: A #HildonDesktopHomeItem.
+ * @is_background: Whether or not the item is in the background
+ *
+ * Sets whether or not the item is currently in the background. If
+ * in the background, the item is expected to reduce its activity,
+ * for instance by stopping animations.
+ **/
 void
-hildon_desktop_home_item_set_is_background (HildonDesktopHomeItem *applet,
+hildon_desktop_home_item_set_is_background (HildonDesktopHomeItem *item,
                                             gboolean is_background)
 {
   HildonDesktopHomeItemPriv      *priv;
-  g_return_if_fail (applet);
+  g_return_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item));
 
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
+  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
 
   if (is_background)
-    g_signal_emit_by_name (applet, "background");
+    g_signal_emit_by_name (item, "background");
   else
-    g_signal_emit_by_name (applet, "foreground");
+    g_signal_emit_by_name (item, "foreground");
 }
 
+/**
+ * hildon_desktop_home_item_raise:
+ * @item: A #HildonDesktopHomeItem.
+ *
+ * Raises the item above all its siblings.
+ **/
 void
 hildon_desktop_home_item_raise (HildonDesktopHomeItem *item)
 {
@@ -1658,6 +1758,12 @@ hildon_desktop_home_item_raise (HildonDesktopHomeItem *item)
 
 }
 
+/**
+ * hildon_desktop_home_item_lower:
+ * @item: A #HildonDesktopHomeItem.
+ *
+ * Lowers the item above all its siblings.
+ **/
 void
 hildon_desktop_home_item_lower (HildonDesktopHomeItem *item)
 {
