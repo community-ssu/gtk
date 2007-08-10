@@ -1,3 +1,9 @@
+osso-gnomevfs-extra (1.9.4-2~unreleased) unstable; urgency=low
+
+  * Fixes: NB#65416, osso-gnomevfs-extra won't build
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 10 Aug 2007 17:00:00 +0100
+
 osso-gnomevfs-extra (1.9.4-1) unstable; urgency=low
 
   * Improve robustness when restarting the daemon

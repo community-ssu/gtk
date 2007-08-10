@@ -1,3 +1,8 @@
+2007-08-10  Martyn Russell  <martyn@imendio.com>
+
+	* debian/rules: Fix building with the new Scratchbox toolchain,
+	fixes NB#65416.
+
 2007-06-01  Richard Hult  <richard@imendio.com>
 
 	* Release 1.9.4.
