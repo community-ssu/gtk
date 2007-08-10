@@ -123,21 +123,23 @@ void
 hd_desktop_launch_banner_close (GtkWidget *parent, HDDesktopBannerInfo *info);
 
 static void
-hd_desktop_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
+hd_desktop_ping_timeout_dialog_response (GtkDialog *note,
+                                         gint ret,
+                                         gpointer data)
 {
   HDWMWindow *win = (HDWMWindow *)data;
 
-  /* This is for NB#64333: If the application recover once the dialog 
-   * has been shown we end up having the situation where we try to kill an 
+  /* This is for NB#64333: If the application recover once the dialog
+   * has been shown we end up having the situation where we try to kill an
    * application that has already been gone, hence destroyed.
    */
 
   if (!HD_WM_IS_WINDOW (win))
-  {	  
+  {
     gtk_widget_destroy (GTK_WIDGET(note));
     return;
   }
-	  
+
   HDWMApplication *app = hd_wm_window_get_application (win);
 
   gtk_widget_destroy (GTK_WIDGET(note));
@@ -145,10 +147,19 @@ hd_desktop_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer dat
 
   if (ret == GTK_RESPONSE_OK)
   {
-    /* Kill the app */	  
+    /* Kill the app */
     if (!hd_wm_window_attempt_signal_kill (win, SIGKILL, FALSE))
       g_debug ("hd_wm_ping_timeout:failed to kill application '%s'.", hd_wm_window_get_name (win));
   }
+}
+
+static void
+destroy_note (HDWMApplication *app)
+{
+  GtkWidget *note;
+  note = GTK_WIDGET (hd_wm_application_get_ping_timeout_note (app));
+  gtk_widget_destroy (note);
+  hd_wm_application_set_ping_timeout_note (app, NULL);
 }
 
 static void
@@ -159,12 +170,12 @@ hd_desktop_application_frozen (HDWM *hdwm, HDWMWindow *win, gpointer data)
 
   HDWMApplication *app = hd_wm_window_get_application (win);
 
-  gchar *timeout_message = 
+  gchar *timeout_message =
     g_strdup_printf (HD_DESKTOP_PING_TIMEOUT_MESSAGE_STRING, hd_wm_window_get_name (win));
 
   /* FIXME: Do we need to check if the note already exists? */
   note = GTK_WIDGET (hd_wm_application_get_ping_timeout_note (app));
-  
+
   if (note && GTK_IS_WIDGET (note))
   {
     g_debug ("hd_wm_ping_timeout: the note already exists.");
@@ -174,6 +185,7 @@ hd_desktop_application_frozen (HDWM *hdwm, HDWMWindow *win, gpointer data)
   note = hildon_note_new_confirmation (NULL, timeout_message);
 
   hd_wm_application_set_ping_timeout_note (app, G_OBJECT (note));
+  g_object_weak_ref (G_OBJECT (win), (GWeakNotify)destroy_note, app);
 
   hildon_note_set_button_texts (HILDON_NOTE (note),
                                 HD_DESKTOP_PING_TIMEOUT_BUTTON_OK_STRING,
