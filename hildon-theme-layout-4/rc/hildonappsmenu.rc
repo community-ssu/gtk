@@ -16,10 +16,10 @@ style "hildon-apps-menu" {
    }
 }
 
-style "hildon-apps-menu-pane1"
+style "hildon-apps-menu-pane1" = "osso-color-themeing"
 {
-  bg[NORMAL] = "#555753"
-}
+  bg[NORMAL] = @PaneMenuColor1
+} 
 
 style "hildon-apps-menu-pane1-item"
 {
@@ -127,9 +127,9 @@ style "hildon-apps-menu-pane1-arrow"
   }
 }
 
-style "hildon-apps-menu-pane2"
+style "hildon-apps-menu-pane2" = "osso-color-themeing"
 {
-  bg[NORMAL] = "#888A85"
+  bg[NORMAL] = @PaneMenuColor2
 }
 
 style "hildon-apps-menu-pane2-item"
@@ -238,9 +238,14 @@ style "hildon-apps-menu-pane2-arrow"
   }
 }
 
-style "hildon-apps-menu-pane-label"
+style "hildon-apps-menu-pane1-label" = "osso-color-themeing"
 {
-  fg[NORMAL] = "#FFFFFF"
+  fg[NORMAL] = @PaneMenu1TextColor
+}
+
+style "hildon-apps-menu-pane2-label" = "osso-color-themeing"
+{
+  fg[NORMAL] = @PaneMenu2TextColor
 }
 
 style "hildon-apps-menu-pane-button"
@@ -261,8 +266,8 @@ widget "*.hildon-apps-menu-pane2" style "hildon-apps-menu-pane2"
 widget "*.hildon-apps-menu-pane2.GtkViewport"  style "hildon-apps-menu-pane2"
 widget "*.hildon-apps-menu-pane1-item" style "hildon-apps-menu-pane1-item"
 widget "*.hildon-apps-menu-pane2-item" style "hildon-apps-menu-pane2-item"
-widget "*.hildon-apps-menu-pane1-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"
-widget "*.hildon-apps-menu-pane2-item.*.GtkLabel"  style "hildon-apps-menu-pane-label"
+widget "*.hildon-apps-menu-pane1-item.*.GtkLabel"  style "hildon-apps-menu-pane1-label"
+widget "*.hildon-apps-menu-pane2-item.*.GtkLabel"  style "hildon-apps-menu-pane2-label"
 widget "*.hildon-apps-menu-pane1-button"  style "hildon-apps-menu-pane-button"
 widget "*.hildon-apps-menu-pane2-button"  style "hildon-apps-menu-pane-button"
 widget "*.hildon-apps-menu-pane1.*.GtkArrow"  style "hildon-apps-menu-pane1-arrow"

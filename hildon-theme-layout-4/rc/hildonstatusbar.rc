@@ -22,7 +22,7 @@ style "osso-status-bar-extension-background" {
         }
     }
 }
-widget "HildonStatusBarExtension" style "osso-status-bar-extension-background"
+widget "HildonDesktopPanelExpandable" style "osso-status-bar-extension-background"
 
 style "osso-status-bar-button" {
   GtkButton::default_border = { 0, 0, 0, 0 }

@@ -1,3 +1,10 @@
+2007-08-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonappsmenu.rc:
+	* rc/hildonnavigator.rc:
+	* rc/hildonstatusbar.rc: Adding real color mappings instead of the
+	hardcoded colors for new applcation menu and switcher.
+
 2007-08-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonappsmenu.rc: Removing the prelight state from the arrow

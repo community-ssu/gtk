@@ -308,9 +308,9 @@ style "hildon-switcher-menu-app-window" {
    }
 }
 
-style "hildon-switcher-menu-app-menu"
+style "hildon-switcher-menu-app-menu" = "osso-color-themeing"
 {
-  bg[NORMAL] = "#555753"
+  bg[NORMAL] = @PaneMenuColor1
 }
 
 style "hildon-switcher-menu-app-item"
@@ -412,9 +412,9 @@ style "hildon-switcher-menu-app-arrow"
   }
 }
 
-style "hildon-switcher-menu-app-label"
+style "hildon-switcher-menu-app-label" = "osso-color-themeing"
 {
-  fg[NORMAL] = "#FFFFFF"
+  fg[NORMAL] = @TaskSwitcherFontColor
 }
 
 style "hildon-switcher-menu-app-button"
@@ -451,9 +451,9 @@ style "hildon-switcher-menu-not-window" {
    }
 }
 
-style "hildon-switcher-menu-not-menu"
+style "hildon-switcher-menu-not-menu" = "osso-color-themeing"
 {
-  bg[NORMAL] = "#EDCD00"
+  //bg[NORMAL] = @TaskSwitcherNotificationMe
 }
 
 style "hildon-switcher-menu-not-item"
@@ -555,9 +555,9 @@ style "hildon-switcher-menu-not-arrow"
   }
 }
 
-style "hildon-switcher-menu-not-label"
+style "hildon-switcher-menu-not-label" = "osso-color-themeing"
 {
-  fg[NORMAL] = "#000000"
+  fg[NORMAL] = @TaskSwitcherNotificationMenuFontColor
 }
 
 style "hildon-switcher-menu-not-button"
