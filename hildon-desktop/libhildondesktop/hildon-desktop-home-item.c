@@ -89,13 +89,10 @@ typedef enum
 
 enum
 {
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE = 1,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_DESKTOP_FILE,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT,
-  HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE
+  PROP_RESIZE_TYPE = 1,
+  PROP_MINIMUM_WIDTH,
+  PROP_MINIMUM_HEIGHT,
+  PROP_STATE
 };
 
 typedef struct HildonDesktopHomeItemPriv_
@@ -370,11 +367,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                                G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE,
-                                   pspec);
-
-  g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_LAYOUT_MODE_SUCKS,
+                                   PROP_RESIZE_TYPE,
                                    pspec);
 
   /**
@@ -391,7 +384,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                              G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH,
+                                   PROP_MINIMUM_WIDTH,
                                    pspec);
 
   /**
@@ -408,7 +401,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                              G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT,
+                                   PROP_MINIMUM_HEIGHT,
                                    pspec);
 
   /**
@@ -426,7 +419,7 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                              G_PARAM_READWRITE);
 
   g_object_class_install_property (object_class,
-                                   HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE,
+                                   PROP_STATE,
                                    pspec);
 
   pspec = g_param_spec_boxed ("background-borders",
@@ -483,6 +476,8 @@ hildon_desktop_home_item_init (HildonDesktopHomeItem * self)
                             self);
   gtk_menu_shell_append (GTK_MENU_SHELL (priv->menu), menu_item);
   gtk_widget_show (menu_item);
+
+  GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
 
   gtk_widget_tap_and_hold_setup (GTK_WIDGET (self),
                                  priv->menu,
@@ -548,19 +543,19 @@ hildon_desktop_home_item_set_property (GObject      *object,
 
   switch (property_id)
     {
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE:
+      case PROP_RESIZE_TYPE:
           hildon_desktop_home_item_set_resize_type (item,
                                                     g_value_get_enum (value));
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH:
+      case PROP_MINIMUM_WIDTH:
           g_object_notify (object, "minimum-width");
           priv->minimum_width = g_value_get_int (value);
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT:
+      case PROP_MINIMUM_HEIGHT:
           g_object_notify (object, "minimum-height");
           priv->minimum_height = g_value_get_int (value);
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE:
+      case PROP_STATE:
           hildon_desktop_home_item_set_state (item,
                                               g_value_get_int (value),
                                               NULL);
@@ -583,16 +578,16 @@ hildon_desktop_home_item_get_property (GObject      *object,
 
   switch (property_id)
     {
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_RESIZE_TYPE:
+      case PROP_RESIZE_TYPE:
           g_value_set_enum (value, priv->resize_type);
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_WIDTH:
+      case PROP_MINIMUM_WIDTH:
           g_value_set_int (value, priv->minimum_width);
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_MINIMUM_HEIGHT:
+      case PROP_MINIMUM_HEIGHT:
           g_value_set_int (value, priv->minimum_height);
           break;
-      case HILDON_DESKTOP_HOME_ITEM_PROPERTY_STATE:
+      case PROP_STATE:
           g_value_set_int (value, priv->state);
           break;
 
