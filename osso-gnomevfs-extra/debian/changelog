@@ -1,4 +1,4 @@
-osso-gnomevfs-extra (1.9.4-2~unreleased) unstable; urgency=low
+osso-gnomevfs-extra (1.9.4-2) unstable; urgency=low
 
   * Fixes: NB#65416, osso-gnomevfs-extra won't build
 
