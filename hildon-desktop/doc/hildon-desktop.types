@@ -4,3 +4,8 @@
 #include <libhildondesktop/statusbar-item.h>
 #include <libhildondesktop/tasknavigator-item.h>
 
+hildon_desktop_item_get_type
+hildon_desktop_home_item_get_type
+hildon_desktop_panel_item_get_type
+statusbar_item_get_type
+tasknavigator_item_get_type

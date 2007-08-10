@@ -257,6 +257,13 @@ hildon_desktop_item_get_property (GObject *object,
   }
 }
 
+/**
+ * hildon_desktop_item_get_widget:
+ * @item: a #HildonDesktopItem
+ * @returns: the child widget
+ *
+ * Returns the child widget of a #HildonDesktopItem
+ **/
 GtkWidget *
 hildon_desktop_item_get_widget (HildonDesktopItem *item)
 {
@@ -265,6 +272,14 @@ hildon_desktop_item_get_widget (HildonDesktopItem *item)
   return GTK_BIN (item)->child;
 }
 
+/**
+ * hildon_desktop_item_get_id:
+ * @item: a #HildonDesktopItem
+ * @returns: the item's identifier
+ *
+ * Returns a #HildonDesktopItem 's identifier. The identifier is used
+ * internally to associate items with container configuration.
+ **/
 const gchar *
 hildon_desktop_item_get_id (HildonDesktopItem *item)
 {
@@ -273,6 +288,13 @@ hildon_desktop_item_get_id (HildonDesktopItem *item)
   return item->id;
 }
 
+/**
+ * hildon_desktop_item_get_name:
+ * @item: a #HildonDesktopItem
+ * @returns: the item's name
+ *
+ * Returns a #HildonDesktopItem 's name.
+ **/
 const gchar *
 hildon_desktop_item_get_name (HildonDesktopItem *item)
 {
@@ -281,6 +303,14 @@ hildon_desktop_item_get_name (HildonDesktopItem *item)
   return item->name;
 }
 
+/**
+ * hildon_desktop_item_find_by_id:
+ * @item: a #HildonDesktopItem
+ * @id: the id to look for.
+ * @returns: 0 if the item has this id, not 0 otherwise.
+ *
+ * Checks whether this item has the given id. Used as a GList find function.
+ **/
 gint
 hildon_desktop_item_find_by_id (HildonDesktopItem *item,
                                 const gchar *id)

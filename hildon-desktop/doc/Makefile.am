@@ -29,9 +29,9 @@ MKDB_OPTIONS		= --sgml-mode --output-format=xml
 content_files		= version.xml 
 #			  visual_index.xml
 
-GTKDOC_CFLAGS		= $(HILDON_CFLAGS)
+GTKDOC_CFLAGS		= $(hildon_desktop_CFLAGS)
 
-GTKDOC_LIBS		= $(HILDON_LIBS)
+GTKDOC_LIBS		= $(hildon_desktop_LIBS)
 
 HTML_IMAGES		=
 

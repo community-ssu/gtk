@@ -1,5 +1,10 @@
 2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-item.c:
+	- some API doc
+
+2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-home-item.h,
 	  libhildondesktop/hildon-home-area.c:
 	- move keyfile keys for applet layout where they belong

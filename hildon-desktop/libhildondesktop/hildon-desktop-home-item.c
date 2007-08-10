@@ -208,6 +208,12 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     GdkEventButton              *button);
 
 
+/**
+ * hildon_desktop_home_item_resize_type_get_type:
+ * @returns: the GType for #HildonDesktopHomeItemResizeType
+ *
+ * Registers and returns the GType for #HildonDesktopHomeItemResizeType
+ **/
 GType
 hildon_desktop_home_item_resize_type_get_type (void)
 {
@@ -236,6 +242,12 @@ hildon_desktop_home_item_resize_type_get_type (void)
 }
 
 
+/**
+ * hildon_desktop_home_item_get_type:
+ * @returns: the GType for #HildonDesktopHomeItem
+ *
+ * Registers and returns the GType for #HildonDesktopHomeItem
+ **/
 GType
 hildon_desktop_home_item_get_type (void)
 {
