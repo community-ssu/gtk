@@ -1,3 +1,7 @@
+2007-08-10  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.3.
+
 2007-08-07  Richard Hult  <richard@imendio.com>
 
 	* src/gtkfilesystemgnomevfs.c

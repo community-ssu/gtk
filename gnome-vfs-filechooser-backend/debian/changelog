@@ -1,10 +1,10 @@
-gnome-vfs-filechooser-backend (1.9.3-1~unreleased) unstable; urgency=low
+gnome-vfs-filechooser-backend (1.9.3-1) unstable; urgency=low
 
   * Fixes: NB#63125, Logical name sfil_ni_opearation_failed is displayed
   * Fixes: NB#63038, No debug symbol package built for gnome-vfs-filechooser
   * Fixes: NB#63676, Not able to create new folder in device memory full
 
- -- Richard Hult <richard@imendio.com>  Fri, 10 Aug 2007 08:48:15 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 10 Aug 2007 17:40:51 +0200
 
 gnome-vfs-filechooser-backend (1.9.2-1) unstable; urgency=low
 
