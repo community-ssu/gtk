@@ -1,5 +1,9 @@
 2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
 
+	* doc/hildon-desktop-docs.sgml: added template
+
+2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c: removed unused layout-mode
 	property
 
