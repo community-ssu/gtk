@@ -1,5 +1,9 @@
 2007-08-10  Martyn Russell  <martyn@imendio.com>
 
+	* Release 1.9.12.
+
+2007-08-10  Martyn Russell  <martyn@imendio.com>
+
 	* tests/test-uri.c: (main): Add switch to get the mime type from
 	an URI name (i.e. no probing, simple URI extension guess work).
 

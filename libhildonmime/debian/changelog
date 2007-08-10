@@ -1,4 +1,4 @@
-libhildonmime (1.9.12-1~unreleased) unstable; urgency=low
+libhildonmime (1.9.12-1) unstable; urgency=low
 
   * Updated the default application list so the chat-ui is default for xmpp schemes.
   * Fixes: NB#65400, libhildonmime won't build
