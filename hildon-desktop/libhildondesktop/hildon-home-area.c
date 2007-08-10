@@ -44,8 +44,7 @@
 
 enum
 {
-  PROP_LAYOUT_MODE = 1,
-  PROP_SNAP_TO_GRID,
+  PROP_SNAP_TO_GRID = 1,
   PROP_APPLET_PADDING,
   PROP_APPLET_DEFAULT_ALPHA,
   PROP_CHILD_X,
@@ -397,18 +396,6 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                 g_cclosure_marshal_VOID__VOID,
                 G_TYPE_NONE,
                 0);
-
-
-  pspec =  g_param_spec_boolean ("layout-mode",
-                                 "Layout mode",
-                                 "Whether the home area is in layout "
-                                 "mode",
-                                 FALSE,
-                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-
-  g_object_class_install_property (object_class,
-                                   PROP_LAYOUT_MODE,
-                                   pspec);
 
   pspec =  g_param_spec_boolean ("snap-to-grid",
                                  "Snap to grid",

@@ -1,5 +1,10 @@
 2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-area.c: removed unused layout-mode
+	property
+
+2007-08-10  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-desktop.c: add a weak reference to the window
 	when creating a ping note, so the note can be destroyed
 	when the window is removed.
