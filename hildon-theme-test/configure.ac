@@ -17,7 +17,7 @@ dnl a layout this theme is based on
 LAYOUT_NAME="hildon-theme-layout-4"
 
 dnl check the layout installation
-PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME" >= 0.9.0)
+PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME" >= 0.10.0)
 
 AC_SUBST(THEME_DIR)
 AC_SUBST(THEME_NAME)
