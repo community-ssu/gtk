@@ -1,2 +1,3 @@
 top-scripts/* /etc/init.d
 services/* /etc/osso-af-init
+osso-af-startup.sudoers /etc/sudoers.d

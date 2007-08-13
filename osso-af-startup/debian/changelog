@@ -1,3 +1,11 @@
+osso-af-startup (1.46-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added dependency to osso-product-info.
+  * Now using update-sudoers instead of writing to /etc/sudoers directly.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Aug 2007 10:01:46 +0300
+
 osso-af-startup (1.45-1) unstable; urgency=low
 
   * Patch from Leonid to optimise first boot. Fixes: NB#60398

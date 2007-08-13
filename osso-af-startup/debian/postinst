@@ -1,16 +1,5 @@
 #!/bin/sh
 
-add_sudoer ()
-{
-  line="$1"
-  if ! grep -F -q "$line" /etc/sudoers; then
-    chmod 666 /etc/sudoers
-    echo "+$line"
-    echo "$line" >>/etc/sudoers
-    chmod 440 /etc/sudoers
-  fi
-}
-
 TGT=''
 if [ -e /targets/links/scratchbox.config ] ; then
         . /targets/links/scratchbox.config
@@ -67,12 +56,7 @@ if ! grep -F -q "$line" /etc/profile; then
   echo "$line" >> /etc/profile
 fi
 
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv start'
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv stop'
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/alarmd start'
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/alarmd stop'
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss start'
-add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss stop'
-add_sudoer 'user ALL = NOPASSWD: /usr/bin/osso-product-info'
-add_sudoer 'user ALL = NOPASSWD: /bin/rm -f /tmp/.opi.tmp'
+if [ -x /usr/sbin/update-sudoers ]; then
+  /usr/sbin/update-sudoers
+fi
 

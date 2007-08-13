@@ -1,0 +1,9 @@
+user ALL = NOPASSWD: /etc/init.d/ke-recv start
+user ALL = NOPASSWD: /etc/init.d/ke-recv stop
+user ALL = NOPASSWD: /etc/init.d/alarmd start
+user ALL = NOPASSWD: /etc/init.d/alarmd stop
+user ALL = NOPASSWD: /etc/init.d/osso-hss start
+user ALL = NOPASSWD: /etc/init.d/osso-hss stop
+user ALL = NOPASSWD: /usr/bin/osso-product-info
+user ALL = NOPASSWD: /bin/rm -f /tmp/.opi.tmp
+
