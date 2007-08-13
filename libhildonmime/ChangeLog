@@ -1,3 +1,14 @@
+2007-08-13  Martyn Russell  <martyn@imendio.com>
+
+	* configure.in: Bumped version.
+
+	* libhildonmime/hildon-uri.c:  Make sure that the GSList* returned
+	when getting actions has the default action as the TOP MOST action
+	in the list, this fixes NB#62728.
+
+	* tests/test-all.c: Add comment to add a test for this at some
+	stage when we have more time.
+
 2007-08-10  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.9.12.

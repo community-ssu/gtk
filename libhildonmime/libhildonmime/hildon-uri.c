@@ -63,8 +63,7 @@
 #define APP_LAUNCH_BANNER_METHOD              "app_launch_banner"
 
 
-#define DEBUG_MSG(x)  
-/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  */
+ #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -1505,10 +1504,10 @@ GSList *
 hildon_uri_get_actions (const gchar  *scheme,
 			GError      **error)
 {
-	GSList        *actions = NULL;
-	GSList        *desktop_files;
-	GSList        *l;
-	gchar         *filename;
+	GSList *actions = NULL;
+	GSList *desktop_files;
+	GSList *l;
+	gchar  *filename;
 
 	g_return_val_if_fail (scheme != NULL && scheme[0] != '\0', NULL);
 
@@ -1522,6 +1521,28 @@ hildon_uri_get_actions (const gchar  *scheme,
 		actions_found = uri_get_desktop_file_actions (filename, scheme);
 		if (actions_found) {
 			actions = g_slist_concat (actions, actions_found);
+		}
+	}
+
+	/* Make sure the default action is the first item in the list */
+	DEBUG_MSG (("URI: Making sure default action is the top of the list..."));
+
+	if (actions && !hildon_uri_is_default_action (actions->data, NULL)) {
+		HildonURIAction *default_action;
+
+		for (l = actions->next; l; l = l->next) {
+			if (!hildon_uri_is_default_action (l->data, NULL)) {
+				continue;
+			}
+
+			DEBUG_MSG (("URI: Moving default action to the top of the list..."));
+
+			default_action = l->data;
+			
+			actions = g_slist_remove_link (actions, l);
+			g_slist_free1 (l);
+			
+			actions = g_slist_prepend (actions, default_action);
 		}
 	}
 
@@ -1594,6 +1615,28 @@ hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 	actions = uri_get_desktop_file_actions_filtered (actions, 
 							 action_type, 
 							 mime_type);
+
+	/* Make sure the default action is the first item in the list */
+	DEBUG_MSG (("URI: Making sure default action is the top of the list..."));
+
+	if (actions && !hildon_uri_is_default_action_by_uri (uri_str, actions->data, NULL)) {
+		HildonURIAction *default_action;
+
+		for (l = actions->next; l; l = l->next) {
+			if (!hildon_uri_is_default_action_by_uri (uri_str, l->data, NULL)) {
+				continue;
+			}
+
+			DEBUG_MSG (("URI: Moving default action to the top of the list..."));
+
+			default_action = l->data;
+			
+			actions = g_slist_remove_link (actions, l);
+			g_slist_free1 (l);
+			
+			actions = g_slist_prepend (actions, default_action);
+		}
+	}
 
 	g_slist_foreach (desktop_files, (GFunc) g_free, NULL);
 	g_slist_free (desktop_files);
@@ -1769,23 +1812,23 @@ hildon_uri_is_default_action (HildonURIAction  *action,
  * Return: The %TRUE if it is the default action or %FALSE.
  **/
 gboolean
-hildon_uri_is_default_action_by_uri (const gchar      *uri,
+hildon_uri_is_default_action_by_uri (const gchar      *uri_str,
 				     HildonURIAction  *action,
 				     GError          **error)
 {
 	HildonURIAction *default_action;
-	gboolean       equal = FALSE;
+	gboolean         equal = FALSE;
 
-	g_return_val_if_fail (uri != NULL, FALSE);
+	g_return_val_if_fail (uri_str != NULL, FALSE);
 	g_return_val_if_fail (action != NULL, FALSE);
 
-	default_action = hildon_uri_get_default_action_by_uri (uri, error);
+	default_action = hildon_uri_get_default_action_by_uri (uri_str, error);
 
 	DEBUG_MSG (("URI: Checking desktop file is default by uri:'%s' for scheme:'%s':\n"
 		    "\tdefault_action:%p\n"
 		    "\tdefault_action->desktop_file:'%s'\n"
 		    "\taction->desktop_file:'%s'",
-		    uri,
+		    uri_str,
 		    action->scheme,
 		    default_action,
 		    default_action ? default_action->desktop_file : "",
@@ -1826,7 +1869,7 @@ hildon_uri_is_default_action_by_uri (const gchar      *uri,
 			    "\tmethod1:'%s'\n"
 			    "\tmethod2:'%s'\n"
 			    "\tEQUAL = %s",
-			    uri,
+			    uri_str,
 			    desktop_file1, desktop_file2,
 			    default_action->name, action->name,
 			    default_action->method, action->method,

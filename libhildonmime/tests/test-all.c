@@ -656,6 +656,11 @@ main (int argc, char **argv)
 		test_get_actions ();
 	}
 
+	/* FIXME: Add the following tests:
+	 * - Make sure the default action is the top action in the list 
+	 *   returned for _get_actions()
+	 */
+
 	test_failure_conditions ();
 	test_system_default_actions ();
 	test_local_default_actions ();
