@@ -33,8 +33,6 @@ start)
     source $CONNECTIVITY_UI_SCRIPT start
   fi
 
-  source $AF_INIT_DIR/keyboard.sh start
-  
   if [ -x /usr/bin/hwkbd-reconfig ]; then
 	  /usr/bin/hwkbd-reconfig
   fi
@@ -42,8 +40,6 @@ start)
   if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
     $AF_INIT_DIR/osso-media-server.sh start &
   fi
-
-  source $AF_INIT_DIR/clipboard.sh start
 
   if [ -f /tmp/.check_auto_install ]; then
     dbus-send --system --dest=com.nokia.ke_recv --type=method_call \
@@ -54,9 +50,6 @@ start)
 
   ;;
 stop)
-
-  source $AF_INIT_DIR/clipboard.sh stop
-  source $AF_INIT_DIR/keyboard.sh stop
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT stop

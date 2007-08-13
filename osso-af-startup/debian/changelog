@@ -3,6 +3,8 @@ osso-af-startup (1.46-1) unstable; urgency=low
   * UNRELEASED
   * Added dependency to osso-product-info.
   * Now using update-sudoers instead of writing to /etc/sudoers directly.
+  * VKB and clipboard daemon are now always started in real-af-startup.
+    Patch from Leonid. Fixes: NB#62677
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Aug 2007 10:01:46 +0300
 

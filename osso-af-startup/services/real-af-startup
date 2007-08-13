@@ -20,23 +20,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 
-start_input()
-{
-  # we need to start VKB for the wizard...
-  if [ -f $AF_INIT_DIR/keyboard.defs ]; then
-    source $AF_INIT_DIR/keyboard.defs
-  fi
-
-  source $AF_INIT_DIR/keyboard.sh start
-  # give VKB some time to start
-  sleep 1
-
-  # start clipboard daemon for the wizard
-  if [ -f $AF_INIT_DIR/clipboard.sh ]; then
-    source $AF_INIT_DIR/clipboard.sh start
-  fi
-}
-
 if [ -f /etc/osso-af-init/wizard-background-defs.sh ]; then
   source /etc/osso-af-init/wizard-background-defs.sh
 fi
@@ -79,6 +62,18 @@ start)
     source $AF_INIT_DIR/startup-greeting.sh start
   fi
 
+  # we need to start VKB 
+  if [ -f $AF_INIT_DIR/keyboard.defs ]; then
+    source $AF_INIT_DIR/keyboard.defs
+  fi
+
+  source $AF_INIT_DIR/keyboard.sh start
+
+  # start clipboard daemon 
+  if [ -f $AF_INIT_DIR/clipboard.sh ]; then
+    source $AF_INIT_DIR/clipboard.sh start
+  fi
+
   if [ -e $HOME/first-boot-flag ]; then
     ADVANCE_STEPS=1
 
@@ -91,7 +86,6 @@ start)
     fi
 
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
-      start_input
       wizback_method advance 1
       wizback_method set_progress_visible false
       source $AF_INIT_DIR/startup-wizard.sh start
@@ -171,7 +165,6 @@ start)
     touch /tmp/.check_auto_install
   else
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
-      start_input
       source $AF_INIT_DIR/startup-wizard.sh start
     fi
 
