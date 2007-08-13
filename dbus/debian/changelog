@@ -1,3 +1,10 @@
+dbus (1.0.2-0osso10) experimental; urgency=low
+
+  * Added missing patch for activated process not inheriting oom_adj.
+    Fixes: NB#65462
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Aug 2007 11:13:35 +0300
+
 dbus (1.0.2-0osso9) experimental; urgency=low
 
   * Fix from the CVS for upstream bug
