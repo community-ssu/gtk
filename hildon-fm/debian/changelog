@@ -1,8 +1,9 @@
-libhildonfm (1:1.9.38~unreleased) unstable; urgency=low
+libhildonfm (1:1.9.38) unstable; urgency=low
 
-  * 
+  * Recognize a non-special root node as a folder so that waiting for it
+    to load works.  This prevents a crash of the bookmarks application.
 
- -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 06 Aug 2007 19:15:51 +0300
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 13 Aug 2007 20:54:38 +0300
 
 libhildonfm (1:1.9.37) unstable; urgency=low
 
