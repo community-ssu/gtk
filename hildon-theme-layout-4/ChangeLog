@@ -1,3 +1,8 @@
+2007-08-13  Mohammad Anwari  <mdamt@maemo.org>
+
+	* rc/hildonkeyboard.rc: Use big font size for Finger keyboard menu. 
+	Fixes NB#53689.
+
 2007-08-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonnavigator.rc: Unborking the comment.

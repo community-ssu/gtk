@@ -686,6 +686,12 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
 }
 widget "*osso-im-fkb-accent-key" style "osso-input-method-fkb-accent-key"
 
+style "osso-input-method-fkb-menu-item" { 
+  font_name = "Nokia Sans 24"
+}
+widget "*.osso-im-fkb-menu-item.*" style "osso-input-method-fkb-menu-item"
+
+
 style "hildon-input-method-wc-frame" = "osso-logical-colors"
 {
     bg[NORMAL] = @WCFrameColor
