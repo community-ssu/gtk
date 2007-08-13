@@ -1,3 +1,9 @@
+2007-08-13  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* gtk/gtktreeview.c: (gtk_tree_view_move_cursor_up_down): Backport
+	uptream fix for 465039 (keynav-failed not emitted when treeview has
+	only one element). Fixes: NB#60882
+
 2007-08-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmain.c (gtk_main_do_event): also send the insensitive-press signal
