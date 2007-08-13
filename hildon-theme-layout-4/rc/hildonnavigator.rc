@@ -453,7 +453,7 @@ style "hildon-switcher-menu-not-window" {
 
 style "hildon-switcher-menu-not-menu" = "osso-color-themeing"
 {
-  //bg[NORMAL] = @TaskSwitcherNotificationMe
+#bg[NORMAL] = @TaskSwitcherNotificationMe
 }
 
 style "hildon-switcher-menu-not-item"

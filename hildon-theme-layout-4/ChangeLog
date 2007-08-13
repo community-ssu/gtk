@@ -1,3 +1,7 @@
+2007-08-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonnavigator.rc: Unborking the comment.
+
 2007-08-13 Tapani Palli <tapani.palli@nokia.com>
 
 	* data/theme.xml: modified 'minimize' animation to hit task switcher
