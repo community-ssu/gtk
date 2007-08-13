@@ -1,3 +1,9 @@
+matchbox-window-manager (2:1.2-osso9) unstable; urgency=low
+
+  * client_common.c: send e->time, not CurrentTime in grabtransfer ... 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 13 Aug 2007 12:34:46 +0300
+
 matchbox-window-manager (2:1.2-osso8) unstable; urgency=low
 
   * use "_MB_NUM_SYSTEM_MODAL_WINDOWS_PRESENT" hint for system modal dialogs +
