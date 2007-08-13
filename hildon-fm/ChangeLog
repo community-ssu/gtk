@@ -1,3 +1,10 @@
+2007-08-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c (is_node_loaded): Also
+	recognize nodes with a GtkFileFolder or get_folder_handle as
+	folders.  Otherwise the root node (which hasn't a GtkFileInfo) is
+	reported as loaded while it in fact isn't.
+
 2007-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.37

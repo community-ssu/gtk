@@ -625,6 +625,8 @@ is_node_loaded (HildonFileSystemModelPrivate *priv,
   /* Only folders need to be loaded.
    */
   if (model_node->location == NULL
+      && model_node->folder == NULL
+      && model_node->get_folder_handle == NULL
       && (model_node->info == NULL
 	  || !gtk_file_info_get_is_folder (model_node->info)))
     return TRUE;
