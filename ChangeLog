@@ -1,3 +1,8 @@
+2007-08-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmain.c (gtk_main_do_event): also send the insensitive-press signal
+	if we are the grab widget.
+
 2007-08-09  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwindow.c (gtk_window_map): do not close all other temporary windows

@@ -1556,7 +1556,7 @@ gtk_main_do_event (GdkEvent *event)
     case GDK_BUTTON_PRESS:
 #ifdef MAEMO_CHANGES
       if (!GTK_WIDGET_IS_SENSITIVE (event_widget) &&
-          gtk_widget_is_ancestor (event_widget, grab_widget))
+          (event_widget == grab_widget || gtk_widget_is_ancestor (event_widget, grab_widget)))
         gtk_widget_insensitive_press (event_widget);
       /* fall through */
 #endif /* MAEMO_CHANGES */
