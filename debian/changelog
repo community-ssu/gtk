@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.10.12-0osso11) unstable; urgency=low
+
+  * Send the insensitive-press signal if there is no grab widget or the
+    event widget is the grab widget.
+  * Do not select item on treeview when it's already selected an it's the
+    only item in the widget. Fixes: NB#60882
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 13 Aug 2007 15:49:13 +0300
+
 gtk+2.0 (2:2.10.12-0osso10) unstable; urgency=low
 
   * Do not validate all the whole string unconditionally in
