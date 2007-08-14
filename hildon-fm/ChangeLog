@@ -1,5 +1,8 @@
 2007-08-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Be smarter about handling empty names in the file chooser
+	(N52803).
+	
 	* hildon-fm/hildon-file-chooser-dialog.c
 	(hildon_file_chooser_dialog_do_autonaming): Do not autoname an
 	empty name.
