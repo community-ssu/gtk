@@ -1,3 +1,51 @@
+hildon-desktop (1:0.0.30-1) sardine; urgency=low
+
+   * src/hd-applications-menu.c: fix and change the way category menu
+   items are painted when activated.
+   
+   * libhildondesktop/hildon-desktop-item.c:
+   - some API doc
+   
+   * libhildondesktop/hildon-desktop-home-item.h,
+     libhildondesktop/hildon-home-area.c:
+   - move keyfile keys for applet layout where they belong
+   
+   * doc/hildon-desktop-docs.sgml: added template
+   
+   * libhildondesktop/hildon-home-area.c: removed unused layout-mode
+   property
+   
+   * src/hd-desktop.c: add a weak reference to the window
+   when creating a ping note, so the note can be destroyed
+   when the window is removed.
+   Fixes: NB#65383
+   
+   * libhildondesktop/hildon-desktop-home-item.c:
+   - fixed adding the settings menu to the context-sensitive menu
+   
+   * libhildondesktop/hildon-desktop-home-item.c:
+   - set the widget as having a window in _init
+   - clean up of properties
+   
+   * libhildondesktop/hildon-desktop-home-item.[ch]:
+   - API documentation
+   
+   * libhildonwm/hd-wm.c (hd_wm_process_x_client_list): notify stack
+   changes when an application comes is activated from hibernation.
+   Fixes NB#51276.
+   
+   * libhildondesktop/hildon-home-area.[ch],
+     libhildondesktop/hildon-desktop-home-item.[ch],
+     src/hd-home-window.[ch]:
+   - removed all code related to layout mode
+   
+   * doc/*: first attempt at getting gtkdoc working
+   
+   * src/hd-switcher-menu.c: changed switcher menu icon size to 40px.
+   Fixes NB#61606.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Tue, 14 Aug 2007 11:43:12 +0300
+
 hildon-desktop (1:0.0.29-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-panel-window-composite.c:
