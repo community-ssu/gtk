@@ -276,12 +276,13 @@ hd_applications_menu_key_press (GtkWidget *menu,
 
       hildon_desktop_popup_menu_deselect_item (button->priv->menu_applications,
 		      			       selected_item);
-      
+ 
       selected_item = 
         hildon_desktop_popup_menu_get_selected_item (button->priv->menu_categories);
 
       gtk_widget_grab_focus (GTK_WIDGET (selected_item));
-      
+      gtk_widget_queue_draw (GTK_WIDGET (selected_item));
+ 
       return TRUE;
     }
   
@@ -307,25 +308,13 @@ hd_applications_menu_key_press (GtkWidget *menu,
   }
   else if (event->keyval == GDK_Return    ||
 	   event->keyval == GDK_KP_Enter  ||
-	   event->keyval == GDK_ISO_Enter ||
-	   activate_menu)
+	   event->keyval == GDK_ISO_Enter)
   {
     if (hd_applications_menu_has_focus (button->priv->menu_categories))
     {
-      GtkMenuItem *selected_item;
-
-      hildon_desktop_popup_menu_select_first_item (button->priv->menu_applications);
-
-      selected_item = 
-        hildon_desktop_popup_menu_get_selected_item (button->priv->menu_applications);
-
-      if (GTK_WIDGET_IS_SENSITIVE (selected_item))
-        gtk_widget_grab_focus (GTK_WIDGET (selected_item));
-      else
-	hildon_desktop_popup_menu_deselect_item (button->priv->menu_applications,
-			                         selected_item);
+      button->priv->focus_applications = TRUE;
       
-      return TRUE;
+      return gtk_widget_event (GTK_WIDGET (button->priv->menu_categories), (GdkEvent *) event);
     }
     else if (hd_applications_menu_has_focus (button->priv->menu_applications))
     {
@@ -338,16 +327,18 @@ hd_applications_menu_key_press (GtkWidget *menu,
     {
       gtk_widget_event (GTK_WIDGET (button->priv->menu_categories), (GdkEvent *) event);
 
-      if (event->keyval == GDK_Up     ||
-          event->keyval == GDK_KP_Up  ||
-          event->keyval == GDK_Down   ||
-          event->keyval == GDK_KP_Down)
+      if (event->keyval == GDK_Up      ||
+          event->keyval == GDK_KP_Up   ||
+          event->keyval == GDK_Down    ||
+          event->keyval == GDK_KP_Down ||
+	  activate_menu)
       {
         GtkMenuItem *selected_item;
 
 	selected_item = 
           hildon_desktop_popup_menu_get_selected_item (button->priv->menu_categories);
 
+	button->priv->focus_applications = activate_menu;
 	gtk_menu_item_activate (selected_item);
       }
     }
@@ -396,6 +387,7 @@ hd_applications_menu_activate_category (GtkMenuItem *item, HDApplicationsMenu *b
   {
     hildon_desktop_popup_menu_select_first_item (button->priv->menu_applications);
     gtk_widget_grab_focus (GTK_WIDGET (sub_items->data));
+    gtk_widget_queue_draw (GTK_WIDGET (item));
   }
   else
   {
@@ -635,7 +627,7 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
       		          TRUE, 
       		          TRUE, 
       		          6);
-      
+
       gtk_container_add (GTK_CONTAINER (menu_item), hbox);
       
       gtk_widget_show_all (hbox);
