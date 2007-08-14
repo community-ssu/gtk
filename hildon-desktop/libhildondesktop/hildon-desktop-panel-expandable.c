@@ -1083,7 +1083,7 @@ hildon_desktop_panel_embed_applet (HildonDesktopPanelExpandable *panel, Window w
 GtkWidget *
 hildon_desktop_panel_expandable_get_extension (HildonDesktopPanelExpandable *panel)
 {
-  g_assert (HILDON_DESKTOP_IS_PANEL_EXPANDABLE (panel));
+  g_return_val_if_fail (HILDON_DESKTOP_IS_PANEL_EXPANDABLE (panel), NULL);
 
   return GTK_WIDGET (panel->priv->extension_table);
 }
