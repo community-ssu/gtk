@@ -1,5 +1,10 @@
 2007-08-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonnavigator.rc: Fixing the arrow theming for the switcher. Fixes
+	NB#65691.
+
+2007-08-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/hildonstatusbar.rc: Adding the proper theming for the hildon
 	statusbar extension. Fixes NB#65211.
 

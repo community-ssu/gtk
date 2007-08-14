@@ -342,14 +342,6 @@ style "hildon-switcher-menu-app-arrow"
     image
     {
       function        = ARROW
-      state           = PRELIGHT 
-      arrow_direction = UP 
-      overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_pressed.png"
-      overlay_stretch = FALSE
-    }
-    image
-    {
-      function        = ARROW
       state           = SELECTED 
       arrow_direction = UP 
       overlay_file    = "../images/qgn_plat_task_switcher_menu_up_arrow_pressed.png"
@@ -376,14 +368,6 @@ style "hildon-switcher-menu-app-arrow"
       state           = INSENSITIVE
       arrow_direction = DOWN 
       overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_disabled.png"
-      overlay_stretch = FALSE
-    }
-    image
-    {
-      function        = ARROW
-      state           = PRELIGHT 
-      arrow_direction = DOWN 
-      overlay_file    = "../images/qgn_plat_task_switcher_menu_down_arrow_pressed.png"
       overlay_stretch = FALSE
     }
     image
@@ -485,14 +469,6 @@ style "hildon-switcher-menu-not-arrow"
     image
     {
       function        = ARROW
-      state           = PRELIGHT 
-      arrow_direction = UP 
-      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_pressed.png"
-      overlay_stretch = FALSE
-    }
-    image
-    {
-      function        = ARROW
       state           = SELECTED 
       arrow_direction = UP 
       overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_up_arrow_pressed.png"
@@ -519,14 +495,6 @@ style "hildon-switcher-menu-not-arrow"
       state           = INSENSITIVE
       arrow_direction = DOWN 
       overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_disabled.png"
-      overlay_stretch = FALSE
-    }
-    image
-    {
-      function        = ARROW
-      state           = PRELIGHT 
-      arrow_direction = DOWN 
-      overlay_file    = "../images/qgn_plat_task_switcher_notification_menu_down_arrow_pressed.png"
       overlay_stretch = FALSE
     }
     image
