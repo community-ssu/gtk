@@ -237,12 +237,21 @@ hd_panel_window_dialog_init (HDPanelWindowDialog *window)
   DBusGProxy *bus_proxy;
   GError *error = NULL;
   guint result;
+  GtkContainer *panel;
+  GtkWidget *extension;
   
   window->priv = HD_PANEL_WINDOW_DIALOG_GET_PRIVATE (window);
 
 #ifndef HD_PANEL_WINDOW_DIALOG_NEW_THEME
   gtk_widget_set_name (GTK_WIDGET (window), "HildonStatusBar");
 #endif
+
+  panel = HILDON_DESKTOP_WINDOW (window)->container;
+
+  extension = 
+    hildon_desktop_panel_expandable_get_extension (HILDON_DESKTOP_PANEL_EXPANDABLE (panel));
+
+  gtk_widget_set_name (extension, "HildonStatusBarExtension");
 
   window->priv->connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 

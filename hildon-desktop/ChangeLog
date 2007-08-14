@@ -1,5 +1,10 @@
 2007-08-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-panel-window-dialog.c: set widget name of panel expandable to
+	"HildonStatusBarExtension".
+
+2007-08-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* configure.ac: 0.0.30
 
 2007-08-14  Lucas Rocha  <lucas.rocha@nokia.com>
