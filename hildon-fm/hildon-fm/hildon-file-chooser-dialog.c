@@ -408,7 +408,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
     g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
 
     if (GTK_WIDGET_VISIBLE(priv->caption_control_name) &&
-        priv->stub_name && !priv->edited)
+        priv->stub_name && priv->stub_name[0] && !priv->edited)
     {
         gchar *name = NULL;
         gboolean selection;
@@ -469,12 +469,10 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
   char *dot;
   gboolean is_folder;
 
-  /* XXX - We do not always reset the extension here since the old
-           code didn't do it and some code out there might rely on it
-           not being done.
-  */
   g_free (priv->stub_name);
+  g_free (priv->ext_name);
   priv->stub_name = g_strdup (name);
+  priv->ext_name = NULL;
 
   /* XXX - Determine whether we are talking about a folder here.  If
            action is CREATE_FOLDER, the dialog might actually be used
@@ -697,15 +695,19 @@ hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
 
     /* Now resplit the name into stub and ext parts since now the
        situation might have changed as to whether it is a folder or
-       not.
+       not.  Only do this with a non-empty stub, tho.
     */
-    if (self->priv->ext_name)
-      name = g_strconcat (self->priv->stub_name, self->priv->ext_name, NULL);
-    else
-      name = g_strdup (self->priv->stub_name);
-
-    set_stub_and_ext (self->priv, name);
-    g_free (name);
+    if (self->priv->stub_name && self->priv->stub_name[0])
+      {
+	if (self->priv->ext_name)
+	  name = g_strconcat (self->priv->stub_name,
+			      self->priv->ext_name, NULL);
+	else
+	  name = g_strdup (self->priv->stub_name);
+	
+	set_stub_and_ext (self->priv, name);
+	g_free (name);
+      }
 
     return result;
 }

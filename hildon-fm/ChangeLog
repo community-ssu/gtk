@@ -1,3 +1,12 @@
+2007-08-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_do_autonaming): Do not autoname an
+	empty name.
+	(hildon_file_chooser_dialog_set_current_folder): Do not resplit an
+	empty name.
+	(set_stub_and_ext): Reset ext_name always.
+
 2007-08-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.38
