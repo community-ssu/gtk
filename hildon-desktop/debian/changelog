@@ -1,3 +1,11 @@
+hildon-desktop (1:0.0.32-1) sardine; urgency=low
+
+  * libhildonwm/hd-wm.c: revert change that closes temporary windows on
+  hw key press because it brings a crasher and it's not the expected
+  UI behavior.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 15 Aug 2007 15:44:45 +0300
+
 hildon-desktop (1:0.0.31-1) sardine; urgency=low
 
   * src/hd-applications-menu.c, src/hd-switcher-menu.c: fix runtime
