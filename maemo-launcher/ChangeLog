@@ -1,5 +1,9 @@
 2007-08-15  Guillem Jover  <guillem.jover@nokia.com>
 
+	* README: Add support for DEB_BUILD_OPTIONS nolauncher.
+
+2007-08-15  Guillem Jover  <guillem.jover@nokia.com>
+
 	* README: Update to reflect the new debhelper script and pkg-config
 	file support.
 

@@ -41,6 +41,11 @@ maemo-invoker.
 
 =back
 
+=head1 NOTES
+
+If the DEB_BUILD_OPTIONS environment variable contains "nolauncher", no
+binary will be prepared to support maemo-launcher.
+
 =head1 EXAMPLES
 
 	dh_maemolauncher usr/bin/foo
@@ -48,6 +53,11 @@ maemo-invoker.
 =cut
 
 init();
+
+if (defined $ENV{DEB_BUILD_OPTIONS} &&
+    $ENV{DEB_BUILD_OPTIONS} =~ /nolauncher/) {
+	exit;
+}
 
 foreach my $package (@{$dh{DOPACKAGES}}) {
 	my $tmp = tmpdir($package);

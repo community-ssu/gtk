@@ -69,11 +69,25 @@ and I can help you on the process.
 Upstream Changes
 ----------------
 
-On configure.ac add something like:
+On configure.ac (or the deprecated configure.in) add something like:
 
+---X<---
+AC_ARG_ENABLE([maemo-launcher],
+              [AS_HELP_STRING([--enable-maemo-launcher],
+                              [build with maemo-launcher support])],
+                              [case "${enableval}" in
+                               yes) maemo_launcher=true ;;
+                               no)  maemo_launcher=false ;;
+                               *) AC_MSG_ERROR([bad value ${enableval} for --enable-maemo-launcher]) ;;
+                               esac], [maemo_launcher=false])
+
+if test x$maemo_launcher = xtrue
+then
 	PKG_CHECK_MODULES(MAEMO_LAUNCHER, [maemo-launcher-app])
 	AC_SUBST(MAEMO_LAUNCHER_CFLAGS)
 	AC_SUBST(MAEMO_LAUNCHER_LIBS)
+fi
+---X<---
 
 On the Makefile.am that is creating the final application binary, add to
 the application_CFLAGS variable:
@@ -97,7 +111,24 @@ Debian Changes
 
 * debian/rules:
 
-  - Add a call to dh_maemolauncher.
+  - At the top of the file around other code processing DEB_BUILD_OPTIONS,
+    add:
+
+---X<---
+ifeq (,$(findstring nolauncher,$(DEB_BUILD_OPTIONS)))
+       conf_opt := --enable-maemo-launcher
+endif
+---X<---
+
+  - On the configure call, add $(conf_opt), so that it becomes something
+    like:
+
+---X<---
+	./configure --enable-foo --enable-bar $(conf_opt)
+---X<---
+
+  - On the binary target producing the package with launcherized files,
+    add a call to dh_maemolauncher.
 
   - Add a debian/package.launcher or debian/launcher (for sources producing
     single binary package) with the list of binaries that are being built
@@ -107,4 +138,19 @@ Debian Changes
 /usr/bin/application-foo
 /usr/bin/application-bar
 ---X<---
+
+
+Development and testing
+=======================
+
+
+Testing w/o launcher support
+----------------------------
+
+Sometimes during development, or in some cases when bugs appear, and one
+wants to discard the launcher from the diangosis, it's useful to be able
+to disable it. This can be done by building with the following command
+line:
+
+	DEB_BUILD_OPTIONS=nolauncher dpkg-buildpackage -us -uc -b
 

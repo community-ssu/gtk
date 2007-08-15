@@ -5,6 +5,7 @@ maemo-launcher (0.23~-1) unstable; urgency=low
       ApplicationDied signal. (Fixes: NB#65588)
     - Update documentation on how to integrate the launcher support into
       other projects.
+    - Add support for nolauncher on DEB_BUILD_OPTIONS to dh_maemolauncher.
 
  -- Guillem Jover <guillem.jover@nokia.com>  Wed, 15 Aug 2007 17:52:44 +0300
 
