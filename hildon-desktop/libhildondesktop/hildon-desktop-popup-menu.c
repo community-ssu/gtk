@@ -468,9 +468,6 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
     gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
   for (l = menu_items; l != NULL; l = g_list_next (l))
-    gtk_item_deselect (GTK_ITEM (l->data));	  
-	
-  for (l = menu_items; l != NULL; l = g_list_next (l))
   {
     gtk_widget_get_pointer (GTK_WIDGET (l->data), &x, &y);
 
@@ -478,9 +475,15 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
     h = GTK_WIDGET (l->data)->allocation.height;
 
     if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
-    {	    
-      gtk_item_select (GTK_ITEM (l->data));
-      menu->priv->selected_item = GTK_MENU_ITEM (l->data);
+    {
+      if (menu->priv->selected_item != GTK_MENU_ITEM (l->data))
+      {
+        gtk_item_deselect (GTK_ITEM (menu->priv->selected_item));
+        gtk_item_select (GTK_ITEM (l->data));
+        menu->priv->selected_item = GTK_MENU_ITEM (l->data);
+      }
+
+      break;
     }
   }
 
@@ -547,7 +550,14 @@ hildon_desktop_popup_menu_press_event (GtkWidget      *widget,
     {
       if (GTK_IS_MENU_ITEM (l->data))
       {
-        gtk_menu_item_activate (GTK_MENU_ITEM (l->data));
+        if (menu->priv->selected_item != GTK_MENU_ITEM (l->data))
+        {
+          gtk_item_deselect (GTK_ITEM (menu->priv->selected_item));
+          gtk_item_select (GTK_ITEM (l->data));
+          menu->priv->selected_item = GTK_MENU_ITEM (l->data);
+        }
+        
+	gtk_menu_item_activate (GTK_MENU_ITEM (l->data));
         break;
       }
     }

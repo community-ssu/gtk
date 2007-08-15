@@ -1,5 +1,13 @@
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-menu.c
+	(hildon_desktop_popup_menu_motion_notify,
+	hildon_desktop_popup_menu_press_event): draw selection on activated
+	menu item. Fixes NB#61740. Optimized selection code on button press
+	and motion notify.
+
+2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* configure.ac: 0.0.32
 
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
