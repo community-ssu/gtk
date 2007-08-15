@@ -310,7 +310,7 @@ style "hildon-switcher-menu-app-window" {
 
 style "hildon-switcher-menu-app-menu" = "osso-color-themeing"
 {
-  bg[NORMAL] = @PaneMenuColor1
+  bg[NORMAL] = @TaskSwitcherBgColor
 }
 
 style "hildon-switcher-menu-app-item"
@@ -437,7 +437,7 @@ style "hildon-switcher-menu-not-window" {
 
 style "hildon-switcher-menu-not-menu" = "osso-color-themeing"
 {
-#bg[NORMAL] = @TaskSwitcherNotificationMe
+bg[NORMAL] = @TaskSwitcherNotificationBgColor
 }
 
 style "hildon-switcher-menu-not-item"
