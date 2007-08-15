@@ -1,3 +1,10 @@
+2007-08-15  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): only continue
+	to queue a row-activated signal or prepare for DnD or tap-n-hold
+	if the column didn't handle the click.
+	NB#60977.
+
 2007-08-13  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* gtk/gtktreeview.c: (gtk_tree_view_move_cursor_up_down): Backport

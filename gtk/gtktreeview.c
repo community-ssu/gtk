@@ -2736,6 +2736,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 
 #ifdef MAEMO_CHANGES
 	  if (node_selected
+	      && !column_handled_click
 	      && gtk_tree_row_reference_valid (tree_view->priv->cursor))
 	    {
 	      GtkTreePath *cursor_path;
@@ -2751,6 +2752,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	    }
 
 	  if (node_is_selectable
+	      && !column_handled_click
 	      && !tree_view->priv->queued_activate_row
 	      && tree_view->priv->rubber_band_status == RUBBER_BAND_OFF
 	      && gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE)
