@@ -202,6 +202,9 @@ hildon_desktop_home_item_get_property (GObject      *object,
 static void
 hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *item);
 
+static GtkWidget * 
+hildon_desktop_home_item_settings (HildonDesktopHomeItem *item, GtkWidget *widget);
+
 static void
 hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     HildonDesktopHomeItemState   state,
@@ -290,6 +293,8 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
   object_class->set_property = hildon_desktop_home_item_set_property;
   object_class->get_property = hildon_desktop_home_item_get_property;
 
+  applet_class->settings = hildon_desktop_home_item_settings;
+
   gtkobject_class->destroy = hildon_desktop_home_item_destroy;
 
   /* Set the widgets virtual functions */
@@ -361,8 +366,8 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
                 G_STRUCT_OFFSET (HildonDesktopHomeItemClass, settings),
                 NULL,
                 NULL,
-                g_cclosure_user_marshal_POINTER__POINTER,
-                G_TYPE_POINTER,
+                g_cclosure_user_marshal_OBJECT__OBJECT,
+                GTK_TYPE_WIDGET,
                 1,
                 GTK_TYPE_WIDGET);
 
@@ -1557,7 +1562,12 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
   g_object_notify (G_OBJECT (widget), "state");
 }
 
-
+static GtkWidget *
+hildon_desktop_home_item_settings (HildonDesktopHomeItem *applet, GtkWidget *widget)
+{
+  /* No settings menu item by default */
+  return NULL;
+}
 
 /********************/
 /* public functions */
@@ -1683,7 +1693,7 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *item)
 {
   HildonDesktopHomeItemPriv    *priv;
   GtkWidget                    *top_level;
-
+  
   g_return_val_if_fail (HILDON_DESKTOP_IS_HOME_ITEM (item), NULL);
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (item);
@@ -1695,9 +1705,9 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *item)
 
   g_signal_emit_by_name (item,
                          "settings",
-                         GTK_IS_WINDOW (top_level)?top_level:NULL,
+                         GTK_IS_WINDOW (top_level) ? top_level : NULL,
                          &priv->settings_menu_item);
-
+  
   if (GTK_IS_MENU_ITEM (priv->settings_menu_item))
   {
     GtkWidget *settings_item;

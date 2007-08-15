@@ -1,5 +1,12 @@
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-marshalers.list, 
+	libhildondesktop/hildon-desktop-home-item.c
+	(hildon_desktop_home_item_class_init): correctly set "settings" signal
+	with OBJECT return type and input parameters.
+
+2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-window.c: mark the extra panes
 	as temporary windows.
 
