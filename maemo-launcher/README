@@ -104,7 +104,7 @@ Debian Changes
 
 * debian/control:
 
-  - Add maemo-launcher-dev to Build-Depends.
+  - Add 'maemo-launcher-dev (>= 0.23-1)' to Build-Depends.
 
   - Add a "${launcher:Depends} to the "Depends:" line of the package
     containing the application to be launched.
