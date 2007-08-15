@@ -1,3 +1,29 @@
+hildon-desktop (1:0.0.31-1) sardine; urgency=low
+
+  * src/hd-applications-menu.c, src/hd-switcher-menu.c: fix runtime
+  warnings related to attaching the window to NULL widgets.
+  * src/hn-app-button.c: removed useless debug print.
+  * libhildonwm/hd-wm.c (mce_handler): close all temporary windows
+  before activating switcher menu. 
+  
+  * libhildondesktop/hildon-desktop-marshalers.list, 
+  libhildondesktop/hildon-desktop-home-item.c
+  (hildon_desktop_home_item_class_init): correctly set "settings" signal
+  with OBJECT return type and input parameters.
+  
+  * libhildondesktop/hildon-desktop-popup-window.c: mark the extra panes
+  as temporary windows.
+  
+  * src/hd-select-plugins-dialog.c: remove use of deprecated property.
+  
+  * src/hd-panel-window-dialog.c: fixed critical warning when getting
+  extension from expandable panel.
+  
+  * src/hd-panel-window-dialog.c: set widget name of panel expandable to
+  "HildonStatusBarExtension".
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 15 Aug 2007 15:00:43 +0300
+
 hildon-desktop (1:0.0.30-2) sardine; urgency=low
 
   * Added build dependency on gtk-doc-tools
