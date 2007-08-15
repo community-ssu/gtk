@@ -286,6 +286,8 @@ hildon_desktop_popup_window_constructor (GType gtype,
 #else
     popup->priv->extra_panes[i] = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
+    gtk_window_set_is_temporary (GTK_WINDOW (popup->priv->extra_panes[i]), TRUE);
+
     gtk_window_set_decorated (GTK_WINDOW (popup->priv->extra_panes[i]), FALSE);
 
     gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);

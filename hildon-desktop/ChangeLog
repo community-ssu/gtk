@@ -1,5 +1,10 @@
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-window.c: mark the extra panes
+	as temporary windows.
+
+2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-select-plugins-dialog.c: remove use of deprecated property.
 
 2007-08-14  Lucas Rocha  <lucas.rocha@nokia.com>
