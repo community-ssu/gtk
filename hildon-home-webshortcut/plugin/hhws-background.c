@@ -187,12 +187,12 @@ hhws_background_load (HildonDesktopBackground *background,
   filename = gconf_client_get_string (client,
                                       HHWS_GCONF_IMAGE_URI,
                                       &local_error);
-  if (local_error) goto error;
+  if (!filename || local_error) goto error;
 
   cache = gconf_client_get_string (client,
                                    HHWS_GCONF_IMAGE_CACHE,
                                    &local_error);
-  if (local_error) goto error;
+  if (!cache || local_error) goto error;
 
   g_object_set (background,
                 "filename", filename,
