@@ -61,7 +61,7 @@ Integrating the maemo-launcher painlessly
 These are the detailed changes needed to add support for the new
 maemo-launcher.
 
-The changes are meant for normal OSSO packages using automake. If yours
+The changes are meant for normal Maemo packages using automake. If yours
 differ feel free to contact me (Guillem Jover <guillem.jover@nokia.com>)
 and I can help you on the process.
 
@@ -93,15 +93,15 @@ Debian Changes
   - Add maemo-launcher-dev to Build-Depends.
 
   - Add a "${launcher:Depends} to the "Depends:" line of the package
-   containing the application to be launched.
+    containing the application to be launched.
 
 * debian/rules:
 
   - Add a call to dh_maemolauncher.
 
   - Add a debian/package.launcher or debian/launcher (for sources producing
-    single binary package) with the list of binaries that will be
-    launcherized. Some example content:
+    single binary package) with the list of binaries that are being built
+    with maemo-launcher support. Some example content:
 
 ---X<---
 /usr/bin/application-foo
