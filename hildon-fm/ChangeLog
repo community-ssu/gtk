@@ -1,3 +1,17 @@
+2007-08-15  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.h: Make the type member to
+	have three different values.
+
+	* hildon-fm/hildon-file-system-voldev.c (gconf_value_changed): Use
+	new vol_type member.
+	(hildon_file_system_voldev_is_visible): Fix logic to take USB mass
+	storages into account.
+	(init_card_type): Renamed as init_vol_type and fixed logic to take
+	USB mass storages into account.
+	(hildon_file_system_voldev_volumes_change): Use new vol_type member
+	correctly. Fixes: NB#62319
+
 2007-08-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Be smarter about handling empty names in the file chooser

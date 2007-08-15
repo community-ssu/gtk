@@ -1,6 +1,8 @@
 libhildonfm (1:1.9.39~unreleased) unstable; urgency=low
 
   * Fixes: NB#52803.
+  * Do not show USB mass storage device when no volumes are mounted.
+    Fixes: NB#62319
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 14 Aug 2007 19:48:47 +0300
 

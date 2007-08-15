@@ -52,8 +52,8 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 static char *
 hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
 					  *location);
-static void init_card_type (const char *path,
-                            HildonFileSystemVoldev *voldev);
+static void init_vol_type (const char *path,
+                           HildonFileSystemVoldev *voldev);
 
 G_DEFINE_TYPE (HildonFileSystemVoldev,
                hildon_file_system_voldev,
@@ -74,13 +74,13 @@ gconf_value_changed(GConfClient *client, guint cnxn_id,
     voldev = HILDON_FILE_SYSTEM_VOLDEV (data);
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (voldev);
 
-    if (!voldev->card_type_valid)
-      init_card_type (location->basepath, voldev);
+    if (!voldev->vol_type_valid)
+      init_vol_type (location->basepath, voldev);
 
-    if (voldev->internal_card &&
+    if (voldev->vol_type == INT_CARD &&
         g_ascii_strcasecmp (entry->key, USED_OVER_USB_INTERNAL_KEY) == 0)
       change = TRUE;
-    else if (!voldev->internal_card &&
+    else if (voldev->vol_type == EXT_CARD &&
              g_ascii_strcasecmp (entry->key, USED_OVER_USB_KEY) == 0)
       change = TRUE;
 
@@ -164,15 +164,17 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location)
   GError *error = NULL;
   gboolean value;
 
-  if (!voldev->card_type_valid)
-    init_card_type (location->basepath, voldev);
+  if (!voldev->vol_type_valid)
+    init_vol_type (location->basepath, voldev);
 
-  if (voldev->internal_card)
+  if (voldev->vol_type == INT_CARD)
     value = gconf_client_get_bool (klass->gconf,
                                    USED_OVER_USB_INTERNAL_KEY, &error);
-  else
+  else if (voldev->vol_type == EXT_CARD)
     value = gconf_client_get_bool (klass->gconf,
                                    USED_OVER_USB_KEY, &error);
+  else
+    value = FALSE; /* USB_STORAGE */
 
   if (error)
     {
@@ -182,9 +184,12 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location)
   else
     voldev->used_over_usb = value;
 
-  ULOG_DEBUG_F("voldev->used_over_usb == %d", voldev->used_over_usb);
+  ULOG_DEBUG_F("%s type: %d, used_over_usb: %d", location->basepath,
+               voldev->vol_type, voldev->used_over_usb);
   if (voldev->volume && !voldev->used_over_usb)
     visible = gnome_vfs_volume_is_mounted (voldev->volume);
+  else if (voldev->drive && voldev->vol_type == USB_STORAGE)
+    visible = FALSE; /* USB drives are never visible */
   else if (voldev->drive && !voldev->used_over_usb)
     visible = (gnome_vfs_drive_is_connected (voldev->drive)
                && !gnome_vfs_drive_is_mounted (voldev->drive));
@@ -295,14 +300,14 @@ beautify_mmc_name (char *name, gboolean internal)
   return name;
 }
 
-static void init_card_type (const char *path,
-                            HildonFileSystemVoldev *voldev)
+static void init_vol_type (const char *path,
+                           HildonFileSystemVoldev *voldev)
 {
   HildonFileSystemVoldevClass *klass;
   gchar *value;
   gboolean drive;
 
-  if (voldev->card_type_valid)
+  if (voldev->vol_type_valid)
     /* already initialised */
     return;
 
@@ -314,7 +319,14 @@ static void init_card_type (const char *path,
 
   klass = HILDON_FILE_SYSTEM_VOLDEV_GET_CLASS (voldev);
 
-  if (g_str_has_prefix (path, "drive://"))
+  if (g_str_has_prefix (path, "drive:///dev/sd") ||
+      g_str_has_prefix (path, "file:///media/usb/"))
+    {
+      voldev->vol_type = USB_STORAGE;
+      voldev->vol_type_valid = TRUE;
+      return;
+    }
+  else if (g_str_has_prefix (path, "drive://"))
     {
       drive = TRUE;
       value = gconf_client_get_string (klass->gconf,
@@ -335,20 +347,20 @@ static void init_card_type (const char *path,
         {
           snprintf (buf, 100, "drive://%s", value);
           if (g_str_has_prefix (path, buf))
-            voldev->internal_card = FALSE;
+            voldev->vol_type = EXT_CARD;
           else
-            voldev->internal_card = TRUE;
+            voldev->vol_type = INT_CARD;
         }
       else
         {
           snprintf (buf, 100, "file://%s", value);
           if (strncmp (buf, path, 100) == 0)
-            voldev->internal_card = FALSE;
+            voldev->vol_type = EXT_CARD;
           else
-            voldev->internal_card = TRUE;
+            voldev->vol_type = INT_CARD;
         }
 
-      voldev->card_type_valid = TRUE;
+      voldev->vol_type_valid = TRUE;
       g_free (value);
     }
 }
@@ -375,8 +387,8 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
   else
     voldev->volume = find_volume (location->basepath);
 
-  if (!voldev->card_type_valid)
-    init_card_type (location->basepath, voldev);
+  if (!voldev->vol_type_valid)
+    init_vol_type (location->basepath, voldev);
 
   if (voldev->volume)
     {
@@ -401,13 +413,13 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       else if (strcmp (location->fixed_icon, "gnome-dev-removable") == 0
 	       || strcmp (location->fixed_icon, "gnome-dev-media-sdmmc") == 0)
 	{
-	  if (voldev->internal_card)
+	  if (voldev->vol_type == INT_CARD)
 	    location->fixed_icon = "qgn_list_gene_internal_memory_card";
 	  else
 	    location->fixed_icon = "qgn_list_gene_removable_memory_card";
 	  
 	  location->fixed_title = beautify_mmc_name (location->fixed_title,
-						     voldev->internal_card);
+                                      voldev->vol_type == INT_CARD);
 	}
     }
 

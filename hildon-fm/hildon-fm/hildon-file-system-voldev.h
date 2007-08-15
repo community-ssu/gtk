@@ -42,6 +42,12 @@ G_BEGIN_DECLS
 typedef struct _HildonFileSystemVoldev HildonFileSystemVoldev;
 typedef struct _HildonFileSystemVoldevClass HildonFileSystemVoldevClass;
 
+typedef enum
+{
+  EXT_CARD,
+  INT_CARD,
+  USB_STORAGE
+} voldev_t;
 
 struct _HildonFileSystemVoldev
 {
@@ -49,8 +55,8 @@ struct _HildonFileSystemVoldev
   GnomeVFSVolume *volume;
   GnomeVFSDrive *drive;
   gboolean used_over_usb;
-  gboolean internal_card;
-  gboolean card_type_valid;
+  voldev_t vol_type;
+  gboolean vol_type_valid;
 };
 
 struct _HildonFileSystemVoldevClass
