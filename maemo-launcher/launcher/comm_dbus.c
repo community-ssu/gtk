@@ -42,7 +42,6 @@ comm_dbus_init(void)
 static void
 comm_dbus_finish(void)
 {
-  dbus_connection_close(conn);
   dbus_connection_unref(conn);
   conn = NULL;
 
