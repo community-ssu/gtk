@@ -281,8 +281,6 @@ hd_select_plugins_dialog_run (GList           *loaded_plugins,
 
   treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (plugin_list));
 
-  g_object_set (treeview, "allow-checkbox-mode", FALSE, NULL);
-
   cell_renderer = gtk_cell_renderer_toggle_new ();
 
   gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview), 
