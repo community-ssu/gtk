@@ -59,9 +59,7 @@ Integrating the maemo-launcher painlessly
 =========================================
 
 These are the detailed changes needed to add support for the new
-maemo-launcher. The launcher will not be used by default, so once it's
-checked that it works with the specific application it can be enabled
-explicitely.
+maemo-launcher.
 
 The changes are meant for normal OSSO packages using automake. If yours
 differ feel free to contact me (Guillem Jover <guillem.jover@nokia.com>)
@@ -70,6 +68,12 @@ and I can help you on the process.
 
 Upstream Changes
 ----------------
+
+On configure.ac add something like:
+
+	PKG_CHECK_MODULES(MAEMO_LAUNCHER, [maemo-launcher-app])
+	AC_SUBST(MAEMO_LAUNCHER_CFLAGS)
+	AC_SUBST(MAEMO_LAUNCHER_LIBS)
 
 On the Makefile.am that is creating the final application binary, add to
 the application_CFLAGS variable:
@@ -86,90 +90,21 @@ Debian Changes
 
 * debian/control:
 
- - Add a "${launcher:Depends} to the "Depends:" line of the package
+  - Add maemo-launcher-dev to Build-Depends.
+
+  - Add a "${launcher:Depends} to the "Depends:" line of the package
    containing the application to be launched.
 
 * debian/rules:
 
- - Initializing the launcher variables:
+  - Add a call to dh_maemolauncher.
+
+  - Add a debian/package.launcher or debian/launcher (for sources producing
+    single binary package) with the list of binaries that will be
+    launcherized. Some example content:
 
 ---X<---
-LAUNCHER = no
-
-ifneq (,$(findstring maemo-launcher,$(DEB_BUILD_OPTIONS)))
-	LAUNCHER = yes
-endif
-
-ifeq "$(strip $(LAUNCHER))" "yes"
-	LAUNCHER_DEPENDS = -Vlauncher:Depends="maemo-launcher"
-	LAUNCHER_CFLAGS = -shared
-	LAUNCHER_LDFLAGS = -shared -export-dynamic
-endif
+/usr/bin/application-foo
+/usr/bin/application-bar
 ---X<---
-
- - On the make target reponsible of the building (usually "build:"),
-   pass the following variables to the make call:
-
----X<---
-	$(MAKE) \
-	  MAEMO_LAUNCHER_CFLAGS="$(LAUNCHER_CFLAGS)" \
-	  MAEMO_LAUNCHER_LDFLAGS="$(LAUNCHER_LDFLAGS)" \
-	  ...
----X<---
-
- - On the "install:" target after having installed the binaries
-   (usually after "$(MAKE) install ...") do:
-
----X<---
-ifeq "$(strip $(LAUNCHER))" "yes"
-	mv $(CURDIR)/debian/application-package/usr/bin/application \
-	   $(CURDIR)/debian/application-package/usr/bin/application.launch
-	ln -s /usr/bin/maemo-invoker \
-	      $(CURDIR)/debian/application-package/usr/bin/application
-endif
----X<---
-
-   Substitute application with the name of the application to be launched,
-   and application-package with the package containing such application.
-
- - On the "binary:" target, change:
-
-	dh_gencontrol
-
-   to
-
-	dh_gencontrol -- $(LAUNCHER_DEPENDS)
-
-
-Activating the maemo-launcher in the application
-================================================
-
-
-Testing the launcher enabled application
-----------------------------------------
-
-To test if your application just works with the launcher, build with the
-following command line:
-
-	DEB_BUILD_OPTIONS=maemo-launcher dpkg-buildpackage -b -us -uc
-
-Install the package, and start the application from the Task Navigator.
-Check as much as possible for extraneous behaviour.
-
-
-Enabling the launcher after checking that it works
---------------------------------------------------
-
-If the tests were successful, you just have to change the first LAUNCHER
-variable assignment from "no" to "yes":
-
----X<---
-LAUNCHER = yes
----X<---
-
-If for any reason the launcher stops working, or it's found that it's
-breaking some part of the application (although in general the launcher
-is not at fault, and only triggers unrelated bugs in other components)
-you can disable it by setting the variable back to "no".
-
 

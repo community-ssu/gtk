@@ -1,5 +1,10 @@
 2007-08-15  Guillem Jover  <guillem.jover@nokia.com>
 
+	* README: Update to reflect the new debhelper script and pkg-config
+	file support.
+
+2007-08-15  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/comm_dbus.c (comm_dbus_finish): Do not call
 	dbus_connection_close for shared connections.
 
