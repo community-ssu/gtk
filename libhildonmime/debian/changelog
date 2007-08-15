@@ -1,4 +1,4 @@
-libhildonmime (1.9.13-1~unreleased) unstable; urgency=low
+libhildonmime (1.9.13-1) unstable; urgency=low
 
   * Fixes: NB#62728, Default handling application for "sip" link is incorrect
 
