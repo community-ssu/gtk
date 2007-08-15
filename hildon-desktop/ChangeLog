@@ -1,5 +1,15 @@
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-switcher-menu-item.c, src/hd-home-window.c: tiny code
+	cleanups.
+	* libhildonwm/hd-wm-desktop.c (hd_wm_desktop_entry_info_init,
+	hd_wm_desk_info_is_hibernating, hd_wm_desk_info_is_urgent,
+	hd_wm_desk_info_get_icon): provide sane default implementation for
+	certain HDWMEntryInfo methods in order to avoid critical warning.
+	Fixes NB#62461.
+
+2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-menu.c
 	(hildon_desktop_popup_menu_motion_notify,
 	hildon_desktop_popup_menu_press_event): draw selection on activated

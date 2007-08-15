@@ -99,6 +99,24 @@ hd_wm_desk_info_get_app_icon_name (HDWMEntryInfo *info)
 }
 
 static GdkPixbuf *
+hd_wm_desk_info_get_icon (HDWMEntryInfo *info)
+{
+  return NULL;	
+}
+
+static gboolean 
+hd_wm_desk_info_is_hibernating (HDWMEntryInfo *info)
+{
+  return FALSE;	
+}
+
+static gboolean 
+hd_wm_desk_info_is_urgent (HDWMEntryInfo *info)
+{
+  return FALSE;	
+}
+
+static GdkPixbuf *
 hd_wm_desk_info_get_app_icon (HDWMEntryInfo *info,
                                gint          size,
                                GError     **error)
@@ -156,16 +174,16 @@ hd_wm_desktop_entry_info_init (HDWMEntryInfoIface *iface)
   iface->set_title         = NULL;
   iface->get_app_name      = hd_wm_desk_info_get_app_name;
   iface->get_window_name   = hd_wm_desk_info_get_window_name;
-  iface->get_icon          = NULL;
+  iface->get_icon          = hd_wm_desk_info_get_icon;
   iface->set_icon          = NULL;
   iface->get_app_icon_name = hd_wm_desk_info_get_app_icon_name;
   iface->get_app_icon      = hd_wm_desk_info_get_app_icon;
   iface->close             = NULL;
-  iface->is_urgent         = NULL;
+  iface->is_urgent         = hd_wm_desk_info_is_urgent;
   iface->get_ignore_urgent = NULL;
   iface->set_ignore_urgent = NULL;
   iface->is_active         = hd_wm_desk_info_is_active;
-  iface->is_hibernating    = NULL;
+  iface->is_hibernating    = hd_wm_desk_info_is_hibernating;
   iface->has_extra_icon    = NULL;
   iface->get_extra_icon    = NULL;
   iface->get_x_window      = hd_wm_desk_info_get_x_window;

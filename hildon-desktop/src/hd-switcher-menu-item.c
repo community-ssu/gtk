@@ -539,9 +539,6 @@ hd_switcher_menu_item_size_request (GtkWidget      *widget,
     requisition->width = MAX (requisition->width, child_width);
 
   requisition->height = MAX (requisition->height, child_height);
-
-  g_debug ("menu-item requisition: (%d, %d)",
-	  requisition->width, requisition->height);
 }
 
 static void

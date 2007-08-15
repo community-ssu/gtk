@@ -1159,7 +1159,6 @@ hd_home_window_area_remove (HDHomeWindow *window)
   hd_home_window_save_area_layout (window);
 
   hd_home_window_ensure_menu_status (window);
-
 }
 
 static gboolean
@@ -1267,11 +1266,10 @@ hd_home_window_osso_display_state_cb (osso_display_state_t      state,
   /* We don't do anything when the screen is dimmed, only on and off */
   if (state == OSSO_DISPLAY_DIMMED)
     return;
-
+  
   g_signal_emit_by_name (G_OBJECT (window),
                          "screen-off",
                          state == OSSO_DISPLAY_OFF);
-
 }
 
 static void
@@ -1336,6 +1334,7 @@ hd_home_window_screen_off (HDHomeWindow         *window,
   GtkWidget            *area;
 
   area = GTK_BIN (window)->child;
+
   g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
   priv->screen_is_off = is_off;
