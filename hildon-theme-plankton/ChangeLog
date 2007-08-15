@@ -1,3 +1,18 @@
+2007-08-15  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: 
+
+	Colour changes:
+
+	removed: PaneSeparatorColor1, PaneSeparatorColor2,
+	TaskSwitcherSeparatorColor, TaskSwitcherNotificationSeparatorColor
+
+	added: TaskSwitcherColor (task switcher menu background color)
+	added: TaskSwitcherNotificationColor (notification menu bg color)
+
+	New graphics: Special menu separators are now bitmaps as it wasnt
+	feasible to implement them by drawing them with a logical color.
+
 2007-08-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: Fixed disabled active checkbox to look 
