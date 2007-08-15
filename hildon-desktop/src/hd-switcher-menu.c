@@ -1527,7 +1527,7 @@ hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 			    HDSwitcherMenu *switcher)
 {
   GtkAdjustment *adj;
-       
+
   if (!switcher->priv->menu_applications ||
       !switcher->priv->menu_notifications)
   {
@@ -1538,7 +1538,8 @@ hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 
   adj = hildon_desktop_popup_menu_get_adjustment (switcher->priv->menu_notifications);
 
-  gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
+  if (adj)
+    gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
 }
 
 static void 
