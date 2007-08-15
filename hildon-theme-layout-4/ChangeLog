@@ -1,3 +1,13 @@
+2007-08-15  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: removed all separator colors (not feasible to
+	implement)
+	* data/layout.txt: added the menu separators as 4 graphics:
+	  qgn_plat_task_pane_menu1_separator.png=2527,45,18,3
+          qgn_plat_task_pane_menu2_separator.png=2635,45,18,3
+          qgn_plat_task_switcher_menu_separator.png=2845,45,18,3
+          qgn_plat_task_notification_menu_separator.png=3001,45,18,3
+	
 2007-08-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonnavigator.rc: Fixing the arrow theming for the switcher. Fixes

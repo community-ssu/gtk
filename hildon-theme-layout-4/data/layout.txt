@@ -85,16 +85,16 @@ PaneMenuColor2=7942,358,30,16
 PaneMenu1TextColor=7942,373,30,16
 PaneMenu2TextColor=7942,388,30,16
 
-PaneSeparatorColor1=7942,403,30,16
-PaneSeparatorColor2=7942,418,30,16
+#PaneSeparatorColor1=7942,403,30,16
+#PaneSeparatorColor2=7942,418,30,16
 SpeedContactDefaultTextColor=7942,433,30,16
 SpeedContactSecondaryTextColor=7942,448,30,16
 TaskSwitcherFontColor=7942,463,30,16
 TaskSwitcherSecondaryFontColor=7942,478,30,16
 TaskSwitcherNotificationMenuFontColor=7942,493,30,16
-TaskSwitcherSeparatorColor=7942,508,30,16
-TaskSwitcherNotificationSeparatorColor=7942,523,30,16
-ThumbMenuSeparatorColor=7942,538,30,16
+TaskSwitcherBgColor=7942,508,30,16
+TaskSwitcherNotificationBgColor=7942,523,30,16
+#ThumbMenuSeparatorColor=7942,538,30,16
 
 #new for now
 PluginMenuTextColor=7942,568,30,16
@@ -537,6 +537,13 @@ qgn_plat_task_navigation_application_switcher_04_highlighted.png=4181,652,80,60
 qgn_plat_task_navigation_menu_frame.png=2395,45,42,42,alpha
 qgn_plat_task_notification_focus_active.png=2983,45,14,14
 qgn_plat_task_switcher_focus_active.png=2827,45,14,14
+
+# new separator gfx
+qgn_plat_task_pane_menu1_separator.png=2527,45,18,3
+qgn_plat_task_pane_menu2_separator.png=2635,45,18,3
+qgn_plat_task_switcher_menu_separator.png=2845,45,18,3
+qgn_plat_task_notification_menu_separator.png=3001,45,18,3
+
 qgn_plat_task_switcher_menu_bg.png=2779,45,42,42,alpha
 qgn_plat_task_switcher_menu_down_arrow_disabled.png=2779,249,72,72 
 qgn_plat_task_switcher_menu_down_arrow_normal.png=2779,93,72,72
