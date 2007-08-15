@@ -843,10 +843,11 @@ hd_switcher_menu_constructor (GType gtype,
   /* We don't attach the widget because if we do it, we cannot be on top of 
    * virtual keyboard. Anyway it should be transient to button
    */
-
+#if 0
   hildon_desktop_popup_window_attach_widget
     (switcher->priv->popup_window, NULL);	  
-  
+#endif
+
   switcher->priv->notifications_window = 
     hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 0);
 

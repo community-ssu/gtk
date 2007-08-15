@@ -849,7 +849,9 @@ hd_applications_menu_create_menu (HDApplicationsMenu *button)
   /* We don't attach the widget because if we do it, we cannot be on top of 
    * virtual keyboard. Anyway it should be transient to button->priv->button
    */
+#if 0
   hildon_desktop_popup_window_attach_widget (popup_window, NULL);
+#endif
   
   button->priv->menu_categories =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,

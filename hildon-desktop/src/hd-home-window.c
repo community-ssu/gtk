@@ -1232,6 +1232,7 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
       applet = HILDON_DESKTOP_HOME_ITEM (l->data);
 
       item = hildon_desktop_home_item_get_settings_menu_item (applet);
+
       if (item && GTK_IS_MENU_ITEM (item))
         {
           gtk_menu_append (GTK_MENU (priv->settings_menu), item);

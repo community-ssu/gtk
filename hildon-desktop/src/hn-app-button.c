@@ -1034,8 +1034,6 @@ hn_app_button_set_group (HNAppButton *app_button,
   if (g_slist_find (group, app_button))
     return;
 
-  g_debug ("setting group for the button");
-
   if (app_button->group)
     {
       GSList *l;

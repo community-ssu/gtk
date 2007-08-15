@@ -710,6 +710,10 @@ mce_handler (DBusConnection *conn,
   
   if (g_str_equal (HOME_PRESS, member) && !hd_wm_modal_windows_present())
   {
+#ifdef MAEMO_CHANGES 
+    gdk_close_all_temporary_windows ();
+#endif    
+
     hd_wm_activate (HD_TN_ACTIVATE_MAIN_MENU);
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
