@@ -1,3 +1,10 @@
+hildon-theme-tools (0.5.2-1) unstable; urgency=low
+
+  * Updated repo addresses for bootstrap tool
+  * Mention the CC license instead of the GPL license
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 16 Aug 2007 15:08:04 +0300
+
 hildon-theme-tools (0.5.1-1) unstable; urgency=low
 
   * Fixing the memory allocation problem 

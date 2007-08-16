@@ -47,7 +47,7 @@ function show_layout_options
                         return
                 elif [ "$opt" == "hildon-theme-layout-4" ]; then
                         LAYOUT="hildon-theme-layout-4"
-                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/4.9.0-1/"
+                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/4.11.0-2/"
                         return
                 else
                         echo "Bad selection!"
@@ -245,6 +245,7 @@ echo "The the layout was created in $PACKAGE_NAME - go ahead"
 echo "and modify the graphics to your liking."
 echo 
 echo "Please note that the theme package has all the licensing data"
-echo "set to GPL. If you'd like to license your theme under different terms"
+echo "set to Creative Commons Share Alike 2.5 license. "
+ecgo "If you'd like to license your theme under different terms"
 echo "make sure to change the copyright information manually."
 echo

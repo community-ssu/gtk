@@ -1,3 +1,7 @@
+[0.5.2 release]
+* Updated repo addresses for bootstrap tool
+* Mention the CC license intead of GPL in the bootstrap tool
+
 [0.5.1 release]
 * Fixing the memory allocation problem 
 * Updated repo addresses for bootstrap tool

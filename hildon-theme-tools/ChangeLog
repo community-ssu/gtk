@@ -1,3 +1,12 @@
+2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.5.2-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* scripts/hildon-theme-bootstrap: Updating.
+
 2007-06-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.5.1-1 release]
