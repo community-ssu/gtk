@@ -1,7 +1,7 @@
 2007-08-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: swapped the mediaplayer "music file" and
-	"netradio" images, they were mixed.
+	"netradio" images, they were mixed. Fixes NB#62184.
 
 2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
