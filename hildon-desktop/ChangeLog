@@ -1,5 +1,10 @@
 2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-applications-menu.c: set name for the correct separator
+	widget.
+
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-switcher-menu.c, src/hd-applications-menu.c: correctly set
 	widget name for separators in order to make them themable.
 

@@ -760,9 +760,9 @@ hd_applications_menu_get_items (HDApplicationsMenu *button,
 	gtk_widget_set_size_request (GTK_WIDGET (separator), -1, 1);
 
         if (level > 0)
-          gtk_widget_set_name (GTK_WIDGET (menu_item), HD_APPS_MENU_APP_MENU_ITEM_NAME);
+          gtk_widget_set_name (GTK_WIDGET (separator), HD_APPS_MENU_APP_MENU_ITEM_NAME);
         else
-          gtk_widget_set_name (GTK_WIDGET (menu_item), HD_APPS_MENU_CAT_MENU_ITEM_NAME);
+          gtk_widget_set_name (GTK_WIDGET (separator), HD_APPS_MENU_CAT_MENU_ITEM_NAME);
 
         menu_items = g_list_prepend (menu_items, separator);
       }
