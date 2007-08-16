@@ -279,7 +279,7 @@ hd_switcher_menu_resize_menu (HildonDesktopPopupMenu *menu, HDSwitcherMenu *swit
 }	
 
 static GtkWidget *
-hd_switcher_menu_create_separator ()
+hd_switcher_menu_create_separator (gboolean is_application_menu)
 {
   GtkWidget *separator;
 
@@ -287,6 +287,11 @@ hd_switcher_menu_create_separator ()
 
   gtk_widget_set_size_request (separator, -1, 1);
 
+  if (is_application_menu)
+    gtk_widget_set_name (separator, HD_SWITCHER_MENU_APP_MENU_ITEM_NAME);
+  else
+    gtk_widget_set_name (separator, HD_SWITCHER_MENU_NOT_MENU_ITEM_NAME);
+	  
   return separator;
 }
 
@@ -657,7 +662,7 @@ hd_switcher_menu_add_notification_group (gpointer key,
     
     hildon_desktop_popup_menu_add_item
       (switcher->priv->menu_notifications,
-      GTK_MENU_ITEM (hd_switcher_menu_create_separator ()));
+      GTK_MENU_ITEM (hd_switcher_menu_create_separator (FALSE)));
 
     menu_item = hd_switcher_menu_item_new_from_notification_group
       (ngroup->notifications, icon, summary, ngroup->dbus_callback, TRUE);
@@ -1668,7 +1673,7 @@ hd_switcher_menu_create_notifications_menu (HDSwitcherMenu *switcher)
         if (first_item)
           hildon_desktop_popup_menu_add_item
             (switcher->priv->menu_notifications,
-            GTK_MENU_ITEM (hd_switcher_menu_create_separator ()));
+            GTK_MENU_ITEM (hd_switcher_menu_create_separator (FALSE)));
 
         menu_item =
           hd_switcher_menu_item_new_from_notification
@@ -1743,7 +1748,7 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
     if (l == apps)
     {
-      separator = hd_switcher_menu_create_separator ();
+      separator = hd_switcher_menu_create_separator (TRUE);
 
       hildon_desktop_popup_menu_add_item
        (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
@@ -1776,7 +1781,7 @@ hd_switcher_menu_create_applications_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     /* Append the separator for this app*/
     if (l->next != NULL)
     {
-      separator = hd_switcher_menu_create_separator ();
+      separator = hd_switcher_menu_create_separator (TRUE);
 
       hildon_desktop_popup_menu_add_item
         (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
