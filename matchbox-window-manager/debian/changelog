@@ -1,3 +1,14 @@
+matchbox-window-manager (2:1.2-osso10) unstable; urgency=low
+
+  * wm.c, keys.c : remove un-needed fprintf noise
+  * main_client.c : check for _OMAP_VIDEO_OVERLAY before animation
+  * dialog_client.c : no not add toolbar_client_alt height for dialog mapping
+    size negotations ...
+  * wm.c : always send configurenotify on new clients (maemo bugzilla #1633)
+  * Fixes: NB#64062, NB#62107, NB#59129, NB#62798
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 14 Aug 2007 15:41:33 +0300
+
 matchbox-window-manager (2:1.2-osso9) unstable; urgency=low
 
   * client_common.c: send e->time, not CurrentTime in grabtransfer ... 
