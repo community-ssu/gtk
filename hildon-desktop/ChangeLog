@@ -1,5 +1,11 @@
 2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-home-titlebar.c
+	(hildon_home_titlebar_set_menu): do not detach menu because it was
+	never attached anywhere.
+
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-applications-menu.c: set name for the correct separator
 	widget.
 

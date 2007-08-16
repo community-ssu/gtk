@@ -617,9 +617,11 @@ hildon_home_titlebar_set_menu (HildonHomeTitlebar *titlebar,
 
   priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
 
+#if 0
   if (priv->menu)
     gtk_menu_detach (GTK_MENU (priv->menu));
-
+#endif
+  
   priv->menu = menu;
 
 #if 0
