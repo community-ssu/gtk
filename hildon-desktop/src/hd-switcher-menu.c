@@ -872,7 +872,7 @@ hd_switcher_menu_constructor (GType gtype,
 		  		    	     "item-height", 72,
 		  		    	     "parent", switcher->priv->popup_window,
 				    	     NULL));	    
-
+  
   switcher->priv->menu_notifications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
 		  			     "item-height", 72,
@@ -1511,6 +1511,7 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
   {	  
     hildon_desktop_popup_menu_select_next_item (switcher->priv->menu_applications);
     hd_wm_debug ("selecting next item");
+    return;
   }
     
   hildon_desktop_popup_window_popup 
@@ -2138,7 +2139,7 @@ hd_switcher_menu_long_press_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
          (switcher->priv->menu_applications));
   }
   else
-    hd_wm_top_desktop ();
+    hd_wm_toggle_desktop ();
 }
 
 static void 
