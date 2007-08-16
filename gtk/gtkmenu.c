@@ -851,13 +851,17 @@ gtk_menu_window_event (GtkWidget *window,
        * signals.
        */
       if (event->client.message_type == gdk_atom_intern_static_string ("_GTK_DELETE_TEMPORARIES") &&
-          _gtk_window_is_on_client_data (GTK_WINDOW (window), event) == FALSE &&
+          _gtk_window_is_on_client_data (GTK_WINDOW (window), (GdkEventClient*)event) == FALSE &&
 	  window == GTK_MENU (menu)->toplevel &&
 	  GTK_WIDGET_MAPPED (GTK_MENU (menu)->toplevel))
 	{
 	  gtk_menu_shell_cancel (GTK_MENU_SHELL (menu));
 	  handled = TRUE;
 	}
+      break;
+    case GDK_DELETE:
+      /* Do nothing for the delete event that will come from _GTK_DELETE_TEMPORARIES */
+      handled = TRUE;
       break;
 #endif /* MAEMO_CHANGES */
     default:
@@ -925,6 +929,7 @@ gtk_menu_init (GtkMenu *menu)
 #ifdef MAEMO_CHANGES
   gtk_window_set_decorated (GTK_WINDOW (menu->toplevel), FALSE);
   gtk_widget_add_events (menu->toplevel, GDK_VISIBILITY_NOTIFY_MASK);
+  gtk_window_set_is_temporary (GTK_WINDOW (menu->toplevel), TRUE);
 #endif /* MAEMO_CHANGES */
 
   /* Refloat the menu, so that reference counting for the menu isn't
