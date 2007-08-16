@@ -4123,6 +4123,11 @@ gtk_window_map (GtkWidget *widget)
   GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (window);
   GdkWindow *toplevel;
 
+#if defined(MAEMO_CHANGES)
+  if (! gtk_window_get_is_temporary (window))
+    gtk_window_close_other_temporaries (window);
+#endif
+
   GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
 
   if (window->bin.child &&

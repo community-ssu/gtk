@@ -1,3 +1,15 @@
+2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkwindow.c (gtk_window_map): call gtk_window_close_other_temporaries
+	if we are not a temporary window.
+
+	* gtk/gtkwindow.h: make gtk_window_close_other_temporaries private again.
+
+	* gtk/gtkmenu.c (gtk_menu_init): mark the toplevel window associated to the menu
+	as temporary and make menus ignore the delete-event that will come from _GTK_DELETE_TEMPORARIES,
+	otherwise they will be destroyed when a non-temporary window is mapped and they will stop working
+	or will crash the next time the user tries to open them.
+
 2007-08-16  Kristian Rietveld  <kris@imendio.com>
 
 	Improve on "row-activate on single tap, but now until
@@ -11,7 +23,7 @@
 	(gtk_tree_view_button_press): set queue_{shift,ctrl}_pressed,
 	(gtk_tree_view_button_release): improve the delayed row-activation
 	handling by correctly handling shift/ctrl+clicks.
-
+	
 2007-08-15  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): only continue
