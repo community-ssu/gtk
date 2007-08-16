@@ -1,3 +1,8 @@
+2007-08-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: swapped the mediaplayer "music file" and
+	"netradio" images, they were mixed.
+
 2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkmenutoolbutton.rc:
