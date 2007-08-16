@@ -405,6 +405,7 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
   /* XXX - GnomeVFS should provide the right icons and display names.
    */
 
+  location->sort_weight = SORT_WEIGHT_USB;
   if (location->fixed_icon)
     {
       if (strcmp (location->fixed_icon, "gnome-dev-removable-usb") == 0
@@ -414,9 +415,15 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 	       || strcmp (location->fixed_icon, "gnome-dev-media-sdmmc") == 0)
 	{
 	  if (voldev->vol_type == INT_CARD)
-	    location->fixed_icon = "qgn_list_gene_internal_memory_card";
+	    {
+	      location->sort_weight = SORT_WEIGHT_INTERNAL_MMC;
+	      location->fixed_icon = "qgn_list_gene_internal_memory_card";
+	    }
 	  else
-	    location->fixed_icon = "qgn_list_gene_removable_memory_card";
+	    {
+	      location->sort_weight = SORT_WEIGHT_EXTERNAL_MMC;
+	      location->fixed_icon = "qgn_list_gene_removable_memory_card";
+	    }
 	  
 	  location->fixed_title = beautify_mmc_name (location->fixed_title,
                                       voldev->vol_type == INT_CARD);

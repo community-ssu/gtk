@@ -76,7 +76,7 @@ hildon_file_system_local_device_init (HildonFileSystemLocalDevice *device)
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE;
-    location->sort_weight = SORT_WEIGHT_DEVICE - 1;
+    location->sort_weight = SORT_WEIGHT_DEVICE;
 }
 
 static void

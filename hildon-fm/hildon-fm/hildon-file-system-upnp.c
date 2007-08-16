@@ -87,6 +87,7 @@ hildon_file_system_upnp_init (HildonFileSystemUpnp *device)
     location->fixed_icon = g_strdup ("qgn_list_filesys_mediaserver");
     location->fixed_title = g_strdup (_("sfil_li_shared_media"));
     location->failed_access_message = NULL;
+    location->sort_weight = SORT_WEIGHT_UPNP;
 
     device->has_children = FALSE;
 

@@ -104,6 +104,7 @@ hildon_file_system_smb_init (HildonFileSystemSmb *device)
     location->fixed_icon = g_strdup ("qgn_list_filesys_samba");
     location->fixed_title = g_strdup (_("sfil_li_samba"));
     location->failed_access_message = NULL;
+    location->sort_weight = SORT_WEIGHT_SMB;
 
     device->has_children = FALSE;
 

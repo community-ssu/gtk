@@ -51,10 +51,15 @@ G_BEGIN_DECLS
    that only single sorting criteria (=name) is used. */
 #define SORT_WEIGHT_FILE   10
 #define SORT_WEIGHT_FOLDER -10
-#define SORT_WEIGHT_DEVICE -5
-#define SORT_WEIGHT_INTERNAL_MMC -8
-#define SORT_WEIGHT_EXTERNAL_MMC -7
-#define SORT_WEIGHT_REMOTE_DEVICE -4
+
+#define SORT_WEIGHT_DEVICE        -20
+#define SORT_WEIGHT_INTERNAL_MMC  -19
+#define SORT_WEIGHT_EXTERNAL_MMC  -18
+#define SORT_WEIGHT_USB           -17
+#define SORT_WEIGHT_REMOTE_DEVICE -16
+#define SORT_WEIGHT_OBEX          -15
+#define SORT_WEIGHT_SMB           -14
+#define SORT_WEIGHT_UPNP          -13
 
 /* An easy way to add tracing to functions, used while debugging */
 #if 0
