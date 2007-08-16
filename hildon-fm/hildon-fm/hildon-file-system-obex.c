@@ -136,7 +136,6 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
     HildonFileSystemSpecialLocation *child = NULL;
     gchar *skipped, *found, *new_uri, *name;
 
-
     skipped = uri + strlen (location->basepath) + 1;
 
     found = strchr (skipped, G_DIR_SEPARATOR);
@@ -164,12 +163,14 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
             hildon_file_system_special_location_set_display_name (child, name);
             g_free (name);
         }
-        child->basepath = new_uri;
+	
+	g_free (new_uri);
+
+        child->basepath = g_strdup (uri);
         child->failed_access_message = _("sfil_ib_cannot_connect_device");
 
         HILDON_FILE_SYSTEM_OBEX(location)->has_children = TRUE;
     }
-
 
     return child;
 }
