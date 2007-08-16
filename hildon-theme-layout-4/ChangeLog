@@ -1,5 +1,11 @@
 2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.11.0-2 release]
+
+	* debian/changelog: Adding missing "Fixes" keyword in debian changelog.
+
+2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	[0.11.0-1 release]
 
 	* NEWS:
