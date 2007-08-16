@@ -1383,6 +1383,9 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->queued_select_row = NULL;
   tree_view->priv->queued_expand_row = NULL;
   tree_view->priv->queued_activate_row = NULL;
+
+  tree_view->priv->queued_ctrl_pressed = FALSE;
+  tree_view->priv->queued_shift_pressed = FALSE;
 #endif /* MAEMO_CHANGES */
 
 #ifdef MAEMO_CHANGES
@@ -2786,6 +2789,8 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 		      gtk_tree_path_free (old_cursor_path);
 		    }
 
+		  tree_view->priv->queued_ctrl_pressed = tree_view->priv->ctrl_pressed;
+		  tree_view->priv->queued_shift_pressed = tree_view->priv->shift_pressed;
 		  tree_view->priv->queued_select_row =
 		    gtk_tree_row_reference_new (tree_view->priv->model, path);
 		}
@@ -3109,11 +3114,27 @@ gtk_tree_view_button_release (GtkWidget      *widget,
       GtkTreePath *path;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
-      gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
+
+      if (tree_view->priv->queued_ctrl_pressed)
+        {
+	  gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
+	  gtk_tree_view_real_toggle_cursor_row (tree_view);
+	  GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
+	}
+      else if (tree_view->priv->queued_shift_pressed)
+        {
+	  gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
+	  gtk_tree_view_real_select_cursor_row (tree_view, FALSE);
+	  GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
+	}
+      else
+	gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
 
       gtk_tree_path_free (path);
       gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
       tree_view->priv->queued_select_row = NULL;
+      tree_view->priv->queued_ctrl_pressed = FALSE;
+      tree_view->priv->queued_shift_pressed = FALSE;
     }
 
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_activate_row))

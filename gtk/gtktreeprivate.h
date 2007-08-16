@@ -273,6 +273,9 @@ struct _GtkTreeViewPrivate
   GtkTreeRowReference *queued_select_row;
   GtkTreeRowReference *queued_expand_row;
   GtkTreeRowReference *queued_activate_row;
+
+  guint queued_shift_pressed : 1;
+  guint queued_ctrl_pressed : 1;
 #endif /* MAEMO_CHANGES */
 };
 

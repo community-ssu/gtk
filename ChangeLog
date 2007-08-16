@@ -1,3 +1,17 @@
+2007-08-16  Kristian Rietveld  <kris@imendio.com>
+
+	Improve on "row-activate on single tap, but now until
+	button-release", fixes MB#1481.
+
+	* gtk/gtktreeprivate.h (GtkTreePrivate): add queued_shift_pressed and
+	queued_ctrl_pressed fiels.
+
+	* gtk/gtktreeview.c (gtk_tree_view_init): initialize those newly
+	added fields,
+	(gtk_tree_view_button_press): set queue_{shift,ctrl}_pressed,
+	(gtk_tree_view_button_release): improve the delayed row-activation
+	handling by correctly handling shift/ctrl+clicks.
+
 2007-08-15  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): only continue
