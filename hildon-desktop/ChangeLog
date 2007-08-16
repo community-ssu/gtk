@@ -1,5 +1,11 @@
 2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-menu.c
+	(hildon_desktop_popup_menu_constructor): invert the order of the
+	scrolling buttons. Fixes NB#65948.
+
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-window.c: handle delete_event
 	on extra panes in order to avoid them to be destroyed by a
 	gdk_close_all_temporary_windows() call.

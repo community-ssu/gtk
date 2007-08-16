@@ -260,11 +260,11 @@ hildon_desktop_popup_menu_constructor (GType gtype,
                     (gpointer)menu);		    
 
   gtk_box_pack_start (GTK_BOX (menu->priv->box_buttons),
-		      menu->priv->scroll_down,
+		      menu->priv->scroll_up,
 		      TRUE, TRUE, 0);
   
   gtk_box_pack_start (GTK_BOX (menu->priv->box_buttons),
-		      menu->priv->scroll_up,
+		      menu->priv->scroll_down,
 		      TRUE, TRUE, 0);
   
   gtk_widget_show (menu->priv->scroll_down);
