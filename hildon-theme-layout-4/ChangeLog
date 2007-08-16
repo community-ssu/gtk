@@ -1,3 +1,8 @@
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* rc/hildonappsmenu.rc: removed useless passive focus definition on
+	applications pane.
+
 2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonappsmenu.rc:
