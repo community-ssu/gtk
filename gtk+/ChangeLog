@@ -1,5 +1,10 @@
 2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkradiobutton.c (gtk_radio_button_focus): add a chunk of code moved around
+	for a MAEMO_CHANGES feature to its original position protected with #ifndef MAEMO_CHANGES.
+
+2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkwindow.c (gtk_window_map): call gtk_window_close_other_temporaries
 	if we are not a temporary window.
 

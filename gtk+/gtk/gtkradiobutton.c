@@ -452,10 +452,12 @@ gtk_radio_button_focus (GtkWidget         *widget,
       gboolean cursor_only;
       gboolean wrap_around;
 
+#ifdef MAEMO_CHANGES
       g_object_get (settings,
                     "gtk-keynav-cursor-only", &cursor_only,
                     "gtk-keynav-wrap-around", &wrap_around,
                     NULL);
+#endif /* MAEMO_CHANGES */
 
       switch (direction)
 	{
@@ -514,6 +516,13 @@ gtk_radio_button_focus (GtkWidget         *widget,
 	      tmp_list = tmp_list->next;
 	    }
 	}
+
+#ifndef MAEMO_CHANGES
+      g_object_get (settings,
+                    "gtk-keynav-cursor-only", &cursor_only,
+                    "gtk-keynav-wrap-around", &wrap_around,
+                    NULL);
+#endif /* MAEMO_CHANGES */
 
       if (!new_focus)
 	{
