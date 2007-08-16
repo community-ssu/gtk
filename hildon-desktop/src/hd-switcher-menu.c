@@ -85,6 +85,7 @@
 /* Hardcoded pixel perfecting values */
 #define AS_BUTTON_BORDER_WIDTH  0
 #define AS_MENU_BORDER_WIDTH    20
+#define AS_MENU_PANE_WIDTH      340
 #define AS_TIP_BORDER_WIDTH 	20
 #define AS_BUTTON_HEIGHT        38
 #define AS_MENU_BUTTON_HEIGHT   116
@@ -856,10 +857,10 @@ hd_switcher_menu_constructor (GType gtype,
 		NULL);
   
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->popup_window),
-			       340, 100);
+			       AS_MENU_PANE_WIDTH, 100);
   
   gtk_widget_set_size_request (GTK_WIDGET (switcher->priv->notifications_window),
-			       340, 100);  
+			       AS_MENU_PANE_WIDTH, 1);  
 
   switcher->priv->menu_applications =
     HILDON_DESKTOP_POPUP_MENU (g_object_new (HILDON_DESKTOP_TYPE_POPUP_MENU,
@@ -1341,11 +1342,17 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
         else
           hd_switcher_menu_attach_button (switcher);	     
       }	       
-	     
+
       hd_switcher_menu_update_highlighting (switcher, TRUE);
     }
     else
-    {	     
+    {
+      gtk_widget_hide (switcher->priv->notifications_window);
+
+      /* Avoid notification pane to be shown next time switcher
+       * menu opens. */
+      switcher->priv->notifications_window->requisition.height = 1;
+ 
       hd_switcher_menu_update_highlighting (switcher, FALSE); 
     }
 

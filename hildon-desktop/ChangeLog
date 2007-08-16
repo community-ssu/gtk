@@ -1,3 +1,10 @@
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-switcher-menu.c (hd_switcher_menu_check_content,
+	hd_switcher_menu_constructor): correctly set notification extra 
+	pane height in order to avoid having an empty pane flicking besides
+	application pane.
+
 2007-08-15  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-switcher-menu.c (hd_switcher_menu_scroll_to): fix crasher
