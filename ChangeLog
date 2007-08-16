@@ -10,6 +10,8 @@
 	otherwise they will be destroyed when a non-temporary window is mapped and they will stop working
 	or will crash the next time the user tries to open them.
 
+	Fixes: NB#52664
+
 2007-08-16  Kristian Rietveld  <kris@imendio.com>
 
 	Improve on "row-activate on single tap, but now until
