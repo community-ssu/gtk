@@ -1,3 +1,11 @@
+[4.11.0-1 release]
+* Adapting for new layout
+* Removed separator colors
+* New graphics: separators 
+* Disabled checkbox looks more disabled now
+* Updated wallpaper
+* Offset to glyph graphics in vkb to look better
+
 [4.10.2-1 release]
 * Layout bump
 

@@ -1,3 +1,18 @@
+hildon-theme-plankton (4.11.0-1) unstable; urgency=low
+
+  * Adapting for new layout
+  * Removed separator colors
+  * New graphics: separators 
+  * Disabled checkbox looks more disabled now
+  * Updated wallpaper
+  * Offset to glyph graphics in vkb to look better
+
+  * Fixes: NB#63596 Un-removable plug-ins are not identified in the list of status bar tab
+  * Fixes: NB#64373 Fn color should match print
+  * Fixes: NB#59978 Space bar should have some padding between the glyph and the border
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 16 Aug 2007 14:22:13 +0300
+
 hildon-theme-plankton (4.10.2-1) unstable; urgency=low
 
   * Layout bump
