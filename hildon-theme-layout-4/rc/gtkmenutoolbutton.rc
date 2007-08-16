@@ -8,36 +8,38 @@
 #
 ####################################################
 
-style "osso-menutoolbuttonarrow" {
+# Commenting this stuff out for a little while
 
-    engine "sapwood" {
-        image {
-            function = FOCUS
-            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
-            state = ACTIVE
-        }
-        image {
-            function = FOCUS
-            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
-        }
-        image {
-            function = BOX
-            file = "../images/qgn_plat_toolbar_menu_button_disabled.png"
-            state = INSENSITIVE
-        }
-        image {
-            function = BOX
-            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
-            state = ACTIVE
-        }
-        image {
-            function = BOX
-            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
-        }
-        image {
-            function = TAB
-        }
-    }
-}
+#style "osso-menutoolbuttonarrow" {
+#
+#    engine "sapwood" {
+#        image {
+#            function = FOCUS
+#            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
+#            state = ACTIVE
+#        }
+#        image {
+#            function = FOCUS
+#            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
+#        }
+#        image {
+#            function = BOX
+#            file = "../images/qgn_plat_toolbar_menu_button_disabled.png"
+#            state = INSENSITIVE
+#        }
+#        image {
+#            function = BOX
+#            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
+#            state = ACTIVE
+#        }
+#        image {
+#            function = BOX
+#            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
+#        }
+#        image {
+#            function = TAB
+#        }
+#    }
+#}
 
-widget "*.GtkMenuToolButton.GtkHBox.GtkToggleButton.GtkArrow" style "osso-menutoolbuttonarrow"
+#widget "*.GtkMenuToolButton.GtkHBox.GtkToggleButton.GtkArrow" style "osso-menutoolbuttonarrow"

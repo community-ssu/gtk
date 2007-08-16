@@ -1,3 +1,9 @@
+2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/gtkmenutoolbutton.rc:
+	* rc/ossortc.rc: Removing the old and unused images that were causing
+	the warnings to be printed on theme load.
+
 2007-08-15  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonnavigator.rc:

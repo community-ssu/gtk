@@ -39,20 +39,6 @@ style "osso-rtc-button"
 
 widget "*.ChavoButton" style "osso-rtc-button"
 
-style "osso-rtc-frame"
-{
-  engine "sapwood"
-    {
-        image {
-            function = SHADOW
-                file     = "../images/qgn_plat_application_call_handling_frame_block.png"
-                border   = { 12, 12, 12, 12 }
-        }
-    }
-}
-widget "*.ChavoFrame" style "osso-rtc-frame"
-
-
 style "osso-ChavoSystemFont" {
     font_name = "Nokia Sans 22.11"
 }
