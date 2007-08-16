@@ -1,5 +1,10 @@
 2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-home-item.c: remove default handler
+	for settings signal as it brakes plugins with old API.
+
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-switcher-menu.c (hd_switcher_menu_toggled_cb,
 	hd_switcher_menu_show_menu_cb): Do not popup window again when menu is
 	already opened and the next running application is activated.

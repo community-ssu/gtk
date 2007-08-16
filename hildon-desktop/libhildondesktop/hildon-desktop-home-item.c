@@ -202,9 +202,6 @@ hildon_desktop_home_item_get_property (GObject      *object,
 static void
 hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *item);
 
-static GtkWidget * 
-hildon_desktop_home_item_settings (HildonDesktopHomeItem *item, GtkWidget *widget);
-
 static void
 hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
                                     HildonDesktopHomeItemState   state,
@@ -292,8 +289,6 @@ hildon_desktop_home_item_class_init (HildonDesktopHomeItemClass * applet_class)
 
   object_class->set_property = hildon_desktop_home_item_set_property;
   object_class->get_property = hildon_desktop_home_item_get_property;
-
-  applet_class->settings = hildon_desktop_home_item_settings;
 
   gtkobject_class->destroy = hildon_desktop_home_item_destroy;
 
@@ -1560,13 +1555,6 @@ hildon_desktop_home_item_set_state (HildonDesktopHomeItem       *item,
 
   priv->state = state;
   g_object_notify (G_OBJECT (widget), "state");
-}
-
-static GtkWidget *
-hildon_desktop_home_item_settings (HildonDesktopHomeItem *applet, GtkWidget *widget)
-{
-  /* No settings menu item by default */
-  return NULL;
 }
 
 /********************/
