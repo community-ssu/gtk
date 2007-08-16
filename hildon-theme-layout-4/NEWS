@@ -1,3 +1,13 @@
+[0.11.0-1]
+* Adding real color mappings for app/switcher/not menu
+* Modified minimize animation
+* Use big font size for finger keyboard
+* Proper theming for statusbar extension
+* Fixed arrow theming in the switcher
+* Removed all separator colors from the layout, added separator graphics
+* Removing all, unused images that were causing warnings during theme load
+* Swapped webradio and now playing images  
+
 [0.10.2-1]
 * FKB menuitems style
 * Theming for new switcher menu

@@ -1,3 +1,27 @@
+hildon-theme-layout-4 (0.11.0-1) unstable; urgency=low
+
+  * Adding real color mappings for app/switcher/not menu
+  * Modified minimize animation
+  * Use big font size for finger keyboard
+  * Proper theming for statusbar extension
+  * Fixed arrow theming in the switcher
+  * Removed all separator colors from the layout, added separator graphics
+  * Removing all, unused images that were causing warnings during theme load
+  * Swapped webradio and now playing images
+
+  * NB#65089 Now Playing Current clip mode is weird.
+  * NB#63886 Arrows in scroll buttons in application menu are shown dimmed
+  * NB#65244 Minimise animation is shown towards switcher area
+  * NB#65515 FKB menu item needs a bigger font size
+  * NB#65211 Extension bar in status bar is not themed properly
+  * NB#65691 Background of scroll arrows in application switcher menu in selected state is not themed properly
+  * #NB65690 Seperators are missing in Contacts, Web and Connectivity sb menu when plankton theme is applied again
+  * #NB65206 Separators in switcher menu are white, hence are not seen
+  * #NB65468 Tiny scrollbar on RSS applet
+  * #NB62184 Mediaplayer music file and webradio images are interchanged
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 06 Aug 2007 09:59:48 +0300
+
 hildon-theme-layout-4 (0.10.2-1) unstable; urgency=low
 
   * FKB menuitems style

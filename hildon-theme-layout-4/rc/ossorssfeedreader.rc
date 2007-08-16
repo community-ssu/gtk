@@ -1,15 +1,39 @@
 # Copyright Nokia Corporation 2007
 # Licensed under Creative Commons Attribution-ShareAlike 2.5 license
 
+style "osso-rss-feed-reader-scrollbar"
+{
+  GtkScrollbar::has-forward-stepper = 0
+  GtkScrollbar::has-backward-stepper = 0
+
+  engine "sapwood"
+    {
+      image
+        {
+          function        = BOX
+          orientation     = VERTICAL
+          file            = "../images/qgn_plat_scroll_rss_shaft_normal.png"
+          border          = { 0, 0, 6, 6 }
+        }
+
+      image
+        {
+          function        = SLIDER
+          orientation     = VERTICAL
+          file            = "../images/qgn_plat_scroll_rss_thumb_normal.png"
+          border          = { 0, 0, 6, 6 }
+        }
+    }
+}
+widget "*.osso-rss-feed-reader-scrollbar" style "osso-rss-feed-reader-scrollbar"
+
+
 style "osso-rss-feed-reader"
 {
   xthickness = 0
   ythickness = 0
   HildonDesktopHomeItem::background-borders = { 262,36,12,72 }
   bg_pixmap[PRELIGHT] = "../images/qgn_plat_news_applet_bg_alpha.png"
-
-  GtkScrollbar::has-forward-stepper = 0
-  GtkScrollbar::has-backward-stepper = 0
 
   engine "sapwood"
     {
@@ -27,23 +51,6 @@ style "osso-rss-feed-reader"
           border   = { 262,36,12,72 }
           shaped = TRUE
         }
-
-      image
-        {
-          function        = BOX
-          orientation     = VERTICAL
-          file            = "../images/qgn_plat_scroll_rss_shaft_normal.png"
-          border          = { 0, 0, 6, 6 }
-        }
-
-      image
-        {
-          function        = SLIDER
-          orientation     = VERTICAL
-          file            = "../images/qgn_plat_scroll_rss_thumb_normal.png"
-          border          = { 0, 0, 6, 6 }
-        }
-
     }
 }
 widget "*.osso-rss-feed-reader" style "osso-rss-feed-reader"

@@ -331,8 +331,8 @@ widget "MediaPlayerTabLibrary" style "mediaplayer-tab-left"
 
 style "osso-mplayer-now-playing-current-clip-mode"
 {
-    bg_pixmap[NORMAL] = "../images/qgn_plat_application_media_player_image.png"
-    bg_pixmap[ACTIVE] = "../images/qgn_plat_application_media_player_image_webradio.png"
+    bg_pixmap[NORMAL] = "../images/qgn_plat_application_media_player_image_webradio.png"
+    bg_pixmap[ACTIVE] = "../images/qgn_plat_application_media_player_image.png"
 }
 
 widget "*.MediaPlayerCurrentClipDetailsImage" style "osso-mplayer-now-playing-current-clip-mode"
