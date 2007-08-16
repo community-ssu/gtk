@@ -1503,17 +1503,12 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
   {
     if (switcher->priv->is_open)	  
       hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
-    switcher->priv->is_open = FALSE;
-    return;
-  }   
 
-  if (switcher->priv->is_open)
-  {	  
-    hildon_desktop_popup_menu_select_next_item (switcher->priv->menu_applications);
-    hd_wm_debug ("selecting next item");
+    switcher->priv->is_open = FALSE;
+
     return;
-  }
-    
+  } 
+
   hildon_desktop_popup_window_popup 
    (switcher->priv->popup_window,
     hd_switcher_menu_position_func,
@@ -2060,10 +2055,18 @@ hd_switcher_menu_changed_stack_cb (HDWM *hdwm,
 static void 
 hd_switcher_menu_show_menu_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
 {
-  gtk_toggle_button_set_active
-    (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
-
-  g_signal_emit_by_name (switcher->priv->toggle_button, "toggled");
+  if (switcher->priv->is_open)
+  {	  
+    hildon_desktop_popup_menu_select_next_item (switcher->priv->menu_applications);
+    hd_wm_debug ("selecting next item");
+  }
+  else
+  {
+    gtk_toggle_button_set_active
+      (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
+  
+    g_signal_emit_by_name (switcher->priv->toggle_button, "toggled");
+  }
 }
 
 static gboolean

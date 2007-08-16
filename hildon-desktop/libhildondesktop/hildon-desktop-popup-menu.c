@@ -292,7 +292,7 @@ static void
 hildon_desktop_popup_menu_finalize (GObject *object)
 {
   g_object_unref (G_OBJECT (HILDON_DESKTOP_POPUP_MENU (object)->priv->box_buttons));
-	
+
   G_OBJECT_CLASS (hildon_desktop_popup_menu_parent_class)->finalize (object);	
 }	
 

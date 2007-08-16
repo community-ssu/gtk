@@ -88,6 +88,11 @@ static gboolean hildon_desktop_popup_window_leave_notify (GtkWidget *widget, Gdk
 static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 				                               GdkEventVisibility *event,
 			        		               gpointer            data);
+
+static gboolean hildon_desktop_popup_window_pane_delete_event (GtkWidget *widget,
+						  	       GdkEvent  *event,
+							       gpointer   data);
+
 static gboolean hildon_desktop_popup_window_delete_event (GtkWidget *widget,
 							  GdkEvent  *event,
 							  gpointer   data);
@@ -291,6 +296,11 @@ hildon_desktop_popup_window_constructor (GType gtype,
     gtk_window_set_decorated (GTK_WINDOW (popup->priv->extra_panes[i]), FALSE);
 
     gtk_widget_add_events (GTK_WIDGET (popup), GDK_VISIBILITY_NOTIFY_MASK);
+
+    g_signal_connect (popup->priv->extra_panes[i],
+  		      "delete-event",
+  		      G_CALLBACK (hildon_desktop_popup_window_pane_delete_event),
+  		      NULL);
 #endif
     g_object_ref (G_OBJECT (popup->priv->extra_panes[i]));
     gtk_object_sink (GTK_OBJECT (popup->priv->extra_panes[i]));		 
@@ -679,6 +689,14 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 }
 
 static gboolean 
+hildon_desktop_popup_window_pane_delete_event (GtkWidget *widget,
+					       GdkEvent *event,
+					       gpointer data)
+{
+  return TRUE;
+}
+
+static gboolean 
 hildon_desktop_popup_window_delete_event (GtkWidget *widget,
 					  GdkEvent *event,
 					  gpointer data)
@@ -786,7 +804,7 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
   else
   {
      for (i=0; i < popup->priv->n_extra_panes; i++)
-     {	     
+     {
        w = popup->priv->extra_panes[i]->allocation.width;
        h = popup->priv->extra_panes[i]->allocation.height;
 

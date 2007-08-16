@@ -1,5 +1,13 @@
 2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-window.c: handle delete_event
+	on extra panes in order to avoid them to be destroyed by a
+	gdk_close_all_temporary_windows() call.
+	* src/hd-switcher-menu.c: polished the handling of Home key long and
+	short press.
+
+2007-08-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-desktop-home-item.c: remove default handler
 	for settings signal as it brakes plugins with old API.
 
