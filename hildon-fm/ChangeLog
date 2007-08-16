@@ -1,5 +1,21 @@
 2007-08-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Get sort order of special locations straightened out (N65611).
+	
+	* hildon-fm/hildon-file-common-private.h: Define sort weights for
+	all top-level special locations.
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Set sort weight to
+	one of SORT_WEIGHT_USB, SORT_WEIGHT_INTERNAL_MMC or
+	SORT_WEIGHT_EXTERNAL_MMC, as appropsiate.
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_init): Use SORT_WEIGHT_UPNP.
+	* hildon-fm/hildon-file-system-smb.c
+	(hildon_file_system_smb_init): Use SORT_WEIGHT_SMB.
+	* hildon-fm/hildon-file-system-local-device.c
+	(hildon_file_system_local_device_init): Use SORT_WEIGHT_DEVICE
+	unchanged instead of sibtracting one from it...
+
 	* hildon-fm/hildon-file-system-obex.c
 	(hildon_file_system_obex_create_child_location): Use the escaped
 	version of the URI as the base_path so that we can correctly find
