@@ -315,6 +315,9 @@ style "hildon-switcher-menu-app-menu" = "osso-color-themeing"
 
 style "hildon-switcher-menu-app-item"
 {
+  GtkMenuItem::wide-separators = 1
+  GtkMenuItem::separator_height = 3
+
   engine "sapwood"
   {
     image
@@ -323,6 +326,13 @@ style "hildon-switcher-menu-app-item"
       state = PRELIGHT
       file = "../images/qgn_plat_task_switcher_focus_active.png"
       border = { 6, 6, 6, 6 }
+    }
+    image
+    {
+      function = BOX
+      detail = "hseparator"
+      file = "../images/qgn_plat_task_switcher_menu_separator.png"
+      border = { 8, 8, 0, 0 }
     }
   }
 }
@@ -442,6 +452,9 @@ bg[NORMAL] = @TaskSwitcherNotificationBgColor
 
 style "hildon-switcher-menu-not-item"
 {
+  GtkMenuItem::wide-separators = 1
+  GtkMenuItem::separator_height = 3
+ 
   engine "sapwood"
   {
     image
@@ -450,6 +463,13 @@ style "hildon-switcher-menu-not-item"
       state = PRELIGHT
       file = "../images/qgn_plat_task_switcher_focus_active.png"
       border = { 6, 6, 6, 6 }
+    }
+    image
+    {
+      function = BOX
+      detail = "hseparator"
+      file = "../images/qgn_plat_task_notification_menu_separator.png"
+      border = { 8, 8, 0, 0 }
     }
   }
 }

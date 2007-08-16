@@ -7,10 +7,10 @@ style "hildon-apps-menu" {
 
    engine "sapwood" {
       image {
-	 function = FLAT_BOX
-	 state = NORMAL
-	 file = "../images/qgn_plat_panemenu_bg.png"
-	 border = { 20, 20, 20, 20 }
+     function = FLAT_BOX
+     state = NORMAL
+     file = "../images/qgn_plat_panemenu_bg.png"
+     border = { 20, 20, 20, 20 }
          shaped = TRUE
       }
    }
@@ -23,6 +23,9 @@ style "hildon-apps-menu-pane1" = "osso-color-themeing"
 
 style "hildon-apps-menu-pane1-item"
 {
+  GtkMenuItem::wide-separators = 1
+  GtkMenuItem::separator_height = 3
+
   engine "sapwood"
   {
     image
@@ -38,6 +41,13 @@ style "hildon-apps-menu-pane1-item"
       state = SELECTED
       file = "../images/qgn_plat_pane1_focus_passive.png"
       border = { 6, 6, 6, 6 }
+    }
+    image
+    {
+      function = BOX
+      detail = "hseparator"
+      file = "../images/qgn_plat_task_pane_menu1_separator.png"
+      border = { 8, 8, 0, 0 }
     }
   }
 }
@@ -134,6 +144,9 @@ style "hildon-apps-menu-pane2" = "osso-color-themeing"
 
 style "hildon-apps-menu-pane2-item"
 {
+  GtkMenuItem::wide-separators = 1
+  GtkMenuItem::separator_height = 3
+
   engine "sapwood"
   {
     image
@@ -149,6 +162,13 @@ style "hildon-apps-menu-pane2-item"
       state = PRELIGHT
       file = "../images/qgn_plat_pane2_focus_passive.png"
       border = { 6, 6, 6, 6 }
+    }
+    image
+    {
+      function = BOX
+      detail = "hseparator"
+      file = "../images/qgn_plat_task_pane_menu2_separator.png"
+      border = { 8, 8, 0, 0 }
     }
   }
 }

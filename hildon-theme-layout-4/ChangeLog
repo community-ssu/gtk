@@ -1,3 +1,9 @@
+2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonappsmenu.rc:
+	* rc/hildonnavigator.rc: Adding correct theming for separators. Fixes
+	NB#65690.
+
 2007-08-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: swapped the mediaplayer "music file" and
