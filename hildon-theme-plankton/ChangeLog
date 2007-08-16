@@ -1,5 +1,12 @@
 2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[4.11.0-2 release]
+
+	* debian/changelog:
+	* debian/control: Forgot to update the control file deps.
+
+2007-08-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	[4.11.0-1 release]
 
 	* NEWS:
