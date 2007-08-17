@@ -10,3 +10,9 @@ Architecture: any
 Depends: ${shlibs:Depends}, osso-icons, lsof, osso-core-config
 Description: Assortment of small programs for the application framework.
  Including waitdbus, waitx, fb-progress, xset770, temp-reaper.
+
+Package: osso-af-utils-dbg
+Architecture: any
+Depends: osso-af-utils (= ${Source-Version})
+Description: osso-af-utils debug symbols
+ Debug symbols for the osso-af-utils package.

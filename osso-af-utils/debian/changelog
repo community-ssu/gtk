@@ -1,3 +1,9 @@
+osso-af-utils (1.15-3) unstable; urgency=low
+
+  * Added debug symbols package. Fixes: NB#65725
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 17 Aug 2007 14:53:04 +0300
+
 osso-af-utils (1.15-2) unstable; urgency=low
 
   * This version is 1.15-2 because 1.15-1 was integrated before it was
