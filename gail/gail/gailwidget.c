@@ -586,10 +586,13 @@ gail_widget_get_index_in_parent (AtkObject *accessible)
       AtkObject *parent;
 
       parent = accessible->accessible_parent;
-
+#ifdef ENABLE_GNOME
       if (GAIL_IS_NOTEBOOK_PAGE (parent) ||
           GAIL_IS_CANVAS_WIDGET (parent))
-        return 0;
+#else
+	      if (GAIL_IS_NOTEBOOK_PAGE (parent))
+#endif
+	return 0;      
       else
         {
           gint n_children, i;

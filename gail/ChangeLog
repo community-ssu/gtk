@@ -1,3 +1,9 @@
+2007-08-17  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* gail/gailwidget.c: (gail_widget_get_index_in_parent): don't use
+	GAIL_IS_CANVAS_WIDGET unless ENABLE_GNOME is defined. Patch from
+	Teemu Virolainen.
+
 2007-06-08  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* Makefile.in:
