@@ -1,3 +1,11 @@
+2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_window_event): clarify the comment a bit.
+
+	* gtk/gtkwindow.c (gtk_window_close_other_temporaries): make public, and add it
+	to gtk.symbols too. Turns out hildon-desktop needs this to handle their HW keys
+	functionality.
+
 2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkradiobutton.c (gtk_radio_button_focus): add a chunk of code moved around

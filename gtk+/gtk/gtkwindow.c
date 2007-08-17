@@ -289,9 +289,6 @@ static GtkKeyHash *gtk_window_get_key_hash        (GtkWindow   *window);
 static void        gtk_window_free_key_hash       (GtkWindow   *window);
 static void	   gtk_window_on_composited_changed (GdkScreen *screen,
 						     GtkWindow *window);
-#if defined(MAEMO_CHANGES) && defined(GDK_WINDOWING_X11)
-static void        gtk_window_close_other_temporaries (GtkWindow *window);
-#endif
 
 static GSList      *toplevel_list = NULL;
 static guint        window_signals[LAST_SIGNAL] = { 0 };
