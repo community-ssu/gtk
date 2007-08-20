@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.10.12-0osso13) unstable; urgency=low
+
+  * debian/rules: update shlibs to >= 2:2.10.12-osso13
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 20 Aug 2007 17:48:36 +0300
+
 gtk+2.0 (2:2.10.12-0osso12) unstable; urgency=low
 
   * Improve on "row-activate on single tap, but now until button-release".
@@ -5,7 +11,6 @@ gtk+2.0 (2:2.10.12-0osso12) unstable; urgency=low
   * Call gtk_window_close_other_temporaries on gtk_window_map for NON temporary
     windows. Mark the toplevel window associated to GtkMenus as temporary, and
     make it ignore delete-events when it is unmapped. Fixes: NB#56624
-	
     gtk_window_close_other_temporaries is now public, ** This is a new unstable API. **
 
  -- Xan Lopez <xan.lopez@nokia.com>  Fri, 17 Aug 2007 14:59:55 +0300
