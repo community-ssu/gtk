@@ -1,27 +1,33 @@
 2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkmenu.c (gtk_menu_window_event): clarify the comment a bit.
+	* gtk/gtkmenu.c (gtk_menu_window_event): clarify the comment a
+	bit.
 
-	* gtk/gtkwindow.c (gtk_window_close_other_temporaries): make public, and add it
-	to gtk.symbols too. Turns out hildon-desktop needs this to handle their HW keys
-	functionality.
-
-2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
-
-	* gtk/gtkradiobutton.c (gtk_radio_button_focus): add a chunk of code moved around
-	for a MAEMO_CHANGES feature to its original position protected with #ifndef MAEMO_CHANGES.
+	* gtk/gtkwindow.c (gtk_window_close_other_temporaries): make
+	public, and add it to gtk.symbols too. Turns out hildon-desktop
+	needs this to handle their HW keys functionality.
 
 2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkwindow.c (gtk_window_map): call gtk_window_close_other_temporaries
-	if we are not a temporary window.
+	* gtk/gtkradiobutton.c (gtk_radio_button_focus): add a chunk of
+	code moved around for a MAEMO_CHANGES feature to its original
+	position protected with #ifndef MAEMO_CHANGES.
 
-	* gtk/gtkwindow.h: make gtk_window_close_other_temporaries private again.
+2007-08-16  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkmenu.c (gtk_menu_init): mark the toplevel window associated to the menu
-	as temporary and make menus ignore the delete-event that will come from _GTK_DELETE_TEMPORARIES,
-	otherwise they will be destroyed when a non-temporary window is mapped and they will stop working
-	or will crash the next time the user tries to open them.
+	* gtk/gtkwindow.c (gtk_window_map): call
+	gtk_window_close_other_temporaries if we are not a temporary
+	window.
+
+	* gtk/gtkwindow.h: make gtk_window_close_other_temporaries private
+	again.
+
+	* gtk/gtkmenu.c (gtk_menu_init): mark the toplevel window
+	associated to the menu as temporary and make menus ignore the
+	delete-event that will come from _GTK_DELETE_TEMPORARIES,
+	otherwise they will be destroyed when a non-temporary window is
+	mapped and they will stop working or will crash the next time the
+	user tries to open them.
 
 	Fixes: NB#52664
 
@@ -30,8 +36,8 @@
 	Improve on "row-activate on single tap, but now until
 	button-release", fixes MB#1481.
 
-	* gtk/gtktreeprivate.h (GtkTreePrivate): add queued_shift_pressed and
-	queued_ctrl_pressed fiels.
+	* gtk/gtktreeprivate.h (GtkTreePrivate): add queued_shift_pressed
+	and queued_ctrl_pressed fiels.
 
 	* gtk/gtktreeview.c (gtk_tree_view_init): initialize those newly
 	added fields,
@@ -41,33 +47,33 @@
 	
 2007-08-15  Kristian Rietveld  <kris@imendio.com>
 
-	* gtk/gtktreeview.c (gtk_tree_view_button_press): only continue
-	to queue a row-activated signal or prepare for DnD or tap-n-hold
-	if the column didn't handle the click.
-	NB#60977.
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): only continue to
+	queue a row-activated signal or prepare for DnD or tap-n-hold if
+	the column didn't handle the click.  NB#60977.
 
 2007-08-13  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* gtk/gtktreeview.c: (gtk_tree_view_move_cursor_up_down): Backport
-	uptream fix for 465039 (keynav-failed not emitted when treeview has
-	only one element). Fixes: NB#60882
+	uptream fix for 465039 (keynav-failed not emitted when treeview
+	has only one element). Fixes: NB#60882
 
 2007-08-13  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkmain.c (gtk_main_do_event): also send the insensitive-press signal
-	if we are the grab widget.
+	* gtk/gtkmain.c (gtk_main_do_event): also send the
+	insensitive-press signal if we are the grab widget.
 
 2007-08-09  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkwindow.c (gtk_window_map): do not close all other temporary windows
-	on map, it's too disrupting.
+	* gtk/gtkwindow.c (gtk_window_map): do not close all other
+	temporary windows on map, it's too disrupting.
 	(gtk_window_close_other_temporaries): Make public.
 
 2007-08-03  Xan Lopez  <xan.lopez@nokia.com>
 
-	* gtk/gtkentry.c (gtk_entry_filter_text): do not validate the whole string
-	unconditionally. Use the new_text_lenght parameter from gtk_entry_real_insert_text
-	as the limit for g_utf8_validate. Fixes: NB#64785
+	* gtk/gtkentry.c (gtk_entry_filter_text): do not validate the
+	whole string unconditionally. Use the new_text_lenght parameter
+	from gtk_entry_real_insert_text as the limit for
+	g_utf8_validate. Fixes: NB#64785
 
 2007-08-02  Xan Lopez  <xan.lopez@nokia.com>
 
@@ -113,11 +119,13 @@
 2007-07-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup):
-	Use _NET_INPUT_AREAS to decide GtkEntryCompletion popup positioning.
+	Use _NET_INPUT_AREAS to decide GtkEntryCompletion popup
+	positioning.
 
-	The matchbox version on Sardine has a new X property for the root window
-	called _NET_INPUT_AREAS. It's supposed to contain an array of rectangles
-	which are reserved for user interaction and should never be obscured
+	The matchbox version on Sardine has a new X property for the root
+	window called _NET_INPUT_AREAS. It's supposed to contain an array
+	of rectangles which are reserved for user interaction and should
+	never be obscured
 
 	I've modified the GtkEntryCompletion popup position code to:
 	* Get a list of the available input areas.
@@ -215,10 +223,10 @@
 
 	* gtk/gtkradiobutton.c (gtk_radio_button_focus):
 	
-	We have remapped cursor keys to TAB movements in our rc files, so we get
-	TAB_{FORWARD,BACKWARD} instead of DOWN/UP in the focus handler of GtkRadioButton.
-	We need to re-enable the old behavior or navigation within the group would 
-	impossible. Fixes: NB#62251
+	We have remapped cursor keys to TAB movements in our rc files, so
+	we get TAB_{FORWARD,BACKWARD} instead of DOWN/UP in the focus
+	handler of GtkRadioButton.  We need to re-enable the old behavior
+	or navigation within the group would impossible. Fixes: NB#62251
 
 2007-06-29  Michael Natterer  <mitch@imendio.com>
 
