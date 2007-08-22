@@ -1,3 +1,14 @@
+2007-08-22  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkarrow.c: add two new style properties:
+
+	- maemo-min-size: replaces the hardcoded min size of the widget,
+	default value is 15 to maintain compatibility.
+
+	- maemo-aspect-ratio: this property allows to define non-square
+	arrows based on the formula height = ratio * width. The default
+	value is 1.0, for square arrows.
+
 2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_window_event): clarify the comment a
