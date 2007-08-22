@@ -9,6 +9,8 @@
 	arrows based on the formula height = ratio * width. The default
 	value is 1.0, for square arrows.
 
+	Fixes: NB#66402
+
 2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_window_event): clarify the comment a
