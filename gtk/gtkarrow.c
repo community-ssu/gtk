@@ -115,8 +115,8 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                            g_param_spec_float ("maemo-aspect-ratio",
                                                                P_("Aspect Ratio"),
                                                                P_("Aspect ratio of the arrow widget"),
-                                                               1e-04,
-                                                               1000.0,
+                                                               -G_MAXFLOAT,
+                                                               G_MAXFLOAT,
                                                                1.0,
                                                                GTK_PARAM_READABLE));
 #endif
@@ -308,9 +308,6 @@ gtk_arrow_expose (GtkWidget      *widget,
 		 + ((widget->allocation.height - height) * misc->yalign));
 #endif
      
-
-g_debug ("alloc %d%d, w %d h %d", widget->allocation.width, widget->allocation.height, width, height);
-
       shadow_type = arrow->shadow_type;
 
       if (widget->state == GTK_STATE_ACTIVE)
