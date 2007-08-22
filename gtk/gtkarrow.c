@@ -31,7 +31,9 @@
 #include "gtkintl.h"
 #include "gtkalias.h"
 
+#ifndef MAEMO_CHANGES
 #define MIN_ARROW_SIZE  15
+#endif
 
 enum {
   PROP_0,
@@ -93,6 +95,17 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                                0.0, 1.0, 0.7,
                                                                GTK_PARAM_READABLE));
 
+#if defined(MAEMO_CHANGES)
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_int ("maemo-min-size",
+                                                             P_("Arrow Minimum Size"),
+                                                             P_("Minimum size of the arrow widget"),
+                                                             0,
+                                                             G_MAXINT,
+                                                             15,
+                                                             GTK_PARAM_READABLE));
+#endif
+
   widget_class->expose_event = gtk_arrow_expose;
 }
 
@@ -151,10 +164,25 @@ gtk_arrow_get_property (GObject         *object,
 static void
 gtk_arrow_init (GtkArrow *arrow)
 {
+#if defined(MAEMO_CHANGES)
+  gint arrow_min_size;
+#endif
+
   GTK_WIDGET_SET_FLAGS (arrow, GTK_NO_WINDOW);
 
+#if defined(MAEMO_CHANGES)
+  gtk_widget_style_get (GTK_WIDGET (arrow),
+                        "maemo-min-size", &arrow_min_size,
+                        NULL);
+#endif
+
+#ifndef MAEMO_CHANGES
   GTK_WIDGET (arrow)->requisition.width = MIN_ARROW_SIZE + GTK_MISC (arrow)->xpad * 2;
   GTK_WIDGET (arrow)->requisition.height = MIN_ARROW_SIZE + GTK_MISC (arrow)->ypad * 2;
+#else
+  GTK_WIDGET (arrow)->requisition.width = arrow_min_size + GTK_MISC (arrow)->xpad * 2;
+  GTK_WIDGET (arrow)->requisition.height = arrow_min_size + GTK_MISC (arrow)->ypad * 2;
+#endif
 
   arrow->arrow_type = GTK_ARROW_RIGHT;
   arrow->shadow_type = GTK_SHADOW_OUT;
