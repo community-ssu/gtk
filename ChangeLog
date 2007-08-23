@@ -12,6 +12,8 @@
 	* gtk/gtkcombobox.c: use gtk_menu_item_set_submenu() instead of
 	gtk_menu_item_remove_submenu().
 
+	Fixes: MB#1701, NB#66518
+
 2007-08-22  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkarrow.c: add two new style properties:
