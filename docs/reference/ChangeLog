@@ -1,3 +1,9 @@
+2007-06-13  Michael Natterer  <mitch@imendio.com>
+
+	Merged from trunk:
+
+	* gtk/tmpl/gtkmenuitem.sgml: remove stuff that has been moved inline.
+
 2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtk-sections.txt: add gtk_window_close_other_temporaries
