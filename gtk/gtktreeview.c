@@ -10595,9 +10595,6 @@ gtk_tree_view_real_expand_collapse_cursor_row (GtkTreeView *tree_view,
   GtkTreePath *cursor_path = NULL;
   GtkRBTree *tree;
   GtkRBNode *node;
-#if defined(MAEMO_CHANGES)
-  gboolean cursor_only;
-#endif
 
   if (! GTK_WIDGET_HAS_FOCUS (tree_view))
     return FALSE;
@@ -10612,20 +10609,9 @@ gtk_tree_view_real_expand_collapse_cursor_row (GtkTreeView *tree_view,
   if (_gtk_tree_view_find_node (tree_view, cursor_path, &tree, &node))
     return FALSE;
 
-#if defined(MAEMO_CHANGES)
-  g_object_get (gtk_widget_get_settings (GTK_WIDGET (tree_view)),
-                "gtk-keynav-cursor-only", &cursor_only,
-                NULL);
-
-  if (cursor_only == FALSE)
-    {
-#endif
   /* Don't handle the event if we aren't an expander */
   if (!((node->flags & GTK_RBNODE_IS_PARENT) == GTK_RBNODE_IS_PARENT))
     return FALSE;
-#if defined(MAEMO_CHANGES)
-    }
-#endif
 
   if (!logical
       && gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL)
