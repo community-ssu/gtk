@@ -1,3 +1,9 @@
+2007-08-30  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup):
+	clamp the popup size to the available space instead of assuming
+	it will always fit. Fixes: NB#55607
+
 2007-08-23  Michael Natterer  <mitch@imendio.com>
 
 	Merged from trunk:
