@@ -1468,15 +1468,22 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
         to_top = root_y;
 
       if (bottom)
-          to_bottom = bottom->y - (root_y + completion->priv->entry->allocation.y);
+        to_bottom = bottom->y - (root_y + completion->priv->entry->allocation.height);
       else
-        to_bottom = monitor.height - (root_y + completion->priv->entry->allocation.y);
+        to_bottom = monitor.height - (root_y + completion->priv->entry->allocation.height);
+ 
+      /* It does not fit in either direction, we need
+         to reduce the popup size */
+      if (popup_req.height > to_bottom && popup_req.height > to_top)
+        {
+          gint max_items =  MAX (to_bottom, to_top) / height;
 
-      /* If the popup fits below the entry we will put it there, otherwise it will
-         go above it. If it does not fit in either direction we will put it below
-         anyway. This is not exactly right, but we don't have other options */
-      if (popup_req.height <= to_bottom ||
-          popup_req.height > to_top)
+          gtk_widget_set_size_request (completion->priv->tree_view, width, max_items * height);
+          gtk_widget_size_request (completion->priv->popup_window, &popup_req);
+          gtk_widget_size_request (completion->priv->entry, &entry_req);
+        }
+
+      if (popup_req.height <= to_bottom)
         {
           above = FALSE;
           y += entry_req.height;
