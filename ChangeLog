@@ -1,6 +1,12 @@
 2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup):
+	use "dummy" as the name for unused parameter to gdk_rectangle_intersect
+	to avoid confusions.
+	
+2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup):
 	use the new direction and height algorithm even when there are
 	no INPUT_AREAS, as it limits the height correctly.
 

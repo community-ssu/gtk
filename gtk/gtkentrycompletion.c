@@ -1451,9 +1451,9 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
       for (i = 0; i < n_rects; i++)
         {
-          GdkRectangle dest;
+          GdkRectangle dummy; /* Unused, have to pass something to intersect */
 
-          if (gdk_rectangle_intersect (&widget_rect, &rectangles[i], &dest))
+          if (gdk_rectangle_intersect (&widget_rect, &rectangles[i], &dummy))
             {
               if (rectangles[i].y + rectangles[i].height < root_y &&
                   (top == NULL || top->y + top->height < rectangles[i].y + rectangles[i].height))
