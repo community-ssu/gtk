@@ -144,6 +144,8 @@ gtk_public_h_sources =          \
 	gtkbin.h		\
 	gtkbindings.h		\
 	gtkbox.h		\
+	gtkbuilder.h		\
+	gtkbuildable.h		\
 	gtkbutton.h		\
 	gtkcalendar.h		\
 	gtkcelleditable.h	\
@@ -339,6 +341,7 @@ gtk_semi_private_h_sources =    \
 gtk_private_h_sources =		\
 	gtkdndcursors.h		\
 	gtkentryprivate.h	\
+	gtkbuilderprivate.h 	\
 	gtkfilechooserdefault.h	\
 	gtkfilechooserembed.h	\
 	gtkfilechooserentry.h	\
@@ -394,6 +397,9 @@ gtk_base_c_sources =            \
 	gtkbin.c		\
 	gtkbindings.c		\
 	gtkbox.c		\
+	gtkbuildable.c		\
+	gtkbuilder.c		\
+	gtkbuilderparser.c	\
 	gtkbutton.c		\
 	gtkcalendar.c		\
 	gtkcelleditable.c	\
@@ -856,7 +862,10 @@ LDADDS =								\
 #
 # Installed tools
 #
-bin_PROGRAMS = gtk-query-immodules-2.0 gtk-update-icon-cache
+bin_PROGRAMS = \
+	gtk-query-immodules-2.0 \
+	gtk-update-icon-cache
+bin_SCRIPTS = gtk-builder-convert
 
 gtk_query_immodules_2_0_DEPENDENCIES = $(DEPS)
 gtk_query_immodules_2_0_LDADD = $(LDADDS)

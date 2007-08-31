@@ -146,9 +146,15 @@ static gboolean gtk_entry_completion_real_insert_prefix  (GtkEntryCompletion *co
 
 static guint entry_completion_signals[LAST_SIGNAL] = { 0 };
 
+/* GtkBuildable */
+static void     gtk_entry_completion_buildable_init      (GtkBuildableIface  *iface);
+
 G_DEFINE_TYPE_WITH_CODE (GtkEntryCompletion, gtk_entry_completion, G_TYPE_OBJECT,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_CELL_LAYOUT,
-						gtk_entry_completion_cell_layout_init))
+						gtk_entry_completion_cell_layout_init)
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE,
+						gtk_entry_completion_buildable_init))
+
 
 static void
 gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
@@ -339,6 +345,14 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
  							 GTK_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (GtkEntryCompletionPrivate));
+}
+
+static void
+gtk_entry_completion_buildable_init (GtkBuildableIface *iface)
+{
+  iface->add_child = _gtk_cell_layout_buildable_add_child;
+  iface->custom_tag_start = _gtk_cell_layout_buildable_custom_tag_start;
+  iface->custom_tag_end = _gtk_cell_layout_buildable_custom_tag_end;
 }
 
 static void

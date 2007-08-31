@@ -31,6 +31,7 @@
 #include <config.h>
 
 #include <string.h>
+#include "gtkbuildable.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkmenu.h"
@@ -142,6 +143,28 @@ static void        node_prepend_ui_reference      (GNode             *node,
 static void        node_remove_ui_reference       (GNode             *node,
                                                    guint              merge_id);
 
+/* GtkBuildable */
+static void gtk_ui_manager_buildable_init      (GtkBuildableIface *iface);
+static void gtk_ui_manager_buildable_add_child (GtkBuildable  *buildable,
+						GtkBuilder    *builder,
+						GObject       *child,
+						const gchar   *type);
+static GObject* gtk_ui_manager_buildable_construct_child (GtkBuildable *buildable,
+							  GtkBuilder   *builder,
+							  const gchar  *name);
+static gboolean gtk_ui_manager_buildable_custom_tag_start (GtkBuildable  *buildable,
+							   GtkBuilder    *builder,
+							   GObject       *child,
+							   const gchar   *tagname,
+							   GMarkupParser *parser,
+							   gpointer      *data);
+static void     gtk_ui_manager_buildable_custom_tag_end (GtkBuildable 	 *buildable,
+							 GtkBuilder   	 *builder,
+							 GObject      	 *child,
+							 const gchar  	 *tagname,
+							 gpointer     	 *data);
+
+
 
 enum 
 {
@@ -163,7 +186,9 @@ enum
 
 static guint ui_manager_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (GtkUIManager, gtk_ui_manager, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (GtkUIManager, gtk_ui_manager, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE,
+						gtk_ui_manager_buildable_init))
 
 static void
 gtk_ui_manager_class_init (GtkUIManagerClass *klass)
@@ -398,6 +423,81 @@ gtk_ui_manager_finalize (GObject *object)
   self->private_data->accel_group = NULL;
 
   G_OBJECT_CLASS (gtk_ui_manager_parent_class)->finalize (object);
+}
+
+static void
+gtk_ui_manager_buildable_init (GtkBuildableIface *iface)
+{
+  iface->add_child = gtk_ui_manager_buildable_add_child;
+  iface->construct_child = gtk_ui_manager_buildable_construct_child;
+  iface->custom_tag_start = gtk_ui_manager_buildable_custom_tag_start;
+  iface->custom_tag_end = gtk_ui_manager_buildable_custom_tag_end;
+}
+
+static void
+gtk_ui_manager_buildable_add_child (GtkBuildable  *buildable,
+				    GtkBuilder    *builder,
+				    GObject       *child,
+				    const gchar   *type)
+{
+  GtkUIManager *self = GTK_UI_MANAGER (buildable);
+  guint pos;
+
+  g_return_if_fail (GTK_IS_ACTION_GROUP (child));
+
+  pos = g_list_length (self->private_data->action_groups);
+
+  g_object_ref (child);
+  gtk_ui_manager_insert_action_group (self,
+				      GTK_ACTION_GROUP (child),
+				      pos);
+}
+
+static void
+child_hierarchy_changed_cb (GtkWidget *widget,
+			    GtkWidget *unused,
+			    GtkUIManager *uimgr)
+{
+  GtkWidget *toplevel;
+  GtkAccelGroup *group;
+  GSList *groups;
+
+  toplevel = gtk_widget_get_toplevel (widget);
+  if (!toplevel || !GTK_IS_WINDOW (toplevel))
+    return;
+  
+  group = gtk_ui_manager_get_accel_group (uimgr);
+  groups = gtk_accel_groups_from_object (toplevel);
+  if (g_slist_find (groups, group) == NULL)
+    gtk_window_add_accel_group (GTK_WINDOW (toplevel), group);
+
+  g_signal_handlers_disconnect_by_func (widget,
+					child_hierarchy_changed_cb,
+					uimgr);
+}
+
+static GObject *
+gtk_ui_manager_buildable_construct_child (GtkBuildable *buildable,
+					  GtkBuilder   *builder,
+					  const gchar  *id)
+{
+  GtkWidget *widget;
+  char *name;
+
+  name = g_strdup_printf ("ui/%s", id);
+  widget = gtk_ui_manager_get_widget (GTK_UI_MANAGER (buildable), name);
+  if (!widget)
+    {
+      g_error ("Unknown ui manager child: %s\n", name);
+      g_free (name);
+      return NULL;
+    }
+  g_free (name);
+
+  g_signal_connect (widget, "hierarchy-changed",
+		    G_CALLBACK (child_hierarchy_changed_cb),
+		    GTK_UI_MANAGER (buildable));
+  return G_OBJECT (widget);
 }
 
 static void
@@ -1479,7 +1579,7 @@ add_ui_from_string (GtkUIManager *self,
 
   queue_update (self);
 
-  g_object_notify (G_OBJECT (self), "ui");      
+  g_object_notify (G_OBJECT (self), "ui");
 
   return ctx.merge_id;
 
@@ -2800,6 +2900,49 @@ print_node (GtkUIManager *self,
 
   if (close_fmt)
     g_string_append_printf (buffer, close_fmt, indent_level, "");
+}
+
+static gboolean
+gtk_ui_manager_buildable_custom_tag_start (GtkBuildable  *buildable,
+					   GtkBuilder    *builder,
+					   GObject       *child,
+					   const gchar   *tagname,
+					   GMarkupParser *parser,
+					   gpointer      *data)
+{
+  if (child)
+    return FALSE;
+
+  if (strcmp (tagname, "ui") == 0)
+    {
+      ParseContext *ctx;
+
+      ctx = g_new0 (ParseContext, 1);
+      ctx->state = STATE_START;
+      ctx->self = GTK_UI_MANAGER (buildable);
+      ctx->current = NULL;
+      ctx->merge_id = gtk_ui_manager_new_merge_id (GTK_UI_MANAGER (buildable));
+
+      *data = ctx;
+      *parser = ui_parser;
+
+      return TRUE;
+    }
+
+  return FALSE;
+
+}
+
+static void
+gtk_ui_manager_buildable_custom_tag_end (GtkBuildable *buildable,
+					 GtkBuilder   *builder,
+					 GObject      *child,
+					 const gchar  *tagname,
+					 gpointer     *data)
+{
+  queue_update (GTK_UI_MANAGER (buildable));
+  g_object_notify (G_OBJECT (buildable), "ui");
+  g_free (data);
 }
 
 /**

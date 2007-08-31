@@ -29,6 +29,7 @@
 #include "gtkcellrenderer.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
+#include "gtkbuildable.h"
 #include "gtkbutton.h"
 #include "gtkalignment.h"
 #include "gtklabel.h"
@@ -462,6 +463,14 @@ static void gtk_tree_view_tree_window_to_tree_coords (GtkTreeView *tree_view,
 						      gint        *tx,
 						      gint        *ty);
 
+/* GtkBuildable */
+static void gtk_tree_view_buildable_add_child (GtkBuildable *tree_view,
+					       GtkBuilder  *builder,
+					       GObject     *child,
+					       const gchar *type);
+static void gtk_tree_view_buildable_init      (GtkBuildableIface *iface);
+
+
 static gboolean scroll_row_timeout                   (gpointer     data);
 static void     add_scroll_timeout                   (GtkTreeView *tree_view);
 static void     remove_scroll_timeout                (GtkTreeView *tree_view);
@@ -478,7 +487,9 @@ static guint tree_view_signals [LAST_SIGNAL] = { 0 };
 /* GType Methods
  */
 
-G_DEFINE_TYPE (GtkTreeView, gtk_tree_view, GTK_TYPE_CONTAINER)
+G_DEFINE_TYPE_WITH_CODE (GtkTreeView, gtk_tree_view, GTK_TYPE_CONTAINER,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE,
+						gtk_tree_view_buildable_init))
 
 static void
 gtk_tree_view_class_init (GtkTreeViewClass *class)
@@ -1331,6 +1342,12 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 }
 
 static void
+gtk_tree_view_buildable_init (GtkBuildableIface *iface)
+{
+  iface->add_child = gtk_tree_view_buildable_add_child;
+}
+
+static void
 gtk_tree_view_init (GtkTreeView *tree_view)
 {
   tree_view->priv = G_TYPE_INSTANCE_GET_PRIVATE (tree_view, GTK_TYPE_TREE_VIEW, GtkTreeViewPrivate);
@@ -1556,6 +1573,15 @@ gtk_tree_view_finalize (GObject *object)
 }
 
 
+
+static void
+gtk_tree_view_buildable_add_child (GtkBuildable *tree_view,
+				   GtkBuilder  *builder,
+				   GObject     *child,
+				   const gchar *type)
+{
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), GTK_TREE_VIEW_COLUMN (child));
+}
 
 /* GtkObject Methods
  */

@@ -1,3 +1,483 @@
+2007-08-24  Sven Herzberg  <sven@imendio.com>
+
+	* Updated GtkBuilder backport to the state of August, 7th
+
+   2007-07-26  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+   
+   	* Backport GtkBuilder from gtk+ trunk (2.11.7):
+   
+      2007-06-15  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	reviewed by: Matthias Clasen
+      
+      	* demos/gtk-demo/Makefile.am:
+      	* demos/gtk-demo/builder.c: (quit_activate), (about_activate),
+      	(do_builder):
+      	* demos/gtk-demo/demo.ui:
+      	* docs/reference/gtk/gtk-docs.sgml:
+      	* docs/reference/gtk/gtk-sections.txt:
+      	* docs/reference/gtk/gtk.types:
+      	* docs/reference/gtk/tmpl/gtkbuildable.sgml:
+      	* docs/reference/gtk/tmpl/gtkbuilder.sgml:
+      	* gtk/Makefile.am:
+      	* gtk/gtk.h:
+      	* gtk/gtk.symbols:
+      	* gtk/gtkaction.c: (gtk_action_buildable_init),
+      	(gtk_action_buildable_set_name), (gtk_action_buildable_get_name):
+      	* gtk/gtkactiongroup.c: (gtk_action_group_get_type),
+      	(gtk_action_group_buildable_init),
+      	(gtk_action_group_buildable_add),
+      	(gtk_action_group_buildable_set_name),
+      	(gtk_action_group_buildable_get_name):
+      	* gtk/gtkbuildable.c: (gtk_buildable_get_type),
+      	(gtk_buildable_set_name), (gtk_buildable_get_name),
+      	(gtk_buildable_add), (gtk_buildable_set_property),
+      	(gtk_buildable_parser_finished), (gtk_buildable_construct_child),
+      	(gtk_buildable_custom_tag_start), (gtk_buildable_custom_tag_end),
+      	(gtk_buildable_custom_finished),
+      	(gtk_buildable_get_internal_child):
+      	* gtk/gtkbuildable.h:
+      	* gtk/gtkbuilder.c: (gtk_builder_class_init), (gtk_builder_init),
+      	(gtk_builder_finalize), (gtk_builder_set_property),
+      	(gtk_builder_get_property), (_gtk_builder_resolve_type_lazily),
+      	(gtk_builder_real_get_type_from_name),
+      	(gtk_builder_get_parameters), (gtk_builder_get_internal_child),
+      	(_gtk_builder_construct), (_gtk_builder_add),
+      	(apply_delayed_properties), (_gtk_builder_finish),
+      	(gtk_builder_new), (gtk_builder_add_from_file),
+      	(gtk_builder_add_from_string), (gtk_builder_get_object),
+      	(object_add_to_list), (gtk_builder_get_objects),
+      	(gtk_builder_set_translation_domain),
+      	(gtk_builder_get_translation_domain),
+      	(gtk_builder_connect_signals_default),
+      	(gtk_builder_connect_signals), (gtk_builder_connect_signals_full),
+      	(gtk_builder_value_from_string),
+      	(gtk_builder_value_from_string_type),
+      	(_gtk_builder_enum_from_string), (_gtk_builder_flags_from_string),
+      	(gtk_builder_get_type_from_name), (gtk_builder_error_quark):
+      	* gtk/gtkbuilder.h:
+      	* gtk/gtkbuilderparser.c: (state_push), (state_peek), (state_pop),
+      	(error_missing_attribute), (error_invalid_attribute),
+      	(error_invalid_tag), (builder_construct), (parse_object),
+      	(free_object_info), (_get_type_by_symbol), (parse_child),
+      	(free_child_info), (parse_property), (free_property_info),
+      	(parse_signal), (_free_signal_info), (parse_interface),
+      	(create_subparser), (free_subparser), (subparser_start),
+      	(subparser_end), (parse_custom), (start_element), (end_element),
+      	(text), (_gtk_builder_parser_parse_buffer):
+      	* gtk/gtkbuilderprivate.h:
+      	* gtk/gtkcelllayout.c: (attributes_start_element),
+      	(attributes_text_element),
+      	(_gtk_cell_layout_buildable_custom_tag_start),
+      	(_gtk_cell_layout_buildable_custom_tag_end),
+      	(_gtk_cell_layout_buildable_add):
+      	* gtk/gtkcelllayout.h:
+      	* gtk/gtkcellview.c: (gtk_cell_view_buildable_init),
+      	(gtk_cell_view_buildable_custom_tag_start),
+      	(gtk_cell_view_buildable_custom_tag_end):
+      	* gtk/gtkcolorseldialog.c:
+      	(gtk_color_selection_dialog_buildable_interface_init),
+      	(gtk_color_selection_dialog_buildable_get_internal_child):
+      	* gtk/gtkcombobox.c: (gtk_combo_box_buildable_init),
+      	(gtk_combo_box_buildable_custom_tag_start),
+      	(gtk_combo_box_buildable_custom_tag_end):
+      	* gtk/gtkcomboboxentry.c:
+      	(gtk_combo_box_entry_buildable_interface_init),
+      	(gtk_combo_box_entry_buildable_get_internal_child):
+      	* gtk/gtkcontainer.c: (gtk_container_get_type),
+      	(gtk_container_buildable_init), (gtk_container_buildable_add),
+      	(gtk_container_buildable_set_child_property),
+      	(attributes_start_element), (attributes_text_element),
+      	(gtk_container_buildable_custom_tag_start),
+      	(gtk_container_buildable_custom_tag_end):
+      	* gtk/gtkdebug.h:
+      	* gtk/gtkdialog.c: (gtk_dialog_buildable_interface_init),
+      	(gtk_dialog_buildable_get_internal_child),
+      	(attributes_start_element), (attributes_text_element),
+      	(gtk_dialog_buildable_custom_tag_start),
+      	(gtk_dialog_buildable_custom_finished):
+      	* gtk/gtkentrycompletion.c: (gtk_entry_completion_buildable_init):
+      	* gtk/gtkexpander.c: (gtk_expander_buildable_add),
+      	(gtk_expander_buildable_init):
+      	* gtk/gtkfontsel.c:
+      	(gtk_font_selection_dialog_buildable_interface_init),
+      	(gtk_font_selection_dialog_buildable_get_internal_child):
+      	* gtk/gtkframe.c: (gtk_frame_buildable_init),
+      	(gtk_frame_buildable_add):
+      	* gtk/gtkiconview.c: (gtk_icon_view_buildable_init),
+      	(gtk_icon_view_buildable_custom_tag_start),
+      	(gtk_icon_view_buildable_custom_tag_end):
+      	* gtk/gtkliststore.c: (gtk_list_store_buildable_init),
+      	(list_store_start_element), (list_store_end_element),
+      	(list_store_text), (gtk_list_store_buildable_custom_tag_start),
+      	(gtk_list_store_buildable_custom_tag_end):
+      	* gtk/gtkmain.c:
+      	* gtk/gtknotebook.c: (gtk_notebook_buildable_init),
+      	(gtk_notebook_buildable_add):
+      	* gtk/gtksizegroup.c: (gtk_size_group_buildable_init),
+      	(size_group_start_element),
+      	(gtk_size_group_buildable_custom_tag_start),
+      	(gtk_size_group_buildable_custom_finished):
+      	* gtk/gtktreestore.c: (gtk_tree_store_buildable_init),
+      	(tree_model_start_element),
+      	(gtk_tree_store_buildable_custom_tag_start),
+      	(gtk_tree_store_buildable_custom_finished):
+      	* gtk/gtktreeview.c: (gtk_tree_view_buildable_init),
+      	(gtk_tree_view_buildable_add):
+      	* gtk/gtktreeviewcolumn.c: (gtk_tree_view_column_buildable_init):
+      	* gtk/gtkuimanager.c: (gtk_ui_manager_buildable_init),
+      	(gtk_ui_manager_buildable_add),
+      	(gtk_ui_manager_buildable_construct_child),
+      	(gtk_ui_manager_buildable_custom_tag_start),
+      	(gtk_ui_manager_buildable_custom_tag_end):
+      	* gtk/gtkwidget.c: (gtk_widget_get_type),
+      	(gtk_widget_buildable_interface_init),
+      	(gtk_widget_buildable_set_name), (gtk_widget_buildable_get_name),
+      	(gtk_widget_buildable_set_property),
+      	(gtk_widget_buildable_parser_finshed), (accel_group_start_element),
+      	(gtk_widget_buildable_custom_tag_start),
+      	(gtk_widget_buildable_custom_finshed):
+      	* gtk/gtkwindow.c: (gtk_window_buildable_interface_init),
+      	(gtk_window_buildable_set_property),
+      	(gtk_window_buildable_parser_finished):
+      	* tests/Makefile.am:
+      	* tests/buildertest.c: (builder_new_from_string), (test_parser),
+      	(signal_normal), (signal_after), (signal_object),
+      	(signal_object_after), (signal_first), (signal_second),
+      	(signal_extra), (signal_extra2), (test_connect_signals),
+      	(test_uimanager_simple), (test_domain), (test_translation),
+      	(test_sizegroup), (test_list_store), (test_tree_store),
+      	(test_types), (test_spin_button), (test_notebook),
+      	(test_construct_only_property), (test_children),
+      	(test_child_properties), (test_treeview_column), (test_icon_view),
+      	(test_combo_box), (test_combo_box_entry), (test_cell_view),
+      	(test_dialog), (test_accelerators), (test_widget), (main):
+      
+      	Add GtkBuilder, fixes #172535
+      	
+      2007-06-15  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c (gtk_builder_add_from_file): 
+      	(gtk_builder_value_from_string_type): 
+      	Use gsize instead of unsigned and gulong instead of long,
+      	fixes complation on OSX, fixes #447987
+      
+      2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+      	
+      	* gtk/Makefile.am: Don't install gtkbuilderprivate.h
+      
+      	* gtk/gtk.h: Include gtkbuilder.h
+      
+      	* NEWS: Updates
+      
+       2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+       
+      	* gtk/gtkbuildable.c:
+      	* gtk/gtkbuilder.c: Documentation fixes
+      
+       	* gtk/gtktreeview.c: Fix up cross-references in docs.
+       	
+       	* gtk/Makefile.am: Don't install gtkbuilderprivate.h
+      2007-06-15  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkuimanager.c: Base class should be GObject, not GtkObject.
+      
+      2007-06-16  Christian Persch  <chpe@gnome.org>
+      
+      	* gtk/gtkbuilder.c: (gtk_builder_real_get_type_from_name),
+      	(gtk_builder_get_type_from_name):
+      	* gtk/gtkbuilder.h: Don't use "typename" C++ keyword as parameter
+      	name. Bug #448193.
+      
+      2007-06-16  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilderparser.c (text): Swap argument order to dgettext
+      	(#448299, Jan Arne Petersen)
+      
+      2007-06-19  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/*: Rename buildable methods to not clash with widget 
+      	methods. (#448928, Torsten Schoenfeld)
+      
+      2007-06-25  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert: Add a script to convert libglade files
+      	to something gtkbuilder can parse.
+      	Fixes #447995
+      
+      2007-06-26  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter.to_xml): Encode 
+      	the output in utf-8 as suggested by Bogdan Nicula
+      
+      2007-06-26  Richard Hult  <richard@imendio.com>
+      
+      	* gtk/gtkbuilder.c: (gtk_builder_value_from_string_type): Fix a
+      	bunch of small bugs when parsing property values
+      	(boolean/int/uint/long/ulong/float/double). Bug #451353.
+      
+      	* tests/buildertest.c: Add tests for the above.
+      
+      2007-06-26  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* demos/gtk-demo/builder.c (do_builder): Connect the
+      	destroy signal in the example instead of the ui file.
+      	Also set the screen and title of the window.
+      	(#451345, Thomas Rydzynski)
+      
+      2007-06-26  Johan Dahlin  <jdahlin@async.com.br>
+       
+      	* gtk/gtkbuilder.h (enum): 
+      	* gtk/gtkbuilderparser.c (end_element): 
+      	* tests/buildertest.c (test_parser): 
+      	Set an error if we encounter properties without values set
+      	(#451303, Philip Withnall)
+      	
+      2007-06-26  Johan Dahlin  <jdahlin@async.com.br>
+       
+      	* tests/buildertest.c (test_object_properties): 
+      	Add a test to check object properties
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilderparser.c: Plug leaks in error code paths
+      
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c: (gtk_builder_get_parameters),
+      	(gtk_builder_value_from_string),
+      	(gtk_builder_value_from_string_type):
+      	* gtk/gtkbuilder.h:
+      	* gtk/gtkcontainer.c: (gtk_container_buildable_set_child_property),
+      	(attributes_text_element):
+      	* gtk/gtkliststore.c: (list_store_text):
+      	* tests/buildertest.c: (test_value_from_string):
+      
+      	Add GtkBuilder and GError arguments to gtk_builder_value_from_string
+      	and gtk_builder_value_from_string_type. (#451428)
+      
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* tests/buildertest.c: (test_value_from_string): 
+      	Check the code and domain of GErrors instead of the string values
+      	
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter._parse): Remove
+      	glade-interface doctype if found.
+      	(GtkBuilderConverter._convert): 
+      	Make sure that we can convert Gazpacho files too.
+   
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c (apply_delayed_properties): 
+      	Print out the name of the right object in the warning
+      	(#451314, Philip Withnall)
+      
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* demos/gtk-demo/demo.ui: Set name of Help menu
+      	to HelpMenu
+      
+      2007-06-27  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilderparser.c (parse_property): Use
+      	the attribute name in the error message instead of
+      	the value.
+      	
+      2007-06-28  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (_indent): Prettify the output by
+      	running it through xmllint --format if xmllint is available 
+      	which also requires the subprocess module only available 
+      	in python 2.4 or later
+      
+      2007-06-29  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c: (gtk_builder_finalize),
+      	(gtk_builder_get_parameters), (_gtk_builder_construct):
+      	* tests/buildertest.c:
+      
+      	Improve reference counting, #447967
+      
+      2007-06-30  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilder.c:
+      	* gtk/gtkbuildable.c: Documentation updates.
+      
+      2007-06-30  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c: (gtk_builder_value_from_string_type):
+      	* gtk/gtkbuilderparser.c: (_gtk_builder_parse_boolean),
+      	(parse_property), (parse_signal):
+      	* gtk/gtkbuilderprivate.h:
+      	* tests/buildertest.c: (test_value_from_string):
+      	Make boolean string parsing consistent, #452464
+      
+      2007-06-30  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilderparser.c: (_get_type_by_symbol), (parse_object),
+      	(parse_child):
+      	* tests/buildertest.c: (test_types):
+      	Move type-func to <object> instead of <child>, add a test to
+      	make sure that it works as desired, #452463
+      
+      2007-06-30  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilderparser.c (_gtk_builder_parse_boolean): 
+      	Use g_ascii_strdown() instead of a rolling our own.
+      
+      2007-06-30  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c:
+      	* gtk/gtkbuilder.h:
+      	* gtk/gtkbuilderparser.c:
+      	* gtk/gtkbuilderprivate.h:
+      	* gtk/gtkwidget.c: 
+      	* tests/buildertest.c:
+      
+      	Improve error handling for enum/flags, rename the converter functions
+      	to be consistent. Add tests. Fixes #452465
+      
+      2007-07-01  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter): 
+      	Convert to getopt, improved documentation, change
+      	the script to require two arguments
+      
+      2007-07-03  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkdialog.c (gtk_dialog_buildable_custom_finished): Mimic the behavior
+      	of gtk_dialog_add_action_widget closer, to make clicking on the buttons
+      	actually work.
+      
+      2007-07-03  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter._strip_root): Add a
+      	--root option. Filter empty properties. Convert GtkAdjustments.
+      
+      2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkcelllayout.c (attributes_text_element): Report
+      	errors about integer parsing back up.  (#452988)
+      
+      	* tests/buildertest.c: Add an extra check.
+      
+      2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilder.c: Fix some typos in docs.  (#452278,
+      	Adam Schreiber)
+      
+      2007-07-04  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert:
+      	Add support for converting GtkComboBox items, also make sure
+      	that we support more than one GtkAdjustment in a file
+      
+      2007-07-04  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkcelllayout.c (_gtk_cell_layout_buildable_add_child): 
+      	pack children from the start instead of the end, this should
+      	probably be made configurable at some point.
+      
+      2007-07-05  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilder.c: Support pixbuf properties by specifying
+      	a filename as the property value.  (#447966)
+      
+      2007-07-06  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilder.c (gtk_builder_get_type_from_name): Add a missing
+      	semi-colon in the doc string, spotted by Johannes Sasonko
+      
+      2007-07-07  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter._convert_textview_text): 
+      	Convert GtkTextView::text properties
+      	(GtkBuilderConverter): Refactor; Optimize widget lookups by not
+      	traversing the whole tree.
+      	Use a common api to create sizegroups, actiongroups and uimanagers
+      	to avoid name conflicts.
+      	Output newly created objects sorted by id before the old roots under
+      	<interface>
+      	(GtkBuilderConverter._parse): Remove unsupported atkrelation and atkproperty
+      	tags
+      	(GtkBuilderConverter._convert_menuitem): Add support for CheckMenuItems
+      	and do not set name and action on separators
+      	(GtkBuilderConverter._add_action_from_menuitem): Only set stock_id
+      	on the action if the menuitem had a stock or label property set
+      2007-07-08  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkwidget.c (gtk_widget_buildable_custom_tag_start): 
+      	Parse <accessibility> but don't do anything yet.
+      	* gtk/gtk-builder-convert (GtkBuilderConverter._parse): 
+      	Do not strip atk/accessibility tags
+      	* tests/buildertest.c (test_widget): 
+      	Test this
+      	
+      2007-07-07  Matthias Clasen <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilderprivate.h:
+      	* gtk/gtkbuilderparser.c: Support context and comments
+      	for properties.
+      
+      2007-07-08  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtkbuilderparser.c (parse_signal): Parse last_modification_time
+      	attribute in <signal> tag
+      
+      2007-07-08  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert (GtkBuilderConverter._convert_menuitem): Convert
+      	GtkMenus which are not part of a GtkMenuBar. Also move over activate signals
+      	when converting a GtkMenuItem subclass to an action. 
+      	(#454830, Bastien Nocera)
+      
+      2007-07-08  Johan Dahlin  <jdahlin@async.com.br>
+      
+      	* gtk/gtk-builder-convert: Improve the way properties
+      	are copied over from a menuitem to an action.
+      	
+      2007-07-08  Matthias Clasen  <mclasen@redhat.com>
+      
+      	* gtk/gtkbuilderparser.c (pgettext): Support old-style
+      	message contexts, too. 
+      
+      2007-07-09  Johan Dahlin,,,  <jdahlin@lozenge>
+      
+      	* demos/gtk-demo/demo.ui:
+      	* gtk/gtk-builder-convert:
+      	* gtk/gtkactiongroup.c: (gtk_action_group_buildable_init),
+      	(gtk_action_group_buildable_add_child),
+      	(accelerator_start_element),
+      	(gtk_action_group_buildable_custom_tag_start),
+      	(gtk_action_group_buildable_custom_tag_end):
+      	* gtk/gtkuimanager.c: (child_hierarchy_changed_cb),
+      	(gtk_ui_manager_buildable_construct_child):
+      	* tests/buildertest.c: (test_uimanager_simple):
+      
+      	Add actiongroup/action accelerator support for builder. #454654
+      
+   2007-07-10  Matthias Clasen  <mclasen@redhat.com>
+   
+   	* gtk/gtk-builder-convert: Fix a typo
+   
+   2007-08-07  Johan Dahlin  <jdahlin@async.com.br>
+   
+   	* gtk/gtkbuilderparser.c (text): 
+   	* gtk/gtkcelllayout.c (attributes_text_element): 
+   	* gtk/gtkliststore.c (list_store_text): 
+   	Do not assume that text is null-terminated as pointed out by
+   	Christopher Fergeau
+   
+   	* gtk/gtkbuilderparser.c (text): Use g_strdup on the translated
+   	string instead of g_strndup() + the length of the untranslated
+   	string. (#461945, Claude Paroz)
+   
+   2007-08-23  Jan Arne Petersen  <jpetersen@jpetersen.org>
+   
+   	* gtk/gtkbuilderparser.c: (text): Duplicate the string returned by
+   	d[n]gettext before it is potentially freed. (#461945)
+   
 2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkarrow.c (gtk_arrow_class_init): add doc for

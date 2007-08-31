@@ -18,6 +18,9 @@
  */
 
 #include <config.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
 #include "gtkcelllayout.h"
 #include "gtkintl.h"
 #include "gtkalias.h"
@@ -281,6 +284,135 @@ gtk_cell_layout_reorder (GtkCellLayout   *cell_layout,
   (* GTK_CELL_LAYOUT_GET_IFACE (cell_layout)->reorder) (cell_layout,
                                                         cell,
                                                         position);
+}
+
+typedef struct {
+  GtkCellLayout   *cell_layout;
+  GtkCellRenderer *renderer;
+  gchar           *attr_name;
+} AttributesSubParserData;
+
+static void
+attributes_start_element (GMarkupParseContext *context,
+			  const gchar         *element_name,
+			  const gchar        **names,
+			  const gchar        **values,
+			  gpointer             user_data,
+			  GError             **error)
+{
+  AttributesSubParserData *parser_data = (AttributesSubParserData*)user_data;
+  guint i;
+
+  if (strcmp (element_name, "attribute") == 0)
+    for (i = 0; names[i]; i++)
+      if (strcmp (names[i], "name") == 0)
+	parser_data->attr_name = g_strdup (values[i]);
+  else if (strcmp (element_name, "attributes") == 0)
+    return;
+  else
+    g_warning ("Unsupported tag for GtkCellLayout: %s\n", element_name);
+}
+
+static void
+attributes_text_element (GMarkupParseContext *context,
+			 const gchar         *text,
+			 gsize                text_len,
+			 gpointer             user_data,
+			 GError             **error)
+{
+  AttributesSubParserData *parser_data = (AttributesSubParserData*)user_data;
+  glong l;
+  gchar *endptr;
+  gchar *string;
+  
+  if (!parser_data->attr_name)
+    return;
+
+  errno = 0;
+  string = g_strndup (text, text_len);
+  l = strtol (string, &endptr, 0);
+  if (errno || endptr == string)
+    {
+      g_set_error (error, 
+                   GTK_BUILDER_ERROR,
+                   GTK_BUILDER_ERROR_INVALID_VALUE,
+                   "Could not parse integer `%s'",
+                   string);
+      g_free (string);
+      return;
+    }
+  g_free (string);
+
+  gtk_cell_layout_add_attribute (parser_data->cell_layout,
+				 parser_data->renderer,
+				 parser_data->attr_name, l);
+  g_free (parser_data->attr_name);
+  parser_data->attr_name = NULL;
+}
+
+static const GMarkupParser attributes_parser =
+  {
+    attributes_start_element,
+    NULL,
+    attributes_text_element,
+  };
+
+gboolean
+_gtk_cell_layout_buildable_custom_tag_start (GtkBuildable  *buildable,
+					     GtkBuilder    *builder,
+					     GObject       *child,
+					     const gchar   *tagname,
+					     GMarkupParser *parser,
+					     gpointer      *data)
+{
+  AttributesSubParserData *parser_data;
+
+  if (!child)
+    return FALSE;
+
+  if (strcmp (tagname, "attributes") == 0)
+    {
+      parser_data = g_slice_new0 (AttributesSubParserData);
+      parser_data->cell_layout = GTK_CELL_LAYOUT (buildable);
+      parser_data->renderer = GTK_CELL_RENDERER (child);
+      parser_data->attr_name = NULL;
+
+      *parser = attributes_parser;
+      *data = parser_data;
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+void
+_gtk_cell_layout_buildable_custom_tag_end (GtkBuildable *buildable,
+					   GtkBuilder   *builder,
+					   GObject      *child,
+					   const gchar  *tagname,
+					   gpointer     *data)
+{
+  AttributesSubParserData *parser_data;
+
+  parser_data = (AttributesSubParserData*)data;
+  g_assert (!parser_data->attr_name);
+  g_slice_free (AttributesSubParserData, parser_data);
+}
+
+void
+_gtk_cell_layout_buildable_add_child (GtkBuildable      *buildable,
+				      GtkBuilder        *builder,
+				      GObject           *child,
+				      const gchar       *type)
+{
+  GtkCellLayoutIface *iface;
+  
+  g_return_if_fail (GTK_IS_CELL_LAYOUT (buildable));
+  g_return_if_fail (GTK_IS_CELL_RENDERER (child));
+
+  iface = GTK_CELL_LAYOUT_GET_IFACE (buildable);
+  g_return_if_fail (iface->pack_start != NULL);
+  iface->pack_start (GTK_CELL_LAYOUT (buildable), GTK_CELL_RENDERER (child), FALSE);
 }
 
 #define __GTK_CELL_LAYOUT_C__

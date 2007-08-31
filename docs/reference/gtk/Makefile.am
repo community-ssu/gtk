@@ -124,6 +124,7 @@ content_files =					\
 	migrating-GtkAssistant.sgml		\
 	migrating-GtkRecentChooser.sgml 	\
 	migrating-GtkLinkButton.sgml		\
+	migrating-GtkBuilder.sgml		\
 	objects_grouped.sgml			\
 	osx.sgml				\
 	question_index.sgml			\

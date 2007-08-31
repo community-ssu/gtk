@@ -18,6 +18,7 @@
  */
 
 #include <config.h>
+#include <string.h>
 #include "gtkcomboboxentry.h"
 #include "gtkcelllayout.h"
 
@@ -26,6 +27,7 @@
 
 #include "gtkprivate.h"
 #include "gtkintl.h"
+#include "gtkbuildable.h"
 #include "gtkalias.h"
 
 #define GTK_COMBO_BOX_ENTRY_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_COMBO_BOX_ENTRY, GtkComboBoxEntryPrivate))
@@ -58,6 +60,10 @@ static void gtk_combo_box_entry_grab_focus       (GtkWidget *widget);
 static void has_frame_changed                    (GtkComboBoxEntry      *entry_box,
 						  GParamSpec            *pspec,
 						  gpointer               data);
+static void gtk_combo_box_entry_buildable_interface_init     (GtkBuildableIface *iface);
+static GObject * gtk_combo_box_entry_buildable_get_internal_child (GtkBuildable *buildable,
+						     GtkBuilder   *builder,
+						     const gchar  *childname);
 
 enum
 {
@@ -65,7 +71,9 @@ enum
   PROP_TEXT_COLUMN
 };
 
-G_DEFINE_TYPE (GtkComboBoxEntry, gtk_combo_box_entry, GTK_TYPE_COMBO_BOX)
+G_DEFINE_TYPE_WITH_CODE (GtkComboBoxEntry, gtk_combo_box_entry, GTK_TYPE_COMBO_BOX,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE,
+						gtk_combo_box_entry_buildable_interface_init))
 
 static void
 gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
@@ -125,6 +133,23 @@ gtk_combo_box_entry_init (GtkComboBoxEntry *entry_box)
                     G_CALLBACK (gtk_combo_box_entry_active_changed), NULL);
   has_frame_changed (entry_box, NULL, NULL);
   g_signal_connect (entry_box, "notify::has-frame", G_CALLBACK (has_frame_changed), NULL);
+}
+
+static void
+gtk_combo_box_entry_buildable_interface_init (GtkBuildableIface *iface)
+{
+  iface->get_internal_child = gtk_combo_box_entry_buildable_get_internal_child;
+}
+
+static GObject *
+gtk_combo_box_entry_buildable_get_internal_child (GtkBuildable *buildable,
+						  GtkBuilder   *builder,
+						  const gchar  *childname)
+{
+    if (strcmp (childname, "entry") == 0)
+      return G_OBJECT (gtk_bin_get_child (GTK_BIN (buildable)));
+
+    return NULL;
 }
 
 static void

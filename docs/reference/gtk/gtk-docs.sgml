@@ -14,6 +14,8 @@
 <!ENTITY GtkBin SYSTEM "xml/gtkbin.xml">
 <!ENTITY GtkBox SYSTEM "xml/gtkbox.xml">
 <!ENTITY GtkButton SYSTEM "xml/gtkbutton.xml">
+<!ENTITY GtkBuildable SYSTEM "xml/gtkbuildable.xml">
+<!ENTITY GtkBuilder SYSTEM "xml/gtkbuilder.xml">
 <!ENTITY GtkCalendar SYSTEM "xml/gtkcalendar.xml">
 <!ENTITY GtkCheckButton SYSTEM "xml/gtkcheckbutton.xml">
 <!ENTITY GtkCheckMenuItem SYSTEM "xml/gtkcheckmenuitem.xml">
@@ -220,6 +222,7 @@
 <!ENTITY gtk-migrating-GtkAssistant SYSTEM "xml/migrating-GtkAssistant.sgml">
 <!ENTITY gtk-migrating-GtkRecentChooser SYSTEM "xml/migrating-GtkRecentChooser.sgml">
 <!ENTITY gtk-migrating-GtkLinkButton SYSTEM "xml/migrating-GtkLinkButton.sgml">
+<!ENTITY gtk-migrating-GtkBuilder SYSTEM "xml/migrating-GtkBuilder.sgml">
 <!ENTITY version SYSTEM "version.xml">
 <!ENTITY gtk-query-immodules SYSTEM "gtk-query-immodules-2.0.xml">
 <!ENTITY gtk-update-icon-cache SYSTEM "gtk-update-icon-cache.xml">
@@ -594,6 +597,12 @@ that is, GUI components such as <link linkend="GtkButton">GtkButton</link> or
       &GtkRecentFilter;
     </chapter>
 
+    <chapter id="Builder">
+      <title>Interface builder</title>
+      &GtkBuildable;
+      &GtkBuilder;
+    </chapter>
+
     <chapter id="DeprecatedObjects">
       <title>Deprecated</title>
         &GtkCList;      
@@ -639,6 +648,7 @@ that is, GUI components such as <link linkend="GtkButton">GtkButton</link> or
     &gtk-migrating-GtkAssistant;
     &gtk-migrating-GtkRecentChooser;
     &gtk-migrating-GtkLinkButton;
+    &gtk-migrating-GtkBuilder;
   </part>
 
   <part>
