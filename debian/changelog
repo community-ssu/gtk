@@ -1,3 +1,17 @@
+gtk+2.0 (2:2.10.12-0osso14) unstable; urgency=low
+
+  * Add maemo-min-size and maemo-aspect-ratio style properties for
+    GtkArrow for fine grained control of their size. Fixes: NB#66402
+  * Add "submenu" property. Fix gtk_menu_item_set_submenu() to accept
+    NULL submenus and deprecate gtk_menu_item_remove_submenu() because
+    we have a properly working setter now. Fixes: MB#1701, NB#66518
+  * Clamp GtkEntryCompletion popup to the available space. Fixes: NB#55607
+  * Add arrow-scale property for GtkMenuItem.
+  * Add again the gtk grab to the popup window in entrycompletion.
+    Fixes: NB#66055
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 31 Aug 2007 14:59:47 +0300
+
 gtk+2.0 (2:2.10.12-0osso13) unstable; urgency=low
 
   * debian/rules: update shlibs to >= 2:2.10.12-osso13
@@ -44,7 +58,6 @@ gtk+2.0 (2:2.10.12-0osso9) unstable; urgency=low
     the new window if it were a temporary window itself. Fixes: NB#52664
 
  -- Xan Lopez <xan.lopez@nokia.com>  Thu,  2 Aug 2007 18:59:08 +0300
-
 
 gtk+2.0 (2:2.10.12-0osso8) unstable; urgency=low
 

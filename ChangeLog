@@ -1,3 +1,11 @@
+2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popdown): add the
+	gtk grab for the popup window. This way the popup at least will close
+	when the user clicks outside it but in the same app/process.
+
+	Fixes: NB#66055
+
 2007-08-31  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c: add an arrow-scaling style property which allows
