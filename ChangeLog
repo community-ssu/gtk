@@ -1,5 +1,14 @@
 2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkarrow.c (gtk_arrow_class_init): add doc for
+	GtkArrow::maemo-min-size and GtkArrow::maemo-aspect-ratio
+	style properties.
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_class_init): add doc for
+	GtkMenuItem::arrow-scaling style property.
+
+2007-08-31  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popdown): add the
 	gtk grab for the popup window. This way the popup at least will close
 	when the user clicks outside it but in the same app/process.

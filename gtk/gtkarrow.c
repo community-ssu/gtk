@@ -102,6 +102,15 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                                GTK_PARAM_READABLE));
 
 #if defined(MAEMO_CHANGES)
+  /**
+   *
+   * GtkArrow::maemo-min-size
+   *
+   * Specifies the minimum width and height for the arrow.
+   *
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("maemo-min-size",
                                                              P_("Arrow Minimum Size"),
@@ -110,7 +119,16 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                              G_MAXINT,
                                                              15,
                                                              GTK_PARAM_READABLE));
-
+  /**
+   *
+   * GtkArrow::maemo-aspect-ratio
+   *
+   * Sets the height of the arrow as height = aspect-ratio * width. By default it's 1.0,
+   * for a square arrow.
+   *
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_float ("maemo-aspect-ratio",
                                                                P_("Aspect Ratio"),

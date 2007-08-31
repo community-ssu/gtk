@@ -241,7 +241,15 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
 							     G_MAXINT,
 							     10,
 							     GTK_PARAM_READABLE));
-
+  /**
+   *
+   * GtkMenuItem::arrow-scaling
+   *
+   * Arbitrary constant to scale up or down the size of the arrow in menuitems.
+   * 
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_float ("arrow-scaling",
                                                                P_("Arrow Scaling"),
