@@ -1415,26 +1415,32 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
   n_rects = nitems_return/4;
 
-  if (ret_val == Success && n_rects > 0)
+  if (ret_val == Success)
     {
       int i, j;
       GdkRectangle widget_rect;
-      GdkRectangle *rectangles = g_slice_alloc (sizeof(GdkRectangle)*n_rects);
+      GdkRectangle *rectangles = NULL;
       gint root_x, root_y;
       GdkRectangle *top = NULL, *bottom = NULL;
       gint to_top = -1, to_bottom = -1;
 
       val = (guint32*)data;
 
-      for (i = 0, j = 0; j < n_rects; i+=4, j++)
+      if (n_rects > 0)
         {
-          rectangles[j].x = val[i];
-          rectangles[j].y = val[i+1];
-          rectangles[j].width = val[i+2];
-          rectangles[j].height = val[i+3];
+          rectangles = g_slice_alloc (sizeof(GdkRectangle)*n_rects);
+
+          for (i = 0, j = 0; j < n_rects; i+=4, j++)
+            {
+              rectangles[j].x = val[i];
+              rectangles[j].y = val[i+1];
+              rectangles[j].width = val[i+2];
+              rectangles[j].height = val[i+3];
+            }
         }
 
-      XFree (data);
+      if (nitems_return > 0)
+        XFree (data);
 
       gdk_window_get_origin (completion->priv->entry->window, &root_x, &root_y);
 
@@ -1461,6 +1467,7 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
                 }
             }
         }
+
       /* Which one is nearer */
       if (top)
         to_top = root_y - (top->y + top->height);
@@ -1494,7 +1501,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
           y -= popup_req.height;
         }
 
-      g_slice_free1 (sizeof(GdkRectangle)*n_rects, rectangles);
+      if (rectangles)
+        g_slice_free1 (sizeof(GdkRectangle)*n_rects, rectangles);
     }
   else
 #endif /* MAEMO_CHANGES && GDK_WINDOWING_X11 */
