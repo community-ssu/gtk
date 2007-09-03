@@ -10635,9 +10635,11 @@ gtk_tree_view_real_expand_collapse_cursor_row (GtkTreeView *tree_view,
   if (_gtk_tree_view_find_node (tree_view, cursor_path, &tree, &node))
     return FALSE;
 
+#ifndef MAEMO_CHANGES
   /* Don't handle the event if we aren't an expander */
   if (!((node->flags & GTK_RBNODE_IS_PARENT) == GTK_RBNODE_IS_PARENT))
     return FALSE;
+#endif /* !MAEMO_CHANGES */
 
   if (!logical
       && gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL)

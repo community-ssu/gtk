@@ -1,3 +1,9 @@
+2007-09-03  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_real_expand_collapse_cursor):
+	don't do the GTK_RBNODE_IS_PARENT check, since the left/right keys
+	should also move focus on child nodes. (NB#64664).
+
 2007-08-24  Sven Herzberg  <sven@imendio.com>
 
 	* Updated GtkBuilder backport to the state of August, 7th
