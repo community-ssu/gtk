@@ -1,5 +1,11 @@
 2007-09-06  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_button_press): set
+	event->window as tah_window instead of widget->window.  (Fixes
+	NB#66174).
+
+2007-09-06  Kristian Rietveld  <kris@imendio.com>
+
 	Delay vertical auto scrolling until an additional row has been
 	selected via pen dragging. (Fixes NB#60326).
 

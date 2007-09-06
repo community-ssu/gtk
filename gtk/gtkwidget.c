@@ -9138,7 +9138,7 @@ gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
 			       NULL, &td->x, &td->y, NULL);
 
       td->timer_counter = TAP_AND_HOLD_TIMER_COUNTER;
-      td->tah_on_window = widget->window;
+      td->tah_on_window = ((GdkEventButton *)event)->window;
 
       tap_and_hold_init_animation (td);
       td->timer_id = g_timeout_add (td->interval,
