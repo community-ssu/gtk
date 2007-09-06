@@ -4027,6 +4027,10 @@ gtk_tree_view_update_rubber_band_selection_range (GtkTreeView *tree_view,
 	    GTK_RBNODE_UNSET_FLAG (start_node, GTK_RBNODE_IS_SELECTED);
 	}
 
+#ifdef MAEMO_CHANGES
+      add_scroll_timeout (tree_view);
+#endif /* MAEMO_CHANGES */
+
       _gtk_tree_view_queue_draw_node (tree_view, start_tree, start_node, NULL);
 
 #ifdef MAEMO_CHANGES
@@ -4324,7 +4328,9 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
     {
       gtk_tree_view_update_rubber_band (tree_view);
 
+#ifndef MAEMO_CHANGES
       add_scroll_timeout (tree_view);
+#endif /* MAEMO_CHANGES */
     }
 
   /* only check for an initiated drag when a button is pressed */

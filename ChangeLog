@@ -1,5 +1,16 @@
 2007-09-06  Kristian Rietveld  <kris@imendio.com>
 
+	Delay vertical auto scrolling until an additional row has been
+	selected via pen dragging. (Fixes NB#60326).
+
+	* gtk/gtktreeview.c (gtk_tree_view_update_rubber_band_selection):
+	start scrolling after an additional row has been selected via
+	pen dragging,
+	(gtk_tree_view_motion_bin_window): don't edge scrolling as soon as
+	we receive a motion event.
+
+2007-09-06  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_focus): bail out if can-focus is
 	FALSE. (NB#65181).
 
