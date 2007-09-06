@@ -8279,7 +8279,11 @@ gtk_tree_view_focus (GtkWidget        *widget,
   container = GTK_CONTAINER (widget);
   tree_view = GTK_TREE_VIEW (widget);
 
-  if (!GTK_WIDGET_IS_SENSITIVE (container))
+  if (!GTK_WIDGET_IS_SENSITIVE (container)
+#ifdef MAEMO_CHANGES
+      || !GTK_WIDGET_CAN_FOCUS (widget)
+#endif /* MAEMO_CHANGES */
+      )
     return FALSE;
 
   focus_child = container->focus_child;

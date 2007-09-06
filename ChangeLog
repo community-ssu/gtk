@@ -1,3 +1,8 @@
+2007-09-06  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_focus): bail out if can-focus is
+	FALSE. (NB#65181).
+
 2007-09-03  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_real_expand_collapse_cursor):
