@@ -1,3 +1,11 @@
+2007-09-10  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from upstream:
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): only start
+	typeahead search if tree_view has focus (and not one of the column
+	buttons).
+
 2007-09-06  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_button_press): set
