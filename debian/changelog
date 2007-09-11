@@ -1,5 +1,12 @@
-gtk+2.0 (2:2.10.12-0osso15) UNRELEASED; urgency=low
+gtk+2.0 (2:2.10.12-0osso15) unstable; urgency=low
 
+  * set event->window as tah_window instead of widget->window on button-press
+    while doing tap-and-hold. Fixes: NB#66174
+  * Delay vertical auto scrolling until an additional row has been
+    selected via pen dragging. Fixes: NB#60326
+  * bail out if can-focus is FALSE on GtkTreeView. Fixes: NB#65181
+  * don't do the GTK_RBNODE_IS_PARENT check in
+    gtk_tree_view_real_expand_collapse_cursor. Fixes: NB#64664
   * Add GtkBuilder backport from upstream gtk+.
     Fixes: MB#1721
 
