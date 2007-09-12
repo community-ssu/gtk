@@ -1,3 +1,10 @@
+2007-09-12 13:14:34  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtknotebook.c: make tabs scrollable and homogeneous by default
+	if MAEMO_CHANGES is defined.
+	(gtk_notebook_real_insert_page): expand notebook pages by default for
+	the homogeneous setting to take effect.
+
 2007-09-10  Kristian Rietveld  <kris@imendio.com>
 
 	Merge from upstream:

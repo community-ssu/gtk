@@ -1000,6 +1000,10 @@ gtk_notebook_init (GtkNotebook *notebook)
   notebook->child_has_focus = FALSE;
   notebook->have_visible_child = FALSE;
   notebook->focus_out = FALSE;
+#ifdef MAEMO_CHANGES
+  notebook->homogeneous = TRUE;
+  notebook->scrollable = TRUE;
+#endif
 
   notebook->has_before_previous = 1;
   notebook->has_before_next     = 0;
@@ -3990,6 +3994,9 @@ gtk_notebook_real_insert_page (GtkNotebook *notebook,
   page->tab_label = tab_label;
   page->menu_label = menu_label;
   page->expand = FALSE;
+#ifdef MAEMO_CHANGES
+  page->expand = TRUE;
+#endif
   page->fill = TRUE;
   page->pack = GTK_PACK_START; 
 
