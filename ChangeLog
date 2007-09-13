@@ -1,3 +1,13 @@
+Thu Sep 13 13:40:50 2007  Tim Janik  <timj@imendio.com>
+
+	Fix for NB#59279.
+
+	* gtk/gtkrange.c (gtk_range_adjustment_value_changed): removed code
+	that forced range repaints upon every motion event, because these tend
+	to stall other repaints on slower devices.
+	added a timer to still force repaints every once in a while (roughly
+	5Hz atm) to avoid leaving the user without feedback on the range.
+
 2007-09-12 13:14:34  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtknotebook.c: make tabs scrollable and homogeneous by default
