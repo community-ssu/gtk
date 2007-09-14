@@ -149,6 +149,7 @@ expand_content_files = 				\
 	migrating-GtkAssistant.sgml		\
 	migrating-GtkRecentChooser.sgml 	\
 	migrating-GtkLinkButton.sgml		\
+	migrating-GtkBuilder.sgml		\
 	tree_widget.sgml			\
 	text_widget.sgml			\
 	question_index.sgml

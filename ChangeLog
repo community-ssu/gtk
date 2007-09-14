@@ -1,3 +1,7 @@
+2007-07-26  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* docs/reference/gtk/Makefile.am: fix GtkBuilder documentation build.
+
 Thu Sep 13 13:40:50 2007  Tim Janik  <timj@imendio.com>
 
 	Fix for NB#59279.
