@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.10.12-0osso16) unstable; urgency=low
+
+  * Use the reintroduced GScanner cache. Addresses NB#61907
+  * Constrain wrap width by 85% of the screen width instead of 50% for
+    labels. Fixes: NB#63754.
+  * Repaints GtkRange at 5Hz on scrolling. Fixes: NB#59279
+  * Notebook and TreeView fixes.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Mon, 17 Sep 2007 17:53:55 +0300
+
 gtk+2.0 (2:2.10.12-0osso15) unstable; urgency=low
 
   * set event->window as tah_window instead of widget->window on button-press
