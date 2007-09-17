@@ -2221,6 +2221,11 @@ gtk_rc_parse_any (GtkRcContext *context,
       g_assert (input_string == NULL);
       
       g_scanner_input_file (scanner, input_fd);
+
+#ifdef MAEMO_CHANGES
+      if (input_name)
+        hildon_g_scanner_cache_open (scanner, input_name);
+#endif /* MAEMO_CHANGES */
     }
   else
     {
@@ -2799,6 +2804,25 @@ gtk_rc_parse_assignment (GScanner      *scanner,
 static gboolean
 is_c_identifier (const gchar *string)
 {
+#ifdef MAEMO_CHANGES
+  if ((string[0] >= 'a' && string[0] <= 'z') ||
+      (string[0] >= 'A' && string[0] <= 'Z') ||
+      string[0] == '_')
+    {
+      const gchar *p;
+
+      for (p = string + 1; *p ; p++)
+        if (! ((*p >= 'a' && *p <= 'z') ||
+               (*p >= 'A' && *p <= 'Z') ||
+               (*p >= '0' && *p <= '9') ||
+               *p == '-' || *p == '_'))
+          return FALSE;
+
+      return TRUE;
+    }
+
+  return FALSE;
+#else /* !MAEMO_CHANGES */
   const gchar *p;
   gboolean is_varname;
 
@@ -2807,6 +2831,7 @@ is_c_identifier (const gchar *string)
     is_varname &= strchr (G_CSET_DIGITS "-_" G_CSET_a_2_z G_CSET_A_2_Z, *p) != NULL;
 
   return is_varname;
+#endif /* MAEMO_CHANGES */
 }
 
 static void

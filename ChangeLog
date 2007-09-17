@@ -1,3 +1,13 @@
+2007-09-17  Michael Natterer  <mitch@imendio.com>
+
+	Reintroduce GScanner cache. Addresses NB#61907:
+
+	* gtk/gtkrc.c (gtk_rc_parse_any): call the reintroduced
+	hildon_g_scanner_cache_open()
+
+	(is_c_identifier): speed up by replacing strchr() by an if()
+	construct. See upstream bug #476903.
+
 2007-09-14 13:24:14  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtklabel.c (gtk_label_ensure_layout): constrain wrap width by 85%
