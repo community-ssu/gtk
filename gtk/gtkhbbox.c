@@ -287,6 +287,8 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
       for (i = 0; i < *nvis_children; i++)
         children_widths[i] = child_width;
     }
+
+  return children_widths;
 }
 
 static void

@@ -1,5 +1,10 @@
 2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): Remember to
+	return the array.
+
+2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkmenu.c (gtk_menu_class_init, gtk_menu_paint): Add
 	maemo-arrow-scaling style property. NB#68989
 
