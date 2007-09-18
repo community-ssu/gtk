@@ -1,3 +1,16 @@
+2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Patch from Xan Lopez, with small cleanups.
+
+	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): New function to
+	calculate the widths for all visible child widgets, and primary and
+	secondary button groups. If there is not enough space for the buttons
+	to have homogeneous width, each button gets their size requisition +
+	any extra space evenly divided between the children.
+	(gtk_hbutton_box_size_allocate): Refactored to not assume homogeneous
+	layout and deal with heterogeneous layout.
+	NB#63578
+
 2007-09-17  Michael Natterer  <mitch@imendio.com>
 
 	Reintroduce GScanner cache. Addresses NB#61907:

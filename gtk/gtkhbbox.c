@@ -164,7 +164,257 @@ gtk_hbutton_box_size_request (GtkWidget      *widget,
 }
 
 
+#if defined(MAEMO_CHANGES)
+/* This function is pretty much an abomination against reason.
+   More or less it's supposed to:
+   - If an homogeneous layout is possible:
+   + primary_width and secondary_width will be the sizes of the primary and
+     secondary groups (basically the homogeneous width times the number of items).
+   + children_widths will contain the homogeneous width for all items
 
+   - If an homogeneous layout is NOT possible:
+   + primary_width and secondary_width will contain the sum of the widths for each
+     group
+   + children_width will contain the heterogeneous width of each button, being this
+     its requisition plus any possible extra width added
+
+   All the other parameters come straight from _gtk_button_box_child_requisition
+*/
+static gint*
+gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
+                                    gint *primary_width,
+                                    gint *secondary_width,
+                                    gint *child_height,
+                                    gint *nvis_children,
+                                    gint *n_secondaries)
+{
+  GtkAllocation *allocation = &widget->allocation;
+  gint *children_widths;
+  gint child_width;
+  gint total_width;
+  gint total_spacing;
+  gint i;
+
+  _gtk_button_box_child_requisition (widget,
+                                     nvis_children,
+                                     n_secondaries,
+                                     &child_width,
+                                     child_height);
+
+  children_widths = g_slice_alloc (sizeof (gint) * (*nvis_children));
+
+  total_width = *nvis_children * child_width;
+  total_spacing = (*nvis_children - 1) * GTK_BOX (widget)->spacing;
+
+  if (total_width + total_spacing > allocation->width)
+    {
+      /* homogeneous allocation too wide to fit container, shrink the buttons
+       * to their size requisition */
+      GList *children;
+      gint extra_space;
+
+      *primary_width = 0;
+      *secondary_width = 0;
+      children = GTK_BOX (widget)->children;
+      i = 0;
+
+      while (children)
+        {
+          GtkBoxChild *child = children->data;
+          GtkWidget *child_widget = child->widget;
+          children = children->next;
+
+          if (GTK_WIDGET_VISIBLE (child_widget))
+            {
+              GtkRequisition req;
+
+	      /* FIXME: take child-min-width and child-internal-pad-x style
+	       * properties into account
+	       */
+
+              gtk_widget_size_request (child_widget, &req);
+
+              if (! child->is_secondary)
+                *primary_width += req.width;
+              else
+                *secondary_width += req.width;
+
+              children_widths[i++] = req.width;
+            }
+        }
+
+      total_width = *primary_width + *secondary_width;
+      extra_space = allocation->width - (total_width + total_spacing);
+
+      /* If extra space available, distribute it evenly to the buttons.
+       * XXX: Smallest buttons should probably get the biggest share instead,
+       *      to maximize button sizes and approximate homogeneous allocation.
+       *
+       * XXX: If extra_space is < 0 the layout will be broken (label truncation
+       *      etc.) but we should still shrink the children
+       */
+      if (extra_space > 0)
+        {
+          gint extra;
+
+          extra = extra_space / *nvis_children;
+          children = GTK_BOX (widget)->children;
+          i = 0;
+
+          while (children)
+            {
+              GtkBoxChild *child = children->data;
+              GtkWidget *child_widget = child->widget;
+              children = children->next;
+
+              if (GTK_WIDGET_VISIBLE (child_widget))
+                {
+                  children_widths[i++] += extra;
+
+                  if (! child->is_secondary)
+                    *primary_width += extra;
+                  else
+                    *secondary_width += extra;
+                }
+            }
+        }
+    }
+  else
+    {
+      /* homogeneous allocation */
+      *primary_width = child_width * (*nvis_children - *n_secondaries);
+      *secondary_width = child_width * *n_secondaries;
+      for (i = 0; i < *nvis_children; i++)
+        children_widths[i] = child_width;
+    }
+}
+
+static void
+gtk_hbutton_box_size_allocate (GtkWidget     *widget,
+			       GtkAllocation *allocation)
+{
+  gint primary_width, secondary_width, child_height;
+  gint *children_widths;
+  gint x, y;
+  gint secondary_x;
+  gint nvis_children, n_secondaries, childspacing;
+  gint n_primaries, inner_width;
+  GList *children;
+  GtkBoxChild *child;
+  gint i;
+  GtkButtonBoxStyle layout;
+
+  widget->allocation = *allocation;
+
+  children_widths = gtk_hbutton_box_get_children_sizes (widget,
+							&primary_width,
+							&secondary_width,
+							&child_height,
+							&nvis_children,
+							&n_secondaries);
+
+  n_primaries = nvis_children - n_secondaries;
+  inner_width = allocation->width - 2 * GTK_CONTAINER (widget)->border_width;
+#define primary_spacing   (childspacing * (n_primaries - 1))
+#define secondary_spacing (childspacing * (n_secondaries - 1))
+
+  layout = GTK_BUTTON_BOX (widget)->layout_style != GTK_BUTTONBOX_DEFAULT_STYLE
+    ? GTK_BUTTON_BOX (widget)->layout_style : default_layout_style;
+
+  switch (layout)
+    {
+    case GTK_BUTTONBOX_SPREAD:
+      childspacing = (inner_width
+                      - (primary_width + secondary_width)) / (nvis_children + 1);
+      x = allocation->x + GTK_CONTAINER (widget)->border_width + childspacing;
+      secondary_x = x + primary_width + primary_spacing + childspacing;
+      break;
+    case GTK_BUTTONBOX_EDGE:
+      if (nvis_children >= 2)
+        {
+          childspacing = (inner_width
+                          - (primary_width + secondary_width)) / (nvis_children + 1);
+          x = allocation->x + GTK_CONTAINER (widget)->border_width;
+          secondary_x = x + primary_width + primary_spacing + childspacing;
+        }
+      else
+        {
+          /* one or zero children, just center */
+          childspacing = inner_width;
+          x = secondary_x = allocation->x + (allocation->width - primary_width) / 2;
+        }
+      break;
+    case GTK_BUTTONBOX_START:
+      childspacing = GTK_BOX (widget)->spacing;
+      x = allocation->x + GTK_CONTAINER (widget)->border_width;
+      secondary_x = allocation->x + allocation->width
+        - secondary_width
+        - secondary_spacing
+        - GTK_CONTAINER (widget)->border_width;
+      break;
+    case GTK_BUTTONBOX_END:
+      childspacing = GTK_BOX (widget)->spacing;
+      x = allocation->x + allocation->width
+        - primary_width
+        - primary_spacing
+        - GTK_CONTAINER (widget)->border_width;
+      secondary_x = allocation->x + GTK_CONTAINER (widget)->border_width;
+      break;
+    case GTK_BUTTONBOX_CENTER:
+      childspacing = GTK_BOX (widget)->spacing;
+      x = allocation->x +
+        (allocation->width
+         - (primary_width + primary_spacing))/2
+         + (secondary_width + secondary_spacing + childspacing)/2;
+      secondary_x = allocation->x + GTK_CONTAINER (widget)->border_width;
+      break;
+    default:
+      g_assert_not_reached();
+      break;
+    }
+#undef primary_spacing
+#undef secondary_spacing
+
+  y = allocation->y + (allocation->height - child_height) / 2;
+
+  children = GTK_BOX (widget)->children;
+  i = 0;
+  while (children)
+    {
+      child = children->data;
+      children = children->next;
+
+      if (GTK_WIDGET_VISIBLE (child->widget))
+	{
+          GtkAllocation child_allocation;
+          gint child_width = children_widths[i++];
+
+	  child_allocation.width = child_width;
+	  child_allocation.height = child_height;
+	  child_allocation.y = y;
+
+	  if (child->is_secondary)
+	    {
+	      child_allocation.x = secondary_x;
+	      secondary_x += child_width + childspacing;
+	    }
+	  else
+	    {
+	      child_allocation.x = x;
+	      x += child_width + childspacing;
+	    }
+
+	  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+	    child_allocation.x = (allocation->x + allocation->width) - (child_allocation.x + child_width - allocation->x);
+
+	  gtk_widget_size_allocate (child->widget, &child_allocation);
+	}
+    }
+
+  g_slice_free1 (sizeof (gint) * nvis_children, children_widths);
+}
+
+#else
 static void
 gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 			       GtkAllocation *allocation)
@@ -285,6 +535,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	}
     }
 }
+#endif
   
 #define __GTK_HBUTTON_BOX_C__
 #include "gtkaliasdef.c"
