@@ -575,6 +575,20 @@ gtk_menu_class_init (GtkMenuClass *class)
                                                                  P_("Place the scroll arrows on opposite sides of the menu."),
                                                                  FALSE,
                                                                  GTK_PARAM_READABLE));
+  /**
+   * GtkMenuItem::arrow-scaling
+   *
+   * Arbitrary constant to scale down the size of the scroll arrow.
+   *
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_float ("maemo-arrow-scaling",
+                                                               P_("Arrow Scaling"),
+                                                               P_("Amount of space used up by the scroll arrows, relative to scroll-arrow-vlength"),
+                                                               0.0, 1.0, 0.7,
+                                                               GTK_PARAM_READABLE));
 #endif
 
  gtk_container_class_install_child_property (container_class,
@@ -2681,7 +2695,12 @@ gtk_menu_paint (GtkWidget      *widget,
 
   if (event->window == widget->window)
     {
-      gint arrow_size = 0.7 * arrow_space;
+      gfloat arrow_scaling = 0.7;
+      gint arrow_size;
+#ifdef MAEMO_CHANGES
+      gtk_widget_style_get (widget, "maemo-arrow-scaling", &arrow_scaling, NULL);
+#endif
+      arrow_size = arrow_scaling * arrow_space;
 
       gtk_paint_box (widget->style,
 		     widget->window,
