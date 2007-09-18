@@ -14,7 +14,7 @@
 	of the screen width instead of 50%, which is more suitable on the maemo
 	desktop. fixes NB#63754.
 
-2007-07-26  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+2007-09-14  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* docs/reference/gtk/Makefile.am: fix GtkBuilder documentation build.
 
