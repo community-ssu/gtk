@@ -35,6 +35,12 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifeq (,$(findstring nodocs,$(DEB_BUILD_OPTIONS)))
+ENABLE_GTK_DOC = --enable-gtk-doc
+else
+ENABLE_GTK_DOC = --disable-gtk-doc
+endif
+
 ifneq (,$(findstring parallel,$(DEB_BUILD_OPTIONS)))
     PARALLEL_JOBS := $(shell echo $(DEB_BUILD_OPTIONS) | \
         sed -e 's/.*parallel=\([0-9]\+\).*/\1/')
@@ -100,7 +106,7 @@ $(BUILD_SHARED_DIR)/config.status: $(SOURCE_DIR)/configure
 			--enable-shared \
 			--disable-static \
 			--disable-dependency-tracking \
-			--disable-gtk-doc
+			$(ENABLE_GTK_DOC)
 
 	cd $(BUILD_SHARED_DIR) && \
 	sed < libtool > libtool-2 \

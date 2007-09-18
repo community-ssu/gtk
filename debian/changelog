@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.10.12-0osso17) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * debian/control.in:
+  * debian/control: Add glib, atk, pango and cairo doc packages to build
+    dependencies to get gtk-doc crossreferences right
+  * debian/rules: --enable-gtk-doc (with nodocs DEB_BUILD_OPTIONS support)
+    (Fixes: NB#69304)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 18 Sep 2007 14:26:10 +0300
+
 gtk+2.0 (2:2.10.12-0osso16) unstable; urgency=low
 
   * Use the reintroduced GScanner cache. Addresses NB#61907
