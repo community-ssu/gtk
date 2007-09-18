@@ -1,5 +1,10 @@
 2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): Fix spacings in
+	GTK_BUTTONBOX_EDGE case which got broken by NB#63578.
+
+2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): Remember to
 	return the array.
 
