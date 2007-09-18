@@ -200,6 +200,11 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
                                      n_secondaries,
                                      &child_width,
                                      child_height);
+  if (*nvis_children == 0)
+    {
+      *primary_width = *secondary_width = *n_secondaries = 0;
+      return NULL;
+    }
 
   children_widths = g_slice_alloc (sizeof (gint) * (*nvis_children));
 
@@ -314,6 +319,8 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 							&child_height,
 							&nvis_children,
 							&n_secondaries);
+  if (nvis_children == 0)
+    return;
 
   n_primaries = nvis_children - n_secondaries;
   inner_width = allocation->width - 2 * GTK_CONTAINER (widget)->border_width;
