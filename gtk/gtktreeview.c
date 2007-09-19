@@ -7497,6 +7497,28 @@ gtk_tree_view_maybe_begin_dragging_row (GtkTreeView      *tree_view,
 
   set_source_row (context, model, path);
 
+#ifdef MAEMO_CHANGES
+  /* Clear pending actions on row */
+  if (tree_view->priv->queued_select_row)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
+      tree_view->priv->queued_select_row = NULL;
+    }
+
+  if (tree_view->priv->queued_expand_row)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
+      tree_view->priv->queued_expand_row = NULL;
+    }
+
+  if (tree_view->priv->queued_activate_row)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
+      tree_view->priv->queued_activate_row = NULL;
+    }
+#endif /* MAEMO_CHANGES */
+
+
  out:
   if (path)
     gtk_tree_path_free (path);

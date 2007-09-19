@@ -1,5 +1,14 @@
 2007-09-19  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_maybe_begin_dragging_row): add
+	Maemo specific code to clear all pending actions on a row (pending
+	select, activation or expand) if we decide to begin a drag here.
+	This avoids clearing the selection when a multiple item drag has
+	been finished or cancelled.
+	NB#59117.
+
+2007-09-19  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_header_focus): add Maemo specific
 	code to immediately return FALSE; this way the headers will always be
 	skipped when the tree view gets focus and it behaves exactly how it
