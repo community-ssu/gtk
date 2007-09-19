@@ -1,3 +1,11 @@
+2007-09-19  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_header_focus): add Maemo specific
+	code to immediately return FALSE; this way the headers will always be
+	skipped when the tree view gets focus and it behaves exactly how it
+	a tree view without visible headers would behave.
+	NB#68792.
+
 2007-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes,

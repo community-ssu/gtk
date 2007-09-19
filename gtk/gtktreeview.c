@@ -8115,6 +8115,13 @@ gtk_tree_view_header_focus (GtkTreeView      *tree_view,
   GList *tmp_list;
   gboolean rtl;
 
+#ifdef MAEMO_CHANGES
+  /* Skip headers when acquiring focus; behave the same as the headers
+   * are invisible.
+   */
+  return FALSE;
+#endif /* MAEMO_CHANGES */
+
   if (! GTK_TREE_VIEW_FLAG_SET (tree_view, GTK_TREE_VIEW_HEADERS_VISIBLE))
     return FALSE;
 
