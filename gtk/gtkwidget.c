@@ -3419,6 +3419,11 @@ gtk_widget_size_allocate (GtkWidget	*widget,
       gtk_widget_invalidate_widget_windows (widget->parent, invalidate);
       gdk_region_destroy (invalidate);
     }
+
+#ifdef MAEMO_CHANGES
+  if (GTK_IS_CONTAINER (widget))
+    _gtk_container_post_size_allocate (GTK_CONTAINER (widget));
+#endif
 }
 
 /**

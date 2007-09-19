@@ -1,3 +1,13 @@
+2007-09-19 13:58:27  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkcontainer.h, gtk/gtkcontainer.c: added _gtk_container_post_size_allocate()
+	for gtkwidget.c to notify containers about size allocation.
+	adjust scroll area around focussed widget for every window after any container
+	got resized.
+
+	* gtk/gtkwidget.c: call _gtk_container_post_size_allocate() at the
+	end of gtk_widget_size_allocate() to allow containers to adjust to size allocation.
+
 2007-09-19  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_maybe_begin_dragging_row): add

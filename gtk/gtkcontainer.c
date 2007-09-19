@@ -1303,6 +1303,18 @@ gtk_container_get_resize_container (GtkContainer *container)
   return GTK_IS_RESIZE_CONTAINER (widget) ? (GtkContainer*) widget : NULL;
 }
 
+#ifdef MAEMO_CHANGES
+static GSList *size_allocated_containers = NULL;
+static guint   collect_size_allocated_containers = 0;
+void
+_gtk_container_post_size_allocate (GtkContainer *container)
+{
+  size_allocated_containers = g_slist_prepend (size_allocated_containers, container);
+}
+
+static void container_scroll_focus_adjustments (GtkContainer *container);
+#endif
+
 static gboolean
 gtk_container_idle_sizer (gpointer data)
 {
@@ -1325,9 +1337,49 @@ gtk_container_idle_sizer (gpointer data)
       g_slist_free_1 (slist);
 
       GTK_PRIVATE_UNSET_FLAG (widget, GTK_RESIZE_PENDING);
+#ifdef MAEMO_CHANGES
+      collect_size_allocated_containers++;
+#endif
       gtk_container_check_resize (GTK_CONTAINER (widget));
+#ifdef MAEMO_CHANGES
+      collect_size_allocated_containers--;
+#endif
     }
 
+#ifdef MAEMO_CHANGES
+  /* adjust scroll position in all windows that recently resized a container */
+  if (collect_size_allocated_containers == 0)
+    {
+      GtkWidget *last = NULL;
+      GSList *current;
+      /* collect involved toplevels */
+      for (current = size_allocated_containers; current; current = current->next)
+        current->data = gtk_widget_get_toplevel (current->data);
+      /* sort toplevels to allow deduping */
+      size_allocated_containers = g_slist_sort (size_allocated_containers, g_direct_equal);
+      /* adjust focus position on toplevels */
+      for (current = size_allocated_containers; current; current = current->next)
+        if (last != current->data) /* dedup toplevels */
+          {
+            last = current->data;
+            if (GTK_IS_WINDOW (current->data))
+              {
+                GtkWidget *focus = GTK_WINDOW (current->data)->focus_widget;
+                if (focus && !GTK_IS_CONTAINER (focus))
+                  focus = focus->parent;
+                while (focus)
+                  {
+                    /* adjust all focus widget parents that could possibly scroll */
+                    container_scroll_focus_adjustments (GTK_CONTAINER (focus));
+                    focus = focus->parent;
+                  }
+              }
+          }
+      g_slist_free (size_allocated_containers);
+      size_allocated_containers = NULL;
+    }
+#endif
+  
   gdk_window_process_all_updates ();
 
   GDK_THREADS_LEAVE ();
@@ -1686,7 +1738,14 @@ gtk_container_real_set_focus_child (GtkContainer     *container,
 	g_object_ref (container->focus_child);
     }
 
+#ifdef MAEMO_CHANGES
+  container_scroll_focus_adjustments (container);
+}
 
+static void
+container_scroll_focus_adjustments (GtkContainer *container)
+{
+#endif
   /* check for h/v adjustments
    */
   if (container->focus_child)
