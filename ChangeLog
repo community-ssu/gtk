@@ -1,5 +1,13 @@
 2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkbbox.h
+	* gtk/gtkbbox.c (_gtk_button_box_child_size_props): Export for hbox.
+	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): Make use of
+	child widget sizing related style properties to improve the way
+	heterogeneous allocation looks.
+
+2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkbbox.c (_gtk_button_box_child_size_props,
 	_gtk_button_box_child_requisition): Refactor getting of style
 	properties into a separate function.

@@ -160,6 +160,11 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
        */
       GList *children;
       gint extra_space;
+      gint child_min_width, ipad_width;
+
+      _gtk_button_box_child_size_props (GTK_BUTTON_BOX (widget),
+                                        &child_min_width, NULL,
+                                        &ipad_width, NULL);
 
       *primary_width = 0;
       *secondary_width = 0;
@@ -176,11 +181,8 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
             {
               GtkRequisition req;
 
-	      /* FIXME: take child-min-width and child-internal-pad-x style
-	       * properties into account
-	       */
-
               gtk_widget_size_request (child_widget, &req);
+              req.width = MAX(req.width + ipad_width, child_min_width);
 
               if (! child->is_secondary)
                 *primary_width += req.width;

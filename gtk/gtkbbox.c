@@ -385,7 +385,7 @@ gtk_button_box_set_child_secondary (GtkButtonBox *widget,
     gtk_widget_queue_resize (child);
 }
 
-static void
+void
 _gtk_button_box_child_size_props (GtkButtonBox *bbox,
                                   gint         *child_min_width,
                                   gint         *child_min_height,
