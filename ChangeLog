@@ -1,3 +1,8 @@
+2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): Replace somewhat
+	obscure defines with real variables.
+
 2007-09-19 13:58:27  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtkcontainer.h, gtk/gtkcontainer.c: added _gtk_container_post_size_allocate()

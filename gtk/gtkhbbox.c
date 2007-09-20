@@ -305,6 +305,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
   gint x, y;
   gint secondary_x;
   gint nvis_children, n_secondaries, childspacing;
+  gint primary_spacing, secondary_spacing;
   gint n_primaries, inner_width;
   GList *children;
   GtkBoxChild *child;
@@ -324,8 +325,6 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 
   n_primaries = nvis_children - n_secondaries;
   inner_width = allocation->width - 2 * GTK_CONTAINER (widget)->border_width;
-#define primary_spacing   (childspacing * (n_primaries - 1))
-#define secondary_spacing (childspacing * (n_secondaries - 1))
 
   layout = GTK_BUTTON_BOX (widget)->layout_style != GTK_BUTTONBOX_DEFAULT_STYLE
     ? GTK_BUTTON_BOX (widget)->layout_style : default_layout_style;
@@ -335,6 +334,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
     case GTK_BUTTONBOX_SPREAD:
       childspacing = (inner_width
                       - (primary_width + secondary_width)) / (nvis_children + 1);
+      primary_spacing = childspacing * (n_primaries - 1);
       x = allocation->x + GTK_CONTAINER (widget)->border_width + childspacing;
       secondary_x = x + primary_width + primary_spacing + childspacing;
       break;
@@ -343,6 +343,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
         {
           childspacing = (inner_width
                           - (primary_width + secondary_width)) / (nvis_children - 1);
+          primary_spacing = childspacing * (n_primaries - 1);
           x = allocation->x + GTK_CONTAINER (widget)->border_width;
           secondary_x = x + primary_width + primary_spacing + childspacing;
         }
@@ -355,6 +356,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       break;
     case GTK_BUTTONBOX_START:
       childspacing = GTK_BOX (widget)->spacing;
+      secondary_spacing = childspacing * (n_secondaries - 1);
       x = allocation->x + GTK_CONTAINER (widget)->border_width;
       secondary_x = allocation->x + allocation->width
         - secondary_width
@@ -363,6 +365,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       break;
     case GTK_BUTTONBOX_END:
       childspacing = GTK_BOX (widget)->spacing;
+      primary_spacing = childspacing * (n_primaries - 1);
       x = allocation->x + allocation->width
         - primary_width
         - primary_spacing
@@ -371,6 +374,8 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       break;
     case GTK_BUTTONBOX_CENTER:
       childspacing = GTK_BOX (widget)->spacing;
+      primary_spacing = childspacing * (n_primaries - 1);
+      secondary_spacing = childspacing * (n_secondaries - 1);
       x = allocation->x +
         (allocation->width
          - (primary_width + primary_spacing))/2
@@ -381,8 +386,6 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       g_assert_not_reached();
       break;
     }
-#undef primary_spacing
-#undef secondary_spacing
 
   y = allocation->y + (allocation->height - child_height) / 2;
 
