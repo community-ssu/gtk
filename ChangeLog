@@ -1,5 +1,11 @@
 2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkbbox.c (_gtk_button_box_child_size_props,
+	_gtk_button_box_child_requisition): Refactor getting of style
+	properties into a separate function.
+
+2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): Respect
 	GtkBox::homogeneous property for size requisition and allocation.
 	NB#66723
