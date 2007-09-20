@@ -1,5 +1,11 @@
 2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes): Respect
+	GtkBox::homogeneous property for size requisition and allocation.
+	NB#66723
+
+2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkhbbox.c (gtk_hbutton_box_get_children_sizes,
 	gtk_hbutton_box_size_allocate): Call get_children_sizes with optional
 	allocation parameter so that we can use it for size requisition as

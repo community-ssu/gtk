@@ -152,10 +152,12 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
   total_width = *nvis_children * child_width;
   total_spacing = (*nvis_children - 1) * GTK_BOX (widget)->spacing;
 
-  if (allocation != NULL && total_width + total_spacing > allocation->width)
+  if (!gtk_box_get_homogeneous (GTK_BOX (widget)) ||
+      (allocation != NULL && total_width + total_spacing > allocation->width))
     {
-      /* homogeneous allocation too wide to fit container, shrink the buttons
-       * to their size requisition */
+      /* want heterogeneous allocation, or homogeneous allocation too wide to
+       * fit container, shrink the buttons to their size requisition
+       */
       GList *children;
       gint extra_space;
 
@@ -190,7 +192,14 @@ gtk_hbutton_box_get_children_sizes (GtkWidget *widget,
         }
 
       total_width = *primary_width + *secondary_width;
-      extra_space = allocation->width - (total_width + total_spacing);
+
+      /* Distribute the extra space between children when wanting to have
+       * homogeneous allocation
+       */
+      if (allocation && gtk_box_get_homogeneous (GTK_BOX (widget)))
+        extra_space = allocation->width - (total_width + total_spacing);
+      else
+        extra_space = 0;
 
       /* If extra space available, distribute it evenly to the buttons.
        * XXX: Smallest buttons should probably get the biggest share instead,
