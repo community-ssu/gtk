@@ -1589,8 +1589,8 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
 
   gtk_widget_show (completion->priv->popup_window);
 
-  gtk_grab_add (completion->priv->popup_window);
 #ifndef MAEMO_CHANGES    
+  gtk_grab_add (completion->priv->popup_window);
   gdk_pointer_grab (completion->priv->popup_window->window, TRUE,
                     GDK_BUTTON_PRESS_MASK |
                     GDK_BUTTON_RELEASE_MASK |
@@ -1609,8 +1609,8 @@ _gtk_entry_completion_popdown (GtkEntryCompletion *completion)
 
 #ifndef MAEMO_CHANGES
   gdk_pointer_ungrab (GDK_CURRENT_TIME);
-#endif
   gtk_grab_remove (completion->priv->popup_window);
+#endif
 
   gtk_widget_hide (completion->priv->popup_window);
 }
