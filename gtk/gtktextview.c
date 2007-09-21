@@ -249,7 +249,7 @@ static void gtk_text_view_move_cursor       (GtkTextView           *text_view,
 static void gtk_text_view_page_horizontally (GtkTextView          *text_view,
                                              gint                  count,
                                              gboolean              extend_selection);
-static void gtk_text_view_move_viewport     (GtkTextView           *text_view,
+static gboolean gtk_text_view_move_viewport (GtkTextView           *text_view,
                                              GtkScrollStep          step,
                                              gint                   count);
 static void gtk_text_view_set_anchor       (GtkTextView           *text_view);
@@ -4757,8 +4757,10 @@ gtk_text_view_move_cursor_internal (GtkTextView     *text_view,
 
       switch (step) 
 	{
-	case GTK_MOVEMENT_LOGICAL_POSITIONS:
         case GTK_MOVEMENT_VISUAL_POSITIONS:
+          leave_direction = count > 0 ? GTK_DIR_RIGHT : GTK_DIR_LEFT;
+          /* fall through */
+        case GTK_MOVEMENT_LOGICAL_POSITIONS:
         case GTK_MOVEMENT_WORDS:
 	  scroll_step = GTK_SCROLL_HORIZONTAL_STEPS;
 	  break;
@@ -4766,6 +4768,8 @@ gtk_text_view_move_cursor_internal (GtkTextView     *text_view,
 	  scroll_step = GTK_SCROLL_HORIZONTAL_ENDS;
 	  break;	  
         case GTK_MOVEMENT_DISPLAY_LINES:
+          leave_direction = count > 0 ? GTK_DIR_DOWN : GTK_DIR_UP;
+          /* fall through */
         case GTK_MOVEMENT_PARAGRAPHS:
         case GTK_MOVEMENT_PARAGRAPH_ENDS:
 	  scroll_step = GTK_SCROLL_STEPS;
@@ -4783,8 +4787,16 @@ gtk_text_view_move_cursor_internal (GtkTextView     *text_view,
           scroll_step = GTK_SCROLL_PAGES;
           break;
 	}
-      
-      gtk_text_view_move_viewport (text_view, scroll_step, count);
+
+      if (!gtk_text_view_move_viewport (text_view, scroll_step, count))
+        {
+          if (leave_direction != -1 &&
+              !gtk_widget_keynav_failed (GTK_WIDGET (text_view),
+                                         leave_direction))
+            {
+              g_signal_emit_by_name (text_view, "move-focus", leave_direction);
+            }
+        }
 
       return;
     }
@@ -4964,7 +4976,7 @@ gtk_text_view_page_horizontally (GtkTextView     *text_view,
 }
 
 
-static void
+static gboolean
 gtk_text_view_move_viewport (GtkTextView     *text_view,
                              GtkScrollStep    step,
                              gint             count)
@@ -5008,7 +5020,7 @@ gtk_text_view_move_viewport (GtkTextView     *text_view,
       break;
     }
 
-  set_adjustment_clamped (adjustment, adjustment->value + count * increment);
+  return set_adjustment_clamped (adjustment, adjustment->value + count * increment);
 }
 
 static void

@@ -1,3 +1,12 @@
+2007-09-21  Michael Natterer  <mitch@imendio.com>
+
+	Merged from upstream:
+
+	* gtk/gtktextview.c (gtk_text_view_move_cursor_internal)
+	(gtk_text_view_move_viewport): merged patch from maemo-gtk which
+	handles failed keynav correctly also when the cursor is invisible.
+	(Tommi Komulainen, fixes NB#69051)
+
 2007-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkbbox.h
