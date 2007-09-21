@@ -41,6 +41,7 @@
 
 	* gtk/gtkwidget.c: call _gtk_container_post_size_allocate() at the
 	end of gtk_widget_size_allocate() to allow containers to adjust to size allocation.
+	(NB#57886)
 
 2007-09-19  Kristian Rietveld  <kris@imendio.com>
 
