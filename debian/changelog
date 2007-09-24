@@ -1,6 +1,4 @@
-gtk+2.0 (2:2.10.12-0osso17) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.10.12-0osso17) unstable; urgency=low
 
   * debian/control.in:
   * debian/control: Add glib, atk, pango and cairo doc packages to build
@@ -11,7 +9,22 @@ gtk+2.0 (2:2.10.12-0osso17) UNRELEASED; urgency=low
   * debian/control.in:
   * debian/control: Add gtk20-l10n to dependencies. (Fixes: NB#63541)
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 20 Sep 2007 19:40:49 +0300
+  * Fixes: NB#57886 adjustment that was bound to a container with
+    gtk_container_set_focus_vadjustment () needs update when container is
+    resized due to vkb popping up
+  * Fixes: NB#59117 Drag'n'Drop in gtk_tree_view with multiple selection
+    broken
+  * Fixes: NB#63578 GtkButtonBox can't handle allocation < requisition
+  * Fixes: NB#66723 Heterogeneous button size for GtkButtonBox
+  * Fixes: NB#68792 [Regression] GtkTreeView: Initial focus is on column
+    headers
+  * Fixes: NB#68989 Menu scroll arrows appear in mini size
+  * Fixes: NB#69051 Unable to move the focus out of textview with no visible
+    cursor
+  * Fixes: NB#69655 Full screen, Zoom in, Zoom out functionalities does not
+    work when entry completion popup is open
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Sep 2007 10:54:43 +0300
 
 gtk+2.0 (2:2.10.12-0osso16) unstable; urgency=low
 
