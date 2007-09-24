@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.12-0osso18) unstable; urgency=low
+
+  * debian/control.in
+  * debian/control: Bump Build-Depends to libglib2.0-dev (>= 2.12.12-1osso9)
+    due to the GScanner cache addition
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Sep 2007 11:10:17 +0300
+
 gtk+2.0 (2:2.10.12-0osso17) unstable; urgency=low
 
   * debian/control.in:
