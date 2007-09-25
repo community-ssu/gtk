@@ -1,3 +1,9 @@
+2007-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_class_init, gtk_entry_init): Make the
+	entry truncate multiline pastes if MAEMO_CHANGES is defined.
+	NB#70531
+
 2007-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup,

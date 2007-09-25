@@ -608,7 +608,11 @@ gtk_entry_class_init (GtkEntryClass *class)
                                    g_param_spec_boolean ("truncate-multiline",
                                                          P_("Truncate multiline"),
                                                          P_("Whether to truncate multiline pastes to one line."),
+#ifdef MAEMO_CHANGES
+							 TRUE,
+#else /* MAEMO_CHANGES */
                                                          FALSE,
+#endif /* MAEMO_CHANGES */
                                                          GTK_PARAM_READWRITE));
 
 #ifdef MAEMO_CHANGES
@@ -1155,7 +1159,11 @@ gtk_entry_init (GtkEntry *entry)
   entry->is_cell_renderer = FALSE;
   entry->editing_canceled = FALSE;
   entry->has_frame = TRUE;
+#ifdef MAEMO_CHANGES
+  entry->truncate_multiline = TRUE;
+#else /* MAEMO_CHANGES */
   entry->truncate_multiline = FALSE;
+#endif /* MAEMO_CHANGES */
   priv->xalign = 0.0;
 
   gtk_drag_dest_set (GTK_WIDGET (entry),
