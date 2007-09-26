@@ -1,3 +1,10 @@
+2007-09-26  Xan Lopez  <xan.lopez@nokia.com>
+
+	Patch by Michael Kostrzewa.
+	
+	* gtk/gtkiconview.c (gtk_icon_view_paint_item): use gtk_paint_flat_box
+	instead of cairo to get theming right. Fixes: NB#70554
+
 2007-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_class_init, gtk_entry_init): Make the

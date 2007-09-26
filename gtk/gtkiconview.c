@@ -2957,14 +2957,15 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
   if (item->selected)
 #ifdef MAEMO_CHANGES
     {
-      gdk_cairo_set_source_color (cr, &GTK_WIDGET (icon_view)->style->base[state]);
-
-      cairo_rectangle (cr,
-          	       x, 
-          	       y,
-          	       item->width, item->height);
-
-      cairo_fill (cr);
+      gtk_paint_flat_box (GTK_WIDGET (icon_view)->style,
+                          (GdkWindow *) drawable,
+                          GTK_STATE_SELECTED,
+                          GTK_SHADOW_NONE,
+                          area,
+                          GTK_WIDGET (icon_view),
+                          "icon_view_item",
+                          x, y,
+                          item->width, item->height);
     }
 #else
     for (l = icon_view->priv->cell_list; l; l = l->next)
@@ -3009,7 +3010,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 			  cell_area.width, cell_area.height);
 
       gtk_icon_view_get_cell_box (icon_view, item, info, &box);
- 
+	  
       gdk_draw_rectangle (drawable,
 			  GTK_WIDGET (icon_view)->style->black_gc,
 			  FALSE,
