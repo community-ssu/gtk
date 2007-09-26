@@ -1,5 +1,11 @@
 2007-09-26  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkmenutoolbutton.c (gtk_menu_tool_button_init): chain
+	insensitive-press from the internal arrow-button to the main widget.
+	Fixes: NB#65190
+
+2007-09-26  Xan Lopez  <xan.lopez@nokia.com>
+	
 	Patch by Michael Kostrzewa.
 	
 	* gtk/gtkiconview.c (gtk_icon_view_paint_item): use gtk_paint_flat_box
