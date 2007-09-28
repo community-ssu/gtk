@@ -1,5 +1,12 @@
 2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmessagedialog.c (gtk_message_class_init,
+	gtk_message_class_realize): (MAEMO_CHANGES) since message dialogs
+	don't have titles, it makes little sense to show the title bar.
+	NB#70820
+
+2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_has_special_cell): (MAEMO_CHANGES)
 	Return TRUE when there's more than one special cell as we don't want
 	the focus rectangle around cells when there's only one. In such case
