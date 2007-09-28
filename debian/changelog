@@ -1,11 +1,14 @@
 gtk+2.0 (2:2.10.12-0osso20) unstable; urgency=low
 
-        *** UNRELEASED ***
-
   * Make GtkEntry truncate multiline pastes by default. Fixes: NB#70531
   * Use theming API instead of cairo for GtkIconView focus rectangle. Fixes: NB#70554
   * Emit ::insensitive-press from GtkMenuToolButton for its internal arrow. Fixes: NB#65190
-
+  * Paint the gap_box in GtkNotebook with notebook_show_arrow detail when arrows are
+    shown to get correct theming. Fixes: MB#1084
+  * Return FALSE from gtk_tree_view_has_special_cell when there is only 1 special
+    cell to get the focus rectangle around the whole row. Fixes: NB#70703
+  * Do not show titlebar for GtkMessageDialog. Fixes: NB#70820	
+	
  -- Xan Lopez <xan.lopez@nokia.com>  Fri, 28 Sep 2007 13:26:46 +0300
 
 gtk+2.0 (2:2.10.12-0osso19) unstable; urgency=low
