@@ -1,3 +1,10 @@
+2007-09-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_paint): paint the box_gap with the
+	notebook_show_arrow detail when arrows are shown to get correct theming.
+
+	Fixes: MB#1084
+
 2007-09-26  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenutoolbutton.c (gtk_menu_tool_button_init): chain

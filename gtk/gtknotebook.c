@@ -4567,9 +4567,28 @@ gtk_notebook_paint (GtkWidget    *widget,
 	  break;
 	}
     }
+#if defined(MAEMO_CHANGES)
+  showarrow = FALSE;
+  children = gtk_notebook_search_page (notebook, NULL, step, TRUE);
+  while (children && !showarrow)
+    {
+      page = children->data;
+      children = gtk_notebook_search_page (notebook, children,
+                                           step, TRUE);
+      if (!GTK_WIDGET_MAPPED (page->tab_label))
+        showarrow = TRUE;
+    }
+#endif
   gtk_paint_box_gap (widget->style, widget->window,
 		     GTK_STATE_NORMAL, GTK_SHADOW_OUT,
-		     area, widget, "notebook",
+		     area, widget, 
+#if defined(MAEMO_CHANGES)
+                     (showarrow && notebook->scrollable)
+                       ? "notebook_show_arrow"
+                       : "notebook",
+#else
+                     "notebook",
+#endif
 		     x, y, width, height,
 		     tab_pos, gap_x, gap_width);
 
