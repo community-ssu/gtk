@@ -583,7 +583,11 @@ get_minimum_width (GtkWidget *widget)
   
   pango_font_metrics_unref (metrics);
 
+#ifdef MAEMO_CHANGES
+  return PANGO_PIXELS (6 * height);
+#else /* MAEMO_CHANGES */
   return PANGO_PIXELS (7 * height);
+#endif /* MAEMO_CHANGES */
 }
 
 static void

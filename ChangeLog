@@ -1,5 +1,11 @@
 2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmenuitem.c (get_minimum_width): (MAEMO_CHANGES) reduce the
+	minimum width of menuitems with submenus to improve cascading a bit.
+	NB#66036
+
+2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkmessagedialog.c (gtk_message_class_init,
 	gtk_message_class_realize): (MAEMO_CHANGES) since message dialogs
 	don't have titles, it makes little sense to show the title bar.
