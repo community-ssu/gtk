@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.10.12-0osso20) unstable; urgency=low
+
+        *** UNRELEASED ***
+
+  * Make GtkEntry truncate multiline pastes by default. Fixes: NB#70531
+  * Use theming API instead of cairo for GtkIconView focus rectangle. Fixes: NB#70554
+  * Emit ::insensitive-press from GtkMenuToolButton for its internal arrow. Fixes: NB#65190
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 28 Sep 2007 13:26:46 +0300
+
 gtk+2.0 (2:2.10.12-0osso19) unstable; urgency=low
 
   * debian/rules: updated shlibs to osso15 because the introduction of
