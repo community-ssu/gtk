@@ -1,3 +1,11 @@
+2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_has_special_cell): (MAEMO_CHANGES)
+	Return TRUE when there's more than one special cell as we don't want
+	the focus rectangle around cells when there's only one. In such case
+	Select key is expected to activate the cell so there's no ambiguity.
+	NB#70703
+
 2007-09-28  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtknotebook.c (gtk_notebook_paint): paint the box_gap with the

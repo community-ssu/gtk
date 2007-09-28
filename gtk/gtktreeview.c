@@ -8027,13 +8027,22 @@ static gboolean
 gtk_tree_view_has_special_cell (GtkTreeView *tree_view)
 {
   GList *list;
+#ifdef MAEMO_CHANGES
+  guint n_specials = 0;
+#endif /* MAEMO_CHANGES */
 
   for (list = tree_view->priv->columns; list; list = list->next)
     {
       if (!((GtkTreeViewColumn *)list->data)->visible)
 	continue;
+#ifdef MAEMO_CHANGES
+      n_specials += _gtk_tree_view_column_count_special_cells (list->data);
+      if (n_specials > 1)
+	return TRUE;
+#else /* MAEMO_CHANGES */
       if (_gtk_tree_view_column_count_special_cells (list->data))
 	return TRUE;
+#endif /* MAEMO_CHANGES */
     }
 
   return FALSE;
