@@ -7,8 +7,10 @@ gtk+2.0 (2:2.10.12-0osso20) unstable; urgency=low
     shown to get correct theming. Fixes: MB#1084
   * Return FALSE from gtk_tree_view_has_special_cell when there is only 1 special
     cell to get the focus rectangle around the whole row. Fixes: NB#70703
-  * Do not show titlebar for GtkMessageDialog. Fixes: NB#70820	
-	
+  * Do not show titlebar for GtkMessageDialog. Fixes: NB#70820
+  * Reduce the minimum width of menuitems with submenus to improve cascading a bit.
+    Fixes: NB#66036
+
  -- Xan Lopez <xan.lopez@nokia.com>  Fri, 28 Sep 2007 13:26:46 +0300
 
 gtk+2.0 (2:2.10.12-0osso19) unstable; urgency=low
