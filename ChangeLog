@@ -1,3 +1,8 @@
+2007-10-03  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_init): do not set the homogeneous
+	property to TRUE, we don't want that. Fixes: NB#56537 (regression)
+
 2007-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenuitem.c (get_minimum_width): (MAEMO_CHANGES) reduce the

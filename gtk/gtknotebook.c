@@ -1001,7 +1001,6 @@ gtk_notebook_init (GtkNotebook *notebook)
   notebook->have_visible_child = FALSE;
   notebook->focus_out = FALSE;
 #ifdef MAEMO_CHANGES
-  notebook->homogeneous = TRUE;
   notebook->scrollable = TRUE;
 #endif
 
