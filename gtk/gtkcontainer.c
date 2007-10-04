@@ -1026,6 +1026,11 @@ gtk_container_init (GtkContainer *container)
   container->reallocate_redraws = FALSE;
 }
 
+#ifdef MAEMO_CHANGES
+static GSList *size_allocated_containers = NULL;
+static guint   collect_size_allocated_containers = 0;
+#endif
+
 static void
 gtk_container_destroy (GtkObject *object)
 {
@@ -1033,6 +1038,10 @@ gtk_container_destroy (GtkObject *object)
   
   if (GTK_CONTAINER_RESIZE_PENDING (container))
     _gtk_container_dequeue_resize_handler (container);
+
+#ifdef MAEMO_CHANGES
+  size_allocated_containers = g_slist_remove (size_allocated_containers, container);
+#endif
 
   /* do this before walking child widgets, to avoid
    * removing children from focus chain one by one.
@@ -1304,8 +1313,6 @@ gtk_container_get_resize_container (GtkContainer *container)
 }
 
 #ifdef MAEMO_CHANGES
-static GSList *size_allocated_containers = NULL;
-static guint   collect_size_allocated_containers = 0;
 void
 _gtk_container_post_size_allocate (GtkContainer *container)
 {

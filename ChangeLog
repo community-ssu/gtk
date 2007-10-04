@@ -1,3 +1,10 @@
+2007-10-04  Xan Lopez  <xan.lopez@nokia.com>
+	
+	* gtk/gtkcontainer.c (gtk_container_destroy): remove the container
+	from the size_allocated_containers list when it's destroyed.
+
+	NB#71770
+
 2007-10-03  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtknotebook.c (gtk_notebook_init): do not set the homogeneous
