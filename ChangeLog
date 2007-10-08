@@ -1,3 +1,16 @@
+2007-10-08  Xan Lopez  <xan.lopez@nokia.com>
+
+	Patch by Tommi.
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_deleted): stop rubberbanding
+	when a row is deleted. It avoids certain crashers when rows inside the
+	selection are deleted and gtk_tree_view_stop_rubber_band is then called.
+
+	The correct fix would probably be to correctly maintain the state of
+	the rubber band data on row_delete.
+
+	Fixes: NB#71834
+
 2007-10-04  Xan Lopez  <xan.lopez@nokia.com>
 	
 	* gtk/gtkcontainer.c (gtk_container_destroy): remove the container

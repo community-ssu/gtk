@@ -8987,6 +8987,14 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
       tree_view->priv->expanded_collapsed_node = NULL;
     }
 
+#ifdef MAEMO_CHANGES
+  /* Stop rubber banding as row deletion invalidates the start/end
+   * rbtree/nodes. Should consider updating the pointers instead.
+   */
+  if (tree_view->priv->rubber_band_status)
+    gtk_tree_view_stop_rubber_band (tree_view);
+#endif
+
   if (tree_view->priv->destroy_count_func)
     {
       gint child_count = 0;
