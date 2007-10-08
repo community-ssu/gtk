@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.12-0osso22) unstable; urgency=low
+
+  * Stop rubberbanding when a row is deleted, fixes crashers when rows in
+    the selection are deleted before the rubberbanding internal state is
+    updated. Fixes: NB#71834
+  * When updating the adjustments as a result of container resize
+    (resize_update=TRUE) force the focused widget visible only if it is
+    smaller than the viewport. Otherwise the updates starts to oscillate
+    between two values (possibly HildonScrollArea is causing that.)
+    That should be enough for vkb resized dialogs. Fixes: NB#71902
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  8 Oct 2007 18:09:52 +0300
+
 gtk+2.0 (2:2.10.12-0osso21) unstable; urgency=low
 
   * Remove the container from the size_allocated_containers list when it's
