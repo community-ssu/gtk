@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.12-0osso21) unstable; urgency=low
+
+  * Remove the container from the size_allocated_containers list when it's
+    destroyed. Fixes: NB#71770
+  * Do not set the homogeneous property to true in GtkNotebook. Fixes: NB#56537
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  8 Oct 2007 11:49:59 +0300
+
 gtk+2.0 (2:2.10.12-0osso20) unstable; urgency=low
 
   * Make GtkEntry truncate multiline pastes by default. Fixes: NB#70531
