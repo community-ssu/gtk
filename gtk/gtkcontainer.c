@@ -1319,7 +1319,7 @@ _gtk_container_post_size_allocate (GtkContainer *container)
   size_allocated_containers = g_slist_prepend (size_allocated_containers, container);
 }
 
-static void container_scroll_focus_adjustments (GtkContainer *container);
+static void container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_update);
 #endif
 
 static gboolean
@@ -1377,7 +1377,7 @@ gtk_container_idle_sizer (gpointer data)
                 while (focus)
                   {
                     /* adjust all focus widget parents that could possibly scroll */
-                    container_scroll_focus_adjustments (GTK_CONTAINER (focus));
+                    container_scroll_focus_adjustments (GTK_CONTAINER (focus), TRUE);
                     focus = focus->parent;
                   }
               }
@@ -1746,11 +1746,11 @@ gtk_container_real_set_focus_child (GtkContainer     *container,
     }
 
 #ifdef MAEMO_CHANGES
-  container_scroll_focus_adjustments (container);
+  container_scroll_focus_adjustments (container, FALSE);
 }
 
 static void
-container_scroll_focus_adjustments (GtkContainer *container)
+container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_update)
 {
 #endif
   /* check for h/v adjustments
@@ -1781,10 +1781,26 @@ container_scroll_focus_adjustments (GtkContainer *container)
 	   y += container->focus_child->allocation.y;
 	  
 	  if (vadj)
-	    gtk_adjustment_clamp_page (vadj, y, y + focus_child->allocation.height);
+	    {
+#ifdef MAEMO_CHANGES
+	      /* When updating the adjustments as a result of container resize
+	       * (resize_update=TRUE) force the focused widget visible only if
+	       * it is smaller than the viewport. Otherwise the updates starts
+	       * to oscillate between two values (possibly HildonScrollArea is
+	       * causing that.) That should be enough for vkb resized dialogs.
+	       */
+	      if (!resize_update || focus_child->allocation.height < vadj->page_size)
+#endif /* MAEMO_CHANGES */
+		gtk_adjustment_clamp_page (vadj, y, y + focus_child->allocation.height);
+	    }
 	  
 	  if (hadj)
-	    gtk_adjustment_clamp_page (hadj, x, x + focus_child->allocation.width);
+	    {
+#ifdef MAEMO_CHANGES
+	      if (!resize_update || focus_child->allocation.width < hadj->page_size)
+#endif /* MAEMO_CHANGES */
+		gtk_adjustment_clamp_page (hadj, x, x + focus_child->allocation.width);
+	    }
 	}
     }
 }

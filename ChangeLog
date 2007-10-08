@@ -1,13 +1,27 @@
 2007-10-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	Patch by Tommi.
+	
+	* gtk/gtkcontainer.c: When updating the adjustments as a result of
+	container resize (resize_update=TRUE) force the focused widget
+	visible only if it is smaller than the viewport. Otherwise the
+	updates starts to oscillate between two values (possibly
+	HildonScrollArea is causing that.) That should be enough for vkb
+	resized dialogs.
 
-	* gtk/gtktreeview.c (gtk_tree_view_row_deleted): stop rubberbanding
-	when a row is deleted. It avoids certain crashers when rows inside the
-	selection are deleted and gtk_tree_view_stop_rubber_band is then called.
+	Fixes: NB#71902
+	
+2007-10-08  Xan Lopez  <xan.lopez@nokia.com>
 
-	The correct fix would probably be to correctly maintain the state of
-	the rubber band data on row_delete.
+	Patch by Tommi.
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_deleted): stop
+	rubberbanding when a row is deleted. It avoids certain crashers
+	when rows inside the selection are deleted and
+	gtk_tree_view_stop_rubber_band is then called.
+
+	The correct fix would probably be to correctly maintain the state
+	of the rubber band data on row_delete.
 
 	Fixes: NB#71834
 
