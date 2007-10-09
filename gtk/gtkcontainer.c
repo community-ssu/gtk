@@ -1040,7 +1040,7 @@ gtk_container_destroy (GtkObject *object)
     _gtk_container_dequeue_resize_handler (container);
 
 #ifdef MAEMO_CHANGES
-  size_allocated_containers = g_slist_remove (size_allocated_containers, container);
+  size_allocated_containers = g_slist_remove_all (size_allocated_containers, container);
 #endif
 
   /* do this before walking child widgets, to avoid

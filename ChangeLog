@@ -1,3 +1,9 @@
+2007-10-09  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkcontainer.c (gtk_container_destroy): remove all instances
+	of the container from the size_allocated_containers, not only the
+	first one. Follow up to bug #71770.
+
 2007-10-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	Patch by Tommi.
