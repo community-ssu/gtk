@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.10.12-0osso23) unstable; urgency=low
+
+  * Remove all instances of the container from the size_allocated_containers
+    list, not only the first one. Follow up to bug #71770. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  9 Oct 2007 09:58:29 +0300
+
 gtk+2.0 (2:2.10.12-0osso22) unstable; urgency=low
 
   * Stop rubberbanding when a row is deleted, fixes crashers when rows in
