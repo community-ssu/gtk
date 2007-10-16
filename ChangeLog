@@ -5,11 +5,12 @@
 
 	Only add toplevels to the size_allocated_containers list.
 
-	It seems that we only *really* want to make focused children visible after
-	a toplevel is resized (see NB#57886) but not after every container is resized,
-	as it might break the logic of some widgets (eg, ModestScrollArea). At this
-	point it might not make much sense to have this in GtkContainer anymore  and
-	maybe we should move it to GtkWindow size_allocate (Tommi's suggestion).
+	It seems that we only *really* want to make focused children
+	visible after a toplevel is resized (see NB#57886) but not after
+	every container is resized, as it might break the logic of some
+	widgets (eg, ModestScrollArea). At this point it might not make
+	much sense to have this in GtkContainer anymore and maybe we
+	should move it to GtkWindow size_allocate (Tommi's suggestion).
 
 	Fixes: NB#72632
 	
