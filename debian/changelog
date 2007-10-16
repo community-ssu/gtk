@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.10.12-0osso24) unstable; urgency=low
+
+  * Only add toplevel widgets to the size_allocated_containers list. Fixes:
+    NB#72632 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 16 Oct 2007 14:29:10 +0300
+
 gtk+2.0 (2:2.10.12-0osso23) unstable; urgency=low
 
   * Remove all instances of the container from the size_allocated_containers
