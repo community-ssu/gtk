@@ -1359,9 +1359,7 @@ gtk_container_idle_sizer (gpointer data)
     {
       GtkWidget *last = NULL;
       GSList *current;
-      /* collect involved toplevels */
-      for (current = size_allocated_containers; current; current = current->next)
-        current->data = gtk_widget_get_toplevel (current->data);
+
       /* sort toplevels to allow deduping */
       size_allocated_containers = g_slist_sort (size_allocated_containers, g_direct_equal);
       /* adjust focus position on toplevels */

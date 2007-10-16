@@ -3421,7 +3421,7 @@ gtk_widget_size_allocate (GtkWidget	*widget,
     }
 
 #ifdef MAEMO_CHANGES
-  if (GTK_IS_CONTAINER (widget))
+  if (GTK_WIDGET_TOPLEVEL (widget))
     _gtk_container_post_size_allocate (GTK_CONTAINER (widget));
 #endif
 }
