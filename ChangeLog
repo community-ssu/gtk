@@ -1,3 +1,12 @@
+2007-10-31  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtklabel.c (label_shortcut_setting_traverse_container): Do not
+	recalculate state on notify::{gtk-enable-accels,gtk-enable-mnemonics}
+	unconditionally.
+
+	Instead of doing it for all GtkLabels only do it for those that
+	are GtkAccelLabel or those using mnemonics. Fixes NB#74392.
+
 2007-10-16  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkcontainer.c (gtk_container_idle_sizer): 

@@ -978,7 +978,9 @@ static void
 label_shortcut_setting_traverse_container (GtkWidget *widget,
                                            gpointer   data)
 {
-  if (GTK_IS_LABEL (widget))
+  if (GTK_IS_LABEL (widget) &&
+      (gtk_label_get_use_underline (GTK_LABEL (widget)) ||
+       GTK_IS_ACCEL_LABEL (widget)))
     label_shortcut_setting_apply (GTK_LABEL (widget));
   else if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget),
