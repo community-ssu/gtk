@@ -1,3 +1,12 @@
+2007-11-02  Xan Lopez  <xan.lopez@nokia.com>
+
+	Apply from upstream, fixes NB#75039
+
+	2007-08-23  Jan Arne Petersen  <jpetersen@jpetersen.org>
+
+        * gtk/gtkbuilderparser.c: (text): Duplicate the string returned by
+        d[n]gettext before it is potentially freed. (#461945)
+
 2007-10-31  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtklabel.c (label_shortcut_setting_traverse_container): Do not
