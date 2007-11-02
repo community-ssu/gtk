@@ -4,7 +4,7 @@
 	* gtk/gtkwindow.c:
 
 	Use "Since: maemo 4.0" instead of "Since: gtk 2.12" where
-	appropriate.
+	appropriate. Fixes: NB#74140
 
 2007-11-02  Xan Lopez  <xan.lopez@nokia.com>
 
