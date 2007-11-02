@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.10.12-0osso25) unstable; urgency=low
+
+  * Do not recalculate state on notify::{gtk-enable-accels,gtk-enable-mnemonics} 
+    unconditionally. Fixes: NB#74392
+  * Duplicate the string returned by d[n]gettext before it is potentially
+    freed in GtkBuildParser text parser function. Fixes: NB#75039
+  * Correctly tag maemo-only functions as "Since: maemo 4.0". Fixes: NB#74140
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri,  2 Nov 2007 15:34:02 +0200
+
 gtk+2.0 (2:2.10.12-0osso24) unstable; urgency=low
 
   * Only add toplevel widgets to the size_allocated_containers list. Fixes:
