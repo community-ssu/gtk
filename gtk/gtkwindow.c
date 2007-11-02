@@ -671,7 +671,7 @@ gtk_window_class_init (GtkWindowClass *klass)
    * a _GTK_DELETE_TEMPORARIES message, so this needs to be properly handled by the
    * widget.
    *
-   * Since: 2.12
+   * Since: maemo 4.0
    * Stability: Unstable
    */
   g_object_class_install_property (gobject_class,
@@ -4938,7 +4938,7 @@ send_client_message_to_embedded_windows (GtkWidget *widget,
  * @window: a #GtkWindow
  * @setting: %TRUE if the window should be closed when it receives the _GTK_DELETE_TEMPORARIES ClientMessage
  * 
- * Since: 2.12
+ * Since: maemo 4.0
  * Stability: Unstable
  */
 void
@@ -4965,7 +4965,7 @@ gtk_window_set_is_temporary (GtkWindow *window,
  *
  * Return value: %TRUE if the window is marked as temporary.
  *
- * Since: 2.12
+ * Since: maemo 4.0
  * Stability: Unstable
  */
 gboolean
@@ -8056,7 +8056,7 @@ _gtk_window_is_on_client_data (GtkWindow *window, GdkEventClient *event)
  * 
  * Sends a _GTK_DELETE_TEMPORARIES ClientEvent to all other toplevel windows
  *
- * Since: 2.12
+ * Since: maemo 4.0
  * Stability: Unstable
  */
 void

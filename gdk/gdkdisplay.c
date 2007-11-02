@@ -341,7 +341,7 @@ gdk_event_send_client_message (GdkEvent        *event,
  * 
  * Sends a _GTK_DELETE_TEMPORARIES ClientEvent to all toplevel windows
  *
- * Since: 2.12
+ * Since: maemo 4.0
  * Stability: Unstable
  */
 void

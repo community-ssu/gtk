@@ -1,5 +1,13 @@
 2007-11-02  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gdk/gdkdisplay.c:
+	* gtk/gtkwindow.c:
+
+	Use "Since: maemo 4.0" instead of "Since: gtk 2.12" where
+	appropriate.
+
+2007-11-02  Xan Lopez  <xan.lopez@nokia.com>
+
 	Apply from upstream, fixes NB#75039
 
 	2007-08-23  Jan Arne Petersen  <jpetersen@jpetersen.org>
