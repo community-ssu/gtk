@@ -1307,14 +1307,12 @@ popup_grab_on_window (GdkWindow *window,
 	return TRUE;
       else
 	{
-          g_warning ("popup_grab_on_window: couldn't grab keyboard");
 	  gdk_display_pointer_ungrab (gdk_drawable_get_display (window),
 				      activate_time);
 	  return FALSE;
 	}
     }
 
-  g_warning ("popup_grab_on_window: couldn't grab pointer");
   return FALSE;
 }
 
@@ -1461,7 +1459,7 @@ gtk_menu_popup (GtkMenu		    *menu,
   if (xgrab_shell && xgrab_shell != widget)
     {
       if (popup_grab_on_window (xgrab_shell->window, activate_time, grab_keyboard))
-          GTK_MENU_SHELL (xgrab_shell)->have_xgrab = TRUE;
+        GTK_MENU_SHELL (xgrab_shell)->have_xgrab = TRUE;
 
 #ifdef MAEMO_CHANGES
       /* Maemo: enable rc-file theming */
@@ -1500,7 +1498,6 @@ gtk_menu_popup (GtkMenu		    *menu,
        */
       menu_shell->parent_menu_shell = NULL;
       menu_grab_transfer_window_destroy (menu);
-      g_warning ("%gtk_menu_popup: exiting because we don't have grab");
       return;
     }
 
@@ -1605,7 +1602,21 @@ gtk_menu_popup (GtkMenu		    *menu,
   /* Once everything is set up correctly, map the toplevel window on
      the screen.
    */
+#ifndef MAEMO_CHANGES
   gtk_widget_show (menu->toplevel);
+
+  /* flush the X event queue for the popup to become realized and
+   * mapped, since grabbing requires a mapped window. (this only works
+   * for popups, regular windows need gtk_widget_show_now() to sync
+   * with window manager interaction).
+   */
+  gdk_flush ();
+#else
+  /* on maemo, menus are ordinary toplevels, so gdk_flush() will not work.
+   * do as above comment suggests instead.
+   */
+  gtk_widget_show_now (menu->toplevel);
+#endif /* MAEMO_CHANGES */
 
   if (xgrab_shell == widget)
     popup_grab_on_window (widget->window, activate_time, grab_keyboard); /* Should always succeed */
