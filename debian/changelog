@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.10.12-0osso26) unstable; urgency=low
+
+  * Set the tap and hold cursor on the root window. Fixes: NB#66174.
+  * Fix grab failure in gtk_menu_popup. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  8 Nov 2007 16:18:24 +0200
+
 gtk+2.0 (2:2.10.12-0osso25) unstable; urgency=low
 
   * Do not recalculate state on notify::{gtk-enable-accels,gtk-enable-mnemonics} 
