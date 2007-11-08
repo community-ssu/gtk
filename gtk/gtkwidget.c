@@ -9084,7 +9084,7 @@ gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
     td->timer_id = 0;
 
   gdk_display_get_pointer (gdk_drawable_get_display (td->tah_on_window),
-			   NULL, &x, &y, NULL);
+                           NULL, &x, &y, NULL);
 
   /* Did we dragged too far from the start point */
   if (gtk_drag_check_threshold (widget, td->x, td->y, x, y))
@@ -9139,12 +9139,26 @@ gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
 
   if (!gtk_widget_tap_and_hold_query (widget, event) && !td->timer_id)
     {
+      GdkWindow *root_window;
       gdk_display_get_pointer (gtk_widget_get_display (widget),
 			       NULL, &td->x, &td->y, NULL);
 
       td->timer_counter = TAP_AND_HOLD_TIMER_COUNTER;
-      td->tah_on_window = ((GdkEventButton *)event)->window;
-
+      /* We set the cursor in the root window for the TAH animation to be
+         visible in every possible case, like windows completely covering
+         some widget to filter events.
+      */
+      root_window = gtk_widget_get_root_window (widget);
+      if (root_window == NULL)
+        {
+          /* We are getting events from a widget that's not in a
+             hierarchy, it might happen (like putting a dummy widget
+             as user_data in a GdkWindow). Try really hard to get
+             the root window
+          */
+          root_window = gdk_screen_get_root_window (gdk_screen_get_default ());
+        }
+      td->tah_on_window = root_window;
       tap_and_hold_init_animation (td);
       td->timer_id = g_timeout_add (td->interval,
 				    (GSourceFunc)
