@@ -1,3 +1,24 @@
+2007-11-08  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_button_press): 
+	
+	Set the TAH cursor in the root window.
+
+	HildonDesktop covers the applets in home with a GdkWindow used to
+	filter events and ease drag-and-drop, reordering, etc of those
+	applets.  When an event passes the filtering a complex hack is
+	used to set as the event window the window that should have
+	received the event if the covering window were not there. GTK TAH
+	will use that window to set the cursor animation, but as the
+	window is always covered it will never have the chance to actually
+	show the cursor.
+
+	This patch sets the cursor in the root window. As every window
+	defaults to its parent's cursor, it should make the TAH animation
+	always visible.
+
+	Fixes: NB#66174
+	
 2007-11-08  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenu.c: add back warnings about failed grabs, they were
