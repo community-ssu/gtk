@@ -1,3 +1,11 @@
+2007-11-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkrange.c (gtk_range_motion_notify): 
+
+	Ignore motion notify noise (up to 3px) in N810. (Yes, evil hack).
+
+	Fixes: NB#75484
+
 2007-11-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_button_press): 
