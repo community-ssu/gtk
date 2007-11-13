@@ -2,6 +2,12 @@
 
 	* gtk/gtkrange.c (gtk_range_motion_notify): 
 
+	Core just fixed this in their side finally... reverting.
+	
+2007-11-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkrange.c (gtk_range_motion_notify): 
+
 	Ignore motion notify noise (up to 3px) in N810. (Yes, evil hack).
 
 	Fixes: NB#75484

@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.10.12-0osso28) unstable; urgency=low
+
+  * Reverting last change, Core fixed it in their side. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Nov 2007 15:48:37 +0200
+
 gtk+2.0 (2:2.10.12-0osso27) unstable; urgency=low
 
   * Ignore N810 motion notify noise. Fixes: NB#75484 

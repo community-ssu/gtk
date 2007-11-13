@@ -2171,21 +2171,6 @@ gtk_range_motion_notify (GtkWidget      *widget,
 
   gdk_window_get_pointer (range->event_window, &x, &y, NULL);
 
-#if defined(MAEMO_CHANGES)
-
-#define N810_MOTION_NOISE 3
-
-  /* N810 HW can create phantom up to 3px motion notify events,
-     ignore them */
-  if (range->orientation == GTK_ORIENTATION_VERTICAL &&
-      (ABS (range->layout->mouse_y - y) <= N810_MOTION_NOISE))
-    return FALSE;
-  else if (range->orientation == GTK_ORIENTATION_HORIZONTAL &&
-           (ABS (range->layout->mouse_x - x) <= N810_MOTION_NOISE))
-    return FALSE;
-
-#endif
-  
   range->layout->mouse_x = x;
   range->layout->mouse_y = y;
 
