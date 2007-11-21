@@ -1,3 +1,17 @@
+2007-11-21  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_popup): 
+
+	Do not store activate_time in menu_shell for menus popped up with
+	button == 0.
+
+	Storing this is only useful for menus opened on press (for the
+	"close on long press" functionality), and it confuses the code
+	responsible of the gtk-menu-popup-click-time, which expects
+	activate_time to be set only for menus opened on button press.
+
+	Fixes: NB#76238
+
 2007-11-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkrange.c (gtk_range_motion_notify): 

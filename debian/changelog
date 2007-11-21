@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.10.12-0osso29) unstable; urgency=low
+
+  * Do not store activate_time for menus not opened on button_press.
+    Fixes: NB#76238 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 21 Nov 2007 13:51:49 +0200
+
 gtk+2.0 (2:2.10.12-0osso28) unstable; urgency=low
 
   * Reverting last change, Core fixed it in their side. 
