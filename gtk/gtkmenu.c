@@ -1298,14 +1298,12 @@ popup_grab_on_window (GdkWindow *window,
 	return TRUE;
       else
 	{
-          g_warning ("popup_grab_on_window: couldn't grab keyboard");
 	  gdk_display_pointer_ungrab (gdk_drawable_get_display (window),
 				      activate_time);
 	  return FALSE;
 	}
     }
 
-  g_warning ("popup_grab_on_window: couldn't grab pointer");
   return FALSE;
 }
 
@@ -1491,7 +1489,6 @@ gtk_menu_popup (GtkMenu		    *menu,
        */
       menu_shell->parent_menu_shell = NULL;
       menu_grab_transfer_window_destroy (menu);
-      g_warning ("gtk_menu_popup: exiting because we don't have grab");
       return;
     }
 

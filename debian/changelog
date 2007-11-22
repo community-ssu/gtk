@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.10.12-0osso31) unstable; urgency=low
+
+  * Remove debug output in GtkMenu. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Nov 2007 18:10:58 +0200
+
 gtk+2.0 (2:2.10.12-0osso30) unstable; urgency=low
 
   * Revert setting activate_time to 0 on gtk_menu_popup when button
