@@ -262,12 +262,6 @@ static gboolean gtk_menu_real_can_activate_accel (GtkWidget *widget,
 static void _gtk_menu_refresh_accel_paths (GtkMenu *menu,
 					   gboolean group_changed);
 
-#ifdef MAEMO_CHANGES
-static gboolean gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
-                                                         GdkEventVisibility *event,
-                                                         GtkMenu            *menu);
-#endif /* MAEMO_CHANGES */
-
 static const gchar	  attach_data_key[] = "gtk-menu-attach-data";
 
 static guint menu_signals[LAST_SIGNAL] = { 0 };
@@ -934,9 +928,6 @@ gtk_menu_init (GtkMenu *menu)
 				     "signal::event", gtk_menu_window_event, menu,
 				     "signal::size_request", gtk_menu_window_size_request, menu,
 				     "signal::destroy", gtk_widget_destroyed, &menu->toplevel,
-#ifdef MAEMO_CHANGES
-                                     "signal::visibility_notify_event", gtk_menu_window_visibility_notify_event, menu,
-#endif /* MAEMO_CHANGES */
 				     NULL);
   gtk_window_set_resizable (GTK_WINDOW (menu->toplevel), FALSE);
   gtk_window_set_mnemonic_modifier (GTK_WINDOW (menu->toplevel), 0);
@@ -5433,82 +5424,6 @@ _gtk_menu_enable_context_menu_behavior (GtkMenu *menu)
   GtkMenuPrivate *priv = gtk_menu_get_private (menu);
 
   priv->context_menu = TRUE;
-}
-#endif /* MAEMO_CHANGES */
-
-#ifdef MAEMO_CHANGES
-static gboolean
-gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
-                                         GdkEventVisibility *event,
-                                         GtkMenu            *menu)
-{
-  GtkMenuShell *menu_shell;
-  GdkScreen *screen;
-  GList *stack;
-  gboolean deactivate;
-
-  /* The point here is to close the menu if another window (eg. dialog,
-     even partially!) gets on top of the menu. However our own submenus may
-     also fully obscure us, so we have to check that case.
-
-     It's also possible that we get here while a submenu was opened and
-     closed quickly, so we don't really see it anymore but its window is
-     still obscuring us.. So, never close the menu if another menu is on top
-     of us. */
-  if (event->state == GDK_VISIBILITY_UNOBSCURED)
-    return FALSE;
-
-  menu_shell = GTK_MENU_SHELL (menu);
-
-  screen = gtk_widget_get_screen (widget);
-
-  deactivate = FALSE;
-
-  /* Inspect windows above us */
-  stack = gdk_screen_get_window_stack (screen);
-  if (stack != NULL)
-    {
-      GList *iter;
-
-      iter = g_list_last (stack);
-
-      while (iter)
-        {
-          GdkWindow *win = iter->data;
-          GdkWindowTypeHint type;
-
-          if (win == widget->window)
-            break;
-
-          gdk_error_trap_push ();
-          type = gdk_window_get_type_hint (win);
-          if (!gdk_error_trap_pop () &&
-              (type != GDK_WINDOW_TYPE_HINT_NOTIFICATION) &&
-              (type != GDK_WINDOW_TYPE_HINT_MENU)         &&
-              (type != GDK_WINDOW_TYPE_HINT_POPUP_MENU)   &&
-              (type != GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU))
-            {
-              /* A non-message and non-menu window above us; close. */
-              deactivate = TRUE;
-
-              break;
-            }
-
-          iter = iter->prev;
-        }
-
-      g_list_foreach (stack, (GFunc) g_object_unref, NULL);
-      g_list_free (stack);
-    }
-
-  if (deactivate)
-    {
-      gtk_menu_shell_deactivate (menu_shell);
-
-      return TRUE;
-    }
-
-  return FALSE;
 }
 #endif /* MAEMO_CHANGES */
 
