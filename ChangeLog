@@ -1,5 +1,11 @@
 2007-11-22  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkmenu.c (gtk_menu_popup): revert using show_now for the menu
+	toplevel, it breaks submenu opening for some reason. The grab failure
+	this fixed is apparently harmless anyway.
+	
+2007-11-22  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkmenu.c (gtk_menu_popup): revert last commit, it breaks in
 	some situations (menus opened on release, or opened on press with
 	button = 0 on gtk_menu_popup).

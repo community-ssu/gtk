@@ -1605,21 +1605,7 @@ gtk_menu_popup (GtkMenu		    *menu,
   /* Once everything is set up correctly, map the toplevel window on
      the screen.
    */
-#ifndef MAEMO_CHANGES
   gtk_widget_show (menu->toplevel);
-
-  /* flush the X event queue for the popup to become realized and
-   * mapped, since grabbing requires a mapped window. (this only works
-   * for popups, regular windows need gtk_widget_show_now() to sync
-   * with window manager interaction).
-   */
-  gdk_flush ();
-#else
-  /* on maemo, menus are ordinary toplevels, so gdk_flush() will not work.
-   * do as above comment suggests instead.
-   */
-  gtk_widget_show_now (menu->toplevel);
-#endif /* MAEMO_CHANGES */
 
   if (xgrab_shell == widget)
     popup_grab_on_window (widget->window, activate_time, grab_keyboard); /* Should always succeed */
