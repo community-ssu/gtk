@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.10.12-0osso30) unstable; urgency=low
+
+  * Revert setting activate_time to 0 on gtk_menu_popup when button
+    is 0.
+  * Do not use show_now on gtk_menu_popup to show the menu toplevel,
+    it breaks submenus in some cases.
+  * Remove visibility-notify-event crack from GtkMenu, it's useless.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Nov 2007 17:58:51 +0200
+
 gtk+2.0 (2:2.10.12-0osso29) unstable; urgency=low
 
   * Do not store activate_time for menus not opened on button_press.
