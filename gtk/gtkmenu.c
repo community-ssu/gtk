@@ -1549,14 +1549,7 @@ gtk_menu_popup (GtkMenu		    *menu,
   menu->parent_menu_item = parent_menu_item;
   menu->position_func = func;
   menu->position_func_data = data;
-#ifdef MAEMO_CHANGES
-  /* Storing the activate_time in menu_shell is only useful for
-     menus opened in button press in order to close them on long
-     press */
-  menu_shell->activate_time = button == 0 ? 0 : activate_time;
-#else
   menu_shell->activate_time = activate_time;
-#endif
 
   /* We need to show the menu here rather in the init function because
    * code expects to be able to tell if the menu is onscreen by
