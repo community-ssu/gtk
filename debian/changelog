@@ -1,6 +1,6 @@
 gtk+2.0 (2:2.10.12-0osso32) unstable; urgency=low
 
-  * Remove spurious bugs from changelog. 
+  * Remove spurious bugs from changelog.
 
  -- Xan Lopez <xan.lopez@nokia.com>  Tue, 27 Nov 2007 13:00:55 +0200
 
