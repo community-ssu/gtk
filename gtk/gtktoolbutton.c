@@ -269,6 +269,24 @@ maemo_insensitive_press (GtkWidget     *widget,
 {
   gtk_widget_insensitive_press (GTK_WIDGET (button));
 }
+static gboolean
+maemo_tap_and_hold_query (GtkWidget *widget, 
+			  GdkEvent *event)
+{
+  gboolean return_value = FALSE;
+
+  g_signal_emit_by_name (G_OBJECT (gtk_widget_get_parent (widget)), 
+			 "tap-and-hold-query", event, &return_value);
+
+  return return_value;
+}
+static void
+maemo_tap_and_hold (GtkWidget *widget, 
+		    gpointer *data)
+{
+  g_signal_emit_by_name (G_OBJECT (gtk_widget_get_parent (widget)), 
+			 "tap-and-hold");
+}
 #endif /* MAEMO_CHANGES */
 
 static void
@@ -288,9 +306,13 @@ gtk_tool_button_init (GtkToolButton      *button,
 			   G_CALLBACK (button_clicked), button, 0);
 
 #ifdef MAEMO_CHANGES
-  /* Hildon: connect "insensitive_press" signal for private button */
+  /* Proxy signals from the GtkButton to the GtkToolButton */
   g_signal_connect_object (button->priv->button, "insensitive_press",
                            G_CALLBACK (maemo_insensitive_press), button, 0);
+  g_signal_connect_object (button->priv->button, "tap-and-hold-query",
+                           G_CALLBACK (maemo_tap_and_hold_query), button, 0);
+  g_signal_connect_object (button->priv->button, "tap-and-hold",
+                           G_CALLBACK (maemo_tap_and_hold), button, 0);
 #endif /* MAEMO_CHANGES */
 
   gtk_container_add (GTK_CONTAINER (button), button->priv->button);

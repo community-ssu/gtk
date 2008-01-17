@@ -1,3 +1,10 @@
+2008-01-17  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtktoolbutton.c (gtk_tool_button_init): proxy tap-and-hold
+	signals for the GtkButton inside the GtkToolButton.
+
+	Patch by Sergio Villar (NB#79312)
+
 2007-11-22  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkmenu.c: remove debug output.
