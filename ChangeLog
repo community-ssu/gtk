@@ -1,5 +1,18 @@
 2008-02-11  Kristian Rietveld  <kris@imendio.com>
 
+	Merge from upstream, fixes NB#78606:
+
+        * gtk/gtktreeviewcolumn.c (gtk_tree_view_column_cell_layout_reorder):
+
+        Plug leak: When reordering the info in the list the old node is
+        removed but not freed. (#503569)
+
+        * gtk/gtkcellview.c (gtk_cell_view_cell_layout_reorder)
+        * gtk/gtkiconview.c (gtk_icon_view_cell_layout_reorder): plug leak
+        wrt. link deletion from list; contination of fix for #503569.
+
+2008-02-11  Kristian Rietveld  <kris@imendio.com>
+
 	* gdk/gdk.h
 	* gdk/gdkdisplay.c (gdk_close_all_temporary_windows): fix prototypes,
 	silences gcc when compiling with -Wstrict-prototypes. (MB#2493,
