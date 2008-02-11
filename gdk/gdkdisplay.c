@@ -345,7 +345,7 @@ gdk_event_send_client_message (GdkEvent        *event,
  * Stability: Unstable
  */
 void
-gdk_close_all_temporary_windows ()
+gdk_close_all_temporary_windows (void)
 {
   GdkEventClient client;
 

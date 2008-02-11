@@ -170,7 +170,7 @@ gint       gdk_mbstowcs          (GdkWChar         *dest,
 gboolean gdk_event_send_client_message      (GdkEvent       *event,
 					     GdkNativeWindow winid);
 #ifdef MAEMO_CHANGES
-void gdk_close_all_temporary_windows ();
+void     gdk_close_all_temporary_windows    (void);
 #endif /* MAEMO_CHANGES */
 void     gdk_event_send_clientmessage_toall (GdkEvent  *event);
 #endif
