@@ -1,3 +1,10 @@
+2008-02-13  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from upstream, fixes NB#75384:
+
+	* gtk/gtktreeview.c (gtk_tree_view_stop_rubber_band): only
+	queue a redraw if the rubber banding has actually been active.
+
 2008-02-11  Kristian Rietveld  <kris@imendio.com>
 
 	Merge from upstream, fixes NB#78606:
