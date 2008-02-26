@@ -1,3 +1,11 @@
+2008-02-26  Michael Natterer  <mitch@imendio.com>
+
+	Merged from upstream, fixes the crash in NB#77296:
+
+	* gtk/gtktextbufferserialize.c (parse_info_free): don't g_free()
+	the members of info->tag_stack since they are a) gobjects and b)
+	not even owned by us, ugh... Fixes crash when deserializing fails.
+
 2008-02-13  Kristian Rietveld  <kris@imendio.com>
 
 	Merge from upstream, fixes NB#75384:
