@@ -4656,11 +4656,20 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	   list = (rtl ? list->prev : list->next))
         {
 	  GtkTreeViewColumn *column = list->data;
+#ifdef MAEMO_CHANGES
+	  gtk_tree_view_column_cell_set_cell_data_with_hint (column,
+                                                             tree_view->priv->model,
+                                                             &iter,
+                                                             GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_PARENT),
+                                                             node->children?TRUE:FALSE,
+                                                             GTK_TREE_CELL_DATA_HINT_KEY_FOCUS);
+#else /* !MAEMO_CHANGES */
 	  gtk_tree_view_column_cell_set_cell_data (column,
 						   tree_view->priv->model,
 						   &iter,
 						   GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_PARENT),
 						   node->children?TRUE:FALSE);
+#endif /* !MAEMO_CHANGES */
         }
 
       has_special_cell = gtk_tree_view_has_special_cell (tree_view);
@@ -10436,11 +10445,20 @@ gtk_tree_view_move_cursor_left_right (GtkTreeView *tree_view,
       if (column->visible == FALSE)
 	goto loop_end;
 
+#ifdef MAEMO_CHANGES
+      gtk_tree_view_column_cell_set_cell_data_with_hint (column,
+                                                         tree_view->priv->model,
+                                                         &iter,
+                                                         GTK_RBNODE_FLAG_SET (cursor_node, GTK_RBNODE_IS_PARENT),
+                                                         cursor_node->children?TRUE:FALSE,
+                                                         GTK_TREE_CELL_DATA_HINT_KEY_FOCUS);
+#else /* !MAEMO_CHANGES */
       gtk_tree_view_column_cell_set_cell_data (column,
 					       tree_view->priv->model,
 					       &iter,
 					       GTK_RBNODE_FLAG_SET (cursor_node, GTK_RBNODE_IS_PARENT),
 					       cursor_node->children?TRUE:FALSE);
+#endif /* !MAEMO_CHANGES */
 
       if (rtl)
         {

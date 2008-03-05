@@ -1260,8 +1260,14 @@ tree_column_is_sensitive (GtkTreeViewColumn *column,
   gboolean sensitive;
   gboolean visible;
 
+#ifdef MAEMO_CHANGES
+  gtk_tree_view_column_cell_set_cell_data_with_hint (column, model,
+                                                     iter, FALSE, FALSE,
+                                                     GTK_TREE_CELL_DATA_HINT_SENSITIVITY);
+#else /* !MAEMO_CHANGES */
   gtk_tree_view_column_cell_set_cell_data (column, model,
 					   iter, FALSE, FALSE);
+#endif /* !MAEMO_CHANGES */
 
   cells = gtk_tree_view_column_get_cell_renderers (column);
 

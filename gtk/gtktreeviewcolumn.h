@@ -232,6 +232,22 @@ gboolean                gtk_tree_view_column_cell_get_position   (GtkTreeViewCol
 					                          gint                    *width);
 void                    gtk_tree_view_column_queue_resize        (GtkTreeViewColumn       *tree_column);
 
+#ifdef MAEMO_CHANGES
+typedef enum
+{
+  GTK_TREE_CELL_DATA_HINT_ALL,
+  GTK_TREE_CELL_DATA_HINT_KEY_FOCUS,
+  GTK_TREE_CELL_DATA_HINT_SENSITIVITY
+} GtkTreeCellDataHint;
+
+void                       gtk_tree_view_column_cell_set_cell_data_with_hint (GtkTreeViewColumn          *tree_column,
+                                                                              GtkTreeModel               *tree_model,
+                                                                              GtkTreeIter                *iter,
+                                                                              gboolean                    is_expander,
+                                                                              gboolean                    is_expanded,
+                                                                              GtkTreeCellDataHint  hint);
+GtkTreeCellDataHint        gtk_tree_view_column_get_cell_data_hint           (GtkTreeViewColumn          *column);
+#endif /* MAEMO_CHANGES */
 
 G_END_DECLS
 
