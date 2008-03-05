@@ -7,6 +7,8 @@ gtk+2.0 (2:2.10.12-0osso33) unstable; urgency=low
     buffer serialization code. Fixes: NB#77296
   * Short circuit gtk_tree_model_filter_row_inserted when an empty root
     level would be built. Fixes: NB#78691
+  * Introduce CellDataFunc hint functionality for GtkTreeViewColumn.
+    Fixes: NB#78800
   * Plug various leaks. Fixes: NB#503569, NB#78606
 
  -- Xan Lopez <xan.lopez@nokia.com>  Wed, 05 Mar 2008 13:55:02 +0200
