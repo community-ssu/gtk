@@ -1,3 +1,11 @@
+2008-03-05  Kristian Rietveld  <kris@imendio.com>
+
+	Also committed upstream.  Fixes NB#78691.
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_row_inserted):
+	short-circuit in case an empty root level would be build (and thus
+	directly destroyed) if no virtual root has been set.
+
 2008-02-26  Michael Natterer  <mitch@imendio.com>
 
 	Merged from upstream, fixes the crash in NB#77296:
