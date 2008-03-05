@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.12-0osso33) unstable; urgency=low
+
+  * Proxy tap and hold signals for the GtkButton inside GtkToolButton.
+    Fixes: NB#79312.
+  * Fix prototype for gdk_close_all_temporary_windows. Fixes: MB#2493
+  * Don't use g_free to free GObjects (that we don't even own) in text
+    buffer serialization code. Fixes: NB#77296
+  * Short circuit gtk_tree_model_filter_row_inserted when an empty root
+    level would be built. Fixes: NB#78691
+  * Plug various leaks. Fixes: NB#503569, NB#78606
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 05 Mar 2008 13:55:02 +0200
+
 gtk+2.0 (2:2.10.12-0osso32) unstable; urgency=low
 
   * Remove spurious bugs from changelog.
