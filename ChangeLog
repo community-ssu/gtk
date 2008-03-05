@@ -1,5 +1,10 @@
 2008-03-05  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/makegtkalias.pl: update the regexp handling #ifdef to be
+	able to handle the MAEMO_CHANGES defines.
+
+2008-03-05  Kristian Rietveld  <kris@imendio.com>
+
 	Also committed upstream.  Fixes NB#78691.
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_row_inserted):
