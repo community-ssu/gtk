@@ -1,3 +1,16 @@
+2008-03-31  Kristian Rietveld  <kris@imendio.com>
+
+	Introduce a changed signal for GtkCellRendererCombo to be
+	able to fix NB#80708.
+
+	* gtk/gtkmarshalers.list: add VOID:STRING,BOXED marshaler.
+
+	* gtk/gtkcellrenderercombo.c (gtk_cell_renderer_combo_class_init):
+	add changed signal,
+	(gtk_cell_renderer_combo_editing_done),
+	(gtk_cell_renderer_combo_changed): emit the changed signal after
+	the embedded combo box has emitted changed.
+	
 2008-03-05  Kristian Rietveld  <kris@imendio.com>
 
 	Introduce CellDataFunc hint functionality for NB#78800.
