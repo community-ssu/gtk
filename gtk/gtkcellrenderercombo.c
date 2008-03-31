@@ -28,7 +28,9 @@
 #include "gtkcellrenderertext.h"
 #include "gtkcombobox.h"
 #include "gtkcomboboxentry.h"
+#ifdef MAEMO_CHANGES
 #include "gtkmarshalers.h"
+#endif /* MAEMO_CHANGES */
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -60,12 +62,14 @@ enum {
   PROP_HAS_ENTRY
 };
 
+#ifdef MAEMO_CHANGES
 enum {
   CHANGED,
   LAST_SIGNAL
 };
 
 static guint cell_renderer_combo_signals[LAST_SIGNAL] = { 0, };
+#endif /* MAEMO_CHANGES */
 
 #define GTK_CELL_RENDERER_COMBO_PATH "gtk-cell-renderer-combo-path"
 
@@ -139,6 +143,7 @@ gtk_cell_renderer_combo_class_init (GtkCellRendererComboClass *klass)
 							 GTK_PARAM_READWRITE));
 
 
+#ifdef MAEMO_CHANGES
   /**
    * GtkCellRendererCombo::changed:
    * @combo: the object on which the signal is emitted
@@ -172,6 +177,7 @@ gtk_cell_renderer_combo_class_init (GtkCellRendererComboClass *klass)
 		  G_TYPE_NONE, 2,
 		  G_TYPE_STRING,
 		  GTK_TYPE_TREE_ITER);
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -287,6 +293,7 @@ gtk_cell_renderer_combo_set_property (GObject      *object,
     }
 }
 
+#ifdef MAEMO_CHANGES
 static void
 gtk_cell_renderer_combo_changed (GtkComboBox *combo,
 				 gpointer     data)
@@ -305,6 +312,7 @@ gtk_cell_renderer_combo_changed (GtkComboBox *combo,
 		     path, &iter);
     }
 }
+#endif /* MAEMO_CHANGES */
 
 static void
 gtk_cell_renderer_combo_editing_done (GtkCellEditable *combo,
@@ -447,9 +455,11 @@ gtk_cell_renderer_combo_start_editing (GtkCellRenderer     *cell,
   g_signal_connect (GTK_CELL_EDITABLE (combo), "editing_done",
 		    G_CALLBACK (gtk_cell_renderer_combo_editing_done),
 		    cell_combo);
+#ifdef MAEMO_CHANGES
   g_signal_connect (GTK_CELL_EDITABLE (combo), "changed",
 		    G_CALLBACK (gtk_cell_renderer_combo_changed),
 		    cell_combo);
+#endif /* MAEMO_CHANGES */
   cell_combo->focus_out_id = 
     g_signal_connect (combo, "focus_out_event",
 		      G_CALLBACK (gtk_cell_renderer_combo_focus_out_event),
