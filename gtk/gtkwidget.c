@@ -9019,7 +9019,6 @@ gtk_widget_real_tap_and_hold_setup (GtkWidget                *widget,
     {
       g_object_ref (menu);
       gtk_object_sink (GTK_OBJECT (menu));
-      _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
 
       if (gtk_menu_get_attach_widget (GTK_MENU (menu)) == NULL)
 	gtk_menu_attach_to_widget (GTK_MENU (menu), widget, NULL);
@@ -9100,7 +9099,12 @@ gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
     {
       tap_and_hold_remove_timer (widget);
       _gtk_widget_grab_notify (widget, FALSE);
+
+      _gtk_menu_push_context_menu_behavior ();
+
       g_signal_emit (widget, widget_signals[TAP_AND_HOLD], 0);
+
+      _gtk_menu_pop_context_menu_behavior ();
 
       GDK_THREADS_LEAVE ();
       return FALSE;

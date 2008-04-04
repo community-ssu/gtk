@@ -266,6 +266,10 @@ static const gchar	  attach_data_key[] = "gtk-menu-attach-data";
 
 static guint menu_signals[LAST_SIGNAL] = { 0 };
 
+#ifdef MAEMO_CHANGES
+static gint context_menu_counter = 0;
+#endif
+
 static GtkMenuPrivate *
 gtk_menu_get_private (GtkMenu *menu)
 {
@@ -1570,6 +1574,8 @@ gtk_menu_popup (GtkMenu		    *menu,
 
 #ifdef MAEMO_CHANGES
   /* Hildon: save position of the pointer during popup. Not multihead safe. */
+  priv->context_menu = (context_menu_counter > 0) && !parent_menu_item;
+
   if (priv->context_menu)
     gdk_display_get_pointer (gtk_widget_get_display (widget), NULL,
                              &priv->popup_pointer_x,
@@ -1616,6 +1622,10 @@ gtk_menu_popdown (GtkMenu *menu)
   menu_shell->ignore_enter = FALSE;
 
   private->have_position = FALSE;
+
+#ifdef MAEMO_CHANGES
+  private->context_menu = FALSE;
+#endif
 
   gtk_menu_stop_scrolling (menu);
   
@@ -5414,13 +5424,19 @@ gtk_menu_grab_notify (GtkWidget *widget,
 }
 
 #ifdef MAEMO_CHANGES
-/* Hildon function to make context menus behave according to spec */
+/* Hildon functions to make context menus behave according to spec */
 void
-_gtk_menu_enable_context_menu_behavior (GtkMenu *menu)
+_gtk_menu_push_context_menu_behavior (void)
 {
-  GtkMenuPrivate *priv = gtk_menu_get_private (menu);
+  context_menu_counter++;
+}
 
-  priv->context_menu = TRUE;
+void
+_gtk_menu_pop_context_menu_behavior (void)
+{
+  g_return_if_fail (context_menu_counter > 0);
+
+  context_menu_counter--;
 }
 #endif /* MAEMO_CHANGES */
 

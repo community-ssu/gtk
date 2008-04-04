@@ -1,3 +1,27 @@
+2008-04-04  Michael Natterer  <mitch@imendio.com>
+
+	Change how GtkMenu's "context_menu" flag gets set.
+
+	Should fix NB#80760 (context sensitive menu disappears after
+	stylus releasing):
+
+	* gtk/gtkmenu.[ch]: replace _gtk_menu_enable_context_menu_behavior()
+	by _gtk_menu_push/pop_context_menu_behavior() which increase/decrease
+	an internal counter.
+
+	(gtk_menu_popup): set the "context_menu" flag to TRUE if the
+	counter is > 0 and this is not a submenu.
+
+	(gtk_menu_popdown): set the flag to FALSE again.
+
+	* gtk/gtkwidget.c (gtk_widget_real_tap_and_hold_setup): don't
+	call the removed _gtk_menu_enable_context_menu_behavior().
+
+	(gtk_widget_tap_and_hold_timeout): call the new push/pop API
+	around emitting the tap-and-hold signal, so all menus popped up by
+	that signal behave as context menus, not only the ones correctly
+	registered with tap_and_hold_setup().
+
 2008-03-31  Kristian Rietveld  <kris@imendio.com>
 
 	Introduce a changed signal for GtkCellRendererCombo to be
