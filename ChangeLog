@@ -1,3 +1,13 @@
+2008-04-15  Michael Natterer  <mitch@imendio.com>
+
+	Fixes NB#80760: context sensitive menu disappears after stylus
+	releasing:
+
+	* gtk/gtkmenu.c (gtk_menu_button_release): use the same conditions
+	as gtk_menu_motion_notify() for checking whether the context menu
+	needs to be closed because the pointer has been moved too far out
+	of the menu.
+
 2008-04-08  Michael Natterer  <mitch@imendio.com>
 
 	Fixes NB#77057: two submenus are closed in web plugin menu when

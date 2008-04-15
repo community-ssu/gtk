@@ -2923,6 +2923,9 @@ gtk_menu_button_release (GtkWidget      *widget,
 			 GdkEventButton *event)
 {
   GtkMenuPrivate *priv = gtk_menu_get_private (GTK_MENU (widget));
+#ifdef MAEMO_CHANGES
+  GtkWidget *menu_item;
+#endif
 
   if (priv->ignore_button_release)
     {
@@ -2946,7 +2949,9 @@ gtk_menu_button_release (GtkWidget      *widget,
       pointer_in_menu_window (widget, event->x_root, event->y_root))
     return TRUE;
 #else
-  if (GTK_IS_MENU_SHELL (gtk_get_event_widget ((GdkEvent *) event)))
+  menu_item = gtk_get_event_widget ((GdkEvent*) event);
+  if (!GTK_IS_MENU_ITEM (menu_item) ||
+      !GTK_IS_MENU (menu_item->parent))
     {
       if (priv->context_menu &&
           (priv->popup_pointer_x >= 0) &&
