@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.10.12-0osso34) unstable; urgency=low
+
+  * Introduce a changed signal for GtkCellRendererCombo to be able to fix NB#80708.
+  * Change how GtkMenu's "context_menu" flag gets set. Fixes: NB#80760: context sensitive menu disappears 
+    after stylus releasing
+  * Fixes: NB#77057: two submenus are closed in web plugin menu when last submenu is empty or has no 
+    focus set.
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Wed, 16 Apr 2008 12:33:00 +0200
+
 gtk+2.0 (2:2.10.12-0osso33) unstable; urgency=low
 
   * Proxy tap and hold signals for the GtkButton inside GtkToolButton.
