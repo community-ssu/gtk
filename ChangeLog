@@ -1,3 +1,13 @@
+2008-04-21  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB79639: Display is freezed when file location combobox is
+	tapped while opening a page:
+
+	* gtk/gtkwindow.c (gtk_window_map): add explanatory comment,
+	(gtk_window_close_other_temporaries): after sending the client
+	message, iterate over all toplevels and send delete-events immediately
+	to temporary windows that are currently mapped.
+
 2008-04-15  Michael Natterer  <mitch@imendio.com>
 
 	Fixes NB#80760: context sensitive menu disappears after stylus

@@ -4169,6 +4169,11 @@ gtk_window_map (GtkWidget *widget)
   GdkWindow *toplevel;
 
 #if defined(MAEMO_CHANGES)
+  /* This call should be before we set the MAPPED flag on the
+   * window, because gtk_window_close_other_temporaries() uses
+   * this to ignore this window when sending delete-events
+   * internally.
+   */
   if (! gtk_window_get_is_temporary (window))
     gtk_window_close_other_temporaries (window);
 #endif
@@ -8062,6 +8067,7 @@ _gtk_window_is_on_client_data (GtkWindow *window, GdkEventClient *event)
 void
 gtk_window_close_other_temporaries (GtkWindow *window)
 {
+  GList *toplevels;
   GdkEventClient client;
   XID xid = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
 
@@ -8070,6 +8076,32 @@ gtk_window_close_other_temporaries (GtkWindow *window)
   client.data_format = 8;
   memcpy (((XID*)(&client.data.b[12])),&xid, sizeof(XID));
   gdk_event_send_clientmessage_toall ((GdkEvent*)&client);
+
+  /* The client messages are sent out of process and won't be
+   * delivered before this function returns.  If the caller is
+   * a modal dialog and thus grabs, the delete events for this
+   * process could get ignored.
+   */
+  toplevels = gtk_window_list_toplevels ();
+  g_list_foreach (toplevels, (GFunc)g_object_ref, NULL);
+
+  while (toplevels)
+    {
+      GtkWindow *toplevel = toplevels->data;
+      toplevels = g_list_delete_link (toplevels, toplevels);
+
+      /* We check for MAPPED here instead of comparing to the
+       * window argument, because there can be unmapped toplevels
+       * that are != window.
+       */
+      if (GTK_WIDGET_MAPPED (toplevel)
+          && gtk_window_get_is_temporary (toplevel))
+        delete_if_temporary (GTK_WIDGET (toplevel), &client);
+
+      g_object_unref (toplevel);
+    }
+
+  g_list_free (toplevels);
 }
 #endif /* MAEMO_CHANGES && GDK_WINDOWING_X11 */
 
