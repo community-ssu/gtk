@@ -1,6 +1,6 @@
 gtk+2.0 (2:2.10.12-0osso35) unstable; urgency=low
 
- * Fixes: NB#79639: Display is freezed when file location combobox is tapped while opening a page
+  * Fixes: NB#79639: Display is freezed when file location combobox is tapped while opening a page
 
  -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 28 Apr 2008 12:25:00 +0200
 
