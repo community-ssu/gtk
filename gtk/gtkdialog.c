@@ -30,9 +30,12 @@
 #include "gtkbutton.h"
 #include "gtkdialog.h"
 #include "gtkhbbox.h"
+#include "gtkvbbox.h"
 #include "gtklabel.h"
 #include "gtkhseparator.h"
+#include "gtkvseparator.h"
 #include "gtkmarshalers.h"
+#include "gtkhbox.h"
 #include "gtkvbox.h"
 #include "gdkkeysyms.h"
 #include "gtkmain.h"
@@ -240,6 +243,9 @@ gtk_dialog_init (GtkDialog *dialog)
 {
   GtkDialogPrivate *priv;
 
+#ifdef MAEMO_CHANGES
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+#endif /* MAEMO_CHANGES */
   priv = GET_PRIVATE (dialog);
   priv->ignore_separator = FALSE;
 
@@ -254,10 +260,18 @@ gtk_dialog_init (GtkDialog *dialog)
   
   dialog->vbox = gtk_vbox_new (FALSE, 0);
   
+#ifdef MAEMO_CHANGES
+  gtk_container_add (GTK_CONTAINER (dialog), hbox);
+  gtk_widget_show (hbox);
+  gtk_widget_show (dialog->vbox);
+
+  dialog->action_area = gtk_vbutton_box_new ();
+#else
   gtk_container_add (GTK_CONTAINER (dialog), dialog->vbox);
   gtk_widget_show (dialog->vbox);
 
   dialog->action_area = gtk_hbutton_box_new ();
+#endif /* MAEMO_CHANGES */
 
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog->action_area),
 #ifdef MAEMO_CHANGES
@@ -266,12 +280,22 @@ gtk_dialog_init (GtkDialog *dialog)
                              GTK_BUTTONBOX_END);  
 #endif /* MAEMO_CHANGES */
 
+#ifdef MAEMO_CHANGES
+  gtk_box_pack_end (GTK_BOX (hbox), dialog->action_area,
+                    FALSE, TRUE, 0);
+  gtk_widget_show (dialog->action_area);
+
+  dialog->separator = gtk_vseparator_new ();
+  gtk_box_pack_end (GTK_BOX (hbox), dialog->separator, FALSE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (hbox), dialog->vbox, TRUE, TRUE, 0);
+#else
   gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->action_area,
                     FALSE, TRUE, 0);
   gtk_widget_show (dialog->action_area);
 
   dialog->separator = gtk_hseparator_new ();
   gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->separator, FALSE, TRUE, 0);
+#endif /* MAEMO_CHANGES */
   gtk_widget_show (dialog->separator);
 
   gtk_window_set_type_hint (GTK_WINDOW (dialog),
