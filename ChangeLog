@@ -1,4 +1,9 @@
-2008-05-14  Michael Natterer  <mitch@gimp.org>
+2008-05-14  Michael Natterer  <mitch@imendio.com>
+
+	* gdk-pixbuf/pixbufloader_*.def: were forgotten to remove when
+	upgrading to 2.10.
+
+2008-05-14  Michael Natterer  <mitch@imendio.com>
 
 	* modules/input/imthai-broken.c: was forgotten to remove.
 
