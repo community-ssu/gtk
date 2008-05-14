@@ -1,3 +1,7 @@
+2008-05-14  Michael Natterer  <mitch@imendio.com>
+
+	* Remove .cvsignore files from all folders.
+
 2008-04-21  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes NB79639: Display is freezed when file location combobox is
