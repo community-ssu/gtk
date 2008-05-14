@@ -1,3 +1,7 @@
+2008-05-14  Michael Natterer  <mitch@gimp.org>
+
+	* modules/input/imthai-broken.c: was forgotten to remove.
+
 2008-05-14  Michael Natterer  <mitch@imendio.com>
 
 	* Remove .cvsignore files from all folders.
