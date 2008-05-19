@@ -10878,6 +10878,9 @@ gtk_tree_view_ensure_interactive_directory (GtkTreeView *tree_view)
      }
    
   tree_view->priv->search_window = gtk_window_new (GTK_WINDOW_POPUP);
+#ifdef MAEMO_CHANGES
+  gtk_window_set_is_temporary (GTK_WINDOW (tree_view->priv->search_window), TRUE);
+#endif /* MAEMO_CHANGES */
 
   if (GTK_WINDOW (toplevel)->group)
     gtk_window_group_add_window (GTK_WINDOW (toplevel)->group,

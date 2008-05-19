@@ -1,3 +1,11 @@
+2008-05-19  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB85078: Application do not respond when fullscreen button is
+	pressed while a web page is loading and combobox popup is open.
+
+	* gtk/gtktreeview.c (gtk_tree_view_ensure_interactive_directory): mark
+	the search_window as a temporary window.
+
 2008-05-14  Michael Natterer  <mitch@imendio.com>
 
 	* gdk-pixbuf/pixbufloader_*.def: were forgotten to remove when
