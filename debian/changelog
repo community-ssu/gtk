@@ -1,6 +1,6 @@
 gtk+2.0 (2:2.10.12-0osso36) unstable; urgency=low
 
-  * Fixes NB85078: Application do not respond when fullscreen button is
+  * Fixes: NB#85078: Application do not respond when fullscreen button is
     pressed while a web page is loading and combobox popup is open.
 
   * gtk/gtktreeview.c (gtk_tree_view_ensure_interactive_directory): mark
