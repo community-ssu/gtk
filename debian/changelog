@@ -1,5 +1,15 @@
 gtk+2.0 (2:2.10.12-0osso35) unstable; urgency=low
 
+  * Fixes NB85078: Application do not respond when fullscreen button is
+    pressed while a web page is loading and combobox popup is open.
+
+  * gtk/gtktreeview.c (gtk_tree_view_ensure_interactive_directory): mark
+    the search_window as a temporary window.
+
+ -- Kristian Rietveld  <kris@imendio.com>  Tue, 19 May 2008 20:59:59 +0200
+
+gtk+2.0 (2:2.10.12-0osso35) unstable; urgency=low
+
   * Fixes: NB#79639: Display is freezed when file location combobox is tapped while opening a page
 
  -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 28 Apr 2008 12:25:00 +0200
@@ -13,7 +23,7 @@ gtk+2.0 (2:2.10.12-0osso34) unstable; urgency=low
     focus set.
 
  -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Wed, 16 Apr 2008 12:33:00 +0200
-
+ 
 gtk+2.0 (2:2.10.12-0osso33) unstable; urgency=low
 
   * Proxy tap and hold signals for the GtkButton inside GtkToolButton.
