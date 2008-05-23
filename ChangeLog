@@ -1,5 +1,14 @@
 2008-05-23  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/gtksequence.[ch]
+	* docs/faq/gtkfaq.sgml
+	* po-properties/uz@Latn.po
+	* po/uz@Latn.po
+	* build/*: remove files which were removed from upstream and
+	forgotten to remove in maemo-gtk.
+
+2008-05-23  Michael Natterer  <mitch@imendio.com>
+
 	* === Start Maemo-GTK+ 2.12.9 ===
 
 	* update svn:ignore
