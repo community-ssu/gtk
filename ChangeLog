@@ -1,5 +1,11 @@
 2008-05-23  Michael Natterer  <mitch@imendio.com>
 
+	* gdk/gdk.c (gdk_threads_add_idle_full): add some trailing
+	whitespace inside a <programlisting> doc section to make old
+	gtk-doc happy.
+
+2008-05-23  Michael Natterer  <mitch@imendio.com>
+
 	* gtk/gtksequence.[ch]
 	* docs/faq/gtkfaq.sgml
 	* po-properties/uz@Latn.po

@@ -509,23 +509,23 @@ gdk_threads_dispatch_free (gpointer data)
  * idle_callback (gpointer data)
  * {
  *    // gdk_threads_enter(); would be needed for g_idle_add()
- *
+ *    
  *    SomeWidget *self = data;
  *    /<!-- -->* do stuff with self *<!-- -->/
- *
+ *    
  *    self->idle_id = 0;
- *
+ *    
  *    // gdk_threads_leave(); would be needed for g_idle_add()
  *    return FALSE;
  * }
- *
+ *  
  * static void
  * some_widget_do_stuff_later (SomeWidget *self)
  * {
  *    self->idle_id = gdk_threads_add_idle (idle_callback, self)
  *    // using g_idle_add() here would require thread protection in the callback
  * }
- *
+ *  
  * static void
  * some_widget_finalize (GObject *object)
  * {
