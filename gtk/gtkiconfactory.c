@@ -870,6 +870,9 @@ icon_size_lookup_intern (GtkSettings *settings,
   
   init_icon_sizes ();
 
+  if (size == (GtkIconSize)-1)
+    return FALSE;
+
   if (size >= icon_sizes_used)
     return FALSE;
 
@@ -1059,7 +1062,7 @@ gtk_icon_size_register_alias (const gchar *alias,
   init_icon_sizes ();
 
   if (!icon_size_lookup_intern (NULL, target, NULL, NULL))
-    g_warning ("gtk_icon_size_register_alias: Icon size %d does not exist", target);
+    g_warning ("gtk_icon_size_register_alias: Icon size %u does not exist", target);
 
   ia = g_hash_table_lookup (icon_aliases, alias);
   if (ia)
@@ -1377,7 +1380,7 @@ find_best_matching_source (GtkIconSet       *icon_set,
       
       if ((s->any_direction || (s->direction == direction)) &&
           (s->any_state || (s->state == state)) &&
-          (s->any_size || (sizes_equivalent (size, s->size))))
+          (s->any_size || size == (GtkIconSize)-1 || (sizes_equivalent (size, s->size))))
         {
 	  if (!g_slist_find (failed, s))
 	    {
@@ -1456,7 +1459,7 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
 
   if (!gtk_icon_size_lookup_for_settings (settings, size, &width, &height))
     {
-      if (size == -1)
+      if (size == (GtkIconSize)-1)
 	{
 	  /* Find an available size close to 48 
 	   */
@@ -1492,7 +1495,7 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
 	}
       else
 	{
-	  g_warning ("Invalid icon size %d\n", size);
+	  g_warning ("Invalid icon size %u\n", size);
 	  width = height = 24;
 	}
     }
@@ -1506,7 +1509,8 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
 
   if (!tmp_pixbuf)
     {
-      g_warning ("Error loading theme icon for stock: %s", error->message);
+      g_warning ("Error loading theme icon '%s' for stock: %s", 
+                 icon_source->source.icon_name, error->message);
       g_error_free (error);
       return NULL;
     }
@@ -1516,7 +1520,7 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
   tmp_source.source.pixbuf = tmp_pixbuf;
 
   pixbuf = gtk_style_render_icon (style, &tmp_source,
-                                  direction, state, -1,
+				  direction, state, -1,
 				  widget, detail);
 
   if (!pixbuf)
@@ -1967,7 +1971,7 @@ gtk_icon_source_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GtkIconSource",
+    our_type = g_boxed_type_register_static (I_("GtkIconSource"),
 					     (GBoxedCopyFunc) gtk_icon_source_copy,
 					     (GBoxedFreeFunc) gtk_icon_source_free);
 
@@ -2476,7 +2480,7 @@ find_in_cache (GtkIconSet      *icon_set,
       if (icon->style == style &&
           icon->direction == direction &&
           icon->state == state &&
-          icon->size == size)
+          (size == (GtkIconSize)-1 || icon->size == size))
         {
           if (prev)
             {
@@ -2697,24 +2701,6 @@ _gtk_icon_set_invalidate_caches (void)
   ++cache_serial;
 }
 
-static void
-listify_foreach (gpointer key, gpointer value, gpointer data)
-{
-  GSList **list = data;
-
-  *list = g_slist_prepend (*list, key);
-}
-
-static GSList *
-hash_table_get_keys (GHashTable *table)
-{
-  GSList *list = NULL;
-
-  g_hash_table_foreach (table, listify_foreach, &list);
-
-  return list;
-}
-
 /**
  * _gtk_icon_factory_list_ids:
  * 
@@ -2724,11 +2710,11 @@ hash_table_get_keys (GHashTable *table)
  * 
  * Return value: List of ids in icon factories
  **/
-GSList*
+GList*
 _gtk_icon_factory_list_ids (void)
 {
   GSList *tmp_list;
-  GSList *ids;
+  GList *ids;
 
   ids = NULL;
 
@@ -2737,13 +2723,13 @@ _gtk_icon_factory_list_ids (void)
   tmp_list = all_icon_factories;
   while (tmp_list != NULL)
     {
-      GSList *these_ids;
+      GList *these_ids;
       
       GtkIconFactory *factory = GTK_ICON_FACTORY (tmp_list->data);
 
-      these_ids = hash_table_get_keys (factory->icons);
+      these_ids = g_hash_table_get_keys (factory->icons);
       
-      ids = g_slist_concat (ids, these_ids);
+      ids = g_list_concat (ids, these_ids);
       
       tmp_list = g_slist_next (tmp_list);
     }

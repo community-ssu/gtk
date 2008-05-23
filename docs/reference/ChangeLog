@@ -1,116 +1,605 @@
-2007-06-13  Michael Natterer  <mitch@imendio.com>
+2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
-	Merged from trunk:
+	* === Released 2.12.9 ===
+
+2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+
+	* === Released 2.12.8 ===
+
+2008-01-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.7 ===
+
+2008-01-28  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.12.6 ===
+
+2008-01-24  Johan Dahlin  <johan@gnome.org>
+
+	* gtk/tmpl/gtkwidget.sgml:
+	Add documentation for <accessible> buildable tag.
+
+2008-01-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.5 ===
+
+2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.4 ===
+
+2007-12-30  Johannes Schmid <jhs@gnome.org>
+
+	* gtk/tmpl/gtknotebook.sgml:
+	Fix method names (gtk_notebook_popup_enable vs. 
+	gtk_notebook_enable_popup)
+
+2007-12-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.3 ===
+
+2007-11-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.2 ===
+
+2007-11-19  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkaboutdialog.sgml: Add some hints about
+	program-name vs name.  (#496689, Thomas Wood)
+
+2007-11-19  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Small correction to the
+	informational DTD.  (#496277, Nicolas Joseph)
+
+2007-10-16  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.12.1 ===
+
+2007-10-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-docs.sgml: Move GtkFileSelection to deprecated
+	section.  (#476920, Matthew Barnes)
+
+2007-10-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtktreemodel.sgml: Document GtkTreeModelForeach 
+	parameters. (#4777074, Ross Burton)
+
+2007-10-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkpaned.sgml: Mention behaviour with a single child.
+	(#477447, Juri Pakaste)
+
+2007-10-01 20:21:28  Tim Janik  <timj@imendio.com>
+
+	* gtk/tmpl/gtkmenu.sgml: reworded push_in description with Owen's
+	help, fixes bug #482034.
+
+2007-09-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.0 ===
+
+2007-09-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating-GtkBuilder.sgml: Add a paragraph about
+	using gtk-builder-convert.
+
+2007-09-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkprintunixdialog.sgml: Additions
+
+2007-09-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf/porting-from-imlib.sgml:
+	* gdk/tmpl/rgb.sgml: Remove references to deprecated
+	functions.  (#460207, Guillaume Cottenceau)
+
+2007-09-06  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gdk/tmpl/windows.sgml: Correct the example widget for
+	child windows.  (#473463, Andrew Cowie)
+
+2007-09-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* gtk/gtk-sections.txt: Remove duplicate
+	gtk_print_operation_get_error().  (#473340, Yeti)
+
+2007-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.6 ===
+
+2007-07-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add more tooltip convenience functions.
+	
+2007-07-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add icon view tooltip convenience functions.
+
+Thu Jul 12 18:12:04 2007  Tim Janik  <timj@imendio.com>
+
+	* gdk/tmpl/threads.sgml: clarify section about gdk_threads_enter/
+	gdk_threads_leave to be reworded in terms of events and to mention
+	availability of gdk_threads_add_idle_full().
+
+2007-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbindings.sgml: Add a paragraph about 
+	keybinding signals.
+
+2007-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkrange.sgml:
+	* gtk/tmpl/gtkbox.sgml:
+	* gtk/tmpl/gtksignal.sgml:
+	* gtk/tmpl/gtkaboutdialog.sgml:
+	* gtk/tmpl/gtkbindings.sgml:
+	* gtk/tmpl/gtklabel.sgml:
+	* gtk/tmpl/gtkstatusbar.sgml: Small additions and corrections.
+
+2007-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Additions
+
+	* gtk/tmpl/gtkplug.sgml:
+	* gtk/tmpl/gtksocket.sgml: Move docs inline
+
+2007-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Updates
+
+2007-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating-GtkTooltip.sgml: Migration chapter
+	for tooltips.
+
+	* gtk/gtk-docs.sgml: Include it, and move GtkTooltips
+	chapter to "Deprecated".
+
+	* gtk/Makefile.am: Glue
+
+	* gtk/tmpl/gtktooltip.sgml: Add more content from
+	Kris' "tooltips in 5 minutes" mail.
+
+2007-07-10  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gdk/tmpl/colors.sgml: Remov references to deprecated
+	api.  (#455666, Guillaume Cottenceau)
+
+2007-07-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating-GtkBuilder.sgml: Add some stuff
+	* gtk/gtk-builder-convert.xml: Updates
+
+2007-07-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf/tmpl/scaling.sgml: Remove uses of deprecated api 
+	in example.  (#454835, Guillaume Cottenceau)
+
+2007-07-09  Johan Dahlin,,,  <jdahlin@lozenge>
+
+	* gtk/tmpl/gtkactiongroup.sgml: Document <accelerator> element
+
+Mon Jul  9 10:32:39 2007  Tim Janik  <timj@imendio.com>
+
+	* gdk/tmpl/threads.sgml: applied docu clarification patch from Bjoern
+	Lindqvist, #454700.
+
+2007-07-08  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/tmpl/gtkbuilder.sgml: Mention last_modification_time
+
+2007-07-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Document context and
+	comments for properties.
+
+2007-07-07  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/gtk-builder-convert.xml: Update
+
+2007-04-05  Matthias clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Pixbuf properties
+
+2007-07-04  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/gtk-builder-convert.xml: We support GtkComboBox.items 
+	properties now
+
+Wed Jul  4 00:58:24 2007  Tim Janik  <timj@gtk.org>
+
+	* gdk/tmpl/events.sgml: fixed up motion hint description.
+
+2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkdrawingarea.sgml: Fix a reference 
+	to a deprecated function.  (#453316, Guillaume Cottenceau)
+
+2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Some wordsmithing
+	on the memory management explanation, asked for
+	by Murray Cumming.
+
+2007-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.5 ===
+
+2007-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Add detail about
+	ordering constraints of construct-only object properties
+
+2007-07-02  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/tmpl/gtkbuilder.sgml: Updates
+
+2007-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Add more details
+
+2007-07-01  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/tmpl/gtkbuilder.sgml:
+	* gtk/tmpl/gtkexpander.sgml:
+	* gtk/tmpl/gtkframe.sgml:
+	* gtk/tmpl/gtknotebook.sgml:
+	* gtk/tmpl/gtktreemodel.sgml: Improve GtkBuilder DTD,
+	remove treemodel section, add more information about
+	container subclasses child attributes. #452954
+
+2007-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/*.sgml: Document GtkBuilder ui definitions.
+
+2007-07-01  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/gtk-builder-convert.xml: Updates
+
+2007-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml: Some corrections and additions
+
+	* gtk/tmpl/gtkdialog.sgml: Explain details of GtkDialog
+	as a buildable.
+
+2007-06-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbuilder.sgml:
+	* gtk/tmpl/gtkbuildable.sgml:
+	* gtk/tmpl/gtkuimanager.sgml: Updates
+
+2007-06-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-sections.txt: Add gdk_keymap_have_bidi_layouts
+
+2007-06-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating-GtkBuilder.sgml: An empty shell
+	* gtk/Makefile.am:
+	* gtk/gtk-docs.sgml: Integrate it
+
+	* gtk/tmpl/gtkbuildable.sgml: Some additions
+
+Wed Jun 27 11:57:13 2007  Tim Janik  <timj@imendio.com>
+
+	* gtk/tmpl/gtkmenu.sgml: fixed push_in description.
+
+2007-06-25  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/Makefile.am:
+	* gtk/gtk-builder-convert.xml: Add a man page
+	* gtk/gtk-docs.sgml: And include it here
+
+	* gtk/tmpl/gtkscalebutton.sgml:
+	* gtk/tmpl/gtkvolumebutton.sgml:
+	* gtk/tmpl/gtkvscrollbar.sgml:
+	* gtk/tmpl/gtkrange.sgml:
+	* gtk/tmpl/gtkrecentaction.sgml:
+	* gtk/tmpl/gtktooltip.sgml:
+	* gtk/tmpl/gtkvscrollbar.sgml: Additions
+	* gdk/gdk-overrides.txt: Remove GDK_WINDOWING_FB
+
+2007-06-19  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.11.4 ===
+
+2007-06-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-docs.sgml: Move GtkMenuShell to the abstract widgets.
+
+2007-06-17  Jan Arne Petersen  <jpetersen@jpetersen.org>
+
+	* gtk/gtk-docs.sgml: Add GtkTooltip. (#448341)
+
+2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.3 ===
+
+2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtktreeview.sgml: Fix up cross-references
+
+	* gtk/gtk-sections.txt: 
+	* gtk/Makefile.am: Updates
+
+2007-06-14  Johan Dahlin  <jdahlin@async.com.br>
+
+	* gtk/tmpl/gtktreeview.sgml (linkend): inlinegraphic instead of 
+	inlinegraphics.
+
+2007-06-13  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/tmpl/gtkmenuitem.sgml: remove stuff that has been moved inline.
 
-2007-08-17  Xan Lopez  <xan.lopez@nokia.com>
+2007-06-12  Matthias Clasen  <mclasen@redhat.com>
 
-	* gtk/gtk-sections.txt: add gtk_window_close_other_temporaries
+	* gdk/gdk-sections.txt: Remove GDK_WINDOWING_FB
+	* gtk/Makefile.am:
+	* gtk/gtk-docs.sgml:
+	* gtk/compiling.sgml:
+	* gtk/building.sgml: Remove linux-fb references
 
-2007-06-29  Xan Lopez  <xan.lopez@nokia.com>
+2007-06-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-update-icon-cache.xml: Document --validate
+
+2007-06-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/text_widget.sgml:
+	* gtk/tree_widget.sgml:
+	* gtk/tmpl/gtkscalebutton.sgml:
+	* gtk/tmpl/gtktextbuffer.sgml:
+	* gtk/tmpl/gtktexttag.sgml:
+	* gtk/tmpl/gtktextview.sgml:
+	* gtk/tmpl/gtktreemodel.sgml:
+	* gtk/tmpl/gtktreeselection.sgml:
+	* gtk/tmpl/gtktreeviewcolumn.sgml:
+	* gtk/tmpl/gtkcellrenderer.sgml:
+	* gtk/tmpl/gtkliststore.sgml:
+	* gtk/tmpl/gtktreestore.sgml:
+	* gtk/tmpl/gtkmenubar.sgml:
+	* gtk/tmpl/gtkbbox.sgml:
+	* gtk/tmpl/gtkseparator.sgml:
+	* gtk/tmpl/gtkgamma.sgml:
+	* gtk/tmpl/gtkhruler.sgml:
+	* gtk/tmpl/gtkvruler.sgml:
+	* gtk/tmpl/gtkrecentchooser.sgml:
+	* gtk/tmpl/gtkvolumebutton.sgml: Clean up short descriptions
+
+2007-06-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbindings.sgml:
+	* gtk/tmpl/gtkrc.sgml:
+	* gtk/tmpl/gtkwidget.sgml:
+	* gtk/tmpl/gtkrecentmanager.sgml:
+	* gtk/*.sgml:
+	* gtk/tmpl/gtkstock.sgml:
+	* gtk/gtk-sections.txt: Updates
+
+	* gtk/Makefile.am: Exclude another private header
+
+	* gtk/tmpl/gtkbox.sgml: Move docs inline
+
+2007-06-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add gtk_rc_parse_color_full
+
+2007-06-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.2 ===
+
+2007-06-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.1 ===
+
+2007-06-03   Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/Makefile.am:
+	* gtk/visual_index.xml:
+	* gtk/images/volumebutton.png: Volume button image
+
+2007-06-01   Matthias Clasen  <mclasen@redhat.com>
+	
+	* gdk/gdk-sections.txt: Add new composited window api
+	* gdk/tmpl/windows.sgml: Add composited window example
+
+2007-05-26   Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating*.sgml: Some cleanups
+
+2007-05-26   Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkentry.sgml: Move docs inline
+
+	* gtk/tmpl/gtklinkbutton.sgml:
+	* gtk/tmpl/gtkfilechooser.sgml:
+	* gtk/tmpl/gtkcellrenderer.sgml:
+	* gtk/tmpl/gtkenums.sgml:
+	* gtk/tmpl/gtkcontainer.sgml: Additions
+
+2007-05-26   Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-overrides.txt: Remove GdkBitmap
+	* gtk/gtk-sections.txt:
+	* gtk/tmpl/gtkenums.sgml:
+	* gdk/tmpl/rgb.sgml:
+	* gdk/tmpl/gcs.sgml:
+	* gdk/tmpl/pango_interaction.sgml:
+	* gdk/tmpl/windows.sgml: Additions
+
+2007-05-26   Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf/gdk-pixbuf-sections.txt: 
+	* gdk/gdk-sections.txt: Add new api
+
+2007-05-26   Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/*: Get the docs in shape
+
+2007-05-25   Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add new functions
+
+2007-05-24   Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.0 ===
+
+2007-05-23  Matthias Clasen  <mclasen@redhat.com>
 
 	* gtk/gtk-sections.txt:
+	* gdk/gdk-sections.txt: Updates
 
-	s/gtk_window_is_temporary/gtk_window_get_is_temporary/
-	s/gtk_window_set_temporary/gtk_window_set_is_temporary/
+2007-05-20  Bastien Nocera  <hadess@hadess.net>
 
-2007-06-28  Xan Lopez  <xan.lopez@nokia.com>
+	* gtk/gtk-docs.sgml: Add missing docs for the
+	volume button
 
-	* gdk/gdk-sections.txt:
-	* gtk/gtk-sections.txt:
+2007-05-20  Bastien Nocera  <hadess@hadess.net>
 
-	Move close temporary windows helper function from GTK to GDK.
+        * gtk/gtk-sections.txt: Add the GtkVolumeButton widget
+	to the docs
 
-2007-06-27  Xan Lopez  <xan.lopez@nokia.com>
+2007-05-20  Bastien Nocera  <hadess@hadess.net>
 
-	* gtk/gtk-sections.txt: Add Temporary window doc.
+	* gtk/gtk-docs.sgml:
+	* gtk/gtk-sections.txt: add the GtkScaleButton widget
+	to the docs
 
-2007-05-30  Tomas Junnonen  <tomas.junnonen@nokia.com>
+2007-05-19  Matthias Clasen <mclasen@redhat.com>
 
-	* gtk/tmpl/gtkimcontext.sgml: Add HILDON_GTK_INPUT_MODE_MULTILINE
+	* gtk/gtk-sections.txt: Add gtk_notebook_[gs]et_group
 
-2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+2007-05-18  Matthias Clasen <mclasen@redhat.com>
 
-	* === Released 2.10.12 ===
+	* gtk/gtk-sections.txt: Add gtk_entry_[gs]et_cursor_hadjustment.
 
-2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+2007-05-18  Matthias Clasen <mclasen@redhat.com>
 
-	* === Released 2.10.11 ===
+	* gtk/gtk-sections.txt: Add generic icon lookup function
 
-2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+2007-04-29  Dan Winship  <danw@novell.com>
 
-	* === Released 2.10.10 ===
+	* gdk/gdk-sections.txt: Add
+	gdk_x11_display_broadcast_startup_message and some other missing
+	startup-notification-related methods
 
-2007-01-22  Matthias Clasen  <mclasen@redhat.com>
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
 
-	* === 2.10.9 ===
+	* gtk/gtk-sections.txt: Add new functions to serialize/
+	deserialize page setups and print settings.
 
-2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.8 ===
+	* gtk/gtk-sections.txt: Add gtk_paper_size_get_builtins
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add gtk_printer_{has,request}_details
+
+2007-04-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkdnd.sgml: Document GTK_TARGET_OTHER_*
+
+2007-04-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkcomboboxentry.sgml: Mention that the entry
+	can be replaced.
+
+2007-04-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkdialog.sgml: Fix a wrong cross reference.
+	(#431289, Bastian Nocera)
+
+2007-03-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkaboutdialog.sgml: Add a paragraph about setting
+	the title on the dialog.
+
+2007-02-14  Stefan Kost  <ensonic@users.sf.net>
+
+	reviewed by: Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf/Makefile.am:
+	* gdk/Makefile.am:
+	* gtk/Makefile.am: use installation prefixes of dependent libs to
+	crossreference docs (#407146).
+
+2007-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/sgml/gtkfilesel.sgml: Add deprecation information.
+
+2007-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkentry.sgml: Expand deprecation notes for
+	gtk_entry_append/prepend_text.  (#394034, Micah Carrick)
 
 2007-01-07  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf/gdk-pixbuf-sections.txt: Correct the include
 	for GdkPixdata.  (#394000, Samuel Cormier-Iijima)
 
-2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+2007-01-07  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.7 ===
+	* gtk/tmpl/gtkstatusbar.sgml: Move docs inline and
+	expand them a bit.
 
-2007-03-27  Tomas Junnonen  <tomas.junnonen@nokia.com>
+2007-01-02  Matthias Clasen  <mclasen@redhat.com>
 
-	* gtk/tmpl/gtkimcontext.sgml: Add HILDON_GTK_INPUT_MODE_DICTIONARY
+	* gtk/tmpl/gtktextbuffer.sgml: Document rich text
+	serialization functions.  (#347940, Murray Cumming)
 
-2007-03-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
 
-	* gtk/gtk-docs.sgml: Add 2.12 and maemo addition indices.
-	* gtk/gtk-sections.txt: Add new symbols so that they get documented.
-	* gtk/tmpl/gtkenums.sgml: Document GTK_BUTTONBOX_CENTER and
-	GtkInvalidInputType
-	* gtk/tmpl/gtkimcontext.sgml: Document GtkIMContextClipboardOperation
-	and HildonGtkInputMode
+	* gtk/tmpl/gtkactiongroup.sgml: Document that action
+	labels may be NULL.
 
-2007-01-19  Michael Natterer  <mitch@gimp.org>
+2006-12-29  Matthias Clasen  <mclasen@redhat.com>
 
-	Backport unbinding of keybindings:
+	* gtk/gtk-sections.txt: Add gtk_cell_layout_get_cells.
 
-    Tue Oct 10 16:38:23 2006  Tim Janik  <timj@imendio.com>
+	* gtk/gtk-docs.sgml: Add a "Since 2.12" index.
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-sections.txt: Add new functions.
+	* gdk/gdk-docs.sgml: Add a "Since 2.12" index.
+
+Thu Dec 14 15:48:14 2006  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtk-sections.txt: added new docs.
+
+2006-11-19  Mark McLoughlin  <mark@skynet.ie>
+
+	* gtk/gtk-sections.txt: add gtk_status_icon_(get|set)_screen
+
+Tue Oct 10 16:38:23 2006  Tim Janik  <timj@imendio.com>
 
 	* gtk/tmpl/gtkbindings.sgml: 
 	* gtk/gtkbindings.c: applied patch from Michael Natterer to move to 
 	inline docs. applied wording fixes suggested by Martyn Russell.
 
-2007-01-19  Michael Natterer  <mitch@imendio.com>
+Tue Oct 10 15:29:15 2006  Tim Janik  <timj@imendio.com>
 
-	Backport gdk_window_beep():
-
-    2006-08-29  Matthias Clasen  <mclasen@redhat.com>
-
-	* gdk/gdk-sections.txt: Add gdk_window_beep
-
-2006-10-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.6 ===
-
-2006-10-02  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.5 ===
+	* gtk/tmpl/gtkbindings.sgml: documented GtkBinding*, #358329.
 
 2006-09-22  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.4 ===
-
-2006-09-22  Matthias Clasen  <mclasen@redhat.com>
-	
-	* gtk/tmpl/gtkprintcontext.sgml:
 	* gtk/tmpl/gtkpagesetup.sgml: Apply a patch
 	to fix some typos.  (#355961, Claudio Saavedra)
 
-2006-09-04  Matthias Clasen  <mclasen@redhat.com>
+2006-09-16  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.3 ===
+	* gtk/glossary.xml: Add an entry for Ellipsization.
+
+2006-08-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkwidget.sgml: Fix some typos (Mariano Suarez-Alvarez)
+
+2006-08-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-sections.txt: Add gdk_window_beep
 
 2006-08-25  Matthias Clasen  <mclasen@redhat.com>
 

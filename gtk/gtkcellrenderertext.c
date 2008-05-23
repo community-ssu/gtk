@@ -115,7 +115,8 @@ enum {
   PROP_UNDERLINE_SET,
   PROP_RISE_SET,
   PROP_LANGUAGE_SET,
-  PROP_ELLIPSIZE_SET
+  PROP_ELLIPSIZE_SET,
+  PROP_ALIGN_SET
 };
 
 static guint text_cell_renderer_signals [LAST_SIGNAL];
@@ -559,13 +560,20 @@ gtk_cell_renderer_text_class_init (GtkCellRendererTextClass *class)
                 P_("Ellipsize set"),
                 P_("Whether this tag affects the ellipsize mode"));
 
+  ADD_SET_PROP ("align-set", PROP_ALIGN_SET,
+                P_("Align set"),
+                P_("Whether this tag affects the alignment mode"));
+
   /**
    * GtkCellRendererText::edited
-   * @renderer: the object which received the signal.
-   * @path: the path identifying the edited cell.
-   * @new_text: the new text.
+   * @renderer: the object which received the signal
+   * @path: the path identifying the edited cell
+   * @new_text: the new text
    *
    * This signal is emitted after @renderer has been edited.
+   *
+   * It is the responsibility of the application to update the model
+   * and store @new_text at the position indicated by @path.
    */
   text_cell_renderer_signals [EDITED] =
     g_signal_new (I_("edited"),
@@ -591,8 +599,7 @@ gtk_cell_renderer_text_finalize (GObject *object)
 
   pango_font_description_free (celltext->font);
 
-  if (celltext->text)
-    g_free (celltext->text);
+  g_free (celltext->text);
 
   if (celltext->extra_attrs)
     pango_attr_list_unref (celltext->extra_attrs);
@@ -731,7 +738,7 @@ gtk_cell_renderer_text_get_property (GObject        *object,
       break;  
 
     case PROP_LANGUAGE:
-      g_value_set_string (value, pango_language_to_string (priv->language));
+      g_value_set_static_string (value, pango_language_to_string (priv->language));
       break;
 
     case PROP_ELLIPSIZE:
@@ -797,6 +804,10 @@ gtk_cell_renderer_text_get_property (GObject        *object,
 
     case PROP_ELLIPSIZE_SET:
       g_value_set_boolean (value, priv->ellipsize_set);
+      break;
+
+    case PROP_ALIGN_SET:
+      g_value_set_boolean (value, priv->align_set);
       break;
       
     case PROP_WIDTH_CHARS:
@@ -1004,8 +1015,7 @@ gtk_cell_renderer_text_set_property (GObject      *object,
   switch (param_id)
     {
     case PROP_TEXT:
-      if (celltext->text)
-        g_free (celltext->text);
+      g_free (celltext->text);
 
       if (priv->markup_set)
         {
@@ -1049,8 +1059,7 @@ gtk_cell_renderer_text_set_property (GObject      *object,
 	    return;
 	  }
 
-	if (celltext->text)
-	  g_free (celltext->text);
+	g_free (celltext->text);
 
 	if (celltext->extra_attrs)
 	  pango_attr_list_unref (celltext->extra_attrs);
@@ -1253,6 +1262,7 @@ gtk_cell_renderer_text_set_property (GObject      *object,
     case PROP_ALIGN:
       priv->align = g_value_get_enum (value);
       priv->align_set = TRUE;
+      g_object_notify (object, "align-set");
       break;
 
     case PROP_BACKGROUND_SET:
@@ -1310,6 +1320,10 @@ gtk_cell_renderer_text_set_property (GObject      *object,
 
     case PROP_ELLIPSIZE_SET:
       priv->ellipsize_set = g_value_get_boolean (value);
+      break;
+
+    case PROP_ALIGN_SET:
+      priv->align_set = g_value_get_boolean (value);
       break;
       
     default:
@@ -1439,12 +1453,6 @@ get_layout (GtkCellRendererText *celltext,
     {
       pango_layout_set_width (layout, priv->wrap_width * PANGO_SCALE);
       pango_layout_set_wrap (layout, priv->wrap_mode);
-
-      if (pango_layout_get_line_count (layout) == 1)
-	{
-	  pango_layout_set_width (layout, -1);
-	  pango_layout_set_wrap (layout, PANGO_WRAP_CHAR);
-	}
     }
   else
     {
@@ -1533,7 +1541,8 @@ get_size (GtkCellRenderer *cell,
   else
     layout = get_layout (celltext, widget, FALSE, 0);
 
-  pango_layout_get_pixel_extents (layout, NULL, &rect);
+  pango_layout_get_extents (layout, NULL, &rect);
+  pango_extents_to_pixels (&rect, NULL);
 
   if (height)
     *height = cell->ypad * 2 + rect.height;
@@ -1578,6 +1587,11 @@ get_size (GtkCellRenderer *cell,
 	  *y_offset = cell->yalign * (cell_area->height - (rect.height + (2 * cell->ypad)));
 	  *y_offset = MAX (*y_offset, 0);
 	}
+    }
+  else
+    {
+      if (x_offset) *x_offset = 0;
+      if (y_offset) *y_offset = 0;
     }
 
   g_object_unref (layout);
@@ -1733,16 +1747,12 @@ popdown_timeout (gpointer data)
 {
   GtkCellRendererTextPrivate *priv;
 
-  GDK_THREADS_ENTER ();
-
   priv = GTK_CELL_RENDERER_TEXT_GET_PRIVATE (data);
 
   priv->entry_menu_popdown_timeout = 0;
 
   if (!GTK_WIDGET_HAS_FOCUS (priv->entry))
     gtk_cell_renderer_text_editing_done (GTK_CELL_EDITABLE (priv->entry), data);
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -1760,7 +1770,7 @@ gtk_cell_renderer_text_popup_unmap (GtkMenu *menu,
   if (priv->entry_menu_popdown_timeout)
     return;
 
-  priv->entry_menu_popdown_timeout = g_timeout_add (500, popdown_timeout,
+  priv->entry_menu_popdown_timeout = gdk_threads_add_timeout (500, popdown_timeout,
                                                     data);
 }
 

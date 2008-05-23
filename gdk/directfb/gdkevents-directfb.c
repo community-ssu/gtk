@@ -142,7 +142,13 @@ dfb_events_io_func (GIOChannel   *channel,
       switch (event->clazz)
         {
         case DFEC_WINDOW:
-          dfb_events_process_window_event (&event->window);
+          /* TODO workaround to prevent two DWET_ENTER in a row from being delivered */
+          if (event->window.type == DWET_ENTER ) {
+            if ( i>0 && buf[i-1].window.type != DWET_ENTER )
+              dfb_events_process_window_event (&event->window);
+          }
+          else
+            dfb_events_process_window_event (&event->window);
           break;
         default:
           break;
@@ -308,6 +314,25 @@ gdk_directfb_event_windows_add (GdkWindow *window)
   else
     impl->window->CreateEventBuffer (impl->window, &EventBuffer);
 }
+
+#if (DIRECTFB_MAJOR_VERSION >= 1)
+void
+gdk_directfb_event_windows_remove (GdkWindow *window)
+{
+  GdkWindowImplDirectFB *impl;
+
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  impl = GDK_WINDOW_IMPL_DIRECTFB (GDK_WINDOW_OBJECT (window)->impl);
+
+  if (!impl->window)
+    return;
+
+  if (EventBuffer)
+    impl->window->DetachEventBuffer (impl->window, EventBuffer);
+/* FIXME: should we warn if (! EventBuffer) ? */
+}
+#endif
 
 GdkWindow *
 gdk_directfb_child_at (GdkWindow *window,
@@ -488,6 +513,10 @@ gdk_event_translate (DFBWindowEvent *dfbevent,
     int wy=_gdk_directfb_mouse_y;
 	child = gdk_directfb_child_at (_gdk_parent_root, &wx, &wy);
 
+    /* first let's see if any cossing event has to be send */
+    gdk_directfb_window_send_crossing_events (NULL, child, GDK_CROSSING_NORMAL);
+
+    /* then dispatch the motion event to the window the cursor it's inside */
 	event_win = gdk_directfb_pointer_event_window (child, GDK_MOTION_NOTIFY);
 
 
@@ -531,8 +560,9 @@ gdk_event_translate (DFBWindowEvent *dfbevent,
 	      }
 	  }
           /* make sure crossing events go to the event window found */
-        GdkWindow *ev_win = ( event_win == NULL ) ? gdk_window_at_pointer (NULL,NULL) :event_win;
+/*        GdkWindow *ev_win = ( event_win == NULL ) ? gdk_window_at_pointer (NULL,NULL) :event_win;
 	     gdk_directfb_window_send_crossing_events (NULL,ev_win,GDK_CROSSING_NORMAL);
+*/
       }
       break;
 
@@ -660,6 +690,10 @@ gdk_event_translate (DFBWindowEvent *dfbevent,
 
         child = gdk_directfb_child_at (window, &dfbevent->x, &dfbevent->y);
 
+        /* this makes sure pointer is set correctly when it previously left
+         * a window being not standard shaped
+         */
+        gdk_window_set_cursor (window, NULL);
         gdk_directfb_window_send_crossing_events (NULL, child,
                                                   GDK_CROSSING_NORMAL);
 

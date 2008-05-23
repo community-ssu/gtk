@@ -107,8 +107,7 @@ gdk_gc_win32_finalize (GObject *object)
   if (win32_gc->values_mask & GDK_GC_FONT)
     gdk_font_unref (win32_gc->font);
   
-  if (win32_gc->pen_dashes)
-    g_free (win32_gc->pen_dashes);
+  g_free (win32_gc->pen_dashes);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -172,35 +171,14 @@ fixup_pen (GdkGCWin32 *win32_gc)
 	  win32_gc->pen_dashes[0] = 4;
 	  win32_gc->pen_num_dashes = 1;
 	}
-      if (G_WIN32_IS_NT_BASED ())
-	{
-	  if (!(win32_gc->pen_style & PS_TYPE_MASK) == PS_GEOMETRIC &&
-	      win32_gc->pen_dashes[0] == 1 &&
-	      (win32_gc->pen_num_dashes == 1 ||
-	       (win32_gc->pen_num_dashes == 2 && win32_gc->pen_dashes[0] == 1)))
-	    win32_gc->pen_style |= PS_ALTERNATE;
-	  else
-	    win32_gc->pen_style |= PS_USERSTYLE;
-	}
+
+      if (!(win32_gc->pen_style & PS_TYPE_MASK) == PS_GEOMETRIC &&
+	  win32_gc->pen_dashes[0] == 1 &&
+	  (win32_gc->pen_num_dashes == 1 ||
+	   (win32_gc->pen_num_dashes == 2 && win32_gc->pen_dashes[0] == 1)))
+	win32_gc->pen_style |= PS_ALTERNATE;
       else
-	{
-	  /* Render "short" on-off dashes drawn with R2_COPYPEN and a
-	   * cosmetic pen using PS_DOT
-	   */
-	  if (win32_gc->line_style == GDK_LINE_ON_OFF_DASH &&
-	      win32_gc->rop2 == R2_COPYPEN &&
-	      (win32_gc->pen_style & PS_TYPE_MASK) == PS_COSMETIC &&
-	      win32_gc->pen_dashes[0] <= 2 &&
-	      (win32_gc->pen_num_dashes == 1 ||
-	       (win32_gc->pen_num_dashes == 2 && win32_gc->pen_dashes[1] <= 2)))
-	    win32_gc->pen_style |= PS_DOT;
-	  else
-	    /* Otherwise render opaque lines solid, horizontal or
-	     * vertical ones will be dashed manually, see
-	     * gdkdrawable-win32.c.
-	     */
-	    win32_gc->pen_style |= PS_SOLID;
-	}
+	win32_gc->pen_style |= PS_USERSTYLE;
      break;
     }
 
@@ -639,8 +617,7 @@ _gdk_windowing_gc_copy (GdkGC *dst_gc,
   if (dst_win32_gc->font != NULL)
     gdk_font_unref (dst_win32_gc->font);
 
-  if (dst_win32_gc->pen_dashes)
-    g_free (dst_win32_gc->pen_dashes);
+  g_free (dst_win32_gc->pen_dashes);
   
   dst_win32_gc->hcliprgn = src_win32_gc->hcliprgn;
   if (dst_win32_gc->hcliprgn)

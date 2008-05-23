@@ -43,6 +43,7 @@ gdk_event_handler_set
 gdk_event_new
 gdk_event_peek
 gdk_event_put
+gdk_event_request_motions
 gdk_event_set_screen
 gdk_get_show_events
 gdk_set_show_events
@@ -100,6 +101,7 @@ gdk_flush
 #if IN_HEADER(__GDK_H__)
 #if IN_FILE(__GDK_DISPLAY_X11_C__)
 gdk_notify_startup_complete
+gdk_notify_startup_complete_with_id
 #endif
 #endif
 
@@ -134,6 +136,10 @@ gdk_threads_enter
 gdk_threads_init
 gdk_threads_leave
 gdk_threads_set_lock_functions
+gdk_threads_add_idle
+gdk_threads_add_idle_full
+gdk_threads_add_timeout
+gdk_threads_add_timeout_full
 #endif
 #endif
 
@@ -319,6 +325,7 @@ gdk_colormap_ref
 gdk_colormap_unref
 #endif
 gdk_color_parse
+gdk_color_to_string
 #endif
 #endif
 
@@ -460,6 +467,7 @@ gdk_display_supports_clipboard_persistence
 gdk_display_supports_selection_notification
 gdk_display_supports_shapes
 gdk_display_supports_input_shapes
+gdk_display_supports_composite
 #endif
 #endif
 
@@ -642,6 +650,7 @@ gdk_window_constrain_size
 gdk_window_destroy
 gdk_window_end_paint
 gdk_window_foreign_new
+gdk_window_freeze_toplevel_updates_libgtk_only
 gdk_window_freeze_updates
 gdk_window_get_children
 gdk_window_get_internal_paint_info
@@ -666,7 +675,9 @@ gdk_window_process_updates
 gdk_window_remove_filter
 gdk_window_set_debug_updates
 gdk_window_set_user_data
+gdk_window_thaw_toplevel_updates_libgtk_only
 gdk_window_thaw_updates
+gdk_window_set_composited
 #endif
 #endif
 
@@ -713,6 +724,7 @@ gdk_window_set_urgency_hint
 gdk_window_set_geometry_hints
 gdk_window_set_title
 gdk_window_set_role
+gdk_window_set_startup_id
 gdk_window_set_transient_for
 gdk_window_set_background
 gdk_window_set_back_pixmap
@@ -734,6 +746,7 @@ gdk_window_set_icon_list
 gdk_window_set_icon
 gdk_window_set_icon_name
 gdk_window_beep
+gdk_window_set_opacity
 gdk_window_iconify
 gdk_window_deiconify
 gdk_window_stick
@@ -809,6 +822,7 @@ gdk_keymap_get_direction
 gdk_keymap_get_entries_for_keycode
 gdk_keymap_get_entries_for_keyval
 gdk_keymap_get_for_display
+gdk_keymap_have_bidi_layouts
 gdk_keymap_lookup_key
 gdk_keymap_translate_keyboard_state
 gdk_keyval_convert_case
@@ -860,6 +874,7 @@ gdk_net_wm_supports
 
 #if IN_HEADER(__GDK_PANGO_H__)
 #if IN_FILE(__GDK_PANGO_C__)
+gdk_pango_attr_emboss_color_new
 gdk_pango_attr_embossed_new
 gdk_pango_attr_stipple_new
 gdk_pango_context_get
@@ -1167,6 +1182,8 @@ gdk_x11_display_get_xdisplay
 gdk_x11_display_grab
 gdk_x11_display_ungrab
 gdk_x11_lookup_xdisplay
+gdk_x11_display_broadcast_startup_message
+gdk_x11_display_get_startup_notification_id
 #endif
 
 #if IN_FILE(__GDK_DRAWABLE_X11_C__)

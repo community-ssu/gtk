@@ -44,7 +44,6 @@ G_BEGIN_DECLS
 #define GTK_WINDOW_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_WINDOW, GtkWindowClass))
 
 
-typedef struct _GtkWindow             GtkWindow;
 typedef struct _GtkWindowClass        GtkWindowClass;
 typedef struct _GtkWindowGeometryInfo GtkWindowGeometryInfo;
 typedef struct _GtkWindowGroup        GtkWindowGroup;
@@ -184,6 +183,8 @@ void       gtk_window_set_wmclass              (GtkWindow           *window,
 						const gchar         *wmclass_class);
 void       gtk_window_set_role                 (GtkWindow           *window,
                                                 const gchar         *role);
+void       gtk_window_set_startup_id           (GtkWindow           *window,
+                                                const gchar         *startup_id);
 G_CONST_RETURN gchar *gtk_window_get_role      (GtkWindow           *window);
 void       gtk_window_add_accel_group          (GtkWindow           *window,
 						GtkAccelGroup	    *accel_group);
@@ -202,6 +203,9 @@ gboolean   gtk_window_activate_default	       (GtkWindow           *window);
 void       gtk_window_set_transient_for        (GtkWindow           *window, 
 						GtkWindow           *parent);
 GtkWindow *gtk_window_get_transient_for        (GtkWindow           *window);
+void       gtk_window_set_opacity              (GtkWindow           *window, 
+						gdouble              opacity);
+gdouble    gtk_window_get_opacity              (GtkWindow           *window);
 void       gtk_window_set_type_hint            (GtkWindow           *window, 
 						GdkWindowTypeHint    hint);
 GdkWindowTypeHint gtk_window_get_type_hint     (GtkWindow           *window);

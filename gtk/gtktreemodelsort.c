@@ -807,7 +807,7 @@ gtk_tree_model_sort_rows_reordered (GtkTreeModel *s_model,
 
   g_return_if_fail (new_order != NULL);
 
-  if (s_path == NULL || gtk_tree_path_get_indices (s_path) == NULL)
+  if (s_path == NULL || gtk_tree_path_get_depth (s_path) == 0)
     {
       if (tree_model_sort->root == NULL)
 	return;
@@ -2282,8 +2282,8 @@ gtk_tree_model_sort_free_level (GtkTreeModelSort *tree_model_sort,
   for (i = 0; i < sort_level->array->len; i++)
     {
       if (g_array_index (sort_level->array, SortElt, i).children)
-	gtk_tree_model_sort_free_level (tree_model_sort, 
-					SORT_LEVEL(g_array_index (sort_level->array, SortElt, i).children));
+	gtk_tree_model_sort_free_level (tree_model_sort,
+					SORT_LEVEL (g_array_index (sort_level->array, SortElt, i).children));
     }
 
   if (sort_level->ref_count == 0)

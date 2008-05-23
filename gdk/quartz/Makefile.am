@@ -6,8 +6,6 @@ INCLUDES = 				\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/gdk		\
 	-I$(top_builddir)/gdk		\
-	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
-	-DGDK_DISABLE_DEPRECATED	\
 	$(GTK_DEBUG_FLAGS) 		\
 	$(GDK_DEP_CFLAGS)		\
 	"-xobjective-c"
@@ -28,6 +26,7 @@ libgdk_quartz_la_SOURCES =    	\
 	gdkdrawable-quartz.c	\
 	gdkdrawable-quartz.h	\
 	gdkevents-quartz.c	\
+	gdkeventloop-quartz.c	\
 	gdkfont-quartz.c	\
 	gdkgc-quartz.c		\
 	gdkgeometry-quartz.c	\
@@ -48,4 +47,5 @@ libgdk_quartz_la_SOURCES =    	\
 	gdkspawn-quartz.c	\
 	gdkvisual-quartz.c	\
 	gdkwindow-quartz.c	\
-	gdkwindow-quartz.h
+	gdkwindow-quartz.h	\
+	xcursors.h

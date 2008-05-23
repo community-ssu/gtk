@@ -1,6 +1,6 @@
 /* gdkdrawable-quartz.c
  *
- * Copyright (C) 2005, 2006 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,57 +19,66 @@
  */
 
 #include <config.h>
-
 #include <cairo-quartz.h>
 #include "gdkprivate-quartz.h"
 
 static gpointer parent_class;
 
-typedef struct {
-  GdkDrawable *drawable;
-  CGContextRef context;
-} SurfaceInfo;
+static cairo_user_data_key_t gdk_quartz_cairo_key;
 
-static cairo_user_data_key_t surface_info_key;
+typedef struct {
+  GdkDrawable  *drawable;
+  CGContextRef  cg_context;
+} GdkQuartzCairoSurfaceData;
 
 static void
-surface_info_destroy (void *data)
+gdk_quartz_cairo_surface_destroy (void *data)
 {
-  SurfaceInfo *info = data;
+  GdkQuartzCairoSurfaceData *surface_data = data;
+  GdkDrawableImplQuartz *impl = GDK_DRAWABLE_IMPL_QUARTZ (surface_data->drawable);
 
-  gdk_quartz_drawable_release_context (info->drawable, info->context);
+  gdk_quartz_drawable_release_context (surface_data->drawable, 
+				       surface_data->cg_context);
 
-  g_free (info);
+  impl->cairo_surface = NULL;
+
+  g_free (surface_data);
 }
 
 static cairo_surface_t *
 gdk_quartz_ref_cairo_surface (GdkDrawable *drawable)
 {
   GdkDrawableImplQuartz *impl = GDK_DRAWABLE_IMPL_QUARTZ (drawable);
-  CGContextRef context;
-  int width, height;
-  cairo_surface_t *surface;
-  SurfaceInfo *info;
 
   if (GDK_IS_WINDOW_IMPL_QUARTZ (drawable) &&
       GDK_WINDOW_DESTROYED (impl->wrapper))
     return NULL;
 
-  context = gdk_quartz_drawable_get_context (drawable, TRUE);
-  if (!context)
-    return NULL;
+  if (!impl->cairo_surface)
+    {
+      CGContextRef cg_context;
+      int width, height;
+      GdkQuartzCairoSurfaceData *surface_data;
 
-  gdk_drawable_get_size (drawable, &width, &height);
+      cg_context = gdk_quartz_drawable_get_context (drawable, TRUE);
+      if (!cg_context)
+	return NULL;
 
-  surface = cairo_quartz_surface_create (context, width, height, TRUE);
+      gdk_drawable_get_size (drawable, &width, &height);
 
-  info = g_new (SurfaceInfo, 1);
-  info->drawable = drawable;
-  info->context = context;
+      impl->cairo_surface = cairo_quartz_surface_create_for_cg_context (cg_context, width, height);
 
-  cairo_surface_set_user_data (surface, &surface_info_key,
-			       info, surface_info_destroy);
-  return surface;
+      surface_data = g_new (GdkQuartzCairoSurfaceData, 1);
+      surface_data->drawable = drawable;
+      surface_data->cg_context = cg_context;
+
+      cairo_surface_set_user_data (impl->cairo_surface, &gdk_quartz_cairo_key,
+				   surface_data, gdk_quartz_cairo_surface_destroy);
+    }
+  else
+    cairo_surface_reference (impl->cairo_surface);
+
+  return impl->cairo_surface;
 }
 
 static void
@@ -128,22 +137,23 @@ gdk_quartz_draw_rectangle (GdkDrawable *drawable,
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
+  _gdk_quartz_gc_update_cg_context (gc, 
+				    drawable,
+				    context,
+				    filled ?
+				    GDK_QUARTZ_CONTEXT_FILL : 
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   if (filled)
     {
       CGRect rect = CGRectMake (x, y, width, height);
 
-      gdk_quartz_set_context_fill_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						    _gdk_gc_get_fg_pixel (gc));
       CGContextFillRect (context, rect);
     }
   else
     {
       CGRect rect = CGRectMake (x + 0.5, y + 0.5, width, height);
 
-      gdk_quartz_set_context_stroke_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						      _gdk_gc_get_fg_pixel (gc));
       CGContextStrokeRect (context, rect);
     }
 
@@ -163,47 +173,63 @@ gdk_quartz_draw_arc (GdkDrawable *drawable,
 {
   CGContextRef context = gdk_quartz_drawable_get_context (drawable, FALSE);
   float start_angle, end_angle;
+  gboolean clockwise = FALSE;
 
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    filled ?
+				    GDK_QUARTZ_CONTEXT_FILL :
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   CGContextSaveGState (context);
 
-  start_angle = (2 - (angle1 / (180.0 * 64.0))) * G_PI;
-  end_angle = start_angle - (angle2 / (180.0 * 64.0)) * G_PI;
+  start_angle = angle1 * 2.0 * G_PI / 360.0 / 64.0;
+  end_angle = start_angle + angle2 * 2.0 * G_PI / 360.0 / 64.0;
+
+  /*  angle2 is relative to angle1 and can be negative, which switches
+   *  the drawing direction
+   */
+  if (angle2 < 0)
+    clockwise = TRUE;
+
+  /*  below, flip the coordinate system back to its original y-diretion
+   *  so the angles passed to CGContextAddArc() are interpreted as
+   *  expected
+   *
+   *  FIXME: the implementation below works only for perfect circles
+   *  (width == height). Any other aspect ratio either scales the
+   *  line width unevenly or scales away the path entirely for very
+   *  small line widths (esp. for line_width == 0, which is a hair
+   *  line on X11 but must be approximated with the thinnest possible
+   *  line on quartz).
+   */
 
   if (filled)
     {
-      gdk_quartz_set_context_fill_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-                                                    _gdk_gc_get_fg_pixel (gc));
-
       CGContextTranslateCTM (context,
                              x + width / 2.0,
                              y + height / 2.0);
-      CGContextScaleCTM (context, 1.0, (double)height / (double)width);
+      CGContextScaleCTM (context, 1.0, - (double)height / (double)width);
 
       CGContextMoveToPoint (context, 0, 0);
       CGContextAddArc (context, 0, 0, width / 2.0,
 		       start_angle, end_angle,
-		       TRUE);
+		       clockwise);
       CGContextClosePath (context);
       CGContextFillPath (context);
     }
   else
     {
-      gdk_quartz_set_context_stroke_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						      _gdk_gc_get_fg_pixel (gc));
-
       CGContextTranslateCTM (context,
                              x + width / 2.0 + 0.5,
                              y + height / 2.0 + 0.5);
-      CGContextScaleCTM (context, 1.0, (double)height / (double)width);
+      CGContextScaleCTM (context, 1.0, - (double)height / (double)width);
 
       CGContextAddArc (context, 0, 0, width / 2.0,
 		       start_angle, end_angle,
-		       TRUE);
+		       clockwise);
       CGContextStrokePath (context);
     }
 
@@ -225,13 +251,13 @@ gdk_quartz_draw_polygon (GdkDrawable *drawable,
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    filled ?
+				    GDK_QUARTZ_CONTEXT_FILL :
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   if (filled)
     {
-      gdk_quartz_set_context_fill_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						    _gdk_gc_get_fg_pixel (gc));
-
       CGContextMoveToPoint (context, points[0].x, points[0].y);
       for (i = 1; i < npoints; i++)
 	CGContextAddLineToPoint (context, points[i].x, points[i].y);
@@ -241,9 +267,6 @@ gdk_quartz_draw_polygon (GdkDrawable *drawable,
     }
   else
     {
-      gdk_quartz_set_context_stroke_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						      _gdk_gc_get_fg_pixel (gc));
-
       CGContextMoveToPoint (context, points[0].x + 0.5, points[0].y + 0.5);
       for (i = 1; i < npoints; i++)
 	CGContextAddLineToPoint (context, points[i].x + 0.5, points[i].y + 0.5);
@@ -318,9 +341,8 @@ gdk_quartz_draw_drawable (GdkDrawable *drawable,
       if (!context)
 	return;
 
-      gdk_quartz_update_context_from_gc (context, gc);
-
-      CGContextSetBlendMode (context, kCGBlendModeNormal);
+      _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+					GDK_QUARTZ_CONTEXT_STROKE);
 
       CGContextClipToRect (context, CGRectMake (xdest, ydest, width, height));
       CGContextTranslateCTM (context, xdest - xsrc, ydest - ysrc);
@@ -349,9 +371,9 @@ gdk_quartz_draw_points (GdkDrawable *drawable,
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
-  gdk_quartz_set_context_fill_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						_gdk_gc_get_fg_pixel (gc));
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    GDK_QUARTZ_CONTEXT_STROKE |
+				    GDK_QUARTZ_CONTEXT_FILL);
 
   /* Just draw 1x1 rectangles */
   for (i = 0; i < npoints; i++) 
@@ -363,6 +385,33 @@ gdk_quartz_draw_points (GdkDrawable *drawable,
   gdk_quartz_drawable_release_context (drawable, context);
 }
 
+static inline void
+gdk_quartz_fix_cap_not_last_line (GdkGCQuartz *private,
+				  gint         x1,
+				  gint         y1,
+				  gint         x2,
+				  gint         y2,
+				  gint        *xfix,
+				  gint        *yfix)
+{
+  *xfix = 0;
+  *yfix = 0;
+
+  if (private->cap_style == GDK_CAP_NOT_LAST && private->line_width == 0)
+    {
+      /* fix only vertical and horizontal lines for now */
+
+      if (y1 == y2 && x1 != x2)
+	{
+	  *xfix = (x1 < x2) ? -1 : 1;
+	}
+      else if (x1 == x2 && y1 != y2)
+	{
+	  *yfix = (y1 < y2) ? -1 : 1;
+	}
+    }
+}
+
 static void
 gdk_quartz_draw_segments (GdkDrawable    *drawable,
 			  GdkGC          *gc,
@@ -370,19 +419,28 @@ gdk_quartz_draw_segments (GdkDrawable    *drawable,
 			  gint            nsegs)
 {
   CGContextRef context = gdk_quartz_drawable_get_context (drawable, FALSE);
+  GdkGCQuartz *private;
   int i;
 
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
-  gdk_quartz_set_context_stroke_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						  _gdk_gc_get_fg_pixel (gc));
+  private = GDK_GC_QUARTZ (gc);
+
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   for (i = 0; i < nsegs; i++)
     {
+      gint xfix, yfix;
+
+      gdk_quartz_fix_cap_not_last_line (private,
+					segs[i].x1, segs[i].y1,
+					segs[i].x2, segs[i].y2,
+					&xfix, &yfix);
+
       CGContextMoveToPoint (context, segs[i].x1 + 0.5, segs[i].y1 + 0.5);
-      CGContextAddLineToPoint (context, segs[i].x2 + 0.5, segs[i].y2 + 0.5);
+      CGContextAddLineToPoint (context, segs[i].x2 + 0.5 + xfix, segs[i].y2 + 0.5 + yfix);
     }
   
   CGContextStrokePath (context);
@@ -397,21 +455,32 @@ gdk_quartz_draw_lines (GdkDrawable *drawable,
 		       gint         npoints)
 {
   CGContextRef context = gdk_quartz_drawable_get_context (drawable, FALSE);
-  int i;
+  GdkGCQuartz *private;
+  gint xfix, yfix;
+  gint i;
 
   if (!context)
     return;
 
-  gdk_quartz_update_context_from_gc (context, gc);
-  gdk_quartz_set_context_stroke_color_from_pixel (context, gdk_drawable_get_colormap (drawable),
-						  _gdk_gc_get_fg_pixel (gc));
-  
-  for (i = 1; i < npoints; i++)
-    {
-      CGContextMoveToPoint (context, points[i - 1].x + 0.5, points[i - 1].y + 0.5);
-      CGContextAddLineToPoint (context, points[i].x + 0.5, points[i].y + 0.5);
-    }
-  
+  private = GDK_GC_QUARTZ (gc);
+
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    GDK_QUARTZ_CONTEXT_STROKE);
+
+  CGContextMoveToPoint (context, points[0].x + 0.5, points[0].y + 0.5);
+
+  for (i = 1; i < npoints - 1; i++)
+    CGContextAddLineToPoint (context, points[i].x + 0.5, points[i].y + 0.5);
+
+  gdk_quartz_fix_cap_not_last_line (private,
+				    points[npoints - 2].x, points[npoints - 2].y,
+				    points[npoints - 1].x, points[npoints - 1].y,
+				    &xfix, &yfix);
+
+  CGContextAddLineToPoint (context,
+			   points[npoints - 1].x + 0.5 + xfix,
+			   points[npoints - 1].y + 0.5 + yfix);
+
   CGContextStrokePath (context);
 
   gdk_quartz_drawable_release_context (drawable, context);
@@ -462,9 +531,8 @@ gdk_quartz_draw_pixbuf (GdkDrawable     *drawable,
   CGDataProviderRelease (data_provider);
   CGColorSpaceRelease (colorspace);
 
-  gdk_quartz_update_context_from_gc (context, gc);
-
-  CGContextSetBlendMode (context, kCGBlendModeNormal);
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   CGContextClipToRect (context, CGRectMake (dest_x, dest_y, width, height));
   CGContextTranslateCTM (context, dest_x - src_x, dest_y - src_y + pixbuf_height);
@@ -509,9 +577,8 @@ gdk_quartz_draw_image (GdkDrawable     *drawable,
   CGDataProviderRelease (data_provider);
   CGColorSpaceRelease (colorspace);
 
-  gdk_quartz_update_context_from_gc (context, gc);
-
-  CGContextSetBlendMode (context, kCGBlendModeNormal);
+  _gdk_quartz_gc_update_cg_context (gc, drawable, context,
+				    GDK_QUARTZ_CONTEXT_STROKE);
 
   CGContextClipToRect (context, CGRectMake (xdest, ydest, width, height));
   CGContextTranslateCTM (context, xdest - xsrc, ydest - ysrc + image->height);
@@ -566,7 +633,7 @@ gdk_drawable_impl_quartz_class_init (GdkDrawableImplQuartzClass *klass)
   drawable_class->get_screen = gdk_quartz_get_screen;
   drawable_class->get_visual = gdk_quartz_get_visual;
 
-  drawable_class->_copy_to_image = _gdk_quartz_copy_to_image;
+  drawable_class->_copy_to_image = _gdk_quartz_image_copy_to_image;
 }
 
 GType
@@ -601,33 +668,42 @@ CGContextRef
 gdk_quartz_drawable_get_context (GdkDrawable *drawable,
 				 gboolean     antialias)
 {
+  GdkDrawableImplQuartz *drawable_impl = GDK_DRAWABLE_IMPL_QUARTZ (drawable);
+  CGContextRef           cg_context;
+
+  if (GDK_IS_WINDOW_IMPL_QUARTZ (drawable) &&
+      GDK_WINDOW_DESTROYED (drawable_impl->wrapper))
+    return NULL;
+
   if (GDK_IS_WINDOW_IMPL_QUARTZ (drawable))
     {
-      GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (drawable);
-      CGContextRef context;
+      GdkWindowImplQuartz *window_impl = GDK_WINDOW_IMPL_QUARTZ (drawable);
 
-      impl->pool = [[NSAutoreleasePool alloc] init];
-
-      if (![impl->view lockFocusIfCanDraw])
+      /* Lock focus when not called as part of a drawRect call. This
+       * is needed when called from outside "real" expose events, for
+       * example for synthesized expose events when realizing windows
+       * and for widgets that send fake expose events like the arrow
+       * buttons in spinbuttons.
+       */
+      if (window_impl->in_paint_rect_count == 0)
 	{
-	  [impl->pool release];
-	  return NULL;
+	  if (![window_impl->view lockFocusIfCanDraw])
+            return NULL;
 	}
 
-      context = [[NSGraphicsContext currentContext] graphicsPort];
-
-      CGContextSaveGState (context);
-      CGContextSetAllowsAntialiasing (context, antialias);
-
+      cg_context = [[NSGraphicsContext currentContext] graphicsPort];
+      CGContextSaveGState (cg_context);
+      CGContextSetAllowsAntialiasing (cg_context, antialias);
+	  
       /* We'll emulate the clipping caused by double buffering here */
-      if (impl->begin_paint_count != 0)
+      if (window_impl->begin_paint_count != 0)
 	{
 	  CGRect rect;
 	  CGRect *cg_rects;
 	  GdkRectangle *rects;
 	  gint n_rects, i;
 	  
-	  gdk_region_get_rectangles (impl->paint_clip_region,
+	  gdk_region_get_rectangles (window_impl->paint_clip_region,
 				     &rects, &n_rects);
 	  
 	  if (n_rects == 1)
@@ -643,60 +719,64 @@ gdk_quartz_drawable_get_context (GdkDrawable *drawable,
 	      cg_rects[i].size.height = rects[i].height;
 	    }
 	  
-	  CGContextClipToRects (context, cg_rects, n_rects);
+	  CGContextClipToRects (cg_context, cg_rects, n_rects);
 	  
 	  g_free (rects);
 	  if (cg_rects != &rect)
 	    g_free (cg_rects);
 	}
-      
-      return context;
     }
   else if (GDK_IS_PIXMAP_IMPL_QUARTZ (drawable))
     {
       GdkPixmapImplQuartz *impl = GDK_PIXMAP_IMPL_QUARTZ (drawable);
-      CGContextRef context;
-
-      context = CGBitmapContextCreate (impl->data,
-				       CGImageGetWidth (impl->image),
-				       CGImageGetHeight (impl->image),
-				       CGImageGetBitsPerComponent (impl->image),
-				       CGImageGetBytesPerRow (impl->image),
-				       CGImageGetColorSpace (impl->image),
-				       CGImageGetBitmapInfo (impl->image));
-      CGContextSetAllowsAntialiasing (context, antialias);
       
-      return context;
+      cg_context = CGBitmapContextCreate (impl->data,
+					  CGImageGetWidth (impl->image),
+					  CGImageGetHeight (impl->image),
+					  CGImageGetBitsPerComponent (impl->image),
+					  CGImageGetBytesPerRow (impl->image),
+					  CGImageGetColorSpace (impl->image),
+					  CGImageGetBitmapInfo (impl->image));
+      CGContextSetAllowsAntialiasing (cg_context, antialias);
+    }
+  else 
+    {
+      g_warning ("Tried to create CGContext for something not a quartz window or pixmap");
+      cg_context = NULL;
     }
 
-  g_assert_not_reached ();
-
-  return NULL;
+  return cg_context;
 }
 
 void
-gdk_quartz_drawable_release_context (GdkDrawable  *drawable,
-				     CGContextRef  context)
+gdk_quartz_drawable_release_context (GdkDrawable  *drawable, 
+				     CGContextRef  cg_context)
 {
-  if (!context)
-    return;
-
   if (GDK_IS_WINDOW_IMPL_QUARTZ (drawable))
     {
-      GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (drawable);
+      GdkWindowImplQuartz *window_impl = GDK_WINDOW_IMPL_QUARTZ (drawable);
 
-      CGContextRestoreGState (context);
-      CGContextSetAllowsAntialiasing (context, TRUE);
+      CGContextRestoreGState (cg_context);
+      CGContextSetAllowsAntialiasing (cg_context, TRUE);
 
-      if (impl->in_paint_rect_count == 0 &&
-	  impl->begin_paint_count == 0)
-	CGContextFlush (context);
-
-      [impl->view unlockFocus];
-      [impl->pool release];
+      /* See comment in gdk_quartz_drawable_get_context(). */
+      if (window_impl->in_paint_rect_count == 0)
+        [window_impl->view unlockFocus];
     }
   else if (GDK_IS_PIXMAP_IMPL_QUARTZ (drawable))
-    {
-      CGContextRelease (context);
-    }
+    CGContextRelease (cg_context);
 }
+
+void
+_gdk_quartz_drawable_finish (GdkDrawable *drawable)
+{
+  GdkDrawableImplQuartz *impl = GDK_DRAWABLE_IMPL_QUARTZ (drawable);
+
+  if (impl->cairo_surface)
+    {
+      cairo_surface_finish (impl->cairo_surface);
+      cairo_surface_set_user_data (impl->cairo_surface, &gdk_quartz_cairo_key,
+				   NULL, NULL);
+      impl->cairo_surface = NULL;
+    }
+}  

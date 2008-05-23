@@ -148,13 +148,13 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
 
 /**
  * GtkToolItem::create-menu-proxy:
- * @toolitem: the object the signal was emitted on
+ * @tool_item: the object the signal was emitted on
  *
  * This signal is emitted when the toolbar needs information from @tool_item
  * about whether the item should appear in the toolbar overflow menu. In
  * response the tool item should either
  * <itemizedlist>
- * <listitem> call gtk_tool_item_set_proxy_menu_item() with a %NULL
+ * <listitem>call gtk_tool_item_set_proxy_menu_item() with a %NULL
  * pointer and return %TRUE to indicate that the item should not appear
  * in the overflow menu
  * </listitem>
@@ -186,7 +186,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
 
 /**
  * GtkToolItem::toolbar-reconfigured:
- * @toolitem: the object the signal was emitted on
+ * @tool_item: the object the signal was emitted on
  *
  * This signal is emitted when some property of the toolbar that the
  * item is a child of changes. For custom subclasses of #GtkToolItem,
@@ -210,7 +210,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
 		  G_TYPE_NONE, 0);
 /**
  * GtkToolItem::set-tooltip:
- * @toolitem: the object the signal was emitted on
+ * @tool_item: the object the signal was emitted on
  * @tooltips: the #GtkTooltips
  * @tip_text: the tooltip text
  * @tip_private: the tooltip private text
@@ -220,6 +220,9 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * set the item's tooltip.
  *
  * Return value: %TRUE if the signal was handled, %FALSE if not
+ *
+ * Deprecated: 2.12: With the new tooltip API, there is no
+ *   need to use this signal anymore.
  **/
   toolitem_signals[SET_TOOLTIP] =
     g_signal_new (I_("set_tooltip"),
@@ -254,8 +257,7 @@ gtk_tool_item_finalize (GObject *object)
 {
   GtkToolItem *item = GTK_TOOL_ITEM (object);
 
-  if (item->priv->menu_item_id)
-    g_free (item->priv->menu_item_id);
+  g_free (item->priv->menu_item_id);
   
   if (item->priv->menu_item)
     g_object_unref (item->priv->menu_item);
@@ -265,10 +267,11 @@ gtk_tool_item_finalize (GObject *object)
 }
 
 static void
-gtk_tool_item_parent_set   (GtkWidget   *toolitem,
-			    GtkWidget   *prev_parent)
+gtk_tool_item_parent_set (GtkWidget   *toolitem,
+			  GtkWidget   *prev_parent)
 {
-  _gtk_tool_item_toolbar_reconfigured (GTK_TOOL_ITEM (toolitem));
+  if (GTK_WIDGET (toolitem)->parent != NULL)
+    _gtk_tool_item_toolbar_reconfigured (GTK_TOOL_ITEM (toolitem));
 }
 
 static void
@@ -773,7 +776,7 @@ gtk_tool_item_real_set_tooltip (GtkToolItem *tool_item,
   if (!child)
     return FALSE;
 
-  gtk_tooltips_set_tip (tooltips, child, tip_text, tip_private);
+  gtk_widget_set_tooltip_text (child, tip_text);
 
   return TRUE;
 }
@@ -790,6 +793,8 @@ gtk_tool_item_real_set_tooltip (GtkToolItem *tool_item,
  * to be used. See gtk_tooltips_set_tip().
  * 
  * Since: 2.4
+ *
+ * Deprecated: 2.12: Use gtk_tool_item_set_tooltip_text() instead.
  **/
 void
 gtk_tool_item_set_tooltip (GtkToolItem *tool_item,
@@ -806,14 +811,62 @@ gtk_tool_item_set_tooltip (GtkToolItem *tool_item,
 }
 
 /**
+ * gtk_tool_item_set_tooltip_text:
+ * @tool_item: a #GtkToolItem: 
+ * @text: text to be used as tooltip for @tool_item
+ *
+ * Sets the text to be displayed as tooltip on the item.
+ * See gtk_widget_set_tooltip_text().
+ *
+ * Since: 2.12
+ **/
+void
+gtk_tool_item_set_tooltip_text (GtkToolItem *tool_item,
+			        const gchar *text)
+{
+  GtkWidget *child;
+
+  g_return_if_fail (GTK_IS_TOOL_ITEM (tool_item));
+
+  child = GTK_BIN (tool_item)->child;
+
+  if (child)
+    gtk_widget_set_tooltip_text (child, text);
+}
+
+/**
+ * gtk_tool_item_set_tooltip_markup:
+ * @tool_item: a #GtkToolItem: 
+ * @markup: markup text to be used as tooltip for @tool_item
+ *
+ * Sets the markup text to be displayed as tooltip on the item.
+ * See gtk_widget_set_tooltip_markup().
+ *
+ * Since: 2.12
+ **/
+void
+gtk_tool_item_set_tooltip_markup (GtkToolItem *tool_item,
+				  const gchar *markup)
+{
+  GtkWidget *child;
+
+  g_return_if_fail (GTK_IS_TOOL_ITEM (tool_item));
+
+  child = GTK_BIN (tool_item)->child;
+
+  if (child)
+    gtk_widget_set_tooltip_markup (child, markup);
+}
+
+/**
  * gtk_tool_item_set_use_drag_window:
- * @toolitem: a #GtkToolItem 
- * @use_drag_window: Whether @toolitem has a drag window.
+ * @tool_item: a #GtkToolItem 
+ * @use_drag_window: Whether @tool_item has a drag window.
  * 
- * Sets whether @toolitem has a drag window. When %TRUE the
+ * Sets whether @tool_item has a drag window. When %TRUE the
  * toolitem can be used as a drag source through gtk_drag_source_set().
- * When @toolitem has a drag window it will intercept all events,
- * even those that would otherwise be sent to a child of @toolitem.
+ * When @tool_item has a drag window it will intercept all events,
+ * even those that would otherwise be sent to a child of @tool_item.
  * 
  * Since: 2.4
  **/
@@ -847,12 +900,12 @@ gtk_tool_item_set_use_drag_window (GtkToolItem *toolitem,
 
 /**
  * gtk_tool_item_get_use_drag_window:
- * @toolitem: a #GtkToolItem 
+ * @tool_item: a #GtkToolItem 
  * 
- * Returns whether @toolitem has a drag window. See
+ * Returns whether @tool_item has a drag window. See
  * gtk_tool_item_set_use_drag_window().
  * 
- * Return value: %TRUE if @toolitem uses a drag window.
+ * Return value: %TRUE if @tool_item uses a drag window.
  * 
  * Since: 2.4
  **/
@@ -866,10 +919,10 @@ gtk_tool_item_get_use_drag_window (GtkToolItem *toolitem)
 
 /**
  * gtk_tool_item_set_visible_horizontal:
- * @toolitem: a #GtkToolItem
- * @visible_horizontal: Whether @toolitem is visible when in horizontal mode
+ * @tool_item: a #GtkToolItem
+ * @visible_horizontal: Whether @tool_item is visible when in horizontal mode
  * 
- * Sets whether @toolitem is visible when the toolbar is docked horizontally.
+ * Sets whether @tool_item is visible when the toolbar is docked horizontally.
  * 
  * Since: 2.4
  **/
@@ -893,12 +946,12 @@ gtk_tool_item_set_visible_horizontal (GtkToolItem *toolitem,
 
 /**
  * gtk_tool_item_get_visible_horizontal:
- * @toolitem: a #GtkToolItem 
+ * @tool_item: a #GtkToolItem 
  * 
- * Returns whether the @toolitem is visible on toolbars that are
+ * Returns whether the @tool_item is visible on toolbars that are
  * docked horizontally.
  * 
- * Return value: %TRUE if @toolitem is visible on toolbars that are
+ * Return value: %TRUE if @tool_item is visible on toolbars that are
  * docked horizontally.
  * 
  * Since: 2.4
@@ -913,14 +966,14 @@ gtk_tool_item_get_visible_horizontal (GtkToolItem *toolitem)
 
 /**
  * gtk_tool_item_set_visible_vertical:
- * @toolitem: a #GtkToolItem 
- * @visible_vertical: whether @toolitem is visible when the toolbar
+ * @tool_item: a #GtkToolItem 
+ * @visible_vertical: whether @tool_item is visible when the toolbar
  * is in vertical mode
  *
- * Sets whether @toolitem is visible when the toolbar is docked
+ * Sets whether @tool_item is visible when the toolbar is docked
  * vertically. Some tool items, such as text entries, are too wide to be
  * useful on a vertically docked toolbar. If @visible_vertical is %FALSE
- * @toolitem will not appear on toolbars that are docked vertically.
+ * @tool_item will not appear on toolbars that are docked vertically.
  * 
  * Since: 2.4
  **/
@@ -944,12 +997,12 @@ gtk_tool_item_set_visible_vertical (GtkToolItem *toolitem,
 
 /**
  * gtk_tool_item_get_visible_vertical:
- * @toolitem: a #GtkToolItem 
+ * @tool_item: a #GtkToolItem 
  * 
- * Returns whether @toolitem is visible when the toolbar is docked vertically.
+ * Returns whether @tool_item is visible when the toolbar is docked vertically.
  * See gtk_tool_item_set_visible_vertical().
  * 
- * Return value: Whether @toolitem is visible when the toolbar is docked vertically
+ * Return value: Whether @tool_item is visible when the toolbar is docked vertically
  * 
  * Since: 2.4
  **/
@@ -1067,8 +1120,7 @@ gtk_tool_item_set_proxy_menu_item (GtkToolItem *tool_item,
   g_return_if_fail (menu_item == NULL || GTK_IS_MENU_ITEM (menu_item));
   g_return_if_fail (menu_item_id != NULL);
 
-  if (tool_item->priv->menu_item_id)
-    g_free (tool_item->priv->menu_item_id);
+  g_free (tool_item->priv->menu_item_id);
       
   tool_item->priv->menu_item_id = g_strdup (menu_item_id);
 

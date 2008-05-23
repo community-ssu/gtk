@@ -298,7 +298,7 @@ gtk_action_group_init (GtkActionGroup *self)
   self->private_data->sensitive = TRUE;
   self->private_data->visible = TRUE;
   self->private_data->actions = g_hash_table_new_full (g_str_hash, g_str_equal,
-						       (GDestroyNotify) g_free,
+						       NULL,
 						       (GDestroyNotify) remove_action);
   self->private_data->translate_func = NULL;
   self->private_data->translate_data = NULL;
@@ -710,6 +710,21 @@ gtk_action_group_get_action (GtkActionGroup *action_group,
     (action_group, action_name);
 }
 
+static gboolean
+check_unique_action (GtkActionGroup *action_group,
+	             const gchar    *action_name)
+{
+  if (gtk_action_group_get_action (action_group, action_name) != NULL)
+    {
+      g_warning ("Refusing to add non-unique action '%s' to action group '%s'",
+	 	 action_name,
+		 action_group->private_data->name);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
 /**
  * gtk_action_group_add_action:
  * @action_group: the action group
@@ -728,12 +743,19 @@ void
 gtk_action_group_add_action (GtkActionGroup *action_group,
 			     GtkAction      *action)
 {
+  const gchar *name;
+
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
   g_return_if_fail (GTK_IS_ACTION (action));
-  g_return_if_fail (gtk_action_get_name (action) != NULL);
+
+  name = gtk_action_get_name (action);
+  g_return_if_fail (name != NULL);
+  
+  if (!check_unique_action (action_group, name))
+    return;
 
   g_hash_table_insert (action_group->private_data->actions, 
-		       g_strdup (gtk_action_get_name (action)),
+		       (gpointer) name,
                        g_object_ref (action));
   g_object_set (action, I_("action-group"), action_group, NULL);
 }
@@ -764,11 +786,11 @@ gtk_action_group_add_action_with_accel (GtkActionGroup *action_group,
   gchar *accel_path;
   guint  accel_key = 0;
   GdkModifierType accel_mods;
-  GtkStockItem stock_item;
-  gchar *name;
-  gchar *stock_id;
-  
-  g_object_get (action, "name", &name, "stock-id", &stock_id, NULL);
+  const gchar *name;
+
+  name = gtk_action_get_name (action);
+  if (!check_unique_action (action_group, name))
+    return;
 
   accel_path = g_strconcat ("<Actions>/",
 			    action_group->private_data->name, "/", name, NULL);
@@ -785,10 +807,20 @@ gtk_action_group_add_action_with_accel (GtkActionGroup *action_group,
 		       accelerator, name);
 	}
     }
-  else if (stock_id && gtk_stock_lookup (stock_id, &stock_item))
+  else 
     {
-      accel_key = stock_item.keyval;
-      accel_mods = stock_item.modifier;
+      gchar *stock_id;
+      GtkStockItem stock_item;
+
+      g_object_get (action, "stock-id", &stock_id, NULL);
+
+      if (stock_id && gtk_stock_lookup (stock_id, &stock_item))
+        {
+          accel_key = stock_item.keyval;
+          accel_mods = stock_item.modifier;
+	}
+
+      g_free (stock_id);
     }
 
   if (accel_key)
@@ -798,8 +830,6 @@ gtk_action_group_add_action_with_accel (GtkActionGroup *action_group,
   gtk_action_group_add_action (action_group, action);
 
   g_free (accel_path);
-  g_free (stock_id);
-  g_free (name);
 }
 
 /**
@@ -815,14 +845,15 @@ void
 gtk_action_group_remove_action (GtkActionGroup *action_group,
 				GtkAction      *action)
 {
+  const gchar *name;
+
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
   g_return_if_fail (GTK_IS_ACTION (action));
-  g_return_if_fail (gtk_action_get_name (action) != NULL);
 
-  /* extra protection to make sure action->name is valid */
-  g_object_ref (action);
-  g_hash_table_remove (action_group->private_data->actions, gtk_action_get_name (action));
-  g_object_unref (action);
+  name = gtk_action_get_name (action);
+  g_return_if_fail (name != NULL);
+
+  g_hash_table_remove (action_group->private_data->actions, name);
 }
 
 static void
@@ -948,6 +979,9 @@ gtk_action_group_add_actions_full (GtkActionGroup       *action_group,
       const gchar *label;
       const gchar *tooltip;
 
+      if (!check_unique_action (action_group, entries[i].name))
+        continue;
+
       label = gtk_action_group_translate_string (action_group, entries[i].label);
       tooltip = gtk_action_group_translate_string (action_group, entries[i].tooltip);
 
@@ -1052,6 +1086,9 @@ gtk_action_group_add_toggle_actions_full (GtkActionGroup             *action_gro
       const gchar *label;
       const gchar *tooltip;
 
+      if (!check_unique_action (action_group, entries[i].name))
+        continue;
+
       label = gtk_action_group_translate_string (action_group, entries[i].label);
       tooltip = gtk_action_group_translate_string (action_group, entries[i].tooltip);
 
@@ -1088,7 +1125,7 @@ gtk_action_group_add_toggle_actions_full (GtkActionGroup             *action_gro
       g_object_unref (action);
     }
 
-    shared_data_unref (shared_data);
+  shared_data_unref (shared_data);
 }
 
 /**
@@ -1163,6 +1200,9 @@ gtk_action_group_add_radio_actions_full (GtkActionGroup            *action_group
       GtkRadioAction *action;
       const gchar *label;
       const gchar *tooltip; 
+
+      if (!check_unique_action (action_group, entries[i].name))
+        continue;
 
       label = gtk_action_group_translate_string (action_group, entries[i].label);
       tooltip = gtk_action_group_translate_string (action_group, entries[i].tooltip);

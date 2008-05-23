@@ -1111,7 +1111,7 @@ main (int argc, char **argv)
 
         model = create_empty_list_blaat ();
         combobox = gtk_combo_box_new_with_model (model);
-	g_signal_connect (combobox, "popup-show", 
+	g_signal_connect (combobox, "notify::popup-shown", 
 			  G_CALLBACK (populate_list_blaat), combobox);
 
 	gtk_combo_box_set_add_tearoffs (GTK_COMBO_BOX (combobox), TRUE);
@@ -1332,7 +1332,7 @@ main (int argc, char **argv)
         gtk_combo_box_set_active_iter (GTK_COMBO_BOX (combobox), &iter);
 
 #if 1
-	g_timeout_add (1000, (GSourceFunc) capital_animation, model);
+	gdk_threads_add_timeout (1000, (GSourceFunc) capital_animation, model);
 #endif
 
         gtk_widget_show_all (window);

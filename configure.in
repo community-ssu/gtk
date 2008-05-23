@@ -11,11 +11,11 @@ AC_PREREQ(2.54)
 # set GTK_BINARY_AGE and GTK_INTERFACE_AGE to 0.
 
 m4_define([gtk_major_version], [2])
-m4_define([gtk_minor_version], [10])
-m4_define([gtk_micro_version], [12])
+m4_define([gtk_minor_version], [12])
+m4_define([gtk_micro_version], [9])
 m4_define([gtk_version],
           [gtk_major_version.gtk_minor_version.gtk_micro_version])
-m4_define([gtk_interface_age], [12])
+m4_define([gtk_interface_age], [9])
 m4_define([gtk_binary_age],
           [m4_eval(100 * gtk_minor_version + gtk_micro_version)])
 # This is the X.Y used in -lgtk-FOO-X.Y
@@ -31,8 +31,8 @@ m4_define([gtk_api_version], [2.0])
 m4_define([gtk_binary_version], [2.10.0])
 
 # required versions of other packages
-m4_define([glib_required_version], [2.12.0])
-m4_define([pango_required_version], [1.12.0])
+m4_define([glib_required_version], [2.13.5])
+m4_define([pango_required_version], [1.17.3])
 m4_define([atk_required_version], [1.9.0])
 m4_define([cairo_required_version], [1.2.0])
 
@@ -138,6 +138,24 @@ dnl Initialize libtool
 AC_PROG_CC
 AM_DISABLE_STATIC
 
+dnl 
+dnl Check for a working C++ compiler, but do not bail out, if none is found.
+dnl We use this for an automated test for C++ header correctness.
+dnl 
+AC_CHECK_PROGS(CXX, [$CCC c++ g++ gcc CC cxx cc++ cl], gcc)
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
+AC_TRY_COMPILE(,[class a { int b; } c;], ,CXX=)
+AM_CONDITIONAL(HAVE_CXX, test "$CXX" != "")
+
+gtk_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS -x objective-c++"
+AC_TRY_COMPILE([@interface Foo @end],,OBJC=yes,OBJC=no)
+AM_CONDITIONAL(HAVE_OBJC, test "$OBJC" == "yes")
+CXXFLAGS="$gtk_save_cxxflags"
+AC_LANG_RESTORE
+
 if test "$os_win32" = "yes"; then
   if test x$enable_static = xyes -o x$enable_static = x; then
     AC_MSG_WARN([Disabling static library build, must build as DLL on Windows.])
@@ -202,6 +220,10 @@ AC_ARG_ENABLE(xkb,
               [AC_HELP_STRING([--enable-xkb],
                               [support XKB [default=maybe]])],,
               [enable_xkb="maybe"])
+AC_ARG_ENABLE(xinerama,
+              [AC_HELP_STRING([--enable-xinerama],
+	                      [support xinerama extension if available [default=yes]])],,
+              [enable_xinerama="yes"])
 AC_ARG_ENABLE(rebuilds,
               [AC_HELP_STRING([--disable-rebuilds],
                               [disable all source autogeneration rules])],,
@@ -214,26 +236,19 @@ AC_ARG_ENABLE(visibility,
 AC_ARG_WITH(xinput,
             [AC_HELP_STRING([--with-xinput=@<:@no/yes@:>@], [support XInput])])
 
-AC_ARG_WITH(wintab,
-            [AC_HELP_STRING([--with-wintab=DIRECTORY],
-                            [use Wintab API with win32 backend])])
-AC_ARG_WITH(ie55,
-            [AC_HELP_STRING([--with-ie55=DIRECTORY],
-                            [IE5.5 libs and headers (for Active IMM)])])
-
 if test "$platform_win32" = yes; then
   gdktarget=win32
 else
   gdktarget=x11
 fi
 
-AC_ARG_WITH(gdktarget, [  --with-gdktarget=[[x11/linux-fb/win32/quartz/directfb]] select non-default GDK target],
+AC_ARG_WITH(gdktarget, [  --with-gdktarget=[[x11/win32/quartz/directfb]] select non-default GDK target],
 	gdktarget=$with_gdktarget)
 
 AC_SUBST(gdktarget)
 case $gdktarget in
-  x11|linux-fb|win32|quartz|directfb) ;;
-  *) AC_MSG_ERROR([Invalid target for GDK: use x11, linux-fb, quartz, directfb or win32.]);;
+  x11|win32|quartz|directfb) ;;
+  *) AC_MSG_ERROR([Invalid target for GDK: use x11, quartz, directfb or win32.]);;
 esac
 
 gdktargetlib=libgdk-$gdktarget-$GTK_API_VERSION.la
@@ -242,19 +257,9 @@ gtktargetlib=libgtk-$gdktarget-$GTK_API_VERSION.la
 AC_SUBST(gdktargetlib)
 AC_SUBST(gtktargetlib)
 
-AC_ARG_ENABLE(shadowfb,
-              [AC_HELP_STRING([--disable-shadowfb],
-                              [disable shadowfb support for linux-fb])],,
-              [enable_shadowfb=yes])
-
-AC_ARG_ENABLE(fbmanager,
-              [AC_HELP_STRING([--enable-fbmanager],
-                              [enable framebuffer manager support (GtkFB)])],,
-              enable_fbmanager=no)
-	
 if test "x$enable_debug" = "xyes"; then
   test "$cflags_set" = set || CFLAGS="$CFLAGS -g"
-  GTK_DEBUG_FLAGS="-DG_ENABLE_DEBUG"
+  GTK_DEBUG_FLAGS="-DG_ENABLE_DEBUG -DG_ERRORCHECK_MUTEXES" 
 else
   if test "x$enable_debug" = "xno"; then
     GTK_DEBUG_FLAGS="-DG_DISABLE_ASSERT -DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS"
@@ -262,6 +267,7 @@ else
     GTK_DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
   fi
 fi
+
 
 if test "x$enable_visibility" = "xno"; then
   GTK_DEBUG_FLAGS="$GTK_DEBUG_FLAGS -DDISABLE_VISIBILITY"
@@ -407,6 +413,7 @@ fi
 AC_SUBST(REBUILD)
 
 AC_CHECK_FUNCS(lstat mkstemp flockfile getc_unlocked)
+AC_CHECK_FUNCS(localtime_r)
 
 # _NL_TIME_FIRST_WEEKDAY is an enum and not a define
 AC_MSG_CHECKING([for _NL_TIME_FIRST_WEEKDAY])
@@ -473,7 +480,7 @@ fi
 # sure that both po/ and po-properties/ have .po files that correspond
 # to your language.  If you only add one to po/, the build will break
 # in po-properties/.
-ALL_LINGUAS="af am ang ar as az az_IR be be@latin bg bn bn_IN br bs ca cs cy da de dz el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu hy ia id is it ja ka ko ku li lt lv mi mk ml mn mr ms nb ne nl nn nso or pa pl pt pt_BR ro ru rw si sk sl sq sr sr@Latn sr@ije sv ta te th tk tr tt uk ur uz uz@Latn vi wa xh yi zh_CN zh_HK zh_TW"
+ALL_LINGUAS="af am ang ar as az az_IR be be@latin bg bn bn_IN br bs ca cs cy da de dz el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu hy ia id io is it ja ka kn ko ku li lt lv mi mk ml mn mr ms nb ne nl nn nso oc or pa pl pt pt_BR ro ru rw si sk sl sq sr sr@Latn sr@ije sv ta te th tk tr tt uk ur uz uz@cyrillic vi wa xh yi zh_CN zh_HK zh_TW"
 AM_GLIB_GNU_GETTEXT
 LIBS="$LIBS $INTLLIBS"
 AC_OUTPUT_COMMANDS([case "$CONFIG_FILES" in *po-properties/Makefile.in*)
@@ -574,72 +581,18 @@ LIBS=$gtk_save_LIBS
 AC_CHECK_HEADERS(pwd.h, AC_DEFINE(HAVE_PWD_H))
 AC_CHECK_HEADERS(sys/time.h, AC_DEFINE(HAVE_SYS_TIME_H))
 AC_CHECK_HEADERS(unistd.h, AC_DEFINE(HAVE_UNISTD_H))
+AC_CHECK_HEADERS(ftw.h, AC_DEFINE(HAVE_FTW_H))
 
-if test "${with_ie55+set}" = set && test $with_ie55 != no; then
-  AC_MSG_CHECKING([for dimm.h])
-  saved_CFLAGS="$CFLAGS"
-  CFLAGS="$CFLAGS -idirafter $with_ie55/Include"
-  AC_TRY_COMPILE([/* The w32api imm.h clashes a bit with the IE5.5 dimm.h */
-#ifdef __GNUC__
-#define IMEMENUITEMINFOA hidden_IMEMENUITEMINFOA
-#define IMEMENUITEMINFOW hidden_IMEMENUITEMINFOW
-#endif
-#include <windows.h>
-#include <objbase.h>
-#include <imm.h>
-#ifdef __GNUC__
-#undef IMEMENUITEMINFOA
-#undef IMEMENUITEMINFOW
-#endif
-#include <dimm.h>
-],
-   [],
-   [AC_MSG_RESULT(yes)
-    AC_MSG_CHECKING([for IE55 uuid.lib])
-    if test -f $with_ie55/Lib/uuid.lib ; then
-      AC_MSG_RESULT(yes)
-      have_ie55=yes
-      AC_DEFINE(HAVE_DIMM_H)
-      IE55_UUID_LIB="$with_ie55/Lib/uuid.lib"
-      AC_SUBST(IE55_UUID_LIB)
-    else
-      AC_MSG_RESULT(no)
-      CFLAGS="$saved_CFLAGS"
-      have_ie55=no
-    fi
-    ],
-   [AC_MSG_RESULT(no)
-    CFLAGS="$saved_CFLAGS"
-    have_ie55=no])
+AC_MSG_CHECKING([for GNU ftw extensions])
+AC_TRY_COMPILE([#define _XOPEN_SOURCE 500
+#define _GNU_SOURCE
+#include <ftw.h>], [int flags = FTW_ACTIONRETVAL;], gtk_ok=yes, gtk_ok=no)
+if test $gtk_ok = yes; then
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(HAVE_GNU_FTW,1,[Have GNU ftw])
+else
+    AC_MSG_RESULT([no])
 fi
-AM_CONDITIONAL(HAVE_IE55, test x$have_ie55 = xyes)
-
-if test "${with_wintab+set}" = set && test $with_wintab != no; then
-  AC_MSG_CHECKING([for wintab.h])
-  saved_CFLAGS="$CFLAGS"
-  CFLAGS="$CFLAGS -I$with_wintab/include"
-  AC_TRY_COMPILE([#include <windows.h>
-#include <wintab.h>], 
-   [],
-   [AC_MSG_RESULT(yes)
-    AC_MSG_CHECKING([for wntab32x.lib])
-    if test -f $with_wintab/lib/i386/wntab32x.lib ; then
-      AC_MSG_RESULT(yes)
-      have_wintab=yes
-      AC_DEFINE(HAVE_WINTAB)
-      WINTAB_LIB="$with_wintab/lib/i386/wntab32x.lib"
-      AC_SUBST(WINTAB_LIB)
-    else
-      AC_MSG_RESULT(no)
-      CFLAGS="$saved_cflags"
-      have_wintab=no
-    fi
-    ],
-   [AC_MSG_RESULT(no)
-    CFLAGS="$saved_cflags"
-    have_wintab=no])
-fi
-AM_CONDITIONAL(HAVE_WINTAB, test x$have_wintab = xyes)
 
 saved_cflags="$CFLAGS"
 saved_ldflags="$LDFLAGS"
@@ -731,10 +684,10 @@ if test $gtk_uxtheme_h = yes; then
 fi
 AC_MSG_RESULT($gtk_uxtheme_h)
 
-
 # Checks for gdkspawn
 AC_CHECK_HEADERS(crt_externs.h)
 AC_CHECK_FUNCS(_NSGetEnviron)
+
 
 ##################################################
 # Checks for gdk-pixbuf
@@ -810,7 +763,7 @@ AC_ARG_WITH(libtiff,
 
 dnl Test for libtiff
   if test x$with_libtiff != xno && test -z "$LIBTIFF"; then
-    AC_CHECK_LIB(tiff, TIFFReadScanline,
+    AC_CHECK_LIB(tiff, TIFFReadRGBAImageOriented,
       [AC_CHECK_HEADER(tiffio.h,
         TIFF='tiff'; LIBTIFF='-ltiff',
         AC_MSG_WARN(*** TIFF loader will not be built (TIFF header files not found) ***))],
@@ -922,14 +875,13 @@ AC_MSG_CHECKING(pixbuf loaders to build)
 dnl due to an autoconf bug, commas in the first arg to
 dnl AC_HELP_STRING cause problems.
 dnl AC_HELP_STRING([--with-included-loaders=LOADER1 LOADER2 ...],
-dnl                [build the specified loaders into gdk-pixbuf (only used if module loading disabled)])
+dnl                [build the specified loaders into gdk-pixbuf])
 AC_ARG_WITH(included_loaders,
 [  --with-included-loaders=LOADER1,LOADER2,...
-                          build the specified loaders into gdk-pixbuf (only
-                          used if module loading disabled)])
+                          build the specified loaders into gdk-pixbuf])
 
 if $dynworks; then 
-        :
+   :
 else
    ## if the option was specified, leave it; otherwise disable included loaders
    if test x$with_included_loaders = xno; then
@@ -937,7 +889,7 @@ else
    fi
 fi
 
-all_loaders="png,bmp,wbmp,gif,ico,ani,jpeg,pnm,ras,tiff,xpm,tga,pcx"
+all_loaders="png,bmp,wbmp,gif,ico,ani,jpeg,pnm,ras,tiff,xpm,xbm,tga,pcx"
 included_loaders=""
 # If no loaders specified, include all
 if test "x$with_included_loaders" = xyes ; then
@@ -959,12 +911,28 @@ for loader in $included_loaders; do
    AC_MSG_ERROR([the specified loader $loader does not exist])
  fi
 
- INCLUDED_LOADER_OBJ="$INCLUDED_LOADER_OBJ libpixbufloader-static-$loader.la"
+ INCLUDED_LOADER_OBJ="$INCLUDED_LOADER_OBJ libstatic-pixbufloader-$loader.la"
  INCLUDED_LOADER_DEFINE="$INCLUDED_LOADER_DEFINE -DINCLUDE_$loader"
+ eval INCLUDE_$loader=yes
 done
 IFS="$gtk_save_ifs"
 AC_SUBST(INCLUDED_LOADER_OBJ)
 AC_SUBST(INCLUDED_LOADER_DEFINE)
+
+AM_CONDITIONAL(INCLUDE_PNG, [test x"$INCLUDE_png" = xyes])
+AM_CONDITIONAL(INCLUDE_BMP, [test x"$INCLUDE_bmp" = xyes])
+AM_CONDITIONAL(INCLUDE_WBMP, [test x"$INCLUDE_wbmp" = xyes])
+AM_CONDITIONAL(INCLUDE_GIF, [test x"$INCLUDE_gif" = xyes])
+AM_CONDITIONAL(INCLUDE_ICO, [test x"$INCLUDE_ico" = xyes])
+AM_CONDITIONAL(INCLUDE_ANI, [test x"$INCLUDE_ani" = xyes])
+AM_CONDITIONAL(INCLUDE_JPEG, [test x"$INCLUDE_jpeg" = xyes])
+AM_CONDITIONAL(INCLUDE_PNM, [test x"$INCLUDE_pnm" = xyes])
+AM_CONDITIONAL(INCLUDE_RAS, [test x"$INCLUDE_ras" = xyes])
+AM_CONDITIONAL(INCLUDE_TIFF, [test x"$INCLUDE_tiff" = xyes])
+AM_CONDITIONAL(INCLUDE_XPM, [test x"$INCLUDE_xpm" = xyes])
+AM_CONDITIONAL(INCLUDE_XBM, [test x"$INCLUDE_xbm" = xyes])
+AM_CONDITIONAL(INCLUDE_TGA, [test x"$INCLUDE_tga" = xyes])
+AM_CONDITIONAL(INCLUDE_PCX, [test x"$INCLUDE_pcx" = xyes])
 
 AC_HEADER_SYS_WAIT
 
@@ -988,6 +956,32 @@ if $dynworks ; then
 else
   STATIC_LIB_DEPS="$LIBTIFF $LIBJPEG $LIBPNG"
 fi
+
+# Checks to see whether we should include mediaLib
+# support.
+#
+AC_CHECK_HEADER(sys/systeminfo.h, AC_DEFINE(HAVE_SYS_SYSTEMINFO_H))
+AC_CHECK_HEADER(sys/sysinfo.h, AC_DEFINE(HAVE_SYS_SYSINFO_H))
+
+AC_MSG_CHECKING(for mediaLib 2.3)
+use_mlib25=no
+# Check for a mediaLib 2.3 function since that is what the GTK+ mediaLib
+# patch requires.
+AC_CHECK_LIB(mlib, mlib_ImageSetStruct, use_mlib=yes, use_mlib=no)
+if test $use_mlib = yes; then
+    AC_DEFINE(USE_MEDIALIB)
+    MEDIA_LIB=-lmlib
+
+    AC_MSG_CHECKING(for mediaLib 2.5)
+    # Check for a mediaLib 2.5 function since that is what is needed for
+    # gdk_rgb_convert integration.
+    AC_CHECK_LIB(mlib, mlib_VideoColorRGBint_to_BGRAint, use_mlib25=yes, use_mlib25=no)
+    if test $use_mlib25 = yes; then
+        AC_DEFINE(USE_MEDIALIB25)
+    fi
+fi
+AM_CONDITIONAL(USE_MEDIALIB, test $use_mlib = yes)
+AM_CONDITIONAL(USE_MEDIALIB25, test $use_mlib25 = yes)
 
 # Checks to see if we should compile in MMX support (there will be
 # a runtime test when the code is actually run to see if it should
@@ -1057,17 +1051,10 @@ fi
 AC_SUBST(REBUILD_PNGS)
 
 GDK_PIXBUF_PACKAGES="gmodule-no-export-2.0 gobject-2.0"
-GDK_PIXBUF_EXTRA_LIBS="$STATIC_LIB_DEPS $MATH_LIB"
+GDK_PIXBUF_EXTRA_LIBS="$STATIC_LIB_DEPS $MATH_LIB $MEDIA_LIB"
 GDK_PIXBUF_EXTRA_CFLAGS= 
 GDK_PIXBUF_DEP_LIBS="`$PKG_CONFIG --libs $GDK_PIXBUF_PACKAGES` $GDK_PIXBUF_EXTRA_LIBS"
 GDK_PIXBUF_DEP_CFLAGS="`$PKG_CONFIG --cflags  gthread-2.0 $GDK_PIXBUF_PACKAGES $PNG_DEP_CFLAGS_PACKAGES` $GDK_PIXBUF_EXTRA_CFLAGS"
-
-AC_SUBST(GDK_PIXBUF_PACKAGES)
-AC_SUBST(GDK_PIXBUF_EXTRA_LIBS)
-AC_SUBST(GDK_PIXBUF_EXTRA_CFLAGS)
-AC_SUBST(GDK_PIXBUF_DEP_LIBS)
-AC_SUBST(GDK_PIXBUF_DEP_CFLAGS)
-
 
 ########################################
 # Windowing system checks
@@ -1252,12 +1239,12 @@ if test "x$gdktarget" = "xx11"; then
     fi
   fi
 
-  # Check for Xinerama extension (Solaris impl or Xfree impl)
-
-  gtk_save_cppflags="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS $x_cflags"
+  if test "x$enable_xinerama" = "xyes"; then
+    # Check for Xinerama extension (Solaris impl or Xfree impl)
+    gtk_save_cppflags="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS $x_cflags"
   
-  case "$host" in
+    case "$host" in
       *-*-solaris*)
           # Check for solaris
 	  AC_MSG_CHECKING(for Xinerama support on Solaris)
@@ -1300,8 +1287,9 @@ if test "x$gdktarget" = "xx11"; then
             AC_MSG_RESULT(no)
          fi
          ;;
-  esac
-
+    esac
+  fi
+  
   # set up things for XInput
 
   if test "x$with_xinput" = "xxfree" || test "x$with_xinput" = "xyes"; then
@@ -1363,6 +1351,24 @@ if test "x$gdktarget" = "xx11"; then
   fi
 
 
+  # Checks for Xcomposite extension
+
+  if $PKG_CONFIG --exists xcomposite ; then
+    AC_DEFINE(HAVE_XCOMPOSITE, 1, Have the XCOMPOSITE X extension)
+
+    X_PACKAGES="$X_PACKAGES xcomposite"
+    GTK_PACKAGES_FOR_X="$GTK_PACKAGES_FOR_X xcomposite"
+  fi
+
+  # Checks for Xdamage extension
+
+  if $PKG_CONFIG --exists xdamage ; then
+    AC_DEFINE(HAVE_XDAMAGE, 1, Have the XDAMAGE X extension)
+
+    X_PACKAGES="$X_PACKAGES xdamage"
+    GTK_PACKAGES_FOR_X="$GTK_PACKAGES_FOR_X xdamage"
+  fi
+
   if $have_base_x_pc ; then
     GDK_EXTRA_LIBS="$x_extra_libs"
   else
@@ -1380,14 +1386,7 @@ else
 fi
 
 if test "x$gdktarget" = "xwin32"; then
-  # We start off with the libraries from Pango
-
-  if test x$have_wintab = xyes; then
-    GDK_WIN32_EXTRA_CFLAGS="-I $with_wintab/include"
-    AC_SUBST(GDK_WIN32_EXTRA_CFLAGS)
-  fi
-
-  GDK_EXTRA_LIBS="$GDK_EXTRA_LIBS -lgdi32 -user32 -limm32 -lshell32 -lole32 -Wl,-luuid"
+  GDK_EXTRA_LIBS="$GDK_EXTRA_LIBS -lgdi32 -limm32 -lshell32 -lole32 -Wl,-luuid"
   AM_CONDITIONAL(USE_WIN32, true)
 else
   AM_CONDITIONAL(USE_WIN32, false)
@@ -1408,24 +1407,6 @@ AC_SUBST(GDK_PIXBUF_XLIB_EXTRA_LIBS)
 AC_SUBST(GDK_PIXBUF_XLIB_EXTRA_CFLAGS)
 AC_SUBST(GDK_PIXBUF_XLIB_DEP_LIBS)
 AC_SUBST(GDK_PIXBUF_XLIB_DEP_CFLAGS)
-
-if test "x$gdktarget" = "xlinux-fb"; then
-  if test x$enable_shadowfb = xyes ; then
-    AC_DEFINE(ENABLE_SHADOW_FB)
-  fi
-
-  if test x$enable_fbmanager = xyes ; then
-    AC_DEFINE(ENABLE_FB_MANAGER)
-    AM_CONDITIONAL(ENABLE_FB_MANAGER, true)
-  else
-    AM_CONDITIONAL(ENABLE_FB_MANAGER, false)
-  fi
-  
-  AM_CONDITIONAL(USE_LINUX_FB, true)
-else
-  AM_CONDITIONAL(USE_LINUX_FB, false)
-  AM_CONDITIONAL(ENABLE_FB_MANAGER, false)
-fi
 
 if test "x$gdktarget" = "xdirectfb"; then
   DIRECTFB_REQUIRED_VERSION=0.9.24
@@ -1548,12 +1529,31 @@ if test x"$os_win32" = xyes; then
   GTK_EXTRA_CFLAGS="$msnative_struct"
 fi
 
+GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
+ATK_PREFIX="`$PKG_CONFIG --variable=prefix atk`"
+PANGO_PREFIX="`$PKG_CONFIG --variable=prefix pango`"
+CAIRO_PREFIX="`pkg-config --variable=prefix cairo`"
+
+if test $enable_explicit_deps != yes ; then
+  GDK_PIXBUF_EXTRA_LIBS=
+fi
+
+AC_SUBST(GDK_PIXBUF_PACKAGES)
+AC_SUBST(GDK_PIXBUF_EXTRA_LIBS)
+AC_SUBST(GDK_PIXBUF_EXTRA_CFLAGS)
+AC_SUBST(GDK_PIXBUF_DEP_LIBS)
+AC_SUBST(GDK_PIXBUF_DEP_CFLAGS)
+
 AC_SUBST(GTK_PACKAGES)
 AC_SUBST(GTK_EXTRA_LIBS)
 AC_SUBST(GTK_EXTRA_CFLAGS)
 AC_SUBST(GTK_DEP_LIBS)
 AC_SUBST(GTK_DEP_CFLAGS)
 
+AC_SUBST(GLIB_PREFIX)
+AC_SUBST(ATK_PREFIX)
+AC_SUBST(PANGO_PREFIX)
+AC_SUBST(CAIRO_PREFIX)
 
 AC_SUBST(GTK_DEBUG_FLAGS)
 AC_SUBST(GTK_XIM_FLAGS)
@@ -1562,26 +1562,53 @@ AC_SUBST(GTK_XIM_FLAGS)
 # Printing system checks
 ################################################################
 
-AC_PATH_PROG(CUPS_CONFIG, cups-config, no)
-if test "x$CUPS_CONFIG" != "xno"; then
-  CUPS_CFLAGS=`cups-config --cflags | sed 's/-O[0-9]*//' | sed 's/-m[^\t]*//g'`
-  CUPS_LIBS=`cups-config --libs`
+AC_ARG_ENABLE(cups,
+              [AC_HELP_STRING([--disable-cups]
+                              [disable cups print backend])],,
+              [enable_cups=auto])
 
-  CUPS_API_VERSION=`cups-config --api-version`
-  CUPS_API_MAJOR=`echo -n $CUPS_API_VERSION | awk -F. '{print $1}'`
-  CUPS_API_MINOR=`echo -n $CUPS_API_VERSION | awk -F. '{print $2}'`
+if test "x$enable_cups" = "xauto"
+then
+  AC_PATH_PROG(CUPS_CONFIG, cups-config, no)
+  if test "x$CUPS_CONFIG" != "xno"; then
+    CUPS_CFLAGS=`$CUPS_CONFIG --cflags | sed 's/-O[0-9]*//' | sed 's/-m[^\t]*//g'`
+    CUPS_LIBS=`$CUPS_CONFIG --libs`
 
-  if test $CUPS_API_MAJOR -gt 1 -o \
-          $CUPS_API_MAJOR -eq 1 -a $CUPS_API_MINOR -ge 2; then
-    AC_DEFINE(HAVE_CUPS_API_1_2)
+    CUPS_API_VERSION=`$CUPS_CONFIG --api-version`
+    CUPS_API_MAJOR=`echo $ECHO_N $CUPS_API_VERSION | awk -F. '{print $1}'`
+    CUPS_API_MINOR=`echo $ECHO_N $CUPS_API_VERSION | awk -F. '{print $2}'`
+
+    if test $CUPS_API_MAJOR -gt 1 -o \
+            $CUPS_API_MAJOR -eq 1 -a $CUPS_API_MINOR -ge 2; then
+      AC_DEFINE(HAVE_CUPS_API_1_2)
+    fi
+
+    AC_SUBST(CUPS_API_MAJOR)
+    AC_SUBST(CUPS_API_MINOR)
+    AC_SUBST(CUPS_CFLAGS)
+    AC_SUBST(CUPS_LIBS)
+
+    AC_CHECK_HEADER(cups/cups.h,,AC_MSG_ERROR([[*** Sorry, cups-config present but cups/cups.h missing.]]))
   fi
+  AM_CONDITIONAL(HAVE_CUPS, test "x$CUPS_CONFIG" != "xno")
 
-  AC_SUBST(CUPS_API_MAJOR)
-  AC_SUBST(CUPS_API_MINOR)
-  AC_SUBST(CUPS_CFLAGS)
-  AC_SUBST(CUPS_LIBS)
+  gtk_save_cflags="$CFLAGS"
+  CFLAGS="$CUPS_CFLAGS"
+  AC_TRY_COMPILE([#include <cups/http.h>],
+                 [http_t http; char *s = http.authstring;],
+                 [AC_DEFINE(HAVE_HTTP_AUTHSTRING,[],[Define if cups http_t authstring field is accessible])],)
+  CFLAGS="$gtk_save_cflags"
+
+  AC_SUBST(HAVE_HTTP_AUTHSTRING)
+
+  gtk_save_libs="$LIBS"
+  LIBS="$CUPS_LIBS"
+  AC_CHECK_FUNCS(httpGetAuthString)
+  LIBS="$gtk_save_libs"
+
+else
+  AM_CONDITIONAL(HAVE_CUPS, false)
 fi
-AM_CONDITIONAL(HAVE_CUPS, test "x$CUPS_CONFIG" != "xno")
 
 gtk_save_cppflags="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $GTK_DEP_CFLAGS"
@@ -1599,6 +1626,13 @@ fi
 CPPFLAGS="$gtk_save_cppflags"
      
 			  	
+AC_ARG_ENABLE(test-print-backend,
+              [AC_HELP_STRING([--enable-test-print-backend],
+                              [build test print backend])],,
+              [enable_test_print_backend=no])
+AM_CONDITIONAL(TEST_PRINT_BACKEND, test "x$enable_test_print_backend" != "xno")
+
+
 ################################################################
 # Strip -export-dynamic from the link lines of various libraries
 ################################################################
@@ -1626,7 +1660,7 @@ fi
 # Checks for gtk-doc and docbook-tools
 ##################################################
 
-GTK_DOC_CHECK([1.4])
+GTK_DOC_CHECK([1.6])
 
 AC_CHECK_PROG(DB2HTML, db2html, true, false)
 AM_CONDITIONAL(HAVE_DOCBOOK, $DB2HTML)
@@ -1704,10 +1738,6 @@ if test "x$gdktarget" = "xx11" ; then
 elif test "x$gdktarget" = "xwin32" ; then
   gdk_windowing='
 #define GDK_WINDOWING_WIN32'
-elif test "x$gdktarget" = "xlinux-fb" ; then
-  gdk_windowing='
-#define GDK_WINDOWING_FB
-#define GDK_NATIVE_WINDOW_POINTER'
 elif test "x$gdktarget" = "xquartz" ; then
   gdk_windowing='
 #define GDK_WINDOWING_QUARTZ'
@@ -1770,7 +1800,6 @@ gdk/x11/Makefile
 gdk/win32/Makefile
 gdk/win32/rc/Makefile
 gdk/win32/rc/gdk.rc
-gdk/linux-fb/Makefile
 gdk/quartz/Makefile
 gdk/directfb/Makefile
 gtk/Makefile
@@ -1790,6 +1819,7 @@ modules/printbackends/Makefile
 modules/printbackends/cups/Makefile
 modules/printbackends/lpr/Makefile
 modules/printbackends/file/Makefile
+modules/printbackends/test/Makefile
 perf/Makefile
 contrib/Makefile
 contrib/gdk-pixbuf-xlib/Makefile
@@ -1800,9 +1830,3 @@ AC_OUTPUT
 
 echo "configuration:
         target: $gdktarget"
-
-if test "x$gdktarget" = "xlinux-fb"; then
-  echo "Warning: The linux-fb GDK target is unmaintained"
-  echo "         and may not work or even compile"
-fi
-

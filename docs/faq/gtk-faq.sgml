@@ -1636,7 +1636,7 @@ int main(int argc, char *argv[])
   gtk_container_set_border_width(GTK_CONTAINER (window), 10);
 #endif
 
-  /* add a button to do something usefull */
+  /* add a button to do something useful */
   button = gtk_button_new_with_label("Fork me!");
           
   g_signal_connect(G_OBJECT (button), "clicked",
@@ -2815,7 +2815,7 @@ the Label widget, which can be done using:</para>
 GtkTooltips in itself is not a GtkWidget (though a GtkObject)
 and as such is not attempted to match any widget styles.</para>
 
-<para>So, you resource file should look something like:</para>
+<para>So, your resource file should look something like:</para>
 
 <programlisting role="C">
 style "postie"

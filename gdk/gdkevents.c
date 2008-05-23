@@ -465,8 +465,7 @@ gdk_event_free (GdkEvent *event)
 
     case GDK_BUTTON_PRESS:
     case GDK_BUTTON_RELEASE:
-      if (event->button.axes)
-	g_free (event->button.axes);
+      g_free (event->button.axes);
       break;
       
     case GDK_EXPOSE:
@@ -475,8 +474,7 @@ gdk_event_free (GdkEvent *event)
       break;
       
     case GDK_MOTION_NOTIFY:
-      if (event->motion.axes)
-	g_free (event->motion.axes);
+      g_free (event->motion.axes);
       break;
       
     case GDK_SETTING:
@@ -838,11 +836,21 @@ gdk_event_get_axis (GdkEvent   *event,
  * gdk_event_request_motions:
  * @event: a valid #GdkEvent
  *
- * Request more motion notifies if #event is a motion notify hint event.
+ * Request more motion notifies if @event is a motion notify hint event.
  * This function should be used instead of gdk_window_get_pointer() to
  * request further motion notifies, because it also works for extension
  * events where motion notifies are provided for devices other than the
- * core pointer.
+ * core pointer. Coordinate extraction, processing and requesting more
+ * motion events from a %GDK_MOTION_NOTIFY event usually works like this:
+ *
+ * <informalexample><programlisting>
+ * {  // motion_event handler
+ *   x = motion_event->x;
+ *   y = motion_event->y;
+ *   ; // handle (x,y) motion
+ *   gdk_event_request_motions (motion_event); // handles is_hint events
+ * }
+ * </programlisting></informalexample>
  *
  * Since: 2.12
  **/

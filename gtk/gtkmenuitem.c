@@ -1153,8 +1153,6 @@ gtk_menu_item_popup_timeout (gpointer data)
   GtkMenuItem *menu_item;
   GtkWidget *parent;
   
-  GDK_THREADS_ENTER ();
-
   menu_item = GTK_MENU_ITEM (data);
 
   parent = GTK_WIDGET (menu_item)->parent;
@@ -1168,8 +1166,6 @@ gtk_menu_item_popup_timeout (gpointer data)
     }
 
   menu_item->timer = 0;
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;  
 }
@@ -1186,8 +1182,8 @@ get_popup_delay (GtkWidget *widget)
       gint popup_delay;
 
       g_object_get (gtk_widget_get_settings (widget),
-                  "gtk-menu-popup-delay", &popup_delay,
-                  NULL);
+		    "gtk-menu-popup-delay", &popup_delay,
+		    NULL);
 
       return popup_delay;
     }
@@ -1211,22 +1207,22 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget,
       gint popup_delay = get_popup_delay (widget);
 
       if (popup_delay > 0)
-        {
-          GdkEvent *event = gtk_get_current_event ();
+	{
+	  GdkEvent *event = gtk_get_current_event ();
 
-          menu_item->timer = g_timeout_add (popup_delay,
-                                            gtk_menu_item_popup_timeout,
-                                            menu_item);
+	  menu_item->timer = gdk_threads_add_timeout (popup_delay,
+                                                      gtk_menu_item_popup_timeout,
+                                                      menu_item);
 
-          if (event &&
-              event->type != GDK_BUTTON_PRESS &&
-              event->type != GDK_ENTER_NOTIFY)
-            menu_item->timer_from_keypress = TRUE;
-          else
-            menu_item->timer_from_keypress = FALSE;
+	  if (event &&
+	      event->type != GDK_BUTTON_PRESS &&
+	      event->type != GDK_ENTER_NOTIFY)
+	    menu_item->timer_from_keypress = TRUE;
+	  else
+	    menu_item->timer_from_keypress = FALSE;
 
-          if (event)
-            gdk_event_free (event);
+	  if (event)
+	    gdk_event_free (event);
 
           return;
         }
@@ -1482,6 +1478,7 @@ gtk_menu_item_get_right_justified (GtkMenuItem *menu_item)
   
   return menu_item->right_justify;
 }
+
 
 static void
 gtk_menu_item_show_all (GtkWidget *widget)

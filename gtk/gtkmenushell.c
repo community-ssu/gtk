@@ -60,6 +60,7 @@ enum {
   ACTIVATE_CURRENT,
   CANCEL,
   CYCLE_FOCUS,
+  MOVE_SELECTED,
   LAST_SIGNAL
 };
 
@@ -196,10 +197,12 @@ static void gtk_real_menu_shell_cycle_focus      (GtkMenuShell      *menu_shell,
 static void     gtk_menu_shell_reset_key_hash    (GtkMenuShell *menu_shell);
 static gboolean gtk_menu_shell_activate_mnemonic (GtkMenuShell *menu_shell,
 						  GdkEventKey  *event);
+static gboolean gtk_menu_shell_real_move_selected (GtkMenuShell  *menu_shell, 
+						   gint           distance);
 
 static guint menu_shell_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (GtkMenuShell, gtk_menu_shell, GTK_TYPE_CONTAINER)
+G_DEFINE_ABSTRACT_TYPE (GtkMenuShell, gtk_menu_shell, GTK_TYPE_CONTAINER)
 
 #ifdef MAEMO_CHANGES
 static void
@@ -247,8 +250,13 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
   widget_class->enter_notify_event = gtk_menu_shell_enter_notify;
   widget_class->leave_notify_event = gtk_menu_shell_leave_notify;
   widget_class->screen_changed = gtk_menu_shell_screen_changed;
+
 #ifdef MAEMO_CHANGES
-  widget_class->insensitive_press = gtk_menu_shell_insensitive_press;
+  g_signal_override_class_closure (g_signal_lookup ("insensitive-press",
+                                                    GTK_TYPE_WIDGET),
+                                   GTK_TYPE_MENU_SHELL,
+                                   g_cclosure_new (G_CALLBACK (gtk_menu_shell_insensitive_press),
+                                                   NULL, NULL));
 #endif /* MAEMO_CHANGES */
 
   container_class->add = gtk_menu_shell_add;
@@ -264,6 +272,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
   klass->cancel = gtk_real_menu_shell_cancel;
   klass->select_item = gtk_menu_shell_real_select_item;
   klass->insert = gtk_menu_shell_real_insert;
+  klass->move_selected = gtk_menu_shell_real_move_selected;
 
   menu_shell_signals[DEACTIVATE] =
     g_signal_new (I_("deactivate"),
@@ -316,7 +325,27 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 			     _gtk_marshal_VOID__ENUM,
 			     G_TYPE_NONE, 1,
 			     GTK_TYPE_DIRECTION_TYPE);
-
+  /**
+   * GtkMenuShell::move-selected:
+   * @menu_shell: the object on which the signal is emitted
+   * @distance: +1 to move to the next item, -1 to move to the previous
+   *
+   * The ::move-selected signal is emitted to move the selection to
+   * another item. 
+   * 
+   * Returns: %TRUE to stop the signal emission, %FALSE to continue
+   *
+   * Since: 2.12
+   */ 
+  menu_shell_signals[MOVE_SELECTED] =
+    g_signal_new (I_("move_selected"),
+		  G_OBJECT_CLASS_TYPE (object_class),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GtkMenuShellClass, move_selected),
+		  _gtk_boolean_handled_accumulator, NULL,
+		  _gtk_marshal_BOOLEAN__INT,
+		  G_TYPE_BOOLEAN, 1,
+		  G_TYPE_INT);
 
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set,
@@ -324,6 +353,11 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 				"cancel", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Return, 0,
+				"activate_current", 1,
+				G_TYPE_BOOLEAN,
+				TRUE);
+  gtk_binding_entry_add_signal (binding_set,
+				GDK_ISO_Enter, 0,
 				"activate_current", 1,
 				G_TYPE_BOOLEAN,
 				TRUE);
@@ -670,7 +704,6 @@ gtk_menu_shell_button_press (GtkWidget      *widget,
 #endif
 
 	}
-
     }
 
   if (menu_item && _gtk_menu_item_is_selectable (menu_item) &&
@@ -725,15 +758,11 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
 	{
 	  menu_shell->button = 0;
 	  if (menu_shell->parent_menu_shell)
-            return gtk_widget_event (menu_shell->parent_menu_shell, (GdkEvent*) event);
+	    return gtk_widget_event (menu_shell->parent_menu_shell, (GdkEvent*) event);
 	}
 
       menu_shell->button = 0;
       menu_item = gtk_menu_shell_get_item (menu_shell, (GdkEvent*) event);
-
-      g_object_get (gtk_widget_get_settings (widget),
-                    "gtk-menu-popup-click-time", &popup_click_time,
-                    NULL);
 
       if (popup_click_time == 0 ||
           (event->time - menu_shell->activate_time) > popup_click_time)
@@ -826,7 +855,7 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
             {
               menu_shell->activate_time = 0;
               deactivate = FALSE;
-             }
+            }
         }
       else /* a very fast press-release */
         {
@@ -906,7 +935,7 @@ gtk_menu_shell_enter_notify (GtkWidget        *widget,
 	  (GTK_IS_MENU_ITEM (menu_item) && 
 	   !_gtk_menu_item_is_selectable (menu_item)))
 	return TRUE;
-      
+
       if (menu_item->parent == widget &&
 	  GTK_IS_MENU_ITEM (menu_item))
 	{
@@ -933,10 +962,19 @@ gtk_menu_shell_enter_notify (GtkWidget        *widget,
                   GtkMenuShellPrivate *priv;
 
                   priv = GTK_MENU_SHELL_GET_PRIVATE (menu_item->parent);
-
-                  _gtk_menu_item_popup_submenu (menu_item, TRUE);
-
                   priv->activated_submenu = TRUE;
+
+                  if (!GTK_WIDGET_VISIBLE (GTK_MENU_ITEM (menu_item)->submenu))
+                    {
+                      gboolean touchscreen_mode;
+
+                      g_object_get (gtk_widget_get_settings (widget),
+                                    "gtk-touchscreen-mode", &touchscreen_mode,
+                                    NULL);
+
+                      if (touchscreen_mode)
+                        _gtk_menu_item_popup_submenu (menu_item, TRUE);
+                    }
                 }
 	    }
 	}
@@ -1241,9 +1279,9 @@ gtk_menu_shell_activate_item (GtkMenuShell      *menu_shell,
 }
 
 /* Distance should be +/- 1 */
-static void
-gtk_menu_shell_move_selected (GtkMenuShell  *menu_shell, 
-			      gint           distance)
+static gboolean
+gtk_menu_shell_real_move_selected (GtkMenuShell  *menu_shell, 
+				   gint           distance)
 {
   if (menu_shell->active_menu_item)
     {
@@ -1294,6 +1332,19 @@ gtk_menu_shell_move_selected (GtkMenuShell  *menu_shell,
       if (node)
 	gtk_menu_shell_select_item (menu_shell, node->data);
     }
+
+  return TRUE;
+}
+
+/* Distance should be +/- 1 */
+static void
+gtk_menu_shell_move_selected (GtkMenuShell  *menu_shell, 
+			      gint           distance)
+{
+  gboolean handled = FALSE;
+
+  g_signal_emit (menu_shell, menu_shell_signals[MOVE_SELECTED], 0,
+		 distance, &handled);
 }
 
 /**
@@ -1370,6 +1421,9 @@ gtk_menu_shell_select_submenu_first (GtkMenuShell     *menu_shell)
 {
   GtkMenuItem *menu_item;
 
+  if (menu_shell->active_menu_item == NULL)
+    return FALSE;
+
   menu_item = GTK_MENU_ITEM (menu_shell->active_menu_item); 
   
   if (menu_item->submenu)
@@ -1417,7 +1471,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell         *menu_shell,
           _gtk_menu_item_popdown_submenu (menu_shell->active_menu_item);
         }
       else if (parent_menu_shell)
-	{
+        {
           if (touchscreen_mode)
             {
               /* close menu when returning from submenu. */
@@ -1425,7 +1479,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell         *menu_shell,
               break;
             }
 
-	  if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
+          if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
               GTK_MENU_SHELL_GET_CLASS (menu_shell)->submenu_placement)
 	    gtk_menu_shell_deselect (menu_shell);
 	  else

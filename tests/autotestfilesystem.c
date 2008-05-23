@@ -25,10 +25,17 @@
 
 #include <config.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <glib/gprintf.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkfilesystem.h>
+
+#ifdef G_OS_WIN32
+#include <direct.h>
+#define rmdir(d) _rmdir(d)
+#endif
 
 #define CALLBACK_TIMEOUT_MS 3000	/* Period after which the callback must have been called */
 #define CANCEL_TIMEOUT_MS 100		/* We'll sleep for this much time before cancelling */
@@ -105,7 +112,7 @@ timeout_cb (gpointer data)
 static void
 wait_for_callback (TestCallbackClosure *closure)
 {
-  g_timeout_add (CALLBACK_TIMEOUT_MS, timeout_cb, closure);
+  gdk_threads_add_timeout (CALLBACK_TIMEOUT_MS, timeout_cb, closure);
   gtk_main ();
 }
 

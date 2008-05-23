@@ -940,8 +940,7 @@ gtk_text_insert (GtkText        *text,
  	  g_free (text->text.ch);
  	  text->text.wc = g_new (GdkWChar, INITIAL_BUFFER_SIZE);
  	  text->text_len = INITIAL_BUFFER_SIZE;
- 	  if (text->scratch_buffer.ch)
- 	    g_free (text->scratch_buffer.ch);
+ 	  g_free (text->scratch_buffer.ch);
  	  text->scratch_buffer.wc = NULL;
  	  text->scratch_buffer_len = 0;
  	}
@@ -1224,13 +1223,11 @@ gtk_text_finalize (GObject *object)
   
   if (text->use_wchar)
     {
-      if (text->scratch_buffer.wc)
-	g_free (text->scratch_buffer.wc);
+      g_free (text->scratch_buffer.wc);
     }
   else
     {
-      if (text->scratch_buffer.ch)
-	g_free (text->scratch_buffer.ch);
+      g_free (text->scratch_buffer.ch);
     }
   
   g_list_free (text->tab_stops);
@@ -1580,8 +1577,6 @@ gtk_text_scroll_timeout (gpointer data)
   gint x, y;
   GdkModifierType mask;
   
-  GDK_THREADS_ENTER ();
-
   text = GTK_TEXT (data);
   
   text->timer = 0;
@@ -1601,8 +1596,6 @@ gtk_text_scroll_timeout (gpointer data)
       gdk_event_free (event);
     }
 
-  GDK_THREADS_LEAVE ();
-  
   return FALSE;
 }
 
@@ -1803,7 +1796,7 @@ gtk_text_motion_notify (GtkWidget      *widget,
     {
       if (text->timer == 0)
 	{
-	  text->timer = g_timeout_add (SCROLL_TIME, 
+	  text->timer = gdk_threads_add_timeout (SCROLL_TIME, 
 				       gtk_text_scroll_timeout,
 				       text);
 	  
@@ -1916,6 +1909,7 @@ gtk_text_key_press (GtkWidget   *widget,
         case GDK_KP_Down:
 	case GDK_Down:      scroll_int (text, +KEY_SCROLL_PIXELS); break;
 	case GDK_Return:
+        case GDK_ISO_Enter:
         case GDK_KP_Enter:
 	  if (event->state & GDK_CONTROL_MASK)
 	    gtk_signal_emit_by_name (GTK_OBJECT (text), "activate");
@@ -2035,6 +2029,7 @@ gtk_text_key_press (GtkWidget   *widget,
 	  gtk_editable_insert_text (GTK_EDITABLE (old_editable), "\t", 1, &position);
 	  break;
         case GDK_KP_Enter:
+        case GDK_ISO_Enter:
 	case GDK_Return:
 	  if (event->state & GDK_CONTROL_MASK)
 	    gtk_signal_emit_by_name (GTK_OBJECT (text), "activate");
@@ -2067,7 +2062,7 @@ gtk_text_key_press (GtkWidget   *widget,
 		  gtk_text_move_backward_character (text);
 		  break;
 		case 'c':
-		  gtk_editable_copy_clipboard (text);
+		  gtk_editable_copy_clipboard (GTK_EDITABLE (text));
 		  break;
 		case 'd':
 		  gtk_text_delete_forward_character (text);
@@ -2094,13 +2089,13 @@ gtk_text_key_press (GtkWidget   *widget,
 		  gtk_text_delete_line (text);
 		  break;
 		case 'v':
-		  gtk_editable_paste_clipboard (text);
+		  gtk_editable_paste_clipboard (GTK_EDITABLE (text));
 		  break;
 		case 'w':
 		  gtk_text_delete_backward_word (text);
 		  break;
 		case 'x':
-		  gtk_editable_cut_clipboard (text);
+		  gtk_editable_cut_clipboard (GTK_EDITABLE (text));
 		  break;
 		default:
 		  return_val = FALSE;

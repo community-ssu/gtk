@@ -340,7 +340,8 @@ static void            gtk_text_btree_remove_tag_info       (GtkTextBTree   *tre
 
 static void redisplay_region (GtkTextBTree      *tree,
                               const GtkTextIter *start,
-                              const GtkTextIter *end);
+                              const GtkTextIter *end,
+                              gboolean           cursors_only);
 
 /* Inline thingies */
 
@@ -663,7 +664,7 @@ gtk_text_btree_resolve_bidi (GtkTextIter *start,
      */
     line = _gtk_text_line_previous (line);
     _gtk_text_btree_get_iter_at_line (tree, &end_propagate, line, 0);
-    _gtk_text_btree_invalidate_region (tree, end, &end_propagate);
+    _gtk_text_btree_invalidate_region (tree, end, &end_propagate, FALSE);
   }
   
   /* Sweep backward */
@@ -719,7 +720,7 @@ gtk_text_btree_resolve_bidi (GtkTextIter *start,
     if (line && line->dir_propagated_forward == PANGO_DIRECTION_NEUTRAL)
       {
         _gtk_text_btree_get_iter_at_line (tree, &start_propagate, line, 0);
-        _gtk_text_btree_invalidate_region(tree, &start_propagate, start);
+        _gtk_text_btree_invalidate_region (tree, &start_propagate, start, FALSE);
       }
   }
 }
@@ -756,7 +757,7 @@ _gtk_text_btree_delete (GtkTextIter *start,
   
   /* Broadcast the need for redisplay before we break the iterators */
   DV (g_print ("invalidating due to deleting some text (%s)\n", G_STRLOC));
-  _gtk_text_btree_invalidate_region (tree, start, end);
+  _gtk_text_btree_invalidate_region (tree, start, end, FALSE);
 
   /* Save the byte offset so we can reset the iterators */
   start_byte_offset = gtk_text_iter_get_line_index (start);
@@ -1241,8 +1242,7 @@ _gtk_text_btree_insert (GtkTextIter *iter,
     gtk_text_iter_forward_chars (&end, char_count_delta);
 
     DV (g_print ("invalidating due to inserting some text (%s)\n", G_STRLOC));
-    _gtk_text_btree_invalidate_region (tree,
-                                      &start, &end);
+    _gtk_text_btree_invalidate_region (tree, &start, &end, FALSE);
 
 
     /* Convenience for the user */
@@ -1292,7 +1292,7 @@ insert_pixbuf_or_widget_segment (GtkTextIter        *iter,
   gtk_text_iter_forward_char (iter); /* skip forward past the segment */
 
   DV (g_print ("invalidating due to inserting pixbuf/widget (%s)\n", G_STRLOC));
-  _gtk_text_btree_invalidate_region (tree, &start, iter);
+  _gtk_text_btree_invalidate_region (tree, &start, iter, FALSE);
 }
      
 void
@@ -1627,7 +1627,8 @@ _gtk_text_btree_remove_view (GtkTextBTree *tree,
 void
 _gtk_text_btree_invalidate_region (GtkTextBTree      *tree,
                                    const GtkTextIter *start,
-                                   const GtkTextIter *end)
+                                   const GtkTextIter *end,
+                                   gboolean           cursors_only)
 {
   BTreeView *view;
 
@@ -1635,7 +1636,10 @@ _gtk_text_btree_invalidate_region (GtkTextBTree      *tree,
 
   while (view != NULL)
     {
-      gtk_text_layout_invalidate (view->layout, start, end);
+      if (cursors_only)
+	gtk_text_layout_invalidate_cursors (view->layout, start, end);
+      else
+	gtk_text_layout_invalidate (view->layout, start, end);
 
       view = view->next;
     }
@@ -1740,12 +1744,12 @@ queue_tag_redisplay (GtkTextBTree      *tree,
   if (_gtk_text_tag_affects_size (tag))
     {
       DV (g_print ("invalidating due to size-affecting tag (%s)\n", G_STRLOC));
-      _gtk_text_btree_invalidate_region (tree, start, end);
+      _gtk_text_btree_invalidate_region (tree, start, end, FALSE);
     }
   else if (_gtk_text_tag_affects_nonsize_appearance (tag))
     {
       /* We only need to queue a redraw, not a relayout */
-      redisplay_region (tree, start, end);
+      redisplay_region (tree, start, end, FALSE);
     }
 
   /* We don't need to do anything if the tag doesn't affect display */
@@ -2192,6 +2196,8 @@ _gtk_text_btree_get_line_at_char (GtkTextBTree      *tree,
   return line;
 }
 
+/* It returns an array sorted by tags priority, ready to pass to
+ * _gtk_text_attributes_fill_from_tags() */
 GtkTextTag**
 _gtk_text_btree_get_tags (const GtkTextIter *iter,
                          gint *num_tags)
@@ -2300,6 +2306,10 @@ _gtk_text_btree_get_tags (const GtkTextIter *iter,
       g_free (tagInfo.tags);
       return NULL;
     }
+
+  /* Sort tags in ascending order of priority */
+  _gtk_text_tag_array_sort (tagInfo.tags, dst);
+
   return tagInfo.tags;
 }
 
@@ -2494,7 +2504,7 @@ _gtk_text_btree_char_is_invisible (const GtkTextIter *iter)
           || (seg->type == &gtk_text_toggle_off_type))
         {
           tag = seg->body.toggle.info->tag;
-          if (tag->invisible_set && tag->values->invisible)
+          if (tag->invisible_set)
             {
               tags[tag->priority] = tag;
               tagCnts[tag->priority]++;
@@ -2518,7 +2528,7 @@ _gtk_text_btree_char_is_invisible (const GtkTextIter *iter)
               || (seg->type == &gtk_text_toggle_off_type))
             {
               tag = seg->body.toggle.info->tag;
-              if (tag->invisible_set && tag->values->invisible)
+              if (tag->invisible_set)
                 {
                   tags[tag->priority] = tag;
                   tagCnts[tag->priority]++;
@@ -2547,7 +2557,7 @@ _gtk_text_btree_char_is_invisible (const GtkTextIter *iter)
               if (summary->toggle_count & 1)
                 {
                   tag = summary->info->tag;
-                  if (tag->invisible_set && tag->values->invisible)
+                  if (tag->invisible_set)
                     {
                       tags[tag->priority] = tag;
                       tagCnts[tag->priority] += summary->toggle_count;
@@ -2599,7 +2609,8 @@ _gtk_text_btree_char_is_invisible (const GtkTextIter *iter)
 static void
 redisplay_region (GtkTextBTree      *tree,
                   const GtkTextIter *start,
-                  const GtkTextIter *end)
+                  const GtkTextIter *end,
+                  gboolean           cursors_only)
 {
   BTreeView *view;
   GtkTextLine *start_line, *end_line;
@@ -2631,9 +2642,14 @@ redisplay_region (GtkTextBTree      *tree,
       if (ld)
         end_y += ld->height;
 
-      gtk_text_layout_changed (view->layout, start_y,
-                               end_y - start_y,
-                               end_y - start_y);
+      if (cursors_only)
+	gtk_text_layout_cursors_changed (view->layout, start_y,
+					 end_y - start_y,
+					  end_y - start_y);
+      else
+	gtk_text_layout_changed (view->layout, start_y,
+				 end_y - start_y,
+				 end_y - start_y);
 
       view = view->next;
     }
@@ -2653,8 +2669,7 @@ redisplay_mark (GtkTextLineSegment *mark)
   gtk_text_iter_forward_char (&end);
 
   DV (g_print ("invalidating due to moving visible mark (%s)\n", G_STRLOC));
-  _gtk_text_btree_invalidate_region (mark->body.mark.tree,
-                                    &iter, &end);
+  _gtk_text_btree_invalidate_region (mark->body.mark.tree, &iter, &end, TRUE);
 }
 
 static void
@@ -2692,7 +2707,12 @@ real_set_mark (GtkTextBTree      *tree,
   g_return_val_if_fail (_gtk_text_iter_get_btree (where) == tree, NULL);
 
   if (existing_mark)
-    mark = existing_mark->segment;
+    {
+      if (gtk_text_mark_get_buffer (existing_mark) != NULL)
+	mark = existing_mark->segment;
+      else
+	mark = NULL;
+    }
   else if (name != NULL)
     mark = g_hash_table_lookup (tree->mark_table,
                                 name);
@@ -2724,7 +2744,7 @@ real_set_mark (GtkTextBTree      *tree,
 
           _gtk_text_btree_get_iter_at_mark (tree, &old_pos,
                                            mark->body.mark.obj);
-          redisplay_region (tree, &old_pos, where);
+          redisplay_region (tree, &old_pos, where, TRUE);
         }
 
       /*
@@ -2752,9 +2772,13 @@ real_set_mark (GtkTextBTree      *tree,
     }
   else
     {
-      mark = _gtk_mark_segment_new (tree,
-                                    left_gravity,
-                                    name);
+      if (existing_mark)
+	g_object_ref (existing_mark);
+      else
+	existing_mark = gtk_text_mark_new (name, left_gravity);
+
+      mark = existing_mark->segment;
+      _gtk_mark_segment_set_tree (mark, tree);
 
       mark->body.mark.line = _gtk_text_iter_get_text_line (&iter);
 
@@ -2854,18 +2878,28 @@ _gtk_text_btree_select_range (GtkTextBTree      *tree,
 			      const GtkTextIter *ins,
                               const GtkTextIter *bound)
 {
-  GtkTextIter start, end;
+  GtkTextIter old_ins, old_bound;
 
-  if (_gtk_text_btree_get_selection_bounds (tree, &start, &end))
-    redisplay_region (tree, &start, &end);
+  _gtk_text_btree_get_iter_at_mark (tree, &old_ins,
+                                    tree->insert_mark);
+  _gtk_text_btree_get_iter_at_mark (tree, &old_bound,
+                                    tree->selection_bound_mark);
 
-  /* Move insert AND selection_bound before we redisplay */
-  real_set_mark (tree, tree->insert_mark,
-                 "insert", FALSE, ins, TRUE, FALSE);
-  real_set_mark (tree, tree->selection_bound_mark,
-                 "selection_bound", FALSE, bound, TRUE, FALSE);
+  /* Check if it's no-op since gtk_text_buffer_place_cursor()
+   * also calls this, and this will redraw the cursor line. */
+  if (!gtk_text_iter_equal (&old_ins, ins) ||
+      !gtk_text_iter_equal (&old_bound, bound))
+    {
+      redisplay_region (tree, &old_ins, &old_bound, TRUE);
 
-  redisplay_region (tree, ins, bound);
+      /* Move insert AND selection_bound before we redisplay */
+      real_set_mark (tree, tree->insert_mark,
+		     "insert", FALSE, ins, TRUE, FALSE);
+      real_set_mark (tree, tree->selection_bound_mark,
+		     "selection_bound", FALSE, bound, TRUE, FALSE);
+
+      redisplay_region (tree, ins, bound, TRUE);
+    }
 }
 
 
@@ -2938,6 +2972,18 @@ _gtk_text_btree_mark_is_selection_bound (GtkTextBTree *tree,
   return segment == tree->selection_bound_mark;
 }
 
+GtkTextMark *
+_gtk_text_btree_get_insert (GtkTextBTree *tree)
+{
+  return tree->insert_mark;
+}
+
+GtkTextMark *
+_gtk_text_btree_get_selection_bound (GtkTextBTree *tree)
+{
+  return tree->selection_bound_mark;
+}
+
 GtkTextMark*
 _gtk_text_btree_get_mark_by_name (GtkTextBTree *tree,
                                   const gchar *name)
@@ -2980,7 +3026,8 @@ gtk_text_mark_set_visible (GtkTextMark       *mark,
     {
       seg->body.mark.visible = setting;
 
-      redisplay_mark (seg);
+      if (seg->body.mark.tree)
+	redisplay_mark (seg);
     }
 }
 
@@ -5609,8 +5656,7 @@ tag_changed_cb (GtkTextTagTable *table,
           /* Must be a last toggle if there was a first one. */
           _gtk_text_btree_get_iter_at_last_toggle (tree, &end, tag);
           DV (g_print ("invalidating due to tag change (%s)\n", G_STRLOC));
-          _gtk_text_btree_invalidate_region (tree,
-                                            &start, &end);
+          _gtk_text_btree_invalidate_region (tree, &start, &end, FALSE);
 
         }
     }

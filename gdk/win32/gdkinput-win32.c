@@ -1,6 +1,6 @@
 /* GDK - The GIMP Drawing Kit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
- * Copyright (C) 1998-2002 Tor Lillqvist
+ * Copyright (C) 1998-2007 Tor Lillqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,8 +37,6 @@
 #include "gdkprivate-win32.h"
 #include "gdkinput-win32.h"
 
-#ifdef HAVE_WINTAB
-
 #define PACKETDATA (PK_CONTEXT | PK_CURSOR | PK_BUTTONS | PK_X | PK_Y  | PK_NORMAL_PRESSURE | PK_ORIENTATION)
 /* We want everything in absolute mode */
 #define PACKETMODE (0)
@@ -48,17 +46,9 @@
 
 #define PROXIMITY_OUT_DELAY 200 /* In milliseconds, see set_ignore_core */
 
-#endif
-
-#if defined(HAVE_WINTAB) || defined(HAVE_WHATEVER_OTHER)
-#define HAVE_SOME_XINPUT
-#endif
-
 #define TWOPI (2.*G_PI)
 
 /* Forward declarations */
-
-#ifdef HAVE_WINTAB
 
 static GdkDevicePrivate *gdk_input_find_dev_from_ctx (HCTX hctx,
 						      UINT id);
@@ -66,19 +56,25 @@ static GList     *wintab_contexts = NULL;
 
 static GdkWindow *wintab_window = NULL;
 
-#endif /* HAVE_WINTAB */
-
-#ifdef HAVE_SOME_XINPUT
-
 static GdkWindow *x_grab_window = NULL; /* Window that currently holds
 					 * the extended inputs grab
 					 */
 static GdkEventMask x_grab_mask;
 static gboolean x_grab_owner_events;
 
-#endif /* HAVE_SOME_XINPUT */
+typedef UINT (WINAPI *t_WTInfoA) (UINT a, UINT b, LPVOID c);
+typedef BOOL (WINAPI *t_WTEnable) (HCTX a, BOOL b);
+typedef HCTX (WINAPI *t_WTOpenA) (HWND a, LPLOGCONTEXTA b, BOOL c);
+typedef BOOL (WINAPI *t_WTOverlap) (HCTX a, BOOL b);
+typedef BOOL (WINAPI *t_WTPacket) (HCTX a, UINT b, LPVOID c);
+typedef int (WINAPI *t_WTQueueSizeSet) (HCTX a, int b);
 
-#ifdef HAVE_WINTAB
+static t_WTInfoA p_WTInfoA;
+static t_WTEnable p_WTEnable;
+static t_WTOpenA p_WTOpenA;
+static t_WTOverlap p_WTOverlap;
+static t_WTPacket p_WTPacket;
+static t_WTQueueSizeSet p_WTQueueSizeSet;
 
 static GdkDevicePrivate *
 gdk_input_find_dev_from_ctx (HCTX hctx,
@@ -219,13 +215,13 @@ print_cursor (int index)
   UINT minbuttons;
   UINT capabilities;
 
-  size = WTInfo (WTI_CURSORS + index, CSR_NAME, NULL);
+  size = (*p_WTInfoA) (WTI_CURSORS + index, CSR_NAME, NULL);
   name = g_malloc (size + 1);
-  WTInfo (WTI_CURSORS + index, CSR_NAME, name);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_NAME, name);
   g_print ("NAME: %s\n", name);
-  WTInfo (WTI_CURSORS + index, CSR_ACTIVE, &active);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_ACTIVE, &active);
   g_print ("ACTIVE: %s\n", active ? "YES" : "NO");
-  WTInfo (WTI_CURSORS + index, CSR_PKTDATA, &wtpkt);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_PKTDATA, &wtpkt);
   g_print ("PKTDATA: %#x:", (guint) wtpkt);
 #define BIT(x) if (wtpkt & PK_##x) g_print (" " #x)
   BIT (CONTEXT);
@@ -243,16 +239,16 @@ print_cursor (int index)
   BIT (ROTATION);
 #undef BIT
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_BUTTONS, &buttons);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_BUTTONS, &buttons);
   g_print ("BUTTONS: %d\n", buttons);
-  WTInfo (WTI_CURSORS + index, CSR_BUTTONBITS, &buttonbits);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_BUTTONBITS, &buttonbits);
   g_print ("BUTTONBITS: %d\n", buttonbits);
-  size = WTInfo (WTI_CURSORS + index, CSR_BTNNAMES, NULL);
+  size = (*p_WTInfoA) (WTI_CURSORS + index, CSR_BTNNAMES, NULL);
   g_print ("BTNNAMES:");
   if (size > 0)
     {
       btnnames = g_malloc (size + 1);
-      WTInfo (WTI_CURSORS + index, CSR_BTNNAMES, btnnames);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_BTNNAMES, btnnames);
       p = btnnames;
       while (*p)
 	{
@@ -261,47 +257,47 @@ print_cursor (int index)
 	}
     }
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_BUTTONMAP, buttonmap);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_BUTTONMAP, buttonmap);
   g_print ("BUTTONMAP:");
   for (i = 0; i < buttons; i++)
     g_print (" %d", buttonmap[i]);
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_SYSBTNMAP, sysbtnmap);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_SYSBTNMAP, sysbtnmap);
   g_print ("SYSBTNMAP:");
   for (i = 0; i < buttons; i++)
     g_print (" %d", sysbtnmap[i]);
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_NPBUTTON, &npbutton);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_NPBUTTON, &npbutton);
   g_print ("NPBUTTON: %d\n", npbutton);
-  WTInfo (WTI_CURSORS + index, CSR_NPBTNMARKS, npbtnmarks);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_NPBTNMARKS, npbtnmarks);
   g_print ("NPBTNMARKS: %d %d\n", npbtnmarks[0], npbtnmarks[1]);
-  size = WTInfo (WTI_CURSORS + index, CSR_NPRESPONSE, NULL);
+  size = (*p_WTInfoA) (WTI_CURSORS + index, CSR_NPRESPONSE, NULL);
   g_print ("NPRESPONSE:");
   if (size > 0)
     {
       npresponse = g_malloc (size);
-      WTInfo (WTI_CURSORS + index, CSR_NPRESPONSE, npresponse);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_NPRESPONSE, npresponse);
       for (i = 0; i < size / sizeof (UINT); i++)
 	g_print (" %d", npresponse[i]);
     }
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_TPBUTTON, &tpbutton);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_TPBUTTON, &tpbutton);
   g_print ("TPBUTTON: %d\n", tpbutton);
-  WTInfo (WTI_CURSORS + index, CSR_TPBTNMARKS, tpbtnmarks);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_TPBTNMARKS, tpbtnmarks);
   g_print ("TPBTNMARKS: %d %d\n", tpbtnmarks[0], tpbtnmarks[1]);
-  size = WTInfo (WTI_CURSORS + index, CSR_TPRESPONSE, NULL);
+  size = (*p_WTInfoA) (WTI_CURSORS + index, CSR_TPRESPONSE, NULL);
   g_print ("TPRESPONSE:");
   if (size > 0)
     {
       tpresponse = g_malloc (size);
-      WTInfo (WTI_CURSORS + index, CSR_TPRESPONSE, tpresponse);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_TPRESPONSE, tpresponse);
       for (i = 0; i < size / sizeof (UINT); i++)
 	g_print (" %d", tpresponse[i]);
     }
   g_print ("\n");
-  WTInfo (WTI_CURSORS + index, CSR_PHYSID, &physid);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_PHYSID, &physid);
   g_print ("PHYSID: %#x\n", (guint) physid);
-  WTInfo (WTI_CURSORS + index, CSR_CAPABILITIES, &capabilities);
+  (*p_WTInfoA) (WTI_CURSORS + index, CSR_CAPABILITIES, &capabilities);
   g_print ("CAPABILITIES: %#x:", capabilities);
 #define BIT(x) if (capabilities & CRC_##x) g_print (" " #x)
   BIT (MULTIMODE);
@@ -311,14 +307,14 @@ print_cursor (int index)
   g_print ("\n");
   if (capabilities & CRC_MULTIMODE)
     {
-      WTInfo (WTI_CURSORS + index, CSR_MODE, &mode);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_MODE, &mode);
       g_print ("MODE: %d\n", mode);
     }
   if (capabilities & CRC_AGGREGATE)
     {
-      WTInfo (WTI_CURSORS + index, CSR_MINPKTDATA, &minpktdata);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_MINPKTDATA, &minpktdata);
       g_print ("MINPKTDATA: %d\n", minpktdata);
-      WTInfo (WTI_CURSORS + index, CSR_MINBUTTONS, &minbuttons);
+      (*p_WTInfoA) (WTI_CURSORS + index, CSR_MINBUTTONS, &minbuttons);
       g_print ("MINBUTTONS: %d\n", minbuttons);
     }
 }
@@ -340,6 +336,7 @@ _gdk_input_wintab_init_check (void)
   int devix, cursorix;
   char devname[100], csrname[100];
   BOOL defcontext_done;
+  HMODULE wintab32;
 
   if (wintab_initialized)
     return;
@@ -348,262 +345,262 @@ _gdk_input_wintab_init_check (void)
   
   wintab_contexts = NULL;
 
-  if (!_gdk_input_ignore_wintab &&
-      WTInfo (0, 0, NULL))
-    {
-      WTInfo (WTI_INTERFACE, IFC_SPECVERSION, &specversion);
-      GDK_NOTE (INPUT, g_print ("Wintab interface version %d.%d\n",
-			       HIBYTE (specversion), LOBYTE (specversion)));
-      WTInfo (WTI_INTERFACE, IFC_NDEVICES, &ndevices);
-      WTInfo (WTI_INTERFACE, IFC_NCURSORS, &ncursors);
+  if (_gdk_input_ignore_wintab)
+    return;
+
+  if ((wintab32 = LoadLibrary ("wintab32.dll")) == NULL)
+    return;
+
+  if ((p_WTInfoA = (t_WTInfoA) GetProcAddress (wintab32, "WTInfoA")) == NULL)
+    return;
+  if ((p_WTEnable = (t_WTEnable) GetProcAddress (wintab32, "WTEnable")) == NULL)
+    return;
+  if ((p_WTOpenA = (t_WTOpenA) GetProcAddress (wintab32, "WTOpenA")) == NULL)
+    return;
+  if ((p_WTOverlap = (t_WTOverlap) GetProcAddress (wintab32, "WTOverlap")) == NULL)
+    return;
+  if ((p_WTPacket = (t_WTPacket) GetProcAddress (wintab32, "WTPacket")) == NULL)
+    return;
+  if ((p_WTQueueSizeSet = (t_WTQueueSizeSet) GetProcAddress (wintab32, "WTQueueSizeSet")) == NULL)
+    return;
+    
+  if (!(*p_WTInfoA) (0, 0, NULL))
+    return;
+
+  (*p_WTInfoA) (WTI_INTERFACE, IFC_SPECVERSION, &specversion);
+  GDK_NOTE (INPUT, g_print ("Wintab interface version %d.%d\n",
+			    HIBYTE (specversion), LOBYTE (specversion)));
+  (*p_WTInfoA) (WTI_INTERFACE, IFC_NDEVICES, &ndevices);
+  (*p_WTInfoA) (WTI_INTERFACE, IFC_NCURSORS, &ncursors);
 #if DEBUG_WINTAB
-      GDK_NOTE (INPUT, g_print ("NDEVICES: %d, NCURSORS: %d\n",
-			       ndevices, ncursors));
+  GDK_NOTE (INPUT, g_print ("NDEVICES: %d, NCURSORS: %d\n",
+			    ndevices, ncursors));
 #endif
-      /* Create a dummy window to receive wintab events */
-      wa.wclass = GDK_INPUT_OUTPUT;
-      wa.event_mask = GDK_ALL_EVENTS_MASK;
-      wa.width = 2;
-      wa.height = 2;
-      wa.x = -100;
-      wa.y = -100;
-      wa.window_type = GDK_WINDOW_TOPLEVEL;
-      if ((wintab_window = gdk_window_new (NULL, &wa, GDK_WA_X|GDK_WA_Y)) == NULL)
+  /* Create a dummy window to receive wintab events */
+  wa.wclass = GDK_INPUT_OUTPUT;
+  wa.event_mask = GDK_ALL_EVENTS_MASK;
+  wa.width = 2;
+  wa.height = 2;
+  wa.x = -100;
+  wa.y = -100;
+  wa.window_type = GDK_WINDOW_TOPLEVEL;
+  if ((wintab_window = gdk_window_new (NULL, &wa, GDK_WA_X|GDK_WA_Y)) == NULL)
+    {
+      g_warning ("gdk_input_wintab_init: gdk_window_new failed");
+      return;
+    }
+  g_object_ref (wintab_window);
+      
+  for (devix = 0; devix < ndevices; devix++)
+    {
+      LOGCONTEXT lc;
+      
+      /* We open the Wintab device (hmm, what if there are several?) as a
+       * system pointing device, i.e. it controls the normal Windows
+       * cursor. This seems much more natural.
+       */
+
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_NAME, devname);
+      
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_NCSRTYPES, &ncsrtypes);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_FIRSTCSR, &firstcsr);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_HARDWARE, &hardware);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_X, &axis_x);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_Y, &axis_y);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_NPRESSURE, &axis_npressure);
+      (*p_WTInfoA) (WTI_DEVICES + devix, DVC_ORIENTATION, axis_or);
+
+      defcontext_done = FALSE;
+      if (HIBYTE (specversion) > 1 || LOBYTE (specversion) >= 1)
 	{
-	  g_warning ("gdk_input_wintab_init: gdk_window_new failed");
+	  /* Try to get device-specific default context */
+	  /* Some drivers, e.g. Aiptek, don't provide this info */
+	  if ((*p_WTInfoA) (WTI_DSCTXS + devix, 0, &lc) > 0)
+	    defcontext_done = TRUE;
+#if DEBUG_WINTAB
+	  if (defcontext_done)
+	    GDK_NOTE (INPUT, (g_print("Using device-specific default context\n")));
+	  else
+	    GDK_NOTE (INPUT, (g_print("Note: Driver did not provide device specific default context info despite claiming to support version 1.1\n")));
+#endif
+	}
+
+      if (!defcontext_done)
+	(*p_WTInfoA) (WTI_DEFSYSCTX, 0, &lc);
+#if DEBUG_WINTAB
+      GDK_NOTE (INPUT, (g_print("Default context:\n"), print_lc(&lc)));
+#endif
+      lc.lcOptions |= CXO_MESSAGES;
+      lc.lcStatus = 0;
+      lc.lcMsgBase = WT_DEFBASE;
+      lc.lcPktRate = 50;
+      lc.lcPktData = PACKETDATA;
+      lc.lcPktMode = PACKETMODE;
+      lc.lcMoveMask = PACKETDATA;
+      lc.lcBtnUpMask = lc.lcBtnDnMask = ~0;
+      lc.lcOutOrgX = axis_x.axMin;
+      lc.lcOutOrgY = axis_y.axMin;
+      lc.lcOutExtX = axis_x.axMax - axis_x.axMin;
+      lc.lcOutExtY = axis_y.axMax - axis_y.axMin;
+      lc.lcOutExtY = -lc.lcOutExtY; /* We want Y growing downward */
+#if DEBUG_WINTAB
+      GDK_NOTE (INPUT, (g_print("context for device %d:\n", devix),
+			print_lc(&lc)));
+#endif
+      hctx = g_new (HCTX, 1);
+      if ((*hctx = (*p_WTOpenA) (GDK_WINDOW_HWND (wintab_window), &lc, TRUE)) == NULL)
+	{
+	  g_warning ("gdk_input_wintab_init: WTOpen failed");
 	  return;
 	}
-      g_object_ref (wintab_window);
+      GDK_NOTE (INPUT, g_print ("opened Wintab device %d %p\n",
+				devix, *hctx));
       
-      for (devix = 0; devix < ndevices; devix++)
-	{
-	  LOGCONTEXT lc;
-	  
-	  /* We open the Wintab device (hmm, what if there are several?) as a
-	   * system pointing device, i.e. it controls the normal Windows
-	   * cursor. This seems much more natural.
-	   */
-
-	  WTInfo (WTI_DEVICES + devix, DVC_NAME, devname);
-      
-	  WTInfo (WTI_DEVICES + devix, DVC_NCSRTYPES, &ncsrtypes);
-	  WTInfo (WTI_DEVICES + devix, DVC_FIRSTCSR, &firstcsr);
-	  WTInfo (WTI_DEVICES + devix, DVC_HARDWARE, &hardware);
-	  WTInfo (WTI_DEVICES + devix, DVC_X, &axis_x);
-	  WTInfo (WTI_DEVICES + devix, DVC_Y, &axis_y);
-	  WTInfo (WTI_DEVICES + devix, DVC_NPRESSURE, &axis_npressure);
-	  WTInfo (WTI_DEVICES + devix, DVC_ORIENTATION, axis_or);
-
-	  defcontext_done = FALSE;
-	  if (HIBYTE (specversion) > 1 || LOBYTE (specversion) >= 1)
-	    {
-	      /* Try to get device-specific default context */
-	      /* Some drivers, e.g. Aiptek, don't provide this info */
-	      if (WTInfo (WTI_DSCTXS + devix, 0, &lc) > 0)
-		defcontext_done = TRUE;
-#if DEBUG_WINTAB
-	      if (defcontext_done)
-		GDK_NOTE (INPUT, (g_print("Using device-specific default context\n")));
-	      else
-		GDK_NOTE (INPUT, (g_print("Note: Driver did not provide device specific default context info despite claiming to support version 1.1\n")));
-#endif
-	    }
-
-	  if (!defcontext_done)
-	    WTInfo (WTI_DEFSYSCTX, 0, &lc);
-#if DEBUG_WINTAB
-	  GDK_NOTE (INPUT, (g_print("Default context:\n"), print_lc(&lc)));
-#endif
-	  lc.lcOptions |= CXO_MESSAGES;
-	  lc.lcStatus = 0;
-	  lc.lcMsgBase = WT_DEFBASE;
-	  lc.lcPktRate = 50;
-	  lc.lcPktData = PACKETDATA;
-	  lc.lcPktMode = PACKETMODE;
-	  lc.lcMoveMask = PACKETDATA;
-	  lc.lcBtnUpMask = lc.lcBtnDnMask = ~0;
-	  lc.lcOutOrgX = axis_x.axMin;
-	  lc.lcOutOrgY = axis_y.axMin;
-	  lc.lcOutExtX = axis_x.axMax - axis_x.axMin;
-	  lc.lcOutExtY = axis_y.axMax - axis_y.axMin;
-	  lc.lcOutExtY = -lc.lcOutExtY; /* We want Y growing downward */
-#if DEBUG_WINTAB
-	  GDK_NOTE (INPUT, (g_print("context for device %d:\n", devix),
-			   print_lc(&lc)));
-#endif
-	  hctx = g_new (HCTX, 1);
-          if ((*hctx = WTOpen (GDK_WINDOW_HWND (wintab_window), &lc, TRUE)) == NULL)
-	    {
-	      g_warning ("gdk_input_wintab_init: WTOpen failed");
-	      return;
-	    }
-	  GDK_NOTE (INPUT, g_print ("opened Wintab device %d %p\n",
-				   devix, *hctx));
-
-	  wintab_contexts = g_list_append (wintab_contexts, hctx);
+      wintab_contexts = g_list_append (wintab_contexts, hctx);
 #if 0
-	  WTEnable (*hctx, TRUE);
+      (*p_WTEnable) (*hctx, TRUE);
 #endif
-	  WTOverlap (*hctx, TRUE);
+      (*p_WTOverlap) (*hctx, TRUE);
 
 #if DEBUG_WINTAB
-	  GDK_NOTE (INPUT, (g_print("context for device %d after WTOpen:\n", devix),
-			   print_lc(&lc)));
+      GDK_NOTE (INPUT, (g_print("context for device %d after WTOpen:\n", devix),
+			print_lc(&lc)));
 #endif
-	  /* Increase packet queue size to reduce the risk of lost packets */
-	  /* According to the specs, if the function fails we must try again */
-	  /* with a smaller queue size */
-	  GDK_NOTE (INPUT, g_print("Attempting to increase queue size\n"));
-	  for (i = 32; i >= 1; i >>= 1)
+      /* Increase packet queue size to reduce the risk of lost packets.
+       * According to the specs, if the function fails we must try again
+       * with a smaller queue size.
+       */
+      GDK_NOTE (INPUT, g_print("Attempting to increase queue size\n"));
+      for (i = 32; i >= 1; i >>= 1)
+	{
+	  if ((*p_WTQueueSizeSet) (*hctx, i))
 	    {
-	      if (WTQueueSizeSet(*hctx, i))
-		{
-		  GDK_NOTE (INPUT, g_print("Queue size set to %d\n", i));
-		  break;
-		}
+	      GDK_NOTE (INPUT, g_print("Queue size set to %d\n", i));
+	      break;
 	    }
-	  if (!i)
-	    GDK_NOTE (INPUT, g_print("Whoops, no queue size could be set\n"));
-	  for (cursorix = firstcsr; cursorix < firstcsr + ncsrtypes; cursorix++)
-	    {
+	}
+      if (!i)
+	GDK_NOTE (INPUT, g_print("Whoops, no queue size could be set\n"));
+      for (cursorix = firstcsr; cursorix < firstcsr + ncsrtypes; cursorix++)
+	{
 #ifdef DEBUG_WINTAB
 	      GDK_NOTE (INPUT, (g_print("Cursor %d:\n", cursorix), print_cursor (cursorix)));
 #endif
-	      active = FALSE;
-	      WTInfo (WTI_CURSORS + cursorix, CSR_ACTIVE, &active);
-	      if (!active)
-		continue;
+	  active = FALSE;
+	  (*p_WTInfoA) (WTI_CURSORS + cursorix, CSR_ACTIVE, &active);
+	  if (!active)
+	    continue;
 
-	      /* Wacom tablets seem to report cursors corresponding to
-	       * nonexistent pens or pucks. At least my ArtPad II
-	       * reports six cursors: a puck, pressure stylus and
-	       * eraser stylus, and then the same three again. I only
-	       * have a pressure-sensitive pen. The puck instances,
-	       * and the second instances of the styluses report
-	       * physid zero. So at least for Wacom, skip cursors with
-	       * physid zero.
-	       */
-	      WTInfo (WTI_CURSORS + cursorix, CSR_PHYSID, &physid);
-	      if (strcmp (devname, "WACOM Tablet") == 0 && physid == 0)
-		continue;
+	  /* Wacom tablets seem to report cursors corresponding to
+	   * nonexistent pens or pucks. At least my ArtPad II reports
+	   * six cursors: a puck, pressure stylus and eraser stylus,
+	   * and then the same three again. I only have a
+	   * pressure-sensitive pen. The puck instances, and the
+	   * second instances of the styluses report physid zero. So
+	   * at least for Wacom, skip cursors with physid zero.
+	   */
+	  (*p_WTInfoA) (WTI_CURSORS + cursorix, CSR_PHYSID, &physid);
+	  if (strcmp (devname, "WACOM Tablet") == 0 && physid == 0)
+	    continue;
 
-	      gdkdev = g_object_new (GDK_TYPE_DEVICE, NULL);
+	  gdkdev = g_object_new (GDK_TYPE_DEVICE, NULL);
+	  (*p_WTInfoA) (WTI_CURSORS + cursorix, CSR_NAME, csrname);
+	  gdkdev->info.name = g_strconcat (devname, " ", csrname, NULL);
+	  gdkdev->info.source = GDK_SOURCE_PEN;
+	  gdkdev->info.mode = GDK_MODE_SCREEN;
+	  gdkdev->info.has_cursor = TRUE;
+	  gdkdev->hctx = *hctx;
+	  gdkdev->cursor = cursorix;
+	  (*p_WTInfoA) (WTI_CURSORS + cursorix, CSR_PKTDATA, &gdkdev->pktdata);
+	  gdkdev->info.num_axes = 0;
+	  if (gdkdev->pktdata & PK_X)
+	    gdkdev->info.num_axes++;
+	  if (gdkdev->pktdata & PK_Y)
+	    gdkdev->info.num_axes++;
+	  if (gdkdev->pktdata & PK_NORMAL_PRESSURE)
+	    gdkdev->info.num_axes++;
+	  /* The wintab driver for the Wacom ArtPad II reports
+	   * PK_ORIENTATION in CSR_PKTDATA, but the tablet doesn't
+	   * actually sense tilt. Catch this by noticing that the
+	   * orientation axis's azimuth resolution is zero.
+	   */
+	  if ((gdkdev->pktdata & PK_ORIENTATION)
+	      && axis_or[0].axResolution == 0)
+	    gdkdev->pktdata &= ~PK_ORIENTATION;
+	  
+	  if (gdkdev->pktdata & PK_ORIENTATION)
+	    gdkdev->info.num_axes += 2; /* x and y tilt */
 
-	      WTInfo (WTI_CURSORS + cursorix, CSR_NAME, csrname);
-	      gdkdev->info.name = g_strconcat (devname, " ", csrname, NULL);
-	      gdkdev->info.source = GDK_SOURCE_PEN;
-	      gdkdev->info.mode = GDK_MODE_SCREEN;
-	      gdkdev->info.has_cursor = TRUE;
-	      gdkdev->hctx = *hctx;
-	      gdkdev->cursor = cursorix;
-	      WTInfo (WTI_CURSORS + cursorix, CSR_PKTDATA, &gdkdev->pktdata);
-	      gdkdev->info.num_axes = 0;
-	      if (gdkdev->pktdata & PK_X)
-		gdkdev->info.num_axes++;
-	      if (gdkdev->pktdata & PK_Y)
-		gdkdev->info.num_axes++;
-	      if (gdkdev->pktdata & PK_NORMAL_PRESSURE)
-		gdkdev->info.num_axes++;
-	      /* The wintab driver for the Wacom ArtPad II reports
-	       * PK_ORIENTATION in CSR_PKTDATA, but the tablet doesn't
-	       * actually sense tilt. Catch this by noticing that the
-	       * orientation axis's azimuth resolution is zero.
-	       */
-	      if ((gdkdev->pktdata & PK_ORIENTATION)
-		  && axis_or[0].axResolution == 0)
-		gdkdev->pktdata &= ~PK_ORIENTATION;
-
-	      if (gdkdev->pktdata & PK_ORIENTATION)
-		gdkdev->info.num_axes += 2; /* x and y tilt */
-	      WTInfo (WTI_CURSORS + cursorix, CSR_NPBTNMARKS, &gdkdev->npbtnmarks);
-	      gdkdev->info.axes = g_new (GdkDeviceAxis, gdkdev->info.num_axes);
-	      gdkdev->axes = g_new (GdkAxisInfo, gdkdev->info.num_axes);
-	      gdkdev->last_axis_data = g_new (gint, gdkdev->info.num_axes);
-	      
-	      k = 0;
-	      if (gdkdev->pktdata & PK_X)
-		{
-		  gdkdev->axes[k].xresolution =
-		    gdkdev->axes[k].resolution = axis_x.axResolution / 65535.;
-		  gdkdev->axes[k].xmin_value =
-		    gdkdev->axes[k].min_value = axis_x.axMin;
-		  gdkdev->axes[k].xmax_value =
-		    gdkdev->axes[k].max_value = axis_x.axMax;
-		  gdkdev->info.axes[k].use = GDK_AXIS_X;
-		  gdkdev->info.axes[k].min = axis_x.axMin;
-		  gdkdev->info.axes[k].max = axis_x.axMax;
-		  k++;
-		}
-	      if (gdkdev->pktdata & PK_Y)
-		{
-		  gdkdev->axes[k].xresolution =
-		    gdkdev->axes[k].resolution = axis_y.axResolution / 65535.;
-		  gdkdev->axes[k].xmin_value =
-		    gdkdev->axes[k].min_value = axis_y.axMin;
-		  gdkdev->axes[k].xmax_value =
-		    gdkdev->axes[k].max_value = axis_y.axMax;
-		  gdkdev->info.axes[k].use = GDK_AXIS_Y;
-		  gdkdev->info.axes[k].min = axis_y.axMin;
-		  gdkdev->info.axes[k].max = axis_y.axMax;
-		  k++;
-		}
-	      if (gdkdev->pktdata & PK_NORMAL_PRESSURE)
-		{
-		  gdkdev->axes[k].xresolution =
-		    gdkdev->axes[k].resolution = axis_npressure.axResolution / 65535.;
-		  gdkdev->axes[k].xmin_value =
-		    gdkdev->axes[k].min_value = axis_npressure.axMin;
-		  gdkdev->axes[k].xmax_value =
-		    gdkdev->axes[k].max_value = axis_npressure.axMax;
-		  gdkdev->info.axes[k].use = GDK_AXIS_PRESSURE;
-		  /* GIMP seems to expect values in the range 0-1 */
-		  gdkdev->info.axes[k].min = 0.0; /*axis_npressure.axMin;*/
-		  gdkdev->info.axes[k].max = 1.0; /*axis_npressure.axMax;*/
-		  k++;
-		}
-	      if (gdkdev->pktdata & PK_ORIENTATION)
-		{
-		  GdkAxisUse axis;
-
-		  gdkdev->orientation_axes[0] = axis_or[0];
-		  gdkdev->orientation_axes[1] = axis_or[1];
-		  for (axis = GDK_AXIS_XTILT; axis <= GDK_AXIS_YTILT; axis++)
-		    {
-		      /* Wintab gives us aximuth and altitude, which
-		       * we convert to x and y tilt in the -1000..1000 range
-		       */
-		      gdkdev->axes[k].xresolution =
-			gdkdev->axes[k].resolution = 1000;
-		      gdkdev->axes[k].xmin_value =
-			gdkdev->axes[k].min_value = -1000;
-		      gdkdev->axes[k].xmax_value =
-			gdkdev->axes[k].max_value = 1000;
-		      gdkdev->info.axes[k].use = axis;
-		      gdkdev->info.axes[k].min = -1000;
-		      gdkdev->info.axes[k].max = 1000;
-		      k++;
-		    }
-		}
-	      gdkdev->info.num_keys = 0;
-	      gdkdev->info.keys = NULL;
-	      GDK_NOTE (INPUT,
-			g_print ("device: (%d) %s axes: %d\n",
-				 cursorix,
-				 gdkdev->info.name,
-				 gdkdev->info.num_axes));
-	      for (i = 0; i < gdkdev->info.num_axes; i++)
-		GDK_NOTE (INPUT,
-			  g_print ("... axis %d: %d--%d@%d (%d--%d@%d)\n",
-				   i,
-				   gdkdev->axes[i].xmin_value, 
-				   gdkdev->axes[i].xmax_value, 
-				   gdkdev->axes[i].xresolution, 
-				   gdkdev->axes[i].min_value, 
-				   gdkdev->axes[i].max_value, 
-				   gdkdev->axes[i].resolution));
-	      _gdk_input_devices = g_list_append (_gdk_input_devices,
-						 gdkdev);
+	  gdkdev->info.axes = g_new (GdkDeviceAxis, gdkdev->info.num_axes);
+	  gdkdev->axes = g_new (GdkAxisInfo, gdkdev->info.num_axes);
+	  gdkdev->last_axis_data = g_new (gint, gdkdev->info.num_axes);
+	  
+	  k = 0;
+	  if (gdkdev->pktdata & PK_X)
+	    {
+	      gdkdev->axes[k].resolution = axis_x.axResolution / 65535.;
+	      gdkdev->axes[k].min_value = axis_x.axMin;
+	      gdkdev->axes[k].max_value = axis_x.axMax;
+	      gdkdev->info.axes[k].use = GDK_AXIS_X;
+	      gdkdev->info.axes[k].min = axis_x.axMin;
+	      gdkdev->info.axes[k].max = axis_x.axMax;
+	      k++;
 	    }
+	  if (gdkdev->pktdata & PK_Y)
+	    {
+	      gdkdev->axes[k].resolution = axis_y.axResolution / 65535.;
+	      gdkdev->axes[k].min_value = axis_y.axMin;
+	      gdkdev->axes[k].max_value = axis_y.axMax;
+	      gdkdev->info.axes[k].use = GDK_AXIS_Y;
+	      gdkdev->info.axes[k].min = axis_y.axMin;
+	      gdkdev->info.axes[k].max = axis_y.axMax;
+	      k++;
+	    }
+	  if (gdkdev->pktdata & PK_NORMAL_PRESSURE)
+	    {
+	      gdkdev->axes[k].resolution = axis_npressure.axResolution / 65535.;
+	      gdkdev->axes[k].min_value = axis_npressure.axMin;
+	      gdkdev->axes[k].max_value = axis_npressure.axMax;
+	      gdkdev->info.axes[k].use = GDK_AXIS_PRESSURE;
+	      /* GIMP seems to expect values in the range 0-1 */
+	      gdkdev->info.axes[k].min = 0.0; /*axis_npressure.axMin;*/
+	      gdkdev->info.axes[k].max = 1.0; /*axis_npressure.axMax;*/
+	      k++;
+	    }
+	  if (gdkdev->pktdata & PK_ORIENTATION)
+	    {
+	      GdkAxisUse axis;
+	      
+	      gdkdev->orientation_axes[0] = axis_or[0];
+	      gdkdev->orientation_axes[1] = axis_or[1];
+	      for (axis = GDK_AXIS_XTILT; axis <= GDK_AXIS_YTILT; axis++)
+		{
+		  /* Wintab gives us aximuth and altitude, which
+		   * we convert to x and y tilt in the -1000..1000 range
+		   */
+		  gdkdev->axes[k].resolution = 1000;
+		  gdkdev->axes[k].min_value = -1000;
+		  gdkdev->axes[k].max_value = 1000;
+		  gdkdev->info.axes[k].use = axis;
+		  gdkdev->info.axes[k].min = -1000;
+		  gdkdev->info.axes[k].max = 1000;
+		  k++;
+		}
+	    }
+	  gdkdev->info.num_keys = 0;
+	  gdkdev->info.keys = NULL;
+	  GDK_NOTE (INPUT, g_print ("device: (%d) %s axes: %d\n",
+				    cursorix,
+				    gdkdev->info.name,
+				    gdkdev->info.num_axes));
+	  for (i = 0; i < gdkdev->info.num_axes; i++)
+	    GDK_NOTE (INPUT, g_print ("... axis %d: %d--%d@%d\n",
+				      i,
+				      gdkdev->axes[i].min_value, 
+				      gdkdev->axes[i].max_value, 
+				      gdkdev->axes[i].resolution));
+	  _gdk_input_devices = g_list_append (_gdk_input_devices,
+					      gdkdev);
 	}
     }
 }
@@ -629,8 +626,6 @@ decode_tilt (gint   *axis_data,
   /* Y tilt */
   axis_data[1] = sin (az) * cos (el) * 1000;
 }
-
-#endif /* HAVE_WINTAB */
 
 static void
 gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
@@ -803,8 +798,6 @@ get_modifier_key_state (void)
   return state;
 }
 
-#ifdef HAVE_WINTAB
-
 static guint ignore_core_timer = 0;
 
 static gboolean
@@ -839,17 +832,15 @@ set_ignore_core (gboolean ignore)
     }
   else
     if (!ignore_core_timer)
-      ignore_core_timer = g_timeout_add (PROXIMITY_OUT_DELAY,
+      ignore_core_timer = gdk_threads_add_timeout (PROXIMITY_OUT_DELAY,
 					 ignore_core_timefunc, NULL);
 }
-#endif /* HAVE_WINTAB */
 
 gboolean 
 _gdk_input_other_event (GdkEvent  *event,
 			MSG       *msg,
 			GdkWindow *window)
 {
-#ifdef HAVE_WINTAB
   GdkDisplay *display;
   GdkWindowObject *obj, *grab_obj;
   GdkInputWindow *input_window;
@@ -881,12 +872,12 @@ _gdk_input_other_event (GdkEvent  *event,
   display = gdk_drawable_get_display (window);
 
   GDK_NOTE (EVENTS_OR_INPUT,
-	    g_print ("gdk_input_win32_other_event: window=%p %+d%+d\n",
+	    g_print ("_gdk_input_other_event: window=%p %+d%+d\n",
 		     GDK_WINDOW_HWND (window), x, y));
   
   if (msg->message == WT_PACKET)
     {
-      if (!WTPacket ((HCTX) msg->lParam, msg->wParam, &packet))
+      if (!(*p_WTPacket) ((HCTX) msg->lParam, msg->wParam, &packet))
 	return FALSE;
     }
 
@@ -896,7 +887,8 @@ _gdk_input_other_event (GdkEvent  *event,
     {
     case WT_PACKET:
       /* Don't produce any button or motion events while a window is being
-       * moved or resized, see bug #151090. */
+       * moved or resized, see bug #151090.
+       */
       if (_sizemove_in_progress)
 	{
 	  GDK_NOTE (EVENTS_OR_INPUT, g_print ("... ignored when moving/sizing\n"));
@@ -1002,7 +994,7 @@ _gdk_input_other_event (GdkEvent  *event,
       /* Now we can check if the window wants the event, and
        * propagate if necessary.
        */
-    dijkstra:
+    loop:
       if (!GDK_WINDOW_IMPL_WIN32 (obj->impl)->extension_events_selected
 	  || !(obj->extension_events & masktest))
 	{
@@ -1032,7 +1024,7 @@ _gdk_input_other_event (GdkEvent  *event,
 	  y = pt.y;
 	  GDK_NOTE (EVENTS_OR_INPUT, g_print ("... propagating to %p %+d%+d\n",
 					      GDK_WINDOW_HWND (window), x, y));
-	  goto dijkstra;
+	  goto loop;
 	}
 
       input_window = _gdk_input_window_find (window);
@@ -1127,7 +1119,6 @@ _gdk_input_other_event (GdkEvent  *event,
 			  "in" : "out")));
       return TRUE;
     }
-#endif
   return FALSE;
 }
 
@@ -1135,11 +1126,9 @@ gboolean
 _gdk_input_enable_window (GdkWindow        *window,
 			  GdkDevicePrivate *gdkdev)
 {
-#ifdef HAVE_SOME_XINPUT
   GdkWindowImplWin32 *impl = GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (window)->impl);
 
   impl->extension_events_selected = TRUE;
-#endif
 
   return TRUE;
 }
@@ -1148,11 +1137,9 @@ gboolean
 _gdk_input_disable_window (GdkWindow        *window,
 			   GdkDevicePrivate *gdkdev)
 {
-#ifdef HAVE_SOME_XINPUT
   GdkWindowImplWin32 *impl = GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (window)->impl);
 
   impl->extension_events_selected = FALSE;
-#endif
 
   return TRUE;
 }
@@ -1164,7 +1151,6 @@ _gdk_input_grab_pointer (GdkWindow    *window,
 			 GdkWindow    *confine_to,
 			 guint32       time)
 {
-#ifdef HAVE_SOME_XINPUT
   GdkInputWindow *input_window, *new_window;
   gboolean need_ungrab;
   GdkDevicePrivate *gdkdev;
@@ -1174,7 +1160,7 @@ _gdk_input_grab_pointer (GdkWindow    *window,
   new_window = NULL;
   need_ungrab = FALSE;
 
-  GDK_NOTE (INPUT, g_print ("gdk_input_win32_grab_pointer: %p %d %p\n",
+  GDK_NOTE (INPUT, g_print ("_gdk_input_grab_pointer: %p %d %p\n",
 			   GDK_WINDOW_HWND (window),
 			   owner_events,
 			   (confine_to ? GDK_WINDOW_HWND (confine_to) : 0)));
@@ -1251,7 +1237,6 @@ _gdk_input_grab_pointer (GdkWindow    *window,
 	}
 #endif
     }
-#endif
 
   return GDK_GRAB_SUCCESS;
 }
@@ -1259,12 +1244,11 @@ _gdk_input_grab_pointer (GdkWindow    *window,
 void 
 _gdk_input_ungrab_pointer (guint32 time)
 {
-#ifdef HAVE_SOME_XINPUT
   GdkInputWindow *input_window;
   GdkDevicePrivate *gdkdev;
   GList *tmp_list;
 
-  GDK_NOTE (INPUT, g_print ("gdk_input_win32_ungrab_pointer\n"));
+  GDK_NOTE (INPUT, g_print ("_gdk_input_ungrab_pointer\n"));
 
   tmp_list = _gdk_input_windows;
   while (tmp_list)
@@ -1292,7 +1276,6 @@ _gdk_input_ungrab_pointer (guint32 time)
 	}
     }
   x_grab_window = NULL;
-#endif
 }
 
 gboolean
@@ -1356,7 +1339,6 @@ gdk_device_get_state (GdkDevice       *device,
     }
 }
 
-#ifdef HAVE_WINTAB
 void
 _gdk_input_set_tablet_active (void)
 {
@@ -1376,11 +1358,10 @@ _gdk_input_set_tablet_active (void)
   while (tmp_list)
     {
       hctx = (HCTX *) (tmp_list->data);
-      WTOverlap (*hctx, TRUE);
+      (*p_WTOverlap) (*hctx, TRUE);
       tmp_list = tmp_list->next;
     }
 }
-#endif /* HAVE_WINTAB */
 
 void 
 _gdk_input_init (GdkDisplay *display)
@@ -1389,7 +1370,6 @@ _gdk_input_init (GdkDisplay *display)
   _gdk_input_devices = NULL;
 
   _gdk_init_input_core (display);
-#ifdef HAVE_WINTAB
 #ifdef WINTAB_NO_LAZY_INIT
   /* Normally, Wintab is only initialized when the application performs
    * an action that requires it, such as enabling extended input events
@@ -1397,7 +1377,6 @@ _gdk_input_init (GdkDisplay *display)
    */
   _gdk_input_wintab_init_check ();
 #endif /* WINTAB_NO_LAZY_INIT */
-#endif /* HAVE_WINTAB */
 
   _gdk_input_devices = g_list_append (_gdk_input_devices, display->core_pointer);
 }

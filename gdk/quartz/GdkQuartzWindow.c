@@ -1,6 +1,6 @@
 /* GdkQuartzWindow.m
  *
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,6 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 
 #import "GdkQuartzWindow.h"
 #include "gdkwindow-quartz.h"
@@ -40,6 +39,13 @@
   return NO;
 }
 
+-(void)windowWillMiniaturize:(NSNotification *)aNotification
+{
+  GdkWindow *window = [[self contentView] gdkWindow];
+
+  _gdk_quartz_window_detach_from_parent (window);
+}
+
 -(void)windowDidMiniaturize:(NSNotification *)aNotification
 {
   GdkWindow *window = [[self contentView] gdkWindow];
@@ -52,6 +58,8 @@
 {
   GdkWindow *window = [[self contentView] gdkWindow];
 
+  _gdk_quartz_window_attach_to_parent (window);
+
   gdk_synthesize_window_state (window, GDK_WINDOW_STATE_ICONIFIED, 0);
 }
 
@@ -59,14 +67,74 @@
 {
   GdkWindow *window = [[self contentView] gdkWindow];
 
-  _gdk_quartz_update_focus_window (window, TRUE);
+  _gdk_quartz_events_update_focus_window (window, TRUE);
 }
 
 -(void)windowDidResignKey:(NSNotification *)aNotification
 {
   GdkWindow *window = [[self contentView] gdkWindow];
 
-  _gdk_quartz_update_focus_window (window, FALSE);
+  _gdk_quartz_events_update_focus_window (window, FALSE);
+}
+
+-(void)windowDidBecomeMain:(NSNotification *)aNotification
+{
+  GdkWindow *window = [[self contentView] gdkWindow];
+
+  if (![self isVisible])
+    {
+      /* Note: This is a hack needed because for unknown reasons, hidden
+       * windows get shown when clicking the dock icon when the application
+       * is not already active.
+       */
+      [self orderOut:nil];
+      return;
+    }
+
+  _gdk_quartz_window_did_become_main (window);
+}
+
+-(void)windowDidResignMain:(NSNotification *)aNotification
+{
+  GdkWindow *window;
+
+  window = [[self contentView] gdkWindow];
+  _gdk_quartz_window_did_resign_main (window);
+}
+
+/* Used in combination with NSLeftMouseUp in sendEvent to keep track
+ * of when the window is being moved with the mouse.
+ */
+-(void)windowWillMove:(NSNotification *)aNotification
+{
+  inMove = YES;
+}
+
+-(void)sendEvent:(NSEvent *)event
+{
+  switch ([event type])
+    {
+    case NSLeftMouseUp:
+      inManualMove = NO;
+      inManualResize = NO;
+      inMove = NO;
+      break;
+
+    case NSLeftMouseDragged:
+      if ([self trackManualMove] || [self trackManualResize])
+        return;
+      break;
+
+    default:
+      break;
+    }
+
+  [super sendEvent:event];
+}
+
+-(BOOL)isInMove
+{
+  return inMove;
 }
 
 -(void)windowDidMove:(NSNotification *)aNotification
@@ -77,8 +145,16 @@
   GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
   GdkEvent *event;
 
+  /* Ignore new position during showing/hiding the window, otherwise we
+   * would get the off-screen position that is used for hidden windows to
+   * get reliable MouseEntered events when showing them again. See comments
+   * in show() and hide().
+   */
+  if (inShowOrHide)
+    return;
+
   private->x = content_rect.origin.x;
-  private->y = _gdk_quartz_get_inverted_screen_y (content_rect.origin.y) - impl->height;
+  private->y = _gdk_quartz_window_get_inverted_screen_y (content_rect.origin.y + content_rect.size.height);
 
   /* Synthesize a configure event */
   event = gdk_event_new (GDK_CONFIGURE);
@@ -102,8 +178,9 @@
   impl->width = content_rect.size.width;
   impl->height = content_rect.size.height;
 
-  /* Synthesize a configure event */
+  [[self contentView] setFrame:NSMakeRect (0, 0, impl->width, impl->height)];
 
+  /* Synthesize a configure event */
   event = gdk_event_new (GDK_CONFIGURE);
   event->configure.window = g_object_ref (window);
   event->configure.x = private->x;
@@ -112,13 +189,6 @@
   event->configure.height = impl->height;
 
   _gdk_event_queue_append (gdk_display_get_default (), event);
-
-  /* Update tracking rectangle */
-  [[self contentView] removeTrackingRect:impl->tracking_rect];
-  impl->tracking_rect = [impl->view addTrackingRect:NSMakeRect(0, 0, impl->width, impl->height) 
-			                      owner:impl->view
-			                   userData:nil
-			               assumeInside:NO];
 }
 
 -(id)initWithContentRect:(NSRect)contentRect styleMask:(unsigned int)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag
@@ -128,12 +198,7 @@
 	                    backing:backingType
 	                      defer:flag];
 
-
-  /* A possible modification here would be to only accept mouse moved events
-   * if any of the child GdkWindows are interested in mouse moved events.
-   */
   [self setAcceptsMouseMovedEvents:YES];
-
   [self setDelegate:self];
   [self setReleasedWhenClosed:YES];
 
@@ -176,13 +241,14 @@
   GdkWindowObject *private = (GdkWindowObject *)window;
   GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
 
-  /* FIXME: Is this right? If so, the switch shouldn't be needed. Need
-   * this + some tweaking to the event/grab code to get menus
-   * working...
-   */
-  /*if (private->window_type == GDK_WINDOW_TEMP)
+  if (!private->accept_focus)
     return NO;
-  */
+
+  /* Popup windows should not be able to get focused in the window
+   * manager sense, it's only handled through grabs.
+   */
+  if (private->window_type == GDK_WINDOW_TEMP)
+    return NO;
 
   switch (impl->type_hint)
     {
@@ -207,6 +273,185 @@
   
   return YES;
 }
+
+- (void)showAndMakeKey:(BOOL)makeKey
+{
+  GdkWindow *window = [[self contentView] gdkWindow];
+  GdkWindowObject *private = (GdkWindowObject *)window;
+  GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
+  gboolean was_hidden;
+  int requested_x = 0, requested_y = 0;
+
+  inShowOrHide = YES;
+  was_hidden = FALSE;
+
+  if (!GDK_WINDOW_IS_MAPPED (window))
+    {
+      NSRect content_rect;
+      NSRect frame_rect;
+
+      was_hidden = TRUE;
+
+      /* We move the window in place if it's not mapped. See comment in
+       * hide().
+       */
+      content_rect =
+        NSMakeRect (private->x,
+                    _gdk_quartz_window_get_inverted_screen_y (private->y) - impl->height,
+                    impl->width, impl->height);
+      frame_rect = [impl->toplevel frameRectForContentRect:content_rect];
+      [impl->toplevel setFrame:frame_rect display:NO];
+
+      requested_x = frame_rect.origin.x;
+      requested_y = frame_rect.origin.y;
+    }
+
+  if (makeKey)
+    [impl->toplevel makeKeyAndOrderFront:impl->toplevel];
+  else
+    [impl->toplevel orderFront:nil];
+
+  inShowOrHide = NO;
+
+  /* When the window manager didn't allow our request, update the position
+   * to what it really ended up as.
+   */
+  if (was_hidden)
+    {
+      NSRect frame_rect;
+
+      frame_rect = [impl->toplevel frame];
+      if (requested_x != frame_rect.origin.x || requested_y != frame_rect.origin.y)
+        {
+          [self windowDidMove:nil];
+        }
+    }
+}
+
+- (void)hide
+{
+  GdkWindow *window = [[self contentView] gdkWindow];
+  GdkWindowObject *private = (GdkWindowObject *)window;
+  GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
+  NSRect content_rect;
+  NSRect frame_rect;
+
+  inShowOrHide = YES;
+
+  /* We move the window away when hiding, to make it possible to move it in
+   * place when showing to get reliable tracking rect events (which are used
+   * to generate crossing events). We have to do this, probably a bug in
+   * quartz.
+   */
+  content_rect = NSMakeRect (-500 - impl->width, -500 - impl->height,
+                             impl->width, impl->height);
+  frame_rect = [impl->toplevel frameRectForContentRect:content_rect];
+  [impl->toplevel setFrame:frame_rect display:NO];
+
+  [impl->toplevel orderOut:nil];
+
+  inShowOrHide = NO;
+}
+
+- (BOOL)trackManualMove
+{
+  NSPoint currentLocation;
+  NSPoint newOrigin;
+  NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
+  NSRect windowFrame = [self frame];
+
+  if (!inManualMove)
+    return NO;
+
+  currentLocation = [self convertBaseToScreen:[self mouseLocationOutsideOfEventStream]];
+  newOrigin.x = currentLocation.x - initialMoveLocation.x;
+  newOrigin.y = currentLocation.y - initialMoveLocation.y;
+
+  /* Clamp vertical position to below the menu bar. */
+  if (newOrigin.y + windowFrame.size.height > screenFrame.origin.y + screenFrame.size.height)
+    newOrigin.y = screenFrame.origin.y + screenFrame.size.height - windowFrame.size.height;
+
+  [self setFrameOrigin:newOrigin];
+
+  return YES;
+}
+
+-(void)beginManualMove
+{
+  NSRect frame = [self frame];
+
+  if (inMove || inManualMove || inManualResize)
+    return;
+
+  inManualMove = YES;
+
+  initialMoveLocation = [self convertBaseToScreen:[self mouseLocationOutsideOfEventStream]];
+  initialMoveLocation.x -= frame.origin.x;
+  initialMoveLocation.y -= frame.origin.y;
+}
+
+- (BOOL)trackManualResize
+{
+  NSPoint currentLocation;
+  NSRect newFrame;
+  float dx, dy;
+  NSSize min_size;
+
+  if (!inManualResize || inTrackManualResize)
+    return NO;
+
+  inTrackManualResize = YES;
+
+  currentLocation = [self convertBaseToScreen:[self mouseLocationOutsideOfEventStream]];
+  currentLocation.x -= initialResizeFrame.origin.x;
+  currentLocation.y -= initialResizeFrame.origin.y;
+
+  dx = currentLocation.x - initialResizeLocation.x;
+  dy = -(currentLocation.y - initialResizeLocation.y);
+
+  newFrame = initialResizeFrame;
+  newFrame.size.width = initialResizeFrame.size.width + dx;
+  newFrame.size.height = initialResizeFrame.size.height + dy;
+
+  min_size = [self contentMinSize];
+  if (newFrame.size.width < min_size.width)
+    newFrame.size.width = min_size.width;
+  if (newFrame.size.height < min_size.height)
+    newFrame.size.height = min_size.height;
+
+  /* We could also apply aspect ratio:
+     newFrame.size.height = newFrame.size.width / [self aspectRatio].width * [self aspectRatio].height;
+  */
+
+  dy = newFrame.size.height - initialResizeFrame.size.height;
+
+  newFrame.origin.x = initialResizeFrame.origin.x;
+  newFrame.origin.y = initialResizeFrame.origin.y - dy;
+
+  [self setFrame:newFrame display:YES];
+
+  /* Let the resizing be handled by GTK+. */
+  if (g_main_context_pending (NULL))
+    g_main_context_iteration (NULL, FALSE);
+
+  inTrackManualResize = NO;
+
+  return YES;
+}
+
+-(void)beginManualResize
+{
+  if (inMove || inManualMove || inManualResize)
+    return;
+
+  inManualResize = YES;
+
+  initialResizeFrame = [self frame];
+  initialResizeLocation = [self convertBaseToScreen:[self mouseLocationOutsideOfEventStream]];
+  initialResizeLocation.x -= initialResizeFrame.origin.x;
+  initialResizeLocation.y -= initialResizeFrame.origin.y;
+}
+
 
 static GdkDragContext *current_context = NULL;
 
@@ -264,7 +509,8 @@ update_context_from_dragging_info (id <NSDraggingInfo> sender)
 
 - (void)draggingEnded:(id <NSDraggingInfo>)sender
 {
-  g_object_unref (current_context);
+  if (current_context)
+    g_object_unref (current_context);
   current_context = NULL;
 }
 
@@ -298,7 +544,7 @@ update_context_from_dragging_info (id <NSDraggingInfo> sender)
   event.dnd.context = current_context;
   event.dnd.time = GDK_CURRENT_TIME;
   event.dnd.x_root = screen_point.x;
-  event.dnd.y_root = _gdk_quartz_get_inverted_screen_y (screen_point.y);
+  event.dnd.y_root = _gdk_quartz_window_get_inverted_screen_y (screen_point.y);
 
   (*_gdk_event_func) (&event, _gdk_event_data);
 
@@ -321,7 +567,7 @@ update_context_from_dragging_info (id <NSDraggingInfo> sender)
   event.dnd.context = current_context;
   event.dnd.time = GDK_CURRENT_TIME;
   event.dnd.x_root = screen_point.x;
-  event.dnd.y_root = _gdk_quartz_get_inverted_screen_y (screen_point.y);
+  event.dnd.y_root = _gdk_quartz_window_get_inverted_screen_y (screen_point.y);
 
   (*_gdk_event_func) (&event, _gdk_event_data);
 

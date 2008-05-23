@@ -477,7 +477,7 @@ gtk_printer_set_state_message (GtkPrinter  *printer,
  * gtk_printer_get_location:
  * @printer: a #GtkPrinter
  * 
- * Returns a  description of the location of the printer.
+ * Returns a description of the location of the printer.
  * 
  * Return value: the location of @printer
  *
@@ -582,9 +582,21 @@ gtk_printer_set_job_count (GtkPrinter *printer,
   return TRUE;
 }
 
+/**
+ * gtk_printer_has_details:
+ * @printer: a #GtkPrinter
+ * 
+ * Returns whether the printer details are available.
+ * 
+ * Return value: %TRUE if @printer details are available
+ *
+ * Since: 2.12
+ */
 gboolean
-_gtk_printer_has_details (GtkPrinter *printer)
+gtk_printer_has_details (GtkPrinter *printer)
 {
+  g_return_val_if_fail (GTK_IS_PRINTER (printer), FALSE);
+
   return printer->priv->has_details;
 }
 
@@ -727,10 +739,23 @@ gtk_printer_set_is_default (GtkPrinter *printer,
   printer->priv->is_default = TRUE;
 }
 
+/**
+ * gtk_printer_request_details:
+ * @printer: a #GtkPrinter
+ * 
+ * Requests the printer details. When the details are available,
+ * the #GtkPrinter::details-acquired signal will be emitted on @printer.
+ * 
+ * Since: 2.12
+ */
 void
-_gtk_printer_request_details (GtkPrinter *printer)
+gtk_printer_request_details (GtkPrinter *printer)
 {
-  GtkPrintBackendClass *backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
+  GtkPrintBackendClass *backend_class;
+
+  g_return_if_fail (GTK_IS_PRINTER (printer));
+
+  backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
   backend_class->printer_request_details (printer);
 }
 
@@ -784,11 +809,26 @@ _gtk_printer_create_cairo_surface (GtkPrinter       *printer,
 						      width, height, cache_io);
 }
 
+/**
+ * gtk_printer_list_papers:
+ * @printer: a #GtkPrinter
+ * 
+ * Lists all the paper sizes @printer supports.
+ * This will return and empty list unless the printer's details are 
+ * available, see gtk_printer_has_details() and gtk_printer_request_details().
+ * 
+ * Return value: a newly allocated list of newly allocated #GtkPageSetup s.
+ *
+ * Since: 2.12
+ */
 GList  *
-_gtk_printer_list_papers (GtkPrinter *printer)
+gtk_printer_list_papers (GtkPrinter *printer)
 {
-  GtkPrintBackendClass *backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
+  GtkPrintBackendClass *backend_class;
 
+  g_return_val_if_fail (GTK_IS_PRINTER (printer), NULL);
+
+  backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
   return backend_class->printer_list_papers (printer);
 }
 
@@ -804,11 +844,31 @@ _gtk_printer_get_hard_margins (GtkPrinter *printer,
   backend_class->printer_get_hard_margins (printer, top, bottom, left, right);
 }
 
+/**
+ * gtk_printer_get_capabilities:
+ * @printer: a #GtkPrinter
+ * 
+ * Returns the printer's capabilities.
+ *
+ * This is useful when you're using #GtkPrintUnixDialog's manual-capabilities 
+ * setting and need to know which settings the printer can handle and which 
+ * you must handle yourself.
+ *
+ * This will return 0 unless the printer's details are available, see
+ * gtk_printer_has_details() and gtk_printer_request_details().
+ *  *
+ * Return value: the printer's capabilities
+ *
+ * Since: 2.12
+ */
 GtkPrintCapabilities
-_gtk_printer_get_capabilities (GtkPrinter *printer)
+gtk_printer_get_capabilities (GtkPrinter *printer)
 {
-  GtkPrintBackendClass *backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
+  GtkPrintBackendClass *backend_class;
 
+  g_return_val_if_fail (GTK_IS_PRINTER (printer), 0);
+
+  backend_class = GTK_PRINT_BACKEND_GET_CLASS (printer->priv->backend);
   return backend_class->printer_get_capabilities (printer);
 }
 
@@ -1008,6 +1068,32 @@ gtk_enumerate_printers (GtkPrinterFunc func,
       g_main_loop_run (printer_list->loop);
       GDK_THREADS_ENTER ();  
     }
+}
+
+GType
+gtk_print_capabilities_get_type (void)
+{
+  static GType etype = 0;
+
+  if (G_UNLIKELY (etype == 0))
+    {
+      static const GFlagsValue values[] = {
+        { GTK_PRINT_CAPABILITY_PAGE_SET, "GTK_PRINT_CAPABILITY_PAGE_SET", "page-set" },
+        { GTK_PRINT_CAPABILITY_COPIES, "GTK_PRINT_CAPABILITY_COPIES", "copies" },
+        { GTK_PRINT_CAPABILITY_COLLATE, "GTK_PRINT_CAPABILITY_COLLATE", "collate" },
+        { GTK_PRINT_CAPABILITY_REVERSE, "GTK_PRINT_CAPABILITY_REVERSE", "reverse" },
+        { GTK_PRINT_CAPABILITY_SCALE, "GTK_PRINT_CAPABILITY_SCALE", "scale" },
+        { GTK_PRINT_CAPABILITY_GENERATE_PDF, "GTK_PRINT_CAPABILITY_GENERATE_PDF", "generate-pdf" },
+        { GTK_PRINT_CAPABILITY_GENERATE_PS, "GTK_PRINT_CAPABILITY_GENERATE_PS", "generate-ps" },
+        { GTK_PRINT_CAPABILITY_PREVIEW, "GTK_PRINT_CAPABILITY_PREVIEW", "preview" },
+	{ GTK_PRINT_CAPABILITY_NUMBER_UP, "GTK_PRINT_CAPABILITY_NUMBER_UP", "number-up"},
+        { 0, NULL, NULL }
+      };
+
+      etype = g_flags_register_static (I_("GtkPrintCapabilities"), values);
+    }
+
+  return etype;
 }
 
 

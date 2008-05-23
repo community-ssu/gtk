@@ -112,6 +112,7 @@ static void gtk_tree_view_column_cell_layout_clear_attributes   (GtkCellLayout  
 static void gtk_tree_view_column_cell_layout_reorder            (GtkCellLayout         *cell_layout,
                                                                  GtkCellRenderer       *cell,
                                                                  gint                   position);
+static GList *gtk_tree_view_column_cell_layout_get_cells        (GtkCellLayout         *cell_layout);
 
 /* Button handling code */
 static void gtk_tree_view_column_create_button                 (GtkTreeViewColumn       *tree_column);
@@ -345,6 +346,7 @@ gtk_tree_view_column_cell_layout_init (GtkCellLayoutIface *iface)
   iface->set_cell_data_func = gtk_tree_view_column_cell_layout_set_cell_data_func;
   iface->clear_attributes = gtk_tree_view_column_cell_layout_clear_attributes;
   iface->reorder = gtk_tree_view_column_cell_layout_reorder;
+  iface->get_cells = gtk_tree_view_column_cell_layout_get_cells;
 }
 
 static void
@@ -945,16 +947,22 @@ gtk_tree_view_column_update_button (GtkTreeViewColumn *tree_column)
 					  NULL);
 
   if (tree_column->show_sort_indicator
-      || (sort_column_id >= 0 && sort_column_id == tree_column->sort_column_id))
+      && (sort_column_id >= 0 && sort_column_id == tree_column->sort_column_id))
     {
+      gboolean alternative;
+
+      g_object_get (gtk_widget_get_settings (tree_column->tree_view),
+		    "gtk-alternative-sort-arrows", &alternative,
+		    NULL);
+
       switch (tree_column->sort_order)
         {
 	  case GTK_SORT_ASCENDING:
-	    arrow_type = GTK_ARROW_DOWN;
+	    arrow_type = alternative ? GTK_ARROW_UP : GTK_ARROW_DOWN;
 	    break;
 
 	  case GTK_SORT_DESCENDING:
-	    arrow_type = GTK_ARROW_UP;
+	    arrow_type = alternative ? GTK_ARROW_DOWN : GTK_ARROW_UP;
 	    break;
 
 	  default:
@@ -1578,6 +1586,12 @@ gtk_tree_view_column_get_cell_renderers (GtkTreeViewColumn *tree_column)
     }
 
   return retval;
+}
+
+static GList *
+gtk_tree_view_column_cell_layout_get_cells (GtkCellLayout *layout)
+{
+  return gtk_tree_view_column_get_cell_renderers (GTK_TREE_VIEW_COLUMN (layout));
 }
 
 /**
@@ -2815,14 +2829,14 @@ gtk_tree_view_column_cell_process_action (GtkTreeViewColumn  *tree_column,
   real_background_area = *background_area;
 
 
-  if (rtl)
-    depth = real_background_area.width - real_cell_area.width - horizontal_separator/2;
-  else
-    depth = real_cell_area.x - real_background_area.x - horizontal_separator/2;
-
   real_cell_area.x += focus_line_width;
   real_cell_area.y += focus_line_width;
   real_cell_area.height -= 2 * focus_line_width;
+
+  if (rtl)
+    depth = real_background_area.width - real_cell_area.width;
+  else
+    depth = real_cell_area.x - real_background_area.x;
 
   /* Find out how much extra space we have to allocate */
   for (list = tree_column->cell_list; list; list = list->next)
@@ -3265,6 +3279,24 @@ _gtk_tree_view_column_cell_event (GtkTreeViewColumn  *tree_column,
 						   event,
 						   path_string);
 }
+
+void
+_gtk_tree_view_column_get_focus_area (GtkTreeViewColumn *tree_column,
+				      GdkRectangle      *background_area,
+				      GdkRectangle      *cell_area,
+				      GdkRectangle      *focus_area)
+{
+  gtk_tree_view_column_cell_process_action (tree_column,
+					    NULL,
+					    background_area,
+					    cell_area,
+					    0,
+					    CELL_ACTION_FOCUS,
+					    NULL,
+					    focus_area,
+					    NULL, NULL, NULL);
+}
+
 
 /* cell list manipulation */
 static GList *
@@ -3807,10 +3839,31 @@ gtk_tree_view_column_cell_get_position (GtkTreeViewColumn *tree_column,
 void
 gtk_tree_view_column_queue_resize (GtkTreeViewColumn *tree_column)
 {
-  g_return_if_fail (tree_column != NULL);
+  g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
 
   if (tree_column->tree_view)
     _gtk_tree_view_column_cell_set_dirty (tree_column, TRUE);
+}
+
+/**
+ * gtk_tree_view_column_get_tree_view:
+ * @tree_column: A #GtkTreeViewColumn
+ *
+ * Returns the #GtkTreeView wherein @tree_column has been inserted.  If
+ * @column is currently not inserted in any tree view, %NULL is
+ * returned.
+ *
+ * Return value: The tree view wherein @column has been inserted if any,
+ *               %NULL otherwise.
+ *
+ * Since: 2.12
+ */
+GtkWidget *
+gtk_tree_view_column_get_tree_view (GtkTreeViewColumn *tree_column)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column), NULL);
+
+  return tree_column->tree_view;
 }
 
 #define __GTK_TREE_VIEW_COLUMN_C__

@@ -52,6 +52,10 @@
  * Try to use gdk_pixbuf_scale_simple() first, this function is
  * the industrial-strength power tool you can fall back to if
  * gdk_pixbuf_scale_simple() isn't powerful enough.
+ *
+ * If the source rectangle overlaps the destination rectangle on the
+ * same pixbuf, it will be overwritten during the scaling which
+ * results in rendering artifacts.
  **/
 void
 gdk_pixbuf_scale (const GdkPixbuf *src,
@@ -73,14 +77,12 @@ gdk_pixbuf_scale (const GdkPixbuf *src,
 
   offset_x = floor (offset_x + 0.5);
   offset_y = floor (offset_y + 0.5);
-  
-  _pixops_scale (dest->pixels + dest_y * dest->rowstride + dest_x * dest->n_channels,
-		 dest_x - offset_x, dest_y - offset_y, 
-		 dest_x + dest_width - offset_x, dest_y + dest_height - offset_y,
-		 dest->rowstride, dest->n_channels, dest->has_alpha,
-		 src->pixels, src->width, src->height,
-		 src->rowstride, src->n_channels, src->has_alpha,
-		 scale_x, scale_y, (PixopsInterpType)interp_type);
+
+  _pixops_scale (dest->pixels, dest->width, dest->height, dest->rowstride,
+                 dest->n_channels, dest->has_alpha, src->pixels, src->width,
+                 src->height, src->rowstride, src->n_channels, src->has_alpha,
+                 dest_x, dest_y, dest_width, dest_height, offset_x, offset_y,
+                 scale_x, scale_y, (PixopsInterpType)interp_type);
 }
 
 /**
@@ -136,13 +138,13 @@ gdk_pixbuf_composite (const GdkPixbuf *src,
 
   offset_x = floor (offset_x + 0.5);
   offset_y = floor (offset_y + 0.5);
-  _pixops_composite (dest->pixels + dest_y * dest->rowstride + dest_x * dest->n_channels,
-		     dest_x - offset_x, dest_y - offset_y, 
-		     dest_x + dest_width - offset_x, dest_y + dest_height - offset_y,
-		     dest->rowstride, dest->n_channels, dest->has_alpha,
-		     src->pixels, src->width, src->height,
-		     src->rowstride, src->n_channels, src->has_alpha,
-		     scale_x, scale_y, (PixopsInterpType)interp_type, overall_alpha);
+
+  _pixops_composite (dest->pixels, dest->width, dest->height, dest->rowstride,
+                     dest->n_channels, dest->has_alpha, src->pixels,
+                     src->width, src->height, src->rowstride, src->n_channels,
+                     src->has_alpha, dest_x, dest_y, dest_width, dest_height,
+                     offset_x, offset_y, scale_x, scale_y,
+                     (PixopsInterpType)interp_type, overall_alpha);
 }
 
 /**
@@ -204,14 +206,14 @@ gdk_pixbuf_composite_color (const GdkPixbuf *src,
   offset_x = floor (offset_x + 0.5);
   offset_y = floor (offset_y + 0.5);
   
-  _pixops_composite_color (dest->pixels + dest_y * dest->rowstride + dest_x * dest->n_channels,
-			   dest_x - offset_x, dest_y - offset_y, 
-			   dest_x + dest_width - offset_x, dest_y + dest_height - offset_y,
+  _pixops_composite_color (dest->pixels, dest_width, dest_height,
 			   dest->rowstride, dest->n_channels, dest->has_alpha,
 			   src->pixels, src->width, src->height,
 			   src->rowstride, src->n_channels, src->has_alpha,
-			   scale_x, scale_y, (PixopsInterpType)interp_type, overall_alpha, check_x, check_y,
-			   check_size, color1, color2);
+			   dest_x, dest_y, dest_width, dest_height, offset_x,
+			   offset_y, scale_x, scale_y,
+			   (PixopsInterpType)interp_type, overall_alpha,
+			   check_x, check_y, check_size, color1, color2);
 }
 
 /**
@@ -318,7 +320,8 @@ gdk_pixbuf_composite_color_simple (const GdkPixbuf *src,
  * Rotates a pixbuf by a multiple of 90 degrees, and returns the
  * result in a new pixbuf.
  *
- * Returns: a new pixbuf
+ * Returns: the new #GdkPixbuf, or %NULL if not enough memory could be
+ * allocated for it.
  *
  * Since: 2.6
  */
@@ -410,7 +413,8 @@ gdk_pixbuf_rotate_simple (const GdkPixbuf   *src,
  * Flips a pixbuf horizontally or vertically and returns the
  * result in a new pixbuf.
  *
- * Returns: a new pixbuf.
+ * Returns: the new #GdkPixbuf, or %NULL if not enough memory could be
+ * allocated for it.
  *
  * Since: 2.6
  */

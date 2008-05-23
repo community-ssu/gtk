@@ -88,11 +88,10 @@ gdk_screen_get_width (GdkScreen *screen)
   int i;
   int width;
   NSArray *array;
-  NSAutoreleasePool *pool;
 
   g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
 
-  pool = [[NSAutoreleasePool alloc] init];
+  GDK_QUARTZ_ALLOC_POOL;
   array = [NSScreen screens];
 
   width = 0;
@@ -102,7 +101,7 @@ gdk_screen_get_width (GdkScreen *screen)
       width += rect.size.width;
     }
 
-  [pool release];
+  GDK_QUARTZ_RELEASE_POOL;
 
   return width;
 }
@@ -113,11 +112,10 @@ gdk_screen_get_height (GdkScreen *screen)
   int i;
   int height;
   NSArray *array;
-  NSAutoreleasePool *pool;
 
   g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
 
-  pool = [[NSAutoreleasePool alloc] init];
+  GDK_QUARTZ_ALLOC_POOL;
   array = [NSScreen screens];
 
   height = 0;
@@ -127,7 +125,7 @@ gdk_screen_get_height (GdkScreen *screen)
       height = MAX (height, rect.size.height);
     }
 
-  [pool release];
+  GDK_QUARTZ_RELEASE_POOL;
 
   return height;
 }
@@ -139,7 +137,13 @@ get_mm_from_pixels (NSScreen *screen, int pixels)
    * 72 is the number of points per inch, 
    * and 25.4 is the number of millimeters per inch.
    */
-  return ((pixels / [screen userSpaceScaleFactor]) / 72) * 25.4;
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_3
+  float dpi = [screen userSpaceScaleFactor] * 72.0;
+#else
+  float dpi = 96.0 / 72.0;
+#endif
+
+  return (pixels / dpi) * 25.4;
 }
 
 gint
@@ -148,11 +152,10 @@ gdk_screen_get_width_mm (GdkScreen *screen)
   int i;
   gint width;
   NSArray *array;
-  NSAutoreleasePool *pool;
 
   g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
 
-  pool = [[NSAutoreleasePool alloc] init];
+  GDK_QUARTZ_ALLOC_POOL;
   array = [NSScreen screens];
 
   width = 0;
@@ -163,7 +166,7 @@ gdk_screen_get_width_mm (GdkScreen *screen)
       width += get_mm_from_pixels (screen, rect.size.width);
     }
 
-  [pool release];
+  GDK_QUARTZ_RELEASE_POOL;
 
   return width;
 }
@@ -174,11 +177,10 @@ gdk_screen_get_height_mm (GdkScreen *screen)
   int i;
   gint height;
   NSArray *array;
-  NSAutoreleasePool *pool;
 
   g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
 
-  pool = [[NSAutoreleasePool alloc] init];
+  GDK_QUARTZ_ALLOC_POOL;
   array = [NSScreen screens];
 
   height = 0;
@@ -190,7 +192,7 @@ gdk_screen_get_height_mm (GdkScreen *screen)
       height = MAX (height, h);
     }
 
-  [pool release];
+  GDK_QUARTZ_RELEASE_POOL;
 
   return height;
 }
@@ -199,6 +201,7 @@ int
 gdk_screen_get_n_monitors (GdkScreen *screen)
 {
   int n;
+
   GDK_QUARTZ_ALLOC_POOL;
   NSArray *array = [NSScreen screens];
 
@@ -216,13 +219,12 @@ gdk_screen_get_monitor_geometry (GdkScreen    *screen,
 {
   NSArray *array;
   NSRect rect;
-  NSAutoreleasePool *pool;
 
   g_return_if_fail (GDK_IS_SCREEN (screen));
   g_return_if_fail (monitor_num < gdk_screen_get_n_monitors (screen));
   g_return_if_fail (monitor_num >= 0);
 
-  pool = [[NSAutoreleasePool alloc] init];
+  GDK_QUARTZ_ALLOC_POOL;
   array = [NSScreen screens];
   rect = [[array objectAtIndex:monitor_num] frame];
   
@@ -231,7 +233,7 @@ gdk_screen_get_monitor_geometry (GdkScreen    *screen,
   dest->width = rect.size.width;
   dest->height = rect.size.height;
 
-  [pool release];
+  GDK_QUARTZ_RELEASE_POOL;
 }
 
 gchar *

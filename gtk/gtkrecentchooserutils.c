@@ -302,7 +302,7 @@ sort_recent_items_mru (GtkRecentInfo *a,
 {
   g_assert (a != NULL && b != NULL);
   
-  return (gtk_recent_info_get_modified (a) < gtk_recent_info_get_modified (b));
+  return (gtk_recent_info_get_modified (b) - gtk_recent_info_get_modified (a));
 }
 
 static gint
@@ -312,7 +312,7 @@ sort_recent_items_lru (GtkRecentInfo *a,
 {
   g_assert (a != NULL && b != NULL);
   
-  return (gtk_recent_info_get_modified (a) > gtk_recent_info_get_modified (b));
+  return -1 * (gtk_recent_info_get_modified (b) > gtk_recent_info_get_modified (a));
 }
 
 typedef struct
@@ -332,9 +332,7 @@ sort_recent_items_proxy (gpointer *a,
   SortRecentData *sort_recent = user_data;
 
   if (sort_recent->func)
-    return (* sort_recent->func) (info_a,
-                                  info_b,
-                                  sort_recent->data);
+    return (* sort_recent->func) (info_a, info_b, sort_recent->data);
   
   /* fallback */
   return 0;
@@ -508,15 +506,12 @@ _gtk_recent_chooser_get_items (GtkRecentChooser  *chooser,
 
   if (compare_func)
     {
-      SortRecentData *sort_recent;
+      SortRecentData sort_recent;
 
-      sort_recent = g_slice_new (SortRecentData);
-      sort_recent->func = sort_func;
-      sort_recent->data = sort_data;
+      sort_recent.func = sort_func;
+      sort_recent.data = sort_data;
 
-      items = g_list_sort_with_data (items, compare_func, sort_recent);
-
-      g_slice_free (SortRecentData, sort_recent);
+      items = g_list_sort_with_data (items, compare_func, &sort_recent);
     }
   
   length = g_list_length (items);

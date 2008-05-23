@@ -58,7 +58,7 @@ enum
 {
   PROP_0,
   
-  PROP_URI,
+  PROP_URI
 };
 
 #define GTK_LINK_BUTTON_GET_PRIVATE(obj)	(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_LINK_BUTTON, GtkLinkButtonPrivate))
@@ -442,7 +442,7 @@ gtk_link_button_clicked (GtkButton *button)
   GtkLinkButton *link_button = GTK_LINK_BUTTON (button);
 
   if (uri_func)
-    (* uri_func) (button, link_button->priv->uri, uri_func_data);
+    (* uri_func) (link_button, link_button->priv->uri, uri_func_data);
 
   link_button->priv->visited = TRUE;
 

@@ -155,7 +155,7 @@ insert_text (GtkTextBuffer *buffer)
   GtkTextChildAnchor *anchor;
   char *filename;
 
-  /* demo_find_file() looks in the the current directory first,
+  /* demo_find_file() looks in the current directory first,
    * so you can run gtk-demo without installing GTK, then looks
    * in the location where the file is installed.
    */
@@ -350,7 +350,7 @@ insert_text (GtkTextBuffer *buffer)
   anchor = gtk_text_buffer_create_child_anchor (buffer, &iter);
   gtk_text_buffer_insert (buffer, &iter, ".\n", -1);
   
-  gtk_text_buffer_insert (buffer, &iter, "\n\nThis demo doesn't demonstrate all the GtkTextBuffer features; it leaves out, for example: invisible/hidden text (doesn't work in GTK 2, but planned), tab stops, application-drawn areas on the sides of the widget for displaying breakpoints and such...", -1);
+  gtk_text_buffer_insert (buffer, &iter, "\n\nThis demo doesn't demonstrate all the GtkTextBuffer features; it leaves out, for example: invisible/hidden text, tab stops, application-drawn areas on the sides of the widget for displaying breakpoints and such...", -1);
 
   /* Apply word_wrap tag to whole buffer */
   gtk_text_buffer_get_bounds (buffer, &start, &end);

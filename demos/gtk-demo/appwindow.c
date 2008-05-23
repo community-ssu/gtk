@@ -141,6 +141,7 @@ about_cb (GtkAction *action,
 			 "authors", authors,
 			 "documenters", documentors,
 			 "logo", transparent,
+                         "title", "About GTK+ Code Demos",
 			 NULL);
 
   g_object_unref (transparent);
@@ -156,7 +157,7 @@ typedef struct
   GtkActionClass parent_class;
 } ToolMenuActionClass;
 
-G_DEFINE_TYPE(ToolMenuAction, tool_menu_action, GTK_TYPE_ACTION);
+G_DEFINE_TYPE(ToolMenuAction, tool_menu_action, GTK_TYPE_ACTION)
 
 static void
 tool_menu_action_class_init (ToolMenuActionClass *class)
@@ -329,7 +330,7 @@ register_stock_icons (void)
       factory = gtk_icon_factory_new ();
       gtk_icon_factory_add_default (factory);
 
-      /* demo_find_file() looks in the the current directory first,
+      /* demo_find_file() looks in the current directory first,
        * so you can run gtk-demo without installing GTK, then looks
        * in the location where the file is installed.
        */

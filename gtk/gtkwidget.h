@@ -150,6 +150,8 @@ typedef struct _GtkWidgetClass	   GtkWidgetClass;
 typedef struct _GtkWidgetAuxInfo   GtkWidgetAuxInfo;
 typedef struct _GtkWidgetShapeInfo GtkWidgetShapeInfo;
 typedef struct _GtkClipboard	   GtkClipboard;
+typedef struct _GtkTooltip         GtkTooltip;
+typedef struct _GtkWindow          GtkWindow;
 typedef void     (*GtkCallback)        (GtkWidget        *widget,
 					gpointer	  data);
 
@@ -419,23 +421,16 @@ struct _GtkWidgetClass
 
   void         (* composited_changed) (GtkWidget *widget);
 
-#ifdef MAEMO_CHANGES
-  void      (*tap_and_hold)       (GtkWidget                *widget);   /* Tap and hold action */
-  void      (*tap_and_hold_setup) (GtkWidget                *widget,
-				   GtkWidget                *menu,
-				   GtkCallback               func,
-				   GtkWidgetTapAndHoldFlags  flags);
-  gboolean  (*tap_and_hold_query) (GtkWidget                *widget,
-				   GdkEvent                 *event);
+  gboolean     (* query_tooltip)      (GtkWidget  *widget,
+				       gint        x,
+				       gint        y,
+				       gboolean    keyboard_tooltip,
+				       GtkTooltip *tooltip);
 
-  void (*insensitive_press) (GtkWidget *widget);
-#else /* !MAEMO_CHANGES */
   /* Padding for future expansion */
-  void (*_gtk_reserved4) (void);
   void (*_gtk_reserved5) (void);
   void (*_gtk_reserved6) (void);
   void (*_gtk_reserved7) (void);
-#endif /* !MAEMO_CHANGES */
 };
 
 struct _GtkWidgetAuxInfo
@@ -459,12 +454,12 @@ GType	   gtk_widget_get_type		  (void) G_GNUC_CONST;
 GtkWidget* gtk_widget_new		  (GType		type,
 					   const gchar	       *first_property_name,
 					   ...);
-GtkWidget* gtk_widget_ref		  (GtkWidget	       *widget);
-void	   gtk_widget_unref		  (GtkWidget	       *widget);
 void	   gtk_widget_destroy		  (GtkWidget	       *widget);
 void	   gtk_widget_destroyed		  (GtkWidget	       *widget,
 					   GtkWidget	      **widget_pointer);
 #ifndef GTK_DISABLE_DEPRECATED
+GtkWidget* gtk_widget_ref		  (GtkWidget	       *widget);
+void	   gtk_widget_unref		  (GtkWidget	       *widget);
 void	   gtk_widget_set		  (GtkWidget	       *widget,
 					   const gchar         *first_property_name,
 					   ...) G_GNUC_NULL_TERMINATED;
@@ -686,6 +681,9 @@ void        gtk_widget_modify_text        (GtkWidget            *widget,
 void        gtk_widget_modify_base        (GtkWidget            *widget,
 					   GtkStateType          state,
 					   const GdkColor       *color);
+void        gtk_widget_modify_cursor      (GtkWidget            *widget,
+					   const GdkColor       *primary,
+					   const GdkColor       *secondary);
 void        gtk_widget_modify_font        (GtkWidget            *widget,
 					   PangoFontDescription *font_desc);
 
@@ -798,6 +796,20 @@ void   gtk_widget_add_mnemonic_label    (GtkWidget *widget,
 					 GtkWidget *label);
 void   gtk_widget_remove_mnemonic_label (GtkWidget *widget,
 					 GtkWidget *label);
+
+void                  gtk_widget_set_tooltip_window    (GtkWidget   *widget,
+                                                        GtkWindow   *custom_window);
+GtkWindow *gtk_widget_get_tooltip_window    (GtkWidget   *widget);
+void       gtk_widget_trigger_tooltip_query (GtkWidget   *widget);
+void       gtk_widget_set_tooltip_text      (GtkWidget   *widget,
+                                             const gchar *text);
+gchar *    gtk_widget_get_tooltip_text      (GtkWidget   *widget);
+void       gtk_widget_set_tooltip_markup    (GtkWidget   *widget,
+                                             const gchar *markup);
+gchar *    gtk_widget_get_tooltip_markup    (GtkWidget   *widget);
+void       gtk_widget_set_has_tooltip       (GtkWidget   *widget,
+					     gboolean     has_tooltip);
+gboolean   gtk_widget_get_has_tooltip       (GtkWidget   *widget);
 
 GType           gtk_requisition_get_type (void) G_GNUC_CONST;
 GtkRequisition *gtk_requisition_copy     (const GtkRequisition *requisition);

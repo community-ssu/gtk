@@ -45,6 +45,7 @@ and parses the first of those that exists.
 </refsect2>
 
 <refsect2><title>Pathnames and patterns</title>
+<anchor id="gtkrc-pathnames-and-patterns"/>
 <para>
 A resource file defines a number of styles and key bindings and
 attaches them to particular widgets. The attachment is done
@@ -951,13 +952,23 @@ Parses resource information directly from a string.
 
 <!-- ##### FUNCTION gtk_rc_parse_color ##### -->
 <para>
-Parses a color in the <link linkend="color-format">format</link> expected in a RC file.
+
 </para>
 
-@scanner: a #GtkScanner
-@color: a pointer to a #GtkColor structure in which to store the result
-@Returns: %G_TOKEN_NONE if parsing succeeded, otherwise the token
-that was expected but not found.
+@scanner: 
+@color: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_rc_parse_color_full ##### -->
+<para>
+
+</para>
+
+@scanner: 
+@style: 
+@color: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gtk_rc_parse_state ##### -->
@@ -1063,6 +1074,7 @@ Increments the reference count of a #GtkRcStyle.
 </para>
 
 @rc_style: a #GtkRcStyle
+@Deprecated: Use g_object_ref() instead
 
 
 <!-- ##### FUNCTION gtk_rc_style_unref ##### -->
@@ -1072,5 +1084,6 @@ frees if the result is 0.
 </para>
 
 @rc_style: a #GtkRcStyle
+@Deprecated: Use g_object_unref() instead
 
 

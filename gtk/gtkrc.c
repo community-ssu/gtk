@@ -218,9 +218,6 @@ static guint       gtk_rc_parse_stock                (GtkRcContext    *context,
 static guint       gtk_rc_parse_logical_color        (GScanner        *scanner,
                                                       GtkRcStyle      *rc_style,
                                                       GHashTable      *hash);
-static guint       gtk_rc_parse_color_full           (GScanner        *scanner,
-                                                      GtkRcStyle      *style,
-                                                      GdkColor        *color);
 
 static void        gtk_rc_clear_hash_node            (gpointer         key,
                                                       gpointer         data,
@@ -239,6 +236,10 @@ static void        gtk_rc_style_copy_icons_and_colors(GtkRcStyle      *rc_style,
 static gint	   gtk_rc_properties_cmp	     (gconstpointer    bsearch_node1,
 						      gconstpointer    bsearch_node2);
 static void        gtk_rc_set_free                   (GtkRcSet        *rc_set);
+
+static void	   insert_rc_property		     (GtkRcStyle      *style,
+						      GtkRcProperty   *property,
+						      gboolean         replace);
 
 
 static const GScannerConfig gtk_rc_scanner_config =
@@ -887,7 +888,7 @@ _gtk_rc_init (void)
                        "\n"    
 		       "class \"GtkProgressBar\" style : gtk \"gtk-default-progress-bar-style\"\n"
 		       "class \"GtkTrayIcon\" style : gtk \"gtk-default-tray-icon-style\"\n"
-		       "widget \"gtk-tooltips*\" style : gtk \"gtk-default-tooltips-style\"\n"
+		       "widget \"gtk-tooltip*\" style : gtk \"gtk-default-tooltips-style\"\n"
 		       "widget_class \"*<GtkMenuItem>*\" style : gtk \"gtk-default-menu-item-style\"\n"
 		       "widget_class \"*<GtkMenuBar>*<GtkMenuItem>\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
                        "class \"GtkLabel\" style : gtk \"gtk-default-label-style\"\n"
@@ -1166,14 +1167,12 @@ gtk_rc_style_finalize (GObject *object)
   rc_style = GTK_RC_STYLE (object);
   rc_priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
 
-  if (rc_style->name)
-    g_free (rc_style->name);
+  g_free (rc_style->name);
   if (rc_style->font_desc)
     pango_font_description_free (rc_style->font_desc);
       
   for (i = 0; i < 5; i++)
-    if (rc_style->bg_pixmap_name[i])
-      g_free (rc_style->bg_pixmap_name[i]);
+    g_free (rc_style->bg_pixmap_name[i]);
   
   /* Now remove all references to this rc_style from
    * realized_style_ht
@@ -1265,6 +1264,36 @@ gtk_rc_style_copy (GtkRcStyle *orig)
   gtk_rc_style_copy_icons_and_colors (style, orig, NULL);
 
   return style;
+}
+
+void
+_gtk_rc_style_set_rc_property (GtkRcStyle *rc_style,
+			       GtkRcProperty *property)
+{
+  g_return_if_fail (GTK_IS_RC_STYLE (rc_style));
+  g_return_if_fail (property != NULL);
+
+  insert_rc_property (rc_style, property, TRUE);
+}
+
+void
+_gtk_rc_style_unset_rc_property (GtkRcStyle *rc_style,
+				 GQuark      type_name,
+				 GQuark      property_name)
+{
+  GtkRcProperty *node;
+
+  g_return_if_fail (GTK_IS_RC_STYLE (rc_style));
+
+  node = _gtk_rc_style_lookup_rc_property (rc_style, type_name, property_name);
+
+  if (node != NULL)
+    {
+      guint index = node - (GtkRcProperty *) rc_style->rc_properties->data;
+      g_value_unset (&node->value);
+      g_free (node->origin);
+      g_array_remove_index (rc_style->rc_properties, index);
+    }
 }
 
 void      
@@ -1518,9 +1547,8 @@ gtk_rc_style_copy_icons_and_colors (GtkRcStyle   *rc_style,
     {
       gtk_rc_style_prepend_empty_color_hash (rc_style);
 
-      priv->color_hashes =
-        g_slist_append (priv->color_hashes,
-                        g_hash_table_ref (context->color_hash));
+      priv->color_hashes = g_slist_append (priv->color_hashes,
+                                           g_hash_table_ref (context->color_hash));
     }
 }
 
@@ -3088,8 +3116,7 @@ gtk_rc_parse_style (GtkRcContext *context,
 	  
 	  for (i = 0; i < 5; i++)
 	    {
-	      if (rc_style->bg_pixmap_name[i])
-		g_free (rc_style->bg_pixmap_name[i]);
+	      g_free (rc_style->bg_pixmap_name[i]);
 	      rc_style->bg_pixmap_name[i] = g_strdup (parent_style->bg_pixmap_name[i]);
 	    }
 	}
@@ -3164,9 +3191,7 @@ gtk_rc_parse_style (GtkRcContext *context,
           token = gtk_rc_parse_logical_color (scanner, rc_style, our_hash);
           break;
 	case G_TOKEN_IDENTIFIER:
-	  if (is_c_identifier (scanner->next_value.v_identifier) &&
-	      scanner->next_value.v_identifier[0] >= 'A' &&
-	      scanner->next_value.v_identifier[0] <= 'Z') /* match namespaced type names */
+	  if (is_c_identifier (scanner->next_value.v_identifier))
 	    {
 	      GtkRcProperty prop = { 0, 0, NULL, { 0, }, };
 	      gchar *name;
@@ -3444,8 +3469,7 @@ gtk_rc_parse_bg_pixmap (GtkRcContext *context,
   
   if (pixmap_file)
     {
-      if (rc_style->bg_pixmap_name[state])
-	g_free (rc_style->bg_pixmap_name[state]);
+      g_free (rc_style->bg_pixmap_name[state]);
       rc_style->bg_pixmap_name[state] = pixmap_file;
     }
   
@@ -3621,6 +3645,7 @@ gtk_rc_parse_engine (GtkRcContext *context,
   guint result = G_TOKEN_NONE;
   GtkRcStyle *new_style = NULL;
   gboolean parsed_curlies = FALSE;
+  GtkRcStylePrivate *rc_priv, *new_priv;
   
   token = g_scanner_get_next_token (scanner);
   if (token != GTK_RC_TOKEN_ENGINE)
@@ -3644,13 +3669,23 @@ gtk_rc_parse_engine (GtkRcContext *context,
 
       parsed_curlies = TRUE;
 
+      rc_priv = GTK_RC_STYLE_GET_PRIVATE (*rc_style);
+
       if (G_OBJECT_TYPE (*rc_style) != GTK_TYPE_RC_STYLE)
 	{
 	  new_style = gtk_rc_style_new ();
 	  gtk_rc_style_real_merge (new_style, *rc_style);
-	  
-	  if ((*rc_style)->name)
-	    new_style->name = g_strdup ((*rc_style)->name);
+
+          new_style->name = g_strdup ((*rc_style)->name);
+
+          /* take over icon factories and color hashes 
+           * from the to-be-deleted style
+           */
+          new_style->icon_factories = (*rc_style)->icon_factories;
+          (*rc_style)->icon_factories = NULL;
+          new_priv = GTK_RC_STYLE_GET_PRIVATE (new_style);
+          new_priv->color_hashes = rc_priv->color_hashes;
+          rc_priv->color_hashes = NULL;
 	}
       else
 	(*rc_style)->engine_specified = TRUE;
@@ -3667,14 +3702,24 @@ gtk_rc_parse_engine (GtkRcContext *context,
 	{
 	  GtkRcStyleClass *new_class;
 	  
+	  rc_priv = GTK_RC_STYLE_GET_PRIVATE (*rc_style);
 	  new_style = gtk_theme_engine_create_rc_style (engine);
 	  g_type_module_unuse (G_TYPE_MODULE (engine));
 	  
 	  new_class = GTK_RC_STYLE_GET_CLASS (new_style);
-	  
+
 	  new_class->merge (new_style, *rc_style);
-	  if ((*rc_style)->name)
-	    new_style->name = g_strdup ((*rc_style)->name);
+
+          new_style->name = g_strdup ((*rc_style)->name);
+
+          /* take over icon factories and color hashes 
+           * from the to-be-deleted style
+           */
+          new_style->icon_factories = (*rc_style)->icon_factories;
+          (*rc_style)->icon_factories = NULL;
+          new_priv = GTK_RC_STYLE_GET_PRIVATE (new_style);
+          new_priv->color_hashes = rc_priv->color_hashes;
+          rc_priv->color_hashes = NULL;
 	  
 	  if (new_class->parse)
 	    {
@@ -3683,6 +3728,13 @@ gtk_rc_parse_engine (GtkRcContext *context,
 	      
 	      if (result != G_TOKEN_NONE)
 		{
+                  /* copy icon factories and color hashes back
+                   */
+                  (*rc_style)->icon_factories = new_style->icon_factories;
+                  new_style->icon_factories = NULL;
+                  rc_priv->color_hashes = new_priv->color_hashes;
+                  new_priv->color_hashes = NULL;
+
 		  g_object_unref (new_style);
 		  new_style = NULL;
 		}
@@ -3714,18 +3766,6 @@ gtk_rc_parse_engine (GtkRcContext *context,
 
   if (new_style)
     {
-      GtkRcStylePrivate *rc_priv = GTK_RC_STYLE_GET_PRIVATE (*rc_style);
-      GtkRcStylePrivate *new_priv = GTK_RC_STYLE_GET_PRIVATE (new_style);
-
-      /* take over icon factories and color hashes from the to-be-deleted style
-       */
-
-      new_style->icon_factories = (*rc_style)->icon_factories;
-      (*rc_style)->icon_factories = NULL;
-
-      new_priv->color_hashes = rc_priv->color_hashes;
-      rc_priv->color_hashes = NULL;
-
       new_style->engine_specified = TRUE;
 
       g_object_unref (*rc_style);
@@ -3836,6 +3876,20 @@ gtk_rc_parse_priority (GScanner	           *scanner,
   return G_TOKEN_NONE;
 }
 
+/**
+ * gtk_rc_parse_color:
+ * @scanner: a #GScanner
+ * @color: a pointer to a #GtkColor structure in which to store the result
+ *
+ * Parses a color in the <link linkend="color=format">format</link> expected
+ * in a RC file. 
+ *
+ * Note that theme engines should use gtk_rc_parse_color_full() in 
+ * order to support symbolic colors.
+ *
+ * Returns: %G_TOKEN_NONE if parsing succeeded, otherwise the token
+ *     that was expected but not found
+ */
 guint
 gtk_rc_parse_color (GScanner *scanner,
 		    GdkColor *color)
@@ -3843,7 +3897,22 @@ gtk_rc_parse_color (GScanner *scanner,
   return gtk_rc_parse_color_full (scanner, NULL, color);
 }
 
-static guint
+/**
+ * gtk_rc_parse_color_full:
+ * @scanner: a #GScanner
+ * @style: a #GtkRcStyle, or %NULL
+ * @color: a pointer to a #GtkColor structure in which to store the result
+ *
+ * Parses a color in the <link linkend="color=format">format</link> expected
+ * in a RC file. If @style is not %NULL, it will be consulted to resolve
+ * references to symbolic colors.
+ *
+ * Returns: %G_TOKEN_NONE if parsing succeeded, otherwise the token
+ *     that was expected but not found
+ *
+ * Since: 2.12
+ */
+guint
 gtk_rc_parse_color_full (GScanner   *scanner,
                          GtkRcStyle *style,
                          GdkColor   *color)
@@ -4100,8 +4169,7 @@ gtk_rc_parse_im_module_file (GScanner *scanner)
   if (token != G_TOKEN_STRING)
     return G_TOKEN_STRING;
 
-  if (im_module_file)
-    g_free (im_module_file);
+  g_free (im_module_file);
     
   im_module_file = g_strdup (scanner->value.v_string);
 

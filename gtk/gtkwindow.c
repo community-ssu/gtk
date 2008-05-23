@@ -26,6 +26,8 @@
 
 #include <config.h>
 #include <string.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <limits.h>
 #include "gdk/gdk.h"
 #include "gdk/gdkkeysyms.h"
@@ -90,6 +92,7 @@ enum {
   PROP_DELETABLE,
   PROP_GRAVITY,
   PROP_TRANSIENT_FOR,
+  PROP_OPACITY,
 #ifdef MAEMO_CHANGES
   PROP_TEMPORARY,
 #endif /* MAEMO_CHANGES */
@@ -97,6 +100,9 @@ enum {
   /* Readonly properties */
   PROP_IS_ACTIVE,
   PROP_HAS_TOPLEVEL_FOCUS,
+  
+  /* Writeonly properties */
+  PROP_STARTUP_ID,
   
   LAST_ARG
 };
@@ -182,8 +188,14 @@ struct _GtkWindowPrivate
 #endif /* MAEMO_CHANGES */
 
   guint reset_type_hint : 1;
+  guint opacity_set : 1;
   guint builder_visible : 1;
+
   GdkWindowTypeHint type_hint;
+
+  gdouble opacity;
+
+  gchar *startup_id;
 };
 
 static void gtk_window_dispose            (GObject           *object);
@@ -364,6 +376,33 @@ add_arrow_bindings (GtkBindingSet    *binding_set,
                                 GTK_TYPE_DIRECTION_TYPE, direction);
 }
 
+static guint32
+extract_time_from_startup_id (const gchar* startup_id)
+{
+  gchar *timestr = g_strrstr (startup_id, "_TIME");
+  guint32 retval = GDK_CURRENT_TIME;
+
+  if (timestr)
+    {
+      gchar *end;
+      guint32 timestamp; 
+    
+      /* Skip past the "_TIME" part */
+      timestr += 5;
+    
+      timestamp = strtoul (timestr, &end, 0);
+      if (end != timestr && errno == 0)
+        retval = timestamp;
+    }
+
+  return retval;
+}
+
+static gboolean
+startup_id_is_fake (const gchar* startup_id)
+{
+  return strncmp (startup_id, "_TIME", 5) == 0;
+}
 
 static void
 gtk_window_class_init (GtkWindowClass *klass)
@@ -449,6 +488,23 @@ gtk_window_class_init (GtkWindowClass *klass)
 							P_("Unique identifier for the window to be used when restoring a session"),
 							NULL,
 							GTK_PARAM_READWRITE));
+							
+  /**
+   * GtkWindow:startup-id:
+   *
+   * The :startup-id is a write-only property for setting window's
+   * startup notification identifier. See gtk_window_set_startup_id()
+   * for more details.
+   *
+   * Since: 2.12
+   */							
+  g_object_class_install_property (gobject_class,
+                                   PROP_ROLE,
+                                   g_param_spec_string ("startup-id",
+							P_("Startup ID"),
+							P_("Unique startup identifier for the window used by startup-notification"),
+							NULL,
+							GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_ALLOW_SHRINK,
@@ -716,6 +772,23 @@ gtk_window_class_init (GtkWindowClass *klass)
 							P_("The transient parent of the dialog"),
 							GTK_TYPE_WINDOW,
 							GTK_PARAM_READWRITE| G_PARAM_CONSTRUCT));
+  /**
+   * GtkWindow:opacity:
+   *
+   * The requested opacity of the window. See gtk_window_set_opacity() for
+   * more details about window opacity.
+   *
+   * Since: 2.12
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_OPACITY,
+				   g_param_spec_double ("opacity",
+							P_("Opacity for Window"),
+							P_("The opacity of the window, from 0 to 1"),
+							0.0,
+							1.0,
+							1.0,
+							GTK_PARAM_READWRITE));
 
   window_signals[SET_FOCUS] =
     g_signal_new (I_("set_focus"),
@@ -780,7 +853,8 @@ gtk_window_class_init (GtkWindowClass *klass)
   
   gtk_binding_entry_add_signal (binding_set, GDK_Return, 0,
                                 "activate_default", 0);
-
+  gtk_binding_entry_add_signal (binding_set, GDK_ISO_Enter, 0,
+                                "activate_default", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Enter, 0,
                                 "activate_default", 0);
 
@@ -840,6 +914,8 @@ gtk_window_init (GtkWindow *window)
   priv->focus_on_map = TRUE;
   priv->deletable = TRUE;
   priv->type_hint = GDK_WINDOW_TYPE_HINT_NORMAL;
+  priv->opacity = 1.0;
+  priv->startup_id = NULL;
 
   colormap = _gtk_widget_peek_colormap ();
   if (colormap)
@@ -876,6 +952,9 @@ gtk_window_set_property (GObject      *object,
     case PROP_ROLE:
       gtk_window_set_role (window, g_value_get_string (value));
       break;
+    case PROP_STARTUP_ID:
+      gtk_window_set_startup_id (window, g_value_get_string (value));
+      break; 
     case PROP_ALLOW_SHRINK:
       window->allow_shrink = g_value_get_boolean (value);
       gtk_widget_queue_resize (GTK_WIDGET (window));
@@ -954,6 +1033,9 @@ gtk_window_set_property (GObject      *object,
       break;
     case PROP_TRANSIENT_FOR:
       gtk_window_set_transient_for (window, g_value_get_object (value));
+      break;
+    case PROP_OPACITY:
+      gtk_window_set_opacity (window, g_value_get_double (value));
       break;
 #ifdef MAEMO_CHANGES
     case PROP_TEMPORARY:
@@ -1070,6 +1152,9 @@ gtk_window_get_property (GObject      *object,
       break;
     case PROP_TRANSIENT_FOR:
       g_value_set_object (value, gtk_window_get_transient_for (window));
+      break;
+    case PROP_OPACITY:
+      g_value_set_double (value, gtk_window_get_opacity (window));
       break;
 #ifdef MAEMO_CHANGES
     case PROP_TEMPORARY:
@@ -1274,6 +1359,60 @@ gtk_window_set_role (GtkWindow   *window,
 }
 
 /**
+ * gtk_window_set_startup_id:
+ * @window: a #GtkWindow
+ * @startup_id: a string with startup-notification identifier
+ *
+ * Startup notification identifiers are used by desktop environment to 
+ * track application startup, to provide user feedback and other 
+ * features. This function changes the corresponding property on the
+ * underlying GdkWindow. Normally, startup identifier is managed 
+ * automatically and you should only use this function in special cases
+ * like transferring focus from other processes. You should use this
+ * function before calling gtk_window_present() or any equivalent
+ * function generating a window map event.
+ *
+ * This function is only useful on X11, not with other GTK+ targets.
+ * 
+ * Since: 2.12
+ **/
+void
+gtk_window_set_startup_id (GtkWindow   *window,
+                           const gchar *startup_id)
+{
+  GtkWindowPrivate *priv = GTK_WINDOW_GET_PRIVATE (window);
+
+  g_return_if_fail (GTK_IS_WINDOW (window));
+  
+  g_free (priv->startup_id);
+  priv->startup_id = g_strdup (startup_id);
+  
+  if (GTK_WIDGET_REALIZED (window))
+    {
+      /* Here we differentiate real and "fake" startup notification IDs,
+       * constructed on purpose just to pass interaction timestamp
+       */  
+      if (startup_id_is_fake (priv->startup_id))
+        {
+          guint32 timestamp = extract_time_from_startup_id (priv->startup_id);
+
+          gtk_window_present_with_time (window, timestamp);
+        }
+      else 
+        {
+          gdk_window_set_startup_id (GTK_WIDGET (window)->window,
+                                     priv->startup_id);
+          
+          /* If window is mapped, terminate the startup-notification too */
+          if (GTK_WIDGET_MAPPED (window) && !disable_startup_notification)
+            gdk_notify_startup_complete_with_id (priv->startup_id);
+        }
+    }
+
+  g_object_notify (G_OBJECT (window), "startup-id");
+}
+
+/**
  * gtk_window_get_role:
  * @window: a #GtkWindow
  *
@@ -1433,7 +1572,6 @@ handle_keys_changed (gpointer data)
 {
   GtkWindow *window;
 
-  GDK_THREADS_ENTER ();
   window = GTK_WINDOW (data);
 
   if (window->keys_changed_handler)
@@ -1443,7 +1581,6 @@ handle_keys_changed (gpointer data)
     }
 
   g_signal_emit (window, window_signals[KEYS_CHANGED], 0);
-  GDK_THREADS_LEAVE ();
   
   return FALSE;
 }
@@ -1452,7 +1589,7 @@ static void
 gtk_window_notify_keys_changed (GtkWindow *window)
 {
   if (!window->keys_changed_handler)
-    window->keys_changed_handler = g_idle_add (handle_keys_changed, window);
+    window->keys_changed_handler = gdk_threads_add_idle (handle_keys_changed, window);
 }
 
 /**
@@ -1475,6 +1612,7 @@ gtk_window_add_accel_group (GtkWindow     *window,
   g_signal_connect_object (accel_group, "accel_changed",
 			   G_CALLBACK (gtk_window_notify_keys_changed),
 			   window, G_CONNECT_SWAPPED);
+  gtk_window_notify_keys_changed (window);
 }
 
 /**
@@ -1495,6 +1633,7 @@ gtk_window_remove_accel_group (GtkWindow     *window,
 					gtk_window_notify_keys_changed,
 					window);
   _gtk_accel_group_detach (accel_group, G_OBJECT (window));
+  gtk_window_notify_keys_changed (window);
 }
 
 static GtkMnemonicHash *
@@ -1966,9 +2105,8 @@ gtk_window_unset_transient_for  (GtkWindow *window)
  * functions in GTK+ will sometimes call
  * gtk_window_set_transient_for() on your behalf.
  *
- * On Windows, this function will and put the child window
- * on top of the parent, much as the window manager would have
- * done on X.
+ * On Windows, this function puts the child window on top of the parent, 
+ * much as the window manager would have done on X.
  * 
  **/
 void       
@@ -2043,6 +2181,68 @@ gtk_window_get_transient_for (GtkWindow *window)
   g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
 
   return window->transient_parent;
+}
+
+/**
+ * gtk_window_set_opacity:
+ * @window: a #GtkWindow
+ * @opacity: desired opacity, between 0 and 1
+ *
+ * Request the windowing system to make @window partially transparent,
+ * with opacity 0 being fully transparent and 1 fully opaque. (Values
+ * of the opacity parameter are clamped to the [0,1] range.) On X11
+ * this has any effect only on X screens with a compositing manager
+ * running. See gtk_widget_is_composited(). On Windows it should work
+ * always.
+ * 
+ * Note that setting a window's opacity after the window has been
+ * shown causes it to flicker once on Windows.
+ *
+ * Since: 2.12
+ **/
+void       
+gtk_window_set_opacity  (GtkWindow *window, 
+			 gdouble    opacity)
+{
+  GtkWindowPrivate *priv;
+  
+  g_return_if_fail (GTK_IS_WINDOW (window));
+
+  priv = GTK_WINDOW_GET_PRIVATE (window); 
+
+  if (opacity < 0.0)
+    opacity = 0.0;
+  else if (opacity > 1.0)
+    opacity = 1.0;
+
+  priv->opacity_set = TRUE;
+  priv->opacity = opacity;
+
+  if (GTK_WIDGET_REALIZED (window))
+    gdk_window_set_opacity (GTK_WIDGET (window)->window, priv->opacity);
+}
+
+/**
+ * gtk_window_get_opacity:
+ * @window: a #GtkWindow
+ *
+ * Fetches the requested opacity for this window. See
+ * gtk_window_set_opacity().
+ *
+ * Return value: the requested opacity for this window.
+ *
+ * Since: 2.12
+ **/
+gdouble
+gtk_window_get_opacity (GtkWindow *window)
+{
+  GtkWindowPrivate *priv;
+  
+  g_return_val_if_fail (GTK_IS_WINDOW (window), 0.0);
+
+  priv = GTK_WINDOW_GET_PRIVATE (window); 
+
+  return priv->opacity;
 }
 
 /**
@@ -4234,11 +4434,22 @@ gtk_window_map (GtkWidget *widget)
   if (window->frame)
     gdk_window_show (window->frame);
 
-  if (!disable_startup_notification &&
-      !sent_startup_notification)
+  if (!disable_startup_notification)
     {
-      sent_startup_notification = TRUE;
-      gdk_notify_startup_complete ();
+      /* Do we have a custom startup-notification id? */
+      if (priv->startup_id != NULL)
+        {
+          /* Make sure we have a "real" id */
+          if (!startup_id_is_fake (priv->startup_id)) 
+            gdk_notify_startup_complete_with_id (priv->startup_id);
+            
+          priv->startup_id = NULL;
+        }
+      else if (!sent_startup_notification)
+        {
+          sent_startup_notification = TRUE;
+          gdk_notify_startup_complete ();
+        }
     }
 }
 
@@ -4308,7 +4519,6 @@ gtk_window_realize (GtkWidget *widget)
   GtkWindowPrivate *priv;
   
   window = GTK_WINDOW (widget);
-
   priv = GTK_WINDOW_GET_PRIVATE (window);
 
   /* ensure widget tree is properly size allocated */
@@ -4344,7 +4554,7 @@ gtk_window_realize (GtkWidget *widget)
     case GTK_WINDOW_POPUP:
       attributes.window_type = GDK_WINDOW_TEMP;
       break;
-   default:
+    default:
       g_warning (G_STRLOC": Unknown window type %d!", window->type);
       break;
     }
@@ -4376,6 +4586,9 @@ gtk_window_realize (GtkWidget *widget)
       window->frame = gdk_window_new (gtk_widget_get_root_window (widget),
 				      &attributes, attributes_mask);
 						 
+      if (priv->opacity_set)
+	gdk_window_set_opacity (window->frame, priv->opacity);
+
       gdk_window_set_user_data (window->frame, widget);
       
       attributes.window_type = GDK_WINDOW_CHILD;
@@ -4414,6 +4627,9 @@ gtk_window_realize (GtkWidget *widget)
   attributes_mask |= (window->wmclass_name ? GDK_WA_WMCLASS : 0);
   
   widget->window = gdk_window_new (parent_window, &attributes, attributes_mask);
+
+  if (!window->has_frame && priv->opacity_set)
+    gdk_window_set_opacity (widget->window, priv->opacity);
 
   gdk_window_enable_synchronized_configure (widget->window);
     
@@ -4461,6 +4677,17 @@ gtk_window_realize (GtkWidget *widget)
     gdk_window_set_modal_hint (widget->window, TRUE);
   else
     gdk_window_set_modal_hint (widget->window, FALSE);
+    
+  if (priv->startup_id)
+    {
+#ifdef GDK_WINDOWING_X11
+      guint32 timestamp = extract_time_from_startup_id (priv->startup_id);
+      if (timestamp != GDK_CURRENT_TIME)
+        gdk_x11_window_set_user_time (widget->window, timestamp);
+#endif
+      if (!startup_id_is_fake (priv->startup_id)) 
+        gdk_window_set_startup_id (widget->window, priv->startup_id);
+    }
 
   /* Icons */
   gtk_window_realize_icon (window);
@@ -4614,7 +4841,7 @@ gtk_window_frame_event (GtkWindow *window, GdkEvent *event)
       configure_event->height -= window->frame_top + window->frame_bottom;
       return gtk_window_configure_event (GTK_WIDGET (window), configure_event);
       break;
-   default:
+    default:
       break;
     }
   return FALSE;
@@ -4640,7 +4867,10 @@ gtk_window_configure_event (GtkWidget         *widget,
    */
 
   if (window->configure_request_count > 0)
-    window->configure_request_count -= 1;
+    {
+      window->configure_request_count -= 1;
+      gdk_window_thaw_toplevel_updates_libgtk_only (widget->window);
+    }
   
   /* As an optimization, we avoid a resize when possible.
    *
@@ -4694,7 +4924,7 @@ _gtk_window_query_nonaccels (GtkWindow      *window,
   if (!accel_mods)
     {
       static const guint bindings[] = {
-	GDK_space, GDK_KP_Space, GDK_Return, GDK_KP_Enter, GDK_Up, GDK_KP_Up, GDK_Down, GDK_KP_Down,
+	GDK_space, GDK_KP_Space, GDK_Return, GDK_ISO_Enter, GDK_KP_Enter, GDK_Up, GDK_KP_Up, GDK_Down, GDK_KP_Down,
 	GDK_Left, GDK_KP_Left, GDK_Right, GDK_KP_Right, GDK_Tab, GDK_KP_Tab, GDK_ISO_Left_Tab,
       };
       guint i;
@@ -5958,28 +6188,49 @@ gtk_window_move_resize (GtkWindow *window)
 			     new_request.width, new_request.height);
 	}
       
-      /* Increment the number of have-not-yet-received-notify requests */
-      window->configure_request_count += 1;
+      if (window->type == GTK_WINDOW_POPUP)
+        {
+	  GtkAllocation allocation;
 
-      /* for GTK_RESIZE_QUEUE toplevels, we are now awaiting a new
-       * configure event in response to our resizing request.
-       * the configure event will cause a new resize with
-       * ->configure_notify_received=TRUE.
-       * until then, we want to
-       * - discard expose events
-       * - coalesce resizes for our children
-       * - defer any window resizes until the configure event arrived
-       * to achieve this, we queue a resize for the window, but remove its
-       * resizing handler, so resizing will not be handled from the next
-       * idle handler but when the configure event arrives.
-       *
-       * FIXME: we should also dequeue the pending redraws here, since
-       * we handle those ourselves upon ->configure_notify_received==TRUE.
-       */
-      if (container->resize_mode == GTK_RESIZE_QUEUE)
-	{
-	  gtk_widget_queue_resize (widget);
-	  _gtk_container_dequeue_resize_handler (container);
+	  /* Directly size allocate for override redirect (popup) windows. */
+          allocation.x = 0;
+          allocation.y = 0;
+	  allocation.width = new_request.width;
+	  allocation.height = new_request.height;
+
+	  gtk_widget_size_allocate (widget, &allocation);
+
+	  gdk_window_process_updates (widget->window, TRUE);
+
+	  if (container->resize_mode == GTK_RESIZE_QUEUE)
+	    gtk_widget_queue_draw (widget);
+	}
+      else
+        {
+	  /* Increment the number of have-not-yet-received-notify requests */
+	  window->configure_request_count += 1;
+	  gdk_window_freeze_toplevel_updates_libgtk_only (widget->window);
+
+	  /* for GTK_RESIZE_QUEUE toplevels, we are now awaiting a new
+	   * configure event in response to our resizing request.
+	   * the configure event will cause a new resize with
+	   * ->configure_notify_received=TRUE.
+	   * until then, we want to
+	   * - discard expose events
+	   * - coalesce resizes for our children
+	   * - defer any window resizes until the configure event arrived
+	   * to achieve this, we queue a resize for the window, but remove its
+	   * resizing handler, so resizing will not be handled from the next
+	   * idle handler but when the configure event arrives.
+	   *
+	   * FIXME: we should also dequeue the pending redraws here, since
+	   * we handle those ourselves upon ->configure_notify_received==TRUE.
+	   */
+	  if (container->resize_mode == GTK_RESIZE_QUEUE)
+	    {
+	      gtk_widget_queue_resize (widget);
+	      _gtk_container_dequeue_resize_handler (container);
+	    }
 	}
     }
   else
@@ -7289,7 +7540,7 @@ gtk_window_group_remove_window (GtkWindowGroup *window_group,
 				GtkWindow      *window)
 {
   g_return_if_fail (GTK_IS_WINDOW_GROUP (window_group));
-  g_return_if_fail (GTK_IS_WIDGET (window));
+  g_return_if_fail (GTK_IS_WINDOW (window));
   g_return_if_fail (window->group == window_group);
 
   g_object_ref (window);

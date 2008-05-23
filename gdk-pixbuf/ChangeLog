@@ -1,6 +1,196 @@
-2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.12 ===
+	* === Released 2.12.9 ===
+
+2008-03-11  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
+
+	* io-bmp.c: (gdk_pixbuf__bmp_image_stop_load): Set a
+	GDK_ERROR_CORRUPT_IMAGE error if the loader is closed while
+	still reading the headers.  (#505085)
+
+2008-03-11  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
+
+	* io-bmp.c: (DecodeHeader): Check for the BMP header magic numbers
+	before decoding it.  (#505085)
+
+2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+
+	* === Released 2.12.8 ===
+
+2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+
+	* gdk-pixbuf-io.c (at_scale_size_prepared_cb): Don't let
+	the width or height go below 1.  (#516024, Christian Persch)
+
+2008-02-10  Matthias Clasen  <mclasne@redhat.com>
+
+	* gdk-pixbuf-scaled-anim.c: Try harder to return pixbufs
+	of the requested size.  (#494515, Mike Morrison)
+
+2008-01-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.7 ===
+
+2008-01-28  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.12.6 ===
+
+2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.5 ===
+
+2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.4 ===
+
+2007-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* io-jpeg.c: Fix the spinguard logic for big buffers.
+	(#494667, Ed Catmur)
+
+2007-12-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.3 ===
+
+2007-11-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.2 ===
+
+2007-11-10  Matthias Clasen <mclasen@redhat.com>
+
+	* io-jpeg.c: Avoid unaligned accesses that cause
+	problems on some architectures.  (patch by David Miller)
+
+2007-10-16  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.12.1 ===
+
+2007-10-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-wbmp.c: Use better magic.  (#339877, Bastien Nocera)
+
+2007-09-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.0 ===
+
+2007-09-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-scaled-anim.c (get_scaled_pixbuf): Don't leak 
+	options.  
+
+2007-09-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-ani.c: Fix some possible crashes.  (#468832, Michal Luczaj)
+
+2007-09-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-tga.c (gdk_pixbuf__tga_stop_load): Handle pbuf 
+	being NULL.  (#468801, Sebastien Bacher)
+
+2007-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.6 ===
+
+Sat Jul  7 17:34:33 2007  Tim Janik  <timj@gtk.org>
+
+	* gdk-pixbuf-scale.c: docu fixes from Guillaume Cottenceau, #454596.
+
+2007-07-06  Michael J. Chudobiak  <mjc@cvs.gnome.org>
+
+	* io-tiff.c: (tiff_image_parse): Added a comment to explain
+	the signal used to stop parsing early.
+
+2007-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-tiff.c: Revert the last change, it was wrong
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Redo the last
+	change in a different way.
+
+2007-07-04  Tor Lillqvist  <tml@novell.com>
+
+	* pixops/Makefile.am (timescale_LDADD): Use GDK_PIXBUF_DEP_LIBS
+	instead of GDK_PIXBUF_EXTRA_LIBS here, too. 
+
+2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-tiff.c (tiff_image_parse): Always set an error
+	when returning NULL.  (453365, Michael Chudobiak)
+
+2007-07-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Be
+	more careful when calling g_propagate_error().  (#453365,
+	Michael Chudobiak)
+
+2007-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.5 ===
+
+2007-07-02  Matthias Clasen <mclasen@redhat.com>
+
+	* gdk-pixbuf.c (gdk_pixbuf_get_option): Document the
+	"orientation" option.
+
+	* gdk-pixbuf.symbols:
+	* gdk-pixbuf-core.h:
+	* gdk-pixbuf-util.c (gdk_pixbuf_apply_embedded_orientation):
+	New function to handle Exif orientation information in 
+	tiff and jpeg images.  (#439567, Michael Chudobiak)
+
+2007-06-19  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.11.4 ===
+
+2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.3 ===
+
+2007-06-15  Hans Breuer  <hans@breuer.org>
+
+	* makefile.msc : updated
+	* io-jpeg.c : use g_snprintf
+
+2007-06-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* io-pnm.c (explode_bitmap_into_buf): Fix out-of-bound access.
+	(#440918, Matthias Kilian)
+
+2007-06-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.2 ===
+
+2007-06-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.1 ===
+
+2007-05-30  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_stop_load):
+	Supply the current GError for fatal_error_handler(). (#441443)
+
+2007-05-24   Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.0 ===
+
+2007-05-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf.symbols: Add missing scaled-anim entries.
+
+2007-05-18  Michael J. Chudobiak  <mjc@cvs.gnome.org>
+
+	* gdk-pixbuf-scaled-anim.c: (get_scaled_pixbuf):
+	Preserve pixbuf options when generating a new scaled pixbuf.
+
+	* io-jpeg.c: (get_orientation), (gdk_pixbuf__jpeg_image_load),
+	(gdk_pixbuf__jpeg_image_load_increment): Read the exif
+	orientation tag and associate it with the "orientation" pixbuf
+	option. Renders libexif unnecessary in some applications.
+
+	* io-tiff.c: (tiff_image_parse): Read the tiff orientation tag,
+	compensate for the partial rotations performed by libtiff,
+	and generate an "orientation" option for the pixbuf.
 
 2007-04-29  Matthias Clasen <mclasen@redhat.com>
 
@@ -9,27 +199,37 @@
 
 2007-04-28  Matthias Clasen <mclasen@redhat.com>
 
-	Merge from trunk:
-
 	* io-png.c:
 	* io-jpeg.c: Accept unknown parameters with a warning 
 	when saving.  (#405539, Daniel Atallah)
 
 2007-04-25  Matthias Clasen <mclasen@redhat.com>
 
-	Merge from trunk:
-
 	* gdk-pixbuf-simple-anim.c (gdk_pixbuf_simple_anim_add_frame):
 	Don't double the delay time of the first frame.  (#431997,
 	Björn Lindqvist)
 
-2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+2007-04-25  Matthias Clasen <mclasen@redhat.com>
 
-	* === Released 2.10.11 ===
+	* gdk-pixbuf-scaled-anim.c (gdk_pixbuf_scaled_anim_iter_finalize):
+	Chain up.  (#433125, Christian Persch)
 
-2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+Wed Mar 28 15:27:35 2007  Tim Janik  <timj@imendio.com>
 
-	* === Released 2.10.10 ===
+	* io-jpeg.c: applied JPEG loader fix from maemo. this fix makes sure
+	stop_load() doesn't forget about its return value, and it pulls the
+	check for infinite looping out of an else branch in load_increment()
+	so it runs unconditionally, fixes #397643.
+
+2007-03-08  Matthias Clasen <mclasen@redhat.com>
+
+	* gdk-pixbuf-scaled-anim.[hc]: Implement an animation
+	wrapper for scaling animations.  
+
+	* gdk-pixbuf-loader.c: Use GdkPixbufScaledAnim to scale
+	animations.  (#335752, Mike Morrison)
+
+	* Makefile.am: Glue.
 
 2007-03-06  Tor Lillqvist  <tml@novell.com>
 
@@ -37,8 +237,6 @@
 	srcdir. (#413492, Mathias Hasselmann)
 
 2007-03-05  Matthias Clasen <mclasen@redhat.com>
-
-	Merge from trunk:
 
 	* io-tga.c: (gdk_pixbuf__tga_stop_load): Flip rle-encoded
 	images even if they haven't been completely loaded.  (#347106)
@@ -49,8 +247,6 @@
 	Fixes bug #393599.
 
 2007-02-16  Matthias Clasen  <mclasen@redhat.com>
-
-	Merged from trunk:
 
 	* io-png.c: Don't leak in the error path.  (#405539, Daniel Atallah)
 
@@ -65,10 +261,6 @@
 	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Protect
 	against stop_load begin broken.  (#403255, Lucas Mazzardo Veloso)
 
-2007-01-22  Matthias Clasen  <mclasen@redhat.com>
-
-	* === 2.10.9 ===
-
 2007-01-21  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-gif.c (gdk_pixbuf__gif_image_stop_load): Return an
@@ -77,7 +269,7 @@
 
 2007-01-17  Michael Natterer  <mitch@imendio.com>
 
-	Patch taken from maemo-gtk (merged from trunk):
+	Patch taken from maemo-gtk:
 
 	* io-png.c (png_text_to_pixbuf_option): don't call g_convert() on
 	ASCII strings.
@@ -85,20 +277,12 @@
 	(png_info_callback): set an error when the size_func would scale
 	the pixbuf away completely.
 
-2007-01-17  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.8 ===
-
 2007-01-16  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Just
 	call gdk_pixbuf_loader_close to close the loader in
 	the error case. Fixes memory leaks in the error case,
-	pointed out by David Ne¿as.
-
-2007-01-05  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.7 ===
+	pointed out by David Necas.
 
 2007-01-04  Matthias Clasen  <mclasen@redhat.com>
 
@@ -110,11 +294,11 @@
 	with more than 8 bits per channel.  (#172584,
 	David Costanzo)
 
-	* io-bmp.c: Handle offsets more carefully. (#172188, 
+	* io-bmp.c: Handle offsets more carefully. (#172188,
 	David Costanzo)
-	
+
 	* io-bmp.c: Handle v5 and OS/2 v2 bmps.
-	
+
 	* io-bmp.c: Handle alpha masks in v4 and v5 bmps.
 
 2006-12-21  Matthias Clasen  <mclasen@redhat.com>
@@ -144,7 +328,7 @@
 2006-12-09  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Behave as
-	documented and close the loader when returning FALSE. 
+	documented and close the loader when returning FALSE.
 
 2006-10-29  Tor Lillqvist  <tml@novell.com>
 
@@ -156,46 +340,34 @@
 	a common .def file for the loaders. The two symbols that need to
 	be exported are fill_info and fill_vtable.
 
-2007-01-19  Michael Natterer  <mitch@imendio.com>
+2006-10-11  Tor Lillqvist  <tml@novell.com>
 
-	Port over io-jpeg.c changed (also filed upstream):
+	Enable having some loaders built-in even if loading the others
+	dynamically. Have loaders in the same order as in configure.in in
+	all places where they are handled/listed.
 
-	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard
-	to avoid infinite looping also when num_left > 0.
+	* Makefile.am: Define the STATIC_FOO_LIB and FOO_LIB macros
+	conditionally depending on whether said loader is built-in or
+	not. Use the names libstatic-pixbufloader-foo.la instead of
+	libpixbufloader-static-foo.la for the built-in ones so that the
+	"echo libpixbufloader-*.la" won't match them.
+	
+	* gdk-pixbuf-io.c: Reorganize code as to plumb the built-in
+	loaders also if USE_GMODULE. Don't warn about a missing
+	gdk-pixbuf.loaders file if we have at least one included loader.
+	
+	* gdk-pixbuf-private.h
+	* io-*.c: Don't define a generic MODULE_ENTRY, as we can't use it
+	in the loaders anyway. Each loader needs to check if INCLUDE_foo
+	is defined.
 
-	(gdk_pixbuf__jpeg_image_stop_load): Make sure the return value
-	matches error status, to ensure the caller can handle 'error'
-	correctly.
+2006-10-08  Matthias Clasen  <mclasen@redhat.com>
 
-2007-01-17  Michael Natterer  <mitch@imendio.com>
-
-	Port over io-png.c changes (also merged back to upstream):
-
-	* io-png.c (png_text_to_pixbuf_option): don't call g_convert() on
-	ASCII strings.
-
-	(png_info_callback): set an error when the size_func would scale
-	the pixbuf away completely.
-
-2006-10-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.6 ===
-
-2006-10-02  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.5 ===
-
-2006-09-22  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.4 ===
+	* Apply a cleanup patch by Kjartan Maraas  (#341812) 
 
 2006-09-06  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-pnm.c: Simplify and fix reading of ASCII images. 
-
-2006-09-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.3 ===
 
 2006-08-17  Matthias Clasen  <mclasen@redhat.com>
 

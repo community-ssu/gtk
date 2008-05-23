@@ -9,7 +9,7 @@ INCLUDES = \
 noinst_PROGRAMS = timescale
 
 timescale_SOURCES = timescale.c
-timescale_LDADD = libpixops.la $(GLIB_LIBS) -lm
+timescale_LDADD = libpixops.la $(GLIB_LIBS) $(GDK_PIXBUF_DEP_LIBS)
 
 if USE_MMX
 mmx_sources =				\

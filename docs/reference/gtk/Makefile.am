@@ -27,6 +27,7 @@ IGNORE_HFILES=				\
 	fnmatch.h			\
 	gdk-pixbuf-loader.h		\
 	gtkdebug.h			\
+	gtkbuilderprivate.h		\
 	gtkdndcursors.h			\
 	gtkentryprivate.h		\
 	gtkfilechooserdefault.h		\
@@ -41,6 +42,7 @@ IGNORE_HFILES=				\
 	gtkfilesystemwin32.h		\
 	gtkhsv.h			\
 	gtkiconcache.h			\
+        gtkiconcachevalidator.h         \
 	gtkiconthemeparser.h		\
 	gtkimmodule.h			\
 	gtkintl.h			\
@@ -58,15 +60,21 @@ IGNORE_HFILES=				\
 	gtkprintutils.h			\
 	gtkprintoperation-private.h	\
 	gtkprivate.h			\
+	gtkquery.h			\
 	gtkrbtree.h			\
 	gtkrecentchooserdefault.h	\
 	gtkrecentchooserutils.h		\
 	gtkrecentchooserprivate.h	\
+	gtksearchengine.h		\
+	gtksearchenginebeagle.h		\
+	gtksearchenginetracker.h	\
+	gtksearchenginesimple.h		\
+	gtksearchenginequartz.h		\
 	gtksequence.h			\
 	gtksocketprivate.h		\
-	gtktreedatalist.h		\
-	gtktreeprivate.h		\
 	gtktextbtree.h			\
+	gtktextbufferserializ.h		\
+	gtktextchildprivate.h		\
 	gtktextdisplay.h		\
 	gtktextiterprivate.h		\
 	gtktextlayout.h			\
@@ -75,12 +83,16 @@ IGNORE_HFILES=				\
 	gtktexttagprivate.h		\
 	gtktexttypes.h			\
 	gtktextutil.h			\
+	gtkthemes.h			\
 	gtktoggleactionprivate.h	\
 	gtktrayicon.h			\
+	gtktreedatalist.h		\
+	gtktreeprivate.h		\
 	gtktypebuiltins.h		\
 	gtkxembed.h			\
 	gtkwin32embed.h			\
 	gtkwin32embedwidget.h		\
+	gtkwindow-decorate.h		\
 	xdgmime				\
 	xembed.h
 
@@ -112,7 +124,6 @@ content_files =					\
 	changes-2.0.sgml			\
 	compiling.sgml				\
 	directfb.sgml				\
-	framebuffer.sgml			\
 	glossary.xml				\
 	migrating-checklist.sgml		\
 	migrating-GtkAction.sgml		\
@@ -125,6 +136,7 @@ content_files =					\
 	migrating-GtkRecentChooser.sgml 	\
 	migrating-GtkLinkButton.sgml		\
 	migrating-GtkBuilder.sgml		\
+        migrating-GtkTooltip.sgml		\
 	objects_grouped.sgml			\
 	osx.sgml				\
 	question_index.sgml			\
@@ -135,6 +147,7 @@ content_files =					\
 	x11.sgml				\
 	gtk-query-immodules-2.0.xml		\
 	gtk-update-icon-cache.xml		\
+	gtk-builder-convert.xml			\
 	visual_index.xml
 
 expand_content_files = 				\
@@ -150,6 +163,7 @@ expand_content_files = 				\
 	migrating-GtkRecentChooser.sgml 	\
 	migrating-GtkLinkButton.sgml		\
 	migrating-GtkBuilder.sgml		\
+	migrating-GtkTooltip.sgml		\
 	tree_widget.sgml			\
 	text_widget.sgml			\
 	question_index.sgml
@@ -306,10 +320,17 @@ HTML_IMAGES = \
 	$(srcdir)/images/statusbar.png					\
 	$(srcdir)/images/toggle-button.png				\
 	$(srcdir)/images/toolbar.png					\
+	$(srcdir)/images/tree-view-coordinates.png			\
+	$(srcdir)/images/volumebutton.png				\
 	$(srcdir)/images/window.png
 
 # Extra options to supply to gtkdoc-fixref
-FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
+FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html \
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/gobject \
+	--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/glib \
+	--extra-dir=$(ATK_PREFIX)/share/gtk-doc/html/atk \
+	--extra-dir=$(PANGO_PREFIX)/share/gtk-doc/html/pango \
+	--extra-dir=$(CAIRO_PREFIX)/share/gtk-doc/html/cairo
 
 include $(top_srcdir)/gtk-doc.make
 
@@ -318,7 +339,7 @@ EXTRA_DIST += version.xml.in
 
 ########################################################################
 
-man_MANS = gtk-query-immodules-2.0.1 gtk-update-icon-cache.1 
+man_MANS = gtk-query-immodules-2.0.1 gtk-update-icon-cache.1 gtk-builder-convert.1
 
 if ENABLE_MAN
 

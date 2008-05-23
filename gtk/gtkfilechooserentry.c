@@ -75,6 +75,7 @@ static void     gtk_file_chooser_entry_iface_init     (GtkEditableClass *iface);
 
 static void     gtk_file_chooser_entry_finalize       (GObject          *object);
 static void     gtk_file_chooser_entry_dispose        (GObject          *object);
+static void     gtk_file_chooser_entry_grab_focus     (GtkWidget        *widget);
 static gboolean gtk_file_chooser_entry_focus          (GtkWidget        *widget,
 						       GtkDirectionType  direction);
 static void     gtk_file_chooser_entry_activate       (GtkEntry         *entry);
@@ -86,6 +87,19 @@ static void     gtk_file_chooser_entry_do_insert_text (GtkEditable *editable,
 
 static void     clear_completion_callback (GtkFileChooserEntry *chooser_entry,
 					   GParamSpec          *pspec);
+
+#ifdef G_OS_WIN32
+static gint     insert_text_callback      (GtkFileChooserEntry *widget,
+					   const gchar         *new_text,
+					   gint                 new_text_length,
+					   gint                *position,
+					   gpointer             user_data);
+static void     delete_text_callback      (GtkFileChooserEntry *widget,
+					   gint                 start_pos,
+					   gint                 end_pos,
+					   gpointer             user_data);
+#endif
+
 static gboolean match_selected_callback   (GtkEntryCompletion  *completion,
 					   GtkTreeModel        *model,
 					   GtkTreeIter         *iter,
@@ -120,6 +134,7 @@ _gtk_file_chooser_entry_class_init (GtkFileChooserEntryClass *class)
   gobject_class->finalize = gtk_file_chooser_entry_finalize;
   gobject_class->dispose = gtk_file_chooser_entry_dispose;
 
+  widget_class->grab_focus = gtk_file_chooser_entry_grab_focus;
   widget_class->focus = gtk_file_chooser_entry_focus;
 
   entry_class->activate = gtk_file_chooser_entry_activate;
@@ -167,6 +182,13 @@ _gtk_file_chooser_entry_init (GtkFileChooserEntry *chooser_entry)
 		    G_CALLBACK (clear_completion_callback), NULL);
   g_signal_connect (chooser_entry, "notify::selection-bound",
 		    G_CALLBACK (clear_completion_callback), NULL);
+
+#ifdef G_OS_WIN32
+  g_signal_connect (chooser_entry, "insert_text",
+		    G_CALLBACK (insert_text_callback), NULL);
+  g_signal_connect (chooser_entry, "delete_text",
+		    G_CALLBACK (delete_text_callback), NULL);
+#endif
 }
 
 static void
@@ -359,7 +381,7 @@ maybe_append_separator_to_path (GtkFileChooserEntry *chooser_entry,
 				GtkFilePath         *path,
 				gchar               *display_name)
 {
-  if (path)
+  if (!g_str_has_suffix (display_name, G_DIR_SEPARATOR_S) && path)
     {
       GtkFileInfo *info;
 	    
@@ -377,7 +399,6 @@ maybe_append_separator_to_path (GtkFileChooserEntry *chooser_entry,
 	  
 	  gtk_file_info_free (info);
 	}
-
     }
 
   return display_name;
@@ -572,8 +593,10 @@ update_current_folder_files (GtkFileChooserEntry *chooser_entry,
 				       NULL); /* NULL-GError */
       if (info)
 	{
-	  const gchar *display_name = gtk_file_info_get_display_name (info);
+	  gchar *display_name = g_strdup (gtk_file_info_get_display_name (info));
 	  GtkTreeIter iter;
+
+          display_name = maybe_append_separator_to_path (chooser_entry, path, display_name);
 
 	  gtk_list_store_append (chooser_entry->completion_store, &iter);
 	  gtk_list_store_set (chooser_entry->completion_store, &iter,
@@ -582,6 +605,7 @@ update_current_folder_files (GtkFileChooserEntry *chooser_entry,
 			      -1);
 
 	  gtk_file_info_free (info);
+          g_free (display_name);
 	}
     }
 
@@ -692,6 +716,13 @@ gtk_file_chooser_entry_do_insert_text (GtkEditable *editable,
 
   if (! chooser_entry->in_change)
     add_completion_idle (GTK_FILE_CHOOSER_ENTRY (editable));
+}
+
+static void
+gtk_file_chooser_entry_grab_focus (GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS (_gtk_file_chooser_entry_parent_class)->grab_focus (widget);
+  _gtk_file_chooser_entry_select_filename (GTK_FILE_CHOOSER_ENTRY (widget));
 }
 
 static gboolean
@@ -846,8 +877,7 @@ gtk_file_chooser_entry_changed (GtkEditable *editable)
 	file_part_pos = 0;
     }
 
-  if (chooser_entry->file_part)
-    g_free (chooser_entry->file_part);
+  g_free (chooser_entry->file_part);
 
   chooser_entry->file_part = file_part;
   chooser_entry->file_part_pos = file_part_pos;
@@ -865,6 +895,70 @@ clear_completion_callback (GtkFileChooserEntry *chooser_entry,
       gtk_file_chooser_entry_changed (GTK_EDITABLE (chooser_entry));
     }
 }
+
+#ifdef G_OS_WIN32
+static gint
+insert_text_callback (GtkFileChooserEntry *chooser_entry,
+		      const gchar	  *new_text,
+		      gint       	   new_text_length,
+		      gint       	  *position,
+		      gpointer   	   user_data)
+{
+  const gchar *colon = memchr (new_text, ':', new_text_length);
+  gint i;
+
+  /* Disallow these characters altogether */
+  for (i = 0; i < new_text_length; i++)
+    {
+      if (new_text[i] == '<' ||
+	  new_text[i] == '>' ||
+	  new_text[i] == '"' ||
+	  new_text[i] == '|' ||
+	  new_text[i] == '*' ||
+	  new_text[i] == '?')
+	break;
+    }
+
+  if (i < new_text_length ||
+      /* Disallow entering text that would cause a colon to be anywhere except
+       * after a drive letter.
+       */
+      (colon != NULL &&
+       *position + (colon - new_text) != 1) ||
+      (new_text_length > 0 &&
+       *position <= 1 &&
+       GTK_ENTRY (chooser_entry)->text_length >= 2 &&
+       gtk_entry_get_text (GTK_ENTRY (chooser_entry))[1] == ':'))
+    {
+      gtk_widget_error_bell (GTK_WIDGET (chooser_entry));
+      g_signal_stop_emission_by_name (chooser_entry, "insert_text");
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static void
+delete_text_callback (GtkFileChooserEntry *chooser_entry,
+		      gint                 start_pos,
+		      gint                 end_pos,
+		      gpointer             user_data)
+{
+  /* If deleting a drive letter, delete the colon, too */
+  if (start_pos == 0 && end_pos == 1 &&
+      GTK_ENTRY (chooser_entry)->text_length >= 2 &&
+      gtk_entry_get_text (GTK_ENTRY (chooser_entry))[1] == ':')
+    {
+      g_signal_handlers_block_by_func (chooser_entry,
+				       G_CALLBACK (delete_text_callback),
+				       user_data);
+      gtk_editable_delete_text (GTK_EDITABLE (chooser_entry), 0, 1);
+      g_signal_handlers_unblock_by_func (chooser_entry,
+					 G_CALLBACK (delete_text_callback),
+					 user_data);
+    }
+}
+#endif
 
 /**
  * _gtk_file_chooser_entry_new:
@@ -928,7 +1022,7 @@ _gtk_file_chooser_entry_set_base_folder (GtkFileChooserEntry *chooser_entry,
   chooser_entry->base_folder = gtk_file_path_copy (path);
 
   gtk_file_chooser_entry_changed (GTK_EDITABLE (chooser_entry));
-  gtk_editable_select_region (GTK_EDITABLE (chooser_entry), 0, -1);
+  _gtk_file_chooser_entry_select_filename (chooser_entry);
 }
 
 /**
@@ -1073,3 +1167,29 @@ _gtk_file_chooser_entry_get_is_folder (GtkFileChooserEntry *chooser_entry,
 
   return retval;
 }
+
+
+/*
+ * _gtk_file_chooser_entry_select_filename:
+ * @chooser_entry: a #GtkFileChooserEntry
+ *
+ * Selects the filename (without the extension) for user edition.
+ */
+void
+_gtk_file_chooser_entry_select_filename (GtkFileChooserEntry *chooser_entry)
+{
+  const gchar *str, *ext;
+  glong len = -1;
+
+  if (chooser_entry->action == GTK_FILE_CHOOSER_ACTION_SAVE)
+    {
+      str = gtk_entry_get_text (GTK_ENTRY (chooser_entry));
+      ext = g_strrstr (str, ".");
+
+      if (ext)
+       len = g_utf8_pointer_to_offset (str, ext);
+    }
+
+  gtk_editable_select_region (GTK_EDITABLE (chooser_entry), 0, (gint) len);
+}
+

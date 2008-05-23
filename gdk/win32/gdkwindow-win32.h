@@ -86,12 +86,16 @@ struct _GdkWindowImplWin32
   GdkWindowTypeHint type_hint;
 
   gboolean extension_events_selected;
+
+  GdkWindow *transient_owner;
+  GSList    *transient_children;
+  gint       num_transients;
+  gboolean   changing_state;
 };
  
 struct _GdkWindowImplWin32Class 
 {
   GdkDrawableImplWin32Class parent_class;
-
 };
 
 GType _gdk_window_impl_win32_get_type (void);

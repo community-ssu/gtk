@@ -382,7 +382,12 @@ gdk_screen_get_monitor_geometry (GdkScreen    *screen,
  * when displaying the window on the screen: in particular, for
  * X an appropriate windowing manager and compositing manager
  * must be running to provide appropriate display.
- * 
+ *
+ * This functionality is not implemented in the Windows backend.
+ *
+ * For setting an overall opacity for a top-level window, see
+ * gdk_window_set_opacity().
+
  * Return value: a colormap to use for windows with an alpha channel
  *   or %NULL if the capability is not available.
  *
@@ -643,8 +648,7 @@ init_xinerama_support (GdkScreen * screen)
   int opcode, firstevent, firsterror;
 #endif
 
-  if (screen_x11->monitors)
-    g_free (screen_x11->monitors);
+  g_free (screen_x11->monitors);
   
 #ifdef HAVE_XINERAMA  
   if (XQueryExtension (GDK_SCREEN_XDISPLAY (screen), "XINERAMA",

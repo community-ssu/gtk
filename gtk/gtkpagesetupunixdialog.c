@@ -45,7 +45,6 @@
 #include "gtkradiobutton.h"
 #include "gtklabel.h"
 #include "gtktable.h"
-#include "gtktooltips.h"
 #include "gtkcelllayout.h"
 #include "gtkcellrenderertext.h"
 #include "gtkalignment.h"
@@ -75,7 +74,6 @@ struct GtkPageSetupUnixDialogPrivate
   GtkWidget *paper_size_combo;
   GtkWidget *paper_size_label;
   GtkWidget *paper_size_eventbox;
-  GtkTooltips *tooltips;
 
   GtkWidget *portrait_radio;
   GtkWidget *reverse_portrait_radio;
@@ -181,14 +179,15 @@ custom_paper_get_filename (void)
   return filename;
 }
 
-static void
-load_custom_papers (GtkListStore *store)
+GList *
+_gtk_load_custom_papers (void)
 {
   GKeyFile *keyfile;
   gchar *filename;
   gchar **groups;
   gsize n_groups, i;
   gboolean load_ok;
+  GList *result = NULL;
 
   filename = custom_paper_get_filename ();
 
@@ -198,61 +197,46 @@ load_custom_papers (GtkListStore *store)
   if (!load_ok)
     {
       g_key_file_free (keyfile);
-      return;
+      return NULL;
     }
 
   groups = g_key_file_get_groups (keyfile, &n_groups);
   for (i = 0; i < n_groups; ++i)
     {
-      GError *error = NULL;
-      gdouble w, h, top, bottom, left, right;
-      GtkPaperSize *paper_size;
       GtkPageSetup *page_setup;
-      gchar *name;
-      GtkTreeIter iter;
 
-      name = g_key_file_get_value (keyfile, groups[i], "Name", NULL);
-      if (!name)
+      page_setup = gtk_page_setup_new_from_key_file (keyfile, groups[i], NULL);
+      if (!page_setup)
         continue;
 
-#define GET_DOUBLE(kf, name, v) \
-      v = g_key_file_get_double (kf, groups[i], name, &error); \
-      if (error != NULL) \
-        {\
-          g_error_free (error);\
-          continue;\
-        }
-
-      GET_DOUBLE (keyfile, "Width", w);
-      GET_DOUBLE (keyfile, "Height", h);
-      GET_DOUBLE (keyfile, "MarginTop", top);
-      GET_DOUBLE (keyfile, "MarginBottom", bottom);
-      GET_DOUBLE (keyfile, "MarginLeft", left);
-      GET_DOUBLE (keyfile, "MarginRight", right);
-
-#undef GET_DOUBLE
-
-      page_setup = gtk_page_setup_new ();
-      paper_size = gtk_paper_size_new_custom (name, name, w, h, GTK_UNIT_MM);
-      gtk_page_setup_set_paper_size (page_setup, paper_size);
-      gtk_paper_size_free (paper_size);
-
-      gtk_page_setup_set_top_margin (page_setup, top, GTK_UNIT_MM);
-      gtk_page_setup_set_bottom_margin (page_setup, bottom, GTK_UNIT_MM);
-      gtk_page_setup_set_left_margin (page_setup, left, GTK_UNIT_MM);
-      gtk_page_setup_set_right_margin (page_setup, right, GTK_UNIT_MM);
-
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-			  0, page_setup, 
-			  -1);
-
-      g_object_unref (page_setup);
-      g_free (name);
+      result = g_list_prepend (result, page_setup);
     }
  
   g_strfreev (groups);
   g_key_file_free (keyfile);
+
+  return g_list_reverse (result);
+}
+
+static void
+load_custom_papers (GtkListStore *store)
+{
+  GtkTreeIter iter;
+  GList *papers, *p;
+  GtkPageSetup *page_setup;
+  
+  papers = _gtk_load_custom_papers ();
+  for (p = papers; p; p = p->next)
+    {
+      page_setup = p->data;
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+			  0, page_setup, 
+			  -1);
+      g_object_unref (page_setup);
+    }
+
+  g_list_free (papers); 
 }
 
 static void
@@ -271,7 +255,6 @@ save_custom_papers (GtkListStore *store)
     {
       do
 	{
-	  GtkPaperSize *paper_size;
 	  GtkPageSetup *page_setup;
 	  gchar group[32];
 
@@ -279,21 +262,7 @@ save_custom_papers (GtkListStore *store)
 
 	  gtk_tree_model_get (model, &iter, 0, &page_setup, -1);
 
-	  paper_size = gtk_page_setup_get_paper_size (page_setup);
-	  g_key_file_set_string (keyfile, group, "Name", gtk_paper_size_get_name (paper_size));
-
-	  g_key_file_set_double (keyfile, group, "Width",
-				 gtk_page_setup_get_paper_width (page_setup, GTK_UNIT_MM));
-	  g_key_file_set_double (keyfile, group, "Height",
-				 gtk_page_setup_get_paper_height (page_setup, GTK_UNIT_MM));
-	  g_key_file_set_double (keyfile, group, "MarginTop",
-				 gtk_page_setup_get_top_margin (page_setup, GTK_UNIT_MM));
-	  g_key_file_set_double (keyfile, group, "MarginBottom",
-				 gtk_page_setup_get_bottom_margin (page_setup, GTK_UNIT_MM));
-	  g_key_file_set_double (keyfile, group, "MarginLeft",
-				 gtk_page_setup_get_left_margin (page_setup, GTK_UNIT_MM));
-	  g_key_file_set_double (keyfile, group, "MarginRight",
-				 gtk_page_setup_get_right_margin (page_setup, GTK_UNIT_MM));
+	  gtk_page_setup_to_key_file (page_setup, keyfile, group);
 	  
 	  ++i;
 	} while (gtk_tree_model_iter_next (model, &iter));
@@ -730,7 +699,7 @@ fill_paper_sizes_from_printer (GtkPageSetupUnixDialog *dialog,
     }
   else
     {
-      list = _gtk_printer_list_papers (printer);
+      list = gtk_printer_list_papers (printer);
       /* TODO: We should really sort this list so interesting size
 	 are at the top */
       for (l = list; l != NULL; l = l->next)
@@ -803,7 +772,7 @@ printer_changed_callback (GtkComboBox            *combo_box,
       gtk_tree_model_get (gtk_combo_box_get_model (combo_box), &iter,
 			  PRINTER_LIST_COL_PRINTER, &printer, -1);
 
-      if (printer == NULL || _gtk_printer_has_details (printer))
+      if (printer == NULL || gtk_printer_has_details (printer))
 	fill_paper_sizes_from_printer (dialog, printer);
       else
 	{
@@ -811,7 +780,7 @@ printer_changed_callback (GtkComboBox            *combo_box,
 	  priv->request_details_tag =
 	    g_signal_connect (printer, "details-acquired",
 			      G_CALLBACK (printer_changed_finished_callback), dialog);
-	  _gtk_printer_request_details (printer);
+	  gtk_printer_request_details (printer);
 
 	}
 
@@ -947,8 +916,7 @@ paper_size_changed (GtkComboBox            *combo_box,
       g_free (left);
       g_free (right);
       
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (priv->tooltips),
-			    priv->paper_size_eventbox, str, NULL);
+      gtk_widget_set_tooltip_text (priv->paper_size_eventbox, str);
       g_free (str);
       
       g_object_unref (page_setup);
@@ -956,8 +924,7 @@ paper_size_changed (GtkComboBox            *combo_box,
   else
     {
       gtk_label_set_text (label, "");
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (priv->tooltips),
-			    priv->paper_size_eventbox, NULL, NULL);
+      gtk_widget_set_tooltip_text (priv->paper_size_eventbox, NULL);
       if (priv->last_setup)
 	g_object_unref (priv->last_setup);
       priv->last_setup = NULL;
@@ -1125,8 +1092,6 @@ populate_dialog (GtkPageSetupUnixDialog *ps_dialog)
 		    2, 3, 4, 5,
 		    GTK_EXPAND|GTK_FILL, 0, 0, 0);
 
-
-  priv->tooltips = gtk_tooltips_new ();
 
   g_signal_connect (priv->paper_size_combo, "changed", G_CALLBACK (paper_size_changed), ps_dialog);
   g_signal_connect (priv->printer_combo, "changed", G_CALLBACK (printer_changed_callback), ps_dialog);
@@ -1743,7 +1708,7 @@ margins_from_printer_changed (CustomPaperDialog *data)
 
       if (printer)
 	{
-	  if (_gtk_printer_has_details (printer))
+	  if (gtk_printer_has_details (printer))
 	    {
 	      set_margins_from_printer (data, printer);
 	      gtk_combo_box_set_active (combo, 0);
@@ -1754,7 +1719,7 @@ margins_from_printer_changed (CustomPaperDialog *data)
 	      data->request_details_tag =
 		g_signal_connect (printer, "details-acquired",
 				  G_CALLBACK (get_margins_finished_callback), data);
-	      _gtk_printer_request_details (printer);
+	      gtk_printer_request_details (printer);
 	    }
 
 	  g_object_unref (printer);

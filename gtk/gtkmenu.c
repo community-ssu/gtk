@@ -46,10 +46,10 @@
 #include "gtkvscrollbar.h"
 #include "gtksettings.h"
 #include "gtkprivate.h"
-#include "gtkintl.h"
 #ifdef MAEMO_CHANGES
 #include "gtkmenubar.h"
 #endif /* MAEMO_CHANGES */
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
@@ -1375,10 +1375,12 @@ maemo_menu_check_name (GtkWidget *widget)
  * a mouse button press, such as a mouse button release or a keypress,
  * @button should be 0.
  *
- * The @activate_time parameter should be the time stamp of the event that
- * initiated the popup. If such an event is not available, use
- * gtk_get_current_event_time() instead.
- *
+ * The @activate_time parameter is used to conflict-resolve initiation of
+ * concurrent requests for mouse/keyboard grab requests. To function
+ * properly, this needs to be the time stamp of the user event (such as
+ * a mouse click or key press) that caused the initiation of the popup.
+ * Only if no such event is available, gtk_get_current_event_time() can
+ * be used instead.
  */
 void
 gtk_menu_popup (GtkMenu		    *menu,
@@ -1454,7 +1456,7 @@ gtk_menu_popup (GtkMenu		    *menu,
   if (xgrab_shell && xgrab_shell != widget)
     {
       if (popup_grab_on_window (xgrab_shell->window, activate_time, grab_keyboard))
-        GTK_MENU_SHELL (xgrab_shell)->have_xgrab = TRUE;
+	GTK_MENU_SHELL (xgrab_shell)->have_xgrab = TRUE;
 
 #ifdef MAEMO_CHANGES
       /* Maemo: enable rc-file theming */
@@ -2168,29 +2170,31 @@ static void
 get_arrows_border (GtkMenu *menu, GtkBorder *border)
 {
   guint scroll_arrow_height;
-#ifndef MAEMO_CHANGES
-  gtk_widget_style_get (GTK_WIDGET (menu),
-                        "scroll-arrow-vlength", &scroll_arrow_height,
-                        NULL);
-#else
+#ifdef MAEMO_CHANGES
   gboolean opposite_arrows;
+#endif
 
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "scroll-arrow-vlength", &scroll_arrow_height,
+#ifdef MAEMO_CHANGES
                         "opposite-arrows", &opposite_arrows,
+#endif
                         NULL);
 
+#ifdef MAEMO_CHANGES
   if (!opposite_arrows)
     {
       border->top = 0;
       border->bottom = (menu->upper_arrow_visible || menu->lower_arrow_visible) ? scroll_arrow_height : 0;
     }
   else
-#endif
     {
-      border->top = menu->upper_arrow_visible ? scroll_arrow_height : 0;
-      border->bottom = menu->lower_arrow_visible ? scroll_arrow_height : 0;
+#endif
+  border->top = menu->upper_arrow_visible ? scroll_arrow_height : 0;
+  border->bottom = menu->lower_arrow_visible ? scroll_arrow_height : 0;
+#ifdef MAEMO_CHANGES
     }
+#endif
 
   border->left = border->right = 0;
 }
@@ -2660,18 +2664,20 @@ get_arrows_visible_area (GtkMenu *menu,
       lower->height = scroll_arrow_height;
     }
   else
-#endif
     {
-      upper->x = border->x;
-      upper->y = border->y;
-      upper->width = border->width - 2 * border->x;
-      upper->height = scroll_arrow_height;
+#endif
+  upper->x = border->x;
+  upper->y = border->y;
+  upper->width = border->width - 2 * border->x;
+  upper->height = scroll_arrow_height;
 
-      lower->x = border->x;
-      lower->y = border->height - border->y - scroll_arrow_height;
-      lower->width = border->width - 2 * border->x;
-      lower->height = scroll_arrow_height;
+  lower->x = border->x;
+  lower->y = border->height - border->y - scroll_arrow_height;
+  lower->width = border->width - 2 * border->x;
+  lower->height = scroll_arrow_height;
+#ifdef MAEMO_CHANGES
     }
+#endif
 
   *arrow_space = scroll_arrow_height - 2 * widget->style->ythickness;
 }
@@ -2696,12 +2702,16 @@ gtk_menu_paint (GtkWidget      *widget,
 
   if (event->window == widget->window)
     {
+#ifndef MAEMO_CHANGES
+      gint arrow_size = 0.7 * arrow_space;
+#else
       gfloat arrow_scaling = 0.7;
       gint arrow_size;
-#ifdef MAEMO_CHANGES
+
       gtk_widget_style_get (widget, "maemo-arrow-scaling", &arrow_scaling, NULL);
-#endif
+
       arrow_size = arrow_scaling * arrow_space;
+#endif
 
       gtk_paint_box (widget->style,
 		     widget->window,
@@ -2715,12 +2725,11 @@ gtk_menu_paint (GtkWidget      *widget,
 	  gtk_paint_box (widget->style,
 			 widget->window,
 			 priv->upper_arrow_state,
-			 GTK_SHADOW_OUT,
-			 &event->area, widget,
+                         GTK_SHADOW_OUT,
 #ifdef MAEMO_CHANGES
-			 "menu_scroll_arrow_up",
+                         &event->area, widget, "menu_scroll_arrow_down",
 #else
-			 "menu",
+                         &event->area, widget, "menu",
 #endif
                          upper.x,
                          upper.y,
@@ -2744,12 +2753,11 @@ gtk_menu_paint (GtkWidget      *widget,
 	  gtk_paint_box (widget->style,
 			 widget->window,
 			 priv->lower_arrow_state,
-			 GTK_SHADOW_OUT,
-			 &event->area, widget,
+                         GTK_SHADOW_OUT,
 #ifdef MAEMO_CHANGES
-			 "menu_scroll_arrow_down",
+                         &event->area, widget, "menu_scroll_arrow_down",
 #else
-			 "menu",
+                         &event->area, widget, "menu",
 #endif
                          lower.x,
                          lower.y,
@@ -2947,7 +2955,17 @@ gtk_menu_button_release (GtkWidget      *widget,
 #ifndef MAEMO_CHANGES
   if (GTK_IS_MENU_SHELL (gtk_get_event_widget ((GdkEvent *) event)) &&
       pointer_in_menu_window (widget, event->x_root, event->y_root))
-    return TRUE;
+    {
+      /*  Ugly: make sure menu_shell->button gets reset to 0 when we
+       *  bail out early here so it is in a consistent state for the
+       *  next button_press/button_release in GtkMenuShell.
+       *  See bug #449371.
+       */
+      if (GTK_MENU_SHELL (widget)->active)
+        GTK_MENU_SHELL (widget)->button = 0;
+
+      return TRUE;
+    }
 #else
   menu_item = gtk_get_event_widget ((GdkEvent*) event);
   if (!GTK_IS_MENU_ITEM (menu_item) ||
@@ -3057,7 +3075,6 @@ gtk_menu_key_press (GtkWidget	*widget,
     {
       guint keyval = 0;
       GdkModifierType mods = 0;
-      gboolean handled = FALSE;
       
       gtk_accelerator_parse (accel, &keyval, &mods);
 
@@ -3068,15 +3085,15 @@ gtk_menu_key_press (GtkWidget	*widget,
        * thing, to properly consider i18n etc., but that probably requires
        * AccelGroup changes etc.
        */
-      if (event->keyval == keyval &&
-          (mods & event->state) == mods)
-	gtk_menu_shell_cancel (menu_shell);
-
-      g_free (accel);
-
-      if (handled)
-        return TRUE;
+      if (event->keyval == keyval && (mods & event->state) == mods)
+        {
+	  gtk_menu_shell_cancel (menu_shell);
+          g_free (accel);
+          return TRUE;
+        }
     }
+
+  g_free (accel);
   
   switch (event->keyval)
     {
@@ -3544,8 +3561,6 @@ gtk_menu_scroll_timeout (gpointer data)
   GtkMenu  *menu;
   gboolean  touchscreen_mode;
 
-  GDK_THREADS_ENTER ();
-
   menu = GTK_MENU (data);
 
   g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
@@ -3553,8 +3568,6 @@ gtk_menu_scroll_timeout (gpointer data)
                 NULL);
 
   gtk_menu_do_timeout_scroll (menu, touchscreen_mode);
-
-  GDK_THREADS_LEAVE ();
 
   return TRUE;
 }
@@ -3565,8 +3578,6 @@ gtk_menu_scroll_timeout_initial (gpointer data)
   GtkMenu  *menu;
   guint     timeout;
   gboolean  touchscreen_mode;
-
-  GDK_THREADS_ENTER ();
 
   menu = GTK_MENU (data);
 
@@ -3584,9 +3595,9 @@ gtk_menu_scroll_timeout_initial (gpointer data)
 
   gtk_menu_remove_scroll_timeout (menu);
 
-  menu->timeout_id = g_timeout_add (timeout, gtk_menu_scroll_timeout, menu);
-
-  GDK_THREADS_LEAVE ();
+  menu->timeout_id = gdk_threads_add_timeout (timeout,
+                                              gtk_menu_scroll_timeout,
+                                              menu);
 
   return FALSE;
 }
@@ -3608,8 +3619,9 @@ gtk_menu_start_scrolling (GtkMenu *menu)
 
   gtk_menu_do_timeout_scroll (menu, touchscreen_mode);
 
-  menu->timeout_id = g_timeout_add (timeout, gtk_menu_scroll_timeout_initial,
-                                    menu);
+  menu->timeout_id = gdk_threads_add_timeout (timeout,
+                                              gtk_menu_scroll_timeout_initial,
+                                              menu);
 }
 
 static gboolean
@@ -3643,14 +3655,18 @@ get_arrows_sensitive_area (GtkMenu *menu,
   guint vertical_padding;
   gint win_x, win_y;
   gint scroll_arrow_height;
+#ifdef MAEMO_CHANGES
   gboolean opposite_arrows;
+#endif
 
   gdk_drawable_get_size (GTK_WIDGET (menu)->window, &width, &height);
 
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "vertical-padding", &vertical_padding,
                         "scroll-arrow-vlength", &scroll_arrow_height,
+#ifdef MAEMO_CHANGES
                         "opposite-arrows", &opposite_arrows,
+#endif
                         NULL);
 
   border = GTK_CONTAINER (menu)->border_width +
@@ -3658,23 +3674,26 @@ get_arrows_sensitive_area (GtkMenu *menu,
 
   gdk_window_get_position (GTK_WIDGET (menu)->window, &win_x, &win_y);
 
+#ifdef MAEMO_CHANGES
   if (opposite_arrows)
     {
-      if (upper)
-        {
-          upper->x = win_x;
-          upper->y = win_y;
-          upper->width = width;
-          upper->height = scroll_arrow_height + border;
-        }
+#endif
+  if (upper)
+    {
+      upper->x = win_x;
+      upper->y = win_y;
+      upper->width = width;
+      upper->height = scroll_arrow_height + border;
+    }
 
-      if (lower)
-        {
-          lower->x = win_x;
-          lower->y = win_y + height - border - scroll_arrow_height;
-          lower->width = width;
-          lower->height = scroll_arrow_height + border;
-        }
+  if (lower)
+    {
+      lower->x = win_x;
+      lower->y = win_y + height - border - scroll_arrow_height;
+      lower->width = width;
+      lower->height = scroll_arrow_height + border;
+    }
+#ifdef MAEMO_CHANGES
     }
   else /* arrows on same side */
     {
@@ -3694,6 +3713,7 @@ get_arrows_sensitive_area (GtkMenu *menu,
           lower->height = scroll_arrow_height + border;
         }
     }
+#endif
 }
 
 
@@ -3797,9 +3817,10 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
                     -MENU_SCROLL_STEP2 : -MENU_SCROLL_STEP1;
 
                   menu->timeout_id =
-                    g_timeout_add (scroll_fast ?
-                                   MENU_SCROLL_TIMEOUT2 : MENU_SCROLL_TIMEOUT1,
-                                   gtk_menu_scroll_timeout, menu);
+                    gdk_threads_add_timeout (scroll_fast ?
+                                             MENU_SCROLL_TIMEOUT2 :
+                                             MENU_SCROLL_TIMEOUT1,
+                                             gtk_menu_scroll_timeout, menu);
                 }
               else if (!enter && !in_arrow && menu->upper_arrow_prelight)
                 {
@@ -3904,9 +3925,10 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
                     MENU_SCROLL_STEP2 : MENU_SCROLL_STEP1;
 
                   menu->timeout_id =
-                    g_timeout_add (scroll_fast ?
-                                   MENU_SCROLL_TIMEOUT2 : MENU_SCROLL_TIMEOUT1,
-                                   gtk_menu_scroll_timeout, menu);
+                    gdk_threads_add_timeout (scroll_fast ?
+                                             MENU_SCROLL_TIMEOUT2 :
+                                             MENU_SCROLL_TIMEOUT1,
+                                             gtk_menu_scroll_timeout, menu);
                 }
               else if (!enter && !in_arrow && menu->lower_arrow_prelight)
                 {
@@ -4082,8 +4104,6 @@ gtk_menu_stop_navigating_submenu_cb (gpointer user_data)
   GtkMenu *menu = user_data;
   GdkWindow *child_window;
 
-  GDK_THREADS_ENTER ();
-
   gtk_menu_stop_navigating_submenu (menu);
   
   if (GTK_WIDGET_REALIZED (menu))
@@ -4103,8 +4123,6 @@ gtk_menu_stop_navigating_submenu_cb (gpointer user_data)
 	  gdk_event_free (send_event);
 	}
     }
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE; 
 }
@@ -4279,8 +4297,9 @@ gtk_menu_set_submenu_navigation_region (GtkMenu          *menu,
 		    "gtk-menu-popdown-delay", &popdown_delay,
 		    NULL);
 
-      menu->navigation_timeout = g_timeout_add (popdown_delay,
-						gtk_menu_stop_navigating_submenu_cb, menu);
+      menu->navigation_timeout = gdk_threads_add_timeout (popdown_delay,
+                                                          gtk_menu_stop_navigating_submenu_cb,
+                                                          menu);
 
 #ifdef DRAW_STAY_UP_TRIANGLE
       draw_stay_up_triangle (gdk_get_default_root_window(),
@@ -4352,7 +4371,7 @@ gtk_menu_position (GtkMenu *menu)
   /* Set the type hint here to allow custom position functions to set a different hint */
   if (!GTK_WIDGET_VISIBLE (menu->toplevel))
     gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-
+  
   if (menu->position_func)
     {
       (* menu->position_func) (menu, &x, &y, &private->initially_pushed_in,

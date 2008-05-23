@@ -29,6 +29,7 @@
 #include "gtktextiter.h"
 #include "gtktextbtree.h"
 #include "gtktextiterprivate.h"
+#include "gtkintl.h"
 #include "gtkdebug.h"
 #include "gtkalias.h"
 #include <string.h>
@@ -37,7 +38,7 @@
 
 typedef struct _GtkTextRealIter GtkTextRealIter;
 
-struct _GtkTextRealIter
+struct G_GNUC_MAY_ALIAS _GtkTextRealIter
 {
   /* Always-valid information */
   GtkTextBTree *tree;
@@ -300,21 +301,9 @@ iter_init_from_char_offset (GtkTextIter *iter,
 }
 
 static inline void
-invalidate_segment (GtkTextRealIter *iter)
-{
-  iter->segments_changed_stamp -= 1;
-}
-
-static inline void
 invalidate_char_index (GtkTextRealIter *iter)
 {
   iter->cached_char_index = -1;
-}
-
-static inline void
-invalidate_line_number (GtkTextRealIter *iter)
-{
-  iter->cached_line_number = -1;
 }
 
 static inline void
@@ -329,28 +318,6 @@ adjust_line_number (GtkTextRealIter *iter, gint count)
 {
   if (iter->cached_line_number >= 0)
     iter->cached_line_number += count;
-}
-
-static inline void
-adjust_char_offsets (GtkTextRealIter *iter, gint count)
-{
-  if (iter->line_char_offset >= 0)
-    {
-      iter->line_char_offset += count;
-      g_assert (iter->segment_char_offset >= 0);
-      iter->segment_char_offset += count;
-    }
-}
-
-static inline void
-adjust_byte_offsets (GtkTextRealIter *iter, gint count)
-{
-  if (iter->line_byte_offset >= 0)
-    {
-      iter->line_byte_offset += count;
-      g_assert (iter->segment_byte_offset >= 0);
-      iter->segment_byte_offset += count;
-    }
 }
 
 static inline void
@@ -471,7 +438,7 @@ gtk_text_iter_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GtkTextIter",
+    our_type = g_boxed_type_register_static (I_("GtkTextIter"),
 					     (GBoxedCopyFunc) gtk_text_iter_copy,
 					     (GBoxedFreeFunc) gtk_text_iter_free);
 
@@ -1359,14 +1326,10 @@ gtk_text_iter_get_tags (const GtkTextIter *iter)
   /* No tags, use default style */
   if (tags == NULL || tag_count == 0)
     {
-      if (tags)
-        g_free (tags);
+      g_free (tags);
 
       return NULL;
     }
-
-  /* Sort tags in ascending order of priority */
-  _gtk_text_tag_array_sort (tags, tag_count);
 
   retval = NULL;
   i = 0;
@@ -1777,14 +1740,10 @@ gtk_text_iter_get_attributes (const GtkTextIter  *iter,
   /* No tags, use default style */
   if (tags == NULL || tag_count == 0)
     {
-      if (tags)
-        g_free (tags);
+      g_free (tags);
 
       return FALSE;
     }
-
-  /* Sort tags in ascending order of priority */
-  _gtk_text_tag_array_sort (tags, tag_count);
 
   _gtk_text_attributes_fill_from_tags (values,
                                        tags,
@@ -2514,10 +2473,10 @@ gtk_text_iter_backward_text_chars (GtkTextIter *iter,
  * gtk_text_iter_forward_line:
  * @iter: an iterator
  *
- * Moves @iter to the start of the next line. Returns %TRUE if there
- * was a next line to move to, and %FALSE if @iter was simply moved to
- * the end of the buffer and is now not dereferenceable, or if @iter was
- * already at the end of the buffer.
+ * Moves @iter to the start of the next line. If the iter is already on the
+ * last line of the buffer, moves the iter to the end of the current line.
+ * If after the operation, the iter is at the end of the buffer and not
+ * dereferencable, returns %FALSE. Otherwise, returns %TRUE.
  *
  * Return value: whether @iter can be dereferenced
  **/
@@ -3917,7 +3876,6 @@ gtk_text_iter_set_visible_line_index (GtkTextIter *iter,
                                       gint         byte_on_line)
 {
   GtkTextRealIter *real;
-  gint bytes_in_line = 0;
   gint offset = 0;
   GtkTextIter pos;
   GtkTextLineSegment *seg;
@@ -3925,8 +3883,6 @@ gtk_text_iter_set_visible_line_index (GtkTextIter *iter,
   g_return_if_fail (iter != NULL);
 
   gtk_text_iter_set_line_offset (iter, 0);
-
-  bytes_in_line = gtk_text_iter_get_bytes_in_line (iter);
 
   pos = *iter;
 

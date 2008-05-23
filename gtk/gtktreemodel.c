@@ -775,8 +775,7 @@ gtk_tree_path_is_descendant (GtkTreePath *path,
  * gtk_tree_path_next:
  * @path: A #GtkTreePath.
  *
- * Moves the @path to point to the next potential node at the current depth.
- * You must use gtk_tree_model_get_iter() to discover whether a corresponding row actually exists.
+ * Moves the @path to point to the next node at the current depth.
  **/
 void
 gtk_tree_path_next (GtkTreePath *path)
@@ -865,7 +864,7 @@ gtk_tree_iter_copy (GtkTreeIter *iter)
 
   g_return_val_if_fail (iter != NULL, NULL);
 
-  retval = g_new (GtkTreeIter, 1);
+  retval = g_slice_new (GtkTreeIter);
   *retval = *iter;
 
   return retval;
@@ -883,7 +882,7 @@ gtk_tree_iter_free (GtkTreeIter *iter)
 {
   g_return_if_fail (iter != NULL);
 
-  g_free (iter);
+  g_slice_free (GtkTreeIter, iter);
 }
 
 GType

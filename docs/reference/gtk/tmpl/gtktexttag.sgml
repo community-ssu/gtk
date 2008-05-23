@@ -2,8 +2,7 @@
 GtkTextTag
 
 <!-- ##### SECTION Short_Description ##### -->
-
-A tag that can be applied to text in a <link linkend="GtkTextBuffer">GtkTextBuffer</link>
+A tag that can be applied to text in a GtkTextBuffer
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -51,6 +50,11 @@ planned to be implemented in future releases.
 @event: 
 @arg2: 
 @Returns: 
+
+<!-- ##### ARG GtkTextTag:accumulative-margin ##### -->
+<para>
+
+</para>
 
 <!-- ##### ARG GtkTextTag:background ##### -->
 <para>

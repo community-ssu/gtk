@@ -1,7 +1,7 @@
 ## Makefile.am for gtk+/gdk
 
 SUBDIRS = $(gdktarget)
-DIST_SUBDIRS = linux-fb win32 x11 quartz directfb
+DIST_SUBDIRS = win32 x11 quartz directfb
 
 EXTRA_DIST =			\
 	keynames.txt		\
@@ -11,6 +11,7 @@ EXTRA_DIST =			\
 	gdkkeysyms-update.pl	\
 	gdk.def 		\
 	gdkmarshalers.list	\
+	gdkmedialib.h		\
 	makeenums.pl		\
 	makefile.msc		\
 	gdk.symbols		\
@@ -45,6 +46,12 @@ LDADD = \
 	$(no_undefined)							\
 	$(LIBTOOL_EXPORT_OPTIONS)
 
+if USE_MEDIALIB
+medialib_sources =  \
+    gdkmedialib.c
+else
+medialib_sources =
+endif
 
 #
 # setup source file variables
@@ -89,6 +96,7 @@ gdk_headers =                     \
 	gdkalias.h
 
 gdk_c_sources =                 \
+	$(medialib_sources)     \
 	gdk.c			\
 	gdkcairo.c		\
 	gdkcolor.c		\
@@ -144,11 +152,6 @@ libgdk_x11_2_0_la_LIBADD = x11/libgdk-x11.la $(GDK_DEP_LIBS) \
   $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
 libgdk_x11_2_0_la_LDFLAGS = $(LDADD)
 
-libgdk_linux_fb_2_0_la_SOURCES = $(common_sources) gdkkeynames.c
-libgdk_linux_fb_2_0_la_LIBADD = linux-fb/libgdk-linux-fb.la $(GDK_DEP_LIBS) \
-  $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
-libgdk_linux_fb_2_0_la_LDFLAGS = $(LDADD)
-
 libgdk_quartz_2_0_la_SOURCES = $(common_sources) gdkkeynames.c
 libgdk_quartz_2_0_la_LIBADD = quartz/libgdk-quartz.la $(GDK_DEP_LIBS) \
   $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
@@ -159,12 +162,6 @@ libgdk_win32_2_0_la_LIBADD = win32/libgdk-win32.la $(GDK_DEP_LIBS) \
   $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
 libgdk_win32_2_0_la_DEPENDENCIES = win32/libgdk-win32.la win32/rc/gdk-win32-res.o gdk.def
 libgdk_win32_2_0_la_LDFLAGS = -Wl,win32/rc/gdk-win32-res.o -export-symbols gdk.def $(LDADD)
-if HAVE_WINTAB
-libgdk_win32_2_0_la_LDFLAGS += -Wl,win32/libwntab32x.a
-endif
-if HAVE_IE55
-libgdk_win32_2_0_la_LDFLAGS += -Wl,win32/libie55uuid.a
-endif
 
 if OS_WIN32
 install-def-file: gdk.def
@@ -202,13 +199,13 @@ gdkaliasdef.c: gdk.symbols
 	 $(PERL) $(srcdir)/makegdkalias.pl -def < $(srcdir)/gdk.symbols > gdkaliasdef.c
 
 if OS_LINUX
-TESTS = pltcheck.sh abicheck.sh
+TESTS = abicheck.sh pltcheck.sh
 endif
 
 
 lib_LTLIBRARIES = $(gdktargetlib)
 
-EXTRA_LTLIBRARIES = libgdk-x11-2.0.la libgdk-linux-fb-2.0.la libgdk-win32-2.0.la libgdk-quartz-2.0.la libgdk-directfb-2.0.la
+EXTRA_LTLIBRARIES = libgdk-x11-2.0.la libgdk-win32-2.0.la libgdk-quartz-2.0.la libgdk-directfb-2.0.la
 
 MAINTAINERCLEANFILES = gdkenumtypes.h stamp-gdkenumtypes.h gdkenumtypes.c \
   gdkmarshalers.h gdkmarshalers.c

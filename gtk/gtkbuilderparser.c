@@ -18,24 +18,20 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <string.h>
-#include <glib/gfileutils.h>
-#include <glib/gi18n.h>
-#include <glib/gmacros.h>
-#include <glib/gmessages.h>
-#include <glib/gslist.h>
-#include <glib/gstrfuncs.h>
-#include <glib-object.h>
-#include <gmodule.h>
+#include <config.h>
 
+#include <string.h>
+
+#include <gmodule.h>
 #include <gdk/gdkenumtypes.h>
 #include <gdk/gdkkeys.h>
-#include <gtk/gtktypeutils.h>
+#include "gtktypeutils.h"
 #include "gtkbuilderprivate.h"
 #include "gtkbuilder.h"
 #include "gtkbuildable.h"
 #include "gtkdebug.h"
 #include "gtktypeutils.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 static void free_property_info (PropertyInfo *info);
@@ -139,24 +135,6 @@ error_invalid_tag (ParserData *data,
 		 line_number, char_number, tag);
 }
 
-static void
-error_missing_property_value (ParserData *data,
-			      GError **error)
-{
-  gint line_number, char_number;
-
-  g_markup_parse_context_get_position (data->ctx,
-                                       &line_number,
-                                       &char_number);
-
-  g_set_error (error,
-	       GTK_BUILDER_ERROR,
-	       GTK_BUILDER_ERROR_MISSING_PROPERTY_VALUE,
-	       "%s:%d:%d <property> must have a value set",
-	       data->filename,
-	       line_number, char_number);
-}
-
 gboolean
 _gtk_builder_boolean_from_string (const gchar  *string,
 				  gboolean     *value,
@@ -204,8 +182,9 @@ _gtk_builder_boolean_from_string (const gchar  *string,
 }
 
 static GObject *
-builder_construct (ParserData *data,
-                   ObjectInfo *object_info)
+builder_construct (ParserData  *data,
+                   ObjectInfo  *object_info,
+		   GError     **error)
 {
   GObject *object;
 
@@ -216,7 +195,10 @@ builder_construct (ParserData *data,
 
   object_info->properties = g_slist_reverse (object_info->properties);
 
-  object = _gtk_builder_construct (data->builder, object_info);
+  object = _gtk_builder_construct (data->builder, object_info, error);
+  if (!object)
+    return NULL;
+
   g_assert (G_IS_OBJECT (object));
 
   object_info->object = object;
@@ -262,8 +244,6 @@ parse_object (ParserData   *data,
   if (child_info && strcmp (child_info->tag.name, "object") == 0)
     {
       error_invalid_tag (data, element_name, NULL, error);
-      if (child_info)
-	free_object_info ((ObjectInfo*)child_info);
       return;
     }
 
@@ -315,7 +295,6 @@ parse_object (ParserData   *data,
   object_info->id = object_id;
   object_info->constructor = constructor;
   state_push (data, object_info);
-  g_assert (state_peek (data) != NULL);
   object_info->tag.name = element_name;
 
   if (child_info)
@@ -351,15 +330,12 @@ parse_child (ParserData   *data,
   object_info = state_peek_info (data, ObjectInfo);
   if (!object_info || strcmp (object_info->tag.name, "object") != 0)
     {
-      error_invalid_tag (data, element_name, "object", error);
-      if (object_info)
-	free_object_info (object_info);
+      error_invalid_tag (data, element_name, NULL, error);
       return;
     }
   
   child_info = g_slice_new0 (ChildInfo);
   state_push (data, child_info);
-  g_assert (state_peek (data) != NULL);
   child_info->tag.name = element_name;
   for (i = 0; names[i]; i++)
     {
@@ -373,7 +349,7 @@ parse_child (ParserData   *data,
 
   child_info->parent = (CommonInfo*)object_info;
 
-  object_info->object = builder_construct (data, object_info);
+  object_info->object = builder_construct (data, object_info, error);
 }
 
 static void
@@ -395,9 +371,15 @@ parse_property (ParserData   *data,
   gchar *name = NULL;
   gchar *context = NULL;
   gboolean translatable = FALSE;
+  ObjectInfo *object_info;
   int i;
 
-  g_assert (data->stack != NULL);
+  object_info = state_peek_info (data, ObjectInfo);
+  if (!object_info || strcmp (object_info->tag.name, "object") != 0)
+    {
+      error_invalid_tag (data, element_name, NULL, error);
+      return;
+    }
 
   for (i = 0; names[i] != NULL; i++)
     {
@@ -434,6 +416,7 @@ parse_property (ParserData   *data,
   info->name = name;
   info->translatable = translatable;
   info->context = context;
+  info->text = g_string_new ("");
   state_push (data, info);
 
   info->tag.name = element_name;
@@ -461,9 +444,15 @@ parse_signal (ParserData   *data,
   gboolean after = FALSE;
   gboolean swapped = FALSE;
   gboolean swapped_set = FALSE;
+  ObjectInfo *object_info;
   int i;
 
-  g_assert (data->stack != NULL);
+  object_info = state_peek_info (data, ObjectInfo);
+  if (!object_info || strcmp (object_info->tag.name, "object") != 0)
+    {
+      error_invalid_tag (data, element_name, NULL, error);
+      return;
+    }
 
   for (i = 0; names[i] != NULL; i++)
     {
@@ -658,8 +647,13 @@ parse_custom (GMarkupParseContext *context,
     {
       ObjectInfo* object_info = (ObjectInfo*)parent_info;
       if (!object_info->object)
-	object_info->object = _gtk_builder_construct (data->builder,
-						      object_info);
+	{
+	  object_info->object = _gtk_builder_construct (data->builder,
+							object_info,
+							error);
+	  if (!object_info->object)
+	    return TRUE; /* A GError is already set */
+	}
       g_assert (object_info->object);
       object = object_info->object;
       child = NULL;
@@ -762,6 +756,40 @@ start_element (GMarkupParseContext *context,
 		   element_name);
 }
 
+/* This function is taken from gettext.h 
+ * GNU gettext uses '\004' to separate context and msgid in .mo files.
+ */
+static const char *
+dpgettext (const char *domain,
+           const char *msgctxt,
+           const char *msgid)
+{
+  size_t msgctxt_len = strlen (msgctxt) + 1;
+  size_t msgid_len = strlen (msgid) + 1;
+  const char *translation;
+  char* msg_ctxt_id;
+
+  msg_ctxt_id = g_alloca (msgctxt_len + msgid_len);
+  
+  memcpy (msg_ctxt_id, msgctxt, msgctxt_len - 1);
+  msg_ctxt_id[msgctxt_len - 1] = '\004';
+  memcpy (msg_ctxt_id + msgctxt_len, msgid, msgid_len);
+
+  translation = dgettext (domain, msg_ctxt_id);
+
+  if (translation == msg_ctxt_id) 
+    {
+      /* try the old way of doing message contexts, too */
+      msg_ctxt_id[msgctxt_len - 1] = '|';
+      translation = dgettext (domain, msg_ctxt_id);
+  
+      if (translation == msg_ctxt_id)
+        return msgid;
+    }
+ 
+  return translation;
+}
+
 /* Called for close tags </foo> */
 static void
 end_element (GMarkupParseContext *context,
@@ -784,14 +812,20 @@ end_element (GMarkupParseContext *context,
       ObjectInfo *object_info = state_pop_info (data, ObjectInfo);
       ChildInfo* child_info = state_peek_info (data, ChildInfo);
 
-      object_info->object = builder_construct (data, object_info);
-
+      object_info->object = builder_construct (data, object_info, error);
+      if (!object_info->object)
+	{
+	  free_object_info (object_info);
+	  return;
+	}
       if (child_info)
         child_info->object = object_info->object;
 
       if (GTK_IS_BUILDABLE (object_info->object) &&
           GTK_BUILDABLE_GET_IFACE (object_info->object)->parser_finished)
         data->finalizers = g_slist_prepend (data->finalizers, object_info->object);
+      _gtk_builder_add_signals (data->builder, object_info->signals);
+
       free_object_info (object_info);
     }
   else if (strcmp (element_name, "property") == 0)
@@ -799,19 +833,31 @@ end_element (GMarkupParseContext *context,
       PropertyInfo *prop_info = state_pop_info (data, PropertyInfo);
       CommonInfo *info = state_peek_info (data, CommonInfo);
 
-      if (!prop_info->data)
-	{
-	  error_missing_property_value (data, error);
-	  free_property_info (prop_info);
-	  if (strcmp (info->tag.name, "object") == 0)
-	    free_object_info((ObjectInfo*)info);
-	  return;
-	}
-      
       /* Normal properties */
       if (strcmp (info->tag.name, "object") == 0)
         {
           ObjectInfo *object_info = (ObjectInfo*)info;
+
+          if (prop_info->translatable && prop_info->text->len)
+            {
+              const char *text;
+
+              if (prop_info->context)
+                text = dpgettext (data->domain,
+                                  prop_info->context,
+                                  prop_info->text->str);
+              else
+                text = dgettext (data->domain, prop_info->text->str);
+
+              prop_info->data = g_strdup (text);
+              g_string_free (prop_info->text, TRUE);
+            }
+          else
+            {
+              prop_info->data = prop_info->text->str;
+              g_string_free (prop_info->text, FALSE);
+            }
+
           object_info->properties =
             g_slist_prepend (object_info->properties, prop_info);
         }
@@ -846,38 +892,6 @@ end_element (GMarkupParseContext *context,
     }
 }
 
-/* This function is taken from gettext.h 
- * GNU gettext uses '\004' to separate context and msgid in .mo files.
- */
-static const char *
-dpgettext (const char *domain,
-           const char *msgctxt,
-           const char *msgid)
-{
-  size_t msgctxt_len = strlen (msgctxt) + 1;
-  size_t msgid_len = strlen (msgid) + 1;
-  const char *translation;
-  char msg_ctxt_id[msgctxt_len + msgid_len];
-
-  memcpy (msg_ctxt_id, msgctxt, msgctxt_len - 1);
-  msg_ctxt_id[msgctxt_len - 1] = '\004';
-  memcpy (msg_ctxt_id + msgctxt_len, msgid, msgid_len);
-
-  translation = dgettext (domain, msg_ctxt_id);
-
-  if (translation == msg_ctxt_id) 
-    {
-      /* try the old way of doing message contexts, too */
-      msg_ctxt_id[msgctxt_len - 1] = '|';
-      translation = dgettext (domain, msg_ctxt_id);
-  
-      if (translation == msg_ctxt_id)
-        return msgid;
-    }
- 
-  return translation;
-}
-
 /* Called for character data */
 /* text is not nul-terminated */
 static void
@@ -908,22 +922,23 @@ text (GMarkupParseContext *context,
     {
       PropertyInfo *prop_info = (PropertyInfo*)info;
 
-      /* text is not guaranteed to be null-terminated */
-      char *string = g_strndup (text, text_len);
-
-      if (prop_info->translatable && text_len)
-        {
-	  if (prop_info->context)
-            text = dpgettext (data->domain, prop_info->context, string);
-          else
-            text = dgettext (data->domain, string);
-
-	  prop_info->data = g_strdup (text);
-	  g_free (string);
-        }
-      else
-	prop_info->data = string;
+      g_string_append_len (prop_info->text, text, text_len);
     }
+}
+
+static void
+free_info (CommonInfo *info)
+{
+  if (strcmp (info->tag.name, "object") == 0) 
+    free_object_info ((ObjectInfo *)info);
+  else if (strcmp (info->tag.name, "child") == 0) 
+    free_child_info ((ChildInfo *)info);
+  else if (strcmp (info->tag.name, "property") == 0) 
+    free_property_info ((PropertyInfo *)info);
+  else if (strcmp (info->tag.name, "signal") == 0) 
+    _free_signal_info ((SignalInfo *)info, NULL);
+  else 
+    g_assert_not_reached ();
 }
 
 static const GMarkupParser parser = {
@@ -949,8 +964,9 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
   data->filename = filename;
   data->domain = g_strdup (gtk_builder_get_translation_domain (builder));
 
-  data->ctx = g_markup_parse_context_new (
-                  &parser, G_MARKUP_TREAT_CDATA_AS_TEXT, data, NULL);
+  data->ctx = g_markup_parse_context_new (&parser, 
+                                          G_MARKUP_TREAT_CDATA_AS_TEXT, 
+                                          data, NULL);
 
   if (!g_markup_parse_context_parse (data->ctx, buffer, length, error))
     goto out;
@@ -969,7 +985,6 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
                                      sub->child,
                                      sub->tagname,
                                      sub->data);
-      free_subparser (sub);
     }
   
   /* Common parser_finished, for all created objects */
@@ -981,11 +996,13 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
     }
 
  out:
-  g_markup_parse_context_free (data->ctx);
 
+  g_slist_foreach (data->stack, (GFunc)free_info, NULL);
   g_slist_free (data->stack);
+  g_slist_foreach (data->custom_finalizers, (GFunc)free_subparser, NULL);
   g_slist_free (data->custom_finalizers);
   g_slist_free (data->finalizers);
   g_free (data->domain);
+  g_markup_parse_context_free (data->ctx);
   g_free (data);
 }

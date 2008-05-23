@@ -166,11 +166,11 @@ static gboolean
 get_mbi(struct wbmp_progressive_state *context, const guchar **buf, guint *buf_size, int *val)
 {
   guchar intbuf[16];
-  int i, n;
+  int n;
   gboolean rv;
 
   *val = 0;
-  n = i = 0;
+  n = 0;
   do {
     rv = getin(context, buf, buf_size, intbuf+n, 1);
     if(!rv)
@@ -339,6 +339,12 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 	return TRUE;
 }
 
+#ifndef INCLUDE_wbmp
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
+
 void
 MODULE_ENTRY (wbmp, fill_vtable) (GdkPixbufModule *module)
 {
@@ -351,7 +357,10 @@ void
 MODULE_ENTRY (wbmp, fill_info) (GdkPixbufFormat *info)
 {
 	static GdkPixbufModulePattern signature[] = {
-		{ " ", "z", 1 }, 
+		{ "  ",    "zz", 1 }, 
+		{ " \140", "z ", 1 },
+		{ " \100", "z ", 1 },
+		{ " \040", "z ", 1 },
 		{ NULL, NULL, 0 }
 	};
 	static gchar * mime_types[] = {

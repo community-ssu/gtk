@@ -54,6 +54,14 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#ifdef HAVE_XCOMPOSITE
+#include <X11/extensions/Xcomposite.h>
+#endif
+
+#ifdef HAVE_XDAMAGE
+#include <X11/extensions/Xdamage.h>
+#endif
+
 
 static void   gdk_display_x11_dispose            (GObject            *object);
 static void   gdk_display_x11_finalize           (GObject            *object);
@@ -209,6 +217,29 @@ gdk_display_open (const gchar *display_name)
   else
 #endif
     display_x11->have_xfixes = FALSE;
+
+#ifdef HAVE_XCOMPOSITE
+  if (XCompositeQueryExtension (display_x11->xdisplay,
+				&ignore, &ignore))
+      display_x11->have_xcomposite = TRUE;
+  else
+#endif
+    display_x11->have_xcomposite = FALSE;
+
+#ifdef HAVE_XDAMAGE
+  if (XDamageQueryExtension (display_x11->xdisplay,
+			     &display_x11->xdamage_event_base,
+			     &ignore))
+    {
+      display_x11->have_xdamage = TRUE;
+
+      gdk_x11_register_standard_event_type (display,
+					    display_x11->xdamage_event_base,
+					    XDamageNumberEvents);
+    }
+  else
+#endif
+    display_x11->have_xdamage = FALSE;
 
   display_x11->have_shapes = FALSE;
   display_x11->have_input_shapes = FALSE;
@@ -869,6 +900,7 @@ _gdk_x11_display_screen_for_xrootwin (GdkDisplay *display,
 Display *
 gdk_x11_display_get_xdisplay (GdkDisplay *display)
 {
+  g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
   return GDK_DISPLAY_X11 (display)->xdisplay;
 }
 
@@ -934,33 +966,6 @@ _gdk_windowing_set_default_display (GdkDisplay *display)
     }
 }
 
-static char*
-escape_for_xmessage (const char *str)
-{
-  GString *retval;
-  const char *p;
-  
-  retval = g_string_new (NULL);
-
-  p = str;
-  while (*p)
-    {
-      switch (*p)
-        {
-        case ' ':
-        case '"':
-        case '\\':
-          g_string_append_c (retval, '\\');
-          break;
-        }
-
-      g_string_append_c (retval, *p);
-      ++p;
-    }
-
-  return g_string_free (retval, FALSE);
-}
-
 static void
 broadcast_xmessage (GdkDisplay *display,
 		    const char *message_type,
@@ -975,6 +980,9 @@ broadcast_xmessage (GdkDisplay *display,
   Atom type_atom;
   Atom type_atom_begin;
   Window xwindow;
+
+  if (!G_LIKELY (GDK_DISPLAY_X11 (display)->trusted_client))
+    return;
 
   {
     XSetWindowAttributes attrs;
@@ -1050,6 +1058,72 @@ broadcast_xmessage (GdkDisplay *display,
 }
 
 /**
+ * gdk_x11_display_broadcast_startup_message:
+ * @display: a #GdkDisplay
+ * @message_type: startup notification message type ("new", "change",
+ * or "remove")
+ * @...: a list of key/value pairs (as strings), terminated by a
+ * %NULL key. (A %NULL value for a key will cause that key to be
+ * skipped in the output.)
+ *
+ * Sends a startup notification message of type @message_type to
+ * @display. 
+ *
+ * This is a convenience function for use by code that implements the
+ * freedesktop startup notification specification. Applications should
+ * not normally need to call it directly. See the <ulink
+ * url="http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt">Startup
+ * Notification Protocol specification</ulink> for
+ * definitions of the message types and keys that can be used.
+ *
+ * Since: 2.12
+ **/
+void
+gdk_x11_display_broadcast_startup_message (GdkDisplay *display,
+					   const char *message_type,
+					   ...)
+{
+  GString *message;
+  va_list ap;
+  const char *key, *value, *p;
+
+  message = g_string_new (message_type);
+  g_string_append_c (message, ':');
+
+  va_start (ap, message_type);
+  while ((key = va_arg (ap, const char *)))
+    {
+      value = va_arg (ap, const char *);
+      if (!value)
+	continue;
+
+      g_string_append_printf (message, " %s=\"", key);
+      for (p = value; *p; p++)
+	{
+	  switch (*p)
+	    {
+	    case ' ':
+	    case '"':
+	    case '\\':
+	      g_string_append_c (message, '\\');
+	      break;
+	    }
+
+	  g_string_append_c (message, *p);
+	}
+      g_string_append_c (message, '\"');
+    }
+  va_end (ap);
+
+  broadcast_xmessage (display,
+		      "_NET_STARTUP_INFO",
+                      "_NET_STARTUP_INFO_BEGIN",
+                      message->str);
+
+  g_string_free (message, TRUE);
+}
+
+/**
  * gdk_notify_startup_complete:
  * 
  * Indicates to the GUI environment that the application has finished
@@ -1068,8 +1142,6 @@ gdk_notify_startup_complete (void)
 {
   GdkDisplay *display;
   GdkDisplayX11 *display_x11;
-  gchar *escaped_id;
-  gchar *message;
 
   display = gdk_display_get_default ();
   if (!display)
@@ -1080,21 +1152,37 @@ gdk_notify_startup_complete (void)
   if (display_x11->startup_notification_id == NULL)
     return;
 
-  if (!G_LIKELY (display_x11->trusted_client))
-    return;
-
-  escaped_id = escape_for_xmessage (display_x11->startup_notification_id);
-  message = g_strdup_printf ("remove: ID=%s", escaped_id);
-  g_free (escaped_id);
-
-  broadcast_xmessage (display,
-		      "_NET_STARTUP_INFO",
-                      "_NET_STARTUP_INFO_BEGIN",
-                      message);
-
-  g_free (message);
+  gdk_notify_startup_complete_with_id (display_x11->startup_notification_id);
 }
 
+/**
+ * gdk_notify_startup_complete_with_id:
+ * @startup_id: a startup-notification identifier, for which notification
+ *              process should be completed
+ * 
+ * Indicates to the GUI environment that the application has finished
+ * loading, using a given identifier.
+ * 
+ * GTK+ will call this function automatically for #GtkWindow with custom
+ * startup-notification identifier unless
+ * gtk_window_set_auto_startup_notification() is called to disable
+ * that feature.
+ *
+ * Since: 2.12
+ **/
+void
+gdk_notify_startup_complete_with_id (const gchar* startup_id)
+{
+  GdkDisplay *display;
+
+  display = gdk_display_get_default ();
+  if (!display)
+    return;
+
+  gdk_x11_display_broadcast_startup_message (display, "remove",
+					     "ID", startup_id,
+					     NULL);
+}
 
 /**
  * gdk_display_supports_selection_notification:
@@ -1292,6 +1380,47 @@ gboolean
 gdk_display_supports_input_shapes (GdkDisplay *display)
 {
   return GDK_DISPLAY_X11 (display)->have_input_shapes;
+}
+
+
+/**
+ * gdk_x11_display_get_startup_notification_id:
+ * @display: a #GdkDisplay
+ *
+ * Gets the startup notification ID for a display.
+ * 
+ * Returns: the startup notification ID for @display
+ *
+ * Since: 2.12
+ */
+G_CONST_RETURN gchar *
+gdk_x11_display_get_startup_notification_id (GdkDisplay *display)
+{
+  return GDK_DISPLAY_X11 (display)->startup_notification_id;
+}
+
+/**
+ * gdk_display_supports_composite:
+ * @display: a #GdkDisplay
+ *
+ * Returns %TRUE if gdk_window_set_composited() can be used
+ * to redirect drawing on the window using compositing.
+ *
+ * Currently this only works on X11 with XComposite and
+ * XDamage extensions available.
+ *
+ * Returns: %TRUE if windows may be composited.
+ *
+ * Since: 2.12
+ */
+gboolean
+gdk_display_supports_composite (GdkDisplay *display)
+{
+  GdkDisplayX11 *x11_display = GDK_DISPLAY_X11 (display);
+
+  return x11_display->have_xcomposite &&
+	 x11_display->have_xdamage &&
+	 x11_display->have_xfixes;
 }
 
 

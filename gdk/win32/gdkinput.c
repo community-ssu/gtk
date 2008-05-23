@@ -35,18 +35,8 @@
 
 #include "gdkdisplay.h"
 #include "gdkinput.h"
-#include "gdkprivate.h"
 
-/* When ther necessary stuff is in
- * gdkinput.h, gdkinternals.h and
- * gdkprivate.h, these includes shouldn't be here.
- */
-
-#include <windows.h>
-#ifdef HAVE_WINTAB
-#include <wintab.h>
-#endif
-
+#include "gdkprivate-win32.h"
 #include "gdkinput-win32.h"
 
 static GdkDeviceAxis gdk_input_core_axes[] = {
@@ -76,18 +66,6 @@ _gdk_init_input_core (GdkDisplay *display)
   display->core_pointer->keys = NULL;
 }
 
-static void
-gdk_device_finalize (GObject *object)
-{
-  g_error ("A GdkDevice object was finalized. This should not happen");
-}
-
-static void
-gdk_device_class_init (GObjectClass *class)
-{
-  class->finalize = gdk_device_finalize;
-}
-
 GType
 gdk_device_get_type (void)
 {
@@ -96,20 +74,20 @@ gdk_device_get_type (void)
   if (!object_type)
     {
       static const GTypeInfo object_info =
-      {
-        sizeof (GdkDeviceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_device_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GdkDevicePrivate),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
+	{
+	  sizeof (GdkDeviceClass),
+	  (GBaseInitFunc) NULL,
+	  (GBaseFinalizeFunc) NULL,
+	  (GClassInitFunc) NULL,
+	  NULL,			/* class_finalize */
+	  NULL,			/* class_data */
+	  sizeof (GdkDevicePrivate),
+	  0,			/* n_preallocs */
+	  (GInstanceInitFunc) NULL,
+	};
       
       object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "GdkDevice",
+                                            g_intern_static_string ("GdkDevice"),
                                             &object_info, 0);
     }
   
@@ -119,18 +97,15 @@ gdk_device_get_type (void)
 GList *
 gdk_devices_list (void)
 {
-#ifdef HAVE_WINTAB
-  _gdk_input_wintab_init_check ();
-#endif /* HAVE_WINTAB */
-  return _gdk_input_devices;
+  return gdk_display_list_devices (_gdk_display);
 }
 
 GList *
 gdk_display_list_devices (GdkDisplay *dpy)
 {
-#ifdef HAVE_WINTAB
+  g_return_val_if_fail (dpy == _gdk_display, NULL);
+
   _gdk_input_wintab_init_check ();
-#endif /* HAVE_WINTAB */
   return _gdk_input_devices;
 }
 
@@ -276,9 +251,8 @@ gdk_input_set_extension_events (GdkWindow *window, gint mask,
 
   if (mask != 0)
     {
-#ifdef HAVE_WINTAB
       _gdk_input_wintab_init_check ();
-#endif /* HAVE_WINTAB */
+
       iw = g_new(GdkInputWindow,1);
 
       iw->window = window;

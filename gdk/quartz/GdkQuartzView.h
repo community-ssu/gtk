@@ -18,15 +18,18 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#import <Quartz/Quartz.h>
+#import <AppKit/AppKit.h>
 #include "gdkwindow.h"
 
 @interface GdkQuartzView : NSView {
   GdkWindow *gdk_window;
+  NSTrackingRectTag trackingRect;
+  BOOL needsInvalidateShadow;
 }
 
 -(void)setGdkWindow:(GdkWindow *)window;
 -(GdkWindow *)gdkWindow;
+-(void)setNeedsInvalidateShadow:(BOOL)invalidate;
 
 @end
 

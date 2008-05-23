@@ -37,6 +37,31 @@ modifiers and signal and allows to specify accelerators.
 </object>
 ]]></programlisting>
 </example>
+In addition to accelerators, <structname>GtkWidget</structname> also support a 
+custom &lt;accessible&gt; element, which supports actions and relations. 
+Properties on the accessible implementation of an object can be set by accessing the 
+internal child "accessible" of a <structname>GtkWidget</structname>.
+<example>
+<title>A UI definition fragment specifying an accessible</title>
+<programlisting><![CDATA[
+<object class="GtkButton" id="label1"/>
+  <property name="label">I am a Label for a Button</property>
+</object>
+<object class="GtkButton" id="button1">
+  <accessibility>
+    <action action_name="click" description="Click the button."/>
+    <relation target="label1" type="labelled-by"/>
+  </accessibility>
+  <child internal-child="accessible">
+    <object class="AtkObject" id="a11y-button1">
+      <property name="AtkObject::name">Clickable Button</property>
+    </object>
+  </child>
+</object>
+]]></programlisting>
+</example>
+
+
 </refsect2>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -214,6 +239,16 @@ modifiers and signal and allows to specify accelerators.
 @widget: the object which received the signal.
 @drag_context: 
 
+<!-- ##### SIGNAL GtkWidget::drag-failed ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+@arg2: 
+@Returns: 
+
 <!-- ##### SIGNAL GtkWidget::drag-leave ##### -->
 <para>
 
@@ -330,22 +365,11 @@ modifiers and signal and allows to specify accelerators.
 
 <!-- ##### SIGNAL GtkWidget::hierarchy-changed ##### -->
 <para>
-Emitted when there is a chance in the hierarchy to
-which a widget belong. More precisely, a widget is
-<firstterm>anchored</firstterm> when its toplevel
-ancestor is a #GtkWindow. This signal is emitted when 
-a widget changes from un-anchored to anchored or vice-versa.
+
 </para>
 
-@widget: the object which received the signal.
+@widget: 
 @widget2: 
-
-<!-- ##### SIGNAL GtkWidget::insensitive-press ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
 
 <!-- ##### SIGNAL GtkWidget::key-press-event ##### -->
 <para>
@@ -417,6 +441,14 @@ a widget changes from un-anchored to anchored or vice-versa.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
 
+<!-- ##### SIGNAL GtkWidget::move-focus ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GtkWidget::no-expose-event ##### -->
 <para>
 
@@ -468,6 +500,18 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
+
+<!-- ##### SIGNAL GtkWidget::query-tooltip ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+@arg2: 
+@arg3: 
+@arg4: 
+@Returns: 
 
 <!-- ##### SIGNAL GtkWidget::realize ##### -->
 <para>
@@ -587,32 +631,6 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @previous_style: 
 
-<!-- ##### SIGNAL GtkWidget::tap-and-hold ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-
-<!-- ##### SIGNAL GtkWidget::tap-and-hold-query ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-@event: 
-@Returns: 
-
-<!-- ##### SIGNAL GtkWidget::tap-and-hold-setup ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-@arg1: 
-@arg2: 
-@arg3: 
-
 <!-- ##### SIGNAL GtkWidget::unmap ##### -->
 <para>
 
@@ -694,6 +712,11 @@ a widget changes from un-anchored to anchored or vice-versa.
 
 </para>
 
+<!-- ##### ARG GtkWidget:has-tooltip ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWidget:height-request ##### -->
 <para>
 
@@ -734,7 +757,12 @@ a widget changes from un-anchored to anchored or vice-versa.
 
 </para>
 
-<!-- ##### ARG GtkWidget:tap-and-hold-state ##### -->
+<!-- ##### ARG GtkWidget:tooltip-markup ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:tooltip-text ##### -->
 <para>
 
 </para>
@@ -1994,6 +2022,16 @@ This function is not useful for applications.
 @font_desc: 
 
 
+<!-- ##### FUNCTION gtk_widget_modify_cursor ##### -->
+<para>
+
+</para>
+
+@widget: 
+@primary: 
+@secondary: 
+
+
 <!-- ##### FUNCTION gtk_widget_create_pango_context ##### -->
 <para>
 
@@ -2493,30 +2531,79 @@ This function is deprecated; it does nothing.
 @Returns: 
 
 
-<!-- ##### FUNCTION gtk_widget_tap_and_hold_menu_position_top ##### -->
-<para>
-
-</para>
-
-@menu: 
-@x: 
-@y: 
-@push_in: 
-@widget: 
-
-
-<!-- ##### FUNCTION gtk_widget_tap_and_hold_setup ##### -->
+<!-- ##### FUNCTION gtk_widget_get_tooltip_markup ##### -->
 <para>
 
 </para>
 
 @widget: 
-@menu: 
-@func: 
-@flags: 
+@Returns: 
 
 
-<!-- ##### FUNCTION gtk_widget_insensitive_press ##### -->
+<!-- ##### FUNCTION gtk_widget_set_tooltip_markup ##### -->
+<para>
+
+</para>
+
+@widget: 
+@markup: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_tooltip_text ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_set_tooltip_text ##### -->
+<para>
+
+</para>
+
+@widget: 
+@text: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_tooltip_window ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_set_tooltip_window ##### -->
+<para>
+
+</para>
+
+@widget: 
+@custom_window: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_has_tooltip ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_set_has_tooltip ##### -->
+<para>
+
+</para>
+
+@widget: 
+@has_tooltip: 
+
+
+<!-- ##### FUNCTION gtk_widget_trigger_tooltip_query ##### -->
 <para>
 
 </para>

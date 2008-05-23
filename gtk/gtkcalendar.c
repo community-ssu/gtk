@@ -55,7 +55,6 @@
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkprivate.h"
-#include "gtkintl.h"
 #include "gdk/gdkkeysyms.h"
 #include "gtkalias.h"
 
@@ -192,10 +191,10 @@ dates_difference(guint year1, guint mm1, guint dd1,
 #define HEADER_BG_COLOR(widget)		 (& (widget)->style->bg[GTK_WIDGET_STATE (widget)])
 #define SELECTED_BG_COLOR(widget)	 (& (widget)->style->base[GTK_WIDGET_HAS_FOCUS (widget) ? GTK_STATE_SELECTED : GTK_STATE_ACTIVE])
 #define SELECTED_FG_COLOR(widget)	 (& (widget)->style->text[GTK_WIDGET_HAS_FOCUS (widget) ? GTK_STATE_SELECTED : GTK_STATE_ACTIVE])
-#define NORMAL_DAY_COLOR(widget)	 (& (widget)->style->fg[GTK_WIDGET_STATE (widget)])
+#define NORMAL_DAY_COLOR(widget)	 (& (widget)->style->text[GTK_WIDGET_STATE (widget)])
 #define PREV_MONTH_COLOR(widget)	 (& (widget)->style->mid[GTK_WIDGET_STATE (widget)])
 #define NEXT_MONTH_COLOR(widget)	 (& (widget)->style->mid[GTK_WIDGET_STATE (widget)])
-#define MARKED_COLOR(widget)		 (& (widget)->style->fg[GTK_WIDGET_STATE (widget)])
+#define MARKED_COLOR(widget)		 (& (widget)->style->text[GTK_WIDGET_STATE (widget)])
 #define BACKGROUND_COLOR(widget)	 (& (widget)->style->base[GTK_WIDGET_STATE (widget)])
 #define HIGHLIGHT_BACK_COLOR(widget)	 (& (widget)->style->mid[GTK_WIDGET_STATE (widget)])
 
@@ -560,16 +559,16 @@ gtk_calendar_init (GtkCalendar *calendar)
   time_t secs;
   struct tm *tm;
   gint i;
-  char buffer[255];
 #ifdef G_OS_WIN32
   wchar_t wbuffer[100];
 #else
+  char buffer[255];
   time_t tmp_time;
 #endif
   GtkCalendarPrivate *priv;
   gchar *year_before;
 #ifdef HAVE__NL_TIME_FIRST_WEEKDAY
-  gchar *langinfo;
+  union { unsigned int word; char *string; } langinfo;
   gint week_1stday = 0;
   gint first_weekday = 1;
   guint week_origin;
@@ -591,23 +590,11 @@ gtk_calendar_init (GtkCalendar *calendar)
 	strftime ( buffer, sizeof (buffer), "%a", gmtime (&tmp_time));
 	default_abbreviated_dayname[i] = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
 #else
-	if (G_WIN32_HAVE_WIDECHAR_API ())
-	  {
-	    if (!GetLocaleInfoW (GetThreadLocale (), LOCALE_SABBREVDAYNAME1 + (i+6)%7,
-				 wbuffer, G_N_ELEMENTS (wbuffer)))
-	      default_abbreviated_dayname[i] = g_strdup_printf ("(%d)", i);
-	    else
-	      default_abbreviated_dayname[i] = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
-	  }
+	if (!GetLocaleInfoW (GetThreadLocale (), LOCALE_SABBREVDAYNAME1 + (i+6)%7,
+			     wbuffer, G_N_ELEMENTS (wbuffer)))
+	  default_abbreviated_dayname[i] = g_strdup_printf ("(%d)", i);
 	else
-	  {
-	    if (!GetLocaleInfoA (GetThreadLocale (),
-				 (LOCALE_SABBREVDAYNAME1 + (i+6)%7) | LOCALE_USE_CP_ACP,
-				 buffer, G_N_ELEMENTS (buffer)))
-	      default_abbreviated_dayname[i] = g_strdup_printf ("(%d)", i);
-	    else
-	      default_abbreviated_dayname[i] = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
-	  }
+	  default_abbreviated_dayname[i] = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
 #endif
       }
   
@@ -619,23 +606,11 @@ gtk_calendar_init (GtkCalendar *calendar)
 	strftime ( buffer, sizeof (buffer), "%B", gmtime (&tmp_time));
 	default_monthname[i] = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
 #else
-	if (G_WIN32_HAVE_WIDECHAR_API ())
-	  {
-	    if (!GetLocaleInfoW (GetThreadLocale (), LOCALE_SMONTHNAME1 + i,
-				 wbuffer, G_N_ELEMENTS (wbuffer)))
-	      default_monthname[i] = g_strdup_printf ("(%d)", i);
-	    else
-	      default_monthname[i] = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
-	  }
+	if (!GetLocaleInfoW (GetThreadLocale (), LOCALE_SMONTHNAME1 + i,
+			     wbuffer, G_N_ELEMENTS (wbuffer)))
+	  default_monthname[i] = g_strdup_printf ("(%d)", i);
 	else
-	  {
-	    if (!GetLocaleInfoA (GetThreadLocale (),
-				 (LOCALE_SMONTHNAME1 + i) | LOCALE_USE_CP_ACP,
-				 buffer, G_N_ELEMENTS (buffer)))
-	      default_monthname[i] = g_strdup_printf ("(%d)", i);
-	    else
-	      default_monthname[i] = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
-	  }
+	  default_monthname[i] = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
 #endif
       }
   
@@ -702,20 +677,10 @@ gtk_calendar_init (GtkCalendar *calendar)
   priv->week_start = 0;
   week_start = NULL;
 
-  if (G_WIN32_HAVE_WIDECHAR_API ())
-    {
-      if (GetLocaleInfoW (GetThreadLocale (), LOCALE_IFIRSTDAYOFWEEK,
-			  wbuffer, G_N_ELEMENTS (wbuffer)))
-	week_start = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
-    }
-  else
-    {
-      if (GetLocaleInfoA (GetThreadLocale (),
-			  LOCALE_IFIRSTDAYOFWEEK | LOCALE_USE_CP_ACP,
-			  buffer, G_N_ELEMENTS (buffer)))
-	week_start = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
-    }
-  
+  if (GetLocaleInfoW (GetThreadLocale (), LOCALE_IFIRSTDAYOFWEEK,
+		      wbuffer, G_N_ELEMENTS (wbuffer)))
+    week_start = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
+      
   if (week_start != NULL)
     {
       priv->week_start = (week_start[0] - '0' + 1) % 7;
@@ -723,10 +688,10 @@ gtk_calendar_init (GtkCalendar *calendar)
     }
 #else
 #ifdef HAVE__NL_TIME_FIRST_WEEKDAY
-  langinfo = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
-  first_weekday = langinfo[0];
-  langinfo = nl_langinfo (_NL_TIME_WEEK_1STDAY);
-  week_origin = GPOINTER_TO_INT (langinfo);
+  langinfo.string = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
+  first_weekday = langinfo.string[0];
+  langinfo.string = nl_langinfo (_NL_TIME_WEEK_1STDAY);
+  week_origin = langinfo.word;
   if (week_origin == 19971130) /* Sunday */
     week_1stday = 0;
   else if (week_origin == 19971201) /* Monday */
@@ -1678,7 +1643,7 @@ gtk_calendar_size_request (GtkWidget	  *widget,
     for (i = 0; i < 7; i++)
       {
 	pango_layout_set_text (layout, default_abbreviated_dayname[i], -1);
-	pango_layout_line_get_pixel_extents (pango_layout_get_lines (layout)->data, NULL, &logical_rect);
+	pango_layout_line_get_pixel_extents (pango_layout_get_lines_readonly (layout)->data, NULL, &logical_rect);
 
 	priv->min_day_width = MAX (priv->min_day_width, logical_rect.width);
 	priv->max_label_char_ascent = MAX (priv->max_label_char_ascent,
@@ -2409,8 +2374,6 @@ calendar_timer (gpointer data)
   GtkCalendarPrivate *priv = GTK_CALENDAR_GET_PRIVATE (calendar);
   gboolean retval = FALSE;
   
-  GDK_THREADS_ENTER ();
-
   if (priv->timer)
     {
       calendar_arrow_action (calendar, priv->click_child);
@@ -2424,7 +2387,7 @@ calendar_timer (gpointer data)
           g_object_get (settings, "gtk-timeout-repeat", &timeout, NULL);
 
 	  priv->need_timer = FALSE;
-	  priv->timer = g_timeout_add_full (G_PRIORITY_DEFAULT_IDLE,
+	  priv->timer = gdk_threads_add_timeout_full (G_PRIORITY_DEFAULT_IDLE,
 					    timeout * SCROLL_DELAY_FACTOR,
 					    (GSourceFunc) calendar_timer,
 					    (gpointer) calendar, NULL);
@@ -2432,8 +2395,6 @@ calendar_timer (gpointer data)
       else 
 	retval = TRUE;
     }
-
-  GDK_THREADS_LEAVE ();
 
   return retval;
 }
@@ -2455,7 +2416,7 @@ calendar_start_spinning (GtkCalendar *calendar,
       g_object_get (settings, "gtk-timeout-initial", &timeout, NULL);
 
       priv->need_timer = TRUE;
-      priv->timer = g_timeout_add_full (G_PRIORITY_DEFAULT_IDLE,
+      priv->timer = gdk_threads_add_timeout_full (G_PRIORITY_DEFAULT_IDLE,
 					timeout,
 					(GSourceFunc) calendar_timer,
 					(gpointer) calendar, NULL);

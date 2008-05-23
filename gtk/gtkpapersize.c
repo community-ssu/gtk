@@ -1,6 +1,7 @@
 /* GTK - The GIMP Toolkit
  * gtkpapersize.c: Paper Size
  * Copyright (C) 2006, Red Hat, Inc.
+ * Copyright © 2006, 2007 Christian Persch
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +29,7 @@
 
 #include "gtkpapersize.h"
 #include "gtkprintutils.h"
+#include "gtkprintoperation.h"  /* for GtkPrintError */
 #include "gtkintl.h"
 #include "gtkalias.h"
 
@@ -52,7 +54,7 @@ gtk_paper_size_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GtkPaperSize",
+    our_type = g_boxed_type_register_static (I_("GtkPaperSize"),
 					     (GBoxedCopyFunc)gtk_paper_size_copy,
 					     (GBoxedFreeFunc)gtk_paper_size_free);
   return our_type;
@@ -62,20 +64,20 @@ static const PaperInfo *
 lookup_paper_info (const gchar *name)
 {
   int lower = 0;
-  int upper = G_N_ELEMENTS (_gtk_standard_names_offsets) - 1;
+  int upper = G_N_ELEMENTS (standard_names_offsets) - 1;
   int mid;
   int cmp;
 
   do 
     {
        mid = (lower + upper) / 2;
-       cmp = strcmp (name, _gtk_paper_names + _gtk_standard_names_offsets[mid].name);
+       cmp = strcmp (name, paper_names + standard_names_offsets[mid].name);
        if (cmp < 0)
          upper = mid - 1;
        else if (cmp > 0)
          lower = mid + 1;
        else
-	 return &_gtk_standard_names_offsets[mid];
+	 return &standard_names_offsets[mid];
     }
   while (lower <= upper);
 
@@ -179,7 +181,7 @@ gtk_paper_size_new_from_info (const PaperInfo *info)
 {
   GtkPaperSize *size;
   
-  size = g_new0 (GtkPaperSize, 1);
+  size = g_slice_new0 (GtkPaperSize);
   size->info = info;
   size->width = info->width;
   size->height = info->height;
@@ -192,7 +194,7 @@ gtk_paper_size_new_from_info (const PaperInfo *info)
  * @name: a paper size name, or %NULL
  * 
  * Creates a new #GtkPaperSize object by parsing a 
- * PWG 5101.1-2002 PWG <!-- FIXME link here -->
+ * <ulink url="ftp://ftp.pwg.org/pub/pwg/candidates/cs-pwgmsn10-20020226-5101.1.pdf">PWG 5101.1-2002</ulink>
  * paper name. 
  *
  * If @name is %NULL, the default paper size is returned,
@@ -216,12 +218,14 @@ gtk_paper_size_new (const gchar *name)
   
   if (parse_full_media_size_name (name, &short_name, &width, &height))
     {
-      size = g_new0 (GtkPaperSize, 1);
+      size = g_slice_new0 (GtkPaperSize);
 
       size->width = width;
       size->height = height;
       size->name = short_name;
       size->display_name = g_strdup (short_name);
+      if (strncmp (short_name, "custom", 6) == 0)
+        size->is_custom = TRUE;
     }
   else
     {
@@ -231,7 +235,7 @@ gtk_paper_size_new (const gchar *name)
       else
 	{
 	  g_warning ("Unknown paper size %s\n", name);
-	  size = g_new0 (GtkPaperSize, 1);
+	  size = g_slice_new0 (GtkPaperSize);
 	  size->name = g_strdup (name);
 	  size->display_name = g_strdup (name);
 	  /* Default to A4 size */
@@ -284,21 +288,21 @@ gtk_paper_size_new_from_ppd (const gchar *ppd_name,
 	g_strndup (ppd_name, strlen (ppd_name) - strlen (".Transverse"));
     }
   
-  for (i = 0; i < G_N_ELEMENTS (_gtk_standard_names_offsets); i++)
+  for (i = 0; i < G_N_ELEMENTS(standard_names_offsets); i++)
     {
-      if (_gtk_standard_names_offsets[i].ppd_name != -1 &&
-	  strcmp (_gtk_paper_names + _gtk_standard_names_offsets[i].ppd_name, lookup_ppd_name) == 0)
+      if (standard_names_offsets[i].ppd_name != -1 &&
+	  strcmp (paper_names + standard_names_offsets[i].ppd_name, lookup_ppd_name) == 0)
 	{
-	  size = gtk_paper_size_new_from_info (&_gtk_standard_names_offsets[i]);
+	  size = gtk_paper_size_new_from_info (&standard_names_offsets[i]);
 	  goto out;
 	}
     }
   
-  for (i = 0; i < G_N_ELEMENTS (_gtk_extra_ppd_names_offsets); i++)
+  for (i = 0; i < G_N_ELEMENTS(extra_ppd_names_offsets); i++)
     {
-      if (strcmp (_gtk_paper_names + _gtk_extra_ppd_names_offsets[i].ppd_name, lookup_ppd_name) == 0)
+      if (strcmp (paper_names + extra_ppd_names_offsets[i].ppd_name, lookup_ppd_name) == 0)
 	{
-	  size = gtk_paper_size_new (_gtk_paper_names + _gtk_extra_ppd_names_offsets[i].standard_name);
+	  size = gtk_paper_size_new (paper_names + extra_ppd_names_offsets[i].standard_name);
 	  goto out;
 	}
     }
@@ -311,7 +315,7 @@ gtk_paper_size_new_from_ppd (const gchar *ppd_name,
 
   if (size->info == NULL ||
       size->info->ppd_name == -1 ||
-      strcmp (_gtk_paper_names + size->info->ppd_name, ppd_name) != 0)
+      strcmp (paper_names + size->info->ppd_name, ppd_name) != 0)
     size->ppd_name = g_strdup (ppd_name);
   
   g_free (freeme);
@@ -346,7 +350,7 @@ gtk_paper_size_new_custom (const gchar *name,
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (unit != GTK_UNIT_PIXEL, NULL);
 
-  size = g_new0 (GtkPaperSize, 1);
+  size = g_slice_new0 (GtkPaperSize);
   
   size->name = g_strdup (name);
   size->display_name = g_strdup (display_name);
@@ -373,7 +377,7 @@ gtk_paper_size_copy (GtkPaperSize *other)
 {
   GtkPaperSize *size;
 
-  size = g_new0 (GtkPaperSize, 1);
+  size = g_slice_new0 (GtkPaperSize);
 
   size->info = other->info;
   if (other->name)
@@ -404,7 +408,8 @@ gtk_paper_size_free (GtkPaperSize *size)
   g_free (size->name);
   g_free (size->display_name);
   g_free (size->ppd_name);
-  g_free (size);
+
+  g_slice_free (GtkPaperSize, size);
 }
 
 /**
@@ -430,6 +435,56 @@ gtk_paper_size_is_equal (GtkPaperSize *size1,
 		 gtk_paper_size_get_name (size2)) == 0;
 }
 
+GList * _gtk_load_custom_papers (void);
+
+/**
+ * gtk_paper_size_get_paper_sizes:
+ * @include_custom: whether to include custom paper sizes
+ *     as defined in the page setup dialog
+ *
+ * Creates a list of known paper sizes.
+ * 
+ * Return value: a newly allocated list of newly 
+ *    allocated #GtkPaperSize objects
+ *
+ * Since: 2.12
+ */
+GList *
+gtk_paper_size_get_paper_sizes (gboolean include_custom)
+{
+  GList *list = NULL;
+  guint i;
+#ifdef G_OS_UNIX		/* _gtk_load_custom_papers() only on Unix so far  */
+  if (include_custom)
+    {
+      GList *page_setups, *l;
+
+      page_setups = _gtk_load_custom_papers ();
+      for (l = page_setups; l != NULL; l = l->next)
+        {
+          GtkPageSetup *setup = (GtkPageSetup *) l->data;
+          GtkPaperSize *size;
+
+          size = gtk_page_setup_get_paper_size (setup);
+          list = g_list_prepend (list, gtk_paper_size_copy (size));
+        }
+
+      g_list_foreach (page_setups, (GFunc) g_object_unref, NULL);
+      g_list_free (page_setups);
+    }
+#endif
+  for (i = 0; i < G_N_ELEMENTS (standard_names_offsets); ++i)
+    {
+       GtkPaperSize *size;
+
+       size = gtk_paper_size_new_from_info (&standard_names_offsets[i]);
+       list = g_list_prepend (list, size);
+    }
+
+  return g_list_reverse (list);
+}
+
+
 /**
  * gtk_paper_size_get_name:
  * @size: a #GtkPaperSize object
@@ -446,7 +501,7 @@ gtk_paper_size_get_name (GtkPaperSize *size)
   if (size->name)
     return size->name;
   g_assert (size->info != NULL);
-  return _gtk_paper_names + size->info->name;
+  return paper_names + size->info->name;
 }
 
 /**
@@ -469,8 +524,8 @@ gtk_paper_size_get_display_name (GtkPaperSize *size)
 
   g_assert (size->info != NULL);
 
-  display_name = _gtk_paper_names + size->info->display_name;
-  return g_strip_context (display_name, gettext (display_name));
+  display_name = paper_names + size->info->display_name;
+  return g_strip_context (display_name, _(display_name));
 }
 
 /**
@@ -490,7 +545,7 @@ gtk_paper_size_get_ppd_name (GtkPaperSize *size)
   if (size->ppd_name)
     return size->ppd_name;
   if (size->info)
-    return _gtk_paper_names + size->info->ppd_name;
+    return paper_names + size->info->ppd_name;
   return NULL;
 }
 
@@ -730,6 +785,137 @@ gtk_paper_size_get_default_right_margin (GtkPaperSize *size,
 
   margin = _gtk_print_convert_to_mm (0.25, GTK_UNIT_INCH);
   return _gtk_print_convert_from_mm (margin, unit);
+}
+
+/**
+ * gtk_paper_size_new_from_key_file:
+ * @key_file: the #GKeyFile to retrieve the papersize from
+ * @group_name: the name ofthe group in the key file to read,
+ *     or %NULL to read the first group
+ * @error: return location for an error, or %NULL
+ *
+ * Reads a paper size from the group @group_name in the key file
+ * @key_file. 
+ *
+ * Returns: a new #GtkPaperSize object with the restored
+ *          paper size, or %NULL if an error occurred.
+ *
+ * Since: 2.12
+ */
+GtkPaperSize *
+gtk_paper_size_new_from_key_file (GKeyFile    *key_file,
+				  const gchar *group_name,
+				  GError     **error)
+{
+  GtkPaperSize *paper_size = NULL;
+  char *name = NULL, *ppd_name = NULL, *display_name = NULL, *freeme = NULL;
+  gdouble width, height;
+  gboolean retval = TRUE;
+  GError *err = NULL;
+
+  g_return_val_if_fail (key_file != NULL, NULL);
+
+  if (!group_name)
+    group_name = freeme = g_key_file_get_start_group (key_file);
+  if (!group_name || !g_key_file_has_group (key_file, group_name))
+    {
+      g_set_error (error,
+		   GTK_PRINT_ERROR,
+		   GTK_PRINT_ERROR_INVALID_FILE,
+		   _("Not a valid page setup file"));
+      retval = FALSE;
+      goto out;
+    }
+
+#define GET_DOUBLE(kf, group, name, v) \
+  v = g_key_file_get_double (kf, group, name, &err); \
+  if (err != NULL) \
+    {\
+      g_propagate_error (error, err);\
+      retval = FALSE;\
+      goto out;\
+    }
+
+  GET_DOUBLE (key_file, group_name, "Width", width);
+  GET_DOUBLE (key_file, group_name, "Height", height);
+
+#undef GET_DOUBLE
+
+  name = g_key_file_get_string (key_file, group_name,
+				"Name", NULL);
+  ppd_name = g_key_file_get_string (key_file, group_name,
+				    "PPDName", NULL);
+  display_name = g_key_file_get_string (key_file, group_name,
+					"DisplayName", NULL);
+  /* Fallback for old ~/.gtk-custom-paper entries */
+  if (!display_name)
+    display_name = g_strdup (name);
+
+  if (ppd_name != NULL)
+    paper_size = gtk_paper_size_new_from_ppd (ppd_name, display_name,
+			                      width, height);
+  else if (name != NULL)
+    paper_size = gtk_paper_size_new_custom (name, display_name,
+					    width, height, GTK_UNIT_MM);
+  else
+    {
+      g_set_error (error,
+		   GTK_PRINT_ERROR,
+		   GTK_PRINT_ERROR_INVALID_FILE,
+		   _("Not a valid page setup file"));
+      retval = FALSE;
+      goto out;
+    }
+  g_assert (paper_size != NULL);
+
+out:
+  g_free (ppd_name);
+  g_free (name);
+  g_free (display_name);
+  g_free (freeme);
+
+  return paper_size;
+}
+
+/**
+ * gtk_paper_size_to_key_file:
+ * @size: a #GtkPaperSize
+ * @key_file: the #GKeyFile to save the paper size to
+ * @group_name: the group to add the settings to in @key_file
+ *
+ * This function adds the paper size from @size to @key_file.
+ *
+ * Since: 2.12
+ */
+void
+gtk_paper_size_to_key_file (GtkPaperSize *size,
+			    GKeyFile     *key_file,
+			    const gchar  *group_name)
+{
+  const char *name, *ppd_name, *display_name;
+
+  g_return_if_fail (size != NULL);
+  g_return_if_fail (key_file != NULL);
+
+  name = gtk_paper_size_get_name (size);
+  display_name = gtk_paper_size_get_display_name (size);
+  ppd_name = gtk_paper_size_get_ppd_name (size);
+
+  if (ppd_name != NULL) 
+    g_key_file_set_string (key_file, group_name,
+			   "PPDName", ppd_name);
+  else
+    g_key_file_set_string (key_file, group_name,
+			   "Name", name);
+
+  if (display_name) 
+    g_key_file_set_string (key_file, group_name,
+			   "DisplayName", display_name);
+
+  g_key_file_set_double (key_file, group_name,
+			 "Width", gtk_paper_size_get_width (size, GTK_UNIT_MM));
+  g_key_file_set_double (key_file, group_name,
+			 "Height", gtk_paper_size_get_height (size, GTK_UNIT_MM));
 }
 
 

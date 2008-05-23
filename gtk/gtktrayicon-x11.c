@@ -72,8 +72,7 @@ static gboolean gtk_tray_icon_delete    (GtkWidget   *widget,
 static gboolean gtk_tray_icon_expose    (GtkWidget      *widget, 
 					 GdkEventExpose *event);
 
-static void gtk_tray_icon_update_manager_window    (GtkTrayIcon *icon,
-						    gboolean     dock_if_realized);
+static void gtk_tray_icon_update_manager_window    (GtkTrayIcon *icon);
 static void gtk_tray_icon_manager_window_destroyed (GtkTrayIcon *icon);
 
 G_DEFINE_TYPE (GtkTrayIcon, gtk_tray_icon, GTK_TYPE_PLUG)
@@ -140,13 +139,29 @@ static gboolean
 gtk_tray_icon_expose (GtkWidget      *widget, 
 		      GdkEventExpose *event)
 {
+  GtkWidget *focus_child;
+  gint border_width, x, y, width, height;
+  gboolean retval = FALSE;
+
   gdk_window_clear_area (widget->window, event->area.x, event->area.y,
 			 event->area.width, event->area.height);
 
-  if (GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->expose_event)  
-    return GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->expose_event (widget, event);
+  if (GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->expose_event)
+    retval = GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->expose_event (widget, event);
 
-  return FALSE;
+  focus_child = GTK_CONTAINER (widget)->focus_child;
+  if (focus_child && GTK_WIDGET_HAS_FOCUS (focus_child))
+    {
+      width  = widget->allocation.width;
+      height = widget->allocation.height;
+
+      gtk_paint_focus (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget),
+                       &event->area, widget, "tray_icon",
+                       x, y, width, height);
+    }
+
+  return retval;
 }
 
 static void
@@ -213,19 +228,31 @@ gtk_tray_icon_manager_filter (GdkXEvent *xevent,
       xev->xclient.message_type == icon->priv->manager_atom &&
       xev->xclient.data.l[1] == icon->priv->selection_atom)
     {
-      gtk_tray_icon_update_manager_window (icon, TRUE);
+      GTK_NOTE (PLUGSOCKET,
+		g_print ("GtkStatusIcon %p: tray manager appeared\n", icon));
+
+      gtk_tray_icon_update_manager_window (icon);
     }
   else if (xev->xany.window == icon->priv->manager_window)
     {
       if (xev->xany.type == PropertyNotify &&
 	  xev->xproperty.atom == icon->priv->orientation_atom)
 	{
+          GTK_NOTE (PLUGSOCKET,
+		    g_print ("GtkStatusIcon %p: got PropertyNotify on manager window for orientation atom\n", icon));
+
 	  gtk_tray_icon_get_orientation_property (icon);
 	}
-      if (xev->xany.type == DestroyNotify)
+      else if (xev->xany.type == DestroyNotify)
 	{
+          GTK_NOTE (PLUGSOCKET,
+		    g_print ("GtkStatusIcon %p: got DestroyNotify for manager window\n", icon));
+
 	  gtk_tray_icon_manager_window_destroyed (icon);
 	}
+      else
+        GTK_NOTE (PLUGSOCKET,
+		  g_print ("GtkStatusIcon %p: got other message on manager window\n", icon));
     }
   
   return GDK_FILTER_CONTINUE;
@@ -237,6 +264,9 @@ gtk_tray_icon_unrealize (GtkWidget *widget)
   GtkTrayIcon *icon = GTK_TRAY_ICON (widget);
   GdkWindow *root_window;
 
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: unrealizing\n", icon));
+
   if (icon->priv->manager_window != None)
     {
       GdkWindow *gdkwin;
@@ -245,14 +275,15 @@ gtk_tray_icon_unrealize (GtkWidget *widget)
                                               icon->priv->manager_window);
       
       gdk_window_remove_filter (gdkwin, gtk_tray_icon_manager_filter, icon);
+
+      icon->priv->manager_window = None;
     }
 
   root_window = gdk_screen_get_root_window (gtk_widget_get_screen (widget));
 
   gdk_window_remove_filter (root_window, gtk_tray_icon_manager_filter, icon);
 
-  if (GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->unrealize (widget);
 }
 
 static void
@@ -289,6 +320,10 @@ gtk_tray_icon_send_manager_message (GtkTrayIcon *icon,
 static void
 gtk_tray_icon_send_dock_request (GtkTrayIcon *icon)
 {
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: sending dock request to manager window %lx\n",
+	    	     icon, (gulong) icon->priv->manager_window));
+
   gtk_tray_icon_send_manager_message (icon,
 				      SYSTEM_TRAY_REQUEST_DOCK,
 				      icon->priv->manager_window,
@@ -297,13 +332,21 @@ gtk_tray_icon_send_dock_request (GtkTrayIcon *icon)
 }
 
 static void
-gtk_tray_icon_update_manager_window (GtkTrayIcon *icon,
-				     gboolean     dock_if_realized)
+gtk_tray_icon_update_manager_window (GtkTrayIcon *icon)
 {
   Display *xdisplay;
-  
+
+  g_return_if_fail (GTK_WIDGET_REALIZED (icon));
+
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: updating tray icon manager window, current manager window: %lx\n",
+		     icon, (gulong) icon->priv->manager_window));
+
   if (icon->priv->manager_window != None)
     return;
+
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: trying to find manager window\n", icon));
 
   xdisplay = GDK_DISPLAY_XDISPLAY (gtk_widget_get_display (GTK_WIDGET (icon)));
   
@@ -323,33 +366,39 @@ gtk_tray_icon_update_manager_window (GtkTrayIcon *icon,
     {
       GdkWindow *gdkwin;
 
+      GTK_NOTE (PLUGSOCKET,
+		g_print ("GtkStatusIcon %p: is being managed by window %lx\n",
+				icon, (gulong) icon->priv->manager_window));
+
       gdkwin = gdk_window_lookup_for_display (gtk_widget_get_display (GTK_WIDGET (icon)),
 					      icon->priv->manager_window);
       
       gdk_window_add_filter (gdkwin, gtk_tray_icon_manager_filter, icon);
 
-      if (dock_if_realized && GTK_WIDGET_REALIZED (icon))
-	gtk_tray_icon_send_dock_request (icon);
+      gtk_tray_icon_send_dock_request (icon);
 
       gtk_tray_icon_get_orientation_property (icon);
     }
+  else
+    GTK_NOTE (PLUGSOCKET,
+	      g_print ("GtkStatusIcon %p: no tray manager found\n", icon));
 }
 
 static void
 gtk_tray_icon_manager_window_destroyed (GtkTrayIcon *icon)
 {
-  GdkWindow *gdkwin;
-  
+  GtkWidget *widget = GTK_WIDGET (icon);
+
+  g_return_if_fail (GTK_WIDGET_REALIZED (icon));
   g_return_if_fail (icon->priv->manager_window != None);
 
-  gdkwin = gdk_window_lookup_for_display (gtk_widget_get_display (GTK_WIDGET (icon)),
-					  icon->priv->manager_window);
-      
-  gdk_window_remove_filter (gdkwin, gtk_tray_icon_manager_filter, icon);
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: tray manager window destroyed\n", icon));
 
-  icon->priv->manager_window = None;
+  gtk_widget_hide (widget);
+  gtk_widget_unrealize (widget);
 
-  gtk_tray_icon_update_manager_window (icon, TRUE);
+  gtk_widget_show (widget);
 }
 
 static gboolean 
@@ -357,19 +406,15 @@ gtk_tray_icon_delete (GtkWidget   *widget,
 		      GdkEventAny *event)
 {
   GtkTrayIcon *icon = GTK_TRAY_ICON (widget);
-  GdkWindow *gdkwin;
 
-  if (icon->priv->manager_window != None)
-    {  
-      gdkwin = gdk_window_lookup_for_display (gtk_widget_get_display (GTK_WIDGET (icon)),
-					      icon->priv->manager_window);
-      
-      gdk_window_remove_filter (gdkwin, gtk_tray_icon_manager_filter, icon);
-      
-      icon->priv->manager_window = None;
-    }
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: delete notify, tray manager window %lx\n",
+	    	     icon, (gulong) icon->priv->manager_window));
 
-  gtk_tray_icon_update_manager_window (icon, TRUE);  
+  gtk_widget_hide (widget);
+  gtk_widget_unrealize (widget);
+
+  gtk_widget_show (widget);
 
   return TRUE;
 }
@@ -384,8 +429,14 @@ gtk_tray_icon_realize (GtkWidget *widget)
   char buffer[256];
   GdkWindow *root_window;
 
-  if (GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->realize)
-    GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->realize (widget);
+  GTK_WIDGET_CLASS (gtk_tray_icon_parent_class)->realize (widget);
+
+  GTK_NOTE (PLUGSOCKET,
+	    g_print ("GtkStatusIcon %p: realized, window: %lx, socket window: %lx\n",
+		     widget,
+		     (gulong) GDK_WINDOW_XWINDOW (widget->window),
+		     GTK_PLUG (icon)->socket_window ?
+			     (gulong) GDK_WINDOW_XWINDOW (GTK_PLUG (icon)->socket_window) : 0UL));
 
   screen = gtk_widget_get_screen (widget);
   display = gdk_screen_get_display (screen);
@@ -408,8 +459,7 @@ gtk_tray_icon_realize (GtkWidget *widget)
 					      "_NET_SYSTEM_TRAY_ORIENTATION",
 					      False);
 
-  gtk_tray_icon_update_manager_window (icon, FALSE);
-  gtk_tray_icon_send_dock_request (icon);
+  gtk_tray_icon_update_manager_window (icon);
 
   root_window = gdk_screen_get_root_window (screen);
   

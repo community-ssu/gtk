@@ -54,16 +54,16 @@ struct _GdkWindowImplQuartz
 
   GdkWindowTypeHint type_hint;
 
-  /* This is the autorelease pool which is retained
-   * while the context is being held 
-   */
-  NSAutoreleasePool *pool;
-
   NSCursor *nscursor;
 
   GdkRegion *paint_clip_region;
   gint begin_paint_count;
   gint in_paint_rect_count;
+
+  GdkWindow *transient_for;
+
+  /* Sorted by z-order */
+  GList *sorted_children;
 };
  
 struct _GdkWindowImplQuartzClass 

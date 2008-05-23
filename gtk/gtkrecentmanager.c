@@ -48,14 +48,21 @@
 /* the file where we store the recently used items */
 #define GTK_RECENTLY_USED_FILE	".recently-used.xbel"
 
-/* a poll every two seconds should be enough */
-#define POLL_DELTA	2000
+/* a poll approximately every five seconds */
+#define POLL_DELTA      5
 
 /* return all items by default */
 #define DEFAULT_LIMIT	-1
 
 /* keep in sync with xdgmime */
 #define GTK_RECENT_DEFAULT_MIME	"application/octet-stream"
+
+typedef struct
+{
+  GSourceFunc func;
+  gpointer data;
+  GDestroyNotify notify;
+} ThreadsDispatch;
 
 typedef struct
 {
@@ -96,7 +103,6 @@ struct _GtkRecentManagerPrivate
 {
   gchar *filename;
 
-  guint is_screen_singleton : 1;
   guint is_dirty : 1;
   guint write_in_progress : 1;
   guint read_in_progress : 1;
@@ -104,8 +110,6 @@ struct _GtkRecentManagerPrivate
   gint limit;
   gint size;
 
-  GdkScreen *screen;
-  
   GBookmarkFile *recent_items;
   
   time_t last_mtime;
@@ -121,6 +125,7 @@ enum
   PROP_SIZE
 };
 
+static void           gtk_recent_manager_dispose      (GObject               *object);
 static void           gtk_recent_manager_finalize     (GObject               *object);
 
 static void           gtk_recent_manager_set_property (GObject               *object,
@@ -149,6 +154,8 @@ static GtkRecentInfo *gtk_recent_info_new             (const gchar           *ur
 static void           gtk_recent_info_free            (GtkRecentInfo         *recent_info);
 
 static guint signal_changed = 0;
+
+static GtkRecentManager *recent_manager_singleton = NULL;
 
 G_DEFINE_TYPE (GtkRecentManager, gtk_recent_manager, G_TYPE_OBJECT)
 
@@ -190,6 +197,32 @@ gtk_recent_manager_error_quark (void)
   return g_quark_from_static_string ("gtk-recent-manager-error-quark");
 }
 
+static gboolean
+threads_dispatch (gpointer data)
+{
+  ThreadsDispatch *dispatch = data;
+  gboolean res = FALSE;
+
+  GDK_THREADS_ENTER ();
+
+  if (!g_source_is_destroyed (g_main_current_source ()))
+    res = dispatch->func (dispatch->data);
+
+  GDK_THREADS_LEAVE ();
+
+  return res;
+}
+
+static void
+threads_free (gpointer data)
+{
+  ThreadsDispatch *dispatch = data;
+
+  if (dispatch->notify)
+    dispatch->notify (dispatch->data);
+
+  g_slice_free (ThreadsDispatch, dispatch);
+}
 
 static void
 gtk_recent_manager_class_init (GtkRecentManagerClass *klass)
@@ -200,6 +233,7 @@ gtk_recent_manager_class_init (GtkRecentManagerClass *klass)
   
   gobject_class->set_property = gtk_recent_manager_set_property;
   gobject_class->get_property = gtk_recent_manager_get_property;
+  gobject_class->dispose = gtk_recent_manager_dispose;
   gobject_class->finalize = gtk_recent_manager_finalize;
   
   /**
@@ -278,6 +312,7 @@ static void
 gtk_recent_manager_init (GtkRecentManager *manager)
 {
   GtkRecentManagerPrivate *priv;
+  ThreadsDispatch *dispatch;
   
   priv = g_type_instance_get_private ((GTypeInstance *) manager,
   				      GTK_TYPE_RECENT_MANAGER);
@@ -286,19 +321,23 @@ gtk_recent_manager_init (GtkRecentManager *manager)
   priv->limit = DEFAULT_LIMIT;
   priv->size = 0;
   
-  priv->is_screen_singleton = FALSE;
   priv->is_dirty = FALSE;
   priv->write_in_progress = FALSE;
   priv->read_in_progress = FALSE;
 
-  priv->screen = NULL;
-
   priv->filename = g_build_filename (g_get_home_dir (),
 				     GTK_RECENTLY_USED_FILE,
 				     NULL);
-  priv->poll_timeout = g_timeout_add (POLL_DELTA,
-		  		      gtk_recent_manager_poll_timeout,
-				      manager);
+  
+  dispatch = g_slice_new (ThreadsDispatch);
+  dispatch->func = gtk_recent_manager_poll_timeout;
+  dispatch->data = manager;
+  dispatch->notify = NULL;
+  priv->poll_timeout = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT + 30,
+                                                   POLL_DELTA,
+                                                   threads_dispatch,
+                                                   dispatch,
+                                                   threads_free);
 
   build_recent_items_list (manager);
 }
@@ -351,22 +390,31 @@ gtk_recent_manager_get_property (GObject               *object,
 } 
 
 static void
+gtk_recent_manager_dispose (GObject *object)
+{
+  GtkRecentManager *manager = GTK_RECENT_MANAGER (object);
+  GtkRecentManagerPrivate *priv = manager->priv;
+
+  if (priv->poll_timeout)
+    {
+      g_source_remove (priv->poll_timeout);
+      priv->poll_timeout = 0;
+    }
+
+  G_OBJECT_CLASS (gtk_recent_manager_parent_class)->dispose (object);
+}
+
+static void
 gtk_recent_manager_finalize (GObject *object)
 {
   GtkRecentManager *manager = GTK_RECENT_MANAGER (object);
   GtkRecentManagerPrivate *priv = manager->priv;
 
-  /* remove the poll timeout */
-  if (priv->poll_timeout)
-    g_source_remove (priv->poll_timeout);
-  
-  if (priv->filename)
-    g_free (priv->filename);
+  g_free (priv->filename);
   
   if (priv->recent_items)
     g_bookmark_file_free (priv->recent_items);
-  
-  /* chain up parent's finalize method */  
+
   G_OBJECT_CLASS (gtk_recent_manager_parent_class)->finalize (object);
 }
 
@@ -399,10 +447,7 @@ gtk_recent_manager_real_changed (GtkRecentManager *manager)
 	}
 
       write_error = NULL;
-      g_bookmark_file_to_file (priv->recent_items,
-		               priv->filename,
-			       &write_error);
-
+      g_bookmark_file_to_file (priv->recent_items, priv->filename, &write_error);
       if (write_error)
         {
           filename_warning ("Attempting to store changes into `%s', "
@@ -477,7 +522,7 @@ gtk_recent_manager_poll_timeout (gpointer data)
       return TRUE;
     }
 
-  /* the file didn't change from the last poll(), so we bail out */
+  /* the file didn't change from the last poll, so we bail out */
   if (stat_buf.st_mtime == priv->last_mtime)
     return TRUE;
 
@@ -492,6 +537,7 @@ gtk_recent_manager_set_filename (GtkRecentManager *manager,
 				 const gchar      *filename)
 {
   GtkRecentManagerPrivate *priv;
+  ThreadsDispatch *dispatch;
   
   g_assert (GTK_IS_RECENT_MANAGER (manager));
   priv = manager->priv;
@@ -508,9 +554,16 @@ gtk_recent_manager_set_filename (GtkRecentManager *manager,
     }
 
   priv->filename = g_strdup (filename);
-  priv->poll_timeout = g_timeout_add (POLL_DELTA,
-		  		      gtk_recent_manager_poll_timeout,
-				      manager);
+
+  dispatch = g_slice_new (ThreadsDispatch);
+  dispatch->func = gtk_recent_manager_poll_timeout;
+  dispatch->data = manager;
+  dispatch->notify = NULL;
+  priv->poll_timeout = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT + 30,
+                                                   POLL_DELTA,
+                                                   threads_dispatch,
+                                                   dispatch,
+                                                   threads_free);
 
   /* mark us clean, so that we can re-read the list
    * of recently used resources
@@ -615,8 +668,7 @@ build_recent_items_list (GtkRecentManager *manager)
  * each time something inside the list changes.
  *
  * #GtkRecentManager objects are expensive: be sure to create them only when
- * needed. You should use the gtk_recent_manager_new_for_screen() or the
- * gtk_recent_manager_get_default() functions instead.
+ * needed. You should use gtk_recent_manager_get_default() instead.
  *
  * Return value: A newly created #GtkRecentManager object.
  *
@@ -631,20 +683,21 @@ gtk_recent_manager_new (void)
 /**
  * gtk_recent_manager_get_default:
  *
- * Gets the recent manager for the default screen. See
- * gtk_recent_manager_get_for_screen().
+ * Gets a unique instance of #GtkRecentManager, that you can share
+ * in your application without caring about memory management. The
+ * returned instance will be freed when you application terminates.
  *
- * Return value: A unique #GtkRecentManager associated with the
- *   default screen. This recent manager is associated with the
- *   screen and can be used as long as the screen is open.
- *   Do not ref or unref it.
+ * Return value: A unique #GtkRecentManager. Do not ref or unref it.
  *
  * Since: 2.10
  */
 GtkRecentManager *
 gtk_recent_manager_get_default (void)
 {
-  return gtk_recent_manager_get_for_screen (gdk_screen_get_default ());
+  if (G_UNLIKELY (!recent_manager_singleton))
+    recent_manager_singleton = gtk_recent_manager_new ();
+
+  return recent_manager_singleton;
 }
 
 /**
@@ -665,70 +718,16 @@ gtk_recent_manager_get_default (void)
  *   and can be used as long as the screen is open. Do not ref or
  *   unref it.
  *
+ * Deprecated: 2.12: This function has been deprecated and should
+ *   not be used in newly written code. Calling this function is
+ *   equivalent to calling gtk_recent_manager_get_default().
+ *
  * Since: 2.10
  */
 GtkRecentManager *
 gtk_recent_manager_get_for_screen (GdkScreen *screen)
 {
-  GtkRecentManager *manager;
-
-  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
-  g_return_val_if_fail (!screen->closed, NULL);
-
-  manager = g_object_get_data (G_OBJECT (screen), "gtk-recent-manager-default");
-  if (!manager)
-    {
-      GtkRecentManagerPrivate *priv;
-      
-      manager = gtk_recent_manager_new ();
-      gtk_recent_manager_set_screen (manager, screen);
-
-      priv = manager->priv;
-      priv->is_screen_singleton = TRUE;
-
-      g_object_set_data (G_OBJECT (screen), I_("gtk-recent-manager-default"), manager);
-    }
-
-  return manager;
-}
-
-static void
-display_closed (GdkDisplay       *display,
-		gboolean          is_error,
-		GtkRecentManager *manager)
-{
-  GtkRecentManagerPrivate *priv = manager->priv;
-  GdkScreen *screen = priv->screen;
-  gboolean was_screen_singleton = priv->is_screen_singleton;
-
-  if (was_screen_singleton)
-    {
-      g_object_set_data (G_OBJECT (screen), I_("gtk-recent-manager-default"), NULL);
-      priv->is_screen_singleton = FALSE;
-    }
-
-  gtk_recent_manager_set_screen (manager, NULL);
-
-  if (was_screen_singleton)
-    g_object_unref (manager);
-}
-
-static void
-unset_screen (GtkRecentManager *manager)
-{
-  GtkRecentManagerPrivate *priv = manager->priv;
-  GdkDisplay *display;
-
-  if (priv->screen)
-    {
-      display = gdk_screen_get_display (priv->screen);
-
-      g_signal_handlers_disconnect_by_func (display,
-					    (gpointer) display_closed,
-					    manager);
-
-      priv->screen = NULL;
-    }
+  return gtk_recent_manager_get_default ();
 }
 
 /**
@@ -741,30 +740,16 @@ unset_screen (GtkRecentManager *manager)
  * storage.
  * 
  * Since: 2.10
+ *
+ * Deprecated: 2.12: This function has been deprecated and should
+ *   not be used in newly written code. Calling this function has
+ *   no effect.
  */
 void
 gtk_recent_manager_set_screen (GtkRecentManager *manager,
 			       GdkScreen        *screen)
 {
-  GtkRecentManagerPrivate *priv;
-  GdkDisplay *display;
 
-  g_return_if_fail (GTK_IS_RECENT_MANAGER (manager));
-  g_return_if_fail (screen == NULL || GDK_IS_SCREEN (screen));
-
-  priv = manager->priv;
-
-  unset_screen (manager);
-
-  if (screen)
-    {
-      display = gdk_screen_get_display (screen);
-
-      priv->screen = screen;
-
-      g_signal_connect (display, "closed",
-		        G_CALLBACK (display_closed), manager);
-    }
 }
 
 /**
@@ -820,11 +805,11 @@ gtk_recent_manager_get_limit (GtkRecentManager *manager)
  * Adds a new resource, pointed by @uri, into the recently used
  * resources list.
  *
- * This function automatically retrieving some of the needed
+ * This function automatically retrieves some of the needed
  * metadata and setting other metadata to common default values; it
  * then feeds the data to gtk_recent_manager_add_full().
  *
- * See gtk_recent_manager_add_full() if you want to explicitely
+ * See gtk_recent_manager_add_full() if you want to explicitly
  * define the metadata for the resource pointed by @uri.
  *
  * Return value: %TRUE if the new item was successfully added
@@ -845,7 +830,7 @@ gtk_recent_manager_add_item (GtkRecentManager  *manager,
   recent_data.display_name = NULL;
   recent_data.description = NULL;
   recent_data.mime_type = NULL;
-  
+
 #ifdef G_OS_UNIX
   if (has_case_prefix (uri, "file:/"))
     {
@@ -856,9 +841,9 @@ gtk_recent_manager_add_item (GtkRecentManager  *manager,
       if (filename)
         {
           mime_type = xdg_mime_get_mime_type_for_file (filename, NULL);
-          if (mime_type && *mime_type)
+          if (mime_type)
             recent_data.mime_type = g_strdup (mime_type);
-
+      
           g_free (filename);
         }
 
@@ -1101,7 +1086,7 @@ gtk_recent_manager_has_item (GtkRecentManager *manager,
   return g_bookmark_file_has_item (priv->recent_items, uri);
 }
 
-static gboolean
+static void
 build_recent_info (GBookmarkFile  *bookmarks,
 		   GtkRecentInfo  *info)
 {
@@ -1155,14 +1140,11 @@ build_recent_info (GBookmarkFile  *bookmarks,
       app_info->count = count;
       app_info->stamp = stamp;
       
-      info->applications = g_slist_append (info->applications,
-      					   app_info);
+      info->applications = g_slist_prepend (info->applications, app_info);
       g_hash_table_replace (info->apps_lookup, app_info->name, app_info);
     }
   
   g_strfreev (apps);
-  
-  return TRUE; 
 }
 
 /**
@@ -1189,7 +1171,6 @@ gtk_recent_manager_lookup_item (GtkRecentManager  *manager,
 {
   GtkRecentManagerPrivate *priv;
   GtkRecentInfo *info = NULL;
-  gboolean res;
   
   g_return_val_if_fail (GTK_IS_RECENT_MANAGER (manager), NULL);
   g_return_val_if_fail (uri != NULL, NULL);
@@ -1224,14 +1205,8 @@ gtk_recent_manager_lookup_item (GtkRecentManager  *manager,
   /* fill the RecentInfo structure with the data retrieved by our
    * parser object from the storage file 
    */
-  res = build_recent_info (priv->recent_items, info);
-  if (!res)
-    {
-      gtk_recent_info_free (info);
-      
-      return NULL;
-    }
- 
+  build_recent_info (priv->recent_items, info);
+
   return info;
 }
 
@@ -1327,42 +1302,17 @@ gtk_recent_manager_get_items (GtkRecentManager *manager)
   for (i = 0; i < uris_len; i++)
     {
       GtkRecentInfo *info;
-      gboolean res;
+      
+      if (priv->limit != -1 && i == priv->limit)
+        break;
       
       info = gtk_recent_info_new (uris[i]);
-      res = build_recent_info (priv->recent_items, info);
-      if (!res)
-        {
-          g_warning ("Unable to create a RecentInfo object for "
-                     "item with URI `%s'",
-                     uris[i]);
-          gtk_recent_info_free (info);
-	  
-          continue;
-        }
+      build_recent_info (priv->recent_items, info);
       
       retval = g_list_prepend (retval, info);
     }
   
   g_strfreev (uris);
-    
-  /* clamp the list, if a limit is present */
-  if ((priv->limit != -1) &&
-      (g_list_length (retval) > priv->limit))
-    {
-      GList *clamp, *l;
-      
-      clamp = g_list_nth (retval, priv->limit - 1);
-      
-      if (!clamp)
-        return retval;
-      
-      l = clamp->next;
-      clamp->next = NULL;
-      
-      g_list_foreach (l, (GFunc) gtk_recent_info_free, NULL);
-      g_list_free (l);
-    }
   
   return retval;
 }
@@ -1439,7 +1389,7 @@ gtk_recent_info_get_type (void)
   static GType info_type = 0;
   
   if (!info_type)
-    info_type = g_boxed_type_register_static ("GtkRecentInfo",
+    info_type = g_boxed_type_register_static (I_("GtkRecentInfo"),
     					      (GBoxedCopyFunc) gtk_recent_info_ref,
     					      (GBoxedFreeFunc) gtk_recent_info_unref);
   return info_type;
@@ -1734,11 +1684,9 @@ recent_app_info_free (RecentAppInfo *app_info)
   if (!app_info)
     return;
   
-  if (app_info->name)
-    g_free (app_info->name);
+  g_free (app_info->name);
   
-  if (app_info->exec)
-    g_free (app_info->exec);
+  g_free (app_info->exec);
   
   g_free (app_info);
 }
@@ -1907,106 +1855,56 @@ gtk_recent_info_last_application (GtkRecentInfo  *info)
   return g_strdup (name);
 }
 
-typedef struct
-{
-  gint size;
-  GdkPixbuf *pixbuf;
-} IconCacheElement;
-
-static void
-icon_cache_element_free (IconCacheElement *element)
-{
-  if (element->pixbuf)
-    g_object_unref (element->pixbuf);
-  g_free (element);
-}
-
-static void
-icon_theme_changed (GtkIconTheme     *icon_theme)
-{
-  GHashTable *cache;
-
-  /* Difference from the initial creation is that we don't
-   * reconnect the signal
-   */
-  cache = g_hash_table_new_full (g_str_hash, g_str_equal,
-				 (GDestroyNotify)g_free,
-				 (GDestroyNotify)icon_cache_element_free);
-  g_object_set_data_full (G_OBJECT (icon_theme), "gtk-recent-icon-cache",
-			  cache, (GDestroyNotify)g_hash_table_destroy);
-}
-
-/* TODO: use the GtkFileChooser's icon cache instead of our own to reduce
- * the memory footprint
- */
-static GdkPixbuf *
-get_cached_icon (const gchar *name,
-		 gint         pixel_size)
-{
-  GtkIconTheme *icon_theme;
-  GHashTable *cache;
-  IconCacheElement *element;
-
-  icon_theme = gtk_icon_theme_get_default ();
-  cache = g_object_get_data (G_OBJECT (icon_theme), "gtk-recent-icon-cache");
-
-  if (!cache)
-    {
-      cache = g_hash_table_new_full (g_str_hash, g_str_equal,
-				     (GDestroyNotify)g_free,
-				     (GDestroyNotify)icon_cache_element_free);
-
-      g_object_set_data_full (G_OBJECT (icon_theme), "gtk-recent-icon-cache",
-			      cache, (GDestroyNotify)g_hash_table_destroy);
-      g_signal_connect (icon_theme, "changed",
-			G_CALLBACK (icon_theme_changed), NULL);
-    }
-
-  element = g_hash_table_lookup (cache, name);
-  if (!element)
-    {
-      element = g_new0 (IconCacheElement, 1);
-      g_hash_table_insert (cache, g_strdup (name), element);
-    }
-
-  if (element->size != pixel_size)
-    {
-      if (element->pixbuf)
-	g_object_unref (element->pixbuf);
-
-      element->size = pixel_size;
-      element->pixbuf = gtk_icon_theme_load_icon (icon_theme, name,
-						  pixel_size, 0, NULL);
-    }
-
-  return element->pixbuf ? g_object_ref (element->pixbuf) : NULL;
-}
-
-
 static GdkPixbuf *
 get_icon_for_mime_type (const char *mime_type,
 			gint        pixel_size)
 {
+  GtkIconTheme *icon_theme;
   const char *separator;
   GString *icon_name;
   GdkPixbuf *pixbuf;
 
   separator = strchr (mime_type, '/');
   if (!separator)
-    return NULL; /* maybe we should return a GError with "invalid MIME-type" */
+    return NULL;
 
-  icon_name = g_string_new ("gnome-mime-");
+  icon_theme = gtk_icon_theme_get_default ();
+
+  /* try with the three icon name variants for MIME types */
+
+  /* canonicalize MIME type: foo/x-bar -> foo-x-bar */
+  icon_name = g_string_new (NULL);
   g_string_append_len (icon_name, mime_type, separator - mime_type);
   g_string_append_c (icon_name, '-');
   g_string_append (icon_name, separator + 1);
-  pixbuf = get_cached_icon (icon_name->str, pixel_size);
+  pixbuf = gtk_icon_theme_load_icon (icon_theme, icon_name->str,
+                                     pixel_size,
+                                     0,
+                                     NULL);
   g_string_free (icon_name, TRUE);
   if (pixbuf)
     return pixbuf;
 
+  /* canonicalize MIME type, and prepend "gnome-mime-" */
   icon_name = g_string_new ("gnome-mime-");
   g_string_append_len (icon_name, mime_type, separator - mime_type);
-  pixbuf = get_cached_icon (icon_name->str, pixel_size);
+  g_string_append_c (icon_name, '-');
+  g_string_append (icon_name, separator + 1);
+  pixbuf = gtk_icon_theme_load_icon (icon_theme, icon_name->str,
+                                     pixel_size,
+                                     0,
+                                     NULL);
+  g_string_free (icon_name, TRUE);
+  if (pixbuf)
+    return pixbuf;
+
+  /* try the MIME family icon */
+  icon_name = g_string_new ("gnome-mime-");
+  g_string_append_len (icon_name, mime_type, separator - mime_type);
+  pixbuf = gtk_icon_theme_load_icon (icon_theme, icon_name->str,
+                                     pixel_size,
+                                     0,
+                                     NULL);
   g_string_free (icon_name, TRUE);
 
   return pixbuf;
@@ -2037,7 +1935,8 @@ get_icon_fallback (const gchar *icon_name,
  *
  * Retrieves the icon of size @size associated to the resource MIME type.
  *
- * Return value: a #GdkPixbuf containing the icon, or %NULL.
+ * Return value: a #GdkPixbuf containing the icon, or %NULL. Use
+ *   g_object_unref() when finished using the icon.
  *
  * Since: 2.10
  */
@@ -2052,9 +1951,15 @@ gtk_recent_info_get_icon (GtkRecentInfo *info,
   if (info->mime_type)
     retval = get_icon_for_mime_type (info->mime_type, size);
 
-  /* this should never fail */  
+  /* this function should never fail */  
   if (!retval)
-    retval = get_icon_fallback (GTK_STOCK_FILE, size);
+    {
+      if (info->mime_type &&
+          strcmp (info->mime_type, "x-directory/normal") == 0)
+        retval = get_icon_fallback (GTK_STOCK_DIRECTORY, size);
+      else
+        retval = get_icon_fallback (GTK_STOCK_FILE, size);
+    }
   
   return retval;
 }
@@ -2240,7 +2145,7 @@ get_uri_shortname_for_display (const gchar *uri)
       rest = get_method_string (uri, &method);
       local_file = g_filename_display_basename (rest);
       
-      name = g_strdup_printf ("%s: %s", method, local_file);
+      name = g_strconcat (method, ": ", local_file, NULL);
       
       g_free (local_file);
       g_free (method);
@@ -2293,27 +2198,40 @@ gtk_recent_info_get_short_name (GtkRecentInfo *info)
  * gtk_recent_info_get_uri_display:
  * @info: a #GtkRecentInfo
  *
- * Gets a displayable version of the resource's URI.
+ * Gets a displayable version of the resource's URI.  If the resource
+ * is local, it returns a local path; if the resource is not local,
+ * it returns the UTF-8 encoded content of gtk_recent_info_get_uri().
  *
- * Return value: a UTF-8 string containing the resource's URI or %NULL
+ * Return value: a newly allocated UTF-8 string containing the
+ *   resource's URI or %NULL. Use g_free() when done using it.
  *
  * Since: 2.10
  */
 gchar *
 gtk_recent_info_get_uri_display (GtkRecentInfo *info)
 {
-  gchar *filename, *filename_utf8;
+  gchar *retval;
   
   g_return_val_if_fail (info != NULL, NULL);
-  
-  filename = g_filename_from_uri (info->uri, NULL, NULL);
-  if (!filename)
-    return NULL;
-      
-  filename_utf8 = g_filename_to_utf8 (filename, -1, NULL, NULL, NULL);
-  g_free (filename);
 
-  return filename_utf8;
+  retval = NULL;
+  if (gtk_recent_info_is_local (info))
+    {
+      gchar *filename;
+
+      filename = g_filename_from_uri (info->uri, NULL, NULL);
+      if (!filename)
+        return NULL;
+      
+      retval = g_filename_to_utf8 (filename, -1, NULL, NULL, NULL);
+      g_free (filename);
+    }
+  else
+    {
+      retval = make_valid_utf8 (info->uri);
+    }
+
+  return retval;
 }
 
 /**
@@ -2432,6 +2350,22 @@ gtk_recent_info_has_group (GtkRecentInfo *info,
     }
 
   return FALSE;
+}
+
+/*
+ * _gtk_recent_manager_sync:
+ * 
+ * Private function for synchronising the recent manager singleton.
+ */
+void
+_gtk_recent_manager_sync (void)
+{
+  if (recent_manager_singleton)
+    {
+      /* force a dump of the contents of the recent manager singleton */
+      recent_manager_singleton->priv->is_dirty = TRUE;
+      gtk_recent_manager_real_changed (recent_manager_singleton);
+    }
 }
 
 #define __GTK_RECENT_MANAGER_C__

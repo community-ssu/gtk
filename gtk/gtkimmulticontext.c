@@ -27,7 +27,7 @@
 #include "gtkmain.h"
 #include "gtkradiomenuitem.h"
 #include "gtkintl.h"
-#include "gtkprivate.h"
+#include "gtkprivate.h" /* To get redefinition of GTK_LOCALE_DIR on Win32 */
 #include "gtkalias.h"
 
 struct _GtkIMMulticontextPrivate
@@ -368,7 +368,7 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
       gchar *global_context_id = get_global_context_id();
 #else /* !MAEMO_CHANGES */
       if (!global_context_id)
-        {
+	{
 	  gchar *locale = _gtk_get_lc_ctype ();
 	  global_context_id = _gtk_im_module_get_default_context_id (locale);
 	  g_free (locale);
@@ -693,7 +693,7 @@ activate_cb (GtkWidget         *menuitem,
 #endif /* MAEMO_CHANGES */
 
       gtk_im_context_reset (GTK_IM_CONTEXT (context));
-
+      
 #ifndef MAEMO_CHANGES
       global_context_id = id;
 #endif /* MAEMO_CHANGES */

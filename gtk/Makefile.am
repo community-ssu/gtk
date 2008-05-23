@@ -4,7 +4,11 @@ SUBDIRS=theme-bits
 
 if OS_UNIX
 SUBDIRS += xdgmime
-GTK_PRINT_PREVIEW_COMMAND="evince --preview %f"
+if USE_QUARTZ
+GTK_PRINT_PREVIEW_COMMAND="/Applications/Preview.app/Contents/MacOS/Preview %f"
+else
+GTK_PRINT_PREVIEW_COMMAND="evince --unlink-tempfile --preview --print-settings %s %f"
+endif
 endif
 
 DIST_SUBDIRS=theme-bits xdgmime
@@ -253,6 +257,7 @@ gtk_public_h_sources =          \
 	gtkradiotoolbutton.h	\
 	gtkrange.h		\
 	gtkrc.h			\
+	gtkrecentaction.h	\
 	gtkrecentchooser.h 	\
 	gtkrecentchooserdialog.h \
 	gtkrecentchoosermenu.h 	\
@@ -261,6 +266,7 @@ gtk_public_h_sources =          \
 	gtkrecentmanager.h 	\
 	gtkruler.h		\
 	gtkscale.h		\
+	gtkscalebutton.h	\
 	gtkscrollbar.h		\
 	gtkscrolledwindow.h	\
 	gtkselection.h		\
@@ -295,6 +301,7 @@ gtk_public_h_sources =          \
 	gtktoolbar.h		\
 	gtktoolbutton.h		\
 	gtktoolitem.h		\
+	gtktooltip.h		\
 	gtktooltips.h		\
 	gtktree.h		\
 	gtktreednd.h		\
@@ -312,6 +319,7 @@ gtk_public_h_sources =          \
 	gtkvbbox.h		\
 	gtkvbox.h		\
 	gtkviewport.h		\
+	gtkvolumebutton.h	\
 	gtkvpaned.h		\
 	gtkvruler.h		\
 	gtkvscale.h		\
@@ -339,6 +347,11 @@ gtk_semi_private_h_sources =    \
 
 # GTK+ header files that don't get installed
 gtk_private_h_sources =		\
+	gtkquery.h		\
+	gtksearchengine.h	\
+	gtksearchenginebeagle.h	\
+	gtksearchenginetracker.h\
+	gtksearchenginesimple.h	\
 	gtkdndcursors.h		\
 	gtkentryprivate.h	\
 	gtkbuilderprivate.h 	\
@@ -349,7 +362,6 @@ gtk_private_h_sources =		\
 	gtkfilesystemunix.h	\
 	gtkhsv.h		\
 	gtkiconcache.h		\
-	gtkiconcachevalidator.h	\
 	gtkintl.h		\
 	gtkkeyhash.h		\
 	gtkmnemonichash.h	\
@@ -361,7 +373,6 @@ gtk_private_h_sources =		\
 	gtkrecentchooserdefault.h \
 	gtkrecentchooserprivate.h \
 	gtkrecentchooserutils.h \
-	gtksequence.h		\
 	gtksocketprivate.h	\
 	gtktextbtree.h		\
 	gtktextbufferserialize.h\
@@ -380,6 +391,11 @@ gtk_private_h_sources =		\
 
 # GTK+ C sources to build the library from
 gtk_base_c_sources =            \
+	gtkquery.c		\
+	gtksearchengine.c	\
+	gtksearchenginebeagle.c	\
+	gtksearchenginetracker.c\
+	gtksearchenginesimple.c	\
 	fnmatch.c		\
 	gtkaboutdialog.c	\
 	gtkaccelgroup.c		\
@@ -519,6 +535,7 @@ gtk_base_c_sources =            \
 	gtkrange.c		\
 	gtkrbtree.c 		\
 	gtkrc.c			\
+	gtkrecentaction.c	\
 	gtkrecentchooserdefault.c \
 	gtkrecentchooserdialog.c \
 	gtkrecentchoosermenu.c 	\
@@ -529,13 +546,13 @@ gtk_base_c_sources =            \
 	gtkrecentmanager.c 	\
 	gtkruler.c		\
 	gtkscale.c		\
+	gtkscalebutton.c	\
 	gtkscrollbar.c		\
 	gtkscrolledwindow.c	\
 	gtkselection.c		\
 	gtkseparator.c		\
 	gtkseparatormenuitem.c	\
 	gtkseparatortoolitem.c	\
-	gtksequence.c		\
 	gtksettings.c		\
 	gtksignal.c		\
 	gtksizegroup.c		\
@@ -571,6 +588,7 @@ gtk_base_c_sources =            \
 	gtktoolbar.c		\
 	gtktoolbutton.c		\
 	gtktoolitem.c		\
+	gtktooltip.c		\
 	gtktooltips.c		\
 	gtktree.c		\
 	gtktreedatalist.c	\
@@ -589,6 +607,7 @@ gtk_base_c_sources =            \
 	gtkuimanager.c		\
 	gtkvbbox.c		\
 	gtkvbox.c		\
+	gtkvolumebutton.c	\
 	gtkviewport.c		\
 	gtkvpaned.c		\
 	gtkvruler.c		\
@@ -617,6 +636,7 @@ gtk_all_c_sources += $(gtk_os_unix_c_sources)
 if OS_UNIX
 gtk_private_h_sources += \
 	gtkfilesystemunix.h		\
+	gtkiconcachevalidator.h		\
 	gtkprintbackend.h		\
 	gtkprinter-private.h		\
 	gtkprinteroption.h		\
@@ -645,10 +665,14 @@ gtk_use_win32_c_sources = \
 	gtksocket-win32.c \
 	gtkwin32embed.c   \
 	gtkwin32embedwidget.c
+gtk_use_quartz_c_sources =	\
+	gtksearchenginequartz.c	\
+	gtkplug-stub.c		\
+	gtksocket-stub.c
 gtk_use_stub_c_sources = \
 	gtkplug-stub.c   \
 	gtksocket-stub.c
-gtk_all_c_sources += $(gtk_use_x11_c_sources) $(gtk_use_win32_c_sources) $(gtk_use_stub_c_sources)
+gtk_all_c_sources += $(gtk_use_x11_c_sources) $(gtk_use_win32_c_sources) $(gtk_use_quartz_c_sources) $(gtk_use_stub_c_sources)
 if USE_X11
 gtk_private_h_sources += gtkxembed.h gtktrayicon.h xembed.h
 gtk_c_sources += $(gtk_use_x11_c_sources)
@@ -657,7 +681,13 @@ if USE_WIN32
 gtk_private_h_sources += gtkwin32embed.h gtkwin32embedwidget.h
 gtk_c_sources += $(gtk_use_win32_c_sources)
 else
+if USE_QUARTZ
+gtk_private_h_sources += gtksearchenginequartz.h
+gtk_c_sources += $(gtk_use_quartz_c_sources)
+gtk_use_quartz_c_sources_CFLAGS = "-xobjective-c"
+else
 gtk_c_sources += $(gtk_use_stub_c_sources)
+endif
 endif
 endif
 
@@ -707,6 +737,7 @@ gtk_extra_sources =				\
 	paper_names.c				\
 	paper_names_offsets.c			\
 	gen-paper-names.c			\
+	gtkstatusicon-quartz.c                  \
 	gtk.symbols				\
 	gtkversion.h.in				\
 	gtkmarshalers.list			\
@@ -808,13 +839,13 @@ libgtk_directfb_2_0_la_SOURCES = $(gtk_c_sources)
 
 libgtk_x11_2_0_la_LDFLAGS = $(libtool_opts)
 libgtk_linux_fb_2_0_la_LDFLAGS = $(libtool_opts)
-libgtk_win32_2_0_la_LDFLAGS = $(libtool_opts)
+libgtk_win32_2_0_la_LDFLAGS = $(libtool_opts) -Wl,-luuid
 libgtk_quartz_2_0_la_LDFLAGS = $(libtool_opts)
 libgtk_directfb_2_0_la_LDFLAGS = $(libtool_opts)
 
 libgtk_x11_2_0_la_LIBADD = $(libadd)
 libgtk_linux_fb_2_0_la_LIBADD = $(libadd)
-libgtk_win32_2_0_la_LIBADD = $(libadd) -lole32 -lgdi32 -lcomdlg32 -lwinspool -lcomctl32 -luuid
+libgtk_win32_2_0_la_LIBADD = $(libadd) -lole32 -lgdi32 -lcomdlg32 -lwinspool -lcomctl32
 libgtk_win32_2_0_la_DEPENDENCIES = $(gtk_def) $(gtk_win32_res)
 libgtk_quartz_2_0_la_LIBADD = $(libadd)
 libgtk_directfb_2_0_la_LIBADD = $(libadd)
@@ -874,7 +905,8 @@ gtk_query_immodules_2_0_SOURCES = queryimmodules.c
 
 gtk_update_icon_cache_LDADD = $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
 
-gtk_update_icon_cache_SOURCES = updateiconcache.c
+gtk_update_icon_cache_SOURCES = \
+	updateiconcache.c 
 
 .PHONY: files test test-debug
 
@@ -884,9 +916,11 @@ files:
 	done
 
 STOCK_ICONS = \
+	stock-icons/16/document-open-recent.png		\
 	stock-icons/16/gtk-about.png  			\
 	stock-icons/16/gtk-add.png    			\
 	stock-icons/16/gtk-cdrom.png  			\
+	stock-icons/16/gtk-close.png  			\
 	stock-icons/16/gtk-connect.png        		\
 	stock-icons/16/gtk-convert.png        		\
 	stock-icons/16/gtk-copy.png   			\
@@ -950,6 +984,7 @@ STOCK_ICONS = \
 	stock-icons/16/gtk-revert-to-saved-rtl.png    	\
 	stock-icons/16/gtk-save-as.png        		\
 	stock-icons/16/gtk-select-all.png     		\
+	stock-icons/16/gtk-select-color.png     	\
 	stock-icons/16/gtk-select-font.png    		\
 	stock-icons/16/gtk-sort-ascending.png	 	\
 	stock-icons/16/gtk-sort-descending.png        	\
@@ -976,6 +1011,7 @@ STOCK_ICONS = \
 	stock-icons/20/gtk-no.png     			\
 	stock-icons/20/gtk-ok.png     			\
 	stock-icons/20/gtk-yes.png    			\
+	stock-icons/24/document-open-recent.png		\
 	stock-icons/24/gtk-about.png  			\
 	stock-icons/24/gtk-add.png    			\
 	stock-icons/24/gtk-bold.png   			\
@@ -1101,31 +1137,36 @@ GENERATED_ICONS = \
 # need to copy the icons so that we can replace the generated ones with
 # symlinks, even in the readonly srcdir case
 stamp-icons: $(STOCK_ICONS)
-	if [ ! -d stock-icons ]; then 						\
-          cp -R $(srcdir)/stock-icons .; 					\
-	  chmod -R u+w stock-icons;						\
-        fi &&									\
-	for i in 16 24; do							\
-	   (cd stock-icons/$$i							\
-	   && $(RM) gtk-go-back-rtl.png 					\
-	   && $(LN_S) gtk-go-forward-ltr.png gtk-go-back-rtl.png		\
-	   && $(RM) gtk-go-forward-rtl.png					\
-	   && $(LN_S) gtk-go-back-ltr.png gtk-go-forward-rtl.png		\
-	   && $(RM) gtk-goto-first-rtl.png 					\
-	   && $(LN_S) gtk-goto-last-ltr.png gtk-goto-first-rtl.png		\
-	   && $(RM) gtk-goto-last-rtl.png					\
-	   && $(LN_S) gtk-goto-first-ltr.png gtk-goto-last-rtl.png		\
-	   && $(RM) gtk-media-forward-rtl.png 					\
-	   && $(LN_S) gtk-media-rewind-ltr.png gtk-media-forward-rtl.png	\
-	   && $(RM) gtk-media-next-rtl.png					\
-	   && $(LN_S) gtk-media-previous-ltr.png gtk-media-next-rtl.png		\
-	   && $(RM) gtk-media-previous-rtl.png 					\
-	   && $(LN_S) gtk-media-next-ltr.png gtk-media-previous-rtl.png		\
-	   && $(RM) gtk-media-rewind-rtl.png					\
-	   && $(LN_S) gtk-media-forward-ltr.png gtk-media-rewind-rtl.png	\
-	   && $(RM) gtk-save.png						\
-	   && $(LN_S) gtk-floppy.png gtk-save.png)				\
-	done									\
+	if [ ! -d stock-icons ]; then 					\
+	  for d in 16 20 24 32 48; do 					\
+	    mkdir -p stock-icons/$$d; 					\
+	  done;								\
+	  for f in $(STOCK_ICONS); do					\
+	    cp $(srcdir)/$$f $$(dirname $$f);				\
+	  done;								\
+	  chmod -R u+w stock-icons;					\
+        fi &&								\
+	for i in 16 24; do						\
+	   (cd stock-icons/$$i						\
+	   && $(RM) gtk-go-back-rtl.png 				\
+	   && $(LN_S) gtk-go-forward-ltr.png gtk-go-back-rtl.png	\
+	   && $(RM) gtk-go-forward-rtl.png				\
+	   && $(LN_S) gtk-go-back-ltr.png gtk-go-forward-rtl.png	\
+	   && $(RM) gtk-goto-first-rtl.png 				\
+	   && $(LN_S) gtk-goto-last-ltr.png gtk-goto-first-rtl.png	\
+	   && $(RM) gtk-goto-last-rtl.png				\
+	   && $(LN_S) gtk-goto-first-ltr.png gtk-goto-last-rtl.png	\
+	   && $(RM) gtk-media-forward-rtl.png 				\
+	   && $(LN_S) gtk-media-rewind-ltr.png gtk-media-forward-rtl.png\
+	   && $(RM) gtk-media-next-rtl.png				\
+	   && $(LN_S) gtk-media-previous-ltr.png gtk-media-next-rtl.png	\
+	   && $(RM) gtk-media-previous-rtl.png 				\
+	   && $(LN_S) gtk-media-next-ltr.png gtk-media-previous-rtl.png	\
+	   && $(RM) gtk-media-rewind-rtl.png				\
+	   && $(LN_S) gtk-media-forward-ltr.png gtk-media-rewind-rtl.png\
+	   && $(RM) gtk-save.png					\
+	   && $(LN_S) gtk-floppy.png gtk-save.png)			\
+	done								\
 	&& touch stamp-icons
 
 if CROSS_COMPILING
@@ -1152,6 +1193,7 @@ EXTRA_DIST +=                   \
 	tree_minus.xpm		\
 	tree_plus.xpm		\
 	gtk.def			\
+	gtk-builder-convert	\
 	gtk-win32.rc		\
 	gtk-win32.rc.in		\
 	gtkwin32embed.h		\
@@ -1161,14 +1203,15 @@ EXTRA_DIST +=                   \
 	gtkfilesystemwin32.c	\
 	gtkprint-win32.h	\
 	gtkprint-win32.c	\
+	gtksearchenginequartz.h \
 	gtkrc.default		\
 	gtkrc.key.default	\
 	gtkrc.key.emacs		\
 	makefile.msc		\
 	makefile.msc.in		\
 	makegtkalias.pl		\
-	abicheck.sh		\
 	aliasfilescheck.sh	\
+	abicheck.sh		\
 	pltcheck.sh
 
 install-data-local:

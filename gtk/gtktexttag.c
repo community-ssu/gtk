@@ -52,7 +52,6 @@
 #include "gtktexttag.h"
 #include "gtktexttypes.h"
 #include "gtktexttagtable.h"
-#include "gtkmain.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkprivate.h"
@@ -107,6 +106,9 @@ enum {
   PROP_INVISIBLE,
   PROP_PARAGRAPH_BACKGROUND,
   PROP_PARAGRAPH_BACKGROUND_GDK,
+
+  /* Behavior args */
+  PROP_ACCUMULATIVE_MARGIN,
   
   /* Whether-a-style-arg-is-set args */
   PROP_BACKGROUND_SET,
@@ -535,6 +537,25 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                        GDK_TYPE_COLOR,
                                                        GTK_PARAM_READWRITE));
 
+  /**
+   * GtkTextTag:accumulative-margin:
+   *
+   * Whether the margins accumulate or override each other.
+   *
+   * When set to %TRUE the margins of this tag are added to the margins 
+   * of any other non-accumulative margins present. When set to %FALSE 
+   * the margins override one another (the default).
+   *
+   * Since: 2.12
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_ACCUMULATIVE_MARGIN,
+                                   g_param_spec_boolean ("accumulative-margin",
+                                                         P_("Margin Accumulates"),
+                                                         P_("Whether left and right margins accumulate."),
+                                                         FALSE,
+                                                         GTK_PARAM_READWRITE));
+
   /* Style props are set or not */
 
 #define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (object_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READWRITE))
@@ -650,7 +671,20 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
   ADD_SET_PROP ("paragraph-background-set", PROP_PARAGRAPH_BACKGROUND_SET,
                 P_("Paragraph background set"),
                 P_("Whether this tag affects the paragraph background color"));
-  
+
+  /**
+   * GtkTextTag::event:
+   * @tag: the #GtkTextTag on which the signal is emitted
+   * @object: the object the event was fired from (typically a #GtkTextView)
+   * @event: the event which triggered the signal
+   * @iter: a #GtkTextIter pointing at the location the event occured
+   *
+   * The ::event signal is emitted when an event occurs on a region of the
+   * buffer marked with this tag.
+   *
+   * Returns: %TRUE to stop other handlers from being invoked for the
+   * event. %FALSE to propagate the event further.
+   */
   signals[EVENT] =
     g_signal_new (I_("event"),
                   G_OBJECT_CLASS_TYPE (object_class),
@@ -1278,6 +1312,12 @@ gtk_text_tag_set_property (GObject      *object,
       }
       break;
 
+    case PROP_ACCUMULATIVE_MARGIN:
+      text_tag->accumulative_margin = g_value_get_boolean (value);
+      g_object_notify (object, "accumulative-margin");
+      size_changed = TRUE;
+      break;
+
       /* Whether the value should be used... */
 
     case PROP_BACKGROUND_SET:
@@ -1602,6 +1642,10 @@ gtk_text_tag_get_property (GObject      *object,
       
     case PROP_PARAGRAPH_BACKGROUND_GDK:
       g_value_set_boxed (value, tag->values->pg_bg_color);
+      break;
+
+    case PROP_ACCUMULATIVE_MARGIN:
+      g_value_set_boolean (value, tag->accumulative_margin);
       break;
 
     case PROP_BACKGROUND_SET:
@@ -2136,6 +2180,9 @@ _gtk_text_attributes_fill_from_tags (GtkTextAttributes *dest,
 {
   guint n = 0;
 
+  guint left_margin_accumulative = 0;
+  guint right_margin_accumulative = 0;
+
   g_return_if_fail (!dest->realized);
 
   while (n < n_tags)
@@ -2197,8 +2244,13 @@ _gtk_text_attributes_fill_from_tags (GtkTextAttributes *dest,
       if (vals->direction != GTK_TEXT_DIR_NONE)
         dest->direction = vals->direction;
 
-      if (tag->left_margin_set)
-        dest->left_margin = vals->left_margin;
+      if (tag->left_margin_set) 
+        {
+          if (tag->accumulative_margin)
+            left_margin_accumulative += vals->left_margin;
+          else
+            dest->left_margin = vals->left_margin;
+        }
 
       if (tag->indent_set)
         dest->indent = vals->indent;
@@ -2206,8 +2258,13 @@ _gtk_text_attributes_fill_from_tags (GtkTextAttributes *dest,
       if (tag->rise_set)
         dest->appearance.rise = vals->appearance.rise;
 
-      if (tag->right_margin_set)
-        dest->right_margin = vals->right_margin;
+      if (tag->right_margin_set) 
+        {
+          if (tag->accumulative_margin)
+            right_margin_accumulative += vals->right_margin;
+          else
+            dest->right_margin = vals->right_margin;
+        }
 
       if (tag->pixels_above_lines_set)
         dest->pixels_above_lines = vals->pixels_above_lines;
@@ -2248,6 +2305,9 @@ _gtk_text_attributes_fill_from_tags (GtkTextAttributes *dest,
 
       ++n;
     }
+
+  dest->left_margin += left_margin_accumulative;
+  dest->right_margin += right_margin_accumulative;
 }
 
 gboolean

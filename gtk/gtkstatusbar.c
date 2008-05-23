@@ -142,6 +142,15 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
  							 P_("Whether the statusbar has a grip for resizing the toplevel"),
  							 TRUE,
  							 GTK_PARAM_READWRITE));
+
+  /** 
+   * GtkStatusbar::text-pushed:
+   * @statusbar: the object which received the signal.
+   * @context_id: the context id of the relevant message/statusbar.
+   * @text: the message that was pushed.
+   * 
+   * Is emitted whenever a new message gets pushed onto a statusbar's stack.
+   */
   statusbar_signals[SIGNAL_TEXT_PUSHED] =
     g_signal_new (I_("text_pushed"),
 		  G_OBJECT_CLASS_TYPE (class),
@@ -152,6 +161,15 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
 		  G_TYPE_NONE, 2,
 		  G_TYPE_UINT,
 		  G_TYPE_STRING);
+
+  /**
+   * GtkStatusbar::text-popped:
+   * @statusbar: the object which received the signal.
+   * @context_id: the context id of the relevant message/statusbar.
+   * @text: the message that was just popped.
+   *
+   * Is emitted whenever a new message is popped off a statusbar's stack.
+   */
   statusbar_signals[SIGNAL_TEXT_POPPED] =
     g_signal_new (I_("text_popped"),
 		  G_OBJECT_CLASS_TYPE (class),
@@ -207,6 +225,13 @@ gtk_statusbar_init (GtkStatusbar *statusbar)
   statusbar->keys = NULL;
 }
 
+/**
+ * gtk_statusbar_new:
+ *
+ * Creates a new #GtkStatusbar ready for messages.
+ *
+ * Returns: the new #GtkStatusbar
+ */
 GtkWidget* 
 gtk_statusbar_new (void)
 {
@@ -226,12 +251,24 @@ gtk_statusbar_update (GtkStatusbar *statusbar,
   gtk_label_set_text (GTK_LABEL (statusbar->label), text);
 }
 
+/**
+ * gtk_statusbar_get_context_id:
+ * @statusbar: a #GtkStatusbar
+ * @context_description: textual description of what context 
+ *                       the new message is being used in
+ *
+ * Returns a new context identifier, given a description 
+ * of the actual context. Note that the description is 
+ * <emphasis>not</emphasis> shown in the UI.
+ *
+ * Returns: an integer id
+ */
 guint
 gtk_statusbar_get_context_id (GtkStatusbar *statusbar,
 			      const gchar  *context_description)
 {
   gchar *string;
-  guint *id;
+  guint id;
   
   g_return_val_if_fail (GTK_IS_STATUSBAR (statusbar), 0);
   g_return_val_if_fail (context_description != NULL, 0);
@@ -239,32 +276,41 @@ gtk_statusbar_get_context_id (GtkStatusbar *statusbar,
   /* we need to preserve namespaces on object datas */
   string = g_strconcat ("gtk-status-bar-context:", context_description, NULL);
 
-  id = g_object_get_data (G_OBJECT (statusbar), string);
-  if (!id)
+  id = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (statusbar), string));
+  if (id == 0)
     {
-      id = g_new (guint, 1);
-      *id = statusbar->seq_context_id++;
-      g_object_set_data_full (G_OBJECT (statusbar), string, id, g_free);
+      id = statusbar->seq_context_id++;
+      g_object_set_data_full (G_OBJECT (statusbar), string, GUINT_TO_POINTER (id), NULL);
       statusbar->keys = g_slist_prepend (statusbar->keys, string);
     }
   else
     g_free (string);
 
-  return *id;
+  return id;
 }
 
+/**
+ * gtk_statusbar_push:
+ * @statusbar: a #GtkStatusbar
+ * @context_id: the message's context id, as returned by
+ *              gtk_statusbar_get_context_id()
+ * @text: the message to add to the statusbar
+ * 
+ * Pushes a new message onto a statusbar's stack.
+ *
+ * Returns: a message id that can be used with 
+ *          gtk_statusbar_remove().
+ */
 guint
 gtk_statusbar_push (GtkStatusbar *statusbar,
 		    guint	  context_id,
 		    const gchar  *text)
 {
   GtkStatusbarMsg *msg;
-  GtkStatusbarClass *class;
 
   g_return_val_if_fail (GTK_IS_STATUSBAR (statusbar), 0);
   g_return_val_if_fail (text != NULL, 0);
 
-  class = GTK_STATUSBAR_GET_CLASS (statusbar);
   msg = g_slice_new (GtkStatusbarMsg);
   msg->text = g_strdup (text);
   msg->context_id = context_id;
@@ -281,6 +327,18 @@ gtk_statusbar_push (GtkStatusbar *statusbar,
   return msg->message_id;
 }
 
+/**
+ * gtk_statusbar_pop:
+ * @statusbar: a #GtkStatusBar
+ * @context_id: a context identifier
+ * 
+ * Removes the first message in the #GtkStatusBar's stack
+ * with the given context id. 
+ *
+ * Note that this may not change the displayed message, if 
+ * the message at the top of the stack has a different 
+ * context id.
+ */
 void
 gtk_statusbar_pop (GtkStatusbar *statusbar,
 		   guint	 context_id)
@@ -299,10 +357,6 @@ gtk_statusbar_pop (GtkStatusbar *statusbar,
 
 	  if (msg->context_id == context_id)
 	    {
-	      GtkStatusbarClass *class;
-
-	      class = GTK_STATUSBAR_GET_CLASS (statusbar);
-
 	      statusbar->messages = g_slist_remove_link (statusbar->messages,
 							 list);
 	      g_free (msg->text);
@@ -322,6 +376,15 @@ gtk_statusbar_pop (GtkStatusbar *statusbar,
 		 msg ? msg->text : NULL);
 }
 
+/**
+ * gtk_statusbar_remove:
+ * @statusbar: a #GtkStatusBar
+ * @context_id: a context identifier
+ * @message_id: a message identifier, as returned by gtk_statusbar_push()
+ *
+ * Forces the removal of a message from a statusbar's stack. 
+ * The exact @context_id and @message_id must be specified.
+ */
 void
 gtk_statusbar_remove (GtkStatusbar *statusbar,
 		      guint	   context_id,
@@ -352,9 +415,6 @@ gtk_statusbar_remove (GtkStatusbar *statusbar,
 	  if (msg->context_id == context_id &&
 	      msg->message_id == message_id)
 	    {
-	      GtkStatusbarClass *class;
-	      
-	      class = GTK_STATUSBAR_GET_CLASS (statusbar);
 	      statusbar->messages = g_slist_remove_link (statusbar->messages, list);
 	      g_free (msg->text);
               g_slice_free (GtkStatusbarMsg, msg);
@@ -366,6 +426,14 @@ gtk_statusbar_remove (GtkStatusbar *statusbar,
     }
 }
 
+/**
+ * gtk_statusbar_set_has_resize_grip:
+ * @statusbar: a #GtkStatusBar
+ * @setting: %TRUE to have a resize grip
+ *
+ * Sets whether the statusbar has a resize grip. 
+ * %TRUE by default.
+ */
 void
 gtk_statusbar_set_has_resize_grip (GtkStatusbar *statusbar,
 				   gboolean      setting)
@@ -396,6 +464,14 @@ gtk_statusbar_set_has_resize_grip (GtkStatusbar *statusbar,
     }
 }
 
+/**
+ * gtk_statusbar_get_has_resize_grip:
+ * @statusbar: a #GtkStatusBar
+ * 
+ * Returns whether the statusbar has a resize grip.
+ *
+ * Returns: %TRUE if the statusbar has a resize grip.
+ */
 gboolean
 gtk_statusbar_get_has_resize_grip (GtkStatusbar *statusbar)
 {
@@ -408,13 +484,11 @@ static void
 gtk_statusbar_destroy (GtkObject *object)
 {
   GtkStatusbar *statusbar;
-  GtkStatusbarClass *class;
   GSList *list;
 
   g_return_if_fail (GTK_IS_STATUSBAR (object));
 
   statusbar = GTK_STATUSBAR (object);
-  class = GTK_STATUSBAR_GET_CLASS (statusbar);
 
   for (list = statusbar->messages; list; list = list->next)
     {
@@ -712,7 +786,7 @@ gtk_statusbar_expose_event (GtkWidget      *widget,
       gtk_paint_resize_grip (widget->style,
                              widget->window,
                              GTK_WIDGET_STATE (widget),
-                             NULL,
+                             &event->area,
                              widget,
                              "statusbar",
                              edge,
@@ -827,15 +901,23 @@ gtk_statusbar_size_allocate  (GtkWidget     *widget,
 	}
       else
 	{
-	  if (statusbar->label->allocation.width + rect.width > statusbar->frame->allocation.width)
+	  GtkWidget *child;
+
+	  /* Use the frame's child instead of statusbar->label directly, in case
+	   * the label has been replaced by a container as the frame's child
+	   * (and the label reparented into that container).
+	   */
+	  child = gtk_bin_get_child (GTK_BIN (statusbar->frame));
+
+	  if (child->allocation.width + rect.width > statusbar->frame->allocation.width)
 	    {
 	      /* shrink the label to make room for the grip */
-	      *allocation = statusbar->label->allocation;
+	      *allocation = child->allocation;
 	      allocation->width = MAX (1, allocation->width - rect.width);
 	      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL) 
-		allocation->x += statusbar->label->allocation.width - allocation->width;
+		allocation->x += child->allocation.width - allocation->width;
 
-	      gtk_widget_size_allocate (statusbar->label, allocation);
+	      gtk_widget_size_allocate (child, allocation);
 	    }
 	}
     }

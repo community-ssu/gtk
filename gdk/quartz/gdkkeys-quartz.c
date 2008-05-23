@@ -206,7 +206,7 @@ maybe_update_keymap (void)
 	  for (i = 0; i < NUM_KEYCODES; i++) 
 	    {
 	      int j;
-	      UInt32 modifiers[] = {0, shiftKey, optionKey, shiftKey|optionKey};
+	      UInt32 modifiers[] = {0, shiftKey, optionKey, shiftKey | optionKey};
 
 	      p = keyval_array + i * KEYVALS_PER_KEYCODE;
 	      
@@ -216,7 +216,7 @@ maybe_update_keymap (void)
 		  UInt16 key_code;
 		  UniChar uc;
 		  
-		  key_code = modifiers[j]|i;
+		  key_code = modifiers[j] | i;
 		  c = KeyTranslate (chr_data, key_code, &state);
 
 		  if (state != 0)
@@ -248,6 +248,12 @@ maybe_update_keymap (void)
 			    }
 			}
 		      
+		      /* Special-case shift-tab since GTK+ expects
+		       * GDK_ISO_Left_Tab for that. 
+		       */
+		      if (found && p[j] == GDK_Tab && modifiers[j] == shiftKey) 
+			p[j] = GDK_ISO_Left_Tab;
+
 		      if (!found)
 			p[j] = gdk_unicode_to_keyval (uc);
 		    }
@@ -275,7 +281,7 @@ maybe_update_keymap (void)
 	  for (i = 0; i < NUM_KEYCODES; i++) 
 	    {
 	      int j;
-	      UInt32 modifiers[] = {0, shiftKey, optionKey, shiftKey|optionKey};
+	      UInt32 modifiers[] = {0, shiftKey, optionKey, shiftKey | optionKey};
               UniChar chars[4];
               UniCharCount nChars;
 
@@ -288,7 +294,7 @@ maybe_update_keymap (void)
 		  UInt16 key_code;
 		  UniChar uc;
 		  
-		  key_code = modifiers[j]|i;
+		  key_code = modifiers[j] | i;
 		  err = UCKeyTranslate (chr_data, i, kUCKeyActionDown,
 		                        (modifiers[j] >> 8) & 0xFF,
 		                        LMGetKbdType(),
@@ -316,6 +322,12 @@ maybe_update_keymap (void)
 			      break;
 			    }
 			}
+
+		      /* Special-case shift-tab since GTK+ expects
+		       * GDK_ISO_Left_Tab for that.
+		       */
+		      if (found && p[j] == GDK_Tab && modifiers[j] == shiftKey)
+			p[j] = GDK_ISO_Left_Tab;
 		      
 		      if (!found)
 			p[j] = gdk_unicode_to_keyval (uc);
@@ -378,6 +390,13 @@ PangoDirection
 gdk_keymap_get_direction (GdkKeymap *keymap)
 {
   return PANGO_DIRECTION_NEUTRAL;
+}
+
+gboolean
+gdk_keymap_have_bidi_layouts (GdkKeymap *keymap)
+{
+  /* FIXME: Can we implement this? */
+  return FALSE;
 }
 
 gboolean
@@ -585,7 +604,7 @@ gdk_keymap_translate_keyboard_state (GdkKeymap       *keymap,
  * GDK_KEY_PRESS, GDK_KEY_RELEASE, GDK_NOTHING (should be ignored)
  */
 GdkEventType
-_gdk_quartz_key_event_type (NSEvent *event)
+_gdk_quartz_keys_event_type (NSEvent *event)
 {
   unsigned short keycode;
   unsigned int flags;
@@ -625,7 +644,7 @@ _gdk_quartz_key_event_type (NSEvent *event)
 }
 
 gboolean
-_gdk_quartz_key_is_modifier (guint keycode)
+_gdk_quartz_keys_is_modifier (guint keycode)
 {
   gint i;
   

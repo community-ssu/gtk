@@ -17,7 +17,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: imime.c,v 1.5 2005/09/28 16:03:11 tml Exp $
+ * $Id: imime.c 13994 2005-09-28 16:03:11Z tml $
  */
 
 #include <config.h>

@@ -450,6 +450,77 @@ enum_changed (GObject *object, GParamSpec *pspec, gpointer data)
 
 }
 
+static void
+flags_modified (GtkCheckButton *button, gpointer data)
+{
+  ObjectProperty *p = data;
+  gboolean active;
+  GFlagsClass *fclass;
+  guint flags;
+  gint i;
+  
+  fclass = G_FLAGS_CLASS (g_type_class_peek (p->spec->value_type));
+  
+  active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button));
+  i = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button), "index"));
+
+  if (is_child_property (p->spec))
+    {
+      GtkWidget *widget = GTK_WIDGET (p->obj);
+      GtkWidget *parent = gtk_widget_get_parent (widget);
+
+      gtk_container_child_get (GTK_CONTAINER (parent), 
+			       widget, p->spec->name, &flags, NULL);
+      if (active)
+        flags |= fclass->values[i].value;
+      else
+        flags &= ~fclass->values[i].value;
+
+      gtk_container_child_set (GTK_CONTAINER (parent), 
+			       widget, p->spec->name, flags, NULL);
+    }
+  else
+    {
+      g_object_get (p->obj, p->spec->name, &flags, NULL);
+
+      if (active)
+        flags |= fclass->values[i].value;
+      else
+        flags &= ~fclass->values[i].value;
+
+      g_object_set (p->obj, p->spec->name, flags, NULL);
+    }
+}
+
+static void
+flags_changed (GObject *object, GParamSpec *pspec, gpointer data)
+{
+  GList *children, *c;
+  GValue val = { 0, };  
+  GFlagsClass *fclass;
+  guint flags;
+  gint i;
+
+  fclass = G_FLAGS_CLASS (g_type_class_peek (pspec->value_type));
+  
+  g_value_init (&val, pspec->value_type);
+  get_property_value (object, pspec, &val);
+  flags = g_value_get_flags (&val);
+  g_value_unset (&val);
+
+  children = gtk_container_get_children (GTK_CONTAINER (data));
+
+  for (c = children, i = 0; c; c = c->next, i++)
+    {
+      block_controller (G_OBJECT (c->data));
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->data),
+                                    (fclass->values[i].value & flags) != 0);
+      unblock_controller (G_OBJECT (c->data));
+    }
+
+  g_list_free (children);
+}
+
 static gunichar
 unichar_get_value (GtkEntry *entry)
 {
@@ -522,13 +593,24 @@ pointer_changed (GObject *object, GParamSpec *pspec, gpointer data)
   g_free (str);
 }
 
+gchar *
+object_label (GObject *obj)
+{
+  const gchar *name;
+
+  if (obj)
+    name = g_type_name (G_TYPE_FROM_INSTANCE (obj));
+  else
+    name = "unknown";
+  return g_strdup_printf ("Object: %p (%s)", obj, name);
+}
+
 static void
 object_changed (GObject *object, GParamSpec *pspec, gpointer data)
 {
   GtkWidget *label, *button;
   gchar *str;
   GObject *obj;
-  const gchar *name;
   
   GList *children = gtk_container_get_children (GTK_CONTAINER (data)); 
   label = GTK_WIDGET (children->data);
@@ -536,11 +618,7 @@ object_changed (GObject *object, GParamSpec *pspec, gpointer data)
   g_object_get (object, pspec->name, &obj, NULL);
   g_list_free (children);
 
-  if (obj)
-    name = g_type_name (G_TYPE_FROM_INSTANCE (obj));
-  else
-    name = "unknown";
-  str = g_strdup_printf ("Object: %p (%s)", obj, name);
+  str = object_label (obj);
   
   gtk_label_set_text (GTK_LABEL (label), str);
   gtk_widget_set_sensitive (button, G_IS_OBJECT (obj));
@@ -731,6 +809,36 @@ property_widget (GObject    *object,
 	if (can_modify)
 	  connect_controller (G_OBJECT (prop_edit), "changed",
 			      object, spec, (GtkSignalFunc) enum_modified);
+      }
+    }
+  else if (type == G_TYPE_PARAM_FLAGS)
+    {
+      {
+	GFlagsClass *fclass;
+	gint j;
+	
+	prop_edit = gtk_vbox_new (FALSE, 0);
+	
+	fclass = G_FLAGS_CLASS (g_type_class_ref (spec->value_type));
+	
+	for (j = 0; j < fclass->n_values; j++)
+	  {
+	    GtkWidget *b;
+	    
+	    b = gtk_check_button_new_with_label (fclass->values[j].value_name);
+            g_object_set_data (G_OBJECT (b), "index", GINT_TO_POINTER (j));
+	    gtk_widget_show (b);
+	    gtk_box_pack_start (GTK_BOX (prop_edit), b, FALSE, FALSE, 0);
+	    if (can_modify) 
+	      connect_controller (G_OBJECT (b), "toggled",
+	     	                  object, spec, (GtkSignalFunc) flags_modified);
+	  }
+	
+	g_type_class_unref (fclass);
+	
+	g_object_connect_property (object, spec,
+				   G_CALLBACK (flags_changed),
+				   prop_edit, G_OBJECT (prop_edit));
       }
     }
   else if (type == G_TYPE_PARAM_UNICHAR)
@@ -964,6 +1072,124 @@ child_properties_from_object (GObject     *object,
 }
 
 static void
+child_properties (GtkWidget *button, 
+		  GObject   *object)
+{
+  create_prop_editor (object, 0);
+}
+
+static GtkWidget *
+children_from_object (GObject     *object,
+		      GtkTooltips *tips)
+{
+  GList *children, *c;
+  GtkWidget *table, *label, *prop_edit, *button, *vbox, *sw;
+  gchar *str;
+  gint i;
+
+  if (!GTK_IS_CONTAINER (object))
+    return NULL;
+
+  children = gtk_container_get_children (GTK_CONTAINER (object));
+
+  table = gtk_table_new (g_list_length (children), 2, FALSE);
+  gtk_table_set_col_spacing (GTK_TABLE (table), 0, 10);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 3);
+ 
+  for (c = children, i = 0; c; c = c->next, i++)
+    {
+      object = c->data;
+
+      label = gtk_label_new ("Child");
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, i, i + 1);
+
+      prop_edit = gtk_hbox_new (FALSE, 5);
+
+      str = object_label (object);
+      label = gtk_label_new (str);
+      g_free (str);
+      button = gtk_button_new_with_label ("Properties");
+      g_signal_connect (button, "clicked",
+                        G_CALLBACK (child_properties),
+                        object);
+
+      gtk_container_add (GTK_CONTAINER (prop_edit), label);
+      gtk_container_add (GTK_CONTAINER (prop_edit), button);
+
+      gtk_table_attach_defaults (GTK_TABLE (table), prop_edit, 1, 2, i, i + 1);
+    }
+
+  vbox = gtk_vbox_new (FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
+
+  sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+                                  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sw), vbox);
+
+  g_list_free (children);
+
+  return sw;
+}
+
+static GtkWidget *
+cells_from_object (GObject     *object,
+                   GtkTooltips *tips)
+{
+  GList *cells, *c;
+  GtkWidget *table, *label, *prop_edit, *button, *vbox, *sw;
+  gchar *str;
+  gint i;
+
+  if (!GTK_IS_CELL_LAYOUT (object))
+    return NULL;
+
+  cells = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (object));
+
+  table = gtk_table_new (g_list_length (cells), 2, FALSE);
+  gtk_table_set_col_spacing (GTK_TABLE (table), 0, 10);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 3);
+ 
+  for (c = cells, i = 0; c; c = c->next, i++)
+    {
+      object = c->data;
+
+      label = gtk_label_new ("Cell");
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, i, i + 1);
+
+      prop_edit = gtk_hbox_new (FALSE, 5);
+
+      str = object_label (object);
+      label = gtk_label_new (str);
+      g_free (str);
+      button = gtk_button_new_with_label ("Properties");
+      g_signal_connect (button, "clicked",
+                        G_CALLBACK (child_properties),
+                        object);
+
+      gtk_container_add (GTK_CONTAINER (prop_edit), label);
+      gtk_container_add (GTK_CONTAINER (prop_edit), button);
+
+      gtk_table_attach_defaults (GTK_TABLE (table), prop_edit, 1, 2, i, i + 1);
+    }
+
+  vbox = gtk_vbox_new (FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
+
+  sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+                                  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sw), vbox);
+
+  g_list_free (cells);
+
+  return sw;
+}
+static void
 kill_tips (GtkWindow *win, GtkObject *tips)
 {
   gtk_object_destroy (tips);
@@ -1050,6 +1276,22 @@ create_prop_editor (GObject   *object,
       if (properties)
 	{
 	  label = gtk_label_new ("Child properties");
+	  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				    properties, label);
+	}
+
+      properties = children_from_object (object, tips);
+      if (properties)
+	{
+	  label = gtk_label_new ("Children");
+	  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				    properties, label);
+	}
+
+      properties = cells_from_object (object, tips);
+      if (properties)
+	{
+	  label = gtk_label_new ("Cell renderers");
 	  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 				    properties, label);
 	}

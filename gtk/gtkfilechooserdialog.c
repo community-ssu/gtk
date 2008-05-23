@@ -50,8 +50,6 @@ static void     gtk_file_chooser_dialog_get_property (GObject               *obj
 
 static void     gtk_file_chooser_dialog_map          (GtkWidget             *widget);
 static void     gtk_file_chooser_dialog_unmap        (GtkWidget             *widget);
-static void     gtk_file_chooser_dialog_style_set    (GtkWidget             *widget,
-						      GtkStyle              *previous_style);
 
 static void response_cb (GtkDialog *dialog,
 			 gint       response_id);
@@ -73,7 +71,6 @@ gtk_file_chooser_dialog_class_init (GtkFileChooserDialogClass *class)
 
   widget_class->map       = gtk_file_chooser_dialog_map;
   widget_class->unmap     = gtk_file_chooser_dialog_unmap;
-  widget_class->style_set = gtk_file_chooser_dialog_style_set;
 
   _gtk_file_chooser_install_properties (gobject_class);
 
@@ -86,14 +83,15 @@ gtk_file_chooser_dialog_init (GtkFileChooserDialog *dialog)
   GtkFileChooserDialogPrivate *priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
 								   GTK_TYPE_FILE_CHOOSER_DIALOG,
 								   GtkFileChooserDialogPrivate);
+  GtkDialog *fc_dialog = GTK_DIALOG (dialog);
+
   dialog->priv = priv;
-  dialog->priv->default_width = -1;
-  dialog->priv->default_height = -1;
-  dialog->priv->resize_horizontally = TRUE;
-  dialog->priv->resize_vertically = TRUE;
   dialog->priv->response_requested = FALSE;
 
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+  gtk_dialog_set_has_separator (fc_dialog, FALSE);
+  gtk_container_set_border_width (GTK_CONTAINER (fc_dialog), 5);
+  gtk_box_set_spacing (GTK_BOX (fc_dialog->vbox), 2); /* 2 * 5 + 2 = 12 */
+  gtk_container_set_border_width (GTK_CONTAINER (fc_dialog->action_area), 5);
 
   /* We do a signal connection here rather than overriding the method in
    * class_init because GtkDialog::response is a RUN_LAST signal.  We want *our*
@@ -112,6 +110,15 @@ gtk_file_chooser_dialog_finalize (GObject *object)
   g_free (dialog->priv->file_system);
 
   G_OBJECT_CLASS (gtk_file_chooser_dialog_parent_class)->finalize (object);  
+}
+
+static gboolean
+is_stock_accept_response_id (int response_id)
+{
+  return (response_id == GTK_RESPONSE_ACCEPT
+	  || response_id == GTK_RESPONSE_OK
+	  || response_id == GTK_RESPONSE_YES
+	  || response_id == GTK_RESPONSE_APPLY);
 }
 
 /* Callback used when the user activates a file in the file chooser widget */
@@ -137,10 +144,7 @@ file_chooser_widget_file_activated (GtkFileChooser       *chooser,
 
       widget = GTK_WIDGET (l->data);
       response_id = gtk_dialog_get_response_for_widget (GTK_DIALOG (dialog), widget);
-      if (response_id == GTK_RESPONSE_ACCEPT
-	  || response_id == GTK_RESPONSE_OK
-	  || response_id == GTK_RESPONSE_YES
-	  || response_id == GTK_RESPONSE_APPLY)
+      if (is_stock_accept_response_id (response_id))
 	{
 	  gtk_widget_activate (widget); /* Should we gtk_dialog_response (dialog, response_id) instead? */
 	  break;
@@ -148,25 +152,6 @@ file_chooser_widget_file_activated (GtkFileChooser       *chooser,
     }
 
   g_list_free (children);
-}
-
-static void
-file_chooser_widget_update_hints (GtkFileChooserDialog *dialog,
-				  gint                  width)
-{
-  GtkFileChooserDialogPrivate *priv;
-  GdkGeometry geometry;
-
-  priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
-
-  geometry.min_width = (!priv->resize_horizontally ? width : -1);
-  geometry.min_height = -1;
-  geometry.max_width = (priv->resize_horizontally?G_MAXSHORT:-1);
-  geometry.max_height = (priv->resize_vertically?G_MAXSHORT:-1);
-
-  gtk_window_set_geometry_hints (GTK_WINDOW (dialog), NULL,
-				 &geometry,
- 				 GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 }
 
 static void
@@ -193,131 +178,57 @@ clamp_to_screen (GtkWidget *widget,
 }
 
 static void
-file_chooser_widget_default_realized_size_changed (GtkWidget            *widget,
-						   GtkFileChooserDialog *dialog)
-{
-  GtkFileChooserDialogPrivate *priv;
-  gint width;
-  gint height;
-  gint default_width, default_height;
-  GtkRequisition req;
-  gboolean resize_horizontally;
-  gboolean resize_vertically;
-  gboolean update_hints;
-  gint dx = 0, dy = 0;
-  gint cur_width, cur_height;
-
-  priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
-
-  /* Force a size request of everything before we start.  This will make sure
-   * that widget->requisition is meaningful. */
-  gtk_widget_size_request (GTK_WIDGET (dialog), &req);
-  gtk_window_get_size (GTK_WINDOW (dialog), &cur_width, &cur_height);
-  width = GTK_WIDGET (dialog)->requisition.width - priv->widget->requisition.width;
-  height = GTK_WIDGET (dialog)->requisition.height - priv->widget->requisition.height;
-  _gtk_file_chooser_embed_get_default_size (GTK_FILE_CHOOSER_EMBED (priv->widget),
-					    &default_width, &default_height);
-
-  /* Ideal target size modulo any resizing */
-  width = default_width + width;
-  height = default_height + height;
-
-  /* Now, we test for resizability */
-  update_hints = FALSE;
-  _gtk_file_chooser_embed_get_resizable_hints (GTK_FILE_CHOOSER_EMBED (priv->widget),
-					       &resize_horizontally,
-					       &resize_vertically);
-  resize_vertically = (!! resize_vertically);     /* normalize */
-  resize_horizontally = (!! resize_horizontally);
-
-  if (resize_horizontally && priv->resize_horizontally)
-    {
-      dx = default_width - priv->default_width;
-      priv->default_width = default_width;
-    }
-  else if (resize_horizontally && ! priv->resize_horizontally)
-    {
-      /* We restore to the ideal size + any change in default_size (which is not
-       * expected).  It would be nicer to store the older size to restore to in
-       * the future. */
-      dx = default_width - priv->default_width;
-      dx += width - cur_width;
-      priv->default_width = default_width;
-      update_hints = TRUE;
-    }
-  else
-    {
-      update_hints = TRUE;
-    }
-
-  if (resize_vertically && priv->resize_vertically)
-    {
-      dy = default_height - priv->default_height;
-      priv->default_height = default_height;
-    }
-  else if (resize_vertically && ! priv->resize_vertically)
-    {
-      dy = default_height - priv->default_height;
-      dy += height - cur_height;
-      priv->default_height = default_height;
-      update_hints = TRUE;
-    }
-  else
-    {
-      update_hints = TRUE;
-    }
-
-  priv->resize_horizontally = resize_horizontally;
-  priv->resize_vertically = resize_vertically;
-
-  if (dx != 0 || dy != 0)
-    {
-      gint new_width = cur_width + dx;
-      gint new_height = cur_height + dy;
-
-      clamp_to_screen (GTK_WIDGET (dialog), &new_width, &new_height);
-      
-      gtk_window_resize (GTK_WINDOW (dialog), new_width, new_height);
-    }
-
-  /* Only store the size if we can resize in that direction. */
-  if (update_hints)
-    file_chooser_widget_update_hints (dialog, width);
-}
-
-static void
-file_chooser_widget_default_unrealized_size_changed (GtkWidget            *widget,
-						     GtkFileChooserDialog *dialog)
-{
-  GtkFileChooserDialogPrivate *priv;
-  GtkRequisition req;
-  gint width, height;
-
-  priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
-  gtk_widget_size_request (GTK_WIDGET (dialog), &req);
-
-  _gtk_file_chooser_embed_get_resizable_hints (GTK_FILE_CHOOSER_EMBED (priv->widget),
-					       &(priv->resize_horizontally),
-					       &(priv->resize_vertically));
-  _gtk_file_chooser_embed_get_default_size (GTK_FILE_CHOOSER_EMBED (priv->widget),
-					    &(priv->default_width), &(priv->default_height));
-  
-  /* Determine how much space the rest of the dialog uses compared to priv->widget */
-  width = priv->default_width + GTK_WIDGET (dialog)->requisition.width - priv->widget->requisition.width;
-  height = priv->default_height + GTK_WIDGET (dialog)->requisition.height - priv->widget->requisition.height;
-
-  gtk_window_set_default_size (GTK_WINDOW (dialog), width, height);
-  file_chooser_widget_update_hints (dialog, width);
-}
-
-static void
 file_chooser_widget_default_size_changed (GtkWidget            *widget,
 					  GtkFileChooserDialog *dialog)
 {
-  if (GTK_WIDGET_REALIZED (dialog))
-    file_chooser_widget_default_realized_size_changed (widget, dialog);
+  GtkFileChooserDialogPrivate *priv;
+  gint width, height;
+  gint default_width, default_height;
+  GtkRequisition req, widget_req;
+  gboolean resizable;
+
+  priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
+
+  /* Unset any previously set size */
+  gtk_widget_set_size_request (GTK_WIDGET (dialog), -1, -1);
+
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      /* Force a size request of everything before we start.  This will make sure
+       * that widget->requisition is meaningful. */
+      gtk_widget_size_request (GTK_WIDGET (dialog), &req);
+      gtk_widget_size_request (widget, &widget_req);
+
+      width = req.width - widget_req.width;
+      height = req.height - widget_req.height;
+    }
   else
-    file_chooser_widget_default_unrealized_size_changed (widget, dialog);
+    {
+      width = GTK_WIDGET (dialog)->allocation.width - widget->allocation.width;
+      height = GTK_WIDGET (dialog)->allocation.height - widget->allocation.height;
+    }
+
+  resizable = _gtk_file_chooser_embed_get_resizable (GTK_FILE_CHOOSER_EMBED (priv->widget));
+  _gtk_file_chooser_embed_get_default_size (GTK_FILE_CHOOSER_EMBED (priv->widget),
+					    &default_width, &default_height);
+
+  /* Ideal target size plus any extra size */
+  width = default_width + width + (2 * GTK_CONTAINER (dialog)->border_width);
+  height = default_height + height + (2 * GTK_CONTAINER (dialog)->border_width);
+
+  if (GTK_WIDGET_REALIZED (dialog))
+    clamp_to_screen (GTK_WIDGET (dialog), &width, &height);
+
+  if (resizable)
+    {
+      gtk_window_set_resizable (GTK_WINDOW (dialog), resizable);
+      gtk_window_resize (GTK_WINDOW (dialog), width, height);
+    }
+  else
+    {
+      gtk_widget_set_size_request (GTK_WIDGET (dialog), width, -1);
+      gtk_window_set_resizable (GTK_WINDOW (dialog), resizable);
+    }
 }
 
 static void
@@ -339,10 +250,7 @@ file_chooser_widget_response_requested (GtkWidget            *widget,
 
       widget = GTK_WIDGET (l->data);
       response_id = gtk_dialog_get_response_for_widget (GTK_DIALOG (dialog), widget);
-      if (response_id == GTK_RESPONSE_ACCEPT
-	  || response_id == GTK_RESPONSE_OK
-	  || response_id == GTK_RESPONSE_YES
-	  || response_id == GTK_RESPONSE_APPLY)
+      if (is_stock_accept_response_id (response_id))
 	{
 	  dialog->priv->response_requested = TRUE;
 	  gtk_widget_activate (widget); /* Should we gtk_dialog_response (dialog, response_id) instead? */
@@ -382,6 +290,7 @@ gtk_file_chooser_dialog_constructor (GType                  type,
   g_signal_connect (priv->widget, "response-requested",
 		    G_CALLBACK (file_chooser_widget_response_requested), object);
 
+  gtk_container_set_border_width (GTK_CONTAINER (priv->widget), 5);
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (object)->vbox), priv->widget, TRUE, TRUE, 0);
 
   gtk_widget_show (priv->widget);
@@ -477,6 +386,26 @@ set_default_size (GtkFileChooserDialog *dialog)
 }
 #endif
 
+static void
+foreach_ensure_default_response_cb (GtkWidget *widget,
+				    gpointer   data)
+{
+  GtkFileChooserDialog *dialog = GTK_FILE_CHOOSER_DIALOG (data);
+  int response_id;
+
+  response_id = gtk_dialog_get_response_for_widget (GTK_DIALOG (dialog), widget);
+  if (is_stock_accept_response_id (response_id))
+    gtk_dialog_set_default_response (GTK_DIALOG (dialog), response_id);
+}
+
+static void
+ensure_default_response (GtkFileChooserDialog *dialog)
+{
+  gtk_container_foreach (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area),
+			 foreach_ensure_default_response_cb,
+			 dialog);
+}
+
 /* GtkWidget::map handler */
 static void
 gtk_file_chooser_dialog_map (GtkWidget *widget)
@@ -484,9 +413,12 @@ gtk_file_chooser_dialog_map (GtkWidget *widget)
   GtkFileChooserDialog *dialog = GTK_FILE_CHOOSER_DIALOG (widget);
   GtkFileChooserDialogPrivate *priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
 
+  ensure_default_response (dialog);
+
   if (!GTK_WIDGET_MAPPED (priv->widget))
     gtk_widget_map (priv->widget);
 
+  file_chooser_widget_default_size_changed (priv->widget, dialog);
   _gtk_file_chooser_embed_initial_focus (GTK_FILE_CHOOSER_EMBED (priv->widget));
 
   GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->map (widget);
@@ -510,29 +442,6 @@ gtk_file_chooser_dialog_unmap (GtkWidget *widget)
   gtk_widget_unmap (priv->widget);
 }
 
-static void
-gtk_file_chooser_dialog_style_set (GtkWidget *widget,
-				   GtkStyle  *previous_style)
-{
-  GtkDialog *dialog;
-
-  if (GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->style_set)
-    GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->style_set (widget, previous_style);
-
-  dialog = GTK_DIALOG (widget);
-
-  /* Override the style properties with HIG-compliant spacings.  Ugh.
-   * http://developer.gnome.org/projects/gup/hig/1.0/layout.html#layout-dialogs
-   * http://developer.gnome.org/projects/gup/hig/1.0/windows.html#alert-spacing
-   */
-
-  gtk_container_set_border_width (GTK_CONTAINER (dialog->vbox), 12);
-  gtk_box_set_spacing (GTK_BOX (dialog->vbox), 24);
-
-  gtk_container_set_border_width (GTK_CONTAINER (dialog->action_area), 0);
-  gtk_box_set_spacing (GTK_BOX (dialog->action_area), 6);
-}
-
 /* GtkDialog::response handler */
 static void
 response_cb (GtkDialog *dialog,
@@ -543,17 +452,14 @@ response_cb (GtkDialog *dialog,
   priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
 
   /* Act only on response IDs we recognize */
-  if (!(response_id == GTK_RESPONSE_ACCEPT
-	|| response_id == GTK_RESPONSE_OK
-	|| response_id == GTK_RESPONSE_YES
-	|| response_id == GTK_RESPONSE_APPLY))
-    return;
-
-  if (!priv->response_requested && !_gtk_file_chooser_embed_should_respond (GTK_FILE_CHOOSER_EMBED (priv->widget)))
+  if (is_stock_accept_response_id (response_id)
+      && !priv->response_requested
+      && !_gtk_file_chooser_embed_should_respond (GTK_FILE_CHOOSER_EMBED (priv->widget)))
     {
       g_signal_stop_emission_by_name (dialog, "response");
-      priv->response_requested = FALSE;
     }
+
+  priv->response_requested = FALSE;
 }
 
 static GtkWidget *

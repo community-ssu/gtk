@@ -61,15 +61,57 @@
 #include "gtkmain.h"
 #include "gtkmodules.h"
 #include "gtkrc.h"
+#include "gtkrecentmanager.h"
 #include "gtkselection.h"
 #include "gtksettings.h"
 #include "gtkwidget.h"
 #include "gtkwindow.h"
-#include "gtkprivate.h"
+#include "gtktooltip.h"
 #include "gtkdebug.h"
 #include "gtkalias.h"
 
 #include "gdk/gdkprivate.h" /* for GDK_WINDOW_DESTROYED */
+
+#ifdef G_OS_WIN32
+
+G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+
+/* This here before inclusion of gtkprivate.h so that it sees the
+ * original GTK_LOCALEDIR definition. Yeah, this is a bit sucky.
+ */
+const gchar *
+_gtk_get_localedir (void)
+{
+  static char *gtk_localedir = NULL;
+  if (gtk_localedir == NULL)
+    {
+      const gchar *p;
+      gchar *temp;
+      
+      /* GTK_LOCALEDIR ends in either /lib/locale or
+       * /share/locale. Scan for that slash.
+       */
+      p = GTK_LOCALEDIR + strlen (GTK_LOCALEDIR);
+      while (*--p != '/')
+	;
+      while (*--p != '/')
+	;
+
+      temp = g_win32_get_package_installation_subdirectory
+        (GETTEXT_PACKAGE, dll_name, p);
+
+      /* gtk_localedir is passed to bindtextdomain() which isn't
+       * UTF-8-aware.
+       */
+      gtk_localedir = g_win32_locale_filename_from_utf8 (temp);
+      g_free (temp);
+    }
+  return gtk_localedir;
+}
+
+#endif
+
+#include "gtkprivate.h"
 
 /* Private type definitions
  */
@@ -169,8 +211,8 @@ static const GDebugKey gtk_debug_keys[] = {
 /**
  * gtk_check_version:
  * @required_major: the required major version.
- * @required_minor: the required major version.
- * @required_micro: the required major version.
+ * @required_minor: the required minor version.
+ * @required_micro: the required micro version.
  * 
  * Checks that the GTK+ library in use is compatible with the
  * given version. Generally you would pass in the constants
@@ -200,7 +242,7 @@ static const GDebugKey gtk_debug_keys[] = {
  *   The returned string is owned by GTK+ and should not be modified
  *   or freed.
  **/
-gchar*
+const gchar*
 gtk_check_version (guint required_major,
 		   guint required_minor,
 		   guint required_micro)
@@ -266,8 +308,6 @@ check_setugid (void)
 
 #ifdef G_OS_WIN32
 
-G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-
 const gchar *
 _gtk_get_datadir (void)
 {
@@ -288,26 +328,6 @@ _gtk_get_libdir (void)
       (GETTEXT_PACKAGE, dll_name, "lib");
 
   return gtk_libdir;
-}
-
-const gchar *
-_gtk_get_localedir (void)
-{
-  static char *gtk_localedir = NULL;
-  if (gtk_localedir == NULL)
-    {
-      gchar *temp;
-      
-      temp = g_win32_get_package_installation_subdirectory
-        (GETTEXT_PACKAGE, dll_name, "lib\\locale");
-
-      /* gtk_localedir is passed to bindtextdomain() which isn't
-       * UTF-8-aware.
-       */
-      gtk_localedir = g_win32_locale_filename_from_utf8 (temp);
-      g_free (temp);
-    }
-  return gtk_localedir;
 }
 
 const gchar *
@@ -650,11 +670,10 @@ do_post_parse_initialization (int    *argc,
    * it isn't default:LTR or default:RTL it will not work 
    */
     char *e = _("default:LTR");
-    if (strcmp (e, "default:RTL")==0) {
+    if (strcmp (e, "default:RTL")==0) 
       gtk_widget_set_default_direction (GTK_TEXT_DIR_RTL);
-    } else if (strcmp (e, "default:LTR")) {
+    else if (strcmp (e, "default:LTR"))
       g_warning ("Whoever translated default:LTR did so wrongly.\n");
-    }
   }
 
   gtk_type_init (0);
@@ -730,7 +749,7 @@ post_parse_hook (GOptionContext *context,
  * with g_option_context_add_group(), if you are using 
  * g_option_context_parse() to parse your commandline arguments.
  *
- * Returns a #GOptionGroup for the commandline arguments recognized
+ * Returns: a #GOptionGroup for the commandline arguments recognized
  *   by GTK+
  *
  * Since: 2.6
@@ -931,7 +950,9 @@ gtk_init (int *argc, char ***argv)
   if (!gtk_init_check (argc, argv))
     {
       const char *display_name_arg = gdk_get_display_arg_name ();
-      g_warning ("cannot open display: %s", display_name_arg ? display_name_arg : " ");
+      if (display_name_arg == NULL)
+        display_name_arg = getenv("DISPLAY");
+      g_warning ("cannot open display: %s", display_name_arg ? display_name_arg : "");
       exit (1);
     }
 }
@@ -1096,8 +1117,10 @@ _gtk_get_lc_ctype (void)
  * effect. (Note that this can change over the life of an
  * application.)  The default language is derived from the current
  * locale. It determines, for example, whether GTK+ uses the
- * right-to-left or left-to-right text direction. See
- * _gtk_get_lc_ctype() for notes on behaviour on Windows.
+ * right-to-left or left-to-right text direction.
+ *
+ * This function is equivalent to pango_language_get_default().  See
+ * that function for details.
  * 
  * Return value: the default language as a #PangoLanguage, must not be
  * freed
@@ -1105,22 +1128,7 @@ _gtk_get_lc_ctype (void)
 PangoLanguage *
 gtk_get_default_language (void)
 {
-  gchar *lang;
-  PangoLanguage *result;
-  gchar *p;
-  
-  lang = _gtk_get_lc_ctype ();
-  p = strchr (lang, '.');
-  if (p)
-    *p = '\0';
-  p = strchr (lang, '@');
-  if (p)
-    *p = '\0';
-
-  result = pango_language_from_string (lang);
-  g_free (lang);
-  
-  return result;
+  return pango_language_get_default ();
 }
 
 void
@@ -1200,9 +1208,14 @@ gtk_main (void)
 
   gtk_main_loop_level--;
 
-  /* Try storing all clipboard data we have */
   if (gtk_main_loop_level == 0)
-    _gtk_clipboard_store_all ();
+    {
+      /* Try storing all clipboard data we have */
+      _gtk_clipboard_store_all ();
+
+      /* Synchronize the recent manager singleton */
+      _gtk_recent_manager_sync ();
+    }
 }
 
 guint
@@ -1383,41 +1396,8 @@ gtk_main_do_event (GdkEvent *event)
   GtkWidget *event_widget;
   GtkWidget *grab_widget;
   GtkWindowGroup *window_group;
-  GdkEvent *next_event;
   GdkEvent *rewritten_event = NULL;
   GList *tmp_list;
-
-  /* If there are any events pending then get the next one.
-   */
-  next_event = gdk_event_peek ();
-  
-  /* Try to compress enter/leave notify events. These event
-   *  pairs occur when the mouse is dragged quickly across
-   *  a window with many buttons (or through a menu). Instead
-   *  of highlighting and de-highlighting each widget that
-   *  is crossed it is better to simply de-highlight the widget
-   *  which contained the mouse initially and highlight the
-   *  widget which ends up containing the mouse.
-   */
-  if (next_event)
-    if (((event->type == GDK_ENTER_NOTIFY) ||
-	 (event->type == GDK_LEAVE_NOTIFY)) &&
-	((next_event->type == GDK_ENTER_NOTIFY) ||
-	 (next_event->type == GDK_LEAVE_NOTIFY)) &&
-	(next_event->type != event->type) &&
-	(next_event->any.window == event->any.window))
-      {
-	/* Throw both the peeked copy and the queued copy away 
-	 */
-	gdk_event_free (next_event);
-	next_event = gdk_event_get ();
-	gdk_event_free (next_event);
-	
-	return;
-      }
-
-  if (next_event)
-    gdk_event_free (next_event);
 
   if (event->type == GDK_SETTING)
     {
@@ -1554,6 +1534,9 @@ gtk_main_do_event (GdkEvent *event)
       gtk_widget_event (event_widget, event);
       break;
 
+#ifndef MAEMO_CHANGES
+    case GDK_SCROLL:
+#endif
     case GDK_BUTTON_PRESS:
 #ifdef MAEMO_CHANGES
       if (!GTK_WIDGET_IS_SENSITIVE (event_widget) &&
@@ -1563,7 +1546,9 @@ gtk_main_do_event (GdkEvent *event)
 #endif /* MAEMO_CHANGES */
     case GDK_2BUTTON_PRESS:
     case GDK_3BUTTON_PRESS:
+#ifdef MAEMO_CHANGES
     case GDK_SCROLL:
+#endif
       gtk_propagate_event (grab_widget, event);
       break;
 
@@ -1618,6 +1603,20 @@ gtk_main_do_event (GdkEvent *event)
     default:
       g_assert_not_reached ();
       break;
+    }
+
+  if (event->type == GDK_ENTER_NOTIFY
+      || event->type == GDK_LEAVE_NOTIFY
+      || event->type == GDK_BUTTON_PRESS
+      || event->type == GDK_2BUTTON_PRESS
+      || event->type == GDK_3BUTTON_PRESS
+      || event->type == GDK_KEY_PRESS
+      || event->type == GDK_DRAG_ENTER
+      || event->type == GDK_GRAB_BROKEN
+      || event->type == GDK_MOTION_NOTIFY
+      || event->type == GDK_SCROLL)
+    {
+      _gtk_tooltip_handle_event (event);
     }
   
   tmp_list = current_events;

@@ -31,6 +31,7 @@
 
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
 #define GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+#undef GTK_DISABLE_DEPRECATED
 
 #include <config.h>
 #include <string.h>
@@ -123,7 +124,7 @@ test_set_filename (GtkFileChooserAction action,
 
   (* set_filename_fn) (GTK_FILE_CHOOSER (chooser), data);
 
-  g_timeout_add (2000, set_filename_timeout_cb, &closure);
+  gdk_threads_add_timeout (2000, set_filename_timeout_cb, &closure);
   gtk_dialog_run (GTK_DIALOG (chooser));
 
   retval = (* compare_filename_fn) (GTK_FILE_CHOOSER (chooser), data);
@@ -282,21 +283,47 @@ test_black_box (void)
 struct confirm_overwrite_closure {
   GtkWidget *chooser;
   GtkWidget *accept_button;
-  gboolean emitted_confirm_overwrite_signal;
+  gint confirm_overwrite_signal_emitted;
+  gchar *extension;
 };
 
 static GtkFileChooserConfirmation
 confirm_overwrite_cb (GtkFileChooser *chooser, gpointer data)
 {
-  struct confirm_overwrite_closure *closure;
-
-  closure = data;
+  struct confirm_overwrite_closure *closure = data;
 
   printf ("bling!\n");
-
-  closure->emitted_confirm_overwrite_signal = TRUE;
+  closure->confirm_overwrite_signal_emitted += 1;
 
   return GTK_FILE_CHOOSER_CONFIRMATION_ACCEPT_FILENAME;
+}
+
+static void
+overwrite_response_cb (GtkFileChooser *chooser, gint response, gpointer data)
+{
+  struct confirm_overwrite_closure *closure = data;
+  char *filename;
+
+  printf ("plong!\n");
+
+  if (response != GTK_RESPONSE_ACCEPT)
+    return;
+
+  filename = gtk_file_chooser_get_filename (chooser);
+
+  if (!g_str_has_suffix (filename, closure->extension))
+    {
+      char *basename;
+
+      basename = g_path_get_basename (filename);
+      g_free (filename);
+
+      filename = g_strconcat (basename, closure->extension, NULL);
+      gtk_file_chooser_set_current_name (chooser, filename);
+
+      g_signal_stop_emission_by_name (chooser, "response");
+      gtk_dialog_response (GTK_DIALOG (chooser), GTK_RESPONSE_ACCEPT);
+    }
 }
 
 static gboolean
@@ -312,7 +339,7 @@ confirm_overwrite_timeout_cb (gpointer data)
 
 /* http://bugzilla.gnome.org/show_bug.cgi?id=347883 */
 static gboolean
-test_confirm_overwrite_for_path (const char *path)
+test_confirm_overwrite_for_path (const char *path, gboolean append_extension)
 {
   gboolean passed;
   struct confirm_overwrite_closure closure;
@@ -320,20 +347,49 @@ test_confirm_overwrite_for_path (const char *path)
 
   passed = TRUE;
 
-  closure.emitted_confirm_overwrite_signal = FALSE;
+  closure.extension = NULL;
+  closure.confirm_overwrite_signal_emitted = 0;
   closure.chooser = gtk_file_chooser_dialog_new ("hello", NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
 						 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 						 NULL);
-  closure.accept_button = gtk_dialog_add_button (GTK_DIALOG (closure.chooser), GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT);
+  closure.accept_button = gtk_dialog_add_button (GTK_DIALOG (closure.chooser),
+                                                 GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT);
   gtk_dialog_set_default_response (GTK_DIALOG (closure.chooser), GTK_RESPONSE_ACCEPT);
 
   gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (closure.chooser), TRUE);
+
   g_signal_connect (closure.chooser, "confirm-overwrite",
 		    G_CALLBACK (confirm_overwrite_cb), &closure);
 
-  gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (closure.chooser), path);
+  if (append_extension)
+    {
+      char *extension;
 
-  g_timeout_add (2000, confirm_overwrite_timeout_cb, &closure);
+      filename = g_path_get_dirname (path);
+      gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (closure.chooser), filename);
+      g_free (filename);
+
+      filename = g_path_get_basename (path);
+      extension = strchr (filename, '.');
+
+      if (extension)
+        {
+          closure.extension = g_strdup (extension);
+          *extension = '\0';
+        }
+
+      gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (closure.chooser), filename);
+      g_free (filename);
+
+      g_signal_connect (closure.chooser, "response",
+                        G_CALLBACK (overwrite_response_cb), &closure);
+    }
+  else
+    {
+      gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (closure.chooser), path);
+    }
+
+  gdk_threads_add_timeout (2000, confirm_overwrite_timeout_cb, &closure);
   gtk_dialog_run (GTK_DIALOG (closure.chooser));
 
   filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (closure.chooser));
@@ -342,9 +398,9 @@ test_confirm_overwrite_for_path (const char *path)
   
   gtk_widget_destroy (closure.chooser);
 
-  passed = passed && closure.emitted_confirm_overwrite_signal;
+  passed = passed && (1 == closure.confirm_overwrite_signal_emitted);
 
-  log_test (passed, "Confirm overwrite");
+  log_test (passed, "Confirm overwrite for %s", path);
 
   return passed;
 }
@@ -354,7 +410,9 @@ test_confirm_overwrite (void)
 {
   gboolean passed = TRUE;
 
-  passed = passed && test_confirm_overwrite_for_path ("/etc/passwd"); /* a file we know will always exist */
+  /* first test for a file we know will always exist */
+  passed = passed && test_confirm_overwrite_for_path ("/etc/passwd", FALSE); 
+  passed = passed && test_confirm_overwrite_for_path ("/etc/resolv.conf", TRUE); 
   
   return passed;
 }
@@ -900,7 +958,7 @@ sleep_timeout_cb (gpointer data)
 static void
 sleep_in_main_loop (int milliseconds)
 {
-  g_timeout_add (milliseconds, sleep_timeout_cb, NULL);
+  gdk_threads_add_timeout (milliseconds, sleep_timeout_cb, NULL);
   gtk_main ();
 }
 

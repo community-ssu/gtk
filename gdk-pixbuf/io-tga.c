@@ -228,8 +228,7 @@ static IOBuffer *io_buffer_free_segment(IOBuffer *buffer,
 static void io_buffer_free(IOBuffer *buffer)
 {
 	g_return_if_fail(buffer != NULL);
-	if (buffer->data)
-		g_free(buffer->data);
+	g_free(buffer->data);
 	g_free(buffer);
 }
 
@@ -936,18 +935,17 @@ static gboolean gdk_pixbuf__tga_stop_load(gpointer data, GError **err)
 	TGAContext *ctx = (TGAContext *) data;
 	g_return_val_if_fail(ctx != NULL, FALSE);
 
-	if (!(ctx->hdr->flags & TGA_ORIGIN_UPPER) && ctx->run_length_encoded) {
+	if (!(ctx->hdr->flags & TGA_ORIGIN_UPPER) && 
+            ctx->run_length_encoded && ctx->pbuf) {
 		pixbuf_flip_vertically (ctx->pbuf);
 		if (ctx->ufunc)
 			(*ctx->ufunc) (ctx->pbuf, 0, 0,
 				       ctx->pbuf->width, ctx->pbuf->height,
 			       	       ctx->udata);
 	}
-	if (ctx->hdr)
-	  g_free (ctx->hdr);
+	g_free (ctx->hdr);
 	if (ctx->cmap) {
-	  if (ctx->cmap->cols)
-	    g_free (ctx->cmap->cols);
+	  g_free (ctx->cmap->cols);
 	  g_free (ctx->cmap);
 	}
 	if (ctx->pbuf)
@@ -962,6 +960,12 @@ static gboolean gdk_pixbuf__tga_stop_load(gpointer data, GError **err)
 	g_free (ctx);
 	return TRUE;
 }
+
+#ifndef INCLUDE_tga
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
 
 void
 MODULE_ENTRY (tga, fill_vtable) (GdkPixbufModule *module)

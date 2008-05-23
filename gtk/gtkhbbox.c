@@ -440,7 +440,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
   g_slice_free1 (sizeof (gint) * nvis_children, children_widths);
 }
 
-#else
+#else /* !MAEMO_CHANGES */
 static void
 gtk_hbutton_box_size_request (GtkWidget      *widget,
 			      GtkRequisition *requisition)
@@ -496,6 +496,8 @@ gtk_hbutton_box_size_request (GtkWidget      *widget,
   requisition->width += GTK_CONTAINER (box)->border_width * 2;
   requisition->height += GTK_CONTAINER (box)->border_width * 2;
 }
+
+
 
 static void
 gtk_hbutton_box_size_allocate (GtkWidget     *widget,
@@ -617,7 +619,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	}
     }
 }
-#endif
+#endif /* MAEMO_CHANGES */
   
 #define __GTK_HBUTTON_BOX_C__
 #include "gtkaliasdef.c"

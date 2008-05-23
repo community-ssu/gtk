@@ -231,8 +231,7 @@ _gtk_tree_data_list_value_to_node (GtkTreeDataList *list,
       list->data.v_double = g_value_get_double (value);
       break;
     case G_TYPE_STRING:
-      if (list->data.v_pointer)
-	g_free (list->data.v_pointer);
+      g_free (list->data.v_pointer);
       list->data.v_pointer = g_value_dup_string (value);
       break;
     case G_TYPE_OBJECT:
@@ -537,7 +536,7 @@ _gtk_tree_data_list_set_header (GList                  *header_list,
       header = g_slice_new0 (GtkTreeDataSortHeader);
       header->sort_column_id = sort_column_id;
       if (list)
-	g_list_append (list, header);
+	list = g_list_append (list, header);
       else
 	header_list = g_list_append (header_list, header);
     }

@@ -1,6 +1,6 @@
 /**
  *
- * $Id: MwmUtil.h,v 1.4 2005/06/12 05:32:25 matthiasc Exp $
+ * $Id: MwmUtil.h 13142 2005-06-12 05:32:25Z matthiasc $
  *
  * Copyright (C) 1995 Free Software Foundation, Inc.
  *

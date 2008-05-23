@@ -485,7 +485,7 @@ gdk_rgb_set_gray_cmap (GdkRgbInfo  *image_info,
 {
   gint i;
   GdkColor color;
-  gint status;
+  gboolean status;
   gulong pixels[256];
   gint r, g, b, gray;
 
@@ -526,8 +526,7 @@ gdk_rgb_free_info (GdkRgbInfo *image_info)
 {
   GSList *tmp_list;
   
-  if (image_info->stage_buf)
-    g_free (image_info->stage_buf);
+  g_free (image_info->stage_buf);
   
   if (image_info->gray_cmap)
     gdk_rgb_cmap_free (image_info->gray_cmap);
@@ -535,11 +534,9 @@ gdk_rgb_free_info (GdkRgbInfo *image_info)
   if (image_info->own_gc)
     g_object_unref (image_info->own_gc);
 
-  if (image_info->colorcube)
-    g_free (image_info->colorcube);
+  g_free (image_info->colorcube);
   
-  if (image_info->colorcube_d)
-    g_free (image_info->colorcube_d);
+  g_free (image_info->colorcube_d);
 
   tmp_list = image_info->cmap_info_list;
   while (tmp_list)
@@ -2161,6 +2158,29 @@ gdk_rgb_convert_0888 (GdkRgbInfo *image_info, GdkImage *image,
     }
 }
 
+#ifdef USE_MEDIALIB25
+/* convert 24-bit packed to 32-bit unpacked */
+static void
+gdk_rgb_convert_0888_medialib (GdkRgbInfo *image_info, GdkImage *image,
+			       gint x0, gint y0, gint width, gint height,
+			       guchar *buf, int rowstride,
+			       gint x_align, gint y_align, GdkRgbCmap *cmap)
+{
+  int y, w;
+  guchar *obuf, *p;
+  gint bpl;
+  guchar *bptr, *bp2;
+
+  bptr = buf;
+  bpl = image->bpl;
+  obuf = ((guchar *)image->mem) + y0 * bpl + x0 * 4;
+
+  mlib_VideoColorRGBint_to_BGRAint (obuf, bptr, NULL, 0xff,
+                                    width, height, bpl, 
+                                    rowstride, 0);
+}
+#endif
+
 static void
 gdk_rgb_convert_0888_br (GdkRgbInfo *image_info, GdkImage *image,
 			 gint x0, gint y0, gint width, gint height,
@@ -3134,7 +3154,17 @@ gdk_rgb_select_conv (GdkRgbInfo *image_info)
 	   (depth == 24 || depth == 32) &&
 	   vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_rgb && byte_order == GDK_LSB_FIRST))
-    conv = gdk_rgb_convert_0888;
+    {
+#ifdef USE_MEDIALIB25
+      if (_gdk_use_medialib ())
+        conv = gdk_rgb_convert_0888_medialib;
+      else
+        conv = gdk_rgb_convert_0888;
+#else
+      conv = gdk_rgb_convert_0888;
+#endif
+    }
+  
 #if G_BYTE_ORDER == G_BIG_ENDIAN
   else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_bgr && byte_order == GDK_MSB_FIRST))
@@ -3151,7 +3181,16 @@ gdk_rgb_select_conv (GdkRgbInfo *image_info)
     conv = gdk_rgb_convert_8880_br;
   else if (bpp == 32 && depth == 32 && vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_rgb && byte_order == GDK_LSB_FIRST))
-    conv = gdk_rgb_convert_0888;
+    {
+#ifdef USE_MEDIALIB25
+      if (_gdk_use_medialib ())
+        conv = gdk_rgb_convert_0888_medialib;
+      else
+        conv = gdk_rgb_convert_0888;
+#else
+      conv = gdk_rgb_convert_0888;
+#endif
+    }
 #endif
   else if (vtype == GDK_VISUAL_TRUE_COLOR && byte_order == GDK_LSB_FIRST)
     {

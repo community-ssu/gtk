@@ -1,5 +1,5 @@
 /* GTK - The GIMP Toolkit
- * gtkprintbackendpdf.c: Default implementation of GtkPrintBackend 
+ * gtkprintbackendfile.c: Default implementation of GtkPrintBackend 
  * for printing to a file
  * Copyright (C) 2003, Red Hat, Inc.
  *
@@ -103,6 +103,8 @@ static cairo_surface_t *    file_printer_create_cairo_surface      (GtkPrinter  
 								    gdouble                  height,
 								    GIOChannel              *cache_io);
 
+static GList *              file_printer_list_papers               (GtkPrinter              *printer);
+
 static void
 gtk_print_backend_file_register_type (GTypeModule *module)
 {
@@ -179,6 +181,7 @@ gtk_print_backend_file_class_init (GtkPrintBackendFileClass *class)
   backend_class->printer_get_options = file_printer_get_options;
   backend_class->printer_get_settings_from_options = file_printer_get_settings_from_options;
   backend_class->printer_prepare_for_print = file_printer_prepare_for_print;
+  backend_class->printer_list_papers = file_printer_list_papers;
 }
 
 /* return N_FORMATS if no explicit format in the settings */
@@ -191,7 +194,8 @@ format_from_settings (GtkPrintSettings *settings)
   if (settings == NULL)
     return N_FORMATS;
 
-  value = gtk_print_settings_get (settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT);
+  value = gtk_print_settings_get (settings,
+                                  GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT);
   if (value == NULL)
     return N_FORMATS;
 
@@ -323,6 +327,8 @@ file_print_cb (GtkPrintBackendFile *print_backend,
 {
   _PrintStreamData *ps = (_PrintStreamData *) user_data;
 
+  GDK_THREADS_ENTER ();
+
   if (ps->target_io != NULL)
     g_io_channel_unref (ps->target_io);
 
@@ -339,6 +345,8 @@ file_print_cb (GtkPrintBackendFile *print_backend,
     g_object_unref (ps->job);
  
   g_free (ps);
+
+  GDK_THREADS_LEAVE ();
 }
 
 static gboolean
@@ -469,6 +477,58 @@ gtk_print_backend_file_init (GtkPrintBackendFile *backend)
   gtk_print_backend_set_list_done (GTK_PRINT_BACKEND (backend));
 }
 
+static void
+file_printer_output_file_format_changed (GtkPrinterOption    *format_option,
+                                         GtkPrinterOptionSet *set)
+{
+  GtkPrinterOption *uri_option;
+  gchar            *base = NULL;
+
+  if (! format_option->value)
+    return;
+
+  uri_option = gtk_printer_option_set_lookup (set,
+                                              "gtk-main-page-custom-input");
+
+  if (uri_option && uri_option->value)
+    {
+      const gchar *uri = uri_option->value;
+      const gchar *dot = strrchr (uri, '.');
+
+      if (dot)
+        {
+          gint i;
+
+          /*  check if the file extension matches one of the known ones  */
+          for (i = 0; i < N_FORMATS; i++)
+            if (strcmp (dot + 1, formats[i]) == 0)
+              break;
+
+          if (i < N_FORMATS && strcmp (formats[i], format_option->value))
+            {
+              /*  the file extension is known but doesn't match the
+               *  selected one, strip it away
+               */
+              base = g_strndup (uri, dot - uri);
+            }
+        }
+      else
+        {
+          /*  there's no file extension  */
+          base = g_strdup (uri);
+        }
+    }
+
+  if (base)
+    {
+      gchar *tmp = g_strdup_printf ("%s.%s", base, format_option->value);
+
+      gtk_printer_option_set (uri_option, tmp);
+      g_free (tmp);
+      g_free (base);
+    }
+}
+
 static GtkPrinterOptionSet *
 file_printer_get_options (GtkPrinter           *printer,
 			  GtkPrintSettings     *settings,
@@ -477,7 +537,8 @@ file_printer_get_options (GtkPrinter           *printer,
 {
   GtkPrinterOptionSet *set;
   GtkPrinterOption *option;
-  const gchar *n_up[] = { "1" };
+  const gchar *n_up[] = {"1", "2", "4", "6", "9", "16" };
+  const gchar *pages_per_sheet = NULL;
   const gchar *format_names[N_FORMATS] = { N_("PDF"), N_("Postscript") };
   const gchar *supported_formats[N_FORMATS];
   gchar *display_format_names[N_FORMATS];
@@ -493,7 +554,12 @@ file_printer_get_options (GtkPrinter           *printer,
   option = gtk_printer_option_new ("gtk-n-up", _("Pages per _sheet:"), GTK_PRINTER_OPTION_TYPE_PICKONE);
   gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (n_up),
 					 (char **) n_up, (char **) n_up /* FIXME i18n (localised digits)! */);
-  gtk_printer_option_set (option, "1");
+  if (settings)
+    pages_per_sheet = gtk_print_settings_get (settings, GTK_PRINT_SETTINGS_NUMBER_UP);
+  if (pages_per_sheet)
+    gtk_printer_option_set (option, pages_per_sheet);
+  else
+    gtk_printer_option_set (option, "1");
   gtk_printer_option_set_add (set, option);
   g_object_unref (option);
 
@@ -549,7 +615,11 @@ file_printer_get_options (GtkPrinter           *printer,
 					     display_format_names);
       gtk_printer_option_set (option, supported_formats[current_format]);
       gtk_printer_option_set_add (set, option);
-      
+
+      g_signal_connect (option, "changed",
+                        G_CALLBACK (file_printer_output_file_format_changed),
+                        set);
+
       g_object_unref (option);
     }
 
@@ -569,7 +639,10 @@ file_printer_get_settings_from_options (GtkPrinter          *printer,
   option = gtk_printer_option_set_lookup (options, "output-file-format");
   if (option)
     gtk_print_settings_set (settings, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, option->value);
-    
+
+  option = gtk_printer_option_set_lookup (options, "gtk-n-up");
+  if (option)
+    gtk_print_settings_set (settings, GTK_PRINT_SETTINGS_NUMBER_UP, option->value);
 }
 
 static void
@@ -599,4 +672,28 @@ file_printer_prepare_for_print (GtkPrinter       *printer,
 
   print_job->page_set = gtk_print_settings_get_page_set (settings);
   print_job->rotate_to_orientation = TRUE;
+}
+
+static GList *
+file_printer_list_papers (GtkPrinter *printer)
+{
+  GList *result = NULL;
+  GList *papers, *p;
+  GtkPageSetup *page_setup;
+
+  papers = gtk_paper_size_get_paper_sizes (TRUE);
+
+  for (p = papers; p; p = p->next)
+    {
+      GtkPaperSize *paper_size = p->data;
+
+      page_setup = gtk_page_setup_new ();
+      gtk_page_setup_set_paper_size (page_setup, paper_size);
+      gtk_paper_size_free (paper_size);
+      result = g_list_prepend (result, page_setup);
+    }
+
+  g_list_free (papers);
+
+  return g_list_reverse (result);
 }

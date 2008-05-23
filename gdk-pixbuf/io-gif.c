@@ -908,10 +908,10 @@ gif_get_lzw (GifContext *context)
 
                 /* Only call prepare_func for the first frame */
 		if (context->animation->frames->next == NULL) { 
-			if (context->animation->width == 0 )
-				context->animation->width = gdk_pixbuf_get_width(context->frame->pixbuf);
-			if (context->animation->height == 0)
-				context->animation->height = gdk_pixbuf_get_height (context->frame->pixbuf);
+                        if (context->animation->width == 0 )
+                                context->animation->width = gdk_pixbuf_get_width(context->frame->pixbuf);
+                        if (context->animation->height == 0)
+                                context->animation->height = gdk_pixbuf_get_height (context->frame->pixbuf);
 
                         if (context->prepare_func)
                                 (* context->prepare_func) (context->frame->pixbuf,
@@ -1653,6 +1653,12 @@ gdk_pixbuf__gif_image_load_animation (FILE *file,
 	g_free (context);
 	return animation;
 }
+
+#ifndef INCLUDE_gif
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
 
 void
 MODULE_ENTRY (gif, fill_vtable) (GdkPixbufModule *module)

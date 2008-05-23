@@ -497,7 +497,7 @@ gtk_ui_manager_buildable_construct_child (GtkBuildable *buildable,
   g_signal_connect (widget, "hierarchy-changed",
 		    G_CALLBACK (child_hierarchy_changed_cb),
 		    GTK_UI_MANAGER (buildable));
-  return G_OBJECT (widget);
+  return g_object_ref (widget);
 }
 
 static void
@@ -1850,6 +1850,8 @@ void
 gtk_ui_manager_remove_ui (GtkUIManager *self, 
 			  guint         merge_id)
 {
+  g_return_if_fail (GTK_IS_UI_MANAGER (self));
+
   g_node_traverse (self->private_data->root_node, 
 		   G_POST_ORDER, G_TRAVERSE_ALL, -1,
 		   remove_ui, GUINT_TO_POINTER (merge_id));
@@ -2304,8 +2306,9 @@ update_node (GtkUIManager *self,
     case NODE_TYPE_MENU:
       {
 	GtkWidget *prev_submenu = NULL;
-	GtkWidget *menu;
+	GtkWidget *menu = NULL;
 	GList *siblings;
+
 	/* remove the proxy if it is of the wrong type ... */
 	if (info->proxy &&  
 	    G_OBJECT_TYPE (info->proxy) != GTK_ACTION_GET_CLASS (action)->menu_item_type)
@@ -2326,26 +2329,40 @@ update_node (GtkUIManager *self,
 	    g_object_unref (info->proxy);
 	    info->proxy = NULL;
 	  }
+
 	/* create proxy if needed ... */
 	if (info->proxy == NULL)
 	  {
-	    GtkWidget *tearoff;
-	    GtkWidget *filler;
+            /* ... if the action already provides a menu, then use
+             * that menu instead of creating an empty one
+             */
+            if ((NODE_INFO (node->parent)->type == NODE_TYPE_TOOLITEM ||
+                 NODE_INFO (node->parent)->type == NODE_TYPE_MENUITEM) &&
+                GTK_ACTION_GET_CLASS (action)->create_menu)
+              {
+                menu = gtk_action_create_menu (action);
+              }
+
+            if (!menu)
+              {
+                GtkWidget *tearoff;
+                GtkWidget *filler;
 	    
-	    menu = gtk_menu_new ();
-	    gtk_widget_set_name (menu, info->name);
-	    tearoff = gtk_tearoff_menu_item_new ();
-	    gtk_widget_set_no_show_all (tearoff, TRUE);
-	    gtk_menu_shell_append (GTK_MENU_SHELL (menu), tearoff);
-	    filler = gtk_menu_item_new_with_label (_("Empty"));
-	    g_object_set_data (G_OBJECT (filler),
-			       I_("gtk-empty-menu-item"),
-			       GINT_TO_POINTER (TRUE));
-	    gtk_widget_set_sensitive (filler, FALSE);
-	    gtk_widget_set_no_show_all (filler, TRUE);
-	    gtk_menu_shell_append (GTK_MENU_SHELL (menu), filler);
+                menu = gtk_menu_new ();
+                gtk_widget_set_name (menu, info->name);
+                tearoff = gtk_tearoff_menu_item_new ();
+                gtk_widget_set_no_show_all (tearoff, TRUE);
+                gtk_menu_shell_append (GTK_MENU_SHELL (menu), tearoff);
+                filler = gtk_menu_item_new_with_label (_("Empty"));
+                g_object_set_data (G_OBJECT (filler),
+                                   I_("gtk-empty-menu-item"),
+                                   GINT_TO_POINTER (TRUE));
+                gtk_widget_set_sensitive (filler, FALSE);
+                gtk_widget_set_no_show_all (filler, TRUE);
+                gtk_menu_shell_append (GTK_MENU_SHELL (menu), filler);
+              }
 	    
-	    if (NODE_INFO (node->parent)->type == NODE_TYPE_TOOLITEM)
+            if (NODE_INFO (node->parent)->type == NODE_TYPE_TOOLITEM)
 	      {
 		info->proxy = menu;
 		g_object_ref_sink (info->proxy);
@@ -2384,6 +2401,7 @@ update_node (GtkUIManager *self,
 	  menu = info->proxy;
 	else
 	  menu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (info->proxy));
+
 	siblings = gtk_container_get_children (GTK_CONTAINER (menu));
 	if (siblings != NULL && GTK_IS_TEAROFF_MENU_ITEM (siblings->data))
 	  {
@@ -2597,16 +2615,6 @@ update_node (GtkUIManager *self,
 
       if (info->proxy)
         {
-          /* FIXME: we must re-set the tooltip, since tooltips on 
-           * toolitems can't be set before the toolitem is added 
-           * to the toolbar.
-           */
-	  gchar *tooltip;
-
-	  g_object_get (G_OBJECT (action), "tooltip", &tooltip, NULL);
-	  g_object_set (G_OBJECT (action), "tooltip", tooltip, NULL);
-	  g_free (tooltip);
-     
           g_signal_connect (info->proxy, "notify::visible",
 			    G_CALLBACK (update_smart_separators), NULL);
         }
@@ -2689,6 +2697,7 @@ update_node (GtkUIManager *self,
   info->action = action;
 
  recurse_children:
+  /* process children */
   child = node->children;
   while (child)
     {
@@ -2748,9 +2757,7 @@ do_updates (GtkUIManager *self)
 static gboolean
 do_updates_idle (GtkUIManager *self)
 {
-  GDK_THREADS_ENTER ();
   do_updates (self);
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -2761,7 +2768,8 @@ queue_update (GtkUIManager *self)
   if (self->private_data->update_tag != 0)
     return;
 
-  self->private_data->update_tag = g_idle_add ((GSourceFunc)do_updates_idle, 
+  self->private_data->update_tag = gdk_threads_add_idle (
+					       (GSourceFunc)do_updates_idle, 
 					       self);
 }
 

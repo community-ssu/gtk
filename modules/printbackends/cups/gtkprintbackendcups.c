@@ -1,7 +1,7 @@
 /* GTK - The GIMP Toolkit
  * gtkprintbackendcups.h: Default implementation of GtkPrintBackend 
  * for the Common Unix Print System (CUPS)
- * Copyright (C) 2003, Red Hat, Inc.
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 
-#include <config.h>
 #include <cups/cups.h>
 #include <cups/language.h>
 #include <cups/http.h>
@@ -341,6 +342,8 @@ cups_print_cb (GtkPrintBackendCups *print_backend,
   GError *error = NULL;
   CupsPrintStreamData *ps = user_data;
 
+  GDK_THREADS_ENTER ();
+
   GTK_NOTE (PRINTING,
             g_print ("CUPS Backend: %s\n", G_STRFUNC)); 
 
@@ -375,7 +378,8 @@ cups_print_cb (GtkPrintBackendCups *print_backend,
   
   if (error)
     g_error_free (error);
-  
+
+  GDK_THREADS_LEAVE ();  
 }
 
 static void
@@ -423,13 +427,15 @@ gtk_print_backend_cups_print_stream (GtkPrintBackend         *print_backend,
 				  NULL,
 				  cups_printer->device_uri);
 
-  gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri",
+  gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, 
+                                   IPP_TAG_URI, "printer-uri",
                                    NULL, cups_printer->printer_uri);
 
   title = gtk_print_job_get_title (job);
   if (title)
-    gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_NAME, "job-name", NULL,
-                                     title);
+    gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, 
+                                     IPP_TAG_NAME, "job-name", 
+                                     NULL, title);
 
   gtk_print_settings_foreach (settings, add_cups_options, request);
   
@@ -622,8 +628,7 @@ cups_dispatch_watch_finalize (GSource *source)
       dispatch->backend = NULL;
     }
 
-  if (dispatch->data_poll != NULL)
-    g_free (dispatch->data_poll);
+  g_free (dispatch->data_poll);
 }
 
 static GSourceFuncs _cups_dispatch_watch_funcs = {
@@ -817,10 +822,12 @@ cups_request_job_info_cb (GtkPrintBackendCups *print_backend,
   int state;
   gboolean done;
 
+  GDK_THREADS_ENTER ();
+
   if (data->job == NULL)
     {
       cups_job_poll_data_free (data);
-      return;
+      goto done;
     }
 
   data->counter++;
@@ -879,13 +886,16 @@ cups_request_job_info_cb (GtkPrintBackendCups *print_backend,
     }
   else
     cups_job_poll_data_free (data);    
+
+done:
+  GDK_THREADS_LEAVE ();
 }
 
 static void
 cups_request_job_info (CupsJobPollData *data)
 {
   GtkCupsRequest *request;
-  gchar *printer_uri;
+  gchar *job_uri;
 
   request = gtk_cups_request_new (NULL,
                                   GTK_CUPS_POST,
@@ -894,10 +904,10 @@ cups_request_job_info (CupsJobPollData *data)
 				  NULL,
 				  NULL);
 
-  printer_uri = g_strdup_printf ("ipp://localhost/jobs/%d", data->job_id);
+  job_uri = g_strdup_printf ("ipp://localhost/jobs/%d", data->job_id);
   gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_URI,
-                                   "job-uri", NULL, printer_uri);
-  g_free (printer_uri);
+                                   "job-uri", NULL, job_uri);
+  g_free (job_uri);
 
   cups_request_execute (data->print_backend,
                         request,
@@ -967,6 +977,8 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
   gboolean list_has_changed;
   GList *removed_printer_checklist;
 
+  GDK_THREADS_ENTER ();
+
   list_has_changed = FALSE;
 
   GTK_NOTE (PRINTING,
@@ -1014,13 +1026,13 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 
       while (attr != NULL && attr->group_tag == IPP_TAG_PRINTER)
       {
-        if (!strcmp (attr->name, "printer-name") &&
+        if (strcmp (attr->name, "printer-name") == 0 &&
 	    attr->value_tag == IPP_TAG_NAME)
 	  printer_name = attr->values[0].string.text;
-	else if (!strcmp (attr->name, "printer-uri-supported") &&
+	else if (strcmp (attr->name, "printer-uri-supported") == 0 &&
 		 attr->value_tag == IPP_TAG_URI)
 	  printer_uri = attr->values[0].string.text;
-	else if (!strcmp (attr->name, "member-uris") &&
+	else if (strcmp (attr->name, "member-uris") == 0 &&
 		 attr->value_tag == IPP_TAG_URI)
 	  member_uris = attr->values[0].string.text;
         else if (strcmp (attr->name, "printer-location") == 0)
@@ -1103,14 +1115,14 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 			resource);
 #endif
 
-          if (!strncmp (resource, "/printers/", 10))
+          if (strncmp (resource, "/printers/", 10) == 0)
 	    {
 	      cups_printer->ppd_name = g_strdup (resource + 10);
               GTK_NOTE (PRINTING,
                         g_print ("CUPS Backend: Setting ppd name '%s' for printer/class '%s'\n", cups_printer->ppd_name, printer_name));
             }
 
-	  gethostname (uri, sizeof(uri));
+	  gethostname (uri, sizeof (uri));
 	  if (strcasecmp (uri, hostname) == 0)
 	    strcpy (hostname, "localhost");
 
@@ -1162,7 +1174,6 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 
       /* The ref is held by GtkPrintBackend, in add_printer() */
       g_object_unref (printer);
-
       
       if (attr == NULL)
         break;
@@ -1177,12 +1188,13 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
       list_has_changed = TRUE;
     }
   
- done:
-
+done:
   if (list_has_changed)
     g_signal_emit_by_name (backend, "printer-list-changed");
   
   gtk_print_backend_set_list_done (backend);
+
+  GDK_THREADS_LEAVE ();
 }
 
 static gboolean
@@ -1236,7 +1248,7 @@ cups_get_printer_list (GtkPrintBackend *backend)
   if (cups_backend->list_printers_poll == 0)
     {
       cups_request_printer_list (cups_backend);
-      cups_backend->list_printers_poll = g_timeout_add (3000,
+      cups_backend->list_printers_poll = gdk_threads_add_timeout (3000,
                                                         (GSourceFunc) cups_request_printer_list,
                                                         backend);
     }
@@ -1267,6 +1279,8 @@ cups_request_ppd_cb (GtkPrintBackendCups *print_backend,
   ipp_t *response;
   GtkPrinter *printer;
 
+  GDK_THREADS_ENTER ();
+
   GTK_NOTE (PRINTING,
             g_print ("CUPS Backend: %s\n", G_STRFUNC));
 
@@ -1287,7 +1301,7 @@ cups_request_ppd_cb (GtkPrintBackendCups *print_backend,
         } 
         
       g_signal_emit_by_name (printer, "details-acquired", success);
-      return;
+      goto done;
     }
 
   response = gtk_cups_result_get_response (result);
@@ -1298,6 +1312,9 @@ cups_request_ppd_cb (GtkPrintBackendCups *print_backend,
   
   gtk_printer_set_has_details (printer, TRUE);
   g_signal_emit_by_name (printer, "details-acquired", TRUE);
+
+done:
+  GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -1387,6 +1404,158 @@ cups_request_ppd (GtkPrinter *printer)
                         (GDestroyNotify)get_ppd_data_free);
 }
 
+/* Ordering matters for default preference */
+static const char *lpoptions_locations[] = {
+  "/etc/cups/lpoptions",
+  ".lpoptions", 
+  ".cups/lpoptions"
+};
+
+static void
+cups_parse_user_default_printer (const char  *filename,
+                                 char       **printer_name)
+{
+  FILE *fp;
+  char line[1024], *lineptr, *defname = NULL;
+  
+  if ((fp = g_fopen (filename, "r")) == NULL)
+    return;
+
+  while (fgets (line, sizeof (line), fp) != NULL)
+    {
+      if (strncasecmp (line, "default", 7) != 0 || !isspace (line[7]))
+        continue;
+
+      lineptr = line + 8;
+      while (isspace (*lineptr))
+        lineptr++;
+
+      if (!*lineptr)
+        continue;
+
+      defname = lineptr;
+      while (!isspace (*lineptr) && *lineptr && *lineptr != '/')
+        lineptr++;
+
+      *lineptr = '\0';
+
+      if (*printer_name != NULL)
+        g_free (*printer_name);
+
+      *printer_name = g_strdup (defname);
+    }
+
+  fclose (fp);
+}
+
+static void
+cups_get_user_default_printer (char **printer_name)
+{
+  int i;
+
+  for (i = 0; i < G_N_ELEMENTS (lpoptions_locations); i++)
+    {
+      if (g_path_is_absolute (lpoptions_locations[i]))
+        {
+          cups_parse_user_default_printer (lpoptions_locations[i],
+                                           printer_name);
+        }
+      else 
+        {
+          char *filename;
+
+          filename = g_build_filename (g_get_home_dir (), 
+                                       lpoptions_locations[i], NULL);
+          cups_parse_user_default_printer (filename, printer_name);
+          g_free (filename);
+        }
+    }
+}
+
+static int
+cups_parse_user_options (const char     *filename,
+                         const char     *printer_name,
+                         int             num_options,
+                         cups_option_t **options)
+{
+  FILE *fp;
+  gchar line[1024], *lineptr, *name;
+
+  if ((fp = g_fopen (filename, "r")) == NULL)
+    return num_options;
+
+  while (fgets (line, sizeof (line), fp) != NULL)
+    {
+      if (strncasecmp (line, "dest", 4) == 0 && isspace (line[4]))
+        lineptr = line + 4;
+      else if (strncasecmp (line, "default", 7) == 0 && isspace (line[7]))
+        lineptr = line + 7;
+      else
+        continue;
+
+      /* Skip leading whitespace */
+      while (isspace (*lineptr))
+        lineptr++;
+
+      if (!*lineptr)
+        continue;
+
+      /* NUL-terminate the name, stripping the instance name */
+      name = lineptr;
+      while (!isspace (*lineptr) && *lineptr)
+        {
+          if (*lineptr == '/')
+            *lineptr = '\0';
+          lineptr++;
+        }
+
+      if (!*lineptr)
+        continue;
+
+      *lineptr++ = '\0';
+
+      if (strncasecmp (name, printer_name, strlen (printer_name)) != 0)
+          continue;
+
+      /* We found our printer, parse the options */
+      num_options = cupsParseOptions (lineptr, num_options, options);
+    }
+
+  fclose (fp);
+
+  return num_options;
+}
+
+static int
+cups_get_user_options (const char     *printer_name,
+                       int             num_options,
+                       cups_option_t **options)
+{
+  int i;
+
+  for (i = 0; i < G_N_ELEMENTS (lpoptions_locations); i++)
+    {
+      if (g_path_is_absolute (lpoptions_locations[i]))
+        { 
+           num_options = cups_parse_user_options (lpoptions_locations[i],
+                                                  printer_name,
+                                                  num_options,
+                                                  options);
+        }
+      else
+        {
+          char *filename;
+
+          filename = g_build_filename (g_get_home_dir (), 
+                                       lpoptions_locations[i], NULL);
+          num_options = cups_parse_user_options (filename, printer_name,
+                                                 num_options, options);
+          g_free (filename);
+        }
+    }
+
+  return num_options;
+}
 
 static void
 cups_request_default_printer_cb (GtkPrintBackendCups *print_backend,
@@ -1415,6 +1584,7 @@ cups_request_default_printer (GtkPrintBackendCups *print_backend)
 {
   GtkCupsRequest *request;
   const char *str;
+  char *name = NULL;
 
   if ((str = g_getenv ("LPDEST")) != NULL)
     {
@@ -1430,6 +1600,15 @@ cups_request_default_printer (GtkPrintBackendCups *print_backend)
       return;
     }
   
+  /* Figure out user setting for default printer */  
+  cups_get_user_default_printer (&name);
+  if (name != NULL)
+    {
+       print_backend->default_printer = name;
+       print_backend->got_default_printer = TRUE;
+       return;
+    }
+
   request = gtk_cups_request_new (NULL,
                                   GTK_CUPS_POST,
                                   CUPS_GET_DEFAULT,
@@ -2198,6 +2377,9 @@ cups_printer_get_options (GtkPrinter           *printer,
   char *prio_display[] = {N_("Urgent"), N_("High"), N_("Medium"), N_("Low") };
   char *cover[] = {"none", "classified", "confidential", "secret", "standard", "topsecret", "unclassified" };
   char *cover_display[] = {N_("None"), N_("Classified"), N_("Confidential"), N_("Secret"), N_("Standard"), N_("Top Secret"), N_("Unclassified"),};
+  char *name;
+  int num_opts;
+  cups_option_t *opts = NULL;
 
 
   set = gtk_printer_option_set_new ();
@@ -2282,10 +2464,12 @@ cups_printer_get_options (GtkPrinter           *printer,
       else
         {
           gchar *custom_name;
+	  char width[G_ASCII_DTOSTR_BUF_SIZE];
+	  char height[G_ASCII_DTOSTR_BUF_SIZE];
 
-	  custom_name = g_strdup_printf ("Custom.%2fx%.2f",
-					 gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS),
-					 gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+	  g_ascii_formatd (width, sizeof (width), "%.2f", gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS));
+	  g_ascii_formatd (height, sizeof (height), "%.2f", gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+	  custom_name = g_strdup_printf (_("Custom %sx%s"), width, height);
           strncpy (option->defchoice, custom_name, PPD_MAX_NAME);
           g_free (custom_name);
         }
@@ -2293,6 +2477,23 @@ cups_printer_get_options (GtkPrinter           *printer,
       for (i = 0; i < ppd_file->num_groups; i++)
         handle_group (set, ppd_file, &ppd_file->groups[i], &ppd_file->groups[i], settings);
     }
+
+  /* Now honor the user set defaults for this printer */
+  num_opts = cups_get_user_options (gtk_printer_get_name (printer), 0, &opts);
+
+  for (i = 0; i < num_opts; i++)
+    {
+      if (STRING_IN_TABLE (opts->name, cups_option_blacklist))
+        continue;
+
+      name = get_option_name (opts[i].name);
+      option = gtk_printer_option_set_lookup (set, name);
+      if (option)
+        gtk_printer_option_set (option, opts[i].value);
+      g_free (name);
+    }
+
+  cupsFreeOptions (num_opts, opts);
 
   return set;
 }
@@ -2778,9 +2979,12 @@ cups_printer_prepare_for_print (GtkPrinter       *printer,
     gtk_print_settings_set (settings, "cups-PageSize", ppd_paper_name);
   else
     {
-      char *custom_name = g_strdup_printf ("Custom.%2fx%.2f",
-					   gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS),
-					   gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+      char width[G_ASCII_DTOSTR_BUF_SIZE];
+      char height[G_ASCII_DTOSTR_BUF_SIZE];
+
+      g_ascii_formatd (width, sizeof (width), "%.2f", gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS));
+      g_ascii_formatd (height, sizeof (height), "%.2f", gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+      char *custom_name = g_strdup_printf (("Custom.%sx%s"), width, height);
       gtk_print_settings_set (settings, "cups-PageSize", custom_name);
       g_free (custom_name);
     }
@@ -2868,5 +3072,6 @@ cups_printer_get_capabilities (GtkPrinter *printer)
   return
     GTK_PRINT_CAPABILITY_COPIES |
     GTK_PRINT_CAPABILITY_COLLATE |
-    GTK_PRINT_CAPABILITY_REVERSE;
+    GTK_PRINT_CAPABILITY_REVERSE |
+    GTK_PRINT_CAPABILITY_NUMBER_UP;
 }

@@ -100,7 +100,7 @@ gtk_radio_button_class_init (GtkRadioButtonClass *class)
    * Emitted when the group of radio buttons that a radio button belongs
    * to changes. This is emitted when a radio button switches from
    * being alone to being part of a group of 2 or more buttons, or
-   * vice-versa, and when a buttton is moved from one group of 2 or
+   * vice-versa, and when a button is moved from one group of 2 or
    * more buttons to a different one, but not when the composition
    * of the group that a button belongs to changes.
    *
@@ -144,10 +144,13 @@ gtk_radio_button_set_property (GObject      *object,
   switch (prop_id)
     {
       GSList *slist;
+      GtkRadioButton *button;
 
     case PROP_GROUP:
-      if (G_VALUE_HOLDS_OBJECT (value))
-	slist = gtk_radio_button_get_group ((GtkRadioButton*) g_value_get_object (value));
+        button = g_value_get_object (value);
+
+      if (button)
+	slist = gtk_radio_button_get_group (button);
       else
 	slist = NULL;
       gtk_radio_button_set_group (radio_button, slist);
@@ -298,28 +301,28 @@ gtk_radio_button_new_with_mnemonic (GSList      *group,
 }
 
 GtkWidget*
-gtk_radio_button_new_from_widget (GtkRadioButton *group)
+gtk_radio_button_new_from_widget (GtkRadioButton *radio_group_member)
 {
   GSList *l = NULL;
-  if (group)
-    l = gtk_radio_button_get_group (group);
+  if (radio_group_member)
+    l = gtk_radio_button_get_group (radio_group_member);
   return gtk_radio_button_new (l);
 }
 
 
 GtkWidget*
-gtk_radio_button_new_with_label_from_widget (GtkRadioButton *group,
+gtk_radio_button_new_with_label_from_widget (GtkRadioButton *radio_group_member,
 					     const gchar    *label)
 {
   GSList *l = NULL;
-  if (group)
-    l = gtk_radio_button_get_group (group);
+  if (radio_group_member)
+    l = gtk_radio_button_get_group (radio_group_member);
   return gtk_radio_button_new_with_label (l, label);
 }
 
 /**
  * gtk_radio_button_new_with_mnemonic_from_widget:
- * @group: widget to get radio group from
+ * @radio_group_member: widget to get radio group from or %NULL
  * @label: the text of the button, with an underscore in front of the
  *         mnemonic character
  * @returns: a new #GtkRadioButton
@@ -329,12 +332,12 @@ gtk_radio_button_new_with_label_from_widget (GtkRadioButton *group,
  * in @label indicate the mnemonic for the button.
  **/
 GtkWidget*
-gtk_radio_button_new_with_mnemonic_from_widget (GtkRadioButton *group,
+gtk_radio_button_new_with_mnemonic_from_widget (GtkRadioButton *radio_group_member,
 					        const gchar    *label)
 {
   GSList *l = NULL;
-  if (group)
-    l = gtk_radio_button_get_group (group);
+  if (radio_group_member)
+    l = gtk_radio_button_get_group (radio_group_member);
   return gtk_radio_button_new_with_mnemonic (l, label);
 }
 
@@ -442,7 +445,7 @@ gtk_radio_button_focus (GtkWidget         *widget,
    */
   if (!GTK_TOGGLE_BUTTON (widget)->draw_indicator)
     return GTK_WIDGET_CLASS (gtk_radio_button_parent_class)->focus (widget, direction);
-
+  
   if (gtk_widget_is_focus (widget))
     {
       GtkSettings *settings = gtk_widget_get_settings (widget);
@@ -451,13 +454,6 @@ gtk_radio_button_focus (GtkWidget         *widget,
       GtkWidget *new_focus = NULL;
       gboolean cursor_only;
       gboolean wrap_around;
-
-#ifdef MAEMO_CHANGES
-      g_object_get (settings,
-                    "gtk-keynav-cursor-only", &cursor_only,
-                    "gtk-keynav-wrap-around", &wrap_around,
-                    NULL);
-#endif /* MAEMO_CHANGES */
 
       switch (direction)
 	{
@@ -485,16 +481,17 @@ gtk_radio_button_focus (GtkWidget         *widget,
               break;
             }
 #endif /* MAEMO_CHANGES */
-            /* fall through */
-	default:
+          /* fall through */
+        default:
 	  return FALSE;
 	}
 
-      if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP
 #ifdef MAEMO_CHANGES
-          || (cursor_only && direction == GTK_DIR_TAB_BACKWARD)
+      if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP ||
+          (cursor_only && direction == GTK_DIR_TAB_BACKWARD))
+#else
+      if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP)
 #endif /* MAEMO_CHANGES */
-          )
 	focus_list = g_slist_reverse (focus_list);
 
       tmp_list = g_slist_find (focus_list, widget);
@@ -517,12 +514,10 @@ gtk_radio_button_focus (GtkWidget         *widget,
 	    }
 	}
 
-#ifndef MAEMO_CHANGES
       g_object_get (settings,
                     "gtk-keynav-cursor-only", &cursor_only,
                     "gtk-keynav-wrap-around", &wrap_around,
                     NULL);
-#endif /* MAEMO_CHANGES */
 
       if (!new_focus)
 	{

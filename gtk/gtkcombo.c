@@ -50,7 +50,7 @@
 #include "gtkintl.h"
 #include "gtkalias.h"
 
-const gchar gtk_combo_string_key[] = "gtk-combo-string-value";
+static const gchar gtk_combo_string_key[] = "gtk-combo-string-value";
 
 #define COMBO_LIST_MAX_HEIGHT	(400)
 #define	EMPTY_LIST_HEIGHT	(15)
@@ -69,7 +69,7 @@ static void         gtk_combo_unrealize		 (GtkWidget	   *widget);
 static void         gtk_combo_destroy            (GtkObject        *combo);
 static GtkListItem *gtk_combo_find               (GtkCombo         *combo);
 static gchar *      gtk_combo_func               (GtkListItem      *li);
-static gint         gtk_combo_focus_idle         (GtkCombo         *combo);
+static gboolean     gtk_combo_focus_idle         (GtkCombo         *combo);
 static gint         gtk_combo_entry_focus_out    (GtkEntry         *entry,
 						  GdkEventFocus    *event,
 						  GtkCombo         *combo);
@@ -232,8 +232,7 @@ gtk_combo_entry_key_press (GtkEntry * entry, GdkEventKey * event, GtkCombo * com
 	  gtk_editable_set_position (editable, pos);
 	}
 
-      if (nprefix)
-	g_free (nprefix);
+      g_free (nprefix);
       g_free (prefix);
       g_completion_free (cmpl);
 
@@ -294,7 +293,9 @@ gtk_combo_window_key_press (GtkWidget   *window,
 {
   guint state = event->state & gtk_accelerator_get_default_mod_mask ();
 
-  if ((event->keyval == GDK_Return || event->keyval == GDK_KP_Enter) &&
+  if ((event->keyval == GDK_Return ||
+       event->keyval == GDK_ISO_Enter ||
+       event->keyval == GDK_KP_Enter) &&
       state == 0)
     {
       gtk_combo_popdown_list (combo);
@@ -411,6 +412,7 @@ gtk_combo_entry_focus_out (GtkEntry * entry, GdkEventFocus * event, GtkCombo * c
 			    g_cclosure_new_object (G_CALLBACK (gtk_combo_focus_idle),
 						   G_OBJECT (combo)));
       g_source_attach (focus_idle, NULL);
+	g_source_unref (focus_idle);
       
       /*g_signal_stop_emission_by_name (entry, "focus_out_event"); */
       return TRUE;
@@ -561,7 +563,7 @@ gtk_combo_popup_list (GtkCombo *combo)
     {
       gtk_window_group_add_window (gtk_window_get_group (GTK_WINDOW (toplevel)), 
                                    GTK_WINDOW (combo->popwin));
-      gtk_window_set_transient_for (combo->popwin, GTK_WINDOW (toplevel));
+      gtk_window_set_transient_for (GTK_WINDOW (combo->popwin), GTK_WINDOW (toplevel));
     }
 
   gtk_widget_set_size_request (combo->popwin, width, height);

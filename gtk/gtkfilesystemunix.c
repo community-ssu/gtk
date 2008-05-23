@@ -254,8 +254,7 @@ static GtkFileInfo *create_file_info              (GtkFileFolderUnix *folder_uni
 						   struct stat *statbuf,
 						   const char *mime_type);
 
-static gboolean execute_callbacks_idle (gpointer data);
-static void execute_callbacks (gpointer data);
+static gboolean execute_callbacks (gpointer data);
 
 static gboolean fill_in_names     (GtkFileFolderUnix  *folder_unix,
 				   GError            **error);
@@ -700,7 +699,7 @@ struct callback_info
 
 
 
-static void
+static gboolean
 execute_callbacks (gpointer data)
 {
   GSList *l;
@@ -745,16 +744,6 @@ execute_callbacks (gpointer data)
     g_object_unref (system_unix);
 
   system_unix->execute_callbacks_idle_id = 0;
-}
-
-static gboolean
-execute_callbacks_idle (gpointer data)
-{
-  GDK_THREADS_ENTER ();
-
-  execute_callbacks(data);
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -791,7 +780,7 @@ queue_callback (GtkFileSystemUnix   *system_unix,
   system_unix->callbacks = g_slist_append (system_unix->callbacks, info);
 
   if (!system_unix->execute_callbacks_idle_id)
-    system_unix->execute_callbacks_idle_id = g_idle_add (execute_callbacks_idle, system_unix);
+    system_unix->execute_callbacks_idle_id = gdk_threads_add_idle (execute_callbacks, system_unix);
 }
 
 static GtkFileSystemHandle *
@@ -833,8 +822,8 @@ gtk_file_system_unix_get_info (GtkFileSystem                *file_system,
   handle = create_handle (file_system);
 
   filename = gtk_file_path_get_string (path);
-  g_return_val_if_fail (filename != NULL, FALSE);
-  g_return_val_if_fail (g_path_is_absolute (filename), FALSE);
+  g_return_val_if_fail (filename != NULL, NULL);
+  g_return_val_if_fail (g_path_is_absolute (filename), NULL);
 
   if (!stat_with_error (filename, &statbuf, &error))
     {
@@ -865,8 +854,6 @@ load_folder (gpointer data)
   GtkFileFolderUnix *folder_unix = data;
   GSList *children;
 
-  GDK_THREADS_ENTER ();
-
   if ((folder_unix->types & STAT_NEEDED_MASK) != 0)
     fill_in_stats (folder_unix);
 
@@ -883,8 +870,6 @@ load_folder (gpointer data)
   folder_unix->load_folder_id = 0;
 
   g_signal_emit_by_name (folder_unix, "finished-loading", 0);
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -929,6 +914,7 @@ gtk_file_system_unix_get_folder (GtkFileSystem                  *file_system,
 	  folder_unix->have_mime_type = FALSE;
 	  folder_unix->have_stat = FALSE;
 	  folder_unix->have_hidden = FALSE;
+	  folder_unix->is_finished_loading = FALSE;
 	  set_asof = TRUE;
 	}
 
@@ -1020,7 +1006,7 @@ gtk_file_system_unix_get_folder (GtkFileSystem                  *file_system,
   /* Start loading the folder contents in an idle */
   if (!folder_unix->load_folder_id)
     folder_unix->load_folder_id =
-      g_idle_add ((GSourceFunc) load_folder, folder_unix);
+      gdk_threads_add_idle ((GSourceFunc) load_folder, folder_unix);
 
   return handle;
 }
@@ -1042,8 +1028,8 @@ gtk_file_system_unix_create_folder (GtkFileSystem                     *file_syst
   system_unix = GTK_FILE_SYSTEM_UNIX (file_system);
 
   filename = gtk_file_path_get_string (path);
-  g_return_val_if_fail (filename != NULL, FALSE);
-  g_return_val_if_fail (g_path_is_absolute (filename), FALSE);
+  g_return_val_if_fail (filename != NULL, NULL);
+  g_return_val_if_fail (g_path_is_absolute (filename), NULL);
 
   handle = create_handle (file_system);
 
@@ -1059,7 +1045,7 @@ gtk_file_system_unix_create_folder (GtkFileSystem                     *file_syst
       g_set_error (&error,
 		   GTK_FILE_SYSTEM_ERROR,
 		   GTK_FILE_SYSTEM_ERROR_NONEXISTENT,
-		   _("Error creating directory '%s': %s"),
+		   _("Error creating folder '%s': %s"),
 		   display_name,
 		   g_strerror (save_errno));
       
@@ -1457,10 +1443,8 @@ expand_tilde (const char *filename)
   notilde = filename + 1;
 
   slash = strchr (notilde, G_DIR_SEPARATOR);
-  if (!slash)
-    return NULL;
 
-  if (slash == notilde)
+  if (slash == notilde || !*notilde)
     {
       home = g_get_home_dir ();
 
@@ -1472,7 +1456,11 @@ expand_tilde (const char *filename)
       char *username;
       struct passwd *passwd;
 
-      username = g_strndup (notilde, slash - notilde);
+      if (slash)
+        username = g_strndup (notilde, slash - notilde);
+      else
+        username = g_strdup (notilde);
+
       passwd = getpwnam (username);
       g_free (username);
 
@@ -1482,7 +1470,10 @@ expand_tilde (const char *filename)
       home = passwd->pw_dir;
     }
 
-  return g_build_filename (home, G_DIR_SEPARATOR_S, slash + 1, NULL);
+  if (slash)
+    return g_build_filename (home, G_DIR_SEPARATOR_S, slash + 1, NULL);
+  else
+    return g_strdup (home);
 }
 
 static gboolean
@@ -1611,17 +1602,12 @@ gtk_file_system_unix_filename_to_path (GtkFileSystem *file_system,
 static const char *
 get_icon_name_for_directory (const char *path)
 {
-  static char *desktop_path = NULL;
-
   if (!g_get_home_dir ())
     return "gnome-fs-directory";
 
-  if (!desktop_path)
-      desktop_path = g_build_filename (g_get_home_dir (), "Desktop", NULL);
-
   if (strcmp (g_get_home_dir (), path) == 0)
     return "gnome-fs-home";
-  else if (strcmp (desktop_path, path) == 0)
+  else if (strcmp (g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP), path) == 0)
     return "gnome-fs-desktop";
   else
     return "gnome-fs-directory";

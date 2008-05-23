@@ -1,6 +1,6 @@
 /* gdkwindow-quartz.c
  *
- * Copyright (C) 2005-2006 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,13 +50,29 @@ typedef struct _GdkDragContextPrivate GdkDragContextPrivate;
 
 struct _GdkGCQuartz
 {
-  GdkGC parent_instance;
+  GdkGC             parent_instance;
 
-  GdkGCValuesMask values_mask;
+  GdkFont          *font;
+  GdkFunction       function;
+  GdkSubwindowMode  subwindow_mode;
+  gboolean          graphics_exposures;
 
-  gboolean have_clip_region;
-  gboolean have_clip_mask;
-  CGImageRef clip_mask;
+  gboolean          have_clip_region;
+  gboolean          have_clip_mask;
+  CGImageRef        clip_mask;
+
+  gint              line_width;
+  GdkLineStyle      line_style;
+  GdkCapStyle       cap_style;
+  GdkJoinStyle      join_style;
+
+  gfloat           *dash_lengths;
+  gint              dash_count;
+  gfloat            dash_phase;
+
+  CGPatternRef      ts_pattern;
+
+  guint             is_window : 1;
 };
 
 struct _GdkGCQuartzClass
@@ -86,54 +102,88 @@ extern GdkWindow *_gdk_root;
 
 extern GdkDragContext *_gdk_quartz_drag_source_context;
 
-GType _gdk_gc_quartz_get_type (void);
-
-GdkGC *_gdk_quartz_gc_new (GdkDrawable      *drawable,
-			  GdkGCValues      *values,
-			  GdkGCValuesMask   values_mask);
-
 /* Initialization */
-void _gdk_windowing_window_init (void);
-void _gdk_events_init           (void);
-void _gdk_visual_init           (void);
-void _gdk_input_init            (void);
+void _gdk_windowing_window_init  (void);
+void _gdk_events_init            (void);
+void _gdk_visual_init            (void);
+void _gdk_input_init             (void);
+void _gdk_quartz_event_loop_init (void);
 
-void gdk_quartz_set_context_fill_color_from_pixel (CGContextRef context, GdkColormap *colormap, guint32 pixel);
-void gdk_quartz_set_context_stroke_color_from_pixel (CGContextRef context, GdkColormap *colormap, guint32 pixel);
+/* GC */
+typedef enum {
+  GDK_QUARTZ_CONTEXT_STROKE = 1 << 0,
+  GDK_QUARTZ_CONTEXT_FILL   = 1 << 1,
+  GDK_QUARTZ_CONTEXT_TEXT   = 1 << 2
+} GdkQuartzContextValuesMask;
 
-void gdk_quartz_update_context_from_gc (CGContextRef context, GdkGC *gc);
+GType  _gdk_gc_quartz_get_type          (void);
+GdkGC *_gdk_quartz_gc_new               (GdkDrawable                *drawable,
+					 GdkGCValues                *values,
+					 GdkGCValuesMask             values_mask);
+void   _gdk_quartz_gc_update_cg_context (GdkGC                      *gc,
+					 GdkDrawable                *drawable,
+					 CGContextRef                context,
+					 GdkQuartzContextValuesMask  mask);
 
-gint        _gdk_quartz_get_inverted_screen_y      (gint y);
+/* Colormap */
+void _gdk_quartz_colormap_get_rgba_from_pixel (GdkColormap *colormap,
+					       guint32      pixel,
+					       gfloat      *red,
+					       gfloat      *green,
+					       gfloat      *blue,
+					       gfloat      *alpha);
 
-GdkWindow * _gdk_quartz_find_child_window_by_point (GdkWindow *toplevel,
-						    int        x,
-						    int        y,
-						    int       *x_ret,
-						    int       *y_ret);
+/* Window */
+gboolean    _gdk_quartz_window_is_ancestor          (GdkWindow *ancestor,
+                                                     GdkWindow *window);
+gint       _gdk_quartz_window_get_inverted_screen_y (gint       y);
+GdkWindow *_gdk_quartz_window_find_child            (GdkWindow *window,
+						     gint       x,
+						     gint       y);
+void       _gdk_quartz_window_attach_to_parent      (GdkWindow *window);
+void       _gdk_quartz_window_detach_from_parent    (GdkWindow *window);
+void       _gdk_quartz_window_did_become_main       (GdkWindow *window);
+void       _gdk_quartz_window_did_resign_main       (GdkWindow *window);
+void       _gdk_quartz_window_debug_highlight       (GdkWindow *window);
 
-void        _gdk_quartz_update_focus_window (GdkWindow *new_window,
-					     gboolean   got_focus);
-GdkWindow *_gdk_quartz_get_mouse_window     (void);
-void       _gdk_quartz_update_mouse_window  (GdkWindow *window);
-void       _gdk_quartz_update_cursor        (GdkWindow *window);
+/* Events */
+typedef enum {
+  GDK_QUARTZ_EVENT_SUBTYPE_EVENTLOOP,
+  GDK_QUARTZ_EVENT_SUBTYPE_FAKE_CROSSING
+} GdkQuartzEventSubType;
 
-GdkImage  *_gdk_quartz_copy_to_image (GdkDrawable *drawable,
-				      GdkImage    *image,
-				      gint         src_x,
-				      gint         src_y,
-				      gint         dest_x,
-				      gint         dest_y,
-				      gint         width,
-				      gint         height);
-
-void _gdk_quartz_send_map_events (GdkWindow *window);
-
-GdkEventType _gdk_quartz_key_event_type  (NSEvent   *event);
-gboolean     _gdk_quartz_key_is_modifier (guint      keycode);
-
-GdkEventMask _gdk_quartz_get_current_event_mask (void);
+void         _gdk_quartz_events_update_focus_window    (GdkWindow *new_window,
+                                                        gboolean   got_focus);
+GdkWindow *  _gdk_quartz_events_get_mouse_window       (gboolean   consider_grabs);
+void         _gdk_quartz_events_update_mouse_window    (GdkWindow *window);
+void         _gdk_quartz_events_update_cursor          (GdkWindow *window);
+void         _gdk_quartz_events_send_map_events        (GdkWindow *window);
+GdkEventMask _gdk_quartz_events_get_current_event_mask (void);
+void         _gdk_quartz_events_trigger_crossing_events(void);
 
 extern GdkWindow *_gdk_quartz_keyboard_grab_window;
 extern GdkWindow *_gdk_quartz_pointer_grab_window;
+
+/* Event loop */
+gboolean   _gdk_quartz_event_loop_check_pending (void);
+NSEvent *  _gdk_quartz_event_loop_get_pending   (void);
+void       _gdk_quartz_event_loop_release_event (NSEvent *event);
+
+/* FIXME: image */
+GdkImage *_gdk_quartz_image_copy_to_image (GdkDrawable *drawable,
+					    GdkImage    *image,
+					    gint         src_x,
+					    gint         src_y,
+					    gint         dest_x,
+					    gint         dest_y,
+					    gint         width,
+					    gint         height);
+
+/* Keys */
+GdkEventType _gdk_quartz_keys_event_type  (NSEvent   *event);
+gboolean     _gdk_quartz_keys_is_modifier (guint      keycode);
+
+/* Drawable */
+void        _gdk_quartz_drawable_finish (GdkDrawable *drawable);
 
 #endif /* __GDK_PRIVATE_QUARTZ_H__ */

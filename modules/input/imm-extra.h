@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: imm-extra.h,v 1.2 2005/07/12 04:05:25 matthiasc Exp $ 
+ * $Id: imm-extra.h 13416 2005-07-12 04:05:26Z matthiasc $ 
  */
 
 #include <windows.h>

@@ -33,7 +33,6 @@
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkrange.h"
-#include "gtkintl.h"
 #include "gtkscrollbar.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
@@ -149,7 +148,7 @@ static void gtk_range_grab_notify    (GtkWidget          *widget,
 				      gboolean            was_grabbed);
 static void gtk_range_state_changed  (GtkWidget          *widget,
 				      GtkStateType        previous_state);
-static gint gtk_range_scroll_event   (GtkWidget        *widget,
+static gboolean gtk_range_scroll_event   (GtkWidget        *widget,
                                       GdkEventScroll   *event);
 static void gtk_range_style_set      (GtkWidget        *widget,
                                       GtkStyle         *previous_style);
@@ -253,6 +252,12 @@ gtk_range_class_init (GtkRangeClass *class)
   class->slider_detail = "slider";
   class->stepper_detail = "stepper";
 
+  /**
+   * GtkRange::value-changed:
+   * @range: the #GtkRange
+   *
+   * Emitted when the range value changes.
+   */
   signals[VALUE_CHANGED] =
     g_signal_new (I_("value_changed"),
                   G_TYPE_FROM_CLASS (gobject_class),
@@ -272,6 +277,13 @@ gtk_range_class_init (GtkRangeClass *class)
                   G_TYPE_NONE, 1,
                   G_TYPE_DOUBLE);
   
+  /**
+   * GtkRange::move-slider:
+   * @range: the #GtkRange
+   * @step: how to move the slider
+   *
+   * Virtual function that moves the slider. Used for keybindings.
+   */
   signals[MOVE_SLIDER] =
     g_signal_new (I_("move_slider"),
                   G_TYPE_FROM_CLASS (gobject_class),
@@ -284,11 +296,11 @@ gtk_range_class_init (GtkRangeClass *class)
 
   /**
    * GtkRange::change-value:
-   * @range: the range that received the signal.
-   * @scroll: the type of scroll action that was performed.
-   * @value: the new value resulting from the scroll action.
+   * @range: the range that received the signal
+   * @scroll: the type of scroll action that was performed
+   * @value: the new value resulting from the scroll action
    * @returns: %TRUE to prevent other handlers from being invoked for the
-   * signal.  %FALSE to propagate the signal further.
+   * signal, %FALSE to propagate the signal further
    *
    * The ::change-value signal is emitted when a scroll action is
    * performed on a range.  It allows an application to determine the
@@ -365,7 +377,7 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:show-fill-level:
    *
-   * The show-fill-level property controls wether fill level indicator
+   * The show-fill-level property controls whether fill level indicator
    * graphics are displayed on the trough. See
    * gtk_range_set_show_fill_level().
    *
@@ -382,9 +394,9 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:restrict-to-fill-level:
    *
-   * The restrict-to-fill-level proeprty controls whether slider
+   * The restrict-to-fill-level property controls whether slider
    * movement is restricted to an upper boundary set by the
-   * fill-level. See gtk_range_set_restrict_to_fill_level().
+   * fill level. See gtk_range_set_restrict_to_fill_level().
    *
    * Since: 2.12
    **/
@@ -443,7 +455,7 @@ gtk_range_class_init (GtkRangeClass *class)
    *
    * The spacing between the stepper buttons and thumb. Note that
    * setting this value to anything > 0 will automatically set the
-   * trough-under-steppers style property to TRUE as well. Also,
+   * trough-under-steppers style property to %TRUE as well. Also,
    * stepper-spacing won't have any effect if there are no steppers.
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -481,6 +493,9 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:trough-side-details:
    *
+   * When %TRUE, the parts of the trough on the two sides of the 
+   * slider are drawn with different details.
+   *
    * Since: 2.10
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -495,7 +510,7 @@ gtk_range_class_init (GtkRangeClass *class)
    *
    * Whether to draw the trough across the full length of the range or
    * to exclude the steppers and their spacing. Note that setting the
-   * stepper-spacing style property to any value > 0 will
+   * #GtkRange:stepper-spacing style property to any value > 0 will
    * automatically enable trough-under-steppers too.
    *
    * Since: 2.10
@@ -503,11 +518,10 @@ gtk_range_class_init (GtkRangeClass *class)
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("trough-under-steppers",
                                                                  P_("Trough Under Steppers"),
-                                                                 P_("Whether to draw trought for full length of range or exclude the steppers and spacing"),
+                                                                 P_("Whether to draw trough for full length of range or exclude the steppers and spacing"),
                                                                  TRUE,
                                                                  GTK_PARAM_READABLE));
 
-  g_type_class_add_private (class, sizeof (GtkRangeLayout));
 #ifdef MAEMO_CHANGES
   /**
    * GtkRange:arrow-scaling:
@@ -517,11 +531,13 @@ gtk_range_class_init (GtkRangeClass *class)
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_float ("arrow-scaling",
-							       P_("Arrow Scaling"),
-							       P_("Amount of space used by the scroll arrows"),
-							       0.0, 1.0, 0.5,
-							       GTK_PARAM_READABLE));
+                                                              P_("Arrow Scaling"),
+                                                              P_("Amount of space used by the scroll arrows"),
+                                                              0.0, 1.0, 0.5,
+                                                              GTK_PARAM_READABLE));
 #endif /* MAEMO_CHANGES */
+
+  g_type_class_add_private (class, sizeof (GtkRangeLayout));
 }
 
 static void
@@ -675,7 +691,6 @@ gtk_range_get_adjustment (GtkRange *range)
  * continuous. #GTK_UPDATE_DISCONTINUOUS means that the value will only
  * be updated when the user releases the button and ends the slider
  * drag operation.
- * 
  **/
 void
 gtk_range_set_update_policy (GtkRange      *range,
@@ -718,7 +733,6 @@ gtk_range_get_update_policy (GtkRange *range)
  * is normally 0 for #GtkScale and nonzero for #GtkScrollbar, and
  * indicates the size of the visible area of the widget being scrolled.
  * The page size affects the size of the scrollbar slider.
- * 
  **/
 void
 gtk_range_set_adjustment (GtkRange      *range,
@@ -768,7 +782,6 @@ gtk_range_set_adjustment (GtkRange      *range,
  * slider moves from top to bottom or left to right. Inverted
  * ranges have higher values at the top or on the right rather than
  * on the bottom or left.
- * 
  **/
 void
 gtk_range_set_inverted (GtkRange *range,
@@ -906,7 +919,6 @@ gtk_range_get_upper_stepper_sensitivity (GtkRange *range)
  * The step size is used when the user clicks the #GtkScrollbar
  * arrows or moves #GtkScale via arrow keys. The page size
  * is used for example when moving via Page Up or Page Down keys.
- * 
  **/
 void
 gtk_range_set_increments (GtkRange *range,
@@ -964,9 +976,8 @@ gtk_range_set_range (GtkRange *range,
  *
  * Sets the current value of the range; if the value is outside the
  * minimum or maximum range values, it will be clamped to fit inside
- * them. The range emits the "value_changed" signal if the value
- * changes.
- * 
+ * them. The range emits the #GtkRange::value-changed signal if the 
+ * value changes.
  **/
 void
 gtk_range_set_value (GtkRange *range,
@@ -1031,7 +1042,9 @@ gtk_range_set_show_fill_level (GtkRange *range,
  * gtk_range_get_show_fill_level:
  * @range: A #GtkRange
  *
- * Return value: Whether GtkRange displays a fill level graphics.
+ * Gets whether the range displays the fill level graphically.
+ *
+ * Return value: %TRUE if @range shows the fill level.
  *
  * Since: 2.12
  **/
@@ -1075,7 +1088,9 @@ gtk_range_set_restrict_to_fill_level (GtkRange *range,
  * gtk_range_get_restrict_to_fill_level:
  * @range: A #GtkRange
  *
- * Return value: Whether GtkRange is restricted to the fill level.
+ * Gets whether the range is restricted to the fill level.
+ *
+ * Return value: %TRUE if @range is restricted to the fill level.
  *
  * Since: 2.12
  **/
@@ -1089,8 +1104,8 @@ gtk_range_get_restrict_to_fill_level (GtkRange *range)
 
 /**
  * gtk_range_set_fill_level:
- * @range:   A #GtkRange
- * @positon: The new position of the fill level indicator
+ * @range: a #GtkRange
+ * @fill_level: the new position of the fill level indicator
  *
  * Set the new position of the fill level indicator.
  *
@@ -1135,7 +1150,9 @@ gtk_range_set_fill_level (GtkRange *range,
  * gtk_range_get_fill_level:
  * @range : A #GtkRange
  *
- * Return value: The current position of the fill level indicator.
+ * Gets the current position of the fill level indicator.
+ *
+ * Return value: The current fill level
  *
  * Since: 2.12
  **/
@@ -2066,7 +2083,7 @@ gtk_range_grab_broken (GtkWidget          *widget,
   return FALSE;
 }
 
-static gboolean
+static gint
 gtk_range_button_release (GtkWidget      *widget,
 			  GdkEventButton *event)
 {
@@ -2131,7 +2148,7 @@ _gtk_range_get_wheel_delta (GtkRange           *range,
   return delta;
 }
       
-static gint
+static gboolean
 gtk_range_scroll_event (GtkWidget      *widget,
 			GdkEventScroll *event)
 {
@@ -2170,7 +2187,7 @@ gtk_range_motion_notify (GtkWidget      *widget,
   range = GTK_RANGE (widget);
 
   gdk_window_get_pointer (range->event_window, &x, &y, NULL);
-
+  
   range->layout->mouse_x = x;
   range->layout->mouse_y = y;
 
@@ -2282,19 +2299,10 @@ gtk_range_adjustment_changed (GtkAdjustment *adjustment,
 static gboolean
 force_repaint (gpointer data)
 {
-  GtkRange *range;
- 
-  GDK_THREADS_ENTER ();
- 
-  range = GTK_RANGE (data);
-
+  GtkRange *range = GTK_RANGE (data);
   range->layout->repaint_id = 0;
-
   if (GTK_WIDGET_DRAWABLE (range))
     gdk_window_process_updates (GTK_WIDGET (range)->window, FALSE);
-
-  GDK_THREADS_LEAVE ();
-
   return FALSE;
 }
 
@@ -2313,14 +2321,9 @@ gtk_range_adjustment_value_changed (GtkAdjustment *adjustment,
   if (layout_changed (range->layout, &layout))
     {
       gtk_widget_queue_draw (GTK_WIDGET (range));
-
-      /* setup a timer to ensure the range isn't lagging too much behind
-       * the scroll position
-       */
+      /* setup a timer to ensure the range isn't lagging too much behind the scroll position */
       if (!range->layout->repaint_id)
-        range->layout->repaint_id = g_timeout_add_full (GDK_PRIORITY_EVENTS,
-							181, force_repaint,
-							range, NULL);
+        range->layout->repaint_id = gdk_threads_add_timeout_full (GDK_PRIORITY_EVENTS, 181, force_repaint, range, NULL);
     }
   
   /* Note that we don't round off to range->round_digits here.
@@ -3354,10 +3357,8 @@ second_timeout (gpointer data)
 {
   GtkRange *range;
 
-  GDK_THREADS_ENTER ();
   range = GTK_RANGE (data);
   gtk_range_scroll (range, range->timer->step);
-  GDK_THREADS_LEAVE ();
   
   return TRUE;
 }
@@ -3369,16 +3370,13 @@ initial_timeout (gpointer data)
   GtkSettings *settings;
   guint        timeout;
 
-  GDK_THREADS_ENTER ();
   settings = gtk_widget_get_settings (GTK_WIDGET (data));
   g_object_get (settings, "gtk-timeout-repeat", &timeout, NULL);
 
   range = GTK_RANGE (data);
-  range->timer->timeout_id = g_timeout_add (timeout * SCROLL_DELAY_FACTOR,
+  range->timer->timeout_id = gdk_threads_add_timeout (timeout * SCROLL_DELAY_FACTOR,
                                             second_timeout,
                                             range);
-  GDK_THREADS_LEAVE ();
-
   /* remove self */
   return FALSE;
 }
@@ -3398,7 +3396,7 @@ gtk_range_add_step_timer (GtkRange      *range,
 
   range->timer = g_new (GtkRangeStepTimer, 1);
 
-  range->timer->timeout_id = g_timeout_add (timeout,
+  range->timer->timeout_id = gdk_threads_add_timeout (timeout,
                                             initial_timeout,
                                             range);
   range->timer->step = step;
@@ -3425,11 +3423,9 @@ update_timeout (gpointer data)
 {
   GtkRange *range;
 
-  GDK_THREADS_ENTER ();
   range = GTK_RANGE (data);
   gtk_range_update_value (range);
   range->update_timeout_id = 0;
-  GDK_THREADS_LEAVE ();
 
   /* self-remove */
   return FALSE;
@@ -3440,7 +3436,7 @@ gtk_range_reset_update_timer (GtkRange *range)
 {
   gtk_range_remove_update_timer (range);
 
-  range->update_timeout_id = g_timeout_add (UPDATE_DELAY,
+  range->update_timeout_id = gdk_threads_add_timeout (UPDATE_DELAY,
                                             update_timeout,
                                             range);
 }

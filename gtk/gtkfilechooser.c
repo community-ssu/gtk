@@ -140,7 +140,7 @@ gtk_file_chooser_class_init (gpointer g_iface)
    * gtk_file_chooser_get_preview_filename() or
    * gtk_file_chooser_get_preview_uri() to get the name of the file to preview.
    * Your widget may not be able to preview all kinds of files; your callback
-   * must call gtk_file_chooser_set_preview_wiget_active() to inform the file
+   * must call gtk_file_chooser_set_preview_widget_active() to inform the file
    * chooser about whether the preview was generated successfully or not.
    *
    * Please see the example code in <xref linkend="gtkfilechooser-preview"/>.
@@ -1049,6 +1049,9 @@ gtk_file_chooser_get_current_folder_uri (GtkFileChooser *chooser)
   file_system = _gtk_file_chooser_get_file_system (chooser);
 
   path = _gtk_file_chooser_get_current_folder_path (chooser);
+  if (!path)
+    return NULL;
+
   uri = gtk_file_system_path_to_uri (file_system, path);
   gtk_file_path_free (path);
 

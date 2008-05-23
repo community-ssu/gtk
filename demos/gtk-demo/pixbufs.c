@@ -61,7 +61,7 @@ load_pixbufs (GError **error)
   if (background)
     return TRUE; /* already loaded earlier */
 
-  /* demo_find_file() looks in the the current directory first,
+  /* demo_find_file() looks in the current directory first,
    * so you can run gtk-demo without installing GTK, then looks
    * in the location where the file is installed.
    */
@@ -187,7 +187,9 @@ timeout (gpointer data)
 			       : MAX (127, fabs (255 * cos (f * 2.0 * G_PI)))));
     }
 
+  GDK_THREADS_ENTER ();
   gtk_widget_queue_draw (da);
+  GDK_THREADS_LEAVE ();
 
   frame_num++;
   return TRUE;

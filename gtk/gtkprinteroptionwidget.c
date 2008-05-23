@@ -73,7 +73,7 @@ enum {
 
 enum {
   PROP_0,
-  PROP_SOURCE,
+  PROP_SOURCE
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -358,11 +358,9 @@ combo_box_set (GtkWidget   *combo,
 	       const gchar *value)
 {
   GtkTreeModel *model;
-  GtkListStore *store;
   struct ComboSet set_data;
   
   model = gtk_combo_box_get_model (GTK_COMBO_BOX (combo));
-  store = GTK_LIST_STORE (model);
 
   set_data.combo = GTK_COMBO_BOX (combo);
   set_data.value = value;
@@ -868,7 +866,7 @@ update_widgets (GtkPrinterOptionWidget *widget)
             text = g_filename_to_utf8 (basename, -1, NULL, NULL, NULL);
 
             if (text != NULL)
-              gtk_entry_set_text (GTK_ENTRY (priv->entry), basename);
+              gtk_entry_set_text (GTK_ENTRY (priv->entry), text);
             if (g_path_is_absolute (dirname))
               gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (priv->combo),
                                                    dirname);

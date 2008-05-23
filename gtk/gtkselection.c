@@ -152,8 +152,8 @@ struct _GtkRetrievalInfo
 
 /* Local Functions */
 static void gtk_selection_init              (void);
-static gint gtk_selection_incr_timeout      (GtkIncrInfo      *info);
-static gint gtk_selection_retrieval_timeout (GtkRetrievalInfo *info);
+static gboolean gtk_selection_incr_timeout      (GtkIncrInfo      *info);
+static gboolean gtk_selection_retrieval_timeout (GtkRetrievalInfo *info);
 static void gtk_selection_retrieval_report  (GtkRetrievalInfo *info,
 					     GdkAtom           type,
 					     gint              format,
@@ -530,10 +530,11 @@ gtk_target_list_remove (GtkTargetList *list,
  * gtk_target_list_find:
  * @list: a #GtkTargetList
  * @target: an interned atom representing the target to search for
- * @info: a pointer to the location to store application info for target
- * 
+ * @info: a pointer to the location to store application info for target,
+ *        or %NULL
+ *
  * Looks up a given target in a #GtkTargetList.
- * 
+ *
  * Return value: %TRUE if the target was found, otherwise %FALSE
  **/
 gboolean
@@ -541,16 +542,23 @@ gtk_target_list_find (GtkTargetList *list,
 		      GdkAtom        target,
 		      guint         *info)
 {
-  GList *tmp_list = list->list;
+  GList *tmp_list;
+
+  g_return_val_if_fail (list != NULL, FALSE);
+
+  tmp_list = list->list;
   while (tmp_list)
     {
       GtkTargetPair *pair = tmp_list->data;
 
       if (pair->target == target)
 	{
-	  *info = pair->info;
+          if (info)
+            *info = pair->info;
+
 	  return TRUE;
 	}
+
       tmp_list = tmp_list->next;
     }
 
@@ -1090,7 +1098,8 @@ gtk_selection_convert (GtkWidget *widget,
   
   current_retrievals = g_list_append (current_retrievals, info);
   gdk_selection_convert (widget->window, selection, target, time_);
-  g_timeout_add (1000, (GSourceFunc) gtk_selection_retrieval_timeout, info);
+  gdk_threads_add_timeout (1000,
+      (GSourceFunc) gtk_selection_retrieval_timeout, info);
   
   return TRUE;
 }
@@ -1115,8 +1124,7 @@ gtk_selection_data_set (GtkSelectionData *selection_data,
 			const guchar	 *data,
 			gint		  length)
 {
-  if (selection_data->data)
-    g_free (selection_data->data);
+  g_free (selection_data->data);
   
   selection_data->type = type;
   selection_data->format = format;
@@ -1197,8 +1205,9 @@ normalize_to_crlf (const gchar *str,
 {
   GString *result = g_string_sized_new (len);
   const gchar *p = str;
+  const gchar *end = str + len;
 
-  while (1)
+  while (p < end)
     {
       if (*p == '\n')
 	g_string_append_c (result, '\r');
@@ -1207,12 +1216,11 @@ normalize_to_crlf (const gchar *str,
 	{
 	  g_string_append_c (result, *p);
 	  p++;
-	  if (*p != '\n')
+	  if (p == end || *p != '\n')
 	    g_string_append_c (result, '\n');
+	  if (p == end)
+	    break;
 	}
-
-      if (*p == '\0')
-	break;
 
       g_string_append_c (result, *p);
       p++;
@@ -1620,7 +1628,6 @@ gtk_selection_data_get_uris (GtkSelectionData *selection_data)
       selection_data->type == text_uri_list_atom)
     {
       gchar **list;
-      gint i;
       gint count = gdk_text_property_to_utf8_list_for_display (selection_data->display,
       							       utf8_atom,
 						   	       selection_data->format, 
@@ -2264,7 +2271,7 @@ _gtk_selection_request (GtkWidget *widget,
 			     gdk_window_get_events (info->requestor) |
 			     GDK_PROPERTY_CHANGE_MASK);
       current_incrs = g_list_append (current_incrs, info);
-      g_timeout_add (1000, (GSourceFunc) gtk_selection_incr_timeout, info);
+      gdk_threads_add_timeout (1000, (GSourceFunc) gtk_selection_incr_timeout, info);
     }
   
   /* If it was a MULTIPLE request, set the property to indicate which
@@ -2453,8 +2460,6 @@ gtk_selection_incr_timeout (GtkIncrInfo *info)
   GList *tmp_list;
   gboolean retval;
 
-  GDK_THREADS_ENTER ();
-  
   /* Determine if retrieval has finished by checking if it still in
      list of pending retrievals */
   
@@ -2490,8 +2495,6 @@ gtk_selection_incr_timeout (GtkIncrInfo *info)
       retval = TRUE;		/* timeout will happen again */
     }
   
-  GDK_THREADS_LEAVE ();
-
   return retval;
 }
 
@@ -2697,14 +2700,12 @@ _gtk_selection_property_notify (GtkWidget	*widget,
  *   results:
  *************************************************************/
 
-static gint
+static gboolean
 gtk_selection_retrieval_timeout (GtkRetrievalInfo *info)
 {
   GList *tmp_list;
   gboolean retval;
 
-  GDK_THREADS_ENTER ();
-  
   /* Determine if retrieval has finished by checking if it still in
      list of pending retrievals */
   
@@ -2737,8 +2738,6 @@ gtk_selection_retrieval_timeout (GtkRetrievalInfo *info)
       
       retval =  TRUE;		/* timeout will happen again */
     }
-
-  GDK_THREADS_LEAVE ();
 
   return retval;
 }
@@ -2941,8 +2940,7 @@ gtk_selection_data_free (GtkSelectionData *data)
 {
   g_return_if_fail (data != NULL);
   
-  if (data->data)
-    g_free (data->data);
+  g_free (data->data);
   
   g_free (data);
 }

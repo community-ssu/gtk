@@ -509,9 +509,7 @@ main (int argc, char **argv)
 
   dialog = g_object_new (GTK_TYPE_FILE_CHOOSER_DIALOG,
 			 "action", action,
-#if 0
 			 "file-system-backend", "gtk+",
-#endif
 			 "select-multiple", multiple,
 			 NULL);
   switch (action)

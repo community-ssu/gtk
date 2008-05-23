@@ -378,5 +378,7 @@ delegate_confirm_overwrite (GtkFileChooser    *chooser,
   return conf;
 }
 
+#ifdef MAEMO_CHANGES
 #define __GTK_FILE_CHOOSER_UTILS_C__
 #include "gtkaliasdef.c"
+#endif /* MAEMO_CHANGES */

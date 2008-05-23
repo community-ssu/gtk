@@ -890,6 +890,34 @@ gtk_tree_store_get_compare_func (GtkTreeStore *tree_store)
 }
 
 static void
+gtk_tree_store_set_vector_internal (GtkTreeStore *tree_store,
+				    GtkTreeIter  *iter,
+				    gboolean     *emit_signal,
+				    gboolean     *maybe_need_sort,
+				    gint         *columns,
+				    GValue       *values,
+				    gint          n_values)
+{
+  gint i;
+  GtkTreeIterCompareFunc func = NULL;
+
+  func = gtk_tree_store_get_compare_func (tree_store);
+  if (func != _gtk_tree_data_list_compare_func)
+    *maybe_need_sort = TRUE;
+
+  for (i = 0; i < n_values; i++)
+    {
+      *emit_signal = gtk_tree_store_real_set_value (tree_store, iter,
+						    columns[i], &values[i],
+						    FALSE) || *emit_signal;
+
+      if (func == _gtk_tree_data_list_compare_func &&
+	  columns[i] == tree_store->sort_column_id)
+	*maybe_need_sort = TRUE;
+    }
+}
+
+static void
 gtk_tree_store_set_valist_internal (GtkTreeStore *tree_store,
                                     GtkTreeIter  *iter,
                                     gboolean     *emit_signal,
@@ -942,6 +970,52 @@ gtk_tree_store_set_valist_internal (GtkTreeStore *tree_store,
       g_value_unset (&value);
 
       column = va_arg (var_args, gint);
+    }
+}
+
+/**
+ * gtk_tree_store_set_valuesv:
+ * @tree_store: A #GtkTreeStore
+ * @iter: A valid #GtkTreeIter for the row being modified
+ * @columns: an array of column numbers
+ * @values: an array of GValues
+ * @n_values: the length of the @columns and @values arrays
+ *
+ * A variant of gtk_tree_store_set_valist() which takes
+ * the columns and values as two arrays, instead of varargs.  This
+ * function is mainly intended for language bindings or in case
+ * the number of columns to change is not known until run-time.
+ *
+ * Since: 2.12
+ **/
+void
+gtk_tree_store_set_valuesv (GtkTreeStore *tree_store,
+			    GtkTreeIter  *iter,
+			    gint         *columns,
+			    GValue       *values,
+			    gint          n_values)
+{
+  gboolean emit_signal = FALSE;
+  gboolean maybe_need_sort = FALSE;
+
+  g_return_if_fail (GTK_IS_TREE_STORE (tree_store));
+  g_return_if_fail (VALID_ITER (iter, tree_store));
+
+  gtk_tree_store_set_vector_internal (tree_store, iter,
+				      &emit_signal,
+				      &maybe_need_sort,
+				      columns, values, n_values);
+
+  if (maybe_need_sort && GTK_TREE_STORE_IS_SORTED (tree_store))
+    gtk_tree_store_sort_iter_changed (tree_store, iter, tree_store->sort_column_id, TRUE);
+
+  if (emit_signal)
+    {
+      GtkTreePath *path;
+
+      path = gtk_tree_store_get_path (GTK_TREE_MODEL (tree_store), iter);
+      gtk_tree_model_row_changed (GTK_TREE_MODEL (tree_store), path, iter);
+      gtk_tree_path_free (path);
     }
 }
 
@@ -1420,8 +1494,6 @@ gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store,
   GtkTreeIter tmp_iter;
   gboolean changed = FALSE;
   gboolean maybe_need_sort = FALSE;
-  GtkTreeIterCompareFunc func = NULL;
-  gint i;
 
   g_return_if_fail (GTK_IS_TREE_STORE (tree_store));
 
@@ -1444,20 +1516,9 @@ gtk_tree_store_insert_with_valuesv (GtkTreeStore *tree_store,
   iter->user_data = new_node;
   g_node_insert (parent_node, position, new_node);
 
-  func = gtk_tree_store_get_compare_func (tree_store);
-  if (func != _gtk_tree_data_list_compare_func)
-    maybe_need_sort = TRUE;
-
-  for (i = 0; i < n_values; i++)
-    {
-      changed = gtk_tree_store_real_set_value (tree_store, iter,
-					       columns[i], &values[i],
-					       FALSE) || changed;
-
-      if (func == _gtk_tree_data_list_compare_func &&
-	  columns[i] == tree_store->sort_column_id)
-	maybe_need_sort = TRUE;
-    }
+  gtk_tree_store_set_vector_internal (tree_store, iter,
+				      &changed, &maybe_need_sort,
+				      columns, values, n_values);
 
   if (maybe_need_sort && GTK_TREE_STORE_IS_SORTED (tree_store))
     gtk_tree_store_sort_iter_changed (tree_store, iter, tree_store->sort_column_id, FALSE);
@@ -3146,6 +3207,7 @@ validate_gnode (GNode* node)
  * </columns>
  */
 typedef struct {
+  GtkBuilder *builder;
   GObject *object;
   GSList *items;
 } GSListSubParserData;
@@ -3168,9 +3230,55 @@ tree_model_start_element (GMarkupParseContext *context,
     }
 }
 
+static void
+tree_model_end_element (GMarkupParseContext *context,
+			const gchar         *element_name,
+			gpointer             user_data,
+			GError             **error)
+{
+  guint i;
+  GSListSubParserData *data = (GSListSubParserData*)user_data;
+
+  g_assert(data->builder);
+
+  if (strcmp (element_name, "columns") == 0)
+    {
+      GSList *l;
+      GType *types;
+      int i;
+      GType type;
+
+      data = (GSListSubParserData*)user_data;
+      data->items = g_slist_reverse (data->items);
+      types = g_new0 (GType, g_slist_length (data->items));
+
+      for (l = data->items, i = 0; l; l = l->next, i++)
+        {
+          type = gtk_builder_get_type_from_name (data->builder, l->data);
+          if (type == G_TYPE_INVALID)
+            {
+              g_warning ("Unknown type %s specified in treemodel %s",
+                         (const gchar*)l->data,
+                         gtk_buildable_get_name (GTK_BUILDABLE (data->object)));
+              continue;
+            }
+          types[i] = type;
+
+          g_free (l->data);
+        }
+
+      gtk_tree_store_set_column_types (GTK_TREE_STORE (data->object), i, types);
+
+      g_free (types);
+    }
+  else if (strcmp (element_name, "column") == 0)
+    ;
+}
+
 static const GMarkupParser tree_model_parser =
   {
-    tree_model_start_element
+    tree_model_start_element,
+    tree_model_end_element
   };
 
 
@@ -3190,6 +3298,7 @@ gtk_tree_store_buildable_custom_tag_start (GtkBuildable  *buildable,
   if (strcmp (tagname, "columns") == 0)
     {
       parser_data = g_slice_new0 (GSListSubParserData);
+      parser_data->builder = builder;
       parser_data->items = NULL;
       parser_data->object = G_OBJECT (buildable);
 
@@ -3208,37 +3317,13 @@ gtk_tree_store_buildable_custom_finished (GtkBuildable *buildable,
 					  const gchar  *tagname,
 					  gpointer      user_data)
 {
-  GSList *l;
   GSListSubParserData *data;
-  GType *types;
-  int i;
-  GType type;
 
   if (strcmp (tagname, "columns"))
     return;
 
   data = (GSListSubParserData*)user_data;
-  data->items = g_slist_reverse (data->items);
-  types = g_new0 (GType, g_slist_length (data->items));
 
-  for (l = data->items, i = 0; l; l = l->next, i++)
-    {
-      type = gtk_builder_get_type_from_name (builder, l->data);
-      if (type == G_TYPE_INVALID)
-	{
-	  g_warning ("Unknown type %s specified in treemodel %s",
-		     (const gchar*)l->data,
-		     gtk_buildable_get_name (GTK_BUILDABLE (data->object)));
-	  continue;
-	}
-      types[i] = type;
-
-      g_free (l->data);
-    }
-
-  gtk_tree_store_set_column_types (GTK_TREE_STORE (data->object), i, types);
-
-  g_free (types);
   g_slist_free (data->items);
   g_slice_free (GSListSubParserData, data);
 }

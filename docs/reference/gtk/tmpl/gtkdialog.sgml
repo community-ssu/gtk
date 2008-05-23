@@ -104,6 +104,45 @@ void quick_message (gchar *message) {
 </example>
 </para>
 
+<refsect2 id="GtkDialog-BUILDER-UI"><title>GtkDialog as GtkBuildable</title>
+<para>
+The GtkDialog implementation of the GtkBuildable interface exposes the 
+@vbox and @action_area as internal children with the names "vbox" and 
+"action_area".
+</para>
+<para>
+GtkDialog supports a custom &lt;action-widgets&gt; element, which 
+can contain multiple &lt;action-widget&gt; elements. The "response"
+attribute specifies a numeric response, and the content of the element
+is the id of widget (which should be a child of the dialogs @action_area).
+</para>
+<example>
+<title>A <structname>GtkDialog</structname> UI definition fragment.</title>
+<programlisting><![CDATA[
+<object class="GtkDialog" id="dialog1">
+  <child internal-child="vbox">"
+    <object class="GtkVBox">
+      <child internal-child="action_area">
+        <object class="GtkHButtonBox">
+          <child>
+            <object class="GtkButton" id="button_cancel"/>
+          </child>
+          <child>
+            <object class="GtkButton" id="button_ok"/>
+          </child>
+        </object>
+      </child>
+    </object>
+  </child>
+  <action-widgets>
+    <action-widget response="3">button_ok</action-widget>
+    <action-widget response="-5">button_cancel</action-widget>
+  </action-widgets>
+</object>
+]]></programlisting>
+</example>
+</refsect2>
+
 <!-- ##### SECTION See_Also ##### -->
 
 <para>
@@ -180,18 +219,13 @@ was clicked.
 
 </para>
 
-<!-- ##### ARG GtkDialog:content-area-spacing ##### -->
-<para>
-
-</para>
-
 <!-- ##### ENUM GtkDialogFlags ##### -->
 <para>
 Flags used to influence dialog construction.
 </para>
 
 @GTK_DIALOG_MODAL: Make the constructed dialog modal, 
-  see gtk_widget_set_modal().
+  see gtk_window_set_modal().
 @GTK_DIALOG_DESTROY_WITH_PARENT: Destroy the dialog when its
   parent is destroyed, see gtk_window_set_destroy_with_parent().
 @GTK_DIALOG_NO_SEPARATOR: Don't put a separator between the

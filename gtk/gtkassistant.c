@@ -457,6 +457,9 @@ set_assistant_buttons_state (GtkAssistant *assistant)
 {
   GtkAssistantPrivate *priv = assistant->priv;
 
+  if (!priv->current_page)
+    return;
+  
   switch (priv->current_page->type)
     {
     case GTK_ASSISTANT_PAGE_INTRO:
@@ -725,10 +728,10 @@ gtk_assistant_init (GtkAssistant *assistant)
     {
       gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->close, FALSE, FALSE, 0);
       gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->cancel, FALSE, FALSE, 0);
-      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->last, FALSE, FALSE, 0);
-      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->back, FALSE, FALSE, 0);
-      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->forward, FALSE, FALSE, 0);
       gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->apply, FALSE, FALSE, 0);
+      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->forward, FALSE, FALSE, 0);
+      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->back, FALSE, FALSE, 0);
+      gtk_box_pack_end (GTK_BOX (priv->action_area), assistant->last, FALSE, FALSE, 0);
     }
 
   gtk_widget_set_parent (priv->action_area, GTK_WIDGET (assistant));
@@ -865,6 +868,9 @@ remove_page (GtkAssistant *assistant,
 
 	  while (page_node && !GTK_WIDGET_VISIBLE (((GtkAssistantPage *) page_node->data)->page))
 	    page_node = page_node->next;
+
+          if (page_node == element)
+            page_node = page_node->next;
 
 	  if (page_node)
 	    priv->current_page = page_node->data;
@@ -1727,8 +1733,7 @@ gtk_assistant_set_forward_page_func (GtkAssistant         *assistant,
 
   /* Page flow has possibly changed, so the
      buttons state might need to change too */
-  if (priv->current_page)
-    set_assistant_buttons_state (assistant);
+  set_assistant_buttons_state (assistant);
 }
 
 /**
@@ -1799,14 +1804,12 @@ gtk_assistant_set_page_title (GtkAssistant *assistant,
 			      GtkWidget    *page,
 			      const gchar  *title)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_if_fail (GTK_IS_ASSISTANT (assistant));
   g_return_if_fail (GTK_IS_WIDGET (page));
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_if_fail (child != NULL);
@@ -1833,14 +1836,12 @@ G_CONST_RETURN gchar*
 gtk_assistant_get_page_title (GtkAssistant *assistant,
 			      GtkWidget    *page)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_val_if_fail (GTK_IS_ASSISTANT (assistant), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (page), NULL);
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_val_if_fail (child != NULL, NULL);
@@ -1886,8 +1887,7 @@ gtk_assistant_set_page_type (GtkAssistant         *assistant,
 
       /* Always set buttons state, a change in a future page
 	 might change current page buttons */
-      if (priv->current_page)
-	set_assistant_buttons_state (assistant);
+      set_assistant_buttons_state (assistant);
 
       gtk_widget_child_notify (page, "page-type");
     }
@@ -1908,14 +1908,12 @@ GtkAssistantPageType
 gtk_assistant_get_page_type (GtkAssistant *assistant,
 			     GtkWidget    *page)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_val_if_fail (GTK_IS_ASSISTANT (assistant), GTK_ASSISTANT_PAGE_CONTENT);
   g_return_val_if_fail (GTK_IS_WIDGET (page), GTK_ASSISTANT_PAGE_CONTENT);
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_val_if_fail (child != NULL, GTK_ASSISTANT_PAGE_CONTENT);
@@ -1990,14 +1988,12 @@ GdkPixbuf*
 gtk_assistant_get_page_header_image (GtkAssistant *assistant,
 				     GtkWidget    *page)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_val_if_fail (GTK_IS_ASSISTANT (assistant), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (page), NULL);
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_val_if_fail (child != NULL, NULL);
@@ -2072,14 +2068,12 @@ GdkPixbuf*
 gtk_assistant_get_page_side_image (GtkAssistant *assistant,
 				   GtkWidget    *page)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_val_if_fail (GTK_IS_ASSISTANT (assistant), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (page), NULL);
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_val_if_fail (child != NULL, NULL);
@@ -2125,8 +2119,7 @@ gtk_assistant_set_page_complete (GtkAssistant *assistant,
 
       /* Always set buttons state, a change in a future page
 	 might change current page buttons */
-      if (priv->current_page)
-	set_assistant_buttons_state (assistant);
+      set_assistant_buttons_state (assistant);
 
       gtk_widget_child_notify (page, "complete");
     }
@@ -2147,14 +2140,12 @@ gboolean
 gtk_assistant_get_page_complete (GtkAssistant *assistant,
 				 GtkWidget    *page)
 {
-  GtkAssistantPrivate *priv;
   GtkAssistantPage *page_info;
   GList *child;
 
   g_return_val_if_fail (GTK_IS_ASSISTANT (assistant), FALSE);
   g_return_val_if_fail (GTK_IS_WIDGET (page), FALSE);
 
-  priv = assistant->priv;
   child = find_page (assistant, page);
 
   g_return_val_if_fail (child != NULL, FALSE);
@@ -2277,7 +2268,7 @@ gtk_assistant_accessible_get_type (void)
       g_type_query (derived_atk_type, &query);
       
       type = g_type_register_static_simple (derived_atk_type, 
-					    "GtkAssistantAccessible", 
+					    I_("GtkAssistantAccessible"), 
 					    query.class_size,
 					    (GClassInitFunc) gtk_assistant_accessible_class_init,
 					    query.instance_size,
@@ -2327,7 +2318,7 @@ gtk_assistant_accessible_factory_get_type (void)
   if (!type) 
     {
       type = g_type_register_static_simple (ATK_TYPE_OBJECT_FACTORY, 
-					    "GtkAssistantAccessibleFactory",
+					    I_("GtkAssistantAccessibleFactory"),
 					    sizeof (AtkObjectFactoryClass),
 					    (GClassInitFunc) gtk_assistant_accessible_factory_class_init,
 					    sizeof (AtkObjectFactory),

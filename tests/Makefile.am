@@ -28,7 +28,7 @@ TESTS = floatingtest buildertest
 
 noinst_PROGRAMS =			\
 	autotestfilechooser		\
-	autotestfilesystem		\
+	autotestkeywords		\
 	floatingtest			\
 	buildertest			\
 	simple				\
@@ -46,6 +46,7 @@ noinst_PROGRAMS =			\
 	testentrycompletion 		\
 	testfilechooser			\
 	testfilechooserbutton		\
+	testframe			\
 	testgtk				\
 	testiconview			\
 	testicontheme			\
@@ -86,10 +87,25 @@ noinst_PROGRAMS =			\
 	pixbuf-threads			\
 	testmerge			\
 	testactions			\
-	testgrouping
+	testgrouping			\
+	testtooltips			\
+	testvolumebutton
+
+if HAVE_CXX
+noinst_PROGRAMS += autotestkeywords
+TESTS += autotestkeywords
+
+autotestkeywords_SOURCES = autotestkeywords.cc
+autotestkeywords_CPPFLAGS = -I$(srcdir)/dummy-headers
+
+if HAVE_OBJC
+autotestkeywords_CPPFLAGS += -DHAVE_OBJC=1
+autotestkeywords_CXXFLAGS = -x objective-c++
+endif
+
+endif
 
 autotestfilechooser_DEPENDENCIES = $(TEST_DEPS)
-autotestfilesystem_DEPENDENCIES = $(TEST_DEPS)
 simple_DEPENDENCIES = $(TEST_DEPS)
 floatingtest_DEPENDENCIES = $(TEST_DEPS)
 buildertest_DEPENDENCIES = $(TEST_DEPS)
@@ -99,6 +115,7 @@ testiconview_DEPENDENCIES = $(TEST_DEPS)
 testaccel_DEPENDENCIES = $(TEST_DEPS)
 testassistant_DEPENDENCIES = $(TEST_DEPS)
 testbbox_DEPENDENCIES = $(TEST_DEPS)
+testframe_DEPENDENCIES = $(TEST_DEPS)
 testcairo_DEPENDENCIES = $(TEST_DEPS)
 testcalendar_DEPENDENCIES = $(TEST_DEPS)
 testcombo_DEPENDENCIES = $(TEST_DEPS)
@@ -142,9 +159,10 @@ testxinerama_DEPENDENCIES = $(TEST_DEPS)
 testmerge_DEPENDENCIES = $(TEST_DEPS)
 testactions_DEPENDENCIES = $(TEST_DEPS)
 testgrouping_DEPENDENCIES = $(TEST_DEPS)
+testtooltips_DEPENDENCIES = $(TEST_DEPS)
+testvolumebutton_DEPENDENCIES = $(TEST_DEPS)
 
 autotestfilechooser_LDADD = $(LDADDS)
-autotestfilesystem_LDADD = $(LDADDS)
 simple_LDADD = $(LDADDS)
 floatingtest_LDADD = $(LDADDS)
 buildertest_LDADD = $(LDADDS)
@@ -152,6 +170,7 @@ print_editor_LDADD = $(LDADDS)
 testaccel_LDADD = $(LDADDS)
 testassistant_LDADD = $(LDADDS)
 testbbox_LDADD = $(LDADDS)
+testframe_LDADD = $(LDADDS)
 testcairo_LDADD = $(LDADDS)
 testcalendar_LDADD = $(LDADDS)
 testcombo_LDADD = $(LDADDS)
@@ -204,14 +223,13 @@ pixbuf_threads_LDADD = $(LDADDS) $(GLIB_LIBS)
 testmerge_LDADD = $(LDADDS)
 testactions_LDADD = $(LDADDS)
 testgrouping_LDADD = $(LDADDS)
+testtooltips_LDADD = $(LDADDS)
+testvolumebutton_LDADD = $(LDADDS)
 
 buildertest_LDFLAGS = -export-dynamic
 
 autotestfilechooser_SOURCES =	\
 	autotestfilechooser.c
-
-autotestfilesystem_SOURCES =	\
-	autotestfilesystem.c
 
 testentrycompletion_SOURCES = 	\
 	prop-editor.c		\
@@ -264,6 +282,7 @@ testspinbutton_SOURCES =    	\
 	testspinbutton.c
 
 teststatusicon_SOURCES =    	\
+	prop-editor.c		\
 	teststatusicon.c
 
 testmerge_SOURCES = 		\
@@ -274,6 +293,9 @@ testactions_SOURCES = 		\
 
 testbbox_SOURCES = 		\
 	testbbox.c
+
+testframe_SOURCES = 		\
+	testframe.c
 
 testiconview_SOURCES = 		\
 	testiconview.c		\
@@ -286,8 +308,14 @@ testrecentchooser_SOURCES = 	\
 testgrouping_SOURCES =		\
 	testgrouping.c
 
+testtooltips_SOURCES =		\
+	testtooltips.c
+
 testrecentchoosermenu_SOURCES =	\
 	testrecentchoosermenu.c
+
+testvolumebutton_SOURCES =	\
+	testvolumebutton.c
 
 EXTRA_DIST = 			\
 	prop-editor.h		\

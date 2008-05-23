@@ -176,11 +176,9 @@ static gboolean gdk_pixbuf__ico_image_load_increment(gpointer data,
 static void 
 context_free (struct ico_progressive_state *context)
 {
-	if (context->LineBuf != NULL)
-		g_free (context->LineBuf);
+	g_free (context->LineBuf);
 	context->LineBuf = NULL;
-	if (context->HeaderBuf != NULL)
-		g_free (context->HeaderBuf);
+	g_free (context->HeaderBuf);
 
 	if (context->pixbuf)
 		g_object_unref (context->pixbuf);
@@ -1185,6 +1183,12 @@ gdk_pixbuf__ico_image_save (FILE          *f,
 
 	return TRUE;
 }
+
+#ifndef INCLUDE_ico
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
 
 void
 MODULE_ENTRY (ico, fill_vtable) (GdkPixbufModule *module)

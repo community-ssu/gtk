@@ -258,6 +258,17 @@ static gboolean DecodeHeader(unsigned char *BFH, unsigned char *BIH,
 {
 	gint clrUsed;
 
+	/* First check for the two first bytes content. A sane
+	   BMP file must start with bytes 0x42 0x4D.  */
+	if (*BFH != 0x42 || *(BFH + 1) != 0x4D) {
+		g_set_error (error,
+			     GDK_PIXBUF_ERROR,
+			     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+			     _("BMP image has bogus header data"));
+		State->read_state = READ_STATE_ERROR;
+		return FALSE;
+	}
+
         /* FIXME this is totally unrobust against bogus image data. */
 	if (State->BufferSize < lsb_32 (&BIH[0]) + 14) {
 		State->BufferSize = lsb_32 (&BIH[0]) + 14;
@@ -605,19 +616,19 @@ decode_bitmasks (guchar *buf,
                 }
 	}
 
-        if (State->r_bits > 8) { 
+        if (State->r_bits > 8) {
           State->r_shift += State->r_bits - 8;
           State->r_bits = 8;
         }
-        if (State->g_bits > 8) { 
+        if (State->g_bits > 8) {
           State->g_shift += State->g_bits - 8;
           State->g_bits = 8;
         }
-        if (State->b_bits > 8) { 
+        if (State->b_bits > 8) {
           State->b_shift += State->b_bits - 8;
           State->b_bits = 8;
         }
-        if (State->a_bits > 8) { 
+        if (State->a_bits > 8) {
           State->a_shift += State->a_bits - 8;
           State->a_bits = 8;
         }
@@ -682,6 +693,8 @@ gdk_pixbuf__bmp_image_begin_load(GdkPixbufModuleSizeFunc size_func,
  */
 static gboolean gdk_pixbuf__bmp_image_stop_load(gpointer data, GError **error)
 {
+	gboolean retval = TRUE;
+	
 	struct bmp_progressive_state *context =
 	    (struct bmp_progressive_state *) data;
 
@@ -691,16 +704,25 @@ static gboolean gdk_pixbuf__bmp_image_stop_load(gpointer data, GError **error)
 	
 	g_return_val_if_fail(context != NULL, TRUE);
 
-	if (context->Colormap != NULL)
-		g_free(context->Colormap);
+	g_free(context->Colormap);
 
 	if (context->pixbuf)
 		g_object_unref(context->pixbuf);
 
+	if (context->read_state == READ_STATE_HEADERS) {
+                if (error && *error == NULL) {
+                        g_set_error (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("Premature end-of-file encountered"));
+                }
+		retval = FALSE;
+	}
+	
 	g_free(context->buff);
 	g_free(context);
 
-        return TRUE;
+        return retval;
 }
 
 
@@ -1363,6 +1385,12 @@ gdk_pixbuf__bmp_image_save (FILE          *f,
 						       f, pixbuf, keys,
 						       values, error);
 }
+
+#ifndef INCLUDE_bmp
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
 
 void
 MODULE_ENTRY (bmp, fill_vtable) (GdkPixbufModule *module)

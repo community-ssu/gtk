@@ -6,7 +6,14 @@ Base class for widgets which visualize an adjustment
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+#GtkRange is the common base class for widgets which visualize an
+adjustment, e.g scales or scrollbars. 
+</para>
+<para>
+Apart from signals for monitoring the parameters of the adjustment, 
+GtkRange provides properties and methods for influencing the sensitivity
+of the "steppers". It also provides properties and methods for setting a 
+"fill level" on range widgets. See gtk_range_set_fill_level().
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -43,20 +50,18 @@ Base class for widgets which visualize an adjustment
 
 <!-- ##### SIGNAL GtkRange::move-slider ##### -->
 <para>
-Virtual function that moves the slider. Used for keybindings.
+
 </para>
 
-@range: the #GtkRange
-@arg1: 
-<!-- # Unused Parameters # -->
-@step: how to move the slider
+@range: 
+@step: 
 
 <!-- ##### SIGNAL GtkRange::value-changed ##### -->
 <para>
-Emitted when the range value changes.
+
 </para>
 
-@range: the #GtkRange
+@range: 
 
 <!-- ##### ARG GtkRange:adjustment ##### -->
 <para>
@@ -113,11 +118,6 @@ Emitted when the range value changes.
 
 </para>
 
-<!-- ##### ARG GtkRange:arrow-paint-box-layout ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkRange:slider-width ##### -->
 <para>
 
@@ -147,6 +147,60 @@ Emitted when the range value changes.
 <para>
 
 </para>
+
+<!-- ##### FUNCTION gtk_range_get_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_range_get_restrict_to_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_range_get_show_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_range_set_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@fill_level: 
+
+
+<!-- ##### FUNCTION gtk_range_set_restrict_to_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@restrict_to_fill_level: 
+
+
+<!-- ##### FUNCTION gtk_range_set_show_fill_level ##### -->
+<para>
+
+</para>
+
+@range: 
+@show_fill_level: 
+
 
 <!-- ##### FUNCTION gtk_range_get_adjustment ##### -->
 <para>
@@ -285,59 +339,5 @@ at the end of range widgets.
 
 @range: 
 @Returns: 
-
-
-<!-- ##### FUNCTION gtk_range_get_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_range_set_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@fill_level: 
-
-
-<!-- ##### FUNCTION gtk_range_get_restrict_to_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_range_set_restrict_to_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@restrict_to_fill_level: 
-
-
-<!-- ##### FUNCTION gtk_range_get_show_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_range_set_show_fill_level ##### -->
-<para>
-
-</para>
-
-@range: 
-@show_fill_level: 
 
 

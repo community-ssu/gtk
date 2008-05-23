@@ -267,7 +267,7 @@ gdk_color_alloc (GdkColormap *colormap,
  * A hash function suitable for using for a hash
  * table that stores #GdkColor's.
  * 
- * Return value: The hash function appled to @colora
+ * Return value: The hash function applied to @colora
  **/
 guint
 gdk_color_hash (const GdkColor *colora)
@@ -346,6 +346,33 @@ gdk_color_parse (const gchar *spec,
     }
   else
     return FALSE;
+}
+
+/**
+ * gdk_color_to_string:
+ * @color: a #GdkColor
+ *
+ * Returns a textual specification of @color in the hexadecimal form
+ * <literal>&num;rrrrggggbbbb</literal>, where <literal>r</literal>,
+ * <literal>g</literal> and <literal>b</literal> are hex digits
+ * representing the red, green and blue components respectively.
+ *
+ * Return value: a newly-allocated text string
+ *
+ * Since: 2.12
+ **/
+gchar *
+gdk_color_to_string (const GdkColor *color)
+{
+  PangoColor pango_color;
+
+  g_return_val_if_fail (color != NULL, NULL);
+
+  pango_color.red = color->red;
+  pango_color.green = color->green;
+  pango_color.blue = color->blue;
+
+  return pango_color_to_string (&pango_color);
 }
 
 /**

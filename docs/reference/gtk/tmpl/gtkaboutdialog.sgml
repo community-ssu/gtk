@@ -28,6 +28,25 @@ To make constructing a #GtkAboutDialog as convenient as possible, you can
 use the function gtk_show_about_dialog() which constructs and shows a dialog 
 and keeps it around so that it can be shown again.
 </para>
+<para>
+Note that GTK+ sets a default title of <literal>_("About &percnt;s")</literal> 
+on the dialog window (where &percnt;s is replaced by the name of the 
+application, but in order to ensure proper translation of the title, 
+applications should set the title property explicitly when constructing 
+a #GtkAboutDialog, as shown in the following example:
+</para>
+<informalexample><programlisting>
+gtk_show_about_dialog (NULL, 
+                       "program-name", "ExampleCode",
+                       "logo", example_logo,
+                       "title" _("About ExampleCode"),
+                       NULL);
+</programlisting></informalexample>
+<para>
+Note that prior to GTK+ 2.12, the #GtkAboutDialog:program-name property
+was called "name". This was changed to avoid the conflict with the
+#GtkWidget:name property.
+</para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
@@ -84,7 +103,7 @@ only private fields and should not be directly accessed.
 
 </para>
 
-<!-- ##### ARG GtkAboutDialog:name ##### -->
+<!-- ##### ARG GtkAboutDialog:program-name ##### -->
 <para>
 
 </para>
@@ -132,6 +151,24 @@ only private fields and should not be directly accessed.
 
 
 <!-- ##### FUNCTION gtk_about_dialog_set_name ##### -->
+<para>
+
+</para>
+
+@about: 
+@name: 
+
+
+<!-- ##### FUNCTION gtk_about_dialog_get_program_name ##### -->
+<para>
+
+</para>
+
+@about: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_about_dialog_set_program_name ##### -->
 <para>
 
 </para>
@@ -381,7 +418,7 @@ link is activated.
 </para>
 
 @about: the #GtkAboutDialog in which the link was activated
-@link: the URL or email address to whiche the activated link points
+@link_: the URL or email address to which the activated link points
 @data: user data that was passed when the function was registered
   with gtk_about_dialog_set_email_hook() or 
   gtk_about_dialog_set_url_hook()

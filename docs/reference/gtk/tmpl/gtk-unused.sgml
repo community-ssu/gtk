@@ -213,6 +213,30 @@ GtkPacker
 Private Information
 
 
+<!-- ##### SECTION ./tmpl/gtkthemes.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gtkthemes.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gtkthemes.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gtkthemes.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gtkthemes.sgml:Title ##### -->
+Themes
+
+
 <!-- ##### SECTION ./tmpl/gtktreemodelsimple.sgml:Long_Description ##### -->
 <para>
 
@@ -531,6 +555,12 @@ Use to get the value of a GtkArg whose GtkType is GTK_TYPE_C_FOREIGN
 </para>
 
 
+<!-- ##### ARG GtkAboutDialog:name ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### STRUCT GtkAccelEntry ##### -->
 <para>
 This is a private struct used by GTK+ internally, don't worry about it.
@@ -619,12 +649,30 @@ Define a function pointer.  Deprecated.
 @arg: 
 @arg_id: 
 
+<!-- ##### STRUCT GtkBuilderClass ##### -->
+<para>
+
+</para>
+
+@get_type_from_name: Looks up a type by name. The default
+  implementation applies heuristics to map type names to
+  <function>_get_type</function> function names, e.g. 
+  GtkHBox to gtk_hbox_get_type(). This virtual function
+  is provided to allow language bindings to intercept the
+  type resolution process.
+
 <!-- ##### STRUCT GtkCellRendererTextPixbuf ##### -->
 <para>
 
 </para>
 
 @parent: 
+
+<!-- ##### ARG GtkCellView:use-fg ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### ARG GtkColorSelection:previous-alpha ##### -->
 <para>
@@ -1340,6 +1388,14 @@ produce superscript and subscript.
 </para>
 
 
+<!-- ##### SIGNAL GtkTextView::move-focus ##### -->
+<para>
+
+</para>
+
+@textview: the object which received the signal.
+@arg1: 
+
 <!-- ##### ARG GtkTextView:height-lines ##### -->
 <para>
 
@@ -1363,6 +1419,15 @@ produce superscript and subscript.
 
 </para>
 
+
+<!-- ##### SIGNAL GtkToolbar::move-focus ##### -->
+<para>
+
+</para>
+
+@toolbar: the object which received the signal.
+@arg1: 
+@Returns: 
 
 <!-- ##### ARG GtkToolbar:pack-end ##### -->
 <para>
@@ -1524,6 +1589,14 @@ the #GtkAdjustment which sets the range of the scale.
 </para>
 
 @window: the object which received the signal.
+
+<!-- ##### SIGNAL GtkWindow::move-focus ##### -->
+<para>
+
+</para>
+
+@window: the object which received the signal.
+@arg1: 
 
 <!-- ##### ARG GtkWindow:auto-shrink ##### -->
 <para>
@@ -1858,40 +1931,6 @@ get an array of #GtkArgs that this object accepts.
 @n_args_p: the number of arguments this object accepts.
 @Returns: the array of arguments (or NULL on error).
 
-<!-- ##### MACRO gtk_binding_entry_add ##### -->
-<para>
-Deprecated.
-</para>
-
-
-<!-- ##### FUNCTION gtk_binding_entry_add_signall ##### -->
-<para>
-
-</para>
-
-@binding_set: 
-@keyval: 
-@modifiers: 
-@signal_name: 
-@binding_args: 
-
-<!-- ##### FUNCTION gtk_binding_entry_clear ##### -->
-<para>
-
-</para>
-
-@binding_set: 
-@keyval: 
-@modifiers: 
-
-<!-- ##### FUNCTION gtk_binding_parse_binding ##### -->
-<para>
-
-</para>
-
-@scanner: 
-@Returns: 
-
 <!-- ##### FUNCTION gtk_button_box_child_requisition ##### -->
 <para>
 This is an internally used function and should never be called from an
@@ -1978,6 +2017,14 @@ Sets the default size of child buttons.
 
 @Returns: 
 
+<!-- ##### FUNCTION gtk_cell_view_get_use_fg ##### -->
+<para>
+
+</para>
+
+@cell_view: 
+@Returns: 
+
 <!-- ##### FUNCTION gtk_cell_view_set_cell_data ##### -->
 <para>
 
@@ -1985,6 +2032,14 @@ Sets the default size of child buttons.
 
 @cell_view: 
 @cellview: 
+
+<!-- ##### FUNCTION gtk_cell_view_set_use_fg ##### -->
+<para>
+
+</para>
+
+@cell_view: 
+@use_fg: 
 
 <!-- ##### FUNCTION gtk_clist_construct ##### -->
 <para>
@@ -2202,6 +2257,39 @@ This function is not usually used by users.
 @columns: 
 @tree_column: 
 @titles: 
+
+<!-- ##### FUNCTION gtk_decorated_window_calculate_frame_size ##### -->
+<para>
+
+</para>
+
+@window: 
+
+<!-- ##### FUNCTION gtk_decorated_window_init ##### -->
+<para>
+
+</para>
+
+@window: 
+
+<!-- ##### FUNCTION gtk_decorated_window_move_resize_window ##### -->
+<para>
+
+</para>
+
+@window: 
+@x: 
+@y: 
+@width: 
+@height: 
+
+<!-- ##### FUNCTION gtk_decorated_window_set_title ##### -->
+<para>
+
+</para>
+
+@window: 
+@title: 
 
 <!-- ##### FUNCTION gtk_drag_dest_handle_event ##### -->
 <para>

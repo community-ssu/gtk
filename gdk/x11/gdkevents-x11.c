@@ -1,5 +1,6 @@
 /* GDK - The GIMP Drawing Kit
- * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ * Copyright (C) 1995-2007 Peter Mattis, Spencer Kimball,
+ * Josh MacDonald, Ryan Lortie
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,8 +42,9 @@
 #include <string.h>
 
 #include "gdkinputprivate.h"
-
+#include "gdksettings.c"
 #include "gdkalias.h"
+
 
 #ifdef HAVE_XKB
 #include <X11/XKBlib.h>
@@ -358,6 +360,8 @@ gdk_event_apply_filters (XEvent *xevent,
  * @data: user data to pass to @func.
  *
  * Adds a filter to be called when X ClientMessage events are received.
+ * See gdk_window_add_filter() if you are interested in filtering other
+ * types of events.
  *
  * Since: 2.2
  **/ 
@@ -2098,6 +2102,35 @@ gdk_event_translate (GdkDisplay *display,
 	}
       else
 #endif
+#if defined(HAVE_XCOMPOSITE) && defined (HAVE_XDAMAGE) && defined (HAVE_XFIXES)
+      if (display_x11->have_xdamage && window_private && window_private->composited &&
+	  xevent->type == display_x11->xdamage_event_base + XDamageNotify &&
+	  ((XDamageNotifyEvent *) xevent)->damage == window_impl->damage)
+	{
+	  XDamageNotifyEvent *damage_event = (XDamageNotifyEvent *) xevent;
+	  XserverRegion repair;
+	  GdkRectangle rect;
+
+	  rect.x = window_private->x + damage_event->area.x;
+	  rect.y = window_private->y + damage_event->area.y;
+	  rect.width = damage_event->area.width;
+	  rect.height = damage_event->area.height;
+
+	  repair = XFixesCreateRegion (display_x11->xdisplay,
+				       &damage_event->area, 1);
+	  XDamageSubtract (display_x11->xdisplay,
+			   window_impl->damage,
+			   repair, None);
+	  XFixesDestroyRegion (display_x11->xdisplay, repair);
+
+	  if (window_private->parent != NULL)
+	    _gdk_window_process_expose (GDK_WINDOW (window_private->parent),
+					damage_event->serial, &rect);
+
+	  return_val = TRUE;
+	}
+      else
+#endif
 	{
 	  /* something else - (e.g., a Xinput event) */
 	  
@@ -2809,7 +2842,6 @@ gdk_net_wm_supports (GdkAtom property)
   return gdk_x11_screen_supports_net_wm_hint (gdk_screen_get_default (), property);
 }
 
-#include "gdksettings.c"
 
 static void
 gdk_xsettings_notify_cb (const char       *name,

@@ -63,6 +63,14 @@ gtk_combo_box_get_active_text().
 @combobox: the object which received the signal.
 @arg1: 
 
+<!-- ##### SIGNAL GtkComboBox::popdown ##### -->
+<para>
+
+</para>
+
+@combobox: the object which received the signal.
+@Returns: 
+
 <!-- ##### SIGNAL GtkComboBox::popup ##### -->
 <para>
 
@@ -130,7 +138,7 @@ gtk_combo_box_get_active_text().
 
 </para>
 
-<!-- ##### ARG GtkComboBox:autodimmed-button ##### -->
+<!-- ##### ARG GtkComboBox:shadow-type ##### -->
 <para>
 
 </para>

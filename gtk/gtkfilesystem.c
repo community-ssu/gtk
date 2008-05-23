@@ -110,14 +110,10 @@ gtk_file_info_free (GtkFileInfo *info)
 {
   g_return_if_fail (info != NULL);
 
-  if (info->display_name)
-    g_free (info->display_name);
-  if (info->mime_type)
-    g_free (info->mime_type);
-  if (info->display_key)
-    g_free (info->display_key);
-  if (info->icon_name)
-    g_free (info->icon_name);
+  g_free (info->display_name);
+  g_free (info->mime_type);
+  g_free (info->display_key);
+  g_free (info->icon_name);
 #ifdef MAEMO_CHANGES
   if (info->icon_pixbuf)
     g_object_unref (info->icon_pixbuf);
@@ -169,8 +165,7 @@ gtk_file_info_set_display_name (GtkFileInfo *info,
   if (display_name == info->display_name)
     return;
 
-  if (info->display_name)
-    g_free (info->display_name);
+  g_free (info->display_name);
   if (info->display_key)
     {
       g_free (info->display_key);
@@ -228,8 +223,7 @@ gtk_file_info_set_mime_type (GtkFileInfo *info,
 {
   g_return_if_fail (info != NULL);
   
-  if (info->mime_type)
-    g_free (info->mime_type);
+  g_free (info->mime_type);
 
   info->mime_type = g_strdup (mime_type);
 }
@@ -275,8 +269,7 @@ gtk_file_info_set_icon_name (GtkFileInfo *info,
 {
   g_return_if_fail (info != NULL);
   
-  if (info->icon_name)
-    g_free (info->icon_name);
+  g_free (info->icon_name);
 
   info->icon_name = g_strdup (icon_name);
 }

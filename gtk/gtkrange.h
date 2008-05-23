@@ -173,6 +173,7 @@ gdouble            gtk_range_get_fill_level                (GtkRange      *range
 gdouble            _gtk_range_get_wheel_delta              (GtkRange      *range,
                                                             GdkScrollDirection direction);
 
+
 G_END_DECLS
 
 

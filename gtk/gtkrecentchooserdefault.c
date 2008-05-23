@@ -60,12 +60,11 @@
 #include "gtkseparatormenuitem.h"
 #include "gtksizegroup.h"
 #include "gtktable.h"
-#include "gtktreeview.h"
 #include "gtktreemodelsort.h"
 #include "gtktreemodelfilter.h"
 #include "gtktreeselection.h"
 #include "gtktreestore.h"
-#include "gtktooltips.h"
+#include "gtktooltip.h"
 #include "gtktypebuiltins.h"
 #include "gtkvbox.h"
 
@@ -100,6 +99,8 @@ struct _GtkRecentChooserDefault
   guint show_tips : 1;
   guint show_icons : 1;
   guint local_only : 1;
+
+  guint limit_set : 1;
   
   GSList *filters;
   GtkRecentFilter *current_filter;
@@ -109,8 +110,6 @@ struct _GtkRecentChooserDefault
   GtkRecentSortFunc sort_func;
   gpointer sort_data;
   GDestroyNotify sort_data_destroy;
-
-  GtkTooltips *tooltips;
 
   GtkIconTheme *icon_theme;
   
@@ -224,6 +223,7 @@ static void set_current_filter        (GtkRecentChooserDefault *impl,
 static GtkIconTheme *get_icon_theme_for_widget (GtkWidget   *widget);
 static gint          get_icon_size_for_widget  (GtkWidget   *widget,
 						GtkIconSize  icon_size);
+static gint          get_recent_files_limit    (GtkWidget   *widget);
 
 static void reload_recent_items (GtkRecentChooserDefault *impl);
 static void chooser_set_model   (GtkRecentChooserDefault *impl);
@@ -278,6 +278,14 @@ static void     recent_view_drag_data_get_cb      (GtkWidget        *widget,
 						   guint             info,
 						   guint32           time_,
 						   gpointer          data);
+static gboolean recent_view_query_tooltip_cb      (GtkWidget        *widget,
+                                                   gint              x,
+                                                   gint              y,
+                                                   gboolean          keyboard_tip,
+                                                   GtkTooltip       *tooltip,
+                                                   gpointer          user_data);
+
+
 
 G_DEFINE_TYPE_WITH_CODE (GtkRecentChooserDefault,
 			 _gtk_recent_chooser_default,
@@ -326,7 +334,7 @@ _gtk_recent_chooser_default_class_init (GtkRecentChooserDefaultClass *klass)
 static void
 _gtk_recent_chooser_default_init (GtkRecentChooserDefault *impl)
 {
-  gtk_box_set_spacing (GTK_BOX (impl), 12);
+  gtk_box_set_spacing (GTK_BOX (impl), 6);
 
   /* by default, we use the global manager */
   impl->local_manager = FALSE;
@@ -337,7 +345,7 @@ _gtk_recent_chooser_default_init (GtkRecentChooserDefault *impl)
   impl->show_icons = TRUE;
   impl->show_private = FALSE;
   impl->show_not_found = TRUE;
-  impl->show_tips = TRUE;
+  impl->show_tips = FALSE;
   impl->select_multiple = FALSE;
   impl->local_only = TRUE;
   
@@ -346,9 +354,6 @@ _gtk_recent_chooser_default_init (GtkRecentChooserDefault *impl)
   
   impl->current_filter = NULL;
 
-  impl->tooltips = gtk_tooltips_new ();
-  g_object_ref_sink (impl->tooltips);
-  
   impl->recent_items = NULL;
   impl->n_recent_items = 0;
   impl->loaded_items = 0;
@@ -374,6 +379,8 @@ gtk_recent_chooser_default_constructor (GType                  type,
   g_assert (impl->manager);
   
   gtk_widget_push_composite_child ();
+
+  impl->limit = get_recent_files_limit (GTK_WIDGET (impl));
   
   scrollw = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrollw),
@@ -395,6 +402,10 @@ gtk_recent_chooser_default_constructor (GType                  type,
 		    G_CALLBACK (recent_view_drag_begin_cb), impl);
   g_signal_connect (impl->recent_view, "drag_data_get",
 		    G_CALLBACK (recent_view_drag_data_get_cb), impl);
+
+  g_object_set (impl->recent_view, "has-tooltip", TRUE, NULL);
+  g_signal_connect (impl->recent_view, "query-tooltip",
+                    G_CALLBACK (recent_view_query_tooltip_cb), impl);
 
   g_object_set_data (G_OBJECT (impl->recent_view),
                      "GtkRecentChooserDefault", impl);
@@ -450,10 +461,8 @@ gtk_recent_chooser_default_constructor (GType                  type,
   gtk_combo_box_set_focus_on_click (GTK_COMBO_BOX (impl->filter_combo), FALSE);
   g_signal_connect (impl->filter_combo, "changed",
                     G_CALLBACK (filter_combo_changed_cb), impl);
-  gtk_tooltips_set_tip (impl->tooltips,
-			impl->filter_combo,
-		        _("Select which type of documents are shown"),
-			NULL);
+  gtk_widget_set_tooltip_text (impl->filter_combo,
+		               _("Select which type of documents are shown"));
   
   gtk_box_pack_end (GTK_BOX (impl->filter_combo_hbox),
                     impl->filter_combo,
@@ -502,11 +511,6 @@ gtk_recent_chooser_default_set_property (GObject      *object,
       break;
     case GTK_RECENT_CHOOSER_PROP_SHOW_TIPS:
       impl->show_tips = g_value_get_boolean (value);
-
-      if (impl->show_tips)
-        gtk_tooltips_enable (impl->tooltips);
-      else
-        gtk_tooltips_disable (impl->tooltips);
       break;
     case GTK_RECENT_CHOOSER_PROP_SHOW_ICONS:
       impl->show_icons = g_value_get_boolean (value);
@@ -526,6 +530,7 @@ gtk_recent_chooser_default_set_property (GObject      *object,
       break;
     case GTK_RECENT_CHOOSER_PROP_LIMIT:
       impl->limit = g_value_get_int (value);
+      impl->limit_set = TRUE;
       reload_recent_items (impl);
       break;
     case GTK_RECENT_CHOOSER_PROP_SORT_TYPE:
@@ -591,6 +596,7 @@ gtk_recent_chooser_default_dispose (GObject *object)
   if (impl->load_id)
     {
       g_source_remove (impl->load_id);
+      impl->load_state = LOAD_EMPTY;
       impl->load_id = 0;
     }
 
@@ -601,7 +607,7 @@ gtk_recent_chooser_default_dispose (GObject *object)
       impl->recent_items = NULL;
     }
 
-  if (impl->manager_changed_id)
+  if (impl->manager && impl->manager_changed_id)
     {
       g_signal_handler_disconnect (impl->manager, impl->manager_changed_id);
       impl->manager_changed_id = 0;
@@ -624,12 +630,6 @@ gtk_recent_chooser_default_dispose (GObject *object)
     {
       g_object_unref (impl->recent_store);
       impl->recent_store = NULL;
-    }
-
-  if (impl->tooltips)
-    {
-      g_object_unref (impl->tooltips);
-      impl->tooltips = NULL;
     }
 
   G_OBJECT_CLASS (_gtk_recent_chooser_default_parent_class)->dispose (object);
@@ -761,8 +761,6 @@ load_recent_items (gpointer user_data)
   const gchar *uri, *name;
   gboolean retval;
   
-  GDK_THREADS_ENTER ();
-  
   impl = GTK_RECENT_CHOOSER_DEFAULT (user_data);
   
   g_assert ((impl->load_state == LOAD_EMPTY) ||
@@ -774,8 +772,6 @@ load_recent_items (gpointer user_data)
       impl->recent_items = gtk_recent_chooser_get_items (GTK_RECENT_CHOOSER (impl));
       if (!impl->recent_items)
         {
-          GDK_THREADS_LEAVE ();
-
 	  impl->load_state = LOAD_FINISHED;
           
           return FALSE;
@@ -832,8 +828,6 @@ load_recent_items (gpointer user_data)
       retval = TRUE;
     }
   
-  GDK_THREADS_LEAVE ();
-  
   return retval;
 }
 
@@ -842,13 +836,12 @@ cleanup_after_load (gpointer user_data)
 {
   GtkRecentChooserDefault *impl;
   
-  GDK_THREADS_ENTER ();
-  
   impl = GTK_RECENT_CHOOSER_DEFAULT (user_data);
 
   if (impl->load_id != 0)
     {
-      g_assert ((impl->load_state == LOAD_PRELOAD) ||
+      g_assert ((impl->load_state == LOAD_EMPTY) ||
+                (impl->load_state == LOAD_PRELOAD) ||
 		(impl->load_state == LOAD_LOADING) ||
 		(impl->load_state == LOAD_FINISHED));
       
@@ -865,34 +858,39 @@ cleanup_after_load (gpointer user_data)
 	      (impl->load_state == LOAD_FINISHED));
 
   set_busy_cursor (impl, FALSE);
-  
-  GDK_THREADS_LEAVE ();
 }
 
 /* clears the current model and reloads the recently used resources */
 static void
 reload_recent_items (GtkRecentChooserDefault *impl)
 {
+  GtkWidget *widget;
+
   /* reload is already in progress - do not disturb */
   if (impl->load_id)
     return;
   
+  widget = GTK_WIDGET (impl);
+
   gtk_tree_view_set_model (GTK_TREE_VIEW (impl->recent_view), NULL);
   gtk_list_store_clear (impl->recent_store);
   
   if (!impl->icon_theme)
-    impl->icon_theme = get_icon_theme_for_widget (GTK_WIDGET (impl));
+    impl->icon_theme = get_icon_theme_for_widget (widget);
 
-  impl->icon_size = get_icon_size_for_widget (GTK_WIDGET (impl),
+  impl->icon_size = get_icon_size_for_widget (widget,
 		  			      GTK_ICON_SIZE_BUTTON);
+
+  if (!impl->limit_set)
+    impl->limit = get_recent_files_limit (widget);
 
   set_busy_cursor (impl, TRUE);
 
   impl->load_state = LOAD_EMPTY;
-  impl->load_id = g_idle_add_full (G_PRIORITY_HIGH_IDLE + 30,
-		      		   load_recent_items,
-				   impl,
-				   cleanup_after_load);
+  impl->load_id = gdk_threads_add_idle_full (G_PRIORITY_HIGH_IDLE + 30,
+                                             load_recent_items,
+                                             impl,
+                                             cleanup_after_load);
 }
 
 /* taken form gtkfilechooserdialog.c */
@@ -972,6 +970,8 @@ recent_icon_data_func (GtkTreeViewColumn *tree_column,
   
   if (pixbuf)  
     g_object_unref (pixbuf);
+
+  gtk_recent_info_unref (info);
 }
 
 static void
@@ -982,11 +982,7 @@ recent_meta_data_func (GtkTreeViewColumn *tree_column,
 		       gpointer           user_data)
 {
   GtkRecentInfo *info = NULL;
-  gchar *uri;
   gchar *name;
-  GString *data;
-  
-  data = g_string_new (NULL);
   
   gtk_tree_model_get (model, iter,
                       RECENT_DISPLAY_NAME_COLUMN, &name,
@@ -994,23 +990,11 @@ recent_meta_data_func (GtkTreeViewColumn *tree_column,
                       -1);
   g_assert (info != NULL);
   
-  uri = gtk_recent_info_get_uri_display (info);
-  
   if (!name)
     name = gtk_recent_info_get_short_name (info);
- 
-  g_string_append_printf (data,
-  			  "<b>%s</b>\n"
-  			  "<small>Location: %s</small>",
-  			  name,
-  			  uri);
+
+  g_object_set (cell, "text", name, NULL);
   
-  g_object_set (cell,
-                "markup", data->str,
-                NULL);
-  
-  g_string_free (data, TRUE);
-  g_free (uri);
   g_free (name);
   gtk_recent_info_unref (info);
 }
@@ -1284,7 +1268,7 @@ gtk_recent_chooser_default_add_filter (GtkRecentChooser *chooser,
   /* display new filter */
   name = gtk_recent_filter_get_name (filter);
   if (!name)
-    name = "Untitled filter";
+    name = _("Untitled filter");
     
   gtk_combo_box_append_text (GTK_COMBO_BOX (impl->filter_combo), name);
   
@@ -1414,6 +1398,21 @@ get_icon_size_for_widget (GtkWidget   *widget,
   return FALLBACK_ICON_SIZE;
 }
 
+static gint
+get_recent_files_limit (GtkWidget *widget)
+{
+  GtkSettings *settings;
+  gint limit;
+
+  if (gtk_widget_has_screen (widget))
+    settings = gtk_settings_get_for_screen (gtk_widget_get_screen (widget));
+  else
+    settings = gtk_settings_get_default ();
+  
+  g_object_get (G_OBJECT (settings), "gtk-recent-files-limit", &limit, NULL);
+
+  return limit;
+}
 
 static void
 recent_manager_changed_cb (GtkRecentManager *manager,
@@ -1557,7 +1556,54 @@ recent_view_drag_data_get_cb (GtkWidget        *widget,
   g_free (drag_data);
 }
 
+static gboolean
+recent_view_query_tooltip_cb (GtkWidget  *widget,
+                              gint        x,
+                              gint        y,
+                              gboolean    keyboard_tip,
+                              GtkTooltip *tooltip,
+                              gpointer    user_data)
+{
+  GtkRecentChooserDefault *impl = user_data;
+  GtkTreeView *tree_view;
+  GtkTreeIter iter;
+  GtkTreePath *path = NULL;
+  GtkRecentInfo *info = NULL;
+  gchar *uri_display;
 
+  if (!impl->show_tips)
+    return FALSE;
+
+  tree_view = GTK_TREE_VIEW (impl->recent_view);
+
+  gtk_tree_view_get_tooltip_context (tree_view,
+                                     &x, &y,
+                                     keyboard_tip,
+                                     NULL, &path, NULL);
+  if (!path)
+    return FALSE;
+
+  if (!gtk_tree_model_get_iter (GTK_TREE_MODEL (impl->recent_store), &iter, path))
+    {
+      gtk_tree_path_free (path);
+      return FALSE;
+    }
+
+  gtk_tree_model_get (GTK_TREE_MODEL (impl->recent_store), &iter,
+                      RECENT_INFO_COLUMN, &info,
+                      -1);
+
+  uri_display = gtk_recent_info_get_uri_display (info);
+  
+  gtk_tooltip_set_text (tooltip, uri_display);
+  gtk_tree_view_set_tooltip_row (tree_view, tooltip, path);
+
+  g_free (uri_display);
+  gtk_tree_path_free (path);
+  gtk_recent_info_unref (info);
+
+  return TRUE;
+}
 
 static void
 remove_selected_from_list (GtkRecentChooserDefault *impl)
@@ -1855,8 +1901,11 @@ set_recent_manager (GtkRecentChooserDefault *impl,
 {
   if (impl->manager)
     {
-      g_signal_handler_disconnect (impl, impl->manager_changed_id);
-      impl->manager_changed_id = 0;
+      if (impl->manager_changed_id)
+        {
+          g_signal_handler_disconnect (impl, impl->manager_changed_id);
+          impl->manager_changed_id = 0;
+        }
 
       impl->manager = NULL;
     }
@@ -1867,9 +1916,11 @@ set_recent_manager (GtkRecentChooserDefault *impl,
     impl->manager = gtk_recent_manager_get_default ();
   
   if (impl->manager)
-    impl->manager_changed_id = g_signal_connect (impl->manager, "changed",
-      						 G_CALLBACK (recent_manager_changed_cb),
-      						 impl);
+    {
+      impl->manager_changed_id = g_signal_connect (impl->manager, "changed",
+                                                   G_CALLBACK (recent_manager_changed_cb),
+                                                   impl);
+    }
 }
 
 GtkWidget *

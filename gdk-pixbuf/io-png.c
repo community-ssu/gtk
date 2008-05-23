@@ -283,8 +283,7 @@ gdk_pixbuf__png_image_load (FILE *f, GError **error)
 	}
 
 	if (setjmp (png_ptr->jmpbuf)) {
-	    	if (rows)
-		  	g_free (rows);
+	    	g_free (rows);
 
 		if (pixbuf)
 			g_object_unref (pixbuf);
@@ -344,8 +343,8 @@ gdk_pixbuf__png_image_load (FILE *f, GError **error)
 static void png_error_callback  (png_structp png_read_ptr,
                                  png_const_charp error_msg);
 
-static void png_warning_callback(png_structp png_read_ptr,
-                                 png_const_charp warning_msg);
+static void png_warning_callback (png_structp png_read_ptr,
+                                  png_const_charp warning_msg);
 
 /* Called at the start of the progressive load */
 static void png_info_callback   (png_structp png_read_ptr,
@@ -676,7 +675,7 @@ png_row_callback   (png_structp png_read_ptr,
         if (lc->fatal_error_occurred)
                 return;
 
-        if (row_num < 0 || row_num >= lc->pixbuf->height) {
+        if (row_num >= lc->pixbuf->height) {
                 lc->fatal_error_occurred = TRUE;
                 if (lc->error && *lc->error == NULL) {
                         g_set_error (lc->error,
@@ -739,8 +738,8 @@ png_error_callback(png_structp png_read_ptr,
 }
 
 static void
-png_warning_callback(png_structp png_read_ptr,
-                     png_const_charp warning_msg)
+png_warning_callback (png_structp png_read_ptr,
+                      png_const_charp warning_msg)
 {
         LoadContext* lc;
         
@@ -915,10 +914,9 @@ static gboolean real_save_png (GdkPixbuf        *pixbuf,
                                           error,
                                           png_simple_error_callback,
                                           png_simple_warning_callback);
-
        if (png_ptr == NULL) {
-               success = FALSE;
-               goto cleanup;
+	       success = FALSE;
+	       goto cleanup;
        }
 
        info_ptr = png_create_info_struct (png_ptr);
@@ -1010,6 +1008,12 @@ gdk_pixbuf__png_image_save_to_callback (GdkPixbufSaveFunc   save_func,
         return real_save_png (pixbuf, keys, values, error,
                               TRUE, NULL, save_func, user_data);
 }
+
+#ifndef INCLUDE_png
+#define MODULE_ENTRY(type,function) function
+#else
+#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#endif
 
 void
 MODULE_ENTRY (png, fill_vtable) (GdkPixbufModule *module)

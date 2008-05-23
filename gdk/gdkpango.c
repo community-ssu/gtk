@@ -48,6 +48,7 @@ struct _GdkPangoRendererPrivate
   gboolean override_color_set[MAX_RENDER_PART + 1];
   
   GdkBitmap *stipple[MAX_RENDER_PART + 1];
+  PangoColor emboss_color;
   gboolean embossed;
 
   cairo_t *cr;
@@ -62,6 +63,7 @@ struct _GdkPangoRendererPrivate
 
 static PangoAttrType gdk_pango_attr_stipple_type;
 static PangoAttrType gdk_pango_attr_embossed_type;
+static PangoAttrType gdk_pango_attr_emboss_color_type;
 
 enum {
   PROP_0,
@@ -115,9 +117,11 @@ gdk_pango_renderer_constructor (GType                  type,
 /* Adjusts matrix and color for the renderer to draw the secondary
  * "shadow" copy for embossed text */
 static void
-emboss_context (cairo_t *cr)
+emboss_context (GdkPangoRenderer *renderer, cairo_t *cr)
 {
+  GdkPangoRendererPrivate *priv = renderer->priv;
   cairo_matrix_t tmp_matrix;
+  double red, green, blue;
 
   /* The gymnastics here to adjust the matrix are because we want
    * to offset by +1,+1 in device-space, not in user-space,
@@ -128,11 +132,15 @@ emboss_context (cairo_t *cr)
   tmp_matrix.y0 += 1.0;
   cairo_set_matrix (cr, &tmp_matrix);
 
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  red = (double) priv->emboss_color.red / 65535.;
+  green = (double) priv->emboss_color.green / 65535.;
+  blue = (double) priv->emboss_color.blue / 65535.;
+
+  cairo_set_source_rgb (cr, red, green, blue);
 }
 
 static inline gboolean
-color_equal (PangoColor *c1, PangoColor *c2)
+color_equal (const PangoColor *c1, const PangoColor *c2)
 {
   if (!c1 && !c2)
     return TRUE;
@@ -233,93 +241,14 @@ gdk_pango_renderer_draw_glyphs (PangoRenderer    *renderer,
   if (priv->embossed)
     {
       cairo_save (cr);
-      emboss_context (cr);
+      emboss_context (gdk_renderer, cr);
       cairo_move_to (cr, (double)x / PANGO_SCALE, (double)y / PANGO_SCALE);
       pango_cairo_show_glyph_string (cr, font, glyphs);
       cairo_restore (cr);
     }
-  
+
   cairo_move_to (cr, (double)x / PANGO_SCALE, (double)y / PANGO_SCALE);
   pango_cairo_show_glyph_string (cr, font, glyphs);
-}
-
-/* Draws an error underline that looks like one of:
- *              H       E                H
- *     /\      /\      /\        /\      /\               -
- *   A/  \    /  \    /  \     A/  \    /  \              |
- *    \   \  /    \  /   /D     \   \  /    \             |
- *     \   \/  C   \/   /        \   \/   C  \            | height = HEIGHT_SQUARES * square
- *      \      /\  F   /          \  F   /\   \           | 
- *       \    /  \    /            \    /  \   \G         |
- *        \  /    \  /              \  /    \  /          |
- *         \/      \/                \/      \/           -
- *         B                         B       
- *    |----|
- *   unit_width = (HEIGHT_SQUARES - 1) * square
- *
- * The x, y, width, height passed in give the desired bounding box;
- * x/width are adjusted to make the underline a integer number of units
- * wide.
- */
-#define HEIGHT_SQUARES 2.5
-
-/* Cut-and-pasted between here and pango/pango/pangocairo-render.c */
-static void
-draw_error_underline (cairo_t *cr,
-		      double  x,
-		      double  y,
-		      double  width,
-		      double  height)
-{
-  double square = height / HEIGHT_SQUARES;
-  double unit_width = (HEIGHT_SQUARES - 1) * square;
-  int width_units = (width + unit_width / 2) / unit_width;
-  double y_top, y_bottom;
-  int i;
-
-  x += (width - width_units * unit_width) / 2;
-  width = width_units * unit_width;
-
-  y_top = y;
-  y_bottom = y + height;
-  
-  /* Bottom of squiggle */
-  cairo_move_to (cr, x - square / 2, y_top + square / 2); /* A */
-  for (i = 0; i < width_units; i += 2)
-    {
-      double x_middle = x + (i + 1) * unit_width;
-      double x_right = x + (i + 2) * unit_width;
-    
-      cairo_line_to (cr, x_middle, y_bottom); /* B */
-      
-      if (i + 1 == width_units)
-	/* Nothing */;
-      else if (i + 2 == width_units)
-	cairo_line_to (cr, x_right + square / 2, y_top + square / 2); /* D */
-      else
-	cairo_line_to (cr, x_right, y_top + square); /* C */
-    }
-  
-  /* Top of squiggle */
-  for (i -= 2; i >= 0; i -= 2)
-    {
-      double x_left = x + i * unit_width;
-      double x_middle = x + (i + 1) * unit_width;
-      double x_right = x + (i + 2) * unit_width;
-      
-      if (i + 1 == width_units)
-	cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
-      else {
-	if (i + 2 == width_units)
-	  cairo_line_to (cr, x_right, y_top); /* E */
-	cairo_line_to (cr, x_middle, y_bottom - square); /* F */
-      }
-      
-      cairo_line_to (cr, x_left, y_top);   /* H */
-    }
-
-  cairo_close_path (cr);
-  cairo_fill (cr);
 }
 
 static void
@@ -339,7 +268,7 @@ gdk_pango_renderer_draw_rectangle (PangoRenderer    *renderer,
   if (priv->embossed && part != PANGO_RENDER_PART_BACKGROUND)
     {
       cairo_save (cr);
-      emboss_context (cr);
+      emboss_context (gdk_renderer, cr);
       cairo_rectangle (cr,
 		       (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
 		       (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
@@ -370,16 +299,16 @@ gdk_pango_renderer_draw_error_underline (PangoRenderer    *renderer,
   if (priv->embossed)
     {
       cairo_save (cr);
-      emboss_context (cr);
-      draw_error_underline (cr,
-			    (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
-			    (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+      emboss_context (gdk_renderer, cr);
+      pango_cairo_show_error_underline (cr,
+            (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+            (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
       cairo_restore (cr);
     }
 
-  draw_error_underline (cr,
-			(double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
-			(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+  pango_cairo_show_error_underline (cr,
+	(double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+	(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
 }
 
 static void
@@ -426,12 +355,15 @@ gdk_pango_renderer_prepare_run (PangoRenderer  *renderer,
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
   gboolean embossed = FALSE;
   GdkBitmap *stipple = NULL;
+  gboolean changed = FALSE;
+  PangoColor emboss_color;
   GSList *l;
   int i;
-  
-  embossed = FALSE;
-  stipple = NULL;
-  
+
+  emboss_color.red = 0xffff;
+  emboss_color.green = 0xffff;
+  emboss_color.blue = 0xffff;
+
   for (l = run->item->analysis.extra_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
@@ -448,6 +380,10 @@ gdk_pango_renderer_prepare_run (PangoRenderer  *renderer,
 	{
 	  embossed = ((GdkPangoAttrEmbossed*)attr)->embossed;
 	}
+      else if (attr->klass->type == gdk_pango_attr_emboss_color_type)
+	{
+	  emboss_color = ((GdkPangoAttrEmbossColor*)attr)->color;
+	}
     }
 
   gdk_pango_renderer_set_stipple (gdk_renderer, PANGO_RENDER_PART_FOREGROUND, stipple);
@@ -458,8 +394,17 @@ gdk_pango_renderer_prepare_run (PangoRenderer  *renderer,
   if (embossed != gdk_renderer->priv->embossed)
     {
       gdk_renderer->priv->embossed = embossed;
-      pango_renderer_part_changed (renderer, PANGO_RENDER_PART_FOREGROUND);
+      changed = TRUE;
     }
+
+  if (!color_equal (&gdk_renderer->priv->emboss_color, &emboss_color))
+    {
+      gdk_renderer->priv->emboss_color = emboss_color;
+      changed = TRUE;
+    }
+
+  if (changed)
+    pango_renderer_part_changed (renderer, PANGO_RENDER_PART_FOREGROUND);
 
   PANGO_RENDERER_CLASS (gdk_pango_renderer_parent_class)->prepare_run (renderer, run);
 
@@ -928,55 +873,6 @@ gdk_draw_layout_line_with_colors (GdkDrawable      *drawable,
   release_renderer (renderer);
 }
 
-/* Gets the bounds of a layout in device coordinates. Note cut-and-paste
- * between here and gtklabel.c */
-static void
-get_rotated_layout_bounds (PangoLayout  *layout,
-			   GdkRectangle *rect)
-{
-  PangoContext *context = pango_layout_get_context (layout);
-  const PangoMatrix *matrix = pango_context_get_matrix (context);
-  gdouble x_min = 0, x_max = 0, y_min = 0, y_max = 0; /* quiet gcc */
-  PangoRectangle logical_rect;
-  gint i, j;
-
-  pango_layout_get_extents (layout, NULL, &logical_rect);
-  
-  for (i = 0; i < 2; i++)
-    {
-      gdouble x = (i == 0) ? logical_rect.x : logical_rect.x + logical_rect.width;
-      for (j = 0; j < 2; j++)
-	{
-	  gdouble y = (j == 0) ? logical_rect.y : logical_rect.y + logical_rect.height;
-	  
-	  gdouble xt = (x * matrix->xx + y * matrix->xy) / PANGO_SCALE + matrix->x0;
-	  gdouble yt = (x * matrix->yx + y * matrix->yy) / PANGO_SCALE + matrix->y0;
-	  
-	  if (i == 0 && j == 0)
-	    {
-	      x_min = x_max = xt;
-	      y_min = y_max = yt;
-	    }
-	  else
-	    {
-	      if (xt < x_min)
-		x_min = xt;
-	      if (yt < y_min)
-		y_min = yt;
-	      if (xt > x_max)
-		x_max = xt;
-	      if (yt > y_max)
-		y_max = yt;
-	    }
-	}
-    }
-  
-  rect->x = floor (x_min);
-  rect->width = ceil (x_max) - rect->x;
-  rect->y = floor (y_min);
-  rect->height = floor (y_max) - rect->y;
-}
-
 /**
  * gdk_draw_layout_with_colors:
  * @drawable:  the drawable on which to draw string
@@ -1025,9 +921,11 @@ gdk_draw_layout_with_colors (GdkDrawable     *drawable,
   if (matrix)
     {
       PangoMatrix tmp_matrix;
-      GdkRectangle rect;
+      PangoRectangle rect;
 
-      get_rotated_layout_bounds (layout, &rect);
+      pango_layout_get_extents (layout, NULL, &rect);
+      pango_matrix_transform_rectangle (matrix, &rect);
+      pango_extents_to_pixels (&rect, NULL);
       
       tmp_matrix = *matrix;
       tmp_matrix.x0 += x - rect.x;
@@ -1115,6 +1013,8 @@ gdk_draw_layout (GdkDrawable     *drawable,
   gdk_draw_layout_with_colors (drawable, gc, x, y, layout, NULL, NULL);
 }
 
+/* GdkPangoAttrStipple */
+
 static PangoAttribute *
 gdk_pango_attr_stipple_copy (const PangoAttribute *attr)
 {
@@ -1181,6 +1081,8 @@ gdk_pango_attr_stipple_new (GdkBitmap *stipple)
   return (PangoAttribute *)result;
 }
 
+/* GdkPangoAttrEmbossed */
+
 static PangoAttribute *
 gdk_pango_attr_embossed_copy (const PangoAttribute *attr)
 {
@@ -1207,10 +1109,9 @@ gdk_pango_attr_embossed_compare (const PangoAttribute *attr1,
 
 /**
  * gdk_pango_attr_embossed_new:
- * @embossed: a bitmap to be set as embossed
+ * @embossed: if the region should be embossed
  *
- * Creates a new attribute containing a embossed bitmap to be used when
- * rendering the text.
+ * Creates a new attribute flagging a region as embossed or not.
  *
  * Return value: new #PangoAttribute
  **/
@@ -1238,6 +1139,72 @@ gdk_pango_attr_embossed_new (gboolean embossed)
   return (PangoAttribute *)result;
 }
 
+/* GdkPangoAttrEmbossColor */
+
+static PangoAttribute *
+gdk_pango_attr_emboss_color_copy (const PangoAttribute *attr)
+{
+  const GdkPangoAttrEmbossColor *old = (const GdkPangoAttrEmbossColor*) attr;
+  GdkPangoAttrEmbossColor *copy;
+
+  copy = g_new (GdkPangoAttrEmbossColor, 1);
+  copy->attr.klass = old->attr.klass;
+  copy->color = old->color;
+
+  return (PangoAttribute *) copy;
+}
+
+static void
+gdk_pango_attr_emboss_color_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+gdk_pango_attr_emboss_color_compare (const PangoAttribute *attr1,
+                                     const PangoAttribute *attr2)
+{
+  const GdkPangoAttrEmbossColor *c1 = (const GdkPangoAttrEmbossColor*) attr1;
+  const GdkPangoAttrEmbossColor *c2 = (const GdkPangoAttrEmbossColor*) attr2;
+
+  return color_equal (&c1->color, &c2->color);
+}
+
+/**
+ * gdk_pango_attr_emboss_color_new:
+ * @color: a GdkColor representing the color to emboss with
+ *
+ * Creates a new attribute specifying the color to emboss text with.
+ *
+ * Return value: new #PangoAttribute
+ *
+ * Since: 2.12
+ **/
+PangoAttribute *
+gdk_pango_attr_emboss_color_new (const GdkColor *color)
+{
+  GdkPangoAttrEmbossColor *result;
+  
+  static PangoAttrClass klass = {
+    0,
+    gdk_pango_attr_emboss_color_copy,
+    gdk_pango_attr_emboss_color_destroy,
+    gdk_pango_attr_emboss_color_compare
+  };
+
+  if (!klass.type)
+    klass.type = gdk_pango_attr_emboss_color_type =
+      pango_attr_type_register ("GdkPangoAttrEmbossColor");
+
+  result = g_new (GdkPangoAttrEmbossColor, 1);
+  result->attr.klass = &klass;
+  result->color.red = color->red;
+  result->color.green = color->green;
+  result->color.blue = color->blue;
+
+  return (PangoAttribute *) result;
+}
+
 /* Get a clip region to draw only part of a layout. index_ranges
  * contains alternating range starts/stops. The region is the
  * region which contains the given ranges, i.e. if you draw with the
@@ -1256,7 +1223,7 @@ layout_iter_get_line_clip_region (PangoLayoutIter *iter,
   gint baseline;
   gint i;
 
-  line = pango_layout_iter_get_line (iter);
+  line = pango_layout_iter_get_line_readonly (iter);
 
   clip_region = gdk_region_new ();
 
@@ -1340,7 +1307,7 @@ gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
   g_return_val_if_fail (index_ranges != NULL, NULL);
   
   iter = pango_layout_get_iter (line->layout);
-  while (pango_layout_iter_get_line (iter) != line)
+  while (pango_layout_iter_get_line_readonly (iter) != line)
     pango_layout_iter_next_line (iter);
   
   clip_region = layout_iter_get_line_clip_region(iter, x_origin, y_origin, index_ranges, n_ranges);
@@ -1390,7 +1357,6 @@ gdk_pango_layout_get_clip_region (PangoLayout *layout,
   do
     {
       PangoRectangle logical_rect;
-      PangoLayoutLine *line;
       GdkRegion *line_region;
       gint baseline;
       
@@ -1398,8 +1364,8 @@ gdk_pango_layout_get_clip_region (PangoLayout *layout,
       baseline = pango_layout_iter_get_baseline (iter);      
 
       line_region = layout_iter_get_line_clip_region(iter, 
-						     x_origin + logical_rect.x / PANGO_SCALE,
-						     y_origin + baseline / PANGO_SCALE,
+						     x_origin + PANGO_PIXELS (logical_rect.x),
+						     y_origin + PANGO_PIXELS (baseline),
 						     index_ranges,
 						     n_ranges);
 

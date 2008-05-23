@@ -100,9 +100,7 @@ gdk_window_directfb_process_all_updates (void)
 static gboolean
 gdk_window_update_idle (gpointer data)
 {
-  GDK_THREADS_ENTER ();
   gdk_window_directfb_process_all_updates ();
-  GDK_THREADS_LEAVE ();
   
   return FALSE;
 }
@@ -115,7 +113,7 @@ gdk_window_schedule_update (GdkWindow *window)
 
   if (!update_idle)
     {
-      update_idle = g_idle_add_full (GDK_PRIORITY_REDRAW,
+      update_idle = gdk_threads_add_idle_full (GDK_PRIORITY_REDRAW,
 				     gdk_window_update_idle, NULL, NULL);
     }
 }
@@ -602,7 +600,9 @@ _gdk_windowing_window_destroy (GdkWindow *window,
   impl = GDK_WINDOW_IMPL_DIRECTFB (private->impl);
 
   _gdk_selection_window_destroyed (window);
-
+#if (DIRECTFB_MAJOR_VERSION >= 1)
+  gdk_directfb_event_windows_remove (window);
+#endif
   if (window == _gdk_directfb_pointer_grab_window)
     gdk_pointer_ungrab (GDK_CURRENT_TIME);
   if (window == _gdk_directfb_keyboard_grab_window)
@@ -611,20 +611,23 @@ _gdk_windowing_window_destroy (GdkWindow *window,
   if (window == gdk_directfb_focused_window)
     gdk_directfb_change_focus (NULL);
 
+
+  if (impl->drawable.surface) {
+    GdkDrawableImplDirectFB *dimpl = GDK_DRAWABLE_IMPL_DIRECTFB (private->impl);
+    if(dimpl->cairo_surface) {
+      cairo_surface_destroy(dimpl->cairo_surface);
+      dimpl->cairo_surface= NULL;
+    }
+    impl->drawable.surface->Release (impl->drawable.surface);
+    impl->drawable.surface = NULL;
+  }
+
   if (!recursing && !foreign_destroy && impl->window ) {
     	impl->window->SetOpacity (impl->window,0);
    		impl->window->Close(impl->window);
       	impl->window->Release(impl->window);
+        impl->window = NULL;
   }
-
-#if 0 /* let the finalizer kill it */
-  if (!recursing && !foreign_destroy)
-    {
-  		if (impl->window)
-    		impl->window->Destroy (impl->window);
-  		impl->window = NULL;
-	}
-#endif
 }
 
 /* This function is called when the window is really gone.
@@ -1268,15 +1271,15 @@ _gdk_directfb_move_resize_child (GdkWindow *window,
 
   if (!private->input_only)
     {
-      if (impl->drawable.surface)
-        {
-          GdkDrawableImplDirectFB *dimpl;
-          dimpl    = GDK_DRAWABLE_IMPL_DIRECTFB (private->impl);
-          impl->drawable.surface->Release (impl->drawable.surface);
-          impl->drawable.surface = NULL;
-          cairo_surface_destroy(dimpl->cairo_surface);
-          dimpl->cairo_surface= NULL;
-        }
+    if (impl->drawable.surface) {
+      GdkDrawableImplDirectFB *dimpl = GDK_DRAWABLE_IMPL_DIRECTFB (private->impl);
+      if(dimpl->cairo_surface) {
+        cairo_surface_destroy(dimpl->cairo_surface);
+        dimpl->cairo_surface= NULL;
+      }
+    impl->drawable.surface->Release (impl->drawable.surface);
+    impl->drawable.surface = NULL;
+  }
 
       parent_impl = GDK_WINDOW_IMPL_DIRECTFB (GDK_WINDOW_OBJECT (private->parent)->impl);
 
@@ -1701,6 +1704,23 @@ gdk_window_set_role (GdkWindow   *window,
     return;
 
   /* N/A */
+}
+
+/**
+ * gdk_window_set_startup_id:
+ * @window: a toplevel #GdkWindow
+ * @startup_id: a string with startup-notification identifier
+ *
+ * When using GTK+, typically you should use gtk_window_set_startup_id()
+ * instead of this low-level function.
+ *
+ * Since: 2.12
+ *
+ **/
+void          
+gdk_window_set_startup_id (GdkWindow   *window,
+		     const gchar *startup_id)
+{
 }
 
 void
@@ -2391,7 +2411,7 @@ gdk_window_set_functions (GdkWindow     *window,
     return;
 
   /* N/A */
-  g_message("unimplemented %s", G_GNUC_FUNCTION);
+  g_message("unimplemented %s", G_STRLOC);
 }
 
 void
@@ -2424,7 +2444,7 @@ gdk_window_set_static_gravities (GdkWindow *window,
     return FALSE;
 
   /* N/A */
-  g_message("unimplemented %s", G_GNUC_FUNCTION);
+  g_message("unimplemented %s", G_STRLOC);
 
   return FALSE;
 }
@@ -2442,7 +2462,7 @@ gdk_window_begin_resize_drag (GdkWindow     *window,
   if (GDK_WINDOW_DESTROYED (window))
     return;
 
-  g_message("unimplemented %s", G_GNUC_FUNCTION);
+  g_message("unimplemented %s", G_STRLOC);
 }
 
 void
@@ -2457,7 +2477,7 @@ gdk_window_begin_move_drag (GdkWindow *window,
   if (GDK_WINDOW_DESTROYED (window))
     return;
 
-  g_message("unimplemented %s", G_GNUC_FUNCTION);
+  g_message("unimplemented %s", G_STRLOC);
 }
 
 /**
@@ -2503,7 +2523,7 @@ gdk_window_get_frame_extents (GdkWindow    *window,
  * Given a directfb window and a subsurface of that window
  * create a gdkwindow child wrapper
  */
-#if (DIRECTFB_MICRO_VERSION > 25)
+#if (DIRECTFB_MAJOR_VERSION >= 1)
 GdkWindow *gdk_directfb_create_child_window(GdkWindow *parent,
                                 IDirectFBSurface *subsurface)
 {
@@ -2998,6 +3018,35 @@ gdk_window_beep (GdkWindow *window)
 {
   gdk_display_beep (gdk_display_get_default());
 }
+
+void
+gdk_window_set_opacity (GdkWindow *window,
+			gdouble    opacity)
+{
+  GdkDisplay *display;
+  guint8 cardinal;
+  
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  if (GDK_WINDOW_DESTROYED (window))
+    return;
+
+  display = gdk_drawable_get_display (window);
+
+  if (opacity < 0)
+    opacity = 0;
+  else if (opacity > 1)
+    opacity = 1;
+  cardinal = opacity * 0xff;
+  gdk_directfb_window_set_opacity(window,cardinal);
+}
+
+void
+_gdk_windowing_window_set_composited (GdkWindow *window,
+                                      gboolean   composited)
+{
+}
+
 
 #define __GDK_WINDOW_X11_C__
 #include "gdkaliasdef.c"

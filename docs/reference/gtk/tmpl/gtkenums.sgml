@@ -78,13 +78,13 @@ contains. (See also: #GtkVButtonBox and #GtkHButtonBox).
 </para>
 
 @GTK_BUTTONBOX_DEFAULT_STYLE: Default packing.
-@GTK_BUTTONBOX_SPREAD: Buttons are evenly spread across the ButtonBox.
-@GTK_BUTTONBOX_EDGE: Buttons are placed at the edges of the ButtonBox.
-@GTK_BUTTONBOX_START: Buttons are grouped towards the start of box, (on the
-left for a HBox, or the top for a VBox).
-@GTK_BUTTONBOX_END: Buttons are grouped towards the end of a box, (on the
-right for a HBox, or the bottom for a VBox).
-@GTK_BUTTONBOX_CENTER: Buttons are grouped in the middle of the ButtonBox.
+@GTK_BUTTONBOX_SPREAD: Buttons are evenly spread across the box.
+@GTK_BUTTONBOX_EDGE: Buttons are placed at the edges of the box.
+@GTK_BUTTONBOX_START: Buttons are grouped towards the start of the box, 
+  (on the left for a HBox, or the top for a VBox).
+@GTK_BUTTONBOX_END: Buttons are grouped towards the end of the box, 
+  (on the right for a HBox, or the bottom for a VBox).
+@GTK_BUTTONBOX_CENTER: Buttons are centered in the box. Since 2.12
 
 <!-- ##### ENUM GtkCornerType ##### -->
 <para>
@@ -479,6 +479,22 @@ Determines the direction of a sort.
 
 @GTK_SORT_ASCENDING: Sorting is in ascending order.
 @GTK_SORT_DESCENDING: Sorting is in descending order.
+
+<!-- ##### ENUM GtkDragResult ##### -->
+<para>
+Gives an indication why a drag operation failed. 
+The value can by obtained by connecting to the
+#GtkWidget::drag-failed signal.
+</para>
+
+@GTK_DRAG_RESULT_SUCCESS: The drag operation was successful
+@GTK_DRAG_RESULT_NO_TARGET: No suitable drag target
+@GTK_DRAG_RESULT_USER_CANCELLED: The user cancelled the drag operation
+@GTK_DRAG_RESULT_TIMEOUT_EXPIRED: The drag operation timed out
+@GTK_DRAG_RESULT_GRAB_BROKEN: The pointer or keyboard grab used
+   for the drag operation was broken
+@GTK_DRAG_RESULT_ERROR: The drag operation failed due to some 
+   unspecified error
 
 <!-- ##### ENUM GtkInvalidInputType ##### -->
 <para>

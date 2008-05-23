@@ -1,7 +1,7 @@
 /* GTK - The GIMP Toolkit
- * gtkprintbackendlpr.c: Default implementation of GtkPrintBackend 
+ * gtkprintbackendlpr.c: LPR implementation of GtkPrintBackend 
  * for printing to lpr 
- * Copyright (C) 2003, Red Hat, Inc.
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -26,7 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <config.h>
 #include <errno.h>
 #include <cairo.h>
 #include <cairo-ps.h>

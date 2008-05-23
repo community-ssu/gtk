@@ -678,10 +678,6 @@ gtk_style_new (void)
  * gtk_style_attach:
  * @style: a #GtkStyle.
  * @window: a #GdkWindow.
- * @returns: Either @style, or a newly-created #GtkStyle.
- *   If the style is newly created, the style parameter
- *   will be dereferenced, and the new style will have
- *   a reference count belonging to the caller.
  *
  * Attaches a style to a window; this process allocates the
  * colors and creates the GC's for the style - it specializes
@@ -692,7 +688,12 @@ gtk_style_new (void)
  * Since this function may return a new object, you have to use it 
  * in the following way: 
  * <literal>style = gtk_style_attach (style, window)</literal>
- **/
+ *
+ * Returns: Either @style, or a newly-created #GtkStyle.
+ *   If the style is newly created, the style parameter
+ *   will be unref'ed, and the new style will have
+ *   a reference count belonging to the caller.
+ */
 GtkStyle*
 gtk_style_attach (GtkStyle  *style,
                   GdkWindow *window)
@@ -3244,7 +3245,7 @@ option_menu_get_props (GtkWidget      *widget,
   if (tmp_size)
     {
       *indicator_size = *tmp_size;
-      g_free (tmp_size);
+      gtk_requisition_free (tmp_size);
     }
   else
     *indicator_size = default_option_indicator_size;
@@ -3252,7 +3253,7 @@ option_menu_get_props (GtkWidget      *widget,
   if (tmp_spacing)
     {
       *indicator_spacing = *tmp_spacing;
-      g_free (tmp_spacing);
+      gtk_border_free (tmp_spacing);
     }
   else
     *indicator_spacing = default_option_indicator_spacing;
@@ -4520,7 +4521,7 @@ gtk_default_draw_focus (GtkStyle      *style,
   cairo_t *cr;
   gboolean free_dash_list = FALSE;
   gint line_width = 1;
-  gint8 *dash_list = "\1\1";
+  gint8 *dash_list = (gint8 *) "\1\1";
 
   if (widget)
     {
@@ -4536,15 +4537,15 @@ gtk_default_draw_focus (GtkStyle      *style,
     {
       if (free_dash_list)
 	g_free (dash_list);
-      
-      dash_list = "\4\4";
+
+      dash_list = (gint8 *) "\4\4";
       free_dash_list = FALSE;
     }
 
   sanitize_size (window, &width, &height);
 
   cr = gdk_cairo_create (window);
-  
+
   if (detail && !strcmp (detail, "colorwheel_light"))
     cairo_set_source_rgb (cr, 0., 0., 0.);
   else if (detail && !strcmp (detail, "colorwheel_dark"))
@@ -4556,7 +4557,7 @@ gtk_default_draw_focus (GtkStyle      *style,
 
   if (dash_list[0])
     {
-      gint n_dashes = strlen (dash_list);
+      gint n_dashes = strlen ((const gchar *) dash_list);
       gdouble *dashes = g_new (gdouble, n_dashes);
       gdouble total_length = 0;
       gdouble dash_offset;
@@ -4938,7 +4939,7 @@ get_insensitive_layout (GdkDrawable *drawable,
       gboolean need_stipple = FALSE;
       ByteRange *br;
       
-      run = pango_layout_iter_get_run (iter);
+      run = pango_layout_iter_get_run_readonly (iter);
 
       if (run)
         {
@@ -6407,7 +6408,15 @@ gtk_paint_resize_grip (GtkStyle      *style,
 GtkBorder *
 gtk_border_copy (const GtkBorder *border)
 {
-  return (GtkBorder *)g_memdup (border, sizeof (GtkBorder));
+  GtkBorder *ret;
+
+  g_return_val_if_fail (border != NULL, NULL);
+
+  ret = g_slice_new (GtkBorder);
+
+  *ret = *border;
+
+  return ret;
 }
 
 /**
@@ -6419,7 +6428,7 @@ gtk_border_copy (const GtkBorder *border)
 void
 gtk_border_free (GtkBorder *border)
 {
-  g_free (border);
+  g_slice_free (GtkBorder, border);
 }
 
 GType
@@ -6632,26 +6641,56 @@ get_insertion_cursor_gc (GtkWidget *widget,
 	}
     }
 
+  /* Cursors in text widgets are drawn only in NORMAL state,
+   * so we can use text[GTK_STATE_NORMAL] as text color here */
   if (is_primary)
     {
       if (!cursor_info->primary_gc)
 	cursor_info->primary_gc = make_cursor_gc (widget,
 						  "cursor-color",
-						  &widget->style->black);
-	
+						  &widget->style->text[GTK_STATE_NORMAL]);
+
       return cursor_info->primary_gc;
     }
   else
     {
-      static const GdkColor gray = { 0, 0x8888, 0x8888, 0x8888 };
-      
       if (!cursor_info->secondary_gc)
 	cursor_info->secondary_gc = make_cursor_gc (widget,
 						    "secondary-cursor-color",
-						    &gray);
-	
+						    /* text_aa is the average of text and base colors,
+						     * in usual black-on-white case it's grey. */
+						    &widget->style->text_aa[GTK_STATE_NORMAL]);
+
       return cursor_info->secondary_gc;
     }
+}
+
+GdkGC *
+_gtk_widget_get_cursor_gc (GtkWidget *widget)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+  g_return_val_if_fail (GTK_WIDGET_REALIZED (widget), NULL);
+  return get_insertion_cursor_gc (widget, TRUE);
+}
+
+void
+_gtk_widget_get_cursor_color (GtkWidget *widget,
+			      GdkColor  *color)
+{
+  GdkColor *style_color;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (color != NULL);
+
+  gtk_widget_style_get (widget, "cursor-color", &style_color, NULL);
+
+  if (style_color)
+    {
+      *color = *style_color;
+      gdk_color_free (style_color);
+    }
+  else
+    *color = widget->style->text[GTK_STATE_NORMAL];
 }
 
 static void
@@ -6668,7 +6707,9 @@ draw_insertion_cursor (GtkWidget        *widget,
   gint i;
   gfloat cursor_aspect_ratio;
   gint offset;
+#ifdef MAEMO_CHANGES
   gint window_width;
+#endif
   
   /* When changing the shape or size of the cursor here,
    * propagate the changes to gtktextview.c:text_window_invalidate_cursors().
@@ -6685,12 +6726,14 @@ draw_insertion_cursor (GtkWidget        *widget,
   else
     offset = stem_width - stem_width / 2;
   
+#ifdef MAEMO_CHANGES
   gdk_drawable_get_size (widget->window, &window_width, NULL);
 
   if (location->x - offset < 0 && direction == GTK_TEXT_DIR_LTR)
     location->x += ABS (location->x - offset);
   else if (location->x + offset > window_width && direction == GTK_TEXT_DIR_RTL)
     location->x -= location->x + offset - window_width;
+#endif
 
   for (i = 0; i < stem_width; i++)
     gdk_draw_line (drawable, gc,

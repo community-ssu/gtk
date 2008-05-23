@@ -53,14 +53,6 @@ Toplevel which can contain other widgets
 
 @window: the object which received the signal.
 
-<!-- ##### SIGNAL GtkWindow::move-focus ##### -->
-<para>
-
-</para>
-
-@window: the object which received the signal.
-@arg1: 
-
 <!-- ##### SIGNAL GtkWindow::set-focus ##### -->
 <para>
 
@@ -144,6 +136,11 @@ Toplevel which can contain other widgets
 
 </para>
 
+<!-- ##### ARG GtkWindow:opacity ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWindow:resizable ##### -->
 <para>
 
@@ -165,6 +162,11 @@ Toplevel which can contain other widgets
 </para>
 
 <!-- ##### ARG GtkWindow:skip-taskbar-hint ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWindow:startup-id ##### -->
 <para>
 
 </para>
@@ -800,6 +802,24 @@ Deprecated alias for gtk_window_set_position().
 @setting: 
 
 
+<!-- ##### FUNCTION gtk_window_set_startup_id ##### -->
+<para>
+
+</para>
+
+@window: 
+@startup_id: 
+
+
+<!-- ##### FUNCTION gtk_window_set_role ##### -->
+<para>
+
+</para>
+
+@window: 
+@role: 
+
+
 <!-- ##### FUNCTION gtk_window_get_decorated ##### -->
 <para>
 
@@ -1139,40 +1159,21 @@ Deprecated alias for gtk_window_set_position().
 @setting: 
 
 
-<!-- ##### FUNCTION gtk_decorated_window_init ##### -->
+<!-- ##### FUNCTION gtk_window_get_opacity ##### -->
 <para>
 
 </para>
 
 @window: 
+@Returns: 
 
 
-<!-- ##### FUNCTION gtk_decorated_window_calculate_frame_size ##### -->
+<!-- ##### FUNCTION gtk_window_set_opacity ##### -->
 <para>
 
 </para>
 
 @window: 
-
-
-<!-- ##### FUNCTION gtk_decorated_window_set_title ##### -->
-<para>
-
-</para>
-
-@window: 
-@title: 
-
-
-<!-- ##### FUNCTION gtk_decorated_window_move_resize_window ##### -->
-<para>
-
-</para>
-
-@window: 
-@x: 
-@y: 
-@width: 
-@height: 
+@opacity: 
 
 

@@ -185,7 +185,7 @@ static const PaperInfo standard_names[] = {
  * The array above only contails the prefered one,
  * and this array fills out with the duplicates.
  */
-static const struct {
+const struct {
   const char *ppd_name;
   const char *standard_name;
 } extra_ppd_names[] = {

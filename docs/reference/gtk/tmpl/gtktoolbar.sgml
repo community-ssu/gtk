@@ -53,17 +53,9 @@ accessed through the function described below.
 @style: 
 @icon_size: 
 @tooltips: 
+@_tooltips: 
 
 <!-- ##### SIGNAL GtkToolbar::focus-home-or-end ##### -->
-<para>
-
-</para>
-
-@toolbar: the object which received the signal.
-@arg1: 
-@Returns: 
-
-<!-- ##### SIGNAL GtkToolbar::move-focus ##### -->
 <para>
 
 </para>

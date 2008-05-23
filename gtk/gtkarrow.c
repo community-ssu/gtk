@@ -62,6 +62,7 @@ static void gtk_arrow_size_request (GtkWidget *widget,
 
 G_DEFINE_TYPE (GtkArrow, gtk_arrow, GTK_TYPE_MISC)
 
+
 static void
 gtk_arrow_class_init (GtkArrowClass *class)
 {
@@ -214,7 +215,6 @@ gtk_arrow_size_request (GtkWidget *widget, GtkRequisition *requisition)
 static void
 gtk_arrow_init (GtkArrow *arrow)
 {
-
   GTK_WIDGET_SET_FLAGS (arrow, GTK_NO_WINDOW);
 
 #ifndef MAEMO_CHANGES

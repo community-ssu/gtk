@@ -48,6 +48,7 @@
 #include "gtkfilechooserdialog.h"
 #include "gtkfilechooserprivate.h"
 #include "gtkfilechooserutils.h"
+#include "gtkmarshalers.h"
 
 #include "gtkfilechooserbutton.h"
 
@@ -84,6 +85,13 @@ enum
   PROP_FOCUS_ON_CLICK,
   PROP_TITLE,
   PROP_WIDTH_CHARS
+};
+
+/* Signals */
+enum
+{
+  FILE_SET,
+  LAST_SIGNAL
 };
 
 /* TreeModel Columns */
@@ -154,21 +162,18 @@ struct _GtkFileChooserButtonPrivate
   guint8 n_volumes;
   guint8 n_shortcuts;
   guint8 n_bookmarks;
-  guint8 has_bookmark_separator       : 1;
-  guint8 has_current_folder_separator : 1;
-  guint8 has_current_folder           : 1;
-  guint8 has_other_separator          : 1;
+  guint  has_bookmark_separator       : 1;
+  guint  has_current_folder_separator : 1;
+  guint  has_current_folder           : 1;
+  guint  has_other_separator          : 1;
 
   /* Used for hiding/showing the dialog when the button is hidden */
-  guint8 active                       : 1;
-
-  /* Used to remember whether a title has been set yet, so we can use the default if it has not been set. */
-  guint8 has_title                    : 1;
+  guint  active                       : 1;
 
   /* Used to track whether we need to set a default current folder on ::map() */
-  guint8 folder_has_been_set          : 1;
+  guint  folder_has_been_set          : 1;
 
-  guint8 focus_on_click               : 1;
+  guint  focus_on_click               : 1;
 };
 
 
@@ -219,7 +224,7 @@ static void     gtk_file_chooser_button_drag_data_received (GtkWidget        *wi
 							    gint              x,
 							    gint              y,
 							    GtkSelectionData *data,
-							    guint             info,
+							    guint             type,
 							    guint             drag_time);
 static void     gtk_file_chooser_button_show_all           (GtkWidget        *widget);
 static void     gtk_file_chooser_button_hide_all           (GtkWidget        *widget);
@@ -301,6 +306,7 @@ static void     dialog_response_cb               (GtkDialog      *dialog,
 						  gint            response,
 						  gpointer        user_data);
 
+static guint file_chooser_button_signals[LAST_SIGNAL] = { 0 };
 
 /* ******************* *
  *  GType Declaration  *
@@ -342,6 +348,26 @@ gtk_file_chooser_button_class_init (GtkFileChooserButtonClass * class)
   widget_class->style_set = gtk_file_chooser_button_style_set;
   widget_class->screen_changed = gtk_file_chooser_button_screen_changed;
   widget_class->mnemonic_activate = gtk_file_chooser_button_mnemonic_activate;
+
+  /**
+   * GtkFileChooserButton::file-set:
+   * @widget: the object which received the signal.
+   *
+   * The ::file-set signal is emitted when the user selects a file.
+   *
+   * Note that this signal is only emitted when the <emphasis>user</emphasis>
+   * changes the file.
+   *
+   * Since: 2.12
+   */
+  file_chooser_button_signals[FILE_SET] =
+    g_signal_new (I_("file-set"),
+		  G_TYPE_FROM_CLASS (gobject_class),
+		  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+		  G_STRUCT_OFFSET (GtkFileChooserButtonClass, file_set),
+		  NULL, NULL,
+		  _gtk_marshal_VOID__VOID,
+		  G_TYPE_NONE, 0);
 
   /**
    * GtkFileChooserButton:dialog:
@@ -649,11 +675,13 @@ gtk_file_chooser_button_constructor (GType                  type,
 					       GTK_RESPONSE_ACCEPT,
 					       GTK_RESPONSE_CANCEL,
 					       -1);
-    }
 
-  /* Set the default title if necessary. We must wait until the dialog has been created to do this. */
-  if (!priv->has_title)
-    gtk_file_chooser_button_set_title (button, _(DEFAULT_TITLE));
+      gtk_file_chooser_button_set_title (button, _(DEFAULT_TITLE));
+    }
+  else if (!GTK_WINDOW (priv->dialog)->title)
+    {
+      gtk_file_chooser_button_set_title (button, _(DEFAULT_TITLE));
+    }
 
   current_folder = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (priv->dialog));
   if (current_folder != NULL)
@@ -687,7 +715,7 @@ gtk_file_chooser_button_constructor (GType                  type,
   g_signal_connect (priv->dialog, "notify",
 		    G_CALLBACK (dialog_notify_cb), object);
   g_object_add_weak_pointer (G_OBJECT (priv->dialog),
-			     (gpointer *) (&priv->dialog));
+			     (gpointer) (&priv->dialog));
 
   priv->fs =
     g_object_ref (_gtk_file_chooser_get_file_system (GTK_FILE_CHOOSER (priv->dialog)));
@@ -793,9 +821,6 @@ gtk_file_chooser_button_set_property (GObject      *object,
       break;
 
     case PROP_TITLE:
-      /* Remember that a title has been set, so we do no try to set it to the default in _init(). */
-      priv->has_title = TRUE;
-      /* Intentionally fall through instead of breaking here, to actually set the property. */
     case GTK_FILE_CHOOSER_PROP_FILTER:
     case GTK_FILE_CHOOSER_PROP_PREVIEW_WIDGET:
     case GTK_FILE_CHOOSER_PROP_PREVIEW_WIDGET_ACTIVE:
@@ -1033,7 +1058,7 @@ gtk_file_chooser_button_drag_data_received (GtkWidget	     *widget,
 					    gint	      x,
 					    gint	      y,
 					    GtkSelectionData *data,
-					    guint	      info,
+					    guint	      type,
 					    guint	      drag_time)
 {
   GtkFileChooserButton *button = GTK_FILE_CHOOSER_BUTTON (widget);
@@ -1045,13 +1070,13 @@ gtk_file_chooser_button_drag_data_received (GtkWidget	     *widget,
     (*GTK_WIDGET_CLASS (gtk_file_chooser_button_parent_class)->drag_data_received) (widget,
 										    context,
 										    x, y,
-										    data, info,
+										    data, type,
 										    drag_time);
 
   if (widget == NULL || context == NULL || data == NULL || data->length < 0)
     return;
 
-  switch (info)
+  switch (type)
     {
     case TEXT_URI_LIST:
       {
@@ -1319,7 +1344,7 @@ change_icon_theme (GtkFileChooserButton *button)
 		 * If we switch to a better bookmarks file format (XBEL), we
 		 * should use mime info to get a better icon.
 		 */
-		pixbuf = gtk_icon_theme_load_icon (theme, "gnome-fs-regular",
+		pixbuf = gtk_icon_theme_load_icon (theme, "gnome-fs-share",
 						   priv->icon_size, 0, NULL);
 	    }
 	  else
@@ -1593,6 +1618,7 @@ model_add_special_get_info_cb (GtkFileSystemHandle *handle,
   GdkPixbuf *pixbuf;
   GtkFileSystemHandle *model_handle;
   struct ChangeIconThemeData *data = user_data;
+  gchar *name;
 
   if (!data->button->priv->model)
     /* button got destroyed */
@@ -1630,10 +1656,15 @@ model_add_special_get_info_cb (GtkFileSystemHandle *handle,
       g_object_unref (pixbuf);
     }
 
-  gtk_list_store_set (GTK_LIST_STORE (data->button->priv->model), &iter,
-		      DISPLAY_NAME_COLUMN, gtk_file_info_get_display_name (info),
-		      -1);
-
+  gtk_tree_model_get (data->button->priv->model, &iter,
+                      DISPLAY_NAME_COLUMN, &name,
+                      -1);
+  if (!name)
+    gtk_list_store_set (GTK_LIST_STORE (data->button->priv->model), &iter,
+  		        DISPLAY_NAME_COLUMN, gtk_file_info_get_display_name (info),
+		        -1);
+  g_free (name);
+   
 out:
   g_object_unref (data->button);
   gtk_tree_row_reference_free (data->row_ref);
@@ -1646,7 +1677,7 @@ static inline void
 model_add_special (GtkFileChooserButton *button)
 {
   const gchar *homedir;
-  gchar *desktopdir = NULL;
+  const gchar *desktopdir;
   GtkListStore *store;
   GtkTreeIter iter;
   GtkFilePath *path;
@@ -1688,15 +1719,9 @@ model_add_special (GtkFileChooserButton *button)
 			  -1);
 
       button->priv->n_special++;
-
-#ifndef G_OS_WIN32
-      desktopdir = g_build_filename (homedir, DESKTOP_DISPLAY_NAME, NULL);
-#endif
     }
 
-#ifdef G_OS_WIN32
-  desktopdir = _gtk_file_system_win32_get_desktop ();
-#endif
+  desktopdir = g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP);
 
   if (desktopdir)
     {
@@ -1705,7 +1730,6 @@ model_add_special (GtkFileChooserButton *button)
       struct ChangeIconThemeData *info;
 
       path = gtk_file_system_filename_to_path (button->priv->fs, desktopdir);
-      g_free (desktopdir);
       gtk_list_store_insert (store, &iter, pos);
       pos++;
 
@@ -1868,7 +1892,7 @@ model_add_bookmarks (GtkFileChooserButton *button,
 	    }
 
 	  icon_theme = gtk_icon_theme_get_for_screen (gtk_widget_get_screen (GTK_WIDGET (button)));
-	  pixbuf = gtk_icon_theme_load_icon (icon_theme, "gnome-fs-directory", 
+	  pixbuf = gtk_icon_theme_load_icon (icon_theme, "gnome-fs-share", 
 					     button->priv->icon_size, 0, NULL);
 
 	  gtk_list_store_insert (store, &iter, pos);
@@ -1977,9 +2001,13 @@ model_update_current_folder (GtkFileChooserButton *button,
 	}
       
       icon_theme = gtk_icon_theme_get_for_screen (gtk_widget_get_screen (GTK_WIDGET (button)));
-      pixbuf = gtk_icon_theme_load_icon (icon_theme, "gnome-fs-directory", 
-					 button->priv->icon_size, 0, NULL);
-      
+      if (gtk_file_system_path_is_local (button->priv->fs, path)) 
+	  pixbuf = gtk_icon_theme_load_icon (icon_theme, "gnome-fs-directory", 
+					     button->priv->icon_size, 0, NULL);
+      else
+	  pixbuf = gtk_icon_theme_load_icon (icon_theme, "gnome-fs-share", 
+					     button->priv->icon_size, 0, NULL);
+
       gtk_list_store_set (store, &iter,
 			  ICON_COLUMN, pixbuf,
 			  DISPLAY_NAME_COLUMN, label,
@@ -2213,7 +2241,7 @@ update_combo_box (GtkFileChooserButton *button)
             if (base_path)
               {
 	        row_found = (paths &&
-		  	     paths->data &&
+			     paths->data &&
 			     gtk_file_path_compare (base_path, paths->data) == 0);
 	        gtk_file_path_free (base_path);
               }
@@ -2651,7 +2679,8 @@ dialog_response_cb (GtkDialog *dialog,
   GtkFileChooserButton *button = GTK_FILE_CHOOSER_BUTTON (user_data);
   GtkFileChooserButtonPrivate *priv = button->priv;
 
-  if (response == GTK_RESPONSE_ACCEPT)
+  if (response == GTK_RESPONSE_ACCEPT ||
+      response == GTK_RESPONSE_OK)
     {
       g_signal_emit_by_name (user_data, "current-folder-changed");
       g_signal_emit_by_name (user_data, "selection-changed");
@@ -2698,6 +2727,8 @@ dialog_response_cb (GtkDialog *dialog,
 
   gtk_widget_set_sensitive (priv->combo_box, TRUE);
   gtk_widget_hide (priv->dialog);
+
+  g_signal_emit_by_name (user_data, "file-set");
 }
 
 
@@ -2759,14 +2790,20 @@ gtk_file_chooser_button_new_with_backend (const gchar          *title,
 /**
  * gtk_file_chooser_button_new_with_dialog:
  * @dialog: the widget to use as dialog
- * 
- * Creates a #GtkFileChooserButton widget which uses @dialog as it's
- * file-picking window. Note that @dialog must be a #GtkDialog (or
- * subclass) which implements the #GtkFileChooser interface and must 
- * not have %GTK_DIALOG_DESTROY_WITH_PARENT set.
- * 
+ *
+ * Creates a #GtkFileChooserButton widget which uses @dialog as its
+ * file-picking window.
+ *
+ * Note that @dialog must be a #GtkDialog (or subclass) which
+ * implements the #GtkFileChooser interface and must not have
+ * %GTK_DIALOG_DESTROY_WITH_PARENT set.
+ *
+ * Also note that the dialog needs to have its confirmative button
+ * added with response %GTK_RESPONSE_ACCEPT or %GTK_RESPONSE_OK in
+ * order for the button to take over the file selected in the dialog.
+ *
  * Returns: a new button widget.
- * 
+ *
  * Since: 2.6
  **/
 GtkWidget *

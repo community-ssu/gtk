@@ -64,6 +64,7 @@ enum {
   PROP_DOUBLE_CLICK_DISTANCE,
   PROP_CURSOR_BLINK,
   PROP_CURSOR_BLINK_TIME,
+  PROP_CURSOR_BLINK_TIMEOUT,
   PROP_SPLIT_CURSOR,
   PROP_THEME_NAME,
   PROP_ICON_THEME_NAME,
@@ -84,6 +85,7 @@ enum {
   PROP_CURSOR_THEME_SIZE,
 #endif
   PROP_ALTERNATIVE_BUTTON_ORDER,
+  PROP_ALTERNATIVE_SORT_ARROWS,
   PROP_SHOW_INPUT_METHOD_MENU,
   PROP_SHOW_UNICODE_MENU,
   PROP_TIMEOUT_INITIAL,
@@ -92,12 +94,19 @@ enum {
   PROP_COLOR_SCHEME,
   PROP_ENABLE_ANIMATIONS,
   PROP_TOUCHSCREEN_MODE,
+  PROP_TOOLTIP_TIMEOUT,
+  PROP_TOOLTIP_BROWSE_TIMEOUT,
+  PROP_TOOLTIP_BROWSE_MODE_TIMEOUT,
   PROP_KEYNAV_CURSOR_ONLY,
   PROP_KEYNAV_WRAP_AROUND,
   PROP_ERROR_BELL,
   PROP_COLOR_HASH,
+  PROP_FILE_CHOOSER_BACKEND,
+  PROP_PRINT_BACKENDS,
+  PROP_PRINT_PREVIEW_COMMAND,
   PROP_ENABLE_MNEMONICS,
-  PROP_ENABLE_ACCELS
+  PROP_ENABLE_ACCELS,
+  PROP_RECENT_FILES_LIMIT
 };
 
 
@@ -206,6 +215,15 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                                                GTK_PARAM_READWRITE),
                                              NULL);
   g_assert (result == PROP_DOUBLE_CLICK_DISTANCE);
+
+  /**
+   * GtkSettings:gtk-cursor-blink:
+   *
+   * Whether the cursor should blink. 
+   *
+   * Also see the #GtkSettings:gtk-cursor-blink-timeout setting, 
+   * which allows more flexible control over cursor blinking.
+   */
   result = settings_install_property_parser (class,
                                              g_param_spec_boolean ("gtk-cursor-blink",
 								   P_("Cursor Blink"),
@@ -217,11 +235,31 @@ gtk_settings_class_init (GtkSettingsClass *class)
   result = settings_install_property_parser (class,
                                              g_param_spec_int ("gtk-cursor-blink-time",
                                                                P_("Cursor Blink Time"),
-                                                               P_("Length of the cursor blink cycle, in milleseconds"),
+                                                               P_("Length of the cursor blink cycle, in milliseconds"),
                                                                100, G_MAXINT, 1200,
                                                                GTK_PARAM_READWRITE),
                                              NULL);
   g_assert (result == PROP_CURSOR_BLINK_TIME);
+ 
+  /**
+   * GtkSettings:gtk-cursor-blink-timeout:
+   *
+   * Time after which the cursor stops blinking, in seconds.
+   * The timer is reset after each user interaction.
+   *
+   * Setting this to zero has the same effect as setting
+   * #GtkSettings:gtk-cursor-blink to %FALSE. 
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_int ("gtk-cursor-blink-timeout",
+                                                               P_("Cursor Blink Timeout"),
+                                                               P_("Time after which the cursor stops blinking, in seconds"),
+                                                               1, G_MAXINT, G_MAXINT,
+                                                               GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_CURSOR_BLINK_TIMEOUT);
   result = settings_install_property_parser (class,
                                              g_param_spec_boolean ("gtk-split-cursor",
 								   P_("Split Cursor"),
@@ -391,6 +429,24 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                              NULL);
   g_assert (result == PROP_ALTERNATIVE_BUTTON_ORDER);
 
+  /**
+   * GtkSettings:gtk-alternative-sort-arrows:
+   *
+   * Controls the direction of the sort indicators in sorted list and tree
+   * views. By default an arrow pointing down means the column is sorted
+   * in ascending order. When set to %TRUE, this order will be inverted.
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_boolean ("gtk-alternative-sort-arrows",
+								   P_("Alternative sort indicator direction"),
+								   P_("Whether the direction of the sort indicators in list and tree views is inverted compared to the default (where down means ascending)"),
+								   FALSE,
+								   GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_ALTERNATIVE_SORT_ARROWS);
+
   result = settings_install_property_parser (class,
 					     g_param_spec_boolean ("gtk-show-input-method-menu",
 								   P_("Show the 'Input Methods' menu"),
@@ -457,6 +513,12 @@ gtk_settings_class_init (GtkSettingsClass *class)
    * merged, color specifications will be converted to hexadecimal form
    * when getting this property.
    *
+   * Starting with GTK+ 2.12, the entries can alternatively be separated
+   * by ';' instead of newlines:
+   * <programlisting>
+   * name1: color1; name2: color2; ...
+   * </programlisting>
+   *
    * Since: 2.10
    */
   result = settings_install_property_parser (class,
@@ -497,6 +559,73 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                              NULL);
 
   g_assert (result == PROP_TOUCHSCREEN_MODE);
+
+  /**
+   * GtkSettings:gtk-tooltip-timeout:
+   *
+   * Time, in milliseconds, after which a tooltip could appear if the
+   * cursor is hovering on top of a widget.
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-tooltip-timeout",
+							       P_("Tooltip timeout"),
+							       P_("Timeout before tooltip is shown"),
+							       0, G_MAXINT,
+							       500,
+							       GTK_PARAM_READWRITE),
+					     NULL);
+
+  g_assert (result == PROP_TOOLTIP_TIMEOUT);
+
+  /**
+   * GtkSettings:gtk-tooltip-browse-timeout:
+   *
+   * Controls the time after which tooltips will appear when
+   * browse mode is enabled, in milliseconds.
+   *
+   * Browse mode is enabled when the mouse pointer moves off an object
+   * where a tooltip was currently being displayed. If the mouse pointer
+   * hits another object before the browse mode timeout expires (see
+   * #GtkSettings:gtk-tooltip-browse-mode-timeout), it will take the 
+   * amount of milliseconds specified by this setting to popup the tooltip
+   * for the new object.
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-tooltip-browse-timeout",
+							       P_("Tooltip browse timeout"),
+							       P_("Timeout before tooltip is shown when browse mode is enabled"),
+							       0, G_MAXINT,
+							       60,
+							       GTK_PARAM_READWRITE),
+					     NULL);
+
+  g_assert (result == PROP_TOOLTIP_BROWSE_TIMEOUT);
+
+  /**
+   * GtkSettings:gtk-tooltip-browse-mode-timeout:
+   *
+   * Amount of time, in milliseconds, after which the browse mode
+   * will be disabled.
+   *
+   * See #GtkSettings:gtk-tooltip-browse-timeout for more information
+   * about browse mode.
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-tooltip-browse-mode-timeout",
+ 							       P_("Tooltip browse mode timeout"),
+ 							       P_("Timeout after which browse mode is disabled"),
+ 							       0, G_MAXINT,
+							       500,
+ 							       GTK_PARAM_READWRITE),
+					     NULL);
+
+  g_assert (result == PROP_TOOLTIP_BROWSE_MODE_TIMEOUT);
 
   /**
    * GtkSettings:gtk-keynav-cursor-only:
@@ -559,20 +688,70 @@ gtk_settings_class_init (GtkSettingsClass *class)
   /**
    * GtkSettings:color-hash:
    *
-   * Holds a hash table representation of the gtk-color-scheme setting,
-   * mapping color names to #GdkColor<!-- -->s. 
+   * Holds a hash table representation of the #GtkSettings:gtk-color-scheme 
+   * setting, mapping color names to #GdkColor<!-- -->s. 
    *
    * Since: 2.10
    */
-  g_object_class_install_property (gobject_class,
-				   PROP_COLOR_HASH,
-				   g_param_spec_boxed ("color-hash",
-						       P_("Color Hash"),
-						       P_("A hash table representation of the color scheme."),
-						       G_TYPE_HASH_TABLE,
-						       GTK_PARAM_READABLE));
+  result = settings_install_property_parser (class, 
+                                             g_param_spec_boxed ("color-hash",
+                                                                 P_("Color Hash"),
+                                                                 P_("A hash table representation of the color scheme."),
+                                                                 G_TYPE_HASH_TABLE,
+                                                                 GTK_PARAM_READABLE),
+                                             NULL);
+  g_assert (result == PROP_COLOR_HASH);
 
-  class_n_properties++;
+  result = settings_install_property_parser (class, 
+                                             g_param_spec_string ("gtk-file-chooser-backend",
+                                                                  P_("Default file chooser backend"),
+                                                                  P_("Name of the GtkFileChooser backend to use by default"),
+                                                                  NULL,
+                                                                  GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_FILE_CHOOSER_BACKEND);
+
+  /**
+   * GtkSettings:gtk-print-backends:
+   *
+   * A comma-separated list of print backends to use in the print
+   * dialog. Available print backends depend on the GTK+ installation,
+   * and may include "pdf", "cups" or "lpr".
+   *
+   * Since: 2.10
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_string ("gtk-print-backends",
+                                                                  P_("Default print backend"),
+                                                                  P_("List of the GtkPrintBackend backends to use by default"),
+                                                                  GTK_PRINT_BACKENDS,
+                                                                  GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_PRINT_BACKENDS);
+
+  /**
+   * GtkSettings:gtk-print-preview-command:
+   *
+   * A command to run for displaying the print preview. The command
+   * should contain a %f placeholder, which will get replaced by
+   * the path to the pdf file. The command may also contain a %s
+   * placeholder, which will get replaced by the path to a file
+   * containing the print settings in the format produced by 
+   * gtk_print_settings_to_file().
+   *
+   * The preview application is responsible for removing the pdf file
+   * and the print settings file when it is done.
+   *
+   * Since: 2.10
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_string ("gtk-print-preview-command",
+                                                                  P_("Default command to run when displaying a print preview"),
+                                                                  P_("Command to run when displaying a print preview"),
+                                                                  GTK_PRINT_PREVIEW_COMMAND,
+                                                                  GTK_PARAM_READWRITE),
+                                             NULL); 
+  g_assert (result == PROP_PRINT_PREVIEW_COMMAND);
 
   /**
    * GtkSettings:gtk-enable-mnemonics:
@@ -607,6 +786,25 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                                                    GTK_PARAM_READWRITE),
                                              NULL);
   g_assert (result == PROP_ENABLE_ACCELS);
+
+  /**
+   * GtkSettings:gtk-recent-files-limit:
+   *
+   * The number of recently used files that should be displayed by default by
+   * #GtkRecentChooser implementations and by the #GtkFileChooser. A value of
+   * -1 means every recently used file stored.
+   *
+   * Since: 2.12
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-recent-files-limit",
+ 							       P_("Recent Files Limit"),
+ 							       P_("Number of recently used files"),
+ 							       -1, G_MAXINT,
+							       50,
+ 							       GTK_PARAM_READWRITE),
+					     NULL);
+  g_assert (result == PROP_RECENT_FILES_LIMIT);
 }
 
 static void
@@ -711,15 +909,16 @@ gtk_settings_get_property (GObject     *object,
   GType value_type = G_VALUE_TYPE (value);
   GType fundamental_type = G_TYPE_FUNDAMENTAL (value_type);
 
-  if (property_id == PROP_COLOR_HASH)
+  /* handle internal properties */
+  switch (property_id)
     {
+    case PROP_COLOR_HASH:
       g_value_set_boxed (value, get_color_hash (settings));
       return;
-    }
-  else if (property_id == PROP_COLOR_SCHEME)
-    {
+    case PROP_COLOR_SCHEME:
       g_value_take_string (value, get_color_scheme (settings));
       return;
+    default: ;
     }
 
   /* For enums and strings, we need to get the value as a string,
@@ -906,6 +1105,9 @@ apply_queued_setting (GtkSettings             *data,
   if (_gtk_settings_parse_convert (parser, &qvalue->public.value,
 				   pspec, &tmp_value))
     {
+      if (pspec->param_id == PROP_COLOR_SCHEME) 
+        merge_color_scheme (data, &tmp_value, qvalue->source);
+
       if (data->property_values[pspec->param_id - 1].source <= qvalue->source)
 	{
           g_value_copy (&tmp_value, &data->property_values[pspec->param_id - 1].value);
@@ -913,8 +1115,6 @@ apply_queued_setting (GtkSettings             *data,
           g_object_notify (G_OBJECT (data), g_param_spec_get_name (pspec));
 	}
 
-      if (pspec->param_id == PROP_COLOR_SCHEME) 
-        merge_color_scheme (data, &tmp_value, qvalue->source);
     }
   else
     {
@@ -951,6 +1151,12 @@ settings_install_property_parser (GtkSettingsClass   *class,
     case G_TYPE_DOUBLE:
     case G_TYPE_STRING:
       break;
+    case G_TYPE_BOXED:
+      if (strcmp (g_param_spec_get_name (pspec), "color-hash") == 0)
+        {
+          break;
+        }
+      /* fall through */
     default:
       if (!parser)
         {
@@ -1659,10 +1865,6 @@ settings_update_font_options (GtkSettings *settings)
 
   options = cairo_font_options_create ();
   
-  /* hint_metrics = FALSE should never be set for user interface code.
-   */
-  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
-
   if (hinting >= 0 && !hinting)
     {
       hint_style = CAIRO_HINT_STYLE_NONE;
@@ -1679,8 +1881,7 @@ settings_update_font_options (GtkSettings *settings)
 	hint_style = CAIRO_HINT_STYLE_FULL;
     }
 
-  if (hint_style_str)
-    g_free (hint_style_str);
+  g_free (hint_style_str);
 
   cairo_font_options_set_hint_style (options, hint_style);
 

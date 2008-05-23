@@ -256,12 +256,9 @@ gdk_input_device_new (GdkDisplay  *display,
  error:
 
   g_free (gdkdev->info.name);
-  if (gdkdev->axes)
-    g_free (gdkdev->axes);
-  if (gdkdev->info.keys)
-    g_free (gdkdev->info.keys);
-  if (gdkdev->info.axes)
-    g_free (gdkdev->info.axes);
+  g_free (gdkdev->axes);
+  g_free (gdkdev->info.keys);
+  g_free (gdkdev->info.axes);
   g_object_unref (gdkdev);
   
   return NULL;
@@ -601,8 +598,8 @@ _gdk_input_common_other_event (GdkEvent         *event,
       event->button.button = xdbe->button;
 
       if (event->button.type == GDK_BUTTON_PRESS)
-        _gdk_event_button_generate (gdk_drawable_get_display (event->button.window),
-                                    event);
+	_gdk_event_button_generate (gdk_drawable_get_display (event->button.window),
+				    event);
 
       GDK_NOTE (EVENTS,
 	g_print ("button %s:\t\twindow: %ld  device: %ld  x,y: %f %f  button: %d\n",
@@ -778,11 +775,16 @@ _gdk_device_get_history (GdkDevice         *device,
   if (device_coords)
     {
       coords = _gdk_device_allocate_history (device, *n_events);
-      
-      for (i=0; i<*n_events; i++)
-	gdk_input_translate_coordinates (gdkdev, input_window,
-					 device_coords[i].data,
-					 coords[i]->axes, NULL, NULL);
+
+      for (i = 0; i < *n_events; i++)
+        {
+          coords[i]->time = device_coords[i].time;
+
+          gdk_input_translate_coordinates (gdkdev, input_window,
+                                           device_coords[i].data,
+                                           coords[i]->axes, NULL, NULL);
+        }
+
       XFreeDeviceMotionEvents (device_coords);
 
       *events = coords;

@@ -65,22 +65,6 @@ static gint signals[LAST_SIGNAL];
 
 G_DEFINE_TYPE (GtkMenuToolButton, gtk_menu_tool_button, GTK_TYPE_TOOL_BUTTON)
 
-static gboolean
-gtk_menu_tool_button_set_tooltip (GtkToolItem *tool_item,
-                                  GtkTooltips *tooltips,
-                                  const char  *tip_text,
-                                  const char  *tip_private)
-{
-  GtkMenuToolButton *button;
-
-  g_return_val_if_fail (GTK_IS_MENU_TOOL_BUTTON (tool_item), FALSE);
-
-  button = GTK_MENU_TOOL_BUTTON (tool_item);
-  gtk_tooltips_set_tip (tooltips, button->priv->button, tip_text, tip_private);
-
-  return TRUE;
-}
-
 static void
 gtk_menu_tool_button_construct_contents (GtkMenuToolButton *button)
 {
@@ -122,6 +106,17 @@ gtk_menu_tool_button_construct_contents (GtkMenuToolButton *button)
 
   if (priv->box)
     {
+      gchar *tmp;
+
+      /* Transfer a possible tooltip to the new box */
+      g_object_get (priv->box, "tooltip-markup", &tmp, NULL);
+
+      if (tmp)
+        {
+	  g_object_set (box, "tooltip-markup", tmp, NULL);
+	  g_free (tmp);
+	}
+
       /* Note: we are not destroying the button and the arrow_button
        * here because they were removed from their container above
        */
@@ -218,7 +213,6 @@ gtk_menu_tool_button_class_init (GtkMenuToolButtonClass *klass)
   object_class->get_property = gtk_menu_tool_button_get_property;
   gtk_object_class->destroy = gtk_menu_tool_button_destroy;
   widget_class->state_changed = gtk_menu_tool_button_state_changed;
-  toolitem_class->set_tooltip = gtk_menu_tool_button_set_tooltip;
   toolitem_class->toolbar_reconfigured = gtk_menu_tool_button_toolbar_reconfigured;
 
   signals[SHOW_MENU] =
@@ -609,6 +603,9 @@ gtk_menu_tool_button_get_menu (GtkMenuToolButton *button)
  * a tooltip on the whole #GtkMenuToolButton.
  *
  * Since: 2.6
+ *
+ * Deprecated: 2.12: Use gtk_menu_tool_button_set_arrow_tooltip_text()
+ * instead.
  **/
 void
 gtk_menu_tool_button_set_arrow_tooltip (GtkMenuToolButton *button,
@@ -619,6 +616,46 @@ gtk_menu_tool_button_set_arrow_tooltip (GtkMenuToolButton *button,
   g_return_if_fail (GTK_IS_MENU_TOOL_BUTTON (button));
 
   gtk_tooltips_set_tip (tooltips, button->priv->arrow_button, tip_text, tip_private);
+}
+
+/**
+ * gtk_menu_tool_button_set_arrow_tooltip_text:
+ * @button: a #GtkMenuToolButton
+ * @text: text to be used as tooltip text for button's arrow button
+ *
+ * Sets the tooltip text to be used as tooltip for the arrow button which
+ * pops up the menu.  See gtk_tool_item_set_tooltip() for setting a tooltip
+ * on the whole #GtkMenuToolButton.
+ *
+ * Since: 2.12
+ **/
+void
+gtk_menu_tool_button_set_arrow_tooltip_text (GtkMenuToolButton *button,
+					     const gchar       *text)
+{
+  g_return_if_fail (GTK_IS_MENU_TOOL_BUTTON (button));
+
+  gtk_widget_set_tooltip_text (button->priv->arrow_button, text);
+}
+
+/**
+ * gtk_menu_tool_button_set_arrow_tooltip_markup:
+ * @button: a #GtkMenuToolButton
+ * @markup: markup text to be used as tooltip text for button's arrow button
+ *
+ * Sets the tooltip markup text to be used as tooltip for the arrow button
+ * which pops up the menu.  See gtk_tool_item_set_tooltip() for setting a
+ * tooltip on the whole #GtkMenuToolButton.
+ *
+ * Since: 2.12
+ **/
+void
+gtk_menu_tool_button_set_arrow_tooltip_markup (GtkMenuToolButton *button,
+					       const gchar       *markup)
+{
+  g_return_if_fail (GTK_IS_MENU_TOOL_BUTTON (button));
+
+  gtk_widget_set_tooltip_markup (button->priv->arrow_button, markup);
 }
 
 #define __GTK_MENU_TOOL_BUTTON_C__

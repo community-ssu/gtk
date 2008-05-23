@@ -105,7 +105,7 @@ static void       gtk_cell_view_cell_layout_set_cell_data_func (GtkCellLayout   
 static void       gtk_cell_view_cell_layout_reorder            (GtkCellLayout         *layout,
                                                                 GtkCellRenderer       *cell,
                                                                 gint                   position);
-
+static GList *    gtk_cell_view_cell_layout_get_cells          (GtkCellLayout         *layout);
 
 /* buildable */
 static void       gtk_cell_view_buildable_init                 (GtkBuildableIface     *iface);
@@ -213,6 +213,7 @@ gtk_cell_view_cell_layout_init (GtkCellLayoutIface *iface)
   iface->set_cell_data_func = gtk_cell_view_cell_layout_set_cell_data_func;
   iface->clear_attributes = gtk_cell_view_cell_layout_clear_attributes;
   iface->reorder = gtk_cell_view_cell_layout_reorder;
+  iface->get_cells = gtk_cell_view_cell_layout_get_cells;
 }
 
 static void
@@ -292,7 +293,6 @@ gtk_cell_view_init (GtkCellView *cellview)
 
   cellview->priv = GTK_CELL_VIEW_GET_PRIVATE (cellview);
 }
-
 
 static void
 gtk_cell_view_finalize (GObject *object)
@@ -1089,6 +1089,13 @@ gtk_cell_view_get_cell_renderers (GtkCellView *cell_view)
 
   return g_list_reverse (retval);
 }
+
+static GList *
+gtk_cell_view_cell_layout_get_cells (GtkCellLayout *layout)
+{
+  return gtk_cell_view_get_cell_renderers (GTK_CELL_VIEW (layout));
+}
+
 
 static gboolean
 gtk_cell_view_buildable_custom_tag_start (GtkBuildable  *buildable,

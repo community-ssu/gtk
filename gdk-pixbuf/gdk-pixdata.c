@@ -620,7 +620,7 @@ gdk_pixdata_to_csource (GdkPixdata        *pixdata,
 			GdkPixdataDumpType dump_type)
 {
   CSourceData cdata = { 0, };
-  gchar *s_uint_8, *s_uint_32, *s_uint, *s_char, *s_null;
+  gchar *s_uint_8;
   guint bpp, width, height, rowstride;
   gboolean rle_encoded;
   gchar *macro_name;
@@ -670,37 +670,13 @@ gdk_pixdata_to_csource (GdkPixdata        *pixdata,
   cdata.gstring = gstring;
 
   if (!cdata.dump_macros && cdata.dump_gtypes)
-    {
-      s_uint_8 =  "guint8 ";
-      s_uint_32 = "guint32";
-      s_uint =    "guint  ";
-      s_char =    "gchar  ";
-      s_null =    "NULL";
-    }
+    s_uint_8 =  "guint8 ";
   else if (!cdata.dump_macros)
-    {
-      s_uint_8 =  "unsigned char";
-      s_uint_32 = "unsigned int ";
-      s_uint =    "unsigned int ";
-      s_char =    "char         ";
-      s_null =    "(char*) 0";
-    }
+    s_uint_8 =  "unsigned char";
   else if (cdata.dump_macros && cdata.dump_gtypes)
-    {
-      s_uint_8 =  "guint8";
-      s_uint_32 = "guint32";
-      s_uint  =   "guint";
-      s_char =    "gchar";
-      s_null =    "NULL";
-    }
+    s_uint_8 =  "guint8";
   else /* cdata.dump_macros && !cdata.dump_gtypes */
-    {
-      s_uint_8 =  "unsigned char";
-      s_uint_32 = "unsigned int";
-      s_uint =    "unsigned int";
-      s_char =    "char";
-      s_null =    "(char*) 0";
-    }
+    s_uint_8 =  "unsigned char";
 
   /* initial comment
    */
@@ -737,7 +713,7 @@ gdk_pixdata_to_csource (GdkPixdata        *pixdata,
 	      cdata.static_prefix, cdata.const_prefix, name);
       APPEND (gstring, "  0x%x, /* Pixbuf magic: 'GdkP' */\n",
 	      GDK_PIXBUF_MAGIC_NUMBER);
-      APPEND (gstring, "  %u + %lu, /* header length + pixel_data length */\n",
+      APPEND (gstring, "  %d + %lu, /* header length + pixel_data length */\n",
 	      GDK_PIXDATA_HEADER_LENGTH,
 	      rle_encoded ? (glong)(img_buffer_end - img_buffer) : (glong)rowstride * height);
       APPEND (gstring, "  0x%x, /* pixdata_type */\n",
@@ -779,7 +755,7 @@ gdk_pixdata_to_csource (GdkPixdata        *pixdata,
       cdata.pos = 3;
       save_uchar (&cdata, *img_buffer++); save_uchar (&cdata, *img_buffer++);
       save_uchar (&cdata, *img_buffer++); save_uchar (&cdata, *img_buffer++);
-      APPEND (gstring, "\"\n  /* length: header (%u) + pixel_data (%u) */\n  \"",
+      APPEND (gstring, "\"\n  /* length: header (%d) + pixel_data (%u) */\n  \"",
 	      GDK_PIXDATA_HEADER_LENGTH,
 	      rle_encoded ? pix_length : rowstride * height);
       cdata.pos = 3;

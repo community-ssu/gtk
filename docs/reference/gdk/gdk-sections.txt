@@ -12,6 +12,7 @@ gdk_set_locale
 gdk_set_sm_client_id
 gdk_exit
 gdk_notify_startup_complete
+gdk_notify_startup_complete_with_id
 
 <SUBSECTION>
 gdk_get_program_class
@@ -54,7 +55,6 @@ gdk_error_trap_pop
 <SUBSECTION>
 GDK_WINDOWING_X11
 GDK_WINDOWING_WIN32
-GDK_WINDOWING_FB
 
 <SUBSECTION Standard>
 GDK_TYPE_GRAB_STATUS
@@ -154,6 +154,7 @@ gdk_display_supports_clipboard_persistence
 gdk_display_store_clipboard
 gdk_display_supports_shapes
 gdk_display_supports_input_shapes
+gdk_display_supports_composite
 <SUBSECTION Standard>
 GDK_DISPLAY_OBJECT
 GDK_IS_DISPLAY
@@ -385,6 +386,7 @@ gdk_color_alloc
 gdk_color_change
 gdk_color_equal
 gdk_color_hash
+gdk_color_to_string
 
 <SUBSECTION Standard>
 GDK_COLORMAP
@@ -648,6 +650,8 @@ gdk_window_fullscreen
 gdk_window_unfullscreen
 gdk_window_set_keep_above
 gdk_window_set_keep_below
+gdk_window_set_opacity
+gdk_window_set_composited
 gdk_window_move
 gdk_window_resize
 gdk_window_move_resize
@@ -743,6 +747,7 @@ gdk_window_set_icon
 gdk_window_set_icon_name
 gdk_window_set_transient_for
 gdk_window_set_role
+gdk_window_set_startup_id
 gdk_window_set_group
 gdk_window_get_group
 gdk_window_set_decorations
@@ -862,7 +867,9 @@ gdk_pango_context_get
 gdk_pango_context_get_for_screen
 gdk_pango_context_set_colormap
 GdkPangoAttrEmbossed
+GdkPangoAttrEmbossColor
 GdkPangoAttrStipple
+gdk_pango_attr_emboss_color_new
 gdk_pango_attr_embossed_new
 gdk_pango_attr_stipple_new
 gdk_pango_layout_get_clip_region
@@ -951,6 +958,10 @@ gdk_threads_enter
 gdk_threads_leave
 gdk_threads_mutex
 gdk_threads_set_lock_functions
+gdk_threads_add_idle
+gdk_threads_add_idle_full
+gdk_threads_add_timeout
+gdk_threads_add_timeout_full
 
 <SUBSECTION Private>
 gdk_threads_lock
@@ -969,6 +980,7 @@ gdk_keymap_translate_keyboard_state
 gdk_keymap_get_entries_for_keyval
 gdk_keymap_get_entries_for_keycode
 gdk_keymap_get_direction
+gdk_keymap_have_bidi_layouts
 
 <SUBSECTION>
 gdk_keyval_name
@@ -1067,6 +1079,7 @@ gdk_event_get_state
 gdk_event_get_axis
 gdk_event_get_coords
 gdk_event_get_root_coords
+gdk_event_request_motions
 
 <SUBSECTION>
 gdk_event_handler_set
@@ -1282,6 +1295,8 @@ gdk_x11_colormap_get_xcolormap
 gdk_x11_colormap_get_xdisplay
 gdk_x11_cursor_get_xcursor
 gdk_x11_cursor_get_xdisplay
+gdk_x11_display_broadcast_startup_message
+gdk_x11_display_get_startup_notification_id
 gdk_x11_display_get_xdisplay
 gdk_x11_display_grab
 gdk_x11_display_ungrab

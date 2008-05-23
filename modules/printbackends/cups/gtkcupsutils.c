@@ -1,7 +1,7 @@
 /* GTK - The GIMP Toolkit
  * gtkcupsutils.h: Statemachine implementation of POST and GET 
- * cup calls which can be used to create a non-blocking cups API
- * Copyright (C) 2003, Red Hat, Inc.
+ * cups calls which can be used to create a non-blocking cups API
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "gtkcupsutils.h"
 #include "config.h"
+#include "gtkcupsutils.h"
 #include "gtkdebug.h"
 
 #include <errno.h>
@@ -29,10 +29,6 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <time.h>
-
-#if CUPS_VERSION_MAJOR > 1 || (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR > 1) || (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH >= 20)
-#define HAVE_HTTP_AUTHSTRING 1
-#endif
 
 typedef void (*GtkCupsRequestStateFunc) (GtkCupsRequest *request);
 
@@ -65,17 +61,21 @@ struct _GtkCupsResult
 #define _GTK_CUPS_MAX_ATTEMPTS 10 
 #define _GTK_CUPS_MAX_CHUNK_SIZE 8192
 
-GtkCupsRequestStateFunc post_states[] = {_connect,
-                                         _post_send,
-                                         _post_write_request,
-                                         _post_write_data,
-                                         _post_check,
-                                         _post_read_response};
+static GtkCupsRequestStateFunc post_states[] = {
+  _connect,
+  _post_send,
+  _post_write_request,
+  _post_write_data,
+  _post_check,
+  _post_read_response
+};
 
-GtkCupsRequestStateFunc get_states[] = {_connect,
-                                        _get_send,
-                                        _get_check,
-                                        _get_read_data};
+static GtkCupsRequestStateFunc get_states[] = {
+  _connect,
+  _get_send,
+  _get_check,
+  _get_read_data
+};
 
 static void
 gtk_cups_result_set_error (GtkCupsResult    *result,
@@ -99,12 +99,12 @@ gtk_cups_result_set_error (GtkCupsResult    *result,
 }
 
 GtkCupsRequest *
-gtk_cups_request_new (http_t *connection,
-                      GtkCupsRequestType req_type, 
-                      gint operation_id,
-                      GIOChannel *data_io,
-                      const char *server,
-                      const char *resource)
+gtk_cups_request_new (http_t             *connection,
+                      GtkCupsRequestType  req_type, 
+                      gint                operation_id,
+                      GIOChannel         *data_io,
+                      const char         *server,
+                      const char         *resource)
 {
   GtkCupsRequest *request;
   cups_lang_t *language;
@@ -124,7 +124,7 @@ gtk_cups_request_new (http_t *connection,
    if (server)
     request->server = g_strdup (server);
   else
-    request->server = g_strdup (cupsServer());
+    request->server = g_strdup (cupsServer ());
 
 
   if (resource)
@@ -140,7 +140,9 @@ gtk_cups_request_new (http_t *connection,
   else
     {
       request->http = NULL;
-      request->http = httpConnectEncrypt (request->server, ippPort(), cupsEncryption());
+      request->http = httpConnectEncrypt (request->server, 
+                                          ippPort (), 
+                                          cupsEncryption ());
 
       if (request->http)
         httpBlocking (request->http, 0);
@@ -153,7 +155,7 @@ gtk_cups_request_new (http_t *connection,
   request->attempts = 0;
   request->data_io = data_io;
 
-  request->ipp_request = ippNew();
+  request->ipp_request = ippNew ();
   request->ipp_request->request.op.operation_id = operation_id;
   request->ipp_request->request.op.request_id = 1;
 
@@ -169,7 +171,7 @@ gtk_cups_request_new (http_t *connection,
 
   gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_NAME,
                                    "requesting-user-name",
-                                   NULL, cupsUser());
+                                   NULL, cupsUser ());
   
   cupsLangFree (language);
 
@@ -191,8 +193,10 @@ void
 gtk_cups_request_free (GtkCupsRequest *request)
 {
   if (request->own_http)
-    if (request->http)
-      httpClose (request->http);
+    {
+      if (request->http)
+        httpClose (request->http);
+    }
   
   if (request->ipp_request)
     ippDelete (request->ipp_request);
@@ -209,9 +213,9 @@ gboolean
 gtk_cups_request_read_write (GtkCupsRequest *request)
 {
   if (request->type == GTK_CUPS_POST)
-    post_states[request->state](request);
+    post_states[request->state] (request);
   else if (request->type == GTK_CUPS_GET)
-    get_states[request->state](request);
+    get_states[request->state] (request);
 
   if (request->attempts > _GTK_CUPS_MAX_ATTEMPTS && 
       request->state != GTK_CUPS_REQUEST_DONE)
@@ -233,9 +237,7 @@ gtk_cups_request_read_write (GtkCupsRequest *request)
       return TRUE;
     }
   else
-    {
-      return FALSE;
-    }
+    return FALSE;
 }
 
 GtkCupsPollState 
@@ -254,11 +256,11 @@ gtk_cups_request_get_result (GtkCupsRequest *request)
 
 void            
 gtk_cups_request_ipp_add_string (GtkCupsRequest *request,
-                                 ipp_tag_t group,
-                                 ipp_tag_t tag,
-                                 const char *name,
-                                 const char *charset,
-                                 const char *value)
+                                 ipp_tag_t       group,
+                                 ipp_tag_t       tag,
+                                 const char     *name,
+                                 const char     *charset,
+                                 const char     *value)
 {
   ippAddString (request->ipp_request,
                 group,
@@ -269,13 +271,13 @@ gtk_cups_request_ipp_add_string (GtkCupsRequest *request,
 }
 
 void            
-gtk_cups_request_ipp_add_strings (GtkCupsRequest *request,
-				  ipp_tag_t group,
-				  ipp_tag_t tag,
-				  const char *name,
-				  int num_values,
-				  const char *charset,
-				  const char * const *values)
+gtk_cups_request_ipp_add_strings (GtkCupsRequest    *request,
+				  ipp_tag_t          group,
+				  ipp_tag_t          tag,
+				  const char        *name,
+				  int                num_values,
+				  const char        *charset,
+				  const char *const *values)
 {
   ippAddStrings (request->ipp_request,
 		 group,
@@ -294,41 +296,40 @@ typedef struct
   ipp_tag_t	value_tag;
 } ipp_option_t;
 
-static const ipp_option_t ipp_options[] =
-			{
-			  { "blackplot",		IPP_TAG_BOOLEAN },
-			  { "brightness",		IPP_TAG_INTEGER },
-			  { "columns",			IPP_TAG_INTEGER },
-			  { "copies",			IPP_TAG_INTEGER },
-			  { "finishings",		IPP_TAG_ENUM },
-			  { "fitplot",			IPP_TAG_BOOLEAN },
-			  { "gamma",			IPP_TAG_INTEGER },
-			  { "hue",			IPP_TAG_INTEGER },
-			  { "job-k-limit",		IPP_TAG_INTEGER },
-			  { "job-page-limit",		IPP_TAG_INTEGER },
-			  { "job-priority",		IPP_TAG_INTEGER },
-			  { "job-quota-period",		IPP_TAG_INTEGER },
-			  { "landscape",		IPP_TAG_BOOLEAN },
-			  { "media",			IPP_TAG_KEYWORD },
-			  { "mirror",			IPP_TAG_BOOLEAN },
-			  { "natural-scaling",		IPP_TAG_INTEGER },
-			  { "number-up",		IPP_TAG_INTEGER },
-			  { "orientation-requested",	IPP_TAG_ENUM },
-			  { "page-bottom",		IPP_TAG_INTEGER },
-			  { "page-left",		IPP_TAG_INTEGER },
-			  { "page-ranges",		IPP_TAG_RANGE },
-			  { "page-right",		IPP_TAG_INTEGER },
-			  { "page-top",			IPP_TAG_INTEGER },
-			  { "penwidth",			IPP_TAG_INTEGER },
-			  { "ppi",			IPP_TAG_INTEGER },
-			  { "prettyprint",		IPP_TAG_BOOLEAN },
-			  { "printer-resolution",	IPP_TAG_RESOLUTION },
-			  { "print-quality",		IPP_TAG_ENUM },
-			  { "saturation",		IPP_TAG_INTEGER },
-			  { "scaling",			IPP_TAG_INTEGER },
-			  { "sides",			IPP_TAG_KEYWORD },
-			  { "wrap",			IPP_TAG_BOOLEAN }
-			};
+static const ipp_option_t ipp_options[] = {
+  { "blackplot",		IPP_TAG_BOOLEAN },
+  { "brightness",		IPP_TAG_INTEGER },
+  { "columns",			IPP_TAG_INTEGER },
+  { "copies",			IPP_TAG_INTEGER },
+  { "finishings",		IPP_TAG_ENUM },
+  { "fitplot",			IPP_TAG_BOOLEAN },
+  { "gamma",			IPP_TAG_INTEGER },
+  { "hue",			IPP_TAG_INTEGER },
+  { "job-k-limit",		IPP_TAG_INTEGER },
+  { "job-page-limit",		IPP_TAG_INTEGER },
+  { "job-priority",		IPP_TAG_INTEGER },
+  { "job-quota-period",		IPP_TAG_INTEGER },
+  { "landscape",		IPP_TAG_BOOLEAN },
+  { "media",			IPP_TAG_KEYWORD },
+  { "mirror",			IPP_TAG_BOOLEAN },
+  { "natural-scaling",		IPP_TAG_INTEGER },
+  { "number-up",		IPP_TAG_INTEGER },
+  { "orientation-requested",	IPP_TAG_ENUM },
+  { "page-bottom",		IPP_TAG_INTEGER },
+  { "page-left",		IPP_TAG_INTEGER },
+  { "page-ranges",		IPP_TAG_RANGE },
+  { "page-right",		IPP_TAG_INTEGER },
+  { "page-top",			IPP_TAG_INTEGER },
+  { "penwidth",			IPP_TAG_INTEGER },
+  { "ppi",			IPP_TAG_INTEGER },
+  { "prettyprint",		IPP_TAG_BOOLEAN },
+  { "printer-resolution",	IPP_TAG_RESOLUTION },
+  { "print-quality",		IPP_TAG_ENUM },
+  { "saturation",		IPP_TAG_INTEGER },
+  { "scaling",			IPP_TAG_INTEGER },
+  { "sides",			IPP_TAG_KEYWORD },
+  { "wrap",			IPP_TAG_BOOLEAN }
+};
 
 
 static ipp_tag_t
@@ -341,14 +342,14 @@ _find_option_tag (const gchar *option)
   result = IPP_TAG_ZERO;
 
   lower_bound = 0;
-  upper_bound = num_options = (int)(sizeof(ipp_options) / sizeof(ipp_options[0])) - 1;
+  upper_bound = num_options = (int) G_N_ELEMENTS (ipp_options) - 1;
   
   while (1)
     {
       int match;
       current_option = (int) (((upper_bound - lower_bound) / 2) + lower_bound);
 
-      match = strcasecmp(option, ipp_options[current_option].name);
+      match = strcasecmp (option, ipp_options[current_option].name);
       if (match == 0)
         {
 	  result = ipp_options[current_option].value_tag;
@@ -389,8 +390,8 @@ gtk_cups_request_encode_option (GtkCupsRequest *request,
 {
   ipp_tag_t option_tag;
 
-  g_assert (option != NULL);
-  g_assert (value != NULL);
+  g_return_if_fail (option != NULL);
+  g_return_if_fail (value != NULL);
 
   option_tag = _find_option_tag (option);
 
@@ -418,16 +419,18 @@ gtk_cups_request_encode_option (GtkCupsRequest *request,
       case IPP_TAG_BOOLEAN:
         {
           char b;
-          b = 0;
-          if (!strcasecmp(value, "true") ||
-	      !strcasecmp(value, "on") ||
-	      !strcasecmp(value, "yes")) 
+          
+          if (strcasecmp (value, "true") == 0 ||
+	      strcasecmp (value, "on") == 0 ||
+	      strcasecmp (value, "yes") == 0) 
 	    b = 1;
-	  
-          ippAddBoolean(request->ipp_request,
-                        IPP_TAG_JOB,
-                        option,
-                        b);
+	  else
+            b = 0;
+
+          ippAddBoolean (request->ipp_request,
+                         IPP_TAG_JOB,
+                         option,
+                         b);
         
           break;
         }
@@ -444,12 +447,12 @@ gtk_cups_request_encode_option (GtkCupsRequest *request,
 	      s = (char *)value;
 	    }
 	  else
-	    lower = strtol(value, &s, 0);
+	    lower = strtol (value, &s, 0);
 
 	  if (*s == '-')
 	    {
 	      if (s[1])
-		upper = strtol(s + 1, NULL, 0);
+		upper = strtol (s + 1, NULL, 0);
 	      else
 		upper = 2147483647;
             }
@@ -472,14 +475,14 @@ gtk_cups_request_encode_option (GtkCupsRequest *request,
           int yres;
           ipp_res_t units;
           
-          xres = strtol(value, &s, 0);
+          xres = strtol (value, &s, 0);
 
 	  if (*s == 'x')
-	    yres = strtol(s + 1, &s, 0);
+	    yres = strtol (s + 1, &s, 0);
 	  else
 	    yres = xres;
 
-	  if (strcasecmp(s, "dpc") == 0)
+	  if (strcasecmp (s, "dpc") == 0)
             units = IPP_RES_PER_CM;
           else
             units = IPP_RES_PER_INCH;
@@ -504,8 +507,8 @@ gtk_cups_request_encode_option (GtkCupsRequest *request,
           
           values = g_strdup (value);
           strings = NULL;
-          in_quotes = 0;
-          
+	  in_quotes = 0;
+
           for (s = values, next = s; *s != '\0'; s++)
             {
               if (in_quotes != 2 && *s == '\'')
@@ -582,7 +585,9 @@ _connect (GtkCupsRequest *request)
 
   if (request->http == NULL)
     {
-      request->http = httpConnectEncrypt (request->server, ippPort(), cupsEncryption());
+      request->http = httpConnectEncrypt (request->server, 
+                                          ippPort (), 
+                                          cupsEncryption ());
 
       if (request->http == NULL)
         request->attempts++;
@@ -617,23 +622,25 @@ _post_send (GtkCupsRequest *request)
   if (request->data_io != NULL)
     {
       fstat (g_io_channel_unix_get_fd (request->data_io), &data_info);
-      sprintf (length, "%lu", (unsigned long)ippLength(request->ipp_request) + data_info.st_size);
+      sprintf (length, "%lu", (unsigned long) (ippLength (request->ipp_request) + data_info.st_size));
     }
   else
-    {
-      sprintf (length, "%lu", (unsigned long)ippLength(request->ipp_request));
-    }
+    sprintf (length, "%lu", (unsigned long) ippLength (request->ipp_request));
 	
-  httpClearFields(request->http);
-  httpSetField(request->http, HTTP_FIELD_CONTENT_LENGTH, length);
-  httpSetField(request->http, HTTP_FIELD_CONTENT_TYPE, "application/ipp");
+  httpClearFields (request->http);
+  httpSetField (request->http, HTTP_FIELD_CONTENT_LENGTH, length);
+  httpSetField (request->http, HTTP_FIELD_CONTENT_TYPE, "application/ipp");
+#ifdef HAVE_HTTPGETAUTHSTRING
+  httpSetField (request->http, HTTP_FIELD_AUTHORIZATION, httpGetAuthString (request->http));
+#else
 #ifdef HAVE_HTTP_AUTHSTRING
-  httpSetField(request->http, HTTP_FIELD_AUTHORIZATION, request->http->authstring);
+  httpSetField (request->http, HTTP_FIELD_AUTHORIZATION, request->http->authstring);
+#endif
 #endif
 
-  if (httpPost(request->http, request->resource))
+  if (httpPost (request->http, request->resource))
     {
-      if (httpReconnect(request->http))
+      if (httpReconnect (request->http))
         {
           request->state = GTK_CUPS_POST_DONE;
           request->poll_state = GTK_CUPS_HTTP_IDLE;
@@ -666,7 +673,7 @@ _post_write_request (GtkCupsRequest *request)
 
   request->poll_state = GTK_CUPS_HTTP_WRITE;
   
-  ipp_status = ippWrite(request->http, request->ipp_request);
+  ipp_status = ippWrite (request->http, request->ipp_request);
 
   if (ipp_status == IPP_ERROR)
     {
@@ -708,7 +715,7 @@ _post_write_data (GtkCupsRequest *request)
   request->poll_state = GTK_CUPS_HTTP_WRITE;
   
   if (httpCheck (request->http))
-    http_status = httpUpdate(request->http);
+    http_status = httpUpdate (request->http);
   else
     http_status = request->last_status;
 
@@ -756,9 +763,9 @@ _post_write_data (GtkCupsRequest *request)
 
 
 #if HAVE_CUPS_API_1_2
-      if (httpWrite2(request->http, buffer, bytes) < bytes)
+      if (httpWrite2 (request->http, buffer, bytes) < bytes)
 #else
-      if (httpWrite(request->http, buffer, (int) bytes) < bytes)
+      if (httpWrite (request->http, buffer, (int) bytes) < bytes)
 #endif /* HAVE_CUPS_API_1_2 */
         {
           int http_errno;
@@ -840,23 +847,23 @@ _post_check (GtkCupsRequest *request)
           return;
         }
     }
-/* TODO: detect ssl in configure.ac */
-#if HAVE_SSL
   else if (http_status == HTTP_UPGRADE_REQUIRED)
     {
       /* Flush any error message... */
       httpFlush (request->http);
 
+      cupsSetEncryption (HTTP_ENCRYPT_REQUIRED);
+      request->state = GTK_CUPS_POST_CONNECT;
+
       /* Reconnect... */
       httpReconnect (request->http);
 
       /* Upgrade with encryption... */
-      httpEncryption(request->http, HTTP_ENCRYPT_REQUIRED);
+      httpEncryption (request->http, HTTP_ENCRYPT_REQUIRED);
  
       request->attempts++;
       goto again;
     }
-#endif 
   else if (http_status != HTTP_OK)
     {
       int http_errno;
@@ -876,13 +883,13 @@ _post_check (GtkCupsRequest *request)
                                      g_strerror (http_errno));
          request->poll_state = GTK_CUPS_HTTP_IDLE;
  
-          httpFlush(request->http); 
+          httpFlush (request->http); 
           return;
         }
 
       request->poll_state = GTK_CUPS_HTTP_IDLE;
        
-      httpFlush(request->http); 
+      httpFlush (request->http); 
       
       request->last_status = HTTP_CONTINUE;
       httpClose (request->http);
@@ -965,14 +972,14 @@ _get_send (GtkCupsRequest *request)
       return;
     }
 
-  httpClearFields(request->http);
+  httpClearFields (request->http);
 #ifdef HAVE_HTTP_AUTHSTRING
-  httpSetField(request->http, HTTP_FIELD_AUTHORIZATION, request->http->authstring);
+  httpSetField (request->http, HTTP_FIELD_AUTHORIZATION, request->http->authstring);
 #endif
 
-  if (httpGet(request->http, request->resource))
+  if (httpGet (request->http, request->resource))
     {
-      if (httpReconnect(request->http))
+      if (httpReconnect (request->http))
         {
           request->state = GTK_CUPS_GET_DONE;
           request->poll_state = GTK_CUPS_HTTP_IDLE;
@@ -1028,23 +1035,23 @@ _get_check (GtkCupsRequest *request)
                                  "Can't prompt for authorization");
       return;
     }
-/* TODO: detect ssl in configure.ac */
-#if HAVE_SSL
   else if (http_status == HTTP_UPGRADE_REQUIRED)
     {
       /* Flush any error message... */
       httpFlush (request->http);
 
+      cupsSetEncryption (HTTP_ENCRYPT_REQUIRED);
+      request->state = GTK_CUPS_POST_CONNECT;
+
       /* Reconnect... */
       httpReconnect (request->http);
 
       /* Upgrade with encryption... */
-      httpEncryption(request->http, HTTP_ENCRYPT_REQUIRED);
+      httpEncryption (request->http, HTTP_ENCRYPT_REQUIRED);
  
       request->attempts++;
       goto again;
     }
-#endif
   else if (http_status != HTTP_OK)
     {
       int http_errno;
@@ -1063,7 +1070,7 @@ _get_check (GtkCupsRequest *request)
                                      "HTTP Error in GET %s", 
                                      g_strerror (http_errno));
           request->poll_state = GTK_CUPS_HTTP_IDLE;
-          httpFlush(request->http);
+          httpFlush (request->http);
 
           return;
         }
@@ -1109,9 +1116,9 @@ _get_read_data (GtkCupsRequest *request)
   request->poll_state = GTK_CUPS_HTTP_READ;
 
 #if HAVE_CUPS_API_1_2
-  bytes = httpRead2(request->http, buffer, sizeof(buffer));
+  bytes = httpRead2 (request->http, buffer, sizeof (buffer));
 #else
-  bytes = httpRead(request->http, buffer, sizeof(buffer));
+  bytes = httpRead (request->http, buffer, sizeof (buffer));
 #endif /* HAVE_CUPS_API_1_2 */
 
   GTK_NOTE (PRINTING,

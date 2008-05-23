@@ -30,6 +30,7 @@
 #include <stdlib.h>       
 #include <fcntl.h>
 
+#include <glib/gstdio.h>
 #include "gtkprintoperation-private.h"
 #include "gtkmarshal.h"
 #include "gtkmessagedialog.h"
@@ -118,20 +119,24 @@ op_unix_free (GtkPrintOperationUnix *op_unix)
 
 static gchar *
 shell_command_substitute_file (const gchar *cmd,
-			       const gchar *filename)
+			       const gchar *pdf_filename,
+			       const gchar *settings_filename,
+                               gboolean    *pdf_filename_replaced,
+                               gboolean    *settings_filename_replaced)
 {
   const gchar *inptr, *start;
-  gchar *result;
   GString *final;
 
   g_return_val_if_fail (cmd != NULL, NULL);
-  g_return_val_if_fail (filename != NULL, NULL);
+  g_return_val_if_fail (pdf_filename != NULL, NULL);
+  g_return_val_if_fail (settings_filename != NULL, NULL);
 
-  result = NULL;
   final = g_string_new (NULL);
 
-  start = inptr = cmd;
+  *pdf_filename_replaced = FALSE;
+  *settings_filename_replaced = FALSE;
 
+  start = inptr = cmd;
   while ((inptr = strchr (inptr, '%')) != NULL) 
     {
       g_string_append_len (final, start, inptr - start);
@@ -139,7 +144,13 @@ shell_command_substitute_file (const gchar *cmd,
       switch (*inptr) 
         {
           case 'f':
-            g_string_append (final, filename ? filename : "");
+            g_string_append (final, pdf_filename);
+            *pdf_filename_replaced = TRUE;
+            break;
+
+          case 's':
+            g_string_append (final, settings_filename);
+            *settings_filename_replaced = TRUE;
             break;
 
           case '%':
@@ -158,39 +169,7 @@ shell_command_substitute_file (const gchar *cmd,
     }
   g_string_append (final, start);
 
-  result = final->str;
-
-  g_string_free (final, FALSE);
-
-  return result;
-}
-
-static void
-gtk_print_operation_unix_initialize (void)
-{
-  static gboolean initialized = FALSE;
-
-  if (!initialized)
-    {
-      /**
-       * GtkSettings:gtk-print-preview-command:
-       *
-       * A command to run for displaying the print preview. The command
-       * should contain a %f placeholder, which will get replaced by
-       * the path to the pdf file.
-       *
-       * The preview application is responsible for removing the pdf file
-       * when it is done.
-       *
-       * Since: 2.10
-       */
-      gtk_settings_install_property (g_param_spec_string ("gtk-print-preview-command",
-							  P_("Default command to run when displaying a print preview"),
-							  P_("Command to run when displaying a print preview"),
-							  GTK_PRINT_PREVIEW_COMMAND,
-							  GTK_PARAM_READWRITE)); 
-      initialized = TRUE;
-    }
+  return g_string_free (final, FALSE);
 }
 
 void
@@ -204,11 +183,16 @@ _gtk_print_operation_platform_backend_launch_preview (GtkPrintOperation *op,
   gchar *cmd;
   gchar *preview_cmd;
   GtkSettings *settings;
+  GtkPrintSettings *print_settings;
+  gchar *settings_filename = NULL;
   gchar *quoted_filename;
+  gchar *quoted_settings_filename;
+  gboolean filename_used = FALSE;
+  gboolean settings_used = FALSE;
   GdkScreen *screen;
   GError *error = NULL;
-
-  gtk_print_operation_unix_initialize ();
+  gint fd;
+  gboolean retval;
 
   cairo_surface_destroy (surface);
  
@@ -216,18 +200,37 @@ _gtk_print_operation_platform_backend_launch_preview (GtkPrintOperation *op,
     screen = gtk_window_get_screen (parent);
   else
     screen = gdk_screen_get_default ();
-  
+
+  fd = g_file_open_tmp ("settingsXXXXXX.ini", &settings_filename, &error);
+  if (fd < 0) 
+    goto out;
+
+  print_settings = gtk_print_operation_get_print_settings (op);
+  retval = gtk_print_settings_to_file (print_settings, settings_filename, &error);
+  close (fd);
+
+  if (!retval)
+    goto out;
+
   settings = gtk_settings_get_for_screen (screen);
   g_object_get (settings, "gtk-print-preview-command", &preview_cmd, NULL);
 
   quoted_filename = g_shell_quote (filename);
-  cmd = shell_command_substitute_file (preview_cmd, quoted_filename);
+  quoted_settings_filename = g_shell_quote (settings_filename);
+  cmd = shell_command_substitute_file (preview_cmd, quoted_filename, quoted_settings_filename, &filename_used, &settings_used);
   g_shell_parse_argv (cmd, &argc, &argv, &error);
+
+  g_free (preview_cmd);
+  g_free (quoted_filename);
+  g_free (quoted_settings_filename);
+  g_free (cmd);
 
   if (error != NULL)
     goto out;
 
   gdk_spawn_on_screen (screen, NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error);
+
+  g_strfreev (argv);
 
  out:
   if (error != NULL)
@@ -245,15 +248,19 @@ _gtk_print_operation_platform_backend_launch_preview (GtkPrintOperation *op,
 
       gtk_window_present (GTK_WINDOW (edialog));
 
-      g_error_free (error); 
+      g_error_free (error);
 
-      g_unlink (filename);
+      filename_used = FALSE; 
+      settings_used = FALSE;
    } 
 
-  g_free (cmd);
-  g_free (quoted_filename);
-  g_free (preview_cmd);
-  g_strfreev (argv);
+  if (!filename_used)
+    g_unlink (filename);
+
+  if (!settings_used)
+    g_unlink (settings_filename);
+
+  g_free (settings_filename);
 }
 
 static void
@@ -261,9 +268,8 @@ unix_finish_send  (GtkPrintJob *job,
                    gpointer     user_data, 
                    GError      *error)
 {
-  GtkPrintOperationUnix *op_unix;
-
-  op_unix = (GtkPrintOperationUnix *) user_data;
+  GtkPrintOperation *op = (GtkPrintOperation *) user_data;
+  GtkPrintOperationUnix *op_unix = op->priv->platform_data;
 
   if (error != NULL)
     {
@@ -286,6 +292,8 @@ unix_finish_send  (GtkPrintJob *job,
 
   if (op_unix->loop)
     g_main_loop_quit (op_unix->loop);
+
+  g_object_unref (op);
 }
 
 static void
@@ -305,12 +313,16 @@ unix_end_run (GtkPrintOperation *op,
   
   /* TODO: Check for error */
   if (op_unix->job != NULL)
-    gtk_print_job_send (op_unix->job,
-                        unix_finish_send, 
-                        op_unix, NULL);
+    {
+      g_object_ref (op);
+      gtk_print_job_send (op_unix->job,
+                          unix_finish_send, 
+                          op, NULL);
+    }
 
   if (wait)
     {
+      g_object_ref (op);
       if (!op_unix->data_sent)
 	{
 	  GDK_THREADS_LEAVE ();  
@@ -318,6 +330,8 @@ unix_end_run (GtkPrintOperation *op,
 	  GDK_THREADS_ENTER ();  
 	}
       g_main_loop_unref (op_unix->loop);
+      op_unix->loop = NULL;
+      g_object_unref (op);
     }
 }
 
@@ -346,9 +360,7 @@ get_print_dialog (GtkPrintOperation *op,
 						 GTK_PRINT_CAPABILITY_COLLATE |
 						 GTK_PRINT_CAPABILITY_REVERSE |
 						 GTK_PRINT_CAPABILITY_SCALE |
-                                                 GTK_PRINT_CAPABILITY_GENERATE_PDF |
-						 GTK_PRINT_CAPABILITY_GENERATE_PS |
-                                                 GTK_PRINT_CAPABILITY_PREVIEW);
+						 GTK_PRINT_CAPABILITY_PREVIEW);
 
   if (priv->print_settings)
     gtk_print_unix_dialog_set_settings (GTK_PRINT_UNIX_DIALOG (pd),

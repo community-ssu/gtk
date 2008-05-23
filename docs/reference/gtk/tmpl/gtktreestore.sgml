@@ -2,7 +2,7 @@
 GtkTreeStore
 
 <!-- ##### SECTION Short_Description ##### -->
-A tree-like data structure that can be used with the #GtkTreeView
+A tree-like data structure that can be used with the GtkTreeView
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -35,7 +35,6 @@ column. The "type" attribute specifies the data type for the column.
 ]]></programlisting>
 </example>
 </refsect2>
-
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
@@ -110,6 +109,18 @@ column. The "type" attribute specifies the data type for the column.
 @tree_store: 
 @iter: 
 @var_args: 
+
+
+<!-- ##### FUNCTION gtk_tree_store_set_valuesv ##### -->
+<para>
+
+</para>
+
+@tree_store: 
+@iter: 
+@columns: 
+@values: 
+@n_values: 
 
 
 <!-- ##### FUNCTION gtk_tree_store_remove ##### -->

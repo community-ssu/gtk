@@ -1,42 +1,75 @@
-2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.12 ===
+	* === Released 2.12.9 ===
 
-2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+2008-02-12  Matthias Clasen  <mclasne@redhat.com>
 
-	* === Released 2.10.11 ===
+	* === Released 2.12.8 ===
 
-2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+2008-01-29  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.10 ===
+	* === Released 2.12.7 ===
 
-2007-01-22  Matthias Clasen  <mclasen@redhat.com>
+2008-01-28  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.12.6 ===
 
-	* === 2.10.9 ===
+2008-01-08  Matthias Clasen  <mclasen@redhat.com>
 
-2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.5 ===
 
-	* === Released 2.10.8 ===
+2008-01-08  Matthias Clasen  <mclasen@redhat.com>
 
-2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.4 ===
 
-	* === Released 2.10.7 ===
+2007-12-04  Matthias Clasen  <mclasen@redhat.com>
 
-2006-10-03  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.3 ===
 
-	* === Released 2.10.6 ===
+2007-11-26  Matthias Clasen  <mclasen@redhat.com>
 
-2006-10-02  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.2 ===
 
-	* === Released 2.10.5 ===
+2007-10-16  Matthias Clasen <mclasen@redhat.com>
 
-2006-09-22  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.1 ===
 
-	* === Released 2.10.4 ===
+2007-09-13  Matthias Clasen  <mclasen@redhat.com>
 
-2006-09-04  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.12.0 ===
 
-	* === Released 2.10.3 ===
+2007-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.6 ===
+
+2007-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.5 ===
+
+2007-06-19  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.11.4 ===
+
+2007-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.3 ===
+
+2007-06-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.2 ===
+
+2007-06-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.1 ===
+
+2007-05-24   Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.0 ===
+
+2006-10-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-xlib.c: Apply a cleanup patch by
+	Kjartan	Maraas  (#341812)
 
 2006-08-17  Matthias Clasen  <mclasen@redhat.com>
 

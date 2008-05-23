@@ -730,7 +730,13 @@ gdk_draw_image (GdkDrawable *drawable,
  *
  * The clip mask of @gc is ignored, but clip rectangles and clip regions work
  * fine.
- * 
+ *
+ * If GDK is built with the Sun mediaLib library, the gdk_draw_pixbuf
+ * function is accelerated using mediaLib, which provides hardware
+ * acceleration on Intel, AMD, and Sparc chipsets.  If desired, mediaLib
+ * support can be turned off by setting the GDK_DISABLE_MEDIALIB environment
+ * variable.
+ *
  * Since: 2.2
  **/
 void
@@ -751,13 +757,17 @@ gdk_draw_pixbuf (GdkDrawable     *drawable,
   g_return_if_fail (gc == NULL || GDK_IS_GC (gc));
   g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
 
+  if (width == 0 || height == 0)
+    return;
+
   if (width == -1)
     width = gdk_pixbuf_get_width (pixbuf);
   if (height == -1)
     height = gdk_pixbuf_get_height (pixbuf);
 
   GDK_DRAWABLE_GET_CLASS (drawable)->draw_pixbuf (drawable, gc, pixbuf,
-						  src_x, src_y, dest_x, dest_y, width, height,
+						  src_x, src_y, dest_x, dest_y,
+                                                  width, height,
 						  dither, x_dither, y_dither);
 }
 
@@ -989,7 +999,7 @@ gdk_draw_trapezoids (GdkDrawable    *drawable,
       cairo_move_to (cr, trapezoids[i].x11, trapezoids[i].y1);
       cairo_line_to (cr, trapezoids[i].x21, trapezoids[i].y1);
       cairo_line_to (cr, trapezoids[i].x22, trapezoids[i].y2);
-      cairo_line_to (cr, trapezoids[i].x21, trapezoids[i].y2);
+      cairo_line_to (cr, trapezoids[i].x12, trapezoids[i].y2);
       cairo_close_path (cr);
     }
 
@@ -1357,6 +1367,44 @@ composite_0888 (guchar      *src_buf,
     }
 }
 
+#ifdef USE_MEDIALIB
+static void
+composite_0888_medialib (guchar      *src_buf,
+			 gint         src_rowstride,
+			 guchar      *dest_buf,
+			 gint         dest_rowstride,
+			 GdkByteOrder dest_byte_order,
+			 gint         width,
+			 gint         height)
+{
+  guchar *src  = src_buf;
+  guchar *dest = dest_buf;
+
+  mlib_image img_src, img_dst;
+
+  mlib_ImageSetStruct (&img_dst,
+                       MLIB_BYTE,
+                       4,
+                       width,
+                       height,
+                       dest_rowstride,
+                       dest_buf);
+
+  mlib_ImageSetStruct (&img_src,
+                       MLIB_BYTE,
+                       4,
+                       width,
+                       height,
+                       src_rowstride,
+                       src_buf);
+
+  if (dest_byte_order == GDK_LSB_FIRST)
+      mlib_ImageBlendRGBA2BGRA (&img_dst, &img_src);
+  else
+      mlib_ImageBlendRGBA2ARGB (&img_dst, &img_src);
+}
+#endif
+
 static void
 composite_565 (guchar      *src_buf,
 	       gint         src_rowstride,
@@ -1554,7 +1602,16 @@ gdk_drawable_real_draw_pixbuf (GdkDrawable  *drawable,
 		   visual->red_mask   == 0xff0000 &&
 		   visual->green_mask == 0x00ff00 &&
 		   visual->blue_mask  == 0x0000ff)
-	    composite_func = composite_0888;
+	    {
+#ifdef USE_MEDIALIB
+	      if (_gdk_use_medialib ())
+	        composite_func = composite_0888_medialib;
+	      else
+	        composite_func = composite_0888;
+#else
+	      composite_func = composite_0888;
+#endif
+	    }
 	}
 
       /* We can't use our composite func if we are required to dither

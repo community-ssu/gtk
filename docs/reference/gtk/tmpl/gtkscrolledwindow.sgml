@@ -137,6 +137,11 @@ only be accessed using the functions below.
 
 </para>
 
+<!-- ##### ARG GtkScrolledWindow:scrollbars-within-bevel ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_scrolled_window_new ##### -->
 <para>
 Creates a new scrolled window. The two arguments are the scrolled

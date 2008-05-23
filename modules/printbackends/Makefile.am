@@ -4,4 +4,8 @@ if HAVE_CUPS
 SUBDIRS += cups
 endif
 
-DIST_SUBDIRS=cups file lpr
+if TEST_PRINT_BACKEND
+SUBDIRS += test
+endif
+
+DIST_SUBDIRS = cups file lpr test

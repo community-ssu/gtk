@@ -541,7 +541,7 @@ gtk_handle_box_size_request (GtkWidget      *widget,
     }
 
   /* if our child is not visible, we still request its size, since we
-   * won't have any usefull hint for our size otherwise.
+   * won't have any useful hint for our size otherwise.
    */
   if (bin->child)
     gtk_widget_size_request (bin->child, &child_requisition);
@@ -858,7 +858,7 @@ gtk_handle_box_paint (GtkWidget      *widget,
 {
   GtkBin *bin;
   GtkHandleBox *hb;
-  guint width, height;
+  gint width, height;
   GdkRectangle rect;
   GdkRectangle dest;
   gint handle_position;

@@ -1,6 +1,6 @@
 /* GdkQuartzWindow.h
  *
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,11 +18,30 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#import <Quartz/Quartz.h>
-#include "gdkwindow.h"
+#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#include <glib.h>
 
 @interface GdkQuartzWindow : NSWindow {
+  BOOL    inMove;
+  BOOL    inShowOrHide;
+
+  /* Manually triggered move/resize (not by the window manager) */
+  BOOL    inManualMove;
+  BOOL    inManualResize;
+  BOOL    inTrackManualResize;
+  NSPoint initialMoveLocation;
+  NSPoint initialResizeLocation;
+  NSRect  initialResizeFrame;
 }
+
+-(BOOL)isInMove;
+-(void)beginManualMove;
+-(BOOL)trackManualMove;
+-(void)beginManualResize;
+-(BOOL)trackManualResize;
+-(void)showAndMakeKey:(BOOL)makeKey;
+-(void)hide;
 
 @end
 

@@ -1,14 +1,11 @@
-2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+2007-06-04  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.11 ===
+	* === Released 2.11.1 ===
 
-2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+2006-10-08  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.10.10 ===
-
-2007-01-05  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.10.7 ===
+	* pixbuf-draw.c: Apply a cleanup patch by 
+	Kjartan Maraas  (#341812)
 
 2006-08-17  Matthias Clasen  <mclasen@redhat.com>
 

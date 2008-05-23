@@ -113,14 +113,31 @@ gdk_colormap_change (GdkColormap *colormap,
   /* FIXME: Implement */
 }
 
+gboolean
+gdk_colors_alloc (GdkColormap   *colormap,
+		  gboolean       contiguous,
+		  gulong        *planes,
+		  gint           nplanes,
+		  gulong        *pixels,
+		  gint           npixels)
+{
+  return TRUE;
+}
+
+void
+gdk_colors_free (GdkColormap *colormap,
+		 gulong      *pixels,
+		 gint         npixels,
+		 gulong       planes)
+{
+}
+
 void
 gdk_colormap_free_colors (GdkColormap *colormap,
 			  GdkColor    *colors,
 			  gint         ncolors)
 {
-  /* This function shouldn't do anything since
-   * colors are neve allocated.
-   */
+  /* This function shouldn't do anything since colors are never allocated. */
 }
 
 gint
@@ -132,18 +149,28 @@ gdk_colormap_alloc_colors (GdkColormap *colormap,
 			   gboolean    *success)
 {
   int i;
+  int alpha;
+
+  g_return_val_if_fail (GDK_IS_COLORMAP (colormap), ncolors);
+  g_return_val_if_fail (colors != NULL, ncolors);
+  g_return_val_if_fail (success != NULL, ncolors);
+
+  if (gdk_colormap_get_visual (colormap)->depth == 32)
+    alpha = 0xff;
+  else
+    alpha = 0;
 
   for (i = 0; i < ncolors; i++)
     {
-      colors[i].pixel = ((colors[i].red >> 8) & 0xff) << 16 |
-	                ((colors[i].green >> 8) & 0xff) << 8 |
-	                ((colors[i].blue >> 8) & 0xff);
+      colors[i].pixel = alpha << 24 |
+        ((colors[i].red >> 8) & 0xff) << 16 |
+        ((colors[i].green >> 8) & 0xff) << 8 |
+        ((colors[i].blue >> 8) & 0xff);
     }
 
-  if (success)
-    *success = TRUE;
+  *success = TRUE;
 
-  return ncolors;
+  return 0;
 }
 
 void
@@ -170,37 +197,21 @@ gdk_colormap_get_screen (GdkColormap *cmap)
 }
 
 void
-gdk_quartz_set_context_fill_color_from_pixel (CGContextRef context, GdkColormap *colormap, guint32 pixel)
+_gdk_quartz_colormap_get_rgba_from_pixel (GdkColormap *colormap,
+					  guint32      pixel,
+					  float       *red,
+					  float       *green,
+					  float       *blue,
+					  float       *alpha)
 {
-  float red, green, blue, alpha;
-
-  red = (pixel >> 16 & 0xff) / 255.0;
-  green = (pixel >> 8 & 0xff) / 255.0;
-  blue = (pixel & 0xff) / 255.0;
-
+  *red   = (pixel >> 16 & 0xff) / 255.0;
+  *green = (pixel >> 8  & 0xff) / 255.0;
+  *blue  = (pixel       & 0xff) / 255.0;
+ 
   if (colormap && gdk_colormap_get_visual (colormap)->depth == 32)
-    alpha = (pixel >> 24 & 0xff) / 255.0;
+    *alpha = (pixel >> 24 & 0xff) / 255.0;
   else
-    alpha = 1.0;
-
-  CGContextSetRGBFillColor (context, red, green, blue, alpha);
-}
-
-void
-gdk_quartz_set_context_stroke_color_from_pixel (CGContextRef context, GdkColormap *colormap, guint32 pixel)
-{
-  float red, green, blue, alpha;
-
-  red = (pixel >> 16 & 0xff) / 255.0;
-  green = (pixel >> 8 & 0xff) / 255.0;
-  blue = (pixel & 0xff) / 255.0;
-
-  if (colormap && gdk_colormap_get_visual (colormap)->depth == 32)
-    alpha = (pixel >> 24 & 0xff) / 255.0;
-  else
-    alpha = 1.0;
-
-  CGContextSetRGBStrokeColor (context, red, green, blue, 1.0);  
+    *alpha = 1.0;
 }
 
 gboolean

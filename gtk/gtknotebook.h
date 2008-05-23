@@ -116,8 +116,12 @@ struct _GtkNotebookClass
 				GtkWidget         *menu_label,
 				gint               position);
 
+  GtkNotebook * (* create_window) (GtkNotebook       *notebook,
+                                   GtkWidget         *page,
+                                   gint               x,
+                                   gint               y);
+
   void (*_gtk_reserved1) (void);
-  void (*_gtk_reserved2) (void);
 };
 
 typedef GtkNotebook* (*GtkNotebookWindowCreationFunc) (GtkNotebook *source,
@@ -165,12 +169,21 @@ void gtk_notebook_remove_page       (GtkNotebook *notebook,
 void gtk_notebook_set_window_creation_hook (GtkNotebookWindowCreationFunc  func,
 					    gpointer                       data,
                                             GDestroyNotify                 destroy);
+#ifndef GTK_DISABLE_DEPRECATED
 void gtk_notebook_set_group_id             (GtkNotebook *notebook,
 					    gint         group_id);
 gint gtk_notebook_get_group_id             (GtkNotebook *notebook);
 
+#endif /* GTK_DISABLE_DEPRECATED */
+
+void gtk_notebook_set_group                (GtkNotebook *notebook,
+					    gpointer     group);
+gpointer gtk_notebook_get_group            (GtkNotebook *notebook);
+
+
+
 /***********************************************************
- *            query, set current NoteebookPage             *
+ *            query, set current NotebookPage              *
  ***********************************************************/
 
 gint       gtk_notebook_get_current_page (GtkNotebook *notebook);

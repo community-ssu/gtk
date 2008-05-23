@@ -421,8 +421,8 @@ gtk_tree_selection_get_selected (GtkTreeSelection  *selection,
  * Since: 2.2
  **/
 GList *
-gtk_tree_selection_get_selected_rows (GtkTreeSelection  *selection,
-                                      GtkTreeModel     **model)
+gtk_tree_selection_get_selected_rows (GtkTreeSelection   *selection,
+                                      GtkTreeModel      **model)
 {
   GList *list = NULL;
   GtkRBTree *tree = NULL;

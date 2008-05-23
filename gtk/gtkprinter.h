@@ -26,6 +26,26 @@
 
 G_BEGIN_DECLS
 
+#define GTK_TYPE_PRINT_CAPABILITIES (gtk_print_capabilities_get_type ())
+
+/* Note, this type is manually registered with GObject in gtkprinter.c
+ * If you add any flags, update the registration as well!
+ */
+typedef enum
+{
+  GTK_PRINT_CAPABILITY_PAGE_SET     = 1 << 0,
+  GTK_PRINT_CAPABILITY_COPIES       = 1 << 1,
+  GTK_PRINT_CAPABILITY_COLLATE      = 1 << 2,
+  GTK_PRINT_CAPABILITY_REVERSE      = 1 << 3,
+  GTK_PRINT_CAPABILITY_SCALE        = 1 << 4,
+  GTK_PRINT_CAPABILITY_GENERATE_PDF = 1 << 5,
+  GTK_PRINT_CAPABILITY_GENERATE_PS  = 1 << 6,
+  GTK_PRINT_CAPABILITY_PREVIEW      = 1 << 7,
+  GTK_PRINT_CAPABILITY_NUMBER_UP    = 1 << 8
+} GtkPrintCapabilities;
+
+GType gtk_print_capabilities_get_type (void) G_GNUC_CONST;
+
 #define GTK_TYPE_PRINTER                  (gtk_printer_get_type ())
 #define GTK_PRINTER(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PRINTER, GtkPrinter))
 #define GTK_PRINTER_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_PRINTER, GtkPrinterClass))
@@ -79,9 +99,12 @@ gboolean                 gtk_printer_is_virtual        (GtkPrinter      *printer
 gboolean                 gtk_printer_is_default        (GtkPrinter      *printer);
 gboolean                 gtk_printer_accepts_pdf       (GtkPrinter      *printer);
 gboolean                 gtk_printer_accepts_ps        (GtkPrinter      *printer);
-
+GList                   *gtk_printer_list_papers       (GtkPrinter      *printer);
 gint                     gtk_printer_compare           (GtkPrinter *a,
 							GtkPrinter *b);
+gboolean                 gtk_printer_has_details       (GtkPrinter       *printer);
+void                     gtk_printer_request_details   (GtkPrinter       *printer);
+GtkPrintCapabilities     gtk_printer_get_capabilities  (GtkPrinter       *printer);
 
 typedef gboolean (*GtkPrinterFunc) (GtkPrinter *printer,
 				    gpointer    data);
@@ -90,7 +113,7 @@ void                     gtk_enumerate_printers        (GtkPrinterFunc   func,
 							gpointer         data,
 							GDestroyNotify   destroy,
 							gboolean         wait);
-						      
+
 G_END_DECLS
 
 #endif /* __GTK_PRINTER_H__ */

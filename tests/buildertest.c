@@ -77,10 +77,24 @@ gboolean test_parser (void)
   g_error_free (error);
 
   error = NULL;
-  gtk_builder_add_from_string (builder, "<interface><object class=\"GtkWindow\" id=\"a\"><property name=\"type\"/></object></interface>", -1, &error);
+  gtk_builder_add_from_string (builder, "<interface><object class=\"Unknown\" id=\"a\"></object></interface>", -1, &error);
   g_assert (error != NULL);
-  g_return_val_if_fail (error->domain == GTK_BUILDER_ERROR, FALSE);
-  g_return_val_if_fail (error->code == GTK_BUILDER_ERROR_MISSING_PROPERTY_VALUE, FALSE);
+  g_assert (error->domain == GTK_BUILDER_ERROR);
+  g_assert (error->code == GTK_BUILDER_ERROR_INVALID_VALUE);
+  g_error_free (error);
+
+  error = NULL;
+  gtk_builder_add_from_string (builder, "<interface><object class=\"GtkWidget\" id=\"a\" constructor=\"none\"></object></interface>", -1, &error);
+  g_assert (error != NULL);
+  g_assert (error->domain == GTK_BUILDER_ERROR);
+  g_assert (error->code == GTK_BUILDER_ERROR_INVALID_VALUE);
+  g_error_free (error);
+
+  error = NULL;
+  gtk_builder_add_from_string (builder, "<interface><object class=\"GtkButton\" id=\"a\"><child internal-child=\"foobar\"><object class=\"GtkButton\" id=\"int\"/></child></object></interface>", -1, &error);
+  g_assert (error != NULL);
+  g_assert (error->domain == GTK_BUILDER_ERROR);
+  g_assert (error->code == GTK_BUILDER_ERROR_INVALID_VALUE);
   g_error_free (error);
 
   g_object_unref (builder);
@@ -196,6 +210,15 @@ gboolean test_connect_signals (void)
     "    <signal name=\"notify::title\" handler=\"signal_extra2\"/>"
     "  </object>"
     "</interface>";
+  const gchar buffer_after_child[] =
+    "<interface>"
+    "  <object class=\"GtkWindow\" id=\"window1\">"
+    "    <child>"
+    "      <object class=\"GtkButton\" id=\"button1\"/>"
+    "    </child>"
+    "    <signal name=\"notify::title\" handler=\"signal_normal\"/>"
+    "  </object>"
+    "</interface>";
 
   builder = builder_new_from_string (buffer, -1, NULL);
   gtk_builder_connect_signals (builder, NULL);
@@ -236,6 +259,19 @@ gboolean test_connect_signals (void)
   
   g_object_unref (builder);
 
+  /* new test, reset globals */
+  after = 0;
+  normal = 0;
+  
+  builder = builder_new_from_string (buffer_after_child, -1, NULL);
+  window = gtk_builder_get_object (builder, "window1");
+  gtk_builder_connect_signals (builder, NULL);
+  gtk_window_set_title (GTK_WINDOW (window), "test");
+
+  g_return_val_if_fail (normal == 1, FALSE);
+  gtk_widget_destroy (GTK_WIDGET (window));
+  g_object_unref (builder);
+  
   return TRUE;
 }
 
@@ -1470,14 +1506,37 @@ gboolean test_widget (void)
   gchar *buffer3 =
     "<interface>"
     "  <object class=\"GtkWindow\" id=\"window1\">"
-    "     <accessibility>"
-    "       <atkproperty name=\"AtkObject::accessible_name\" translatable=\"yes\">Contacts</atkproperty>"
-    "       <atkrelation target=\"button1\" type=\"labelled-by\"/>"
-    "     </accessibility>"
+    "    <child>"
+    "      <object class=\"GtkVBox\" id=\"vbox1\">"
+    "        <child>"
+    "          <object class=\"GtkLabel\" id=\"label1\">"
+    "            <child internal-child=\"accessible\">"
+    "              <object class=\"AtkObject\" id=\"a11y-label1\">"
+    "                <property name=\"AtkObject::accessible-name\">A Label</property>"
+    "              </object>"
+    "            </child>"
+    "            <accessibility>"
+    "              <relation target=\"button1\" type=\"label-for\"/>"
+    "            </accessibility>"
+    "          </object>"
+    "        </child>"
+    "        <child>"
+    "          <object class=\"GtkButton\" id=\"button1\">"
+    "            <accessibility>"
+    "              <action action_name=\"click\" description=\"Sliff\"/>"
+    "            </accessibility>"
+    "          </object>"
+    "        </child>"
+    "      </object>"
+    "    </child>"
     "  </object>"
-   "</interface>";
+    "</interface>";
   GtkBuilder *builder;
-  GObject *window1, *button1;
+  GObject *window1, *button1, *label1;
+  AtkObject *accessible;
+  AtkRelationSet *relation_set;
+  AtkRelation *relation;
+  char *name;
   
   builder = builder_new_from_string (buffer, -1, NULL);
   button1 = gtk_builder_get_object (builder, "button1");
@@ -1495,11 +1554,63 @@ gboolean test_widget (void)
 
   g_return_val_if_fail (GTK_WIDGET_RECEIVES_DEFAULT (GTK_WIDGET (button1)), FALSE);
   
+  g_object_unref (builder);
+  
+  builder = builder_new_from_string (buffer3, -1, NULL);
+
   window1 = gtk_builder_get_object (builder, "window1");
+  label1 = gtk_builder_get_object (builder, "label1");
+
+  accessible = gtk_widget_get_accessible (GTK_WIDGET (label1));
+  relation_set = atk_object_ref_relation_set (accessible);
+  g_return_if_fail (atk_relation_set_get_n_relations (relation_set) == 1);
+  relation = atk_relation_set_get_relation (relation_set, 0);
+  g_return_if_fail (relation != NULL);
+  g_return_if_fail (ATK_IS_RELATION (relation));
+  g_return_if_fail (atk_relation_get_relation_type (relation) != ATK_RELATION_LABELLED_BY);
+  g_object_unref (relation_set);
+
+  g_object_get (G_OBJECT (accessible), "accessible-name", &name, NULL);
+  g_return_if_fail (strcmp (name, "A Label") == 0);
+  g_free (name);
+  
   gtk_widget_destroy (GTK_WIDGET (window1));
   g_object_unref (builder);
 
   builder = builder_new_from_string (buffer3, -1, NULL);
+  window1 = gtk_builder_get_object (builder, "window1");
+  gtk_widget_destroy (GTK_WIDGET (window1));
+  g_object_unref (builder);
+
+  return TRUE;
+}
+
+gboolean test_window (void)
+{
+  gchar *buffer1 =
+    "<interface>"
+    "  <object class=\"GtkWindow\" id=\"window1\">"
+    "     <property name=\"title\"></property>"
+    "  </object>"
+   "</interface>";
+  gchar *buffer2 =
+    "<interface>"
+    "  <object class=\"GtkWindow\" id=\"window1\">"
+    "  </object>"
+   "</interface>";
+  GtkBuilder *builder;
+  GObject *window1;
+  gchar *title;
+  
+  builder = builder_new_from_string (buffer1, -1, NULL);
+  window1 = gtk_builder_get_object (builder, "window1");
+  g_object_get (window1, "title", &title, NULL);
+  g_return_val_if_fail (strcmp (title, "") == 0, FALSE);
+  g_free (title);
+  gtk_widget_destroy (GTK_WIDGET (window1));
+  g_object_unref (builder);
+
+  builder = builder_new_from_string (buffer2, -1, NULL);
   window1 = gtk_builder_get_object (builder, "window1");
   gtk_widget_destroy (GTK_WIDGET (window1));
   g_object_unref (builder);
@@ -1709,15 +1820,65 @@ test_reference_counting (void)
   return TRUE;
 }
 
+static void 
+test_file (const gchar *filename)
+{
+  GtkBuilder *builder;
+  GError *error = NULL;
+  GSList *l, *objects;
+
+  builder = gtk_builder_new ();
+
+  if (!gtk_builder_add_from_file (builder, filename, &error))
+    {
+      g_error (error->message);
+      g_error_free (error);
+      return;
+    }
+
+  objects = gtk_builder_get_objects (builder);
+  for (l = objects; l; l = l->next)
+    {
+      GObject *obj = (GObject*)l->data;
+
+      if (GTK_IS_DIALOG (obj))
+	{
+	  int response;
+
+	  g_print ("Running dialog %s.\n",
+		   gtk_widget_get_name (GTK_WIDGET (obj)));
+	  response = gtk_dialog_run (GTK_DIALOG (obj));
+	}
+      else if (GTK_IS_WINDOW (obj))
+	{
+	  g_signal_connect (obj, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+	  g_print ("Showing %s.\n",
+		   gtk_widget_get_name (GTK_WIDGET (obj)));
+	  gtk_widget_show_all (GTK_WIDGET (obj));
+	}
+    }
+
+  gtk_main ();
+
+  g_object_unref (builder);
+  builder = NULL;
+}
+
 int
 main (int argc, char **argv)
 {
   gtk_init (&argc, &argv);
   
+  if (argc > 1) 
+    {
+      test_file (argv[1]);
+
+      return 0;
+    }
+
   g_print ("Testing parser\n");
   if (!test_parser ())
     g_error ("test_parser failed");
-
   g_print ("Testing types\n");
   if (!test_types ())
     g_error ("test_types failed");
@@ -1809,6 +1970,10 @@ main (int argc, char **argv)
   g_print ("Testing reference counting\n");
   if (!test_reference_counting ())
     g_error ("test_reference_counting failed");
+
+  g_print ("Testing window\n");
+  if (!test_window ())
+    g_error ("test_window failed");
 
   return 0;
 }

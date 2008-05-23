@@ -50,6 +50,7 @@
 #undef STRICT
 #include <shlobj.h>
 #include <shellapi.h>
+#include <winreg.h>
 
 #define BOOKMARKS_FILENAME ".gtk-bookmarks"
 
@@ -242,8 +243,7 @@ static GtkFileInfo *create_file_info       (GtkFileFolderWin32        *folder_wi
 					    WIN32_FILE_ATTRIBUTE_DATA *wfad,
 					    const char                *mime_type);
 
-static gboolean execute_callbacks_idle (gpointer data);
-static void execute_callbacks (gpointer data);
+static gboolean execute_callbacks (gpointer data);
 
 static gboolean fill_in_names        (GtkFileFolderWin32  *folder_win32,
 				      GError             **error);
@@ -331,6 +331,65 @@ gtk_file_system_win32_iface_init (GtkFileSystemIface *iface)
   iface->set_bookmark_label = gtk_file_system_win32_set_bookmark_label;
 }
 
+/**
+ * get_viewable_logical_drives:
+ * 
+ * Returns the list of logical and viewable drives as defined by
+ * GetLogicalDrives() and the registry keys
+ * Software\Microsoft\Windows\CurrentVersion\Policies\Explorer under
+ * HKLM or HKCU. If neither key exists the result of
+ * GetLogicalDrives() is returned.
+ *
+ * Return value: bitmask with same meaning as returned by GetLogicalDrives()
+**/
+static guint32 
+get_viewable_logical_drives (void)
+{
+  guint viewable_drives = GetLogicalDrives ();
+  HKEY key;
+
+  DWORD var_type = REG_DWORD; //the value's a REG_DWORD type
+  DWORD no_drives_size = 4;
+  DWORD no_drives;
+  gboolean hklm_present = FALSE;
+
+  if (RegOpenKeyEx (HKEY_LOCAL_MACHINE,
+		    "Software\\Microsoft\\Windows\\"
+		    "CurrentVersion\\Policies\\Explorer",
+		    0, KEY_READ, &key) == ERROR_SUCCESS)
+    {
+      if (RegQueryValueEx (key, "NoDrives", NULL, &var_type,
+			   (LPBYTE) &no_drives, &no_drives_size) == ERROR_SUCCESS)
+	{
+	  /* We need the bits that are set in viewable_drives, and
+	   * unset in no_drives.
+	   */
+	  viewable_drives = viewable_drives & ~no_drives;
+	  hklm_present = TRUE;
+	}
+      RegCloseKey (key);
+    }
+
+  /* If the key is present in HKLM then the one in HKCU should be ignored */
+  if (!hklm_present)
+    {
+      if (RegOpenKeyEx (HKEY_CURRENT_USER,
+			"Software\\Microsoft\\Windows\\"
+			"CurrentVersion\\Policies\\Explorer",
+			0, KEY_READ, &key) == ERROR_SUCCESS)
+	{
+	  if (RegQueryValueEx (key, "NoDrives", NULL, &var_type,
+			       (LPBYTE) &no_drives, &no_drives_size) == ERROR_SUCCESS)
+	    {
+	      viewable_drives = viewable_drives & ~no_drives;
+	    }
+	  RegCloseKey (key);
+	}
+    }
+
+  return viewable_drives; 
+}
+
 static gboolean
 check_volumes (gpointer data)
 {
@@ -338,8 +397,10 @@ check_volumes (gpointer data)
 
   g_return_val_if_fail (system_win32, FALSE);
 
-  if (system_win32->drives != GetLogicalDrives())
-    g_signal_emit_by_name (system_win32, "volumes-changed", 0);
+  if (system_win32->drives != get_viewable_logical_drives ())
+    {
+      g_signal_emit_by_name (system_win32, "volumes-changed", 0);
+    }
 
   return TRUE;
 }
@@ -373,7 +434,7 @@ gtk_file_system_win32_init (GtkFileSystemWin32 *system_win32)
   /* Set up an idle handler for volume changes. Once a second should
    * be enough.
    */
-  system_win32->timeout = g_timeout_add_full (0, 1000, check_volumes, system_win32, NULL);
+  system_win32->timeout = gdk_threads_add_timeout_full (0, 1000, check_volumes, system_win32, NULL);
 
   system_win32->handles = g_hash_table_new (g_direct_hash, g_direct_equal);
 
@@ -526,11 +587,11 @@ gtk_file_system_win32_list_volumes (GtkFileSystem *file_system)
   GSList *list = NULL;
   GtkFileSystemWin32 *system_win32 = (GtkFileSystemWin32 *)file_system;
 
-  drives = GetLogicalDrives();
+  drives = get_viewable_logical_drives ();
 
   system_win32->drives = drives;
   if (!drives)
-    g_warning ("GetLogicalDrives failed.");
+    g_warning ("get_viewable_logical_drives failed.");
 
   while (drives && drive[0] <= 'Z')
     {
@@ -812,7 +873,7 @@ struct callback_info
 
 
 
-static void
+static gboolean
 execute_callbacks (gpointer data)
 {
   GSList *l;
@@ -857,16 +918,6 @@ execute_callbacks (gpointer data)
     g_object_unref (system_win32);
 
   system_win32->execute_callbacks_idle_id = 0;
-}
-
-static gboolean
-execute_callbacks_idle (gpointer data)
-{
-  GDK_THREADS_ENTER ();
-
-  execute_callbacks(data);
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -903,7 +954,7 @@ queue_callback (GtkFileSystemWin32  *system_win32,
   system_win32->callbacks = g_slist_append (system_win32->callbacks, info);
 
   if (!system_win32->execute_callbacks_idle_id)
-    system_win32->execute_callbacks_idle_id = g_idle_add (execute_callbacks_idle, system_win32);
+    system_win32->execute_callbacks_idle_id = gdk_threads_add_idle (execute_callbacks, system_win32);
 }
 
 static GtkFileSystemHandle *
@@ -982,8 +1033,8 @@ gtk_file_system_win32_get_info (GtkFileSystem               *file_system,
   handle = create_handle (file_system);
 
   filename = gtk_file_path_get_string (path);
-  g_return_val_if_fail (filename != NULL, FALSE);
-  g_return_val_if_fail (g_path_is_absolute (filename), FALSE);
+  g_return_val_if_fail (filename != NULL, NULL);
+  g_return_val_if_fail (g_path_is_absolute (filename), NULL);
 
   if (!stat_with_error (filename, &wfad, &error))
     {
@@ -1010,8 +1061,6 @@ load_folder (gpointer data)
   GtkFileFolderWin32 *folder_win32 = data;
   GSList *children;
 
-  GDK_THREADS_ENTER ();
-
   if ((folder_win32->types & STAT_NEEDED_MASK) != 0)
     fill_in_stats (folder_win32);
 
@@ -1028,8 +1077,6 @@ load_folder (gpointer data)
   folder_win32->load_folder_id = 0;
 
   g_signal_emit_by_name (folder_win32, "finished-loading", 0);
-
-  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }
@@ -1139,7 +1186,7 @@ gtk_file_system_win32_get_folder (GtkFileSystem                 *file_system,
   /* Start loading the folder contents in an idle */
   if (!folder_win32->load_folder_id)
     folder_win32->load_folder_id =
-      g_idle_add ((GSourceFunc) load_folder, folder_win32);
+      gdk_threads_add_idle ((GSourceFunc) load_folder, folder_win32);
 
   return handle;
 }
@@ -1161,7 +1208,7 @@ gtk_file_system_win32_create_folder (GtkFileSystem                    *file_syst
   system_win32 = GTK_FILE_SYSTEM_WIN32 (file_system);
 
   filename = gtk_file_path_get_string (path);
-  g_return_val_if_fail (filename != NULL, FALSE);
+  g_return_val_if_fail (filename != NULL, NULL);
   g_return_val_if_fail (g_path_is_absolute (filename), NULL);
 
   handle = create_handle (file_system);
@@ -1177,7 +1224,7 @@ gtk_file_system_win32_create_folder (GtkFileSystem                    *file_syst
       g_set_error (&error,
 		   GTK_FILE_SYSTEM_ERROR,
 		   GTK_FILE_SYSTEM_ERROR_NONEXISTENT,
-		   _("Error creating directory '%s': %s"),
+		   _("Error creating folder '%s': %s"),
 		   display_filename,
 		   g_strerror (save_errno));
 

@@ -19,7 +19,6 @@
 #undef GTK_COMPILED_WITH_DEBUGGING
 
 #undef HAVE_CATGETS
-#undef HAVE_DIMM_H
 #undef HAVE_GETTEXT
 #undef HAVE_IPC_H
 #undef HAVE_LC_MESSAGES
@@ -27,6 +26,8 @@
 #undef HAVE_PWD_H
 #undef HAVE_SHM_H
 #undef HAVE_STPCPY
+#undef HAVE_SYS_SYSINFO_H
+#undef HAVE_SYS_SYSTEMINFO_H
 #undef HAVE_XSHM_H
 #undef HAVE_SHAPE_EXT
 #undef HAVE_SOLARIS_XINERAMA
@@ -34,7 +35,6 @@
 #undef HAVE_SYS_TIME_H
 #undef HAVE_XFREE_XINERAMA
 #undef HAVE_XINERAMA
-#undef HAVE_WINTAB
 #undef HAVE_XCONVERTCASE
 #undef HAVE_XFT
 
@@ -46,6 +46,8 @@
 
 #undef USE_GMODULE
 #undef USE_MMX
+#undef USE_MEDIALIB
+#undef USE_MEDIALIB25
 
 /* Define to use XKB extension */
 #undef HAVE_XKB

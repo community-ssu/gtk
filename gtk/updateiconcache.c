@@ -19,6 +19,7 @@
 
 #include <config.h>
 
+#include <locale.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -38,12 +39,19 @@
 #include <glib/gstdio.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 #include <glib/gi18n.h>
+#include "gtkiconcachevalidator.h"
 
 static gboolean force_update = FALSE;
 static gboolean ignore_theme_index = FALSE;
 static gboolean quiet = FALSE;
 static gboolean index_only = FALSE;
+static gboolean validate = FALSE;
 static gchar *var_name = "-";
+
+/* Quite ugly - if we just add the c file to the
+ * list of sources in Makefile.am, libtool complains.
+ */
+#include "gtkiconcachevalidator.c"
 
 #define CACHE_NAME "icon-theme.cache"
 
@@ -55,8 +63,6 @@ static gchar *var_name = "-";
 #define HAS_SUFFIX_ANI (1 << 4)
 #endif /* MAEMO_CHANGES */
 
-#define CAN_CACHE_IMAGE_DATA(flags) (!index_only && (((flags) & HAS_SUFFIX_PNG) || ((flags) & HAS_SUFFIX_XPM)))
-
 #define MAJOR_VERSION 1
 #define MINOR_VERSION 0
 #define HASH_OFFSET 12
@@ -64,16 +70,62 @@ static gchar *var_name = "-";
 #define ALIGN_VALUE(this, boundary) \
   (( ((unsigned long)(this)) + (((unsigned long)(boundary)) -1)) & (~(((unsigned long)(boundary))-1)))
 
+#ifdef HAVE_FTW_H
+
+#include <ftw.h>
+
+static struct stat cache_stat;
+static gboolean cache_up_to_date;
+
+static int check_dir_mtime (const char        *dir, 
+                            const struct stat *sb,
+                            int                tf)
+{
+  if (tf != FTW_NS && sb->st_mtime > cache_stat.st_mtime)
+    {
+      cache_up_to_date = FALSE;
+      /* stop tree walk */
+      return 1;
+    }
+
+  return 0;
+}
+
+ gboolean
+ is_cache_up_to_date (const gchar *path)
+ {
+  gchar *cache_path;
+  gint retval;
+
+  cache_path = g_build_filename (path, CACHE_NAME, NULL);
+  retval = g_stat (cache_path, &cache_stat);
+  g_free (cache_path);
+  
+  if (retval < 0)
+    {
+      /* Cache file not found */
+      return FALSE;
+    }
+
+  cache_up_to_date = TRUE;
+
+  ftw (path, check_dir_mtime, 20);
+
+  return cache_up_to_date;
+}
+
+#else  /* !HAVE_FTW_H */
+
 gboolean
 is_cache_up_to_date (const gchar *path)
 {
   struct stat path_stat, cache_stat;
   gchar *cache_path;
-  int retval;
+  int retval; 
   
   retval = g_stat (path, &path_stat);
 
-  if (retval < 0)
+  if (retval < 0) 
     {
       /* We can't stat the path,
        * assume we have a updated cache */
@@ -94,7 +146,9 @@ is_cache_up_to_date (const gchar *path)
   return cache_stat.st_mtime >= path_stat.st_mtime;
 }
 
-gboolean
+#endif  /* !HAVE_FTW_H */
+
+static gboolean
 has_theme_index (const gchar *path)
 {
   gboolean result;
@@ -112,13 +166,29 @@ has_theme_index (const gchar *path)
 
 typedef struct 
 {
-  gboolean has_pixdata;
   GdkPixdata pixdata;
+  gboolean has_pixdata;
   guint32 offset;
-  guint pixel_data_size;
+  guint size;
 } ImageData;
 
+typedef struct 
+{
+  int has_embedded_rect;
+  int x0, y0, x1, y1;
+  
+  int n_attach_points;
+  int *attach_points;
+  
+  int n_display_names;
+  char **display_names;
+
+  guint32 offset;
+  gint size;
+} IconData;
+
 static GHashTable *image_data_hash = NULL;
+static GHashTable *icon_data_hash = NULL;
 
 typedef struct
 {
@@ -128,15 +198,10 @@ typedef struct
   ImageData *image_data;
   guint pixel_data_size;
 
-  int has_embedded_rect;
-  int x0, y0, x1, y1;
-  
-  int n_attach_points;
-  int *attach_points;
-  
-  int n_display_names;
-  char **display_names;
+  IconData *icon_data;
+  guint icon_data_size;
 } Image;
+
 
 static gboolean
 foreach_remove_func (gpointer key, gpointer value, gpointer user_data)
@@ -148,9 +213,8 @@ foreach_remove_func (gpointer key, gpointer value, gpointer user_data)
 
   if (image->flags == HAS_ICON_FILE)
     {
+      /* just a .icon file, throw away */
       g_free (key);
-      g_free (image->attach_points);
-      g_strfreev (image->display_names);
       g_free (image);
 
       return TRUE;
@@ -169,8 +233,8 @@ foreach_remove_func (gpointer key, gpointer value, gpointer user_data)
   return TRUE;
 }
 
-static void
-load_icon_data (Image *image, const char *path)
+static IconData *
+load_icon_data (const char *path)
 {
   GKeyFile *icon_file;
   char **split;
@@ -182,6 +246,7 @@ load_icon_data (Image *image, const char *path)
   GError *error = NULL;
   gchar **keys;
   gsize n_keys;
+  IconData *data;
   
   icon_file = g_key_file_new ();
   g_key_file_set_list_separator (icon_file, ',');
@@ -189,8 +254,12 @@ load_icon_data (Image *image, const char *path)
   if (error)
     {
       g_error_free (error);
-      return;
+      g_key_file_free (icon_file);
+
+      return NULL;
     }
+
+  data = g_new0 (IconData, 1);
 
   ivalues = g_key_file_get_integer_list (icon_file, 
 					 "Icon Data", "EmbeddedTextRectangle",
@@ -199,11 +268,11 @@ load_icon_data (Image *image, const char *path)
     {
       if (length == 4)
 	{
-	  image->has_embedded_rect = TRUE;
-	  image->x0 = ivalues[0];
-	  image->y0 = ivalues[1];
-	  image->x1 = ivalues[2];
-	  image->y1 = ivalues[3];
+	  data->has_embedded_rect = TRUE;
+	  data->x0 = ivalues[0];
+	  data->y0 = ivalues[1];
+	  data->x1 = ivalues[2];
+	  data->y1 = ivalues[3];
 	}
       
       g_free (ivalues);
@@ -214,19 +283,19 @@ load_icon_data (Image *image, const char *path)
     {
       split = g_strsplit (str, "|", -1);
       
-      image->n_attach_points = g_strv_length (split);
-      image->attach_points = g_new (int, 2 * image->n_attach_points);
+      data->n_attach_points = g_strv_length (split);
+      data->attach_points = g_new (int, 2 * data->n_attach_points);
 
       i = 0;
-      while (split[i] != NULL && i < image->n_attach_points)
+      while (split[i] != NULL && i < data->n_attach_points)
 	{
 	  split_point = strchr (split[i], ',');
 	  if (split_point)
 	    {
 	      *split_point = 0;
 	      split_point++;
-	      image->attach_points[2 * i] = atoi (split[i]);
-	      image->attach_points[2 * i + 1] = atoi (split_point);
+	      data->attach_points[2 * i] = atoi (split[i]);
+	      data->attach_points[2 * i + 1] = atoi (split_point);
 	    }
 	  i++;
 	}
@@ -236,8 +305,8 @@ load_icon_data (Image *image, const char *path)
     }
       
   keys = g_key_file_get_keys (icon_file, "Icon Data", &n_keys, &error);
-  image->display_names = g_new0 (gchar *, 2 * n_keys + 1); 
-  image->n_display_names = 0;
+  data->display_names = g_new0 (gchar *, 2 * n_keys + 1); 
+  data->n_display_names = 0;
   
   for (i = 0; i < n_keys; i++)
     {
@@ -267,15 +336,23 @@ load_icon_data (Image *image, const char *path)
 					    NULL);
 	    }
 	  
-	  image->display_names[2 * image->n_display_names] = lang;
-	  image->display_names[2 * image->n_display_names + 1] = name;
-	  image->n_display_names++;
+	  data->display_names[2 * data->n_display_names] = lang;
+	  data->display_names[2 * data->n_display_names + 1] = name;
+	  data->n_display_names++;
 	}
     }
 
   g_strfreev (keys);
   
   g_key_file_free (icon_file);
+
+  /* -1 means not computed yet, the real value depends
+   * on string pool state, and will be computed 
+   * later 
+   */
+  data->size = -1;
+
+  return data;
 }
 
 /*
@@ -394,14 +471,14 @@ static void
 maybe_cache_image_data (Image       *image, 
 			const gchar *path)
 {
-  if (CAN_CACHE_IMAGE_DATA(image->flags) && !image->image_data) 
+  if (!index_only && !image->image_data && 
+      (g_str_has_suffix (path, ".png") || g_str_has_suffix (path, ".xpm")))
     {
       GdkPixbuf *pixbuf;
       ImageData *idata;
       gchar *path2;
 
       idata = g_hash_table_lookup (image_data_hash, path);
-
       path2 = follow_links (path);
 
       if (path2)
@@ -441,19 +518,66 @@ maybe_cache_image_data (Image       *image,
 	  if (pixbuf) 
 	    {
 	      gdk_pixdata_from_pixbuf (&idata->pixdata, pixbuf, FALSE);
-	      idata->pixel_data_size = idata->pixdata.length + 8;
+	      idata->size = idata->pixdata.length + 8;
 	      idata->has_pixdata = TRUE;
 	    }
 	}
 
       image->image_data = idata;
 
-      if (path2)
-	g_free (path2);
+      g_free (path2);
     }
 }
 
-GList *
+static void
+maybe_cache_icon_data (Image       *image,
+                       const gchar *path)
+{
+  if (g_str_has_suffix (path, ".icon"))
+    {
+      IconData *idata = NULL;
+      gchar *path2 = NULL;
+
+      idata = g_hash_table_lookup (icon_data_hash, path);
+      path2 = follow_links (path);
+
+      if (path2)
+	{
+	  IconData *idata2;
+
+	  canonicalize_filename (path2);
+  
+	  idata2 = g_hash_table_lookup (icon_data_hash, path2);
+
+	  if (idata && idata2 && idata != idata2)
+	    g_error (_("different idatas found for symlinked '%s' and '%s'\n"),
+		     path, path2);
+
+	  if (idata && !idata2)
+	    g_hash_table_insert (icon_data_hash, g_strdup (path2), idata);
+
+	  if (!idata && idata2)
+	    {
+	      g_hash_table_insert (icon_data_hash, g_strdup (path), idata2);
+	      idata = idata2;
+	    }
+	}
+      
+      if (!idata)
+	{
+	  idata = load_icon_data (path);
+	  g_hash_table_insert (icon_data_hash, g_strdup (path), idata);
+	  if (path2)
+	    g_hash_table_insert (icon_data_hash, g_strdup (path2), idata);  
+        }
+
+      image->icon_data = idata;
+
+      g_free (path2);
+    }
+}
+
+static GList *
 scan_directory (const gchar *base_path, 
 		const gchar *subdir, 
 		GHashTable  *files, 
@@ -502,6 +626,10 @@ scan_directory (const gchar *base_path,
 	  continue;
 	}
 
+      /* ignore images in the toplevel directory */
+      if (subdir == NULL)
+        continue;
+
       retval = g_file_test (path, G_FILE_TEST_IS_REGULAR);
       if (retval)
 	{
@@ -526,12 +654,7 @@ scan_directory (const gchar *base_path,
 	  *dot = '\0';
 	  
 	  image = g_hash_table_lookup (dir_hash, basename);
-	  if (image)
-	    {
-	      image->flags |= flags;
-	      maybe_cache_image_data (image, path);
-	    }
-	  else
+	  if (!image)
 	    {
 	      if (!dir_added) 
 		{
@@ -546,16 +669,15 @@ scan_directory (const gchar *base_path,
 		}
 		
 	      image = g_new0 (Image, 1);
-	      image->flags = flags;
 	      image->dir_index = dir_index;
-	      maybe_cache_image_data (image, path);
-
 	      g_hash_table_insert (dir_hash, g_strdup (basename), image);
 	    }
 
-	  if (g_str_has_suffix (name, ".icon"))
-	    load_icon_data (image, path);
-
+	  image->flags |= flags;
+      
+	  maybe_cache_image_data (image, path);
+          maybe_cache_icon_data (image, path);
+       
 	  g_free (basename);
 	}
 
@@ -579,6 +701,7 @@ struct _HashNode
   HashNode *next;
   gchar *name;
   GList *image_list;
+  gint offset;
 };
 
 static guint
@@ -621,7 +744,21 @@ convert_to_hash (gpointer key, gpointer value, gpointer user_data)
   return TRUE;
 }
 
-gboolean
+static GHashTable *string_pool = NULL;
+ 
+static int
+find_string (const gchar *n)
+{
+  return GPOINTER_TO_INT (g_hash_table_lookup (string_pool, n));
+}
+
+static void
+add_string (const gchar *n, int offset)
+{
+  g_hash_table_insert (string_pool, (gpointer) n, GINT_TO_POINTER (offset));
+}
+
+static gboolean
 write_string (FILE *cache, const gchar *n)
 {
   gchar *s;
@@ -634,11 +771,13 @@ write_string (FILE *cache, const gchar *n)
 
   i = fwrite (s, l, 1, cache);
 
+  g_free (s);
+
   return i == 1;
   
 }
 
-gboolean
+static gboolean
 write_card16 (FILE *cache, guint16 n)
 {
   int i;
@@ -650,7 +789,7 @@ write_card16 (FILE *cache, guint16 n)
   return i == 1;
 }
 
-gboolean
+static gboolean
 write_card32 (FILE *cache, guint32 n)
 {
   int i;
@@ -663,12 +802,13 @@ write_card32 (FILE *cache, guint32 n)
 }
 
 
-gboolean
-write_pixdata (FILE *cache, GdkPixdata *pixdata)
+static gboolean
+write_image_data (FILE *cache, ImageData *image_data, int offset)
 {
   guint8 *s;
   guint len;
   gint i;
+  GdkPixdata *pixdata = &image_data->pixdata;
 
   /* Type 0 is GdkPixdata */
   if (!write_card32 (cache, 0))
@@ -690,6 +830,121 @@ write_pixdata (FILE *cache, GdkPixdata *pixdata)
 }
 
 static gboolean
+write_icon_data (FILE *cache, IconData *icon_data, int offset)
+{
+  int ofs = offset + 12;
+  int j;
+  int tmp, tmp2;
+
+  if (icon_data->has_embedded_rect)
+    {
+      if (!write_card32 (cache, ofs))
+        return FALSE;
+	      
+       ofs += 8;
+    }	      
+  else
+    {
+      if (!write_card32 (cache, 0))
+        return FALSE;
+    }
+	      
+  if (icon_data->n_attach_points > 0)
+    {
+      if (!write_card32 (cache, ofs))
+        return FALSE;
+
+      ofs += 4 + 4 * icon_data->n_attach_points;
+    }
+  else
+    {
+      if (!write_card32 (cache, 0))
+        return FALSE;
+    }
+
+  if (icon_data->n_display_names > 0)
+    {
+      if (!write_card32 (cache, ofs))
+	return FALSE;
+    }
+  else
+    {
+      if (!write_card32 (cache, 0))
+        return FALSE;
+    }
+
+  if (icon_data->has_embedded_rect)
+    {
+      if (!write_card16 (cache, icon_data->x0) ||
+          !write_card16 (cache, icon_data->y0) ||
+	  !write_card16 (cache, icon_data->x1) ||
+	  !write_card16 (cache, icon_data->y1))
+        return FALSE;
+    }
+
+  if (icon_data->n_attach_points > 0)
+    {
+      if (!write_card32 (cache, icon_data->n_attach_points))
+        return FALSE;
+		  
+      for (j = 0; j < 2 * icon_data->n_attach_points; j++)
+        {
+          if (!write_card16 (cache, icon_data->attach_points[j]))
+            return FALSE;
+        }		  
+    }
+
+  if (icon_data->n_display_names > 0)
+    {
+      if (!write_card32 (cache, icon_data->n_display_names))
+        return FALSE;
+
+      ofs += 4 + 8 * icon_data->n_display_names;
+
+      tmp = ofs;
+      for (j = 0; j < 2 * icon_data->n_display_names; j++)
+        {
+          tmp2 = find_string (icon_data->display_names[j]);
+          if (tmp2 == 0 || tmp2 == -1)
+            {
+              tmp2 = tmp;
+              tmp += ALIGN_VALUE (strlen (icon_data->display_names[j]) + 1, 4);
+              /* We're playing a little game with negative
+               * offsets here to handle duplicate strings in 
+               * the array.
+               */
+              add_string (icon_data->display_names[j], -tmp2);
+            }
+          else if (tmp2 < 0)
+            {
+              tmp2 = -tmp2;
+            }
+
+          if (!write_card32 (cache, tmp2))
+            return FALSE;
+
+        }
+
+      g_assert (ofs == ftell (cache));
+      for (j = 0; j < 2 * icon_data->n_display_names; j++)
+        {
+          tmp2 = find_string (icon_data->display_names[j]);
+          g_assert (tmp2 != 0 && tmp2 != -1);
+          if (tmp2 < 0)
+            {
+              tmp2 = -tmp2;
+              g_assert (tmp2 == ftell (cache));
+              add_string (icon_data->display_names[j], tmp2);
+              if (!write_string (cache, icon_data->display_names[j]))
+                return FALSE;
+            }
+        }
+    }	     
+
+  return TRUE;
+}
+
+static gboolean
 write_header (FILE *cache, guint32 dir_list_offset)
 {
   return (write_card16 (cache, MAJOR_VERSION) &&
@@ -698,119 +953,166 @@ write_header (FILE *cache, guint32 dir_list_offset)
 	  write_card32 (cache, dir_list_offset));
 }
 
-guint
+static gint
 get_image_meta_data_size (Image *image)
 {
   gint i;
-  guint len = 0;
 
-  if (image->has_embedded_rect ||
-      image->attach_points > 0 ||
-      image->n_display_names > 0)
-    len += 12;
-
-  if (image->has_embedded_rect)
-    len += 8;
-
-  if (image->n_attach_points > 0)
-    len += 4 + image->n_attach_points * 4;
-
-  if (image->n_display_names > 0)
+  /* The complication with storing the size in both
+   * IconData and Image is necessary since we attribute
+   * the size of the IconData only to the first Image
+   * using it (at which time it is written out in the 
+   * cache). Later Images just refer to the written out
+   * IconData via the offset.
+   */
+  if (image->icon_data_size == 0)
     {
-      len += 4 + 8 * image->n_display_names;
+      if (image->icon_data && image->icon_data->size < 0)
+	{
+          IconData *data = image->icon_data;
 
-      for (i = 0; image->display_names[i]; i++)
-	len += ALIGN_VALUE (strlen (image->display_names[i]) + 1, 4);
+          data->size = 0;
+
+          if (data->has_embedded_rect ||
+              data->n_attach_points > 0 ||
+              data->n_display_names > 0)
+            data->size += 12;
+
+          if (data->has_embedded_rect)
+            data->size += 8;
+
+          if (data->n_attach_points > 0)
+            data->size += 4 + data->n_attach_points * 4;
+
+          if (data->n_display_names > 0)
+            {
+              data->size += 4 + 8 * data->n_display_names;
+
+              for (i = 0; data->display_names[i]; i++)
+                { 
+                  int poolv;
+                  if ((poolv = find_string (data->display_names[i])) == 0)
+                    {
+                      data->size += ALIGN_VALUE (strlen (data->display_names[i]) + 1, 4);
+                      /* Adding the string to the pool with -1
+                       * to indicate that it hasn't been written out
+                       * to the cache yet. We still need it in the
+                       * pool in case the same string occurs twice
+                       * during a get_single_node_size() calculation.
+                       */
+                      add_string (data->display_names[i], -1);
+                    }
+                }
+           } 
+
+	  image->icon_data_size = data->size;
+	  data->size = 0;
+	}
     }
 
-  return len;
+  g_assert (image->icon_data_size % 4 == 0);
+
+  return image->icon_data_size;
 }
 
-guint
+static gint
 get_image_pixel_data_size (Image *image)
 {
+  /* The complication with storing the size in both
+   * ImageData and Image is necessary since we attribute
+   * the size of the ImageData only to the first Image
+   * using it (at which time it is written out in the 
+   * cache). Later Images just refer to the written out
+   * ImageData via the offset.
+   */
   if (image->pixel_data_size == 0)
     {
       if (image->image_data && 
 	  image->image_data->has_pixdata)
 	{
-	  image->pixel_data_size = image->image_data->pixel_data_size;
-	  image->image_data->pixel_data_size = 0;
+	  image->pixel_data_size = image->image_data->size;
+	  image->image_data->size = 0;
 	}
     }
+
+  g_assert (image->pixel_data_size % 4 == 0);
 
   return image->pixel_data_size;
 }
 
-guint
+static gint
 get_image_data_size (Image *image)
 {
-  guint len;
+  gint len;
   
   len = 0;
 
   len += get_image_pixel_data_size (image);
   len += get_image_meta_data_size (image);
-  
-  if (len > 0 || (image->image_data && image->image_data->has_pixdata))
+
+  /* Even if len is zero, we need to reserve space to
+   * write the ImageData, unless this is an .svg without 
+   * .icon, in which case both image_data and icon_data
+   * are NULL.
+   */
+  if (len > 0 || image->image_data || image->icon_data)
     len += 8;
 
   return len;
 }
 
-guint
-get_single_node_size (HashNode *node, gboolean include_image_data)
+static void
+get_single_node_size (HashNode *node, int *node_size, int *image_data_size)
 {
-  int len = 0;
   GList *list;
 
   /* Node pointers */
-  len += 12;
+  *node_size = 12;
 
   /* Name */
-  len += ALIGN_VALUE (strlen (node->name) + 1, 4);
-
-  /* Image list */
-  len += 4 + g_list_length (node->image_list) * 8;
- 
-  /* Image data */
-  if (include_image_data)
-    for (list = node->image_list; list; list = list->next)
-      {
-	Image *image = list->data;
-
-	len += get_image_data_size (image);
-      }
-  
-  return len;
-}
-
-guint
-get_bucket_size (HashNode *node)
-{
-  int len = 0;
-  while (node)
+  if (find_string (node->name) == 0)
     {
-      len += get_single_node_size (node, TRUE);
-
-      node = node->next;
+      *node_size += ALIGN_VALUE (strlen (node->name) + 1, 4);
+      add_string (node->name, -1);
     }
 
-  return len;
+  /* Image list */
+  *node_size += 4 + g_list_length (node->image_list) * 8;
+ 
+  /* Image data */
+  *image_data_size = 0;
+  for (list = node->image_list; list; list = list->next)
+    {
+      Image *image = list->data;
+
+      *image_data_size += get_image_data_size (image);
+    }
 }
 
-gboolean
+static gboolean
 write_bucket (FILE *cache, HashNode *node, int *offset)
 {
   while (node != NULL)
     {
-      int next_offset = *offset + get_single_node_size (node, TRUE);
-      int image_data_offset = *offset + get_single_node_size (node, FALSE);
+      int node_size, image_data_size;
+      int next_offset, image_data_offset;
       int data_offset;
+      int name_offset;
+      int name_size;
+      int image_list_offset;
       int tmp;
-      int i, j, len;
+      int i, len;
       GList *list;
+
+      g_assert (*offset == ftell (cache));
+
+      node->offset = *offset;
 	  
+      get_single_node_size (node, &node_size, &image_data_size);
+      g_assert (node_size % 4 == 0);
+      g_assert (image_data_size % 4 == 0);
+      image_data_offset = *offset + node_size;
+      next_offset = *offset + node_size + image_data_size;
       /* Chain offset */
       if (node->next != NULL)
 	{
@@ -823,26 +1125,35 @@ write_bucket (FILE *cache, HashNode *node, int *offset)
 	    return FALSE;
 	}
       
-      /* Icon name offset */
-      if (!write_card32 (cache, *offset + 12))
+      name_size = 0;
+      name_offset = find_string (node->name);
+      if (name_offset <= 0)
+        {
+          name_offset = *offset + 12;
+          name_size = ALIGN_VALUE (strlen (node->name) + 1, 4);
+          add_string (node->name, name_offset);
+        }
+      if (!write_card32 (cache, name_offset))
 	return FALSE;
       
-      /* Image list offset */
-      tmp = *offset + 12 + ALIGN_VALUE (strlen (node->name) + 1, 4);
-      if (!write_card32 (cache, tmp))
+      image_list_offset = *offset + 12 + name_size;
+      if (!write_card32 (cache, image_list_offset))
 	return FALSE;
       
       /* Icon name */
-      if (!write_string (cache, node->name))
-	return FALSE;
-      
+      if (name_size > 0)
+        {
+          if (!write_string (cache, node->name))
+	    return FALSE;
+        }
+
       /* Image list */
       len = g_list_length (node->image_list);
       if (!write_card32 (cache, len))
 	return FALSE;
       
       /* Image data goes right after the image list */
-      tmp += 4 + len * 8;
+      tmp = image_list_offset + 4 + len * 8;
 
       list = node->image_list;
       data_offset = image_data_offset;
@@ -889,125 +1200,39 @@ write_bucket (FILE *cache, HashNode *node, int *offset)
 	  /* Pixel data */
 	  if (pixel_data_size > 0) 
 	    {
-	      if (!write_card32 (cache, image_data_offset + 8))
-		return FALSE;
-
 	      image->image_data->offset = image_data_offset + 8;
+	      if (!write_card32 (cache, image->image_data->offset))
+		return FALSE;
 	    }
 	  else
 	    {
-	      gint offset;
-
-	      if (image->image_data)
-		offset = image->image_data->offset;
-	      else
-		offset = 0;
-
-	      if (!write_card32 (cache, offset))
+	      if (!write_card32 (cache, (guint32) image->image_data ? image->image_data->offset : 0))
 		return FALSE;
 	    }
 
 	  if (meta_data_size > 0)
 	    {
-	      if (!write_card32 (cache, image_data_offset + pixel_data_size + 8))
+	      image->icon_data->offset = image_data_offset + pixel_data_size + 8;
+	      if (!write_card32 (cache, image->icon_data->offset))
 		return FALSE;
 	    }
 	  else
 	    {
-	      if (!write_card32 (cache, 0))
+	      if (!write_card32 (cache, image->icon_data ? image->icon_data->offset : 0))
 		return FALSE;
 	    }
 
 	  if (pixel_data_size > 0)
 	    {
-	      if (!write_pixdata (cache, &image->image_data->pixdata))
+	      if (!write_image_data (cache, image->image_data, image->image_data->offset))
 		return FALSE;
 	    }
 	  
 	  if (meta_data_size > 0)
 	    {
-	      int ofs = image_data_offset + pixel_data_size + 20;
-
-	      if (image->has_embedded_rect)
-		{
-		  if (!write_card32 (cache, ofs))
-		    return FALSE;
-	      
-		  ofs += 8;
-		}	      
-	      else
-		{
-		  if (!write_card32 (cache, 0))
-		    return FALSE;
-		}
-	      
-	      if (image->n_attach_points > 0)
-		{
-		  if (!write_card32 (cache, ofs))
-		    return FALSE;
-
-		  ofs += 4 + 4 * image->n_attach_points;
-		}
-	      else
-		{
-		  if (!write_card32 (cache, 0))
-		    return FALSE;
-		}
-
-	      if (image->n_display_names > 0)
-		{
-		  if (!write_card32 (cache, ofs))
-		    return FALSE;
-		}
-	      else
-		{
-		  if (!write_card32 (cache, 0))
-		    return FALSE;
-		}
-
-	      if (image->has_embedded_rect)
-		{
-		  if (!write_card16 (cache, image->x0) ||
-		      !write_card16 (cache, image->y0) ||
-		      !write_card16 (cache, image->x1) ||
-		      !write_card16 (cache, image->y1))
-		    return FALSE;
-		}
-
-	      if (image->n_attach_points > 0)
-		{
-		  if (!write_card32 (cache, image->n_attach_points))
-		    return FALSE;
-		  
-		  for (j = 0; j < 2 * image->n_attach_points; j++)
-		    {
-		      if (!write_card16 (cache, image->attach_points[j]))
-			return FALSE;
-		    }		  
-		}
-
-	      if (image->n_display_names > 0)
-		{
-		  if (!write_card32 (cache, image->n_display_names))
-		    return FALSE;
-
-		  ofs += 4 + 8 * image->n_display_names;
-
-		  for (j = 0; j < 2 * image->n_display_names; j++)
-		    {
-		      if (!write_card32 (cache, ofs))
-			return FALSE;
-
-		      ofs += ALIGN_VALUE (strlen (image->display_names[j]) + 1, 4);
-		    }
-
-		  for (j = 0; j < 2 * image->n_display_names; j++)
-		    {
-		      if (!write_string (cache, image->display_names[j]))
-			return FALSE;
-		    }	     
-		}
-	    }
+              if (!write_icon_data (cache, image->icon_data, image->icon_data->offset))
+                return FALSE;
+            }
 
 	  image_data_offset += pixel_data_size + meta_data_size + 8;
 	}
@@ -1019,7 +1244,7 @@ write_bucket (FILE *cache, HashNode *node, int *offset)
   return TRUE;
 }
 
-gboolean
+static gboolean
 write_hash_table (FILE *cache, HashContext *context, int *new_offset)
 {
   int offset = HASH_OFFSET;
@@ -1029,50 +1254,54 @@ write_hash_table (FILE *cache, HashContext *context, int *new_offset)
   if (!(write_card32 (cache, context->size)))
     return FALSE;
 
-  /* Size int + size * 4 */
-  node_offset = offset + 4 + context->size * 4;
-  
+  offset += 4;
+  node_offset = offset + context->size * 4;
+  /* Just write zeros here, we will rewrite this later */  
   for (i = 0; i < context->size; i++)
     {
-      if (context->nodes[i] != NULL)
-	{
-	  if (!write_card32 (cache, node_offset))
-	    return FALSE;
-	  
-	  node_offset += get_bucket_size (context->nodes[i]);
-	}
-      else
-	{
-	  if (!write_card32 (cache, 0xffffffff))
-	    {
-	      return FALSE;
-	    }
-	}
+      if (!write_card32 (cache, 0))
+	return FALSE;
     }
 
-  *new_offset = node_offset;
-
   /* Now write the buckets */
-  node_offset = offset + 4 + context->size * 4;
-  
   for (i = 0; i < context->size; i++)
     {
       if (!context->nodes[i])
 	continue;
 
+      g_assert (node_offset % 4 == 0);
       if (!write_bucket (cache, context->nodes[i], &node_offset))
 	return FALSE;
     }
 
+  *new_offset = node_offset;
+
+  /* Now write out the bucket offsets */
+
+  fseek (cache, offset, SEEK_SET);
+
+  for (i = 0; i < context->size; i++)
+    {
+      if (context->nodes[i] != NULL)
+        node_offset = context->nodes[i]->offset;
+      else
+	node_offset = 0xffffffff;
+      if (!write_card32 (cache, node_offset))
+        return FALSE;
+    }
+
+  fseek (cache, 0, SEEK_END);
+
   return TRUE;
 }
 
-gboolean
+static gboolean
 write_dir_index (FILE *cache, int offset, GList *directories)
 {
   int n_dirs;
   GList *d;
   char *dir;
+  int tmp, tmp2;
 
   n_dirs = g_list_length (directories);
 
@@ -1081,27 +1310,54 @@ write_dir_index (FILE *cache, int offset, GList *directories)
 
   offset += 4 + n_dirs * 4;
 
+  tmp = offset;
   for (d = directories; d; d = d->next)
     {
       dir = d->data;
-      if (!write_card32 (cache, offset))
+  
+      tmp2 = find_string (dir);
+    
+      if (tmp2 == 0 || tmp2 == -1)
+        {
+          tmp2 = tmp;
+          tmp += ALIGN_VALUE (strlen (dir) + 1, 4);
+          /* We're playing a little game with negative
+           * offsets here to handle duplicate strings in 
+           * the array, even though that should not 
+           * really happen for the directory index.
+           */
+          add_string (dir, -tmp2);
+        }
+      else if (tmp2 < 0)
+        {
+          tmp2 = -tmp2;
+        }
+
+      if (!write_card32 (cache, tmp2))
 	return FALSE;
-      
-      offset += ALIGN_VALUE (strlen (dir) + 1, 4);
     }
 
+  g_assert (offset == ftell (cache));
   for (d = directories; d; d = d->next)
     {
       dir = d->data;
 
-      if (!write_string (cache, dir))
-	return FALSE;
+      tmp2 = find_string (dir);
+      g_assert (tmp2 != 0 && tmp2 != -1);
+      if (tmp2 < 0)
+        {
+          tmp2 = -tmp2;
+          g_assert (tmp2 == ftell (cache));
+          add_string (dir, tmp2); 
+          if (!write_string (cache, dir))
+	    return FALSE;
+        }
     }
   
   return TRUE;
 }
 
-gboolean
+static gboolean
 write_file (FILE *cache, GHashTable *files, GList *directories)
 {
   HashContext context;
@@ -1132,7 +1388,7 @@ write_file (FILE *cache, GHashTable *files, GList *directories)
 
   if (!write_dir_index (cache, new_offset, directories))
     {
-      g_printerr (_("Failed to write directory index\n"));
+      g_printerr (_("Failed to write folder index\n"));
       return FALSE;
     }
   
@@ -1147,7 +1403,33 @@ write_file (FILE *cache, GHashTable *files, GList *directories)
   return TRUE;
 }
 
-void
+static gboolean
+validate_file (const gchar *file)
+{
+  GMappedFile *map;
+  CacheInfo info;
+
+  map = g_mapped_file_new (file, FALSE, NULL);
+  if (!map)
+    return FALSE;
+
+  info.cache = g_mapped_file_get_contents (map);
+  info.cache_size = g_mapped_file_get_length (map);
+  info.n_directories = 0;
+  info.flags = CHECK_OFFSETS|CHECK_STRINGS|CHECK_PIXBUFS;
+
+  if (!_gtk_icon_cache_validate (&info)) 
+    {
+      g_mapped_file_free (map);
+      return FALSE;
+    }
+  
+  g_mapped_file_free (map);
+
+  return TRUE;
+}
+
+static void
 build_cache (const gchar *path)
 {
   gchar *cache_path, *tmp_cache_path;
@@ -1172,7 +1454,9 @@ build_cache (const gchar *path)
 
   files = g_hash_table_new (g_str_hash, g_str_equal);
   image_data_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  
+  icon_data_hash = g_hash_table_new (g_str_hash, g_str_equal);
+  string_pool = g_hash_table_new (g_str_hash, g_str_equal);
+ 
   directories = scan_directory (path, NULL, files, NULL, 0);
 
   if (g_hash_table_size (files) == 0)
@@ -1194,6 +1478,13 @@ build_cache (const gchar *path)
   if (!retval)
     {
       g_unlink (tmp_cache_path);
+      exit (1);
+    }
+
+  if (!validate_file (tmp_cache_path))
+    {
+      g_printerr (_("The generated cache was invalid.\n"));
+      //g_unlink (tmp_cache_path);
       exit (1);
     }
 
@@ -1250,7 +1541,7 @@ build_cache (const gchar *path)
     g_printerr (_("Cache file created successfully.\n"));
 }
 
-void
+static void
 write_csource (const gchar *path)
 {
   gchar *cache_path;
@@ -1286,13 +1577,40 @@ write_csource (const gchar *path)
 }
 
 static GOptionEntry args[] = {
-  { "force", 'f', 0, G_OPTION_ARG_NONE, &force_update, N_("Overwrite an existing cache, even if uptodate"), NULL },
+  { "force", 'f', 0, G_OPTION_ARG_NONE, &force_update, N_("Overwrite an existing cache, even if up to date"), NULL },
   { "ignore-theme-index", 't', 0, G_OPTION_ARG_NONE, &ignore_theme_index, N_("Don't check for the existence of index.theme"), NULL },
   { "index-only", 'i', 0, G_OPTION_ARG_NONE, &index_only, N_("Don't include image data in the cache"), NULL },
   { "source", 'c', 0, G_OPTION_ARG_STRING, &var_name, N_("Output a C header file"), "NAME" },
   { "quiet", 'q', 0, G_OPTION_ARG_NONE, &quiet, N_("Turn off verbose output"), NULL },
+  { "validate", 'v', 0, G_OPTION_ARG_NONE, &validate, N_("Validate existing icon cache"), NULL },
   { NULL }
 };
+
+static void
+printerr_handler (const gchar *string)
+{
+  const gchar *charset;
+
+  fputs (g_get_prgname (), stderr);
+  fputs (": ", stderr);
+  if (g_get_charset (&charset))
+    fputs (string, stderr); /* charset is UTF-8 already */
+  else
+    {
+      gchar *result;
+
+      result = g_convert_with_fallback (string, -1, charset, "UTF-8", "?", NULL, NULL, NULL);
+      
+      if (result)
+        {
+          fputs (result, stderr);
+          g_free (result);
+        }
+   
+      fflush (stderr);
+    }
+}
+
 
 int
 main (int argc, char **argv)
@@ -1302,7 +1620,11 @@ main (int argc, char **argv)
 
   if (argc < 2)
     return 0;
+
+  g_set_printerr_handler (printerr_handler);
   
+  setlocale (LC_ALL, "");
+
   bindtextdomain (GETTEXT_PACKAGE, GTK_LOCALEDIR);
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
@@ -1316,6 +1638,28 @@ main (int argc, char **argv)
   path = g_locale_to_utf8 (path, -1, NULL, NULL, NULL);
 #endif
   
+  if (validate)
+    {
+       gchar *file = g_build_filename (path, CACHE_NAME, NULL);
+
+       if (!g_file_test (file, G_FILE_TEST_IS_REGULAR))
+         {
+            if (!quiet)
+              g_printerr (_("File not found: %s\n"), file);
+            exit (1);
+         }
+       if (!validate_file (file))
+         {
+           if (!quiet)
+             g_printerr (_("Not a valid icon cache: %s\n"), file);
+           exit (1);
+         }
+       else 
+         {
+           exit (0);
+         }
+    }
+
   if (!ignore_theme_index && !has_theme_index (path))
     {
       g_printerr (_("No theme index file in '%s'.\n"

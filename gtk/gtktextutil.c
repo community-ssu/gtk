@@ -157,7 +157,7 @@ limit_layout_lines (PangoLayout *layout)
     {
       text  = pango_layout_get_text (layout);
       str   = g_string_new (NULL);
-      lines = pango_layout_get_lines (layout);
+      lines = pango_layout_get_lines_readonly (layout);
 
       /* get first lines */
       elem = lines;
@@ -327,15 +327,11 @@ _gtk_text_util_create_rich_drag_icon (GtkWidget     *widget,
    gtk_text_layout_validate (layout, DRAG_ICON_MAX_HEIGHT);
    gtk_text_layout_get_size (layout, &layout_width, &layout_height);
 
-   g_print ("%s: layout size %d %d\n", G_STRFUNC, layout_width, layout_height);
-
    layout_width = MIN (layout_width, DRAG_ICON_MAX_WIDTH);
    layout_height = MIN (layout_height, DRAG_ICON_MAX_HEIGHT);
 
    pixmap_width  = layout_width + DRAG_ICON_LAYOUT_BORDER * 2;
    pixmap_height = layout_height + DRAG_ICON_LAYOUT_BORDER * 2;
-
-   g_print ("%s: pixmap size %d %d\n", G_STRFUNC, pixmap_width, pixmap_height);
 
    drawable = gdk_pixmap_new (widget->window,
                               pixmap_width  + 2, pixmap_height + 2, -1);
@@ -365,4 +361,146 @@ _gtk_text_util_create_rich_drag_icon (GtkWidget     *widget,
    g_object_unref (new_buffer);
 
    return drawable;
+}
+
+
+static gint
+layout_get_char_width (PangoLayout *layout)
+{
+  gint width;
+  PangoFontMetrics *metrics;
+  const PangoFontDescription *font_desc;
+  PangoContext *context = pango_layout_get_context (layout);
+
+  font_desc = pango_layout_get_font_description (layout);
+  if (!font_desc)
+    font_desc = pango_context_get_font_description (context);
+
+  metrics = pango_context_get_metrics (context, font_desc, NULL);
+  width = pango_font_metrics_get_approximate_char_width (metrics);
+  pango_font_metrics_unref (metrics);
+
+  return width;
+}
+
+/**
+ * _gtk_text_util_get_block_cursor_location
+ * @layout: a #PangoLayout
+ * @index: index at which cursor is located
+ * @pos: cursor location
+ * @at_line_end: whether cursor i sdrawn at line end, not over some
+ * character
+ *
+ * Returns: whether cursor should actually be drawn as a rectangle.
+ * It may not be the case if character at index is invisible.
+ **/
+gboolean
+_gtk_text_util_get_block_cursor_location (PangoLayout    *layout,
+					  gint            index,
+					  PangoRectangle *pos,
+					  gboolean       *at_line_end)
+{
+  PangoRectangle strong_pos, weak_pos;
+  PangoLayoutLine *layout_line;
+  gboolean rtl;
+  gint line_no;
+  const gchar *text;
+
+  g_return_val_if_fail (layout != NULL, FALSE);
+  g_return_val_if_fail (index >= 0, FALSE);
+  g_return_val_if_fail (pos != NULL, FALSE);
+
+  pango_layout_index_to_pos (layout, index, pos);
+
+  if (pos->width != 0)
+    {
+      /* cursor is at some visible character, good */
+      if (at_line_end)
+	*at_line_end = FALSE;
+      if (pos->width < 0)
+	{
+	  pos->x += pos->width;
+	  pos->width = -pos->width;
+	}
+      return TRUE;
+    }
+
+  pango_layout_index_to_line_x (layout, index, FALSE, &line_no, NULL);
+  layout_line = pango_layout_get_line_readonly (layout, line_no);
+  g_return_val_if_fail (layout_line != NULL, FALSE);
+
+  text = pango_layout_get_text (layout);
+
+  if (index < layout_line->start_index + layout_line->length)
+    {
+      /* this may be a zero-width character in the middle of the line,
+       * or it could be a character where line is wrapped, we do want
+       * block cursor in latter case */
+      if (g_utf8_next_char (text + index) - text !=
+	  layout_line->start_index + layout_line->length)
+	{
+	  /* zero-width character in the middle of the line, do not
+	   * bother with block cursor */
+	  return FALSE;
+	}
+    }
+
+  /* Cursor is at the line end. It may be an empty line, or it could
+   * be on the left or on the right depending on text direction, or it
+   * even could be in the middle of visual layout in bidi text. */
+
+  pango_layout_get_cursor_pos (layout, index, &strong_pos, &weak_pos);
+
+  if (strong_pos.x != weak_pos.x)
+    {
+      /* do not show block cursor in this case, since the character typed
+       * in may or may not appear at the cursor position */
+      return FALSE;
+    }
+
+  /* In case when index points to the end of line, pos->x is always most right
+   * pixel of the layout line, so we need to correct it for RTL text. */
+  if (layout_line->length)
+    {
+      if (layout_line->resolved_dir == PANGO_DIRECTION_RTL)
+	{
+	  PangoLayoutIter *iter;
+	  PangoRectangle line_rect;
+	  gint i;
+	  gint left, right;
+	  const gchar *p;
+
+	  p = g_utf8_prev_char (text + index);
+
+	  pango_layout_line_index_to_x (layout_line, p - text, FALSE, &left);
+	  pango_layout_line_index_to_x (layout_line, p - text, TRUE, &right);
+	  pos->x = MIN (left, right);
+
+	  iter = pango_layout_get_iter (layout);
+	  for (i = 0; i < line_no; i++)
+	    pango_layout_iter_next_line (iter);
+	  pango_layout_iter_get_line_extents (iter, NULL, &line_rect);
+	  pango_layout_iter_free (iter);
+
+          rtl = TRUE;
+	  pos->x += line_rect.x;
+	}
+      else
+	rtl = FALSE;
+    }
+  else
+    {
+      PangoContext *context = pango_layout_get_context (layout);
+      rtl = pango_context_get_base_dir (context) == PANGO_DIRECTION_RTL;
+    }
+
+  pos->width = layout_get_char_width (layout);
+
+  if (rtl)
+    pos->x -= pos->width - 1;
+
+  if (at_line_end)
+    *at_line_end = TRUE;
+
+  return pos->width != 0;
 }

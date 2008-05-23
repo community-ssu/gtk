@@ -1,5 +1,6 @@
 /* GDK - The GIMP Drawing Kit
- * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ * Copyright (C) 1995-2007 Peter Mattis, Spencer Kimball,
+ * Josh MacDonald, Ryan Lortie
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -57,6 +58,18 @@
 
 #ifdef HAVE_SHAPE_EXT
 #include <X11/extensions/shape.h>
+#endif
+
+#ifdef HAVE_XCOMPOSITE
+#include <X11/extensions/Xcomposite.h>
+#endif
+
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#endif
+
+#ifdef HAVE_XDAMAGE
+#include <X11/extensions/Xdamage.h>
 #endif
 
 const int _gdk_event_mask_table[21] =
@@ -194,8 +207,7 @@ gdk_window_impl_x11_finalize (GObject *object)
 	_gdk_xid_table_remove (display, window_impl->toplevel->focus_window);
     }
 
-  if (window_impl->toplevel)
-    g_free (window_impl->toplevel);
+  g_free (window_impl->toplevel);
 
   if (window_impl->cursor)
     gdk_cursor_unref (window_impl->cursor);
@@ -618,6 +630,12 @@ setup_toplevel_window (GdkWindow *window,
 		   gdk_x11_get_xatom_by_name_for_display (screen_x11->display, "WM_CLIENT_LEADER"),
 		   XA_WINDOW, 32, PropModeReplace,
 		   (guchar *) &leader_window, 1);
+
+  if (toplevel->focus_window != None)
+    XChangeProperty (xdisplay, xid, 
+                     gdk_x11_get_xatom_by_name_for_display (screen_x11->display, "_NET_WM_USER_TIME_WINDOW"),
+                     XA_WINDOW, 32, PropModeReplace,
+                     (guchar *) &toplevel->focus_window, 1);
 
   if (!obj->focus_on_map)
     gdk_x11_window_set_user_time (window, 0);
@@ -1292,7 +1310,7 @@ set_initial_hints (GdkWindow *window)
     return;
 
   update_wm_hints (window, TRUE);
-
+  
   /* We set the spec hints regardless of whether the spec is supported,
    * since it can't hurt and it's kind of expensive to check whether
    * it's supported.
@@ -1364,11 +1382,10 @@ set_initial_hints (GdkWindow *window)
       XChangeProperty (xdisplay,
                        xwindow,
 		       gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE"),
-                       XA_ATOM, 32,
-                       PropModeReplace,
+                       XA_ATOM, 32, PropModeReplace,
                        (guchar*) atoms, i);
     }
-  else
+  else 
     {
       XDeleteProperty (xdisplay,
                        xwindow,
@@ -1586,7 +1603,6 @@ gdk_window_hide (GdkWindow *window)
     case GDK_WINDOW_TEMP: /* ? */
       gdk_window_withdraw (window);
       return;
-      break;
       
     case GDK_WINDOW_FOREIGN:
     case GDK_WINDOW_ROOT:
@@ -2909,6 +2925,40 @@ gdk_window_set_role (GdkWindow   *window,
       else
 	XDeleteProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
 			 gdk_x11_get_xatom_by_name_for_display (display, "WM_WINDOW_ROLE"));
+    }
+}
+
+/**
+ * gdk_window_set_startup_id:
+ * @window: a toplevel #GdkWindow
+ * @startup_id: a string with startup-notification identifier
+ *
+ * When using GTK+, typically you should use gtk_window_set_startup_id()
+ * instead of this low-level function.
+ *
+ * Since: 2.12
+ *
+ **/
+void          
+gdk_window_set_startup_id (GdkWindow   *window,
+		     const gchar *startup_id)
+{
+  GdkDisplay *display;
+  
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  display = gdk_drawable_get_display (window);
+
+  if (!GDK_WINDOW_DESTROYED (window))
+    {
+      if (startup_id)
+	XChangeProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
+			 gdk_x11_get_xatom_by_name_for_display (display, "_NET_STARTUP_ID"), 
+			 gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
+			 PropModeReplace, startup_id, strlen (startup_id));
+      else
+	XDeleteProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
+			 gdk_x11_get_xatom_by_name_for_display (display, "_NET_STARTUP_ID"));
     }
 }
 
@@ -4238,6 +4288,7 @@ gdk_x11_window_set_user_time (GdkWindow *window,
   GdkDisplayX11 *display_x11;
   GdkToplevelX11 *toplevel;
   glong timestamp_long = (glong)timestamp;
+  Window xid;
 
   g_return_if_fail (GDK_IS_WINDOW (window));
 
@@ -4248,7 +4299,20 @@ gdk_x11_window_set_user_time (GdkWindow *window,
   display_x11 = GDK_DISPLAY_X11 (display);
   toplevel = _gdk_x11_window_get_toplevel (window);
 
-  XChangeProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
+  if (!toplevel)
+    {
+      g_warning ("gdk_window_set_user_time called on non-toplevel\n");
+      return;
+    }
+
+  if (toplevel->focus_window != None &&
+      gdk_x11_screen_supports_net_wm_hint (GDK_WINDOW_SCREEN (window),
+                                           gdk_atom_intern_static_string ("_NET_WM_USER_TIME_WINDOW")))
+    xid = toplevel->focus_window;
+  else
+    xid = GDK_WINDOW_XID (window);
+
+  XChangeProperty (GDK_DISPLAY_XDISPLAY (display), xid,
                    gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_USER_TIME"),
                    XA_CARDINAL, 32, PropModeReplace,
                    (guchar *)&timestamp_long, 1);
@@ -5757,7 +5821,6 @@ wmspec_resize_drag (GdkWindow     *window,
       g_warning ("gdk_window_begin_resize_drag: bad resize edge %d!",
                  edge);
       return;
-      break;
     }
   
   wmspec_moveresize (window, direction, root_x, root_y, timestamp);
@@ -6363,6 +6426,93 @@ gdk_window_beep (GdkWindow *window)
 #endif
     gdk_display_beep (display);
 }
+
+/**
+ * gdk_window_set_opacity:
+ * @window: a top-level #GdkWindow
+ * @opacity: opacity
+ *
+ * Request the windowing system to make @window partially transparent,
+ * with opacity 0 being fully transparent and 1 fully opaque. (Values
+ * of the opacity parameter are clamped to the [0,1] range.) 
+ *
+ * On X11, this works only on X screens with a compositing manager 
+ * running.
+ *
+ * For setting up per-pixel alpha, see gdk_screen_get_rgba_colormap().
+ * For making non-toplevel windows translucent, see 
+ * gdk_window_set_composited().
+ *
+ * Since: 2.12
+ */
+void
+gdk_window_set_opacity (GdkWindow *window,
+			gdouble    opacity)
+{
+  GdkDisplay *display;
+  guint32 cardinal;
+  
+  g_return_if_fail (GDK_IS_WINDOW (window));
+  g_return_if_fail (WINDOW_IS_TOPLEVEL (window));
+
+  if (GDK_WINDOW_DESTROYED (window))
+    return;
+
+  display = gdk_drawable_get_display (window);
+
+  if (opacity < 0)
+    opacity = 0;
+  else if (opacity > 1)
+    opacity = 1;
+
+  cardinal = opacity * 0xffffffff;
+
+  if (cardinal == 0xffffffff)
+    XDeleteProperty (GDK_DISPLAY_XDISPLAY (display),
+		     GDK_WINDOW_XID (window),
+		     gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_OPACITY"));
+  else
+    XChangeProperty (GDK_DISPLAY_XDISPLAY (display),
+		     GDK_WINDOW_XID (window),
+		     gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_OPACITY"),
+		     XA_CARDINAL, 32,
+		     PropModeReplace,
+		     (guchar *) &cardinal, 1);
+}
+
+void
+_gdk_windowing_window_set_composited (GdkWindow *window,
+                                      gboolean   composited)
+{
+#if defined(HAVE_XCOMPOSITE) && defined(HAVE_XDAMAGE) && defined (HAVE_XFIXES)
+  GdkWindowObject *private = (GdkWindowObject *) window;
+  GdkDisplayX11 *x11_display;
+  GdkWindowImplX11 *impl;
+  GdkDisplay *display;
+  Display *dpy;
+  Window xid;
+
+  impl = GDK_WINDOW_IMPL_X11 (private->impl);
+
+  display = gdk_screen_get_display (GDK_DRAWABLE_IMPL_X11 (impl)->screen);
+  x11_display = GDK_DISPLAY_X11 (display);
+  dpy = GDK_DISPLAY_XDISPLAY (display);
+  xid = GDK_WINDOW_XWINDOW (private);
+
+  if (composited)
+    {
+      XCompositeRedirectWindow (dpy, xid, CompositeRedirectManual);
+      impl->damage = XDamageCreate (dpy, xid, XDamageReportBoundingBox);
+    }
+  else
+    {
+      XCompositeUnredirectWindow (dpy, xid, CompositeRedirectManual);
+      XDamageDestroy (dpy, impl->damage);
+      impl->damage = None;
+    }
+#endif
+}
+
 
 #define __GDK_WINDOW_X11_C__
 #include "gdkaliasdef.c"

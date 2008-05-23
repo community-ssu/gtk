@@ -1,6 +1,6 @@
 /* GdkQuartzView.m
  *
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,6 +42,9 @@
 
 -(BOOL)isOpaque
 {
+  if (GDK_WINDOW_DESTROYED (gdk_window))
+    return YES;
+
   /* A view is opaque if its GdkWindow doesn't have the RGBA colormap */
   return gdk_drawable_get_colormap (gdk_window) != gdk_screen_get_rgba_colormap (_gdk_screen);
 }
@@ -54,6 +57,21 @@
   const NSRect *drawn_rects;
   int count, i;
   GdkRegion *region;
+
+  if (GDK_WINDOW_DESTROYED (gdk_window))
+    return;
+
+  if (!(private->event_mask & GDK_EXPOSURE_MASK))
+    return;
+
+  /* For some reason, we occasionally get draw requests for zero sized rects
+   * at 0,0, just ignore those.
+   */
+  if (rect.origin.x == 0 && rect.origin.y == 0 &&
+      rect.size.width == 0 && rect.size.height == 0)
+    {
+      return;
+    }
 
   GDK_QUARTZ_ALLOC_POOL;
 
@@ -71,7 +89,7 @@
       gdk_region_union_with_rect (region, &gdk_rect);
     }
 
-  if (!gdk_region_empty (region) && private->event_mask & GDK_EXPOSURE_MASK)
+  if (!gdk_region_empty (region))
     {
       GdkEvent event;
       
@@ -87,17 +105,81 @@
       event.expose.region = region;
       event.expose.area = gdk_rect;
       
-      impl->in_paint_rect_count ++;
+      impl->in_paint_rect_count++;
 
       (*_gdk_event_func) (&event, _gdk_event_data);
 
-      impl->in_paint_rect_count --;
+      impl->in_paint_rect_count--;
 
       g_object_unref (gdk_window);
-      gdk_region_destroy (event.expose.region);
+    }
+
+  gdk_region_destroy (region);
+
+  if (needsInvalidateShadow)
+    {
+      [[self window] invalidateShadow];
+      needsInvalidateShadow = NO;
     }
 
   GDK_QUARTZ_RELEASE_POOL;
+}
+
+-(void)setNeedsInvalidateShadow:(BOOL)invalidate
+{
+  needsInvalidateShadow = invalidate;
+}
+
+/* For information on setting up tracking rects properly, see here:
+ * http://developer.apple.com/documentation/Cocoa/Conceptual/EventOverview/EventOverview.pdf
+ */
+-(void)updateTrackingRect
+{
+  GdkWindowObject *private = GDK_WINDOW_OBJECT (gdk_window);
+  GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
+  NSRect rect;
+
+  if (trackingRect)
+    {
+      [self removeTrackingRect:trackingRect];
+      trackingRect = 0;
+    }
+
+  if (!impl->toplevel)
+    return;
+
+  /* Note, if we want to set assumeInside we can use:
+   * NSPointInRect ([[self window] convertScreenToBase:[NSEvent mouseLocation]], rect)
+   */
+
+  rect = [self bounds];
+  trackingRect = [self addTrackingRect:rect
+                                 owner:self
+                              userData:nil
+                          assumeInside:NO];
+}
+
+-(void)viewDidMoveToWindow
+{
+  if (![self window]) /* We are destroyed already */
+      return;
+
+  [self updateTrackingRect];
+}
+
+-(void)viewWillMoveToWindow:(NSWindow *)newWindow
+{
+  if (newWindow == nil && trackingRect)
+    {
+      [self removeTrackingRect:trackingRect];
+      trackingRect = 0;
+    }
+}
+
+-(void)setFrame:(NSRect)frame
+{
+  [super setFrame:frame];
+  [self updateTrackingRect];
 }
 
 @end

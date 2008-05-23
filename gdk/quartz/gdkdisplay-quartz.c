@@ -45,11 +45,15 @@ gdk_display_open (const gchar *display_name)
   if (_gdk_display != NULL)
     return NULL;
 
+  /* Initialize application */
+  [NSApplication sharedApplication];
+
   _gdk_display = g_object_new (GDK_TYPE_DISPLAY, NULL);
   _gdk_screen = g_object_new (GDK_TYPE_SCREEN, NULL);
 
-  /* Initialize application */
-  [NSApplication sharedApplication];
+  NSScreen *nsscreen;
+  nsscreen = [[NSScreen screens] objectAtIndex:0];
+  gdk_screen_set_resolution (_gdk_screen, 72.0 * [nsscreen userSpaceScaleFactor]);
 
   _gdk_visual_init ();
   gdk_screen_set_default_colormap (_gdk_screen,
@@ -73,8 +77,16 @@ gdk_display_open (const gchar *display_name)
 G_CONST_RETURN gchar *
 gdk_display_get_name (GdkDisplay *display)
 {
-  /* FIXME: Implement */
-  return NULL;
+  static gchar *display_name = NULL;
+
+  if (!display_name)
+    {
+      GDK_QUARTZ_ALLOC_POOL;
+      display_name = g_strdup ([[[NSHost currentHost] name] UTF8String]);
+      GDK_QUARTZ_RELEASE_POOL;
+    }
+
+  return display_name;
 }
 
 int
@@ -158,3 +170,10 @@ gdk_display_store_clipboard (GdkDisplay *display,
   /* FIXME: Implement */
 }
 
+
+gboolean
+gdk_display_supports_composite (GdkDisplay *display)
+{
+  /* FIXME: Implement */
+  return FALSE;
+}

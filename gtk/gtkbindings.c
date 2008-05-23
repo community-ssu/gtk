@@ -565,7 +565,7 @@ gtk_binding_entry_activate (GtkBindingEntry *entry,
  * gtk_binding_set_new:
  * @set_name: unique name of this binding set
  *
- * Gtk+ maintains a global list of binding sets. Each binding set has
+ * GTK+ maintains a global list of binding sets. Each binding set has
  * a unique name which needs to be specified upon creation.
  *
  * Return value: new binding set
@@ -914,9 +914,6 @@ gtk_binding_entry_add_signal (GtkBindingSet  *binding_set,
       arg->arg_type = va_arg (args, GtkType);
       switch (G_TYPE_FUNDAMENTAL (arg->arg_type))
 	{
-	  /* for elaborated commenting about var args collection, take a look
-	   * at gtk_arg_collect_value() in gtkargcollector.c
-	   */
 	case G_TYPE_CHAR:
 	case G_TYPE_UCHAR:
 	case G_TYPE_INT:
