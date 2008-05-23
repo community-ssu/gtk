@@ -138,6 +138,11 @@ gtk_combo_box_get_active_text().
 
 </para>
 
+<!-- ##### ARG GtkComboBox:autodimmed-button ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkComboBox:shadow-type ##### -->
 <para>
 

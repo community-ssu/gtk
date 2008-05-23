@@ -1,3 +1,11 @@
+2008-05-23  Michael Natterer  <mitch@imendio.com>
+
+	* === Start Maemo-GTK+ 2.12.9 ===
+
+	* update svn:ignore
+
+	* regenerated some sgml files in docs/reference
+
 2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.9 ===

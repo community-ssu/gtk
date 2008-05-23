@@ -145,6 +145,14 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 @arg1: 
 @arg2: 
 
+<!-- ##### SIGNAL GtkTreeView::row-insensitive ##### -->
+<para>
+
+</para>
+
+@treeview: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GtkTreeView::select-all ##### -->
 <para>
 
@@ -359,6 +367,11 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 </para>
 
 <!-- ##### ARG GtkTreeView:row-ending-details ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTreeView:separator-height ##### -->
 <para>
 
 </para>

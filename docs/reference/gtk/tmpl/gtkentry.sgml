@@ -79,6 +79,14 @@ The #GtkEntry-struct struct contains only private data.
 @entry: the object which received the signal.
 @arg1: 
 
+<!-- ##### SIGNAL GtkEntry::invalid-input ##### -->
+<para>
+
+</para>
+
+@entry: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GtkEntry::move-cursor ##### -->
 <para>
 
@@ -127,6 +135,11 @@ The #GtkEntry-struct struct contains only private data.
 </para>
 
 <!-- ##### ARG GtkEntry:has-frame ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkEntry:hildon-input-mode ##### -->
 <para>
 
 </para>
@@ -487,5 +500,23 @@ The #GtkEntry-struct struct contains only private data.
 
 @entry: 
 @Returns: 
+
+
+<!-- ##### FUNCTION hildon_gtk_entry_get_input_mode ##### -->
+<para>
+
+</para>
+
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_gtk_entry_set_input_mode ##### -->
+<para>
+
+</para>
+
+@entry: 
+@input_mode: 
 
 
