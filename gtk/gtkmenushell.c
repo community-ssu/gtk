@@ -764,6 +764,10 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
       menu_shell->button = 0;
       menu_item = gtk_menu_shell_get_item (menu_shell, (GdkEvent*) event);
 
+      g_object_get (gtk_widget_get_settings (widget),
+                    "gtk-menu-popup-click-time", &popup_click_time,
+                    NULL);
+
       if (popup_click_time == 0 ||
           (event->time - menu_shell->activate_time) > popup_click_time)
         {
