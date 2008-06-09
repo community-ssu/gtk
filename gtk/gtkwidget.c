@@ -2525,6 +2525,16 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                                                              P_("The length of vertical scroll arrows"),
                                                              1, G_MAXINT, 16,
                                                              GTK_PARAM_READABLE));
+
+#ifdef MAEMO_CHANGES
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_enum ("hildon-mode",
+                                                              P_("Hildon Mode"),
+                                                              P_("The mode according to which widgets should behave"),
+                                                              GTK_TYPE_MODE,
+                                                              HILDON_DIABLO,
+                                                              GTK_PARAM_READABLE));
+#endif /* MAEMO_CHANGES */
 }
 
 static void

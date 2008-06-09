@@ -544,6 +544,12 @@ typedef enum
   HILDON_GTK_INPUT_MODE_AUTOCAP      = 1 << 30,
   HILDON_GTK_INPUT_MODE_DICTIONARY   = 1 << 31
 } HildonGtkInputMode;
+
+typedef enum
+{
+  HILDON_DIABLO,
+  HILDON_FREMANTLE
+} HildonMode;
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS

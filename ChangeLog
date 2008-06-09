@@ -1,3 +1,9 @@
+2008-06-09  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkenums.h:
+	* gtk/gtkwidget.c (gtk_widget_class_init): introduce hildon-mode
+	style property.
+
 2008-06-04  Alberto Garcia  <agarcia@igalia.com>
 
 	* gtk/gtkdialog.c (gtk_dialog_init): change the layout of the
