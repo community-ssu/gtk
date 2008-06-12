@@ -1671,6 +1671,64 @@ gtk_entry_draw_frame (GtkWidget    *widget,
     }
 }
 
+typedef struct {
+  GtkEntry      *entry;
+  GtkAdjustment *adjustment;
+} EntryProgressAdjustment;
+
+static void
+entry_progress_adjustment_removed (gpointer data)
+{
+  EntryProgressAdjustment *epa = data;
+  g_signal_handlers_disconnect_by_func (epa->adjustment, gtk_widget_queue_draw, epa->entry);
+  g_object_unref (epa->adjustment);
+  g_slice_free (EntryProgressAdjustment, epa);
+}
+
+void
+gtk_entry_set_progress_adjustment (GtkEntry      *entry,
+                                   GtkAdjustment *adjustment)
+{
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+  if (adjustment)
+    g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (adjustment)
+    {
+      EntryProgressAdjustment *epa = g_slice_new (EntryProgressAdjustment);
+      epa->entry = entry;
+      epa->adjustment = g_object_ref_sink (adjustment);
+      g_object_set_data_full (G_OBJECT (entry), "GtkEntry-progress-adjustment", epa, entry_progress_adjustment_removed);
+      g_signal_connect_object (adjustment, "value-changed", G_CALLBACK (gtk_widget_queue_draw), entry, G_CONNECT_SWAPPED);
+    }
+  else
+    g_object_set_data (G_OBJECT (entry), "GtkEntry-progress-adjustment", NULL);
+}
+
+static void
+entry_paint_progress_adjustment (GtkEntry       *entry,
+                                 GdkEventExpose *event)
+{
+  EntryProgressAdjustment *epa = g_object_get_data (G_OBJECT (entry), "GtkEntry-progress-adjustment");
+  if (!epa)
+    return;
+  GtkWidget *widget = GTK_WIDGET (entry);
+  GtkAdjustment *adjustment = epa->adjustment;
+  double value = adjustment->value / ABS (adjustment->upper - adjustment->page_size - adjustment->lower);
+  int area_width, area_height;
+  gdk_drawable_get_size (entry->text_area, &area_width, &area_height);
+  if (value < 0)
+    gtk_paint_box (widget->style, entry->text_area,
+                   GTK_STATE_SELECTED, GTK_SHADOW_OUT,
+                   &event->area, widget, "bar",
+                   area_width + value * area_width, 0, -value * area_width, area_height);
+  else
+    gtk_paint_box (widget->style, entry->text_area,
+                   GTK_STATE_SELECTED, GTK_SHADOW_OUT,
+                   &event->area, widget, "bar",
+                   0, 0, value * area_width, area_height);
+}
+
 static gint
 gtk_entry_expose (GtkWidget      *widget,
 		  GdkEventExpose *event)
@@ -1689,6 +1747,7 @@ gtk_entry_expose (GtkWidget      *widget,
 			  GTK_WIDGET_STATE(widget), GTK_SHADOW_NONE,
 			  &event->area, widget, "entry_bg",
 			  0, 0, area_width, area_height);
+      entry_paint_progress_adjustment (entry, event);
 
       if (entry->dnd_position != -1)
 	gtk_entry_draw_cursor (GTK_ENTRY (widget), CURSOR_DND);

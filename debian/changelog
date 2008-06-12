@@ -1,3 +1,21 @@
+gtk+2.0 (2:2.12.9-0osso2) unstable; urgency=low
+
+  * gtk/gtkentry.c (gtk_entry_set_progress_adjustment): new function to
+    set an adjustment as progress indicator on GtkEntry widgets. Tim Janik
+    <timj@imendio.com>
+  * gtk/gtkdialog.c (gtk_dialog_init): change the layout of the
+    dialog so the buttons appear vertically on the right side. Alberto Garcia
+    <agarcia@igalia.com>
+  * gtk/gtkmenushell.c (gtk_menu_shell_button_release): one part of
+    the 2-12 upgrade patch got lost, making all menus behave
+    unpredictable-to-unusable. Should be fixed now. Michael Natterer
+    <mitch@imendio.com>
+  * gtk/gtkenums.h:
+  * gtk/gtkwidget.c (gtk_widget_class_init): introduce hildon-mode
+    style property. Kristian Rietveld  <kris@imendio.com>
+
+ -- Karl Lattimer <karl.lattimer@nokia.com>  Thu, 12 Jun 2008 13:40:00 +0300
+
 gtk+2.0 (2:2.12.9-0osso1) unstable; urgency=low
 
   * Upgrade to GTK+ 2.12.9

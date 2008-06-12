@@ -1,3 +1,8 @@
+2008-05-05 13:42:57  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkentry.c (gtk_entry_set_progress_adjustment): new function to
+	set an adjustment as progress indicator on GtkEntry widgets.
+
 2008-06-09  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtkenums.h:
