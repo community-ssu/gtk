@@ -1671,6 +1671,7 @@ gtk_entry_draw_frame (GtkWidget    *widget,
     }
 }
 
+#ifdef MAEMO_CHANGES
 typedef struct {
   GtkEntry      *entry;
   GtkAdjustment *adjustment;
@@ -1685,9 +1686,19 @@ entry_progress_adjustment_removed (gpointer data)
   g_slice_free (EntryProgressAdjustment, epa);
 }
 
+/**
+ * hildon_gtk_entry_set_progress_adjustment:
+ * @entry:      valid #GtkEntry
+ * @adjustment: valid #GtkAdjustment or %NULL
+ *
+ * Set an adjustment that is used to display progress indicators in the
+ * background of the #GtkEntry. The progress indicator is usually displayed
+ * from left to right, negative adjustment values cause progress indication
+ * from right to left.
+ */
 void
-gtk_entry_set_progress_adjustment (GtkEntry      *entry,
-                                   GtkAdjustment *adjustment)
+hildon_gtk_entry_set_progress_adjustment (GtkEntry      *entry,
+                                          GtkAdjustment *adjustment)
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
   if (adjustment)
@@ -1728,6 +1739,7 @@ entry_paint_progress_adjustment (GtkEntry       *entry,
                    &event->area, widget, "bar",
                    0, 0, value * area_width, area_height);
 }
+#endif /* MAEMO_CHANGES */
 
 static gint
 gtk_entry_expose (GtkWidget      *widget,
@@ -1747,7 +1759,9 @@ gtk_entry_expose (GtkWidget      *widget,
 			  GTK_WIDGET_STATE(widget), GTK_SHADOW_NONE,
 			  &event->area, widget, "entry_bg",
 			  0, 0, area_width, area_height);
+#ifdef MAEMO_CHANGES
       entry_paint_progress_adjustment (entry, event);
+#endif /* MAEMO_CHANGES */
 
       if (entry->dnd_position != -1)
 	gtk_entry_draw_cursor (GTK_ENTRY (widget), CURSOR_DND);

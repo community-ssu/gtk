@@ -225,6 +225,8 @@ void       gtk_entry_set_editable   		(GtkEntry      *entry,
 void               hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
                                                     HildonGtkInputMode input_mode);
 HildonGtkInputMode hildon_gtk_entry_get_input_mode (GtkEntry          *entry);
+void               hildon_gtk_entry_set_progress_adjustment (GtkEntry      *entry,
+                                                             GtkAdjustment *adjustment);
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS
