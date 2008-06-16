@@ -700,9 +700,9 @@ _gdk_quartz_window_did_resign_main (GdkWindow *window)
 }
 
 GdkWindow *
-gdk_window_new (GdkWindow     *parent,
-		GdkWindowAttr *attributes,
-		gint           attributes_mask)
+_gdk_window_new (GdkWindow     *parent,
+                 GdkWindowAttr *attributes,
+                 gint           attributes_mask)
 {
   GdkWindow *window;
   GdkWindowObject *private;
@@ -1422,10 +1422,10 @@ gdk_window_move_resize (GdkWindow *window,
 }
 
 void
-gdk_window_reparent (GdkWindow *window,
-		     GdkWindow *new_parent,
-		     gint       x,
-		     gint       y)
+_gdk_window_reparent (GdkWindow *window,
+                      GdkWindow *new_parent,
+                      gint       x,
+                      gint       y)
 {
   g_warning ("gdk_window_reparent: %p %p (%d, %d)", 
 	     window, new_parent, x, y);
