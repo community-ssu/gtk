@@ -1,4 +1,5 @@
 ## Makefile.am for gtk+/gdk/gdk-directfb
+include $(top_srcdir)/Makefile.decl
 
 libgdkincludedir = $(includedir)/gtk-2.0/gdk
 
@@ -40,7 +41,8 @@ libgdk_directfb_la_SOURCES =	\
 	gdkproperty-directfb.c	\
 	gdkscreen-directfb.c	\
 	gdkselection-directfb.c	\
-	gdkspawn-directfb.c     \
+	gdkspawn-directfb.c 	\
+	gdktestutils-directfb.c	\
 	gdkvisual-directfb.c	\
 	gdkdirectfb.h		\
 	gdkwindow-directfb.c	\
@@ -52,4 +54,4 @@ libgdkinclude_HEADERS =		\
 	gdkprivate-directfb.h
 
 
-EXTRA_DIST = AUTHORS README TODO 
+EXTRA_DIST += AUTHORS README TODO 

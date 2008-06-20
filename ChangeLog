@@ -1,3 +1,50 @@
+2008-06-20  Michael Natterer  <mitch@imendio.com>
+
+	* Merge the testing framework and all unit tests from upstream
+	trunk as of today (too many commits in upstream to have their
+	ChangeLog entries copied here, thus only a summary):
+
+	* configure.in: depend on glib >= 2.15.0, add gtk/tests/Makefile
+
+	* Makefile.decl: makefile snippet to be included by all other
+	makefiles to put the test rules in place.
+
+	* */Makefile.am: include Makefile.decl in all makefiles.
+
+	* gdk/gdktestutils.h: new GDK test utils header.
+
+	* gdk/gdk.h: include it.
+	* gdk/gdk.symbols: add its symbols.
+
+	* gdk/directfb/gdktestutils-directfb.c
+	* gdk/quartz/gdktestutils-quartz.c
+	* gdk/win32/gdktestutils-win32.c
+	* gdk/x11/gdktestutils-x11.c: implement it in the various
+	backends.
+
+	* gtk/gtktestutils.[ch]: new GTK+ test utils files.
+
+	* gtk/gtk.h: include it.
+	* gtk/gtk.symbols: add its symbols.
+
+	* gtk/tests/pixbuf-init.c
+	* gtk/tests/textbuffer.c
+	* gtk/tests/defaultvalue.c
+	* gtk/tests/filechooser.c
+	* gtk/tests/floating.c
+	* gtk/tests/treeview-scrolling.c
+	* gtk/tests/builder.c
+	* gtk/tests/object.c
+	* gtk/tests/liststore.c
+	* gtk/tests/recentmanager.c
+	* gtk/tests/treestore.c
+	* gtk/tests/testing.c: unit tests. Some are moved from toplevel/tests
+	(note that these are not removed from there in maemo-gtk, but they
+	don't hurt either and toplevel/tests will by synced with upstream
+	on the next gtk upgrade). Some tests had to be edited because
+	they test vnew features of trunk that are not yet available in
+	maemo-gtk.
+
 2008-06-16  Michael Natterer  <mitch@imendio.com>
 
 	* Merge pixmap redirection code from upstream trunk, consisting of
