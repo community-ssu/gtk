@@ -221,7 +221,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 				   g_param_spec_flags ("hildon-input-mode",
 						       "Hildon input mode",
 						       "Allowed characters and input mode",
-						       GTK_TYPE_GTK_INPUT_MODE,
+						       HILDON_TYPE_GTK_INPUT_MODE,
 						       HILDON_GTK_INPUT_MODE_FULL |
 						       HILDON_GTK_INPUT_MODE_AUTOCAP |
 						       HILDON_GTK_INPUT_MODE_DICTIONARY,
