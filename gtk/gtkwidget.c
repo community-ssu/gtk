@@ -2554,7 +2554,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                                            g_param_spec_enum ("hildon-mode",
                                                               P_("Hildon Mode"),
                                                               P_("The mode according to which widgets should behave"),
-                                                              GTK_TYPE_MODE,
+                                                              HILDON_TYPE_MODE,
                                                               HILDON_DIABLO,
                                                               GTK_PARAM_READABLE));
 #endif /* MAEMO_CHANGES */

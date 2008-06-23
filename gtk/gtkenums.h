@@ -545,6 +545,9 @@ typedef enum
   HILDON_GTK_INPUT_MODE_DICTIONARY   = 1 << 31
 } HildonGtkInputMode;
 
+/* Temporary compatibility define */
+#define GTK_TYPE_GTK_INPUT_MODE HILDON_TYPE_GTK_INPUT_MODE
+
 typedef enum
 {
   HILDON_DIABLO,

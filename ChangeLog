@@ -1,3 +1,17 @@
+2008-06-23  Kristian Rietveld  <kris@imendio.com>
+
+	* gdk/Makefile.am:
+	* gdk-pixbuf/Makefile.am:
+	* gtk/Makefile.am:
+	* perf/Makefile.am: do not hard code the prefix of the enum,
+	use @ENUMPREFIX@ instead.
+
+	* gtk/gtkwidget.c (gtk_widget_class_init): use HILDON_TYPE_MODE
+	for the hildon-mode style property instead of GTK_TYPE_MODE.
+
+	* gtk/gtkenums.h: add a temporary define to map
+	GTK_TYPE_GTK_INPUT_MODE to HILDON_TYPE_GTK_INPUT_MODE.
+
 2008-06-20  Michael Natterer  <mitch@imendio.com>
 
 	* Merge the testing framework and all unit tests from upstream
