@@ -90,7 +90,8 @@ noinst_PROGRAMS =			\
 	testactions			\
 	testgrouping			\
 	testtooltips			\
-	testvolumebutton
+	testvolumebutton		\
+	testhildontreeview
 
 if HAVE_CXX
 noinst_PROGRAMS += autotestkeywords
@@ -162,6 +163,7 @@ testactions_DEPENDENCIES = $(TEST_DEPS)
 testgrouping_DEPENDENCIES = $(TEST_DEPS)
 testtooltips_DEPENDENCIES = $(TEST_DEPS)
 testvolumebutton_DEPENDENCIES = $(TEST_DEPS)
+testhildontreeview_DEPENDENCIES = $(TEST_DEPS)
 
 autotestfilechooser_LDADD = $(LDADDS)
 simple_LDADD = $(LDADDS)
@@ -226,6 +228,7 @@ testactions_LDADD = $(LDADDS)
 testgrouping_LDADD = $(LDADDS)
 testtooltips_LDADD = $(LDADDS)
 testvolumebutton_LDADD = $(LDADDS)
+testhildontreeview_LDADD = $(LDADDS)
 
 buildertest_LDFLAGS = -export-dynamic
 
@@ -317,6 +320,9 @@ testrecentchoosermenu_SOURCES =	\
 
 testvolumebutton_SOURCES =	\
 	testvolumebutton.c
+
+testhildontreeview_SOURCES =	\
+	testhildontreeview.c
 
 EXTRA_DIST += 			\
 	prop-editor.h		\

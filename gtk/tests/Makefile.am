@@ -71,3 +71,7 @@ defaultvalue_LDADD 		 = $(progs_ldadd)
 TEST_PROGS			+= textbuffer
 textbuffer_SOURCES		 = textbuffer.c pixbuf-init.c
 textbuffer_LDADD		 = $(progs_ldadd)
+
+TEST_PROGS			+= treeview-hildon
+treeview_hildon_SOURCES		 = treeview-hildon.c
+treeview_hildon_LDADD		 = $(progs_ldadd)

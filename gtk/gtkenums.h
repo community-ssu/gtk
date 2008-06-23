@@ -553,6 +553,12 @@ typedef enum
   HILDON_DIABLO,
   HILDON_FREMANTLE
 } HildonMode;
+
+typedef enum
+{
+  HILDON_UI_MODE_NORMAL,
+  HILDON_UI_MODE_EDIT
+} HildonUIMode;
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS

@@ -160,10 +160,28 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
 			     GtkSelectionMode  type)
 {
   GtkTreeSelectionFunc tmp_func;
+#ifdef MAEMO_CHANGES
+  HildonMode mode;
+#endif /* MAEMO_CHANGES */
+
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
 
   if (selection->type == type)
     return;
+
+#ifdef MAEMO_CHANGES
+  gtk_widget_style_get (GTK_WIDGET (selection->tree_view),
+                        "hildon-mode", &mode,
+                        NULL);
+
+  if (mode == HILDON_FREMANTLE
+      && selection->tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
+      && type != GTK_SELECTION_NONE)
+    {
+      g_warning ("Cannot change the selection mode to anything other than GTK_SELECTION_NONE if hildon-ui-mode is GTK_HILDON_UI_MODE_NORMAL.\n");
+      return;
+    }
+#endif /* MAEMO_CHANGES */
 
   
   if (type == GTK_SELECTION_NONE)
@@ -1297,9 +1315,21 @@ _gtk_tree_selection_row_is_selectable (GtkTreeSelection *selection,
 {
 #ifdef MAEMO_CHANGES
   GList *list;
+  HildonMode mode;
 #endif /* MAEMO_CHANGES */
   GtkTreeIter iter;
   gboolean sensitive = FALSE;
+
+#ifdef MAEMO_CHANGES
+  gtk_widget_style_get (GTK_WIDGET (selection->tree_view),
+                        "hildon-mode", &mode,
+                        NULL);
+
+  /* normal-mode does not support selections */
+  if (mode == HILDON_FREMANTLE
+      && selection->tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
+    return FALSE;
+#endif /* MAEMO_CHANGES */
 
   if (!gtk_tree_model_get_iter (selection->tree_view->priv->model, &iter, path))
     sensitive = TRUE;
@@ -1445,6 +1475,14 @@ _gtk_tree_selection_internal_select_node (GtkTreeSelection *selection,
 	}
       else if ((mode & GTK_TREE_SELECT_MODE_TOGGLE) == GTK_TREE_SELECT_MODE_TOGGLE)
 	{
+#ifdef MAEMO_CHANGES
+          HildonMode mode;
+
+          gtk_widget_style_get (GTK_WIDGET (selection->tree_view),
+                                "hildon-mode", &mode,
+                                NULL);
+#endif /* MAEMO_CHANGES */
+
 	  flags = node->flags;
 	  if (selection->tree_view->priv->anchor)
 	    gtk_tree_row_reference_free (selection->tree_view->priv->anchor);
@@ -1452,7 +1490,15 @@ _gtk_tree_selection_internal_select_node (GtkTreeSelection *selection,
 	  selection->tree_view->priv->anchor =
 	    gtk_tree_row_reference_new_proxy (G_OBJECT (selection->tree_view), selection->tree_view->priv->model, path);
 
-	  if ((flags & GTK_RBNODE_IS_SELECTED) == GTK_RBNODE_IS_SELECTED)
+	  if ((flags & GTK_RBNODE_IS_SELECTED) == GTK_RBNODE_IS_SELECTED
+#ifdef MAEMO_CHANGES
+              /* FIXME: implement count-caching if this shows up in
+               * profiles.
+               */
+              && (mode == HILDON_DIABLO
+                  || gtk_tree_selection_count_selected_rows (selection) > 1)
+#endif /* MAEMO_CHANGES */
+             )
 	    dirty |= gtk_tree_selection_real_select_node (selection, tree, node, FALSE);
 	  else
 	    dirty |= gtk_tree_selection_real_select_node (selection, tree, node, TRUE);
