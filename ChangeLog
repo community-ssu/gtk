@@ -1,3 +1,34 @@
+2008-06-25  Kristian Rietveld  <kris@imendio.com>
+
+	Implement GtkIconView behavior changes that are only in effect
+	when the hildon-mode style property is set to HILDON_FREMANTLE.
+
+	* gtk/gtkiconview.c (gtk_icon_view_class_init),
+	(gtk_icon_view_init), gtk_icon_view_[gs]et_property),
+	(gtk_icon_view_set_hildon_ui_mode): introduce hildon-ui-mode property,
+	(gtk_icon_view_style_set): reset hildon-ui-mode,
+	(gtk_icon_view_expose): draw tickmark over item when necessary,
+	(gtk_icon_view_motion), (gtk_icon_view_button_press),
+	(gtk_icon_view_button_release): add new-style row selection and
+	activation behaviors,
+	(gtk_icon_view_set_cursor),
+	(gtk_icon_view_move_cursor_up_down),
+	(gtk_icon_view_move_page_up_down),
+	(gtk_icon_view_move_cursor_left_right),
+	(gtk_icon_view_move_cursor_start_end): disable cursor movement in
+	new-style,
+	(verify_items), (gtk_icon_view_row_inserted),
+	(gtk_icon_view_row_deleted): enforce one-must-be-selected rule,
+	(gtk_icon_view_set_selection_mode): guard changes to selection mode in
+	normal-mode,
+	(free_queued*item): new functions.
+
+	* gtk/tests/Makefile.am:
+	* gtk/tests/iconview-hildon.c: add selftest.
+
+	* tests/Makefile.am:
+	* tests/testhildoniconview.c: add interactive test.
+
 2008-06-23  Kristian Rietveld  <kris@imendio.com>
 
 	Implement GtkTreeView behavior changes that are only in effect

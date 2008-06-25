@@ -91,6 +91,7 @@ noinst_PROGRAMS =			\
 	testgrouping			\
 	testtooltips			\
 	testvolumebutton		\
+	testhildoniconview		\
 	testhildontreeview
 
 if HAVE_CXX
@@ -163,6 +164,7 @@ testactions_DEPENDENCIES = $(TEST_DEPS)
 testgrouping_DEPENDENCIES = $(TEST_DEPS)
 testtooltips_DEPENDENCIES = $(TEST_DEPS)
 testvolumebutton_DEPENDENCIES = $(TEST_DEPS)
+testhildoniconview_DEPENDENCIES = $(TEST_DEPS)
 testhildontreeview_DEPENDENCIES = $(TEST_DEPS)
 
 autotestfilechooser_LDADD = $(LDADDS)
@@ -228,6 +230,7 @@ testactions_LDADD = $(LDADDS)
 testgrouping_LDADD = $(LDADDS)
 testtooltips_LDADD = $(LDADDS)
 testvolumebutton_LDADD = $(LDADDS)
+testhildoniconview_LDADD = $(LDADDS)
 testhildontreeview_LDADD = $(LDADDS)
 
 buildertest_LDFLAGS = -export-dynamic
@@ -320,6 +323,9 @@ testrecentchoosermenu_SOURCES =	\
 
 testvolumebutton_SOURCES =	\
 	testvolumebutton.c
+
+testhildoniconview_SOURCES =	\
+	testhildoniconview.c
 
 testhildontreeview_SOURCES =	\
 	testhildontreeview.c

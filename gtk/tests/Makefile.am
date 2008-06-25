@@ -75,3 +75,7 @@ textbuffer_LDADD		 = $(progs_ldadd)
 TEST_PROGS			+= treeview-hildon
 treeview_hildon_SOURCES		 = treeview-hildon.c
 treeview_hildon_LDADD		 = $(progs_ldadd)
+
+TEST_PROGS			+= iconview-hildon
+iconview_hildon_SOURCES		 = iconview-hildon.c
+iconview_hildon_LDADD		 = $(progs_ldadd)
