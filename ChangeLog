@@ -1,5 +1,9 @@
 2008-06-25  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/tests/treeview-hildon.c: s/g_return_if_fail/g_assert/.
+
+2008-06-25  Kristian Rietveld  <kris@imendio.com>
+
 	Implement GtkIconView behavior changes that are only in effect
 	when the hildon-mode style property is set to HILDON_FREMANTLE.
 
