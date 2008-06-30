@@ -5,7 +5,7 @@ gtk+2.0 (2:2.12.9-0osso2) unstable; urgency=low
     <timj@imendio.com>
   * gtk/gtkdialog.c (gtk_dialog_init): change the layout of the
     dialog so the buttons appear vertically on the right side. Alberto Garcia
-    <agarcia@igalia.com>
+    <agarcia@ig\alia.com>
   * gtk/gtkmenushell.c (gtk_menu_shell_button_release): one part of
     the 2-12 upgrade patch got lost, making all menus behave
     unpredictable-to-unusable. Should be fixed now. Michael Natterer
