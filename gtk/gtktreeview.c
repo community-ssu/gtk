@@ -3327,16 +3327,6 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
 
-      /* For new-style we've temporary selected the node to get the
-       * highlight drawn.  We unselect it here to have the selection
-       * logic below function properly.
-       *
-       * This does queue a draw, but the selection logic below
-       * is about to queue a draw for this anyway too.
-       */
-      if (mode == HILDON_FREMANTLE)
-        free_queued_select_row (tree_view);
-
       if (tree_view->priv->queued_ctrl_pressed)
         {
 	  gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
@@ -3352,6 +3342,7 @@ gtk_tree_view_button_release (GtkWidget      *widget,
       else
 	gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
 
+      free_queued_select_row (tree_view);
       gtk_tree_path_free (path);
       tree_view->priv->queued_ctrl_pressed = FALSE;
       tree_view->priv->queued_shift_pressed = FALSE;

@@ -1,5 +1,12 @@
 2008-07-03  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_button_release): call
+	free_queued_select_row() for both modes; no longer needed to call
+	this before the other operations for fremantle mode, removed
+	comment.
+
+2008-07-03  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeprivate.h: update fields.
 
 	* gtk/gtktreeview.c (gtk_tree_view_init),
