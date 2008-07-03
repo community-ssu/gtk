@@ -1,3 +1,7 @@
+2008-07-03  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkstyle.h: change old MAEMO START comments into #ifdefs.
+
 2008-06-25  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/tests/treeview-hildon.c: s/g_return_if_fail/g_assert/.
