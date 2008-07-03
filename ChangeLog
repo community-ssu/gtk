@@ -1,5 +1,11 @@
 2008-07-03  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_button_release): in diablo
+	mode, do not verify whether or not to active against the cursor
+	row reference, rather against the current node under the cursor.
+
+2008-07-03  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_button_release): call
 	free_queued_select_row() for both modes; no longer needed to call
 	this before the other operations for fremantle mode, removed

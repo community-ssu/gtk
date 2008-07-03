@@ -3374,19 +3374,27 @@ gtk_tree_view_button_release (GtkWidget      *widget,
           gtk_tree_view_row_activated (tree_view, path,
                                        tree_view->priv->focus_column);
         }
-      else if (gtk_tree_row_reference_valid (tree_view->priv->cursor))
+      else if (mode == HILDON_DIABLO)
         {
-	  GtkTreePath *cursor_path;
+          gint new_y;
+          GtkRBTree *tree, *activate_tree;
+          GtkRBNode *node, *activate_node;
 
-	  cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
+          /* Get the node that is currently under the cursor */
+          new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->y);
+          if (new_y < 0)
+            new_y = 0;
+          _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
 
-	  if (!gtk_tree_path_compare (cursor_path, path))
+          _gtk_tree_view_find_node (tree_view, path,
+                                    &activate_tree, &activate_node);
+
+          /* Only emit activated if these match */
+          if (tree == activate_tree && node == activate_node)
 	    {
-	      gtk_tree_view_row_activated (tree_view, cursor_path,
+	      gtk_tree_view_row_activated (tree_view, path,
 					   tree_view->priv->focus_column);
 	    }
-
-	  gtk_tree_path_free (cursor_path);
 	}
 
       gtk_tree_path_free (path);
