@@ -279,13 +279,15 @@ struct _GtkTreeViewPrivate
   GtkTreeRowReference *queued_expand_row;
   GtkTreeRowReference *queued_activate_row;
 
+  GtkRBNode *highlighted_node;
+  GtkRBTree *highlighted_tree;
+
   GtkTreeCellDataHint cell_data_hint;
 
   HildonUIMode hildon_ui_mode;
 
   guint queued_shift_pressed : 1;
   guint queued_ctrl_pressed : 1;
-  guint queued_select_was_selected : 1;
 #endif /* MAEMO_CHANGES */
 };
 

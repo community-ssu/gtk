@@ -1,5 +1,19 @@
 2008-07-03  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeprivate.h: update fields.
+
+	* gtk/gtktreeview.c (gtk_tree_view_init),
+	(gtk_tree_view_button_press), (gtk_tree_view_button_release),
+	(gtk_tree_view_bin_expose),
+	(free_queued_select_row), (free_queued_activate_row): keep track
+	of highlighted row via a (tree, node) pair instead of selection
+	state on the node (there can only be on highlighted node at the
+	time anyway), only draw tick marks for selected rows,
+	(gtk_tree_view_focus_to_cursor): direct bail out in Fremantle
+	mode, it was possible to change the selection using keyboard.
+
+2008-07-03  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtkstyle.h: change old MAEMO START comments into #ifdefs.
 
 2008-06-25  Kristian Rietveld  <kris@imendio.com>

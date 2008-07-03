@@ -1463,6 +1463,9 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->queued_expand_row = NULL;
   tree_view->priv->queued_activate_row = NULL;
 
+  tree_view->priv->highlighted_node = NULL;
+  tree_view->priv->highlighted_tree = NULL;
+
   tree_view->priv->queued_ctrl_pressed = FALSE;
   tree_view->priv->queued_shift_pressed = FALSE;
 
@@ -2915,7 +2918,8 @@ gtk_tree_view_button_press (GtkWidget      *widget,
               tree_view->priv->queued_activate_row = gtk_tree_row_reference_new (tree_view->priv->model, path);
 
               /* Mark the node as selected to create a highlight effect */
-              GTK_RBNODE_SET_FLAG (node, GTK_RBNODE_IS_SELECTED);
+              tree_view->priv->highlighted_tree = tree;
+              tree_view->priv->highlighted_node = node;
               gtk_tree_view_queue_draw_path (tree_view, path, NULL);
             }
           else if (mode == HILDON_DIABLO
@@ -2987,10 +2991,9 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	      if (tree_view->priv->queued_select_row)
 		gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
 	      tree_view->priv->queued_select_row = NULL;
-              tree_view->priv->queued_select_was_selected = node_selected;
 
-              if (!node_selected)
-                GTK_RBNODE_SET_FLAG (node, GTK_RBNODE_IS_SELECTED);
+              tree_view->priv->highlighted_node = node;
+              tree_view->priv->highlighted_tree = tree;
 
               tree_view->priv->queued_select_row =
                   gtk_tree_row_reference_new (tree_view->priv->model, path);
@@ -3366,12 +3369,16 @@ gtk_tree_view_button_release (GtkWidget      *widget,
       if (mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
         {
-          GtkRBTree *tree;
-          GtkRBNode *node;
+          if (tree_view->priv->highlighted_node)
+            {
+              _gtk_tree_view_queue_draw_node (tree_view,
+                                              tree_view->priv->highlighted_tree,
+                                              tree_view->priv->highlighted_node,
+                                              NULL);
 
-          _gtk_tree_view_find_node (tree_view, path, &tree, &node);
-          GTK_RBNODE_UNSET_FLAG (node, GTK_RBNODE_IS_SELECTED);
-          gtk_tree_view_queue_draw_path (tree_view, path, NULL);
+              tree_view->priv->highlighted_tree = NULL;
+              tree_view->priv->highlighted_node = NULL;
+            }
 
           gtk_tree_view_row_activated (tree_view, path,
                                        tree_view->priv->focus_column);
@@ -4885,7 +4892,12 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
       if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_PRELIT))
 	flags |= GTK_CELL_RENDERER_PRELIT;
 
+#ifdef MAEMO_CHANGES
+      if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED)
+          || node == tree_view->priv->highlighted_node)
+#else /* !MAEMO_CHANGES */
       if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
+#endif /* !MAEMO_CHANGES */
         flags |= GTK_CELL_RENDERER_SELECTED;
 
       parity = _gtk_rbtree_node_find_parity (tree, node);
@@ -10375,6 +10387,16 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
 
 {
   GtkTreePath *cursor_path;
+#ifdef MAEMO_CHANGES
+  HildonMode mode;
+
+  gtk_widget_style_get (GTK_WIDGET (tree_view),
+                        "hildon-mode", &mode,
+                        NULL);
+
+  if (mode == HILDON_FREMANTLE)
+    return;
+#endif /* MAEMO_CHANGES */
 
   if ((tree_view->priv->tree == NULL) ||
       (! GTK_WIDGET_REALIZED (tree_view)))
@@ -10414,14 +10436,6 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
 
       if (cursor_path)
 	{
-#ifdef MAEMO_CHANGES
-          HildonMode mode;
-
-          gtk_widget_style_get (GTK_WIDGET (tree_view),
-                                "hildon-mode", &mode,
-                                NULL);
-#endif /* MAEMO_CHANGES */
-
 	  if (tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE
 #ifdef MAEMO_CHANGES
               && mode == HILDON_DIABLO
@@ -16707,21 +16721,18 @@ free_queued_select_row (GtkTreeView *tree_view)
    * was previously *not* selected.
    */
   if (mode == HILDON_FREMANTLE
-      && tree_view->priv->queued_select_row
-      && !tree_view->priv->queued_select_was_selected)
+      && tree_view->priv->queued_select_row)
     {
-      GtkRBTree *tree;
-      GtkRBNode *node;
-      GtkTreePath *path;
-
-      path = gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
-      if (path)
+      if (tree_view->priv->highlighted_node)
         {
-          _gtk_tree_view_find_node (tree_view, path, &tree, &node);
-          GTK_RBNODE_UNSET_FLAG (node, GTK_RBNODE_IS_SELECTED);
-          gtk_tree_view_queue_draw_path (tree_view, path, NULL);
+          _gtk_tree_view_queue_draw_node (tree_view,
+                                          tree_view->priv->highlighted_tree,
+                                          tree_view->priv->highlighted_node,
+                                          NULL);
+
+          tree_view->priv->highlighted_tree = NULL;
+          tree_view->priv->highlighted_node = NULL;
         }
-      gtk_tree_path_free (path);
     }
 
   gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
@@ -16741,18 +16752,16 @@ free_queued_activate_row (GtkTreeView *tree_view)
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
       && tree_view->priv->queued_activate_row)
     {
-      GtkRBTree *tree;
-      GtkRBNode *node;
-      GtkTreePath *path;
-
-      path = gtk_tree_row_reference_get_path (tree_view->priv->queued_activate_row);
-      if (path)
+      if (tree_view->priv->highlighted_node)
         {
-          _gtk_tree_view_find_node (tree_view, path, &tree, &node);
-          GTK_RBNODE_UNSET_FLAG (node, GTK_RBNODE_IS_SELECTED);
-          gtk_tree_view_queue_draw_path (tree_view, path, NULL);
+          _gtk_tree_view_queue_draw_node (tree_view,
+                                          tree_view->priv->highlighted_tree,
+                                          tree_view->priv->highlighted_node,
+                                          NULL);
+
+          tree_view->priv->highlighted_tree = NULL;
+          tree_view->priv->highlighted_node = NULL;
         }
-      gtk_tree_path_free (path);
     }
 
   gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
