@@ -1,3 +1,103 @@
+2008-07-04  Michael Natterer  <mitch@imendio.com>
+
+	Merge the GdkWindow refactoring patch from upstream trunk which
+	moves a lot of GdkWindow API into a new GdkWindowImpl interface
+	that is implemented by backends. Also merged some follow-up fixes
+	and patches to the same code in order to make applying patches on
+	top of this stuff easier. Commit consists of the indented entries
+	below:
+
+    2008-07-02  Cody Russell  <bratsche@gnome.org>
+  
+	Bug 541305 – [Win32] Scrolling was broken after GdkWindow refactoring
+
+	* gdk/win32/gdkwindow-win32.c: Reverted some logic so that scrolling
+	works again.
+
+	* gdk/win32/gdkgeometry-win32.c: Removed some more unnecessary checks.
+	* gdk/win32/gdkkeys-win32.c: Removed unused variable to fix compile-time
+	warnings.
+
+    2008-07-02  Cody Russell  <bratsche@gnome.org>
+
+	Bug 541249 – [Win32] Fix some internal static methods
+
+	* gdk/gdkwindow-win32.c: Make the interface implementation methods
+	static.
+
+    2008-07-02  Cody Russell  <bratsche@gnome.org>
+
+	Bug 541162 – [Win32] Update for the new GdkWindowImpl stuff
+
+	* gdk/win32/gdkprivate-win32.h:
+	* gdk/win32/gdkgeometry-win32.c:
+	* gdk/win32/gdkevents-win32.c:
+	* gdk/win32/gdkwindow-win32.c: Update Win32 backend according to
+	the newly refactored GdkWindow code.
+
+    2008-07-01  Richard Hult  <richard@imendio.com>
+
+	Some aftermath from the window impl cleanups:
+
+	* gdk/quartz/gdkwindow-quartz.c:
+	(gdk_window_merge_child_input_shapes): Rename and export again.
+	(gdk_window_quartz_get_offsets): Make static.
+
+    2008-06-30  Michael Natterer  <mitch@imendio.com>
+
+	Some unrelated cleanups found while reviewing
+	the offscreen window patch:
+
+	* gdk/gdkwindow.c: add missing Since: 2.14 to the redirection
+	functions, fix some function header indentation, update
+	documentation of redirect_to_drawable().
+
+	* gdk/x11/gdkwindow-x11.c
+	* gdk/x11/gdkpixmap-x11.c: fix function header
+	formatting/indentation.
+
+	* gtk/gtkwidget.c: use I_() on "damage_event".
+
+    2008-06-30  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/gdkinternals.h: remove duplicate declaration of
+	_gdk_window_new().
+
+    2008-06-30  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/Makefile.am: reorder source lists alphabetically.
+
+    2008-06-27  Kristian Rietveld  <kris@imendio.com>
+
+	* gdk/quartz/gdkgeometry-quartz.c:
+	* gdk/quartz/gdkwindow-quartz.c:
+	* gdk/quartz/gdkprivate-quartz.h: adapt to use GdkWindowImpl
+	interface.
+
+    2008-06-27  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Abstract some GdkWindow API into an interface that the backends
+	must implement. (based on a patch by Alex Larsson)
+
+	* gdk/Makefile.am: Add gdkwindowimpl.[ch]
+
+	* gdk/gdk.symbols: Move symbols around.
+
+	* gdk/gdkinternals.h:
+	* gdk/gdkwindowimpl.[ch]: Move some of the GdkWindow API we require
+	from the backends to a GInterface that the backends should implement
+	instead.
+
+	* gdk/gdkwindow.c: Provide some of the GdkWindow public API as a
+	wrapper call around the GdkWindowImpl interface vtable.
+
+	* gdk/x11/gdkevents-x11.c:
+	* gdk/x11/gdkgeometry-x11.c:
+	* gdk/x11/gdkprivate-x11.h:
+	* gdk/x11/gdkwindow-x11.c:
+	* gdk/x11/gdkwindow-x11.h: Update the X11 backend to implement
+	the GdkWindowImpl interface.
+
 2008-07-04  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtkiconview.c (gtk_icon_view_button_press),

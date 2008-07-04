@@ -371,10 +371,10 @@ void          gdk_window_remove_filter         (GdkWindow     *window,
 void          gdk_window_scroll                (GdkWindow *window,
                                                 gint       dx,
                                                 gint       dy);
-void	      gdk_window_move_region           (GdkWindow *window,
-						GdkRegion *region,
-						gint       dx,
-						gint       dy);
+void	      gdk_window_move_region           (GdkWindow       *window,
+						const GdkRegion *region,
+						gint             dx,
+						gint             dy);
 
 /* 
  * This allows for making shaped (partially transparent) windows
@@ -382,14 +382,14 @@ void	      gdk_window_move_region           (GdkWindow *window,
  *  The shape_mask can be the mask
  *  from gdk_pixmap_create_from_xpm.   Stefan Wille
  */
-void gdk_window_shape_combine_mask  (GdkWindow	    *window,
-                                     GdkBitmap	    *mask,
-                                     gint	     x,
-                                     gint	     y);
-void gdk_window_shape_combine_region (GdkWindow	    *window,
-                                      GdkRegion     *shape_region,
-                                      gint	     offset_x,
-                                      gint	     offset_y);
+void gdk_window_shape_combine_mask  (GdkWindow	      *window,
+                                     GdkBitmap        *mask,
+                                     gint	       x,
+                                     gint	       y);
+void gdk_window_shape_combine_region (GdkWindow	      *window,
+                                      const GdkRegion *shape_region,
+                                      gint	       offset_x,
+                                      gint	       offset_y);
 
 /*
  * This routine allows you to quickly take the shapes of all the child windows
