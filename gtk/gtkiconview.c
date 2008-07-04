@@ -2196,20 +2196,17 @@ gtk_icon_view_button_press (GtkWidget      *widget,
               if (icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
                 {
                   icon_view->priv->queued_activate_item = item;
-                  item->selected = TRUE;
 
+                  /* Queue a draw so it will appear highlighted */
                   gtk_icon_view_queue_draw_item (icon_view, item);
                 }
               else if (icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
                 {
                   icon_view->priv->queued_select_item = item;
-                  icon_view->priv->queued_select_was_selected = item->selected;
 
+                  /* Queue a draw so it will appear highlighted */
                   if (!item->selected)
-                    {
-                      item->selected = TRUE;
-                      gtk_icon_view_queue_draw_item (icon_view, item);
-                    }
+                    gtk_icon_view_queue_draw_item (icon_view, item);
                 }
             }
 #endif /* MAEMO_CHANGES */
@@ -2314,7 +2311,6 @@ gtk_icon_view_button_release (GtkWidget      *widget,
     {
       GtkTreePath *path;
 
-      icon_view->priv->queued_activate_item->selected = FALSE;
       gtk_icon_view_queue_draw_item (icon_view,
                                      icon_view->priv->queued_activate_item);
 
@@ -2335,7 +2331,7 @@ gtk_icon_view_button_release (GtkWidget      *widget,
 
       if (icon_view->priv->selection_mode == GTK_SELECTION_SINGLE)
         {
-          if (!icon_view->priv->queued_select_was_selected)
+          if (!item->selected)
             {
               gtk_icon_view_unselect_all_internal (icon_view);
 
@@ -2348,9 +2344,6 @@ gtk_icon_view_button_release (GtkWidget      *widget,
       else if (icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
         {
           gboolean found = FALSE;
-
-          if (!icon_view->priv->queued_select_was_selected)
-            item->selected = FALSE;
 
           if (item->selected)
             {
@@ -3251,6 +3244,9 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
   gint i;
   GtkStateType state;
   GtkCellRendererState flags;
+#ifdef MAEMO_CHANGES
+  gboolean selected = FALSE;
+#endif /* !MAEMO_CHANGES */
       
   if (icon_view->priv->model == NULL)
     return;
@@ -3264,7 +3260,16 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
   
   padding = focus_width; 
   
+#ifndef MAEMO_CHANGES
   if (item->selected)
+#else /* MAEMO_CHANGES */
+  if (item->selected
+      || item == icon_view->priv->queued_select_item
+      || item == icon_view->priv->queued_activate_item)
+    selected = TRUE;
+
+  if (selected)
+#endif /* MAEMO_CHANGES */
     {
       flags = GTK_CELL_RENDERER_SELECTED;
       if (GTK_WIDGET_HAS_FOCUS (icon_view))
@@ -3286,8 +3291,8 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 		      item->width, item->height);
 #endif
 
-  if (item->selected)
 #ifdef MAEMO_CHANGES
+  if (selected)
     {
       gtk_paint_flat_box (GTK_WIDGET (icon_view)->style,
                           (GdkWindow *) drawable,
@@ -3299,7 +3304,8 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
                           x, y,
                           item->width, item->height);
     }
-#else
+#else /* !MAEMO_CHANGES */
+  if (item->selected)
     for (l = icon_view->priv->cell_list; l; l = l->next)
       {
 	GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
@@ -3322,7 +3328,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 	    cairo_fill (cr);
 	  }
       }
-#endif /* MAEMO_CHANGES */
+#endif /* !MAEMO_CHANGES */
 
   for (l = icon_view->priv->cell_list; l; l = l->next)
     {
@@ -7723,7 +7729,6 @@ free_queued_activate_item (GtkIconView *icon_view)
 {
   if (icon_view->priv->queued_activate_item)
     {
-      icon_view->priv->queued_activate_item->selected = FALSE;
       gtk_icon_view_queue_draw_item (icon_view,
                                      icon_view->priv->queued_activate_item);
 
@@ -7736,12 +7741,8 @@ free_queued_select_item (GtkIconView *icon_view)
 {
   if (icon_view->priv->queued_select_item)
     {
-      if (!icon_view->priv->queued_select_was_selected)
-        {
-          icon_view->priv->queued_select_item->selected = FALSE;
-          gtk_icon_view_queue_draw_item (icon_view,
-                                         icon_view->priv->queued_select_item);
-        }
+      gtk_icon_view_queue_draw_item (icon_view,
+                                     icon_view->priv->queued_select_item);
 
       icon_view->priv->queued_select_item = NULL;
     }
