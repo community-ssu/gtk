@@ -43,6 +43,27 @@ item_activated_callback (GtkWidget         *icon_view,
   g_print ("item-activated emitted.\n");
 }
 
+static gboolean
+row_header_func (GtkTreeModel  *model,
+                 GtkTreeIter   *iter,
+                 gchar        **header_text,
+                 gpointer       data)
+{
+  GtkTreePath *path;
+  gboolean retval = FALSE;
+
+  path = gtk_tree_model_get_path (model, iter);
+  if (gtk_tree_path_get_indices (path)[0] % 15 == 0)
+    {
+      retval = TRUE;
+      if (header_text)
+        *header_text = g_strdup ("Happy fun group header!");
+    }
+  gtk_tree_path_free (path);
+
+  return retval;
+}
+
 static GtkWidget *
 create_icon_view (HildonUIMode  mode,
                   const char   *name,
@@ -63,6 +84,11 @@ create_icon_view (HildonUIMode  mode,
   else if (mode != HILDON_UI_MODE_NORMAL)
     gtk_icon_view_set_selection_mode (GTK_ICON_VIEW (icon_view),
                                       GTK_SELECTION_SINGLE);
+
+  hildon_icon_view_set_row_header_func (GTK_ICON_VIEW (icon_view),
+                                        row_header_func,
+                                        NULL,
+                                        NULL);
 
   renderer = gtk_cell_renderer_pixbuf_new ();
   g_object_set (renderer, "stock-id", GTK_STOCK_NEW, NULL);

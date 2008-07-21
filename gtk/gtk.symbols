@@ -1897,6 +1897,8 @@ gtk_icon_view_set_tooltip_cell
 gtk_icon_view_get_tooltip_context
 gtk_icon_view_set_tooltip_column
 gtk_icon_view_get_tooltip_column
+hildon_icon_view_get_row_header_func
+hildon_icon_view_set_row_header_func
 #endif
 #endif
 
@@ -4519,6 +4521,8 @@ gtk_tree_view_unset_rows_drag_source
 gtk_tree_view_widget_to_tree_coords
 #endif
 gtk_tree_view_columns_autosize
+hildon_tree_view_get_row_header_func
+hildon_tree_view_set_row_header_func
 #endif
 #endif
 

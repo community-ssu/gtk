@@ -286,6 +286,11 @@ struct _GtkTreeViewPrivate
 
   HildonUIMode hildon_ui_mode;
 
+  HildonTreeViewRowHeaderFunc row_header_func;
+  gpointer row_header_data;
+  GDestroyNotify row_header_destroy;
+  PangoLayout *row_header_layout;
+
   guint queued_shift_pressed : 1;
   guint queued_ctrl_pressed : 1;
 #endif /* MAEMO_CHANGES */

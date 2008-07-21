@@ -138,6 +138,13 @@ typedef void     (*GtkTreeViewSearchPositionFunc) (GtkTreeView  *tree_view,
 						   GtkWidget    *search_dialog,
 						   gpointer      user_data);
 
+#ifdef MAEMO_CHANGES
+typedef gboolean (*HildonTreeViewRowHeaderFunc) (GtkTreeModel      *model,
+					         GtkTreeIter       *iter,
+                                                 gchar            **header_text,
+					         gpointer           data);
+#endif /* MAEMO_CHANGES */
+
 
 /* Creators */
 GType                  gtk_tree_view_get_type                      (void) G_GNUC_CONST;
@@ -394,6 +401,14 @@ void                        gtk_tree_view_set_row_separator_func (GtkTreeView   
 								  GtkTreeViewRowSeparatorFunc func,
 								  gpointer                    data,
 								  GtkDestroyNotify            destroy);
+
+#ifdef MAEMO_CHANGES
+HildonTreeViewRowHeaderFunc hildon_tree_view_get_row_header_func (GtkTreeView                 *tree_view);
+void                        hildon_tree_view_set_row_header_func (GtkTreeView                 *tree_view,
+                                                                  HildonTreeViewRowHeaderFunc  func,
+                                                                  gpointer                     data,
+                                                                  GDestroyNotify               destroy);
+#endif /* MAEMO_CHANGES */
 
 GtkTreeViewGridLines        gtk_tree_view_get_grid_lines         (GtkTreeView                *tree_view);
 void                        gtk_tree_view_set_grid_lines         (GtkTreeView                *tree_view,

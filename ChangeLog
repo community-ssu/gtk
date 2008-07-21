@@ -1,3 +1,35 @@
+2008-07-21  Kristian Rietveld  <kris@imendio.com>
+
+	Add support for creating group/row headers to tree and icon view.
+
+	* gtk/gtktreeprivate.h:
+	* gtk/gtktreeselection.c (_gtk_tree_selection_row_is_selectable):
+	check for group header,
+	* gtk/gtktreeview.[ch]
+	(hildon_tree_view_[gs]et_row_header_func): new functions,
+	(row_is_separator): new Maemo implementation that takes headers
+	into account; update all calls to this function,
+	(validate_row), (gtk_tree_view_bin_expose): get it drawn,
+	(gtk_tree_view_row_*): update selection update code to search
+	for the first focusable path, don't just use the first path,
+
+	* gtk/gtkiconview.[ch]
+	(hildon_icon_view_[gs]et_row_header_func): new functions,
+	(gtk_icon_view_button_press): ignore headers,
+	(gtk_icon_view_layout_single_row),
+	(gtk_icon_view_calculate_item_size): tweak layouting algorithm
+	to support row headers,
+	(gtk_icon_view_paint_item): get it drawn,
+	(gtk_icon_view_row_*): update selection update code to
+	search for first selectable path, don't just use the first path,
+	(find_item_*), (gtk_icon_view_move_cursor_*): fix up
+	key navigation.
+
+	* gtk/gtk.symbols: added new symbols.
+
+	* tests/testhildontreeview.c:
+	* tests/testhildoniconview.c: test it.
+
 2008-07-04  Michael Natterer  <mitch@imendio.com>
 
 	Merge the GdkWindow refactoring patch from upstream trunk which

@@ -52,6 +52,27 @@ row_insensitive_callback (GtkWidget         *tree_view,
   g_print ("row-insensitive emitted.\n");
 }
 
+static gboolean
+row_header_func (GtkTreeModel *model,
+                 GtkTreeIter  *iter,
+                 gchar       **header_text,
+                 gpointer      user_data)
+{
+  GtkTreePath *path;
+  gboolean retval = FALSE;
+
+  path = gtk_tree_model_get_path (model, iter);
+  if (gtk_tree_path_get_indices (path)[0] % 10 == 0)
+    {
+      retval = TRUE;
+      if (header_text)
+        *header_text = g_strdup ("Happy fun group header!");
+    }
+  gtk_tree_path_free (path);
+
+  return retval;
+}
+
 static GtkWidget *
 create_tree_view (HildonUIMode  mode,
                   const char   *name,
@@ -85,6 +106,11 @@ create_tree_view (HildonUIMode  mode,
                                                renderer,
                                                "text", 0,
                                                NULL);
+
+  hildon_tree_view_set_row_header_func (GTK_TREE_VIEW (tree_view),
+                                        row_header_func,
+                                        NULL,
+                                        NULL);
 
   return tree_view;
 }

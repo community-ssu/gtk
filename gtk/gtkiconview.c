@@ -48,6 +48,10 @@
 
 #define SCROLL_EDGE_SIZE 15
 
+#ifdef MAEMO_CHANGES
+#define HILDON_ROW_HEADER_HEIGHT 35
+#endif /* MAEMO_CHANGES */
+
 #define GTK_ICON_VIEW_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ICON_VIEW, GtkIconViewPrivate))
 
 typedef struct _GtkIconViewItem GtkIconViewItem;
@@ -74,7 +78,9 @@ struct _GtkIconViewItem
 
   guint selected : 1;
   guint selected_before_rubberbanding : 1;
-
+#ifdef MAEMO_CHANGES
+  guint is_header : 1;
+#endif /* MAEMO_CHANGES */
 };
 
 typedef struct _GtkIconViewCellInfo GtkIconViewCellInfo;
@@ -180,6 +186,11 @@ struct _GtkIconViewPrivate
 
   GtkIconViewItem *queued_activate_item;
   GtkIconViewItem *queued_select_item;
+
+  HildonIconViewRowHeaderFunc row_header_func;
+  gpointer row_header_data;
+  GDestroyNotify row_header_destroy;
+  PangoLayout *row_header_layout;
 #endif /* MAEMO_CHANGES */
 
   /* scroll to */
@@ -1066,6 +1077,20 @@ gtk_icon_view_destroy (GtkObject *object)
       g_object_unref (icon_view->priv->vadjustment);
       icon_view->priv->vadjustment = NULL;
     }
+
+#ifdef MAEMO_CHANGES
+  if (icon_view->priv->row_header_destroy && icon_view->priv->row_header_data)
+    {
+      (* icon_view->priv->row_header_destroy) (icon_view->priv->row_header_data);
+      icon_view->priv->row_header_data = NULL;
+    }
+
+  if (icon_view->priv->row_header_layout != NULL)
+    {
+      g_object_unref (icon_view->priv->row_header_layout);
+      icon_view->priv->row_header_layout = NULL;
+    }
+#endif /* MAEMO_CHANGES */
   
   clear_dest_info (icon_view);
   clear_source_info (icon_view);
@@ -1322,6 +1347,8 @@ gtk_icon_view_style_set (GtkWidget *widget,
 #ifdef MAEMO_CHANGES
   /* Reset the UI mode */
   gtk_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
+
+  /* FIXME: might want to update the row_header_layout if it exists */
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);
@@ -2120,7 +2147,11 @@ gtk_icon_view_button_press (GtkWidget      *widget,
                             NULL);
 #endif /* MAEMO_CHANGES */
 
+#ifdef MAEMO_CHANGES
+      if (item != NULL && !item->is_header)
+#else /* !MAEMO_CHANGES */
       if (item != NULL)
+#endif /* !MAEMO_CHANGES */
 	{
 #ifdef MAEMO_CHANGES
           if (info != NULL)
@@ -2535,6 +2566,11 @@ gtk_icon_view_update_rubberband_selection (GtkIconView *icon_view)
       GtkIconViewItem *item = items->data;
       gboolean is_in;
       gboolean selected;
+
+#ifdef MAEMO_CHANGES
+      if (item->is_header)
+        continue;
+#endif /* MAEMO_CHANGES */
       
       is_in = gtk_icon_view_item_hit_test (icon_view, item, 
 					   x, y, width, height);
@@ -2776,6 +2812,76 @@ gtk_icon_view_adjustment_changed (GtkAdjustment *adjustment,
     }
 }
 
+#ifdef MAEMO_CHANGES
+static inline gboolean
+item_is_header (GtkIconView     *icon_view,
+                GtkIconViewItem *item)
+{
+  gboolean is_header = FALSE;
+
+  if (icon_view->priv->row_header_func)
+    {
+      GtkTreeIter iter;
+
+      if (gtk_tree_model_get_flags (icon_view->priv->model) & GTK_TREE_MODEL_ITERS_PERSIST)
+        {
+          GtkTreePath *path;
+
+          path = gtk_tree_path_new_from_indices (item->index, -1);
+          if (!gtk_tree_model_get_iter (icon_view->priv->model, &iter, path))
+            return is_header;
+          gtk_tree_path_free (path);
+        }
+      else
+        iter = item->iter;
+
+      is_header = (* icon_view->priv->row_header_func) (icon_view->priv->model,
+                                                        &iter,
+                                                        NULL,
+                                                        icon_view->priv->row_header_data);
+    }
+
+  return is_header;
+}
+
+static gboolean
+search_first_selectable_path (GtkIconView  *icon_view,
+                              GtkTreePath **path,
+                              gboolean      search_forward)
+{
+  int index;
+  GList *list;
+
+  if (!path || !*path)
+    return FALSE;
+
+  index = gtk_tree_path_get_indices (*path)[0];
+  list = g_list_nth (icon_view->priv->items, index);
+
+  while (list && item_is_header (icon_view, list->data))
+    {
+      if (search_forward)
+        {
+          index++;
+          list = list->next;
+        }
+      else
+        {
+          index--;
+          list = list->prev;
+        }
+    }
+
+  if (!list)
+    return FALSE;
+
+  gtk_tree_path_up (*path);
+  gtk_tree_path_append_index (*path, index);
+
+  return TRUE;
+}
+#endif /* MAEMO_CHANGES */
+
 static GList *
 gtk_icon_view_layout_single_row (GtkIconView *icon_view, 
 				 GList       *first_item, 
@@ -2792,6 +2898,9 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
   gint *max_height;
   gint i;
   gboolean rtl;
+#ifdef MAEMO_CHANGES
+  GtkIconViewItem *header_item = NULL;
+#endif /* MAEMO_CHANGES */
 
   rtl = gtk_widget_get_direction (GTK_WIDGET (icon_view)) == GTK_TEXT_DIR_RTL;
   max_height = g_new0 (gint, icon_view->priv->n_cells);
@@ -2814,6 +2923,19 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
       GtkIconViewItem *item = items->data;
 
       gtk_icon_view_calculate_item_size (icon_view, item);
+
+#ifdef MAEMO_CHANGES
+      if (item->is_header)
+        {
+          header_item = item;
+          item->y = *y + focus_width;
+
+          /* Include the header item as last item of this row */
+          items = items->next;
+          break;
+        }
+#endif /* MAEMO_CHANGES */
+
       colspan = 1 + (item->width - 1) / (item_width + icon_view->priv->column_spacing);
 
       item->width = colspan * item_width + (colspan - 1) * icon_view->priv->column_spacing;
@@ -2854,6 +2976,11 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
     {
       GtkIconViewItem *item = items->data;
 
+#ifdef MAEMO_CHANGES
+      if (item->is_header)
+        continue;
+#endif /* MAEMO_CHANGES */
+
       gtk_icon_view_calculate_item_size2 (icon_view, item, max_height);
 
       /* We may want to readjust the new y coordinate. */
@@ -2863,6 +2990,20 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
       if (rtl)
 	item->col = col - 1 - item->col;
     }
+
+#ifdef MAEMO_CHANGES
+  if (header_item)
+    {
+      /* FIXME: we might want to use allocation->width here instead. */
+      header_item->x = 0;
+      header_item->width = icon_view->priv->width;
+
+      header_item->y = *y;
+      header_item->height = HILDON_ROW_HEADER_HEIGHT;
+
+      *y += HILDON_ROW_HEADER_HEIGHT;
+    }
+#endif /* MAEMO_CHANGES */
 
   g_free (max_height);
   
@@ -3078,7 +3219,11 @@ gtk_icon_view_calculate_item_size (GtkIconView     *icon_view,
   gint spacing;
   GList *l;
 
+#ifdef MAEMO_CHANGES
+  if (item->width != -1 && item->height != -1 && !item->is_header) 
+#else /* !MAEMO_CHANGES */
   if (item->width != -1 && item->height != -1) 
+#endif /* !MAEMO_CHANGES */
     return;
 
   if (item->n_cells != icon_view->priv->n_cells)
@@ -3100,6 +3245,13 @@ gtk_icon_view_calculate_item_size (GtkIconView     *icon_view,
 
   item->width = 0;
   item->height = 0;
+
+#ifdef MAEMO_CHANGES
+  item->is_header = item_is_header (icon_view, item);
+  if (item->is_header)
+    return;
+#endif /* MAEMO_CHANGES */
+
   for (l = icon_view->priv->cell_list; l; l = l->next)
     {
       GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
@@ -3227,6 +3379,60 @@ gtk_icon_view_item_invalidate_size (GtkIconViewItem *item)
   item->height = -1;
 }
 
+#ifdef MAEMO_CHANGES
+static void
+gtk_icon_view_paint_row_header (GtkIconView     *icon_view,
+                                GtkIconViewItem *item,
+                                GdkRectangle    *area,
+                                GdkDrawable     *drawable)
+{
+  gchar *label = NULL;
+  int width, height;
+  gboolean is_header;
+  GtkTreeIter iter;
+  GtkWidget *widget = GTK_WIDGET (icon_view);
+
+  g_return_if_fail (icon_view->priv->row_header_func != NULL);
+
+  if (gtk_tree_model_get_flags (icon_view->priv->model) & GTK_TREE_MODEL_ITERS_PERSIST)
+    {
+      GtkTreePath *path;
+
+      path = gtk_tree_path_new_from_indices (item->index, -1);
+      g_return_if_fail (gtk_tree_model_get_iter (icon_view->priv->model, &iter, path));
+      gtk_tree_path_free (path);
+    }
+  else
+    iter = item->iter;
+
+  is_header = (* icon_view->priv->row_header_func) (icon_view->priv->model,
+                                                    &iter,
+                                                    &label,
+                                                    icon_view->priv->row_header_data);
+
+  g_return_if_fail (is_header == TRUE);
+  g_return_if_fail (icon_view->priv->row_header_layout != NULL);
+
+  pango_layout_set_text (icon_view->priv->row_header_layout,
+                         label, strlen (label));
+  pango_layout_get_pixel_size (icon_view->priv->row_header_layout,
+                               &width, &height);
+
+  gtk_paint_layout (widget->style,
+                    drawable,
+                    widget->state,
+                    TRUE,
+                    area,
+                    widget,
+                    "iconview-group-header",
+                    item->x + (item->width - width) / 2,
+                    item->y + item->height - height,
+                    icon_view->priv->row_header_layout);
+
+  g_free (label);
+}
+#endif /* MAEMO_CHANGES */
+
 static void
 gtk_icon_view_paint_item (GtkIconView     *icon_view,
 			  cairo_t         *cr,
@@ -3250,6 +3456,14 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
       
   if (icon_view->priv->model == NULL)
     return;
+
+#ifdef MAEMO_CHANGES
+  if (item->is_header)
+    {
+      gtk_icon_view_paint_row_header (icon_view, item, area, drawable);
+      return;
+    }
+#endif /* MAEMO_CHANGES */
   
   gtk_icon_view_set_cell_data (icon_view, item);
 
@@ -3557,6 +3771,10 @@ gtk_icon_view_set_cursor_item (GtkIconView     *icon_view,
     return;
 
 #ifdef MAEMO_CHANGES
+  /* Cannot set cursor on header */
+  if (item->is_header)
+    return;
+
   gtk_widget_style_get (GTK_WIDGET (icon_view),
                         "hildon-mode", &mode,
                         NULL);
@@ -3688,6 +3906,11 @@ gtk_icon_view_select_item (GtkIconView      *icon_view,
 
   if (item->selected)
     return;
+
+#ifdef MAEMO_CHANGES
+  if (item->is_header)
+    return;
+#endif /* MAEMO_CHANGES */
   
   if (icon_view->priv->selection_mode == GTK_SELECTION_NONE)
     return;
@@ -3712,6 +3935,11 @@ gtk_icon_view_unselect_item (GtkIconView      *icon_view,
 
   if (!item->selected)
     return;
+
+#ifdef MAEMO_CHANGES
+  if (item->is_header)
+    return;
+#endif /* MAEMO_CHANGES */
   
   if (icon_view->priv->selection_mode == GTK_SELECTION_NONE ||
       icon_view->priv->selection_mode == GTK_SELECTION_BROWSE)
@@ -3836,8 +4064,12 @@ gtk_icon_view_row_inserted (GtkTreeModel *model,
       if (mode == HILDON_FREMANTLE
           && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
         {
-          /* Select the just inserted node. */
-          gtk_icon_view_select_path (icon_view, path);
+          GtkTreePath *tmppath;
+
+          tmppath = gtk_tree_path_copy (path);
+          search_first_selectable_path (icon_view, &tmppath, TRUE);
+          gtk_icon_view_select_path (icon_view, tmppath);
+          gtk_tree_path_free (tmppath);
         }
     }
 #endif /* MAEMO_CHANGES */
@@ -3902,8 +4134,8 @@ gtk_icon_view_row_deleted (GtkTreeModel *model,
           GtkTreePath *path;
 
           /* The last item was just removed, select the first one */
-          path = gtk_tree_path_new ();
-          gtk_tree_path_append_index (path, 0);
+          path = gtk_tree_path_new_first ();
+          search_first_selectable_path (icon_view, &path, TRUE);
           gtk_icon_view_select_path (icon_view, path);
           gtk_tree_path_free (path);
         }
@@ -4098,6 +4330,12 @@ find_item (GtkIconView     *icon_view,
   for (items = icon_view->priv->items; items; items = items->next)
     {
       item = items->data;
+
+#ifdef MAEMO_CHANGES
+      if (item->is_header)
+        continue;
+#endif /* MAEMO_CHANGES */
+
       if (item->row == row && item->col == col)
 	return item;
     }
@@ -4203,6 +4441,11 @@ find_item_page_up_down (GtkIconView     *icon_view,
 	{
 	  for (next = item->next; next; next = next->next)
 	    {
+#ifdef MAEMO_CHANGES
+              if (((GtkIconViewItem *)next->data)->is_header)
+                continue;
+#endif /* MAEMO_CHANGES */
+
 	      if (((GtkIconViewItem *)next->data)->col == col)
 		break;
 	    }
@@ -4218,6 +4461,11 @@ find_item_page_up_down (GtkIconView     *icon_view,
 	{
 	  for (next = item->prev; next; next = next->prev)
 	    {
+#ifdef MAEMO_CHANGES
+              if (((GtkIconViewItem *)next->data)->is_header)
+                continue;
+#endif /* MAEMO_CHANGES */
+
 	      if (((GtkIconViewItem *)next->data)->col == col)
 		break;
 	    }
@@ -4233,6 +4481,30 @@ find_item_page_up_down (GtkIconView     *icon_view,
 
   return NULL;
 }
+
+#ifdef MAEMO_CHANGES
+static inline GList *
+find_first_cursor_item (GtkIconView *icon_view,
+                        gboolean     search_forward)
+{
+  GList *list;
+
+  if (search_forward)
+    {
+      list = icon_view->priv->items;
+      while (list && ((GtkIconViewItem *)list->data)->is_header)
+        list = list->next;
+    }
+  else
+    {
+      list = g_list_last (icon_view->priv->items);
+      while (list && ((GtkIconViewItem *)list->data)->is_header)
+        list = list->prev;
+    }
+
+  return list;
+}
+#endif /* MAEMO_CHANGES */
 
 static gboolean
 gtk_icon_view_select_all_between (GtkIconView     *icon_view,
@@ -4273,7 +4545,11 @@ gtk_icon_view_select_all_between (GtkIconView     *icon_view,
       if (row1 <= item->row && item->row <= row2 &&
 	  col1 <= item->col && item->col <= col2)
 	{
+#ifdef MAEMO_CHANGES
+	  if (!item->selected && !item->is_header)
+#else /* !MAEMO_CHANGES */
 	  if (!item->selected)
+#endif /* !MAEMO_CHANGES */
 	    {
 	      dirty = TRUE;
 	      item->selected = TRUE;
@@ -4300,19 +4576,27 @@ gtk_icon_view_move_cursor_up_down (GtkIconView *icon_view,
   
   if (!icon_view->priv->cursor_item)
     {
-#ifdef MAEMO_CHANGES
-      return;
-#else /* !MAEMO_CHANGES */
       GList *list;
+#ifdef MAEMO_CHANGES
+      HildonMode mode;
 
+      gtk_widget_style_get (GTK_WIDGET (icon_view),
+                            "hildon-mode", &mode,
+                            NULL);
+
+      if (mode == HILDON_FREMANTLE)
+        return;
+      
+      list = find_first_cursor_item (icon_view, count > 0);
+#else /* !MAEMO_CHANGES */
       if (count > 0)
 	list = icon_view->priv->items;
       else
 	list = g_list_last (icon_view->priv->items);
+#endif /* !MAEMO_CHANGES */
 
       item = list ? list->data : NULL;
       cell = -1;
-#endif /* !MAEMO_CHANGES */
     }
   else
     {
@@ -4373,18 +4657,26 @@ gtk_icon_view_move_cursor_page_up_down (GtkIconView *icon_view,
   
   if (!icon_view->priv->cursor_item)
     {
-#ifdef MAEMO_CHANGES
-      return;
-#else /* !MAEMO_CHANGES */
       GList *list;
+#ifdef MAEMO_CHANGES
+      HildonMode mode;
 
+      gtk_widget_style_get (GTK_WIDGET (icon_view),
+                            "hildon-mode", &mode,
+                            NULL);
+
+      if (mode == HILDON_FREMANTLE)
+        return;
+      
+      list = find_first_cursor_item (icon_view, count > 0);
+#else /* !MAEMO_CHANGES */
       if (count > 0)
 	list = icon_view->priv->items;
       else
 	list = g_list_last (icon_view->priv->items);
+#endif /* !MAEMO_CHANGES */
 
       item = list ? list->data : NULL;
-#endif /* !MAEMO_CHANGES */
     }
   else
     item = find_item_page_up_down (icon_view, 
@@ -4434,18 +4726,26 @@ gtk_icon_view_move_cursor_left_right (GtkIconView *icon_view,
   
   if (!icon_view->priv->cursor_item)
     {
-#ifdef MAEMO_CHANGES
-      return;
-#else /* !MAEMO_CHANGES */
       GList *list;
+#ifdef MAEMO_CHANGES
+      HildonMode mode;
 
+      gtk_widget_style_get (GTK_WIDGET (icon_view),
+                            "hildon-mode", &mode,
+                            NULL);
+
+      if (mode == HILDON_FREMANTLE)
+        return;
+      
+      list = find_first_cursor_item (icon_view, count > 0);
+#else /* !MAEMO_CHANGES */
       if (count > 0)
 	list = icon_view->priv->items;
       else
 	list = g_list_last (icon_view->priv->items);
+#endif /* !MAEMO_CHANGES */
 
       item = list ? list->data : NULL;
-#endif /* !MAEMO_CHANGES */
     }
   else
     {
@@ -4501,19 +4801,28 @@ gtk_icon_view_move_cursor_start_end (GtkIconView *icon_view,
   GtkIconViewItem *item;
   GList *list;
   gboolean dirty = FALSE;
+#ifdef MAEMO_CHANGES
+  HildonMode mode;
+#endif /* !MAEMO_CHANGES */
   
   if (!GTK_WIDGET_HAS_FOCUS (icon_view))
     return;
   
 #ifdef MAEMO_CHANGES
-  if (!icon_view->priv->cursor_item)
-    return;
-#endif /* MAEMO_CHANGES */
+  gtk_widget_style_get (GTK_WIDGET (icon_view),
+                        "hildon-mode", &mode,
+                        NULL);
 
+  if (mode == HILDON_FREMANTLE)
+    return;
+
+  list = find_first_cursor_item (icon_view, count < 0);
+#else /* !MAEMO_CHANGES */
   if (count < 0)
     list = icon_view->priv->items;
   else
     list = g_list_last (icon_view->priv->items);
+#endif /* !MAEMO_CHANGES */
   
   item = list ? list->data : NULL;
 
@@ -6101,7 +6410,11 @@ gtk_icon_view_select_all (GtkIconView *icon_view)
     {
       GtkIconViewItem *item = items->data;
       
+#ifdef MAEMO_CHANGES
+      if (!item->selected && !item->is_header)
+#else /* !MAEMO_CHANGES */
       if (!item->selected)
+#endif /* !MAEMO_CHANGES */
 	{
 	  dirty = TRUE;
 	  item->selected = TRUE;
@@ -7724,6 +8037,44 @@ gtk_icon_view_set_reorderable (GtkIconView *icon_view,
 }
 
 #ifdef MAEMO_CHANGES
+HildonIconViewRowHeaderFunc
+hildon_icon_view_get_row_header_func (GtkIconView *icon_view)
+{
+  g_return_val_if_fail (GTK_IS_ICON_VIEW (icon_view), NULL);
+
+  return icon_view->priv->row_header_func;
+}
+
+void
+hildon_icon_view_set_row_header_func (GtkIconView                 *icon_view,
+                                      HildonIconViewRowHeaderFunc  func,
+                                      gpointer                    data,
+                                      GDestroyNotify              destroy)
+{
+  g_return_if_fail (GTK_IS_ICON_VIEW (icon_view));
+
+  if (icon_view->priv->row_header_destroy)
+    (* icon_view->priv->row_header_destroy) (icon_view->priv->row_header_data);
+
+  icon_view->priv->row_header_func = func;
+  icon_view->priv->row_header_data = data;
+  icon_view->priv->row_header_destroy = destroy;
+
+  if (func && !icon_view->priv->row_header_layout)
+    {
+      icon_view->priv->row_header_layout =
+          gtk_widget_create_pango_layout (GTK_WIDGET (icon_view), "");
+      /* FIXME: set specific font settings, etc */
+    }
+  else if (!func && icon_view->priv->row_header_layout)
+    {
+      g_object_unref (icon_view->priv->row_header_layout);
+      icon_view->priv->row_header_layout = NULL;
+    }
+
+  gtk_icon_view_queue_layout (icon_view);
+}
+
 static void
 free_queued_activate_item (GtkIconView *icon_view)
 {
@@ -7792,8 +8143,8 @@ gtk_icon_view_set_hildon_ui_mode (GtkIconView   *icon_view,
           GtkTreePath *path;
 
           /* Select the first item */
-          path = gtk_tree_path_new ();
-          gtk_tree_path_append_index (path, 0);
+          path = gtk_tree_path_new_first ();
+          search_first_selectable_path (icon_view, &path, TRUE);
           gtk_icon_view_select_path (icon_view, path);
           gtk_tree_path_free (path);
         }

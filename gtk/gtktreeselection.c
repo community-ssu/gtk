@@ -1344,6 +1344,18 @@ _gtk_tree_selection_row_is_selectable (GtkTreeSelection *selection,
     }
 
 #ifdef MAEMO_CHANGES
+  if (!sensitive && selection->tree_view->priv->row_header_func)
+    {
+      /* never allow separators to be selected */
+      if ((* selection->tree_view->priv->row_header_func) (selection->tree_view->priv->model,
+                                                           &iter,
+                                                           NULL,
+                                                           selection->tree_view->priv->row_header_data))
+        return FALSE;
+    }
+#endif /* MAEMO_CHANGES */
+
+#ifdef MAEMO_CHANGES
   for (list = selection->tree_view->priv->columns; list && !sensitive; list = list->next)
     {
       GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (list->data);
