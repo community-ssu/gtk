@@ -1,3 +1,12 @@
+2008-08-06  Michael Natterer  <mitch@imendio.com>
+
+	Merged from upstream trunk:
+
+	Fixes: NB84261: dereferencing a NULL-pointer
+
+	* gtk/gtkselection.c: add tons of g_return_if_fail() instead of
+	crashing when NULL pointers get passed.
+
 2008-07-21  Kristian Rietveld  <kris@imendio.com>
 
 	Add support for creating group/row headers to tree and icon view.

@@ -951,7 +951,9 @@ gtk_selection_remove_all (GtkWidget *widget)
   GList *tmp_list;
   GList *next;
   GtkSelectionInfo *selection_info;
-  
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
   /* Remove pending requests/incrs for this widget */
   
   tmp_list = current_retrievals;
@@ -1124,6 +1126,8 @@ gtk_selection_data_set (GtkSelectionData *selection_data,
 			const guchar	 *data,
 			gint		  length)
 {
+  g_return_if_fail (selection_data != NULL);
+
   g_free (selection_data->data);
   
   selection_data->type = type;
@@ -1364,6 +1368,8 @@ gtk_selection_data_set_text (GtkSelectionData     *selection_data,
 			     const gchar          *str,
 			     gint                  len)
 {
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+
   if (len < 0)
     len = strlen (str);
   
@@ -1413,6 +1419,8 @@ guchar *
 gtk_selection_data_get_text (GtkSelectionData *selection_data)
 {
   guchar *result = NULL;
+
+  g_return_val_if_fail (selection_data != NULL, NULL);
 
   init_atoms ();
   
@@ -1472,6 +1480,9 @@ gtk_selection_data_set_pixbuf (GtkSelectionData *selection_data,
   gchar *str, *type;
   gsize len;
 
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+  g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), FALSE);
+
   formats = gdk_pixbuf_get_formats ();
 
   for (f = formats; f; f = f->next)
@@ -1530,6 +1541,8 @@ gtk_selection_data_get_pixbuf (GtkSelectionData *selection_data)
   GdkPixbufLoader *loader;
   GdkPixbuf *result = NULL;
 
+  g_return_val_if_fail (selection_data != NULL, NULL);
+
   if (selection_data->length > 0)
     {
       loader = gdk_pixbuf_loader_new ();
@@ -1568,6 +1581,9 @@ gboolean
 gtk_selection_data_set_uris (GtkSelectionData  *selection_data,
 			     gchar            **uris)
 {
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+  g_return_val_if_fail (uris != NULL, FALSE);
+
   init_atoms ();
 
   if (selection_data->target == text_uri_list_atom)
@@ -1622,6 +1638,8 @@ gtk_selection_data_get_uris (GtkSelectionData *selection_data)
 {
   gchar **result = NULL;
 
+  g_return_val_if_fail (selection_data != NULL, NULL);
+
   init_atoms ();
   
   if (selection_data->length >= 0 &&
@@ -1664,6 +1682,8 @@ gtk_selection_data_get_targets (GtkSelectionData  *selection_data,
 				GdkAtom          **targets,
 				gint              *n_atoms)
 {
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+
   if (selection_data->length >= 0 &&
       selection_data->format == 32 &&
       selection_data->type == GDK_SELECTION_TYPE_ATOM)
@@ -1701,10 +1721,12 @@ gtk_selection_data_get_targets (GtkSelectionData  *selection_data,
  **/
 gboolean 
 gtk_targets_include_text (GdkAtom *targets,
-			   gint     n_targets)
+                          gint     n_targets)
 {
   gint i;
   gboolean result = FALSE;
+
+  g_return_val_if_fail (targets != NULL || n_targets == 0, FALSE);
 
   /* Keep in sync with gtk_target_list_add_text_targets()
    */
@@ -1753,6 +1775,7 @@ gtk_targets_include_rich_text (GdkAtom       *targets,
   gint i, j;
   gboolean result = FALSE;
 
+  g_return_val_if_fail (targets != NULL || n_targets == 0, FALSE);
   g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), FALSE);
 
   init_atoms ();
@@ -1796,6 +1819,8 @@ gtk_selection_data_targets_include_text (GtkSelectionData *selection_data)
   gint n_targets;
   gboolean result = FALSE;
 
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+
   init_atoms ();
 
   if (gtk_selection_data_get_targets (selection_data, &targets, &n_targets))
@@ -1830,6 +1855,7 @@ gtk_selection_data_targets_include_rich_text (GtkSelectionData *selection_data,
   gint n_targets;
   gboolean result = FALSE;
 
+  g_return_val_if_fail (selection_data != NULL, FALSE);
   g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), FALSE);
 
   init_atoms ();
@@ -1867,6 +1893,8 @@ gtk_targets_include_image (GdkAtom *targets,
   GList *l;
   gint i;
   gboolean result = FALSE;
+
+  g_return_val_if_fail (targets != NULL || n_targets == 0, FALSE);
 
   list = gtk_target_list_new (NULL, 0);
   gtk_target_list_add_image_targets (list, 0, writable);
@@ -1910,6 +1938,8 @@ gtk_selection_data_targets_include_image (GtkSelectionData *selection_data,
   gint n_targets;
   gboolean result = FALSE;
 
+  g_return_val_if_fail (selection_data != NULL, FALSE);
+
   init_atoms ();
 
   if (gtk_selection_data_get_targets (selection_data, &targets, &n_targets))
@@ -1940,6 +1970,8 @@ gtk_targets_include_uri (GdkAtom *targets,
 {
   gint i;
   gboolean result = FALSE;
+
+  g_return_val_if_fail (targets != NULL || n_targets == 0, FALSE);
 
   /* Keep in sync with gtk_target_list_add_uri_targets()
    */
@@ -1977,6 +2009,8 @@ gtk_selection_data_targets_include_uri (GtkSelectionData *selection_data)
   GdkAtom *targets;
   gint n_targets;
   gboolean result = FALSE;
+
+  g_return_val_if_fail (selection_data != NULL, FALSE);
 
   init_atoms ();
 
