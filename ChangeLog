@@ -1,3 +1,10 @@
+2008-08-07 16:24:01  Tim Janik  <timj@imendio.com>
+
+	* gdk/x11/gdkmain-x11.c (gdk_x_error): abort the program with g_error()
+	instead of exit(1) in case of X errors, so testers have core dumps and
+	logging information about abnormal program abortion available, fixes:
+	NB#75037 - When receiving an X error, GDK exits with 1 which makes debugging hard
+
 2008-08-06  Michael Natterer  <mitch@imendio.com>
 
 	Merged from upstream trunk:
