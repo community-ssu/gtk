@@ -366,6 +366,9 @@ static void
 gtk_scrolled_window_init (GtkScrolledWindow *scrolled_window)
 {
   GTK_WIDGET_SET_FLAGS (scrolled_window, GTK_NO_WINDOW | GTK_CAN_FOCUS);
+#ifdef MAEMO_CHANGES
+  GTK_WIDGET_UNSET_FLAGS (scrolled_window, GTK_CAN_FOCUS);
+#endif
 
   scrolled_window->hscrollbar = NULL;
   scrolled_window->vscrollbar = NULL;
@@ -1558,6 +1561,10 @@ gtk_scrolled_window_focus (GtkWidget        *widget,
 
   if (!had_focus_child)
     {
+#ifdef MAEMO_CHANGES
+      if (!GTK_WIDGET_CAN_FOCUS (widget)
+        return FALSE;
+#endif
       gtk_widget_grab_focus (widget);
       return TRUE;
     }
