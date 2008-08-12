@@ -1,3 +1,7 @@
+2008-08-12  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 2:2.12.9-0osso4
+
 2008-08-11  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* gtk/gtkscrolledwindow.c: (gtk_scrolled_window_focus): Add a missing

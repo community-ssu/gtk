@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.12.9-0osso4) unstable; urgency=low
+
+  * Lot of changes, see ChangeLog.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Aug 2008 19:30:17 +0300
+
 gtk+2.0 (2:2.12.9-0osso3) unstable; urgency=low
 
   * gtk/tests/treeview-hildon.c: s/g_return_if_fail/g_assert/.
