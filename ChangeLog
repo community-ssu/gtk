@@ -1,3 +1,8 @@
+2008-08-11  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gtk/gtkscrolledwindow.c: (gtk_scrolled_window_focus): Add a missing
+	closing parenthesis to fix build.
+
 2008-08-11  Sven Herzberg  <sven@imendio.com>
 
 	NB#87439: GtkScrolledWindow accepts focus even if not useful
