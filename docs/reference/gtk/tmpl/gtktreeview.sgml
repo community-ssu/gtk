@@ -271,6 +271,11 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 
 </para>
 
+<!-- ##### ARG GtkTreeView:hildon-ui-mode ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTreeView:hover-expand ##### -->
 <para>
 

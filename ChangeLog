@@ -2,7 +2,7 @@
 
 	Released 2:2.12.9-0osso4
 
-2008-08-11  Claudio Saavedra  <csaavedra@igalia.com>
+2008-08-11  Claudio Saavedra  
 
 	* gtk/gtkscrolledwindow.c: (gtk_scrolled_window_focus): Add a missing
 	closing parenthesis to fix build.
@@ -494,7 +494,7 @@
 	* gtk/gtkwidget.c (gtk_widget_class_init): introduce hildon-mode
 	style property.
 
-2008-06-04  Alberto Garcia  <agarcia@ig\alia.com>
+2008-06-04  Alberto Garcia  
 
 	* gtk/gtkdialog.c (gtk_dialog_init): change the layout of the
 	dialog so the buttons appear vertically on the right side.
