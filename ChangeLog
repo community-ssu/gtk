@@ -1,3 +1,13 @@
+2008-08-29 10:55:06  Tim Janik  <timj@imendio.com>
+
+	Applied patch from Kristian Rietveld to fix inclusion of
+	gtkfilechooserprivate.h in Gtk+ applications, by installing neccessary
+	new include files.
+
+	* gtk/gtkquery.h, gtk/gtksearchengine.h: guard against direct inclusion.
+
+	* gtk/Makefile.am: install gtkquery.h and gtksearchengine.h.
+
 2008-08-12  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	Released 2:2.12.9-0osso4

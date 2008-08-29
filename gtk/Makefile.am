@@ -342,6 +342,8 @@ endif
 # Installed header files without compatibility guarantees
 # that are not included in gtk/gtk.h
 gtk_semi_private_h_sources =    \
+	gtkquery.h		\
+	gtksearchengine.h	\
 	gtktextlayout.h		\
 	gtkfilesystem.h		\
 	gtkfilesystemmodel.h	\
@@ -350,8 +352,6 @@ gtk_semi_private_h_sources =    \
 
 # GTK+ header files that don't get installed
 gtk_private_h_sources =		\
-	gtkquery.h		\
-	gtksearchengine.h	\
 	gtksearchenginebeagle.h	\
 	gtksearchenginetracker.h\
 	gtksearchenginesimple.h	\
