@@ -1,3 +1,18 @@
+2008-08-29  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.9-1maemo0
+
+	* debian/changelog: Switch to use 'maemo' instead of 'osso' for 
+	versioning.
+	* debian/control.in: Set Kimmo as the maintainer.
+
+	* docs/reference/gdk/tmpl/events.sgml:
+	* docs/reference/gtk/tmpl/gtkiconview.sgml:
+	* docs/reference/gtk/tmpl/gtkobject.sgml:
+	* docs/reference/gtk/tmpl/gtktoolbar.sgml:
+	* docs/reference/gtk/tmpl/gtktreeview.sgml:
+	* docs/reference/gtk/tmpl/gtkwidget.sgml: Template updates.
+
 2008-08-29 10:55:06  Tim Janik  <timj@imendio.com>
 
 	Applied patch from Kristian Rietveld to fix inclusion of
