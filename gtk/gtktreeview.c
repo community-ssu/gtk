@@ -8396,6 +8396,11 @@ gtk_tree_view_has_special_cell (GtkTreeView *tree_view)
       if (!((GtkTreeViewColumn *)list->data)->visible)
 	continue;
 #ifdef MAEMO_CHANGES
+      /* We return true if there is more than one special cell.  Since
+       * we do not want to have the per-cell focus rectangles when there
+       * is only a single activatable cell, we return FALSE for
+       * n_specials == 1
+       */
       n_specials += _gtk_tree_view_column_count_special_cells (list->data);
       if (n_specials > 1)
 	return TRUE;
@@ -11088,6 +11093,56 @@ gtk_tree_view_real_select_cursor_row (GtkTreeView *tree_view,
       gtk_tree_path_free (cursor_path);
       return FALSE;
     }
+
+#ifdef MAEMO_CHANGES
+  if (start_editing)
+    {
+      GList *list;
+      gboolean rtl;
+      GtkTreeIter iter;
+
+      /* In case we have only one activatable cell in the tree view, we have
+       * a special case.  We will have to set the cell data on the cursor
+       * row in order to figure out.
+       */
+      gtk_tree_model_get_iter (tree_view->priv->model, &iter, cursor_path);
+      rtl = (gtk_widget_get_direction (GTK_WIDGET (tree_view)) == GTK_TEXT_DIR_RTL);
+
+      for (list = (rtl ? g_list_last (tree_view->priv->columns) : g_list_first (tree_view->priv->columns));
+           list;
+           list = (rtl ? list->prev : list->next))
+        {
+          GtkTreeViewColumn *column = list->data;
+          gtk_tree_view_column_cell_set_cell_data_with_hint (column,
+                                                             tree_view->priv->model,
+                                                             &iter,
+                                                             GTK_RBNODE_FLAG_SET (cursor_node, GTK_RBNODE_IS_PARENT),
+                                                             cursor_node->children?TRUE:FALSE,
+                                                             GTK_TREE_CELL_DATA_HINT_KEY_FOCUS);
+        }
+
+      if (!gtk_tree_view_has_special_cell (tree_view))
+        {
+          /* We now set focus_column to the first column with an activatable
+           * cell that we can find.  This is either none, or the one with
+           * the only activatable cell that is around.
+           */
+          for (list = (rtl ? g_list_last (tree_view->priv->columns) : g_list_first (tree_view->priv->columns));
+               list;
+               list = (rtl ? list->prev : list->next))
+            {
+              GtkTreeViewColumn *column = list->data;
+
+              if (column->visible
+                  && _gtk_tree_view_column_count_special_cells (column))
+                {
+                  tree_view->priv->focus_column = column;
+                  break;
+                }
+            }
+        }
+    }
+#endif /* MAEMO_CHANGES */
 
   if (!tree_view->priv->shift_pressed && start_editing &&
       tree_view->priv->focus_column)
