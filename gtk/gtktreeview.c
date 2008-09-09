@@ -16486,6 +16486,12 @@ gtk_tree_view_set_row_separator_func (GtkTreeView                *tree_view,
   tree_view->priv->row_separator_func = func;
   tree_view->priv->row_separator_data = data;
   tree_view->priv->row_separator_destroy = destroy;
+
+#ifdef MAEMO_CHANGES
+  /* Have the tree recalculate heights */
+  _gtk_rbtree_mark_invalid (tree_view->priv->tree);
+  gtk_widget_queue_resize (GTK_WIDGET (tree_view));
+#endif /* MAEMO_CHANGES */
 }
 
 #ifdef MAEMO_CHANGES
@@ -16523,6 +16529,10 @@ hildon_tree_view_set_row_header_func (GtkTreeView                 *tree_view,
       g_object_unref (tree_view->priv->row_header_layout);
       tree_view->priv->row_header_layout = NULL;
     }
+
+  /* Have the tree recalculate heights */
+  _gtk_rbtree_mark_invalid (tree_view->priv->tree);
+  gtk_widget_queue_resize (GTK_WIDGET (tree_view));
 }
 #endif /* MAEMO_CHANGES */
   

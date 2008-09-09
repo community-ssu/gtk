@@ -1,5 +1,12 @@
 2008-09-09  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_set_row_header_func): mark
+	tree as invalid and queue a resize,
+	(gtk_tree_view_set_row_separator_func): ditto (probably need to be
+	upstreamed).
+
+2008-09-09  Kristian Rietveld  <kris@imendio.com>
+
 	Make the combination of fixed-height-mode with row separator
 	and/or row headers work nicely.  This fix also needs to go
 	upstream in some form and with missing bits filled out.
