@@ -1,3 +1,21 @@
+2008-09-09  Kristian Rietveld  <kris@imendio.com>
+
+	Make the combination of fixed-height-mode with row separator
+	and/or row headers work nicely.  This fix also needs to go
+	upstream in some form and with missing bits filled out.
+
+	* gtk/gtktreeview.c (determine_row_height): new function,
+	(gtk_tree_view_nodes_set_fixed_height): ditto, slower
+	variant of _gtk_rbtree_set_fixed_height,
+	(initialize_fixed_height_mode): search for first regular row
+	to use for measuring the fixed height to use; use the slower
+	set_fixed_height variant if a row separator or row header func
+	has been set,
+	(gtk_tree_view_row_changed),
+	(gtk_tree_view_row_inserted): use determine_row_height() for
+	getting a row's height if a row separator or row header func
+	has been set.
+
 2008-09-03  Kristian Rietveld  <kris@gtk.org>
 
 	Fixes NB#87436: Enter key is not handled to check/uncheck the

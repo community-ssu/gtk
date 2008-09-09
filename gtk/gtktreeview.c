@@ -6855,6 +6855,141 @@ validate_visible_area (GtkTreeView *tree_view)
     gtk_widget_queue_draw (GTK_WIDGET (tree_view));
 }
 
+#ifdef MAEMO_CHANGES
+/* You can pass in focus_pad, separator_height to save
+ * calls to gtk_widget_style_get() (especially for
+ * gtk_tree_view_nodes_set_fixed_height).
+ */
+static inline int
+determine_row_height (GtkTreeView *tree_view,
+                      GtkTreeIter *iter,
+                      int          focus_pad,
+                      int          separator_height)
+{
+  int height;
+  gboolean is_separator, is_header;
+
+  /* Determine the correct height for this node.  This is
+   * analogous to what is found in validate_row().
+   */
+  is_separator = row_is_separator (tree_view, iter, &is_header, NULL);
+
+  if (!is_separator)
+    height = tree_view->priv->fixed_height;
+  else if (is_header)
+    height = HILDON_ROW_HEADER_HEIGHT;
+  else
+    {
+      if (focus_pad == -1 || separator_height == -1)
+        gtk_widget_style_get (GTK_WIDGET (tree_view),
+                              "focus-padding", &focus_pad,
+                              "separator-height", &separator_height,
+                              NULL);
+
+      height = separator_height + 2 * focus_pad;
+    }
+
+  return height;
+}
+
+/* This function is basically an extended and non-recursive version of
+ * _gtk_rbtree_set_fixed_height() which also keeps track of the current
+ * iter.  We can then pass this iter in to the row separator and
+ * row header funcs.
+ */
+static void
+gtk_tree_view_nodes_set_fixed_height (GtkTreeView *tree_view)
+{
+  int focus_pad;
+  int separator_height;
+  GtkRBTree *tree;
+  GtkRBNode *node;
+  GtkTreeIter iter;
+
+  tree = tree_view->priv->tree;
+
+  if (tree == NULL)
+    return;
+
+  node = tree->root;
+  g_assert (node);
+
+  /* Rewind tree, we start at the first node */
+  while (node->left != tree->nil)
+    node = node->left;
+
+  gtk_tree_model_get_iter_first (tree_view->priv->model, &iter);
+
+  gtk_widget_style_get (GTK_WIDGET (tree_view),
+                        "focus-padding", &focus_pad,
+                        "separator-height", &separator_height,
+                        NULL);
+
+  /* This loop is equivalent to the one in bin_expose, but with
+   * the extra assertions removed.
+   */
+  do
+    {
+      if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_INVALID))
+        {
+          int height;
+
+          height = determine_row_height (tree_view, &iter,
+                                         focus_pad, separator_height);
+
+          _gtk_rbtree_node_set_height (tree, node, height);
+          _gtk_rbtree_node_mark_valid (tree, node);
+        }
+
+      if (node->children)
+        {
+          GtkTreeIter parent = iter;
+
+          tree = node->children;
+          node = tree->root;
+
+          g_assert (node != tree->nil);
+
+          while (node->left != tree->nil)
+            node = node->left;
+
+          gtk_tree_model_iter_children (tree_view->priv->model,
+                                        &iter, &parent);
+        }
+      else
+        {
+          gboolean done = FALSE;
+
+          do
+            {
+              node = _gtk_rbtree_next (tree, node);
+              if (node != NULL)
+                {
+                  gtk_tree_model_iter_next (tree_view->priv->model, &iter);
+                  done = TRUE;
+                }
+              else
+                {
+                  GtkTreeIter parent_iter = iter;
+
+                  node = tree->parent_node;
+                  tree = tree->parent_tree;
+
+                  if (!tree)
+                    /* We are done */
+                    return;
+
+                  gtk_tree_model_iter_parent (tree_view->priv->model,
+                                              &iter, &parent_iter);
+                }
+            }
+          while (!done);
+        }
+    }
+  while (TRUE);
+}
+#endif /* MAEMO_CHANGES */
+
 static void
 initialize_fixed_height_mode (GtkTreeView *tree_view)
 {
@@ -6873,6 +7008,31 @@ initialize_fixed_height_mode (GtkTreeView *tree_view)
       node = tree->root;
 
       path = _gtk_tree_view_find_path (tree_view, tree, node);
+
+#ifdef MAEMO_CHANGES
+      /* Search for the first regular row */
+      while (node)
+        {
+          gboolean is_header, is_separator;
+
+          is_separator = row_is_separator (tree_view, NULL, &is_header, path);
+          if (!is_separator && !is_header)
+            break;
+
+          _gtk_rbtree_next_full (tree, node, &tree, &node);
+
+          gtk_tree_path_free (path);
+
+          if (node)
+            path = _gtk_tree_view_find_path (tree_view, tree, node);
+          else
+            path = NULL;
+        }
+
+      if  (!path)
+        return;
+#endif /* MAEMO_CHANGES */
+
       gtk_tree_model_get_iter (tree_view->priv->model, &iter, path);
 
       validate_row (tree_view, tree, node, &iter, path);
@@ -6882,6 +7042,16 @@ initialize_fixed_height_mode (GtkTreeView *tree_view)
       tree_view->priv->fixed_height = ROW_HEIGHT (tree_view, GTK_RBNODE_GET_HEIGHT (node));
     }
 
+#ifdef MAEMO_CHANGES
+  /* If a separator or row header func has been set, we cannot
+   * uniformly set the same height on all rows.  We fall back to
+   * a slower alternative.
+   */
+  if (tree_view->priv->row_separator_func
+      || tree_view->priv->row_header_func)
+    gtk_tree_view_nodes_set_fixed_height (tree_view);
+  else
+#endif /* MAEMO_CHANGES */
    _gtk_rbtree_set_fixed_height (tree_view->priv->tree,
                                  tree_view->priv->fixed_height, TRUE);
 }
@@ -9105,6 +9275,17 @@ gtk_tree_view_row_changed (GtkTreeModel *model,
   if (tree_view->priv->fixed_height_mode
       && tree_view->priv->fixed_height >= 0)
     {
+#ifdef MAEMO_CHANGES
+      if (tree_view->priv->row_separator_func
+          || tree_view->priv->row_header_func)
+        {
+          int height;
+
+          height = determine_row_height (tree_view, iter, -1, -1);
+          _gtk_rbtree_node_set_height (tree, node, height);
+        }
+      else
+#endif /* !MAEMO_CHANGES */
       _gtk_rbtree_node_set_height (tree, node, tree_view->priv->fixed_height);
       if (GTK_WIDGET_REALIZED (tree_view))
 	gtk_tree_view_node_queue_redraw (tree_view, tree, node);
@@ -9157,7 +9338,17 @@ gtk_tree_view_row_inserted (GtkTreeModel *model,
 
   if (tree_view->priv->fixed_height_mode
       && tree_view->priv->fixed_height >= 0)
+#ifdef MAEMO_CHANGES
+    {
+      if (tree_view->priv->row_separator_func
+          || tree_view->priv->row_header_func)
+        height = determine_row_height (tree_view, iter, -1, -1);
+      else
+        height = tree_view->priv->fixed_height;
+    }
+#else /* !MAEMO_CHANGES */
     height = tree_view->priv->fixed_height;
+#endif /* !MAEMO_CHANGES */
   else
     height = 0;
 
