@@ -276,11 +276,7 @@ gtk_dialog_init (GtkDialog *dialog)
 #endif /* MAEMO_CHANGES */
 
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog->action_area),
-#ifdef MAEMO_CHANGES
-                             GTK_BUTTONBOX_CENTER);
-#else
                              GTK_BUTTONBOX_END);  
-#endif /* MAEMO_CHANGES */
 
 #ifdef MAEMO_CHANGES
   gtk_box_pack_end (GTK_BOX (hbox), dialog->action_area,
