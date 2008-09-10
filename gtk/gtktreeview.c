@@ -935,6 +935,26 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 							     G_MAXINT,
 							     _TREE_VIEW_SEPARATOR_HEIGHT,
 							     GTK_PARAM_READABLE));
+
+  /**
+   * GtkTreeView:row-height:
+   *
+   * Height in pixels of a row.  When set, all rows will use this height,
+   * except for row separators and row headers.  A value of -1 means this
+   * value is unset.  Setting this property does not imply fixed height
+   * mode will be turned on, so columns are still properly autosized.
+   *
+   * Since: maemo 5.0
+   * Stability: Unstable
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_int ("row-height",
+							     P_("Row height"),
+							     P_("Height of a row"),
+							     -1,
+							     G_MAXINT,
+                                                             -1,
+							     GTK_PARAM_READABLE));
 #endif /* MAEMO_CHANGES */
 
   /* Signals */
@@ -6361,6 +6381,7 @@ validate_row (GtkTreeView *tree_view,
   gint focus_pad;
   gint grid_line_width;
 #ifdef MAEMO_CHANGES
+  gint row_height;
   gint separator_height;
   HildonMode mode;
   gboolean is_header = FALSE;
@@ -6384,6 +6405,7 @@ validate_row (GtkTreeView *tree_view,
 			"vertical-separator", &vertical_separator,
 			"grid-line-width", &grid_line_width,
 #ifdef MAEMO_CHANGES
+                        "row-height", &row_height,
 			"separator-height", &separator_height,
                         "hildon-mode", &mode,
 #endif /* MAEMO_CHANGES */
@@ -6481,6 +6503,11 @@ validate_row (GtkTreeView *tree_view,
 
   if (draw_hgrid_lines)
     height += grid_line_width;
+
+#ifdef MAEMO_CHANGES
+  if (row_height != -1 && !is_separator && !is_header)
+    height = row_height;
+#endif /* MAEMO_CHANGES */
 
   if (height != GTK_RBNODE_GET_HEIGHT (node))
     {

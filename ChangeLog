@@ -1,3 +1,16 @@
+2008-09-10  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_class_init): introduce
+	row-height style property,
+	(validate_row): enforce row-height style property.  Note that this is
+	the only place that needs patching, both fixed-height and
+	non-fixed-height mode go through validate_row().
+
+	* tests/testhildontreeview.c (create_model): remove new lines
+	from string,
+	(main): set row-height style property in "fremantle-widget"
+	style definition to test the feature.
+
 2008-09-10  Alberto Garcia  <agarcia@igalia.com>
 
 	* gtk/gtkdialog.c (gtk_dialog_init): Align all buttons to the

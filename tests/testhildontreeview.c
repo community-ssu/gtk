@@ -27,7 +27,7 @@ create_model (void)
     {
       gchar *str;
 
-      str = g_strdup_printf ("\nRow %d\n", i);
+      str = g_strdup_printf ("Row %d", i);
       gtk_list_store_insert_with_values (store, NULL, i, 0, str, -1);
       g_free (str);
     }
@@ -175,6 +175,7 @@ main (int argc, char **argv)
 
   gtk_rc_parse_string ("style \"fremantle-widget\" {\n"
                        "  GtkWidget::hildon-mode = 1\n"
+                       "  GtkTreeView::row-height = 70\n"
                        "} widget \"*.fremantle-widget\" style \"fremantle-widget\"");
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
