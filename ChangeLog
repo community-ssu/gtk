@@ -1,3 +1,9 @@
+2008-09-15  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.9-1maemo1
+
+	* debian/changelog: updates.
+
 2008-09-10  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_class_init): introduce

@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.12.9-1maemo1) unstable; urgency=low
+
+  * Fixes: NB#87436 (Enter key is not handled to check/uncheck the
+    check-button in some scenarios)
+  * Misc GtkTreeView improvements.
+  * Fixes: NB#88199 (Incorrect alignment in the dialog right side buttons)
+  * New GtkTreeView::row-height style property.
+  * Set myself as the maintainer of the maemo package.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 15 Sep 2008 18:44:20 +0300
+
 gtk+2.0 (2:2.12.9-1maemo0) unstable; urgency=low
 
   * Fixes inclusion of gtkfilechooserprivate.h in applications.
