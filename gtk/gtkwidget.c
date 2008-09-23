@@ -324,22 +324,27 @@ typedef struct
 
 
 /* --- Tap And Hold --- */
-static gboolean gtk_widget_tap_and_hold_timeout      (GtkWidget                *widget);
-static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget                *widget,
-						      GdkEvent                 *event,
-						      TahData                  *td);
-static gboolean gtk_widget_tap_and_hold_event_stop   (GtkWidget                *widget,
-						      gpointer                  unused,
-						      TahData                  *td);
-static void     gtk_widget_real_tap_and_hold_setup   (GtkWidget                *widget,
-						      GtkWidget                *menu,
-						      GtkCallback               func,
-						      GtkWidgetTapAndHoldFlags  flags );
-static void     gtk_widget_real_tap_and_hold         (GtkWidget                *widget);
-static gboolean gtk_widget_tap_and_hold_query        (GtkWidget                *widget,
-						      GdkEvent                 *event);
-static gboolean gtk_widget_real_tap_and_hold_query   (GtkWidget                *widget,
-						      GdkEvent                 *event);
+static gboolean gtk_widget_tap_and_hold_timeout           (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_button_press      (GtkWidget                *widget,
+                                                           GdkEvent                 *event,
+                                                           TahData                  *td);
+static gboolean gtk_widget_tap_and_hold_event_stop        (GtkWidget                *widget,
+                                                           gpointer                  unused,
+                                                           TahData                  *td);
+static void     gtk_widget_real_tap_and_hold_setup        (GtkWidget                *widget,
+                                                           GtkWidget                *menu,
+                                                           GtkCallback               func,
+                                                           GtkWidgetTapAndHoldFlags  flags );
+static void     gtk_widget_real_tap_and_hold              (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_query             (GtkWidget                *widget,
+                                                           GdkEvent                 *event);
+static gboolean gtk_widget_real_tap_and_hold_query        (GtkWidget                *widget,
+                                                           GdkEvent                 *event);
+
+static gboolean gtk_widget_tap_and_hold_query_accumulator (GSignalInvocationHint    *ihint,
+                                                           GValue                   *return_accu,
+                                                           const GValue             *handler_return,
+                                                           gpointer                  dummy);
 #endif /* MAEMO_CHANGES */
 
 
@@ -2348,7 +2353,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                              G_TYPE_FROM_CLASS (gobject_class),
                              G_SIGNAL_RUN_LAST,
                              G_CALLBACK (gtk_widget_real_tap_and_hold_query),
-                             _gtk_boolean_handled_accumulator, NULL,
+                             gtk_widget_tap_and_hold_query_accumulator, NULL,
                              _gtk_marshal_BOOLEAN__BOXED,
                              G_TYPE_BOOLEAN, 1,
                              GDK_TYPE_EVENT);
@@ -10561,6 +10566,30 @@ gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
 
   GDK_THREADS_LEAVE ();
   return result;
+}
+
+static gboolean
+gtk_widget_tap_and_hold_query_accumulator (GSignalInvocationHint *ihint,
+                                           GValue                *return_accu,
+                                           const GValue          *handler_return,
+                                           gpointer               dummy)
+{
+  gboolean continue_emission;
+  gboolean tap_and_hold_not_allowed;
+
+  /* The semantics of the tap-and-hold-query return value differs from
+   * the normal event signal handlers.
+   */
+
+  tap_and_hold_not_allowed = g_value_get_boolean (handler_return);
+  g_value_set_boolean (return_accu, tap_and_hold_not_allowed);
+
+  /* tap_and_hold_not_allowed == FALSE means invoke tap-and-hold,
+   * in this case we do not continue emission.
+   */
+  continue_emission = (tap_and_hold_not_allowed != FALSE);
+
+  return continue_emission;
 }
 
 static gboolean
