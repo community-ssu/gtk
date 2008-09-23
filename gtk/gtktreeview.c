@@ -17176,6 +17176,7 @@ gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
   gdouble x, y;
   gint new_y;
   gboolean sensitive;
+  HildonMode mode;
 
   if (!tree_view->priv->tree)
     return FALSE;
@@ -17190,9 +17191,26 @@ gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
   if (node == NULL)
     return TRUE;
 
+  gtk_widget_style_get (widget,
+                        "hildon-mode", &mode,
+                        NULL);
+
   path = _gtk_tree_view_find_path (tree_view, tree, node);
-  sensitive = _gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
-                                                     node, path);
+
+  if (mode == HILDON_FREMANTLE
+      && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
+    {
+      /* The normal mode has no notion of selection, so we special-case
+       * it here.
+       */
+      sensitive = !row_is_separator (tree_view, NULL, NULL, path);
+    }
+  else
+    {
+      sensitive = _gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+                                                         node, path);
+    }
+
   gtk_tree_path_free (path);
 
   return !sensitive;
