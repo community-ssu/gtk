@@ -1,3 +1,9 @@
+2008-09-24  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.9-1maemo2
+
+	* debian/changelog: updates.
+
 2008-09-23  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_tap_and_hold_query): special

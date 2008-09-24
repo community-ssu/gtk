@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.12.9-1maemo2) unstable; urgency=low
+
+  * Implements custom boolean accumulator for the tap-and-hold-query signal.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 24 Sep 2008 09:30:04 +0300
+
 gtk+2.0 (2:2.12.9-1maemo1) unstable; urgency=low
 
   * Fixes: NB#87436 (Enter key is not handled to check/uncheck the
