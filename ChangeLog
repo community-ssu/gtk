@@ -1,3 +1,16 @@
+2008-09-24  Michael Natterer  <mitch@imendio.com>
+
+	Fixes NB#87440: Combobox popup not moving with the combobox
+
+	Merged code from upstream that repositions the popups when
+	the widgets change size. Patch by Christian Dywan:
+
+	* gtk/gtkentry.c: remove #ifdef MAEMO_CHANGES since the same
+	code is in upstream.
+
+	* gtk/gtkcombobox.c: move the popup around here too when the
+	combobox changes its allocation.
+
 2008-09-24  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.9-1maemo2
