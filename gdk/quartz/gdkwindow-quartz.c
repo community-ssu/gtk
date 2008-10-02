@@ -322,9 +322,11 @@ gdk_window_quartz_process_all_updates (void)
 {
   GSList *old_update_windows = update_windows;
   GSList *tmp_list = update_windows;
+  GSList *nswindows;
 
   update_idle = 0;
   update_windows = NULL;
+  nswindows = NULL;
 
   g_slist_foreach (old_update_windows, (GFunc) g_object_ref, NULL);
   
@@ -332,15 +334,49 @@ gdk_window_quartz_process_all_updates (void)
 
   while (tmp_list)
     {
+      GdkWindow *window = tmp_list->data;
+      GdkWindow *toplevel;
+
+      /* Only flush each toplevel at most once. */
+      toplevel = gdk_window_get_toplevel (window);
+      if (toplevel)
+        {
+          GdkWindowObject *private;
+          GdkWindowImplQuartz *impl;
+          NSWindow *nswindow;
+
+          private = (GdkWindowObject *) toplevel;
+          impl = (GdkWindowImplQuartz *) private->impl;
+          nswindow = impl->toplevel;
+
+          if (nswindow && ![nswindow isFlushWindowDisabled]) 
+            {
+              [nswindow disableFlushWindow];
+              nswindows = g_slist_prepend (nswindows, nswindow);
+            }
+        }
+
       gdk_window_quartz_process_updates_internal (tmp_list->data);
 
       g_object_unref (tmp_list->data);
       tmp_list = tmp_list->next;
     }
 
+  tmp_list = nswindows;
+  while (tmp_list) 
+    {
+      NSWindow *nswindow = tmp_list->data;
+
+      [nswindow enableFlushWindow];
+      [nswindow flushWindow];
+
+      tmp_list = tmp_list->next;
+    }
+		    
   GDK_QUARTZ_RELEASE_POOL;
 
   g_slist_free (old_update_windows);
+  g_slist_free (nswindows);
 }
 
 static gboolean
@@ -501,22 +537,31 @@ get_ancestor_coordinates_from_child (GdkWindow *child_window,
 }
 
 void
-_gdk_quartz_window_debug_highlight (GdkWindow *window)
+_gdk_quartz_window_debug_highlight (GdkWindow *window, gint number)
 {
   GdkWindowObject *private = GDK_WINDOW_OBJECT (window);
   GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
   gint x, y;
   GdkWindow *toplevel;
   gint tx, ty;
-  static NSWindow *debug_window;
-  static NSRect old_rect;
+  static NSWindow *debug_window[10];
+  static NSRect old_rect[10];
   NSRect rect;
+  NSColor *color;
+
+  g_return_if_fail (number >= 0 && number <= 9);
 
   if (window == _gdk_root)
     return;
 
   if (window == NULL)
-    return;
+    {
+      if (debug_window[number])
+        [debug_window[number] close];
+      debug_window[number] = NULL;
+
+      return;
+    }
 
   toplevel = gdk_window_get_toplevel (window);
   get_ancestor_coordinates_from_child (window, 0, 0, toplevel, &x, &y);
@@ -525,37 +570,56 @@ _gdk_quartz_window_debug_highlight (GdkWindow *window)
   x += tx;
   y += ty;
 
-  rect =  NSMakeRect (x,
-                      _gdk_quartz_window_get_inverted_screen_y (y + impl->height),
-                      impl->width, impl->height);
+  rect = NSMakeRect (x,
+                     _gdk_quartz_window_get_inverted_screen_y (y + impl->height),
+                     impl->width, impl->height);
 
-  if (debug_window &&
-      rect.origin.x == old_rect.origin.x &&
-      rect.origin.y == old_rect.origin.y &&
-      rect.size.width == old_rect.size.width &&
-      rect.size.height == old_rect.size.height)
+  if (debug_window[number] && NSEqualRects (rect, old_rect[number]))
+    return;
+
+  old_rect[number] = rect;
+
+  if (debug_window[number])
+    [debug_window[number] close];
+
+  debug_window[number] = [[NSWindow alloc] initWithContentRect:rect
+                                                     styleMask:NSBorderlessWindowMask
+			                               backing:NSBackingStoreBuffered
+			                                 defer:NO];
+
+  switch (number)
     {
-      return;
+    case 0:
+      color = [NSColor redColor];
+      break;
+    case 1:
+      color = [NSColor blueColor];
+      break;
+    case 2:
+      color = [NSColor greenColor];
+      break;
+    case 3:
+      color = [NSColor yellowColor];
+      break;
+    case 4:
+      color = [NSColor brownColor];
+      break;
+    case 5:
+      color = [NSColor purpleColor];
+      break;
+    default:
+      color = [NSColor blackColor];
+      break;
     }
 
-  old_rect = rect;
+  [debug_window[number] setBackgroundColor:color];
+  [debug_window[number] setAlphaValue:0.4];
+  [debug_window[number] setOpaque:NO];
+  [debug_window[number] setReleasedWhenClosed:YES];
+  [debug_window[number] setIgnoresMouseEvents:YES];
+  [debug_window[number] setLevel:NSFloatingWindowLevel];
 
-  if (debug_window)
-    [debug_window close];
-
-  debug_window = [[NSWindow alloc] initWithContentRect:rect
-                                             styleMask:NSBorderlessWindowMask
-			                       backing:NSBackingStoreBuffered
-			                         defer:NO];
-
-  [debug_window setBackgroundColor:[NSColor redColor]];
-  [debug_window setAlphaValue:0.4];
-  [debug_window setOpaque:NO];
-  [debug_window setReleasedWhenClosed:YES];
-  [debug_window setIgnoresMouseEvents:YES];
-  [debug_window setLevel:NSFloatingWindowLevel];
-
-  [debug_window orderFront:nil];
+  [debug_window[number] orderFront:nil];
 }
 
 gboolean
@@ -1104,8 +1168,11 @@ gdk_window_quartz_show (GdkWindow *window,
   if (impl->transient_for && !GDK_WINDOW_DESTROYED (impl->transient_for))
     _gdk_quartz_window_attach_to_parent (window);
 
+  /* Create a crossing event for windows that pop up under the mouse. Part
+   * of the workarounds for problems with the tracking rect API.
+   */
   if (impl->toplevel)
-    _gdk_quartz_events_trigger_crossing_events ();
+    _gdk_quartz_events_trigger_crossing_events (TRUE);
 
   GDK_QUARTZ_RELEASE_POOL;
 }

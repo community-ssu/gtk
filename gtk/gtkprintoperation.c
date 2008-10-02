@@ -1839,6 +1839,17 @@ run_pdf (GtkPrintOperation  *op,
   
   surface = cairo_pdf_surface_create (priv->export_filename,
 				      width, height);
+  if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS)
+    {
+      g_set_error (&priv->error,
+                   GTK_PRINT_ERROR,
+                   GTK_PRINT_ERROR_GENERAL,
+                   cairo_status_to_string (cairo_surface_status (surface)));
+      *do_print = FALSE;
+      return GTK_PRINT_OPERATION_RESULT_ERROR;
+    }
+
+  /* this would crash on a nil surface */
   cairo_surface_set_fallback_resolution (surface, 300, 300);
 
   priv->platform_data = surface;
@@ -1906,6 +1917,46 @@ find_range (PrintPagesData *data)
       data->start = range->start;
       data->end = range->end + 1;
     }
+}
+
+static void
+clamp_page_ranges (PrintPagesData *data)
+{
+  GtkPrintOperationPrivate *priv; 
+  gint                      num_of_correct_ranges;
+  gint                      i;
+
+  priv = data->op->priv;
+
+  num_of_correct_ranges = 0;
+
+  for (i = 0; i < data->num_ranges; i++)
+    if ((data->ranges[i].start >= 0) &&
+        (data->ranges[i].start < priv->nr_of_pages) &&
+        (data->ranges[i].end >= 0) &&
+        (data->ranges[i].end < priv->nr_of_pages))
+      {
+        data->ranges[num_of_correct_ranges] = data->ranges[i];
+        num_of_correct_ranges++;
+      }
+    else if ((data->ranges[i].start >= 0) &&
+             (data->ranges[i].start < priv->nr_of_pages) &&
+             (data->ranges[i].end >= priv->nr_of_pages))
+      {
+        data->ranges[i].end = priv->nr_of_pages - 1;
+        data->ranges[num_of_correct_ranges] = data->ranges[i];
+        num_of_correct_ranges++;
+      }
+    else if ((data->ranges[i].end >= 0) &&
+             (data->ranges[i].end < priv->nr_of_pages) &&
+             (data->ranges[i].start < 0))
+      {
+        data->ranges[i].start = 0;
+        data->ranges[num_of_correct_ranges] = data->ranges[i];
+        num_of_correct_ranges++;
+      }
+
+  data->num_ranges = num_of_correct_ranges;
 }
 
 static gboolean 
@@ -2121,6 +2172,8 @@ print_pages_idle (gpointer user_data)
 	  data->ranges[0].end = priv->nr_of_pages - 1;
 	}
       
+      clamp_page_ranges (data);
+
       if (priv->manual_reverse)
 	{
 	  data->range = data->num_ranges - 1;

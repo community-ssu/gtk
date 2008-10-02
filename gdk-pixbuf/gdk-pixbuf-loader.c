@@ -356,9 +356,8 @@ gdk_pixbuf_loader_load_module (GdkPixbufLoader *loader,
         if (priv->image_module == NULL)
                 return 0;
   
-        if (priv->image_module->module == NULL)
-                if (!_gdk_pixbuf_load_module (priv->image_module, error))
-                        return 0;
+        if (!_gdk_pixbuf_load_module (priv->image_module, error))
+                return 0;
   
         if (priv->image_module->module == NULL)
                 return 0;
@@ -727,8 +726,12 @@ gdk_pixbuf_loader_close (GdkPixbufLoader *loader,
  					 * here, since we might not get an error in the
  					 * gdk_pixbuf_get_file_info() case
  					 */
-					if (tmp)
-						g_propagate_error (error, tmp);
+					if (tmp) {
+						if (error && *error == NULL)
+							g_propagate_error (error, tmp);
+						else
+							g_error_free (tmp);
+					}
                                         retval = FALSE;
                                 }
                 }

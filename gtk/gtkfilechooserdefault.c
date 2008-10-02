@@ -84,7 +84,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <locale.h>
+#include <locale.h> /* LC_ALL */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -258,7 +258,7 @@ static const int num_file_list_source_targets = G_N_ELEMENTS (file_list_source_t
 
 /* Target types for dropping into the file list */
 static const GtkTargetEntry file_list_dest_targets[] = {
-  { "text/uri-list", 0, TEXT_URI_LIST }
+  { "text/uri-list", GTK_TARGET_OTHER_WIDGET, TEXT_URI_LIST }
 };
 
 static const int num_file_list_dest_targets = G_N_ELEMENTS (file_list_dest_targets); 
@@ -1037,7 +1037,7 @@ error_message_with_parent (GtkWindow  *parent,
   gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 					    "%s", detail);
 
-  if (parent->group)
+  if (parent && parent->group)
     gtk_window_group_add_window (parent->group, GTK_WINDOW (dialog));
 
   gtk_dialog_run (GTK_DIALOG (dialog));
@@ -1691,37 +1691,43 @@ _gtk_file_chooser_label_for_uri (const gchar *uri)
   gchar *host, *label;
   
   start = strstr (uri, "://");
-  start += 3;
-  path = strchr (start, '/');
+  if (start)
+    {
+      start += 3;
+      path = strchr (start, '/');
+      if (path)
+        end = path;
+      else
+        {
+          end = uri + strlen (uri);
+          path = "/";
+        }
+
+      /* strip username */
+      p = strchr (start, '@');
+      if (p && p < end)
+        {
+          start = p + 1;
+        }
   
-  if (path)
-    end = path;
+      p = strchr (start, ':');
+      if (p && p < end)
+        end = p;
+  
+      host = g_strndup (start, end - start);
+
+      /* Translators: the first string is a path and the second string 
+       * is a hostname. Nautilus and the panel contain the same string 
+       * to translate. 
+       */
+      label = g_strdup_printf (_("%1$s on %2$s"), path, host);
+  
+      g_free (host);
+    }
   else
     {
-      end = uri + strlen (uri);
-      path = "/";
+      label = g_strdup (uri);
     }
-
-  /* strip username */
-  p = strchr (start, '@');
-  if (p && p < end)
-    {
-      start = p + 1;
-    }
-  
-  p = strchr (start, ':');
-  if (p && p < end)
-    end = p;
-  
-  host = g_strndup (start, end - start);
-
-  /* Translators: the first string is a path and the second string 
-   * is a hostname. Nautilus and the panel contain the same string 
-   * to translate. 
-   */
-  label = g_strdup_printf (_("%1$s on %2$s"), path, host);
-  
-  g_free (host);
 
   return label;
 }
@@ -3783,14 +3789,13 @@ shortcuts_build_popup_menu (GtkFileChooserDefault *impl)
 		    G_CALLBACK (rename_shortcut_cb), impl);
   gtk_widget_show (item);
   gtk_menu_shell_append (GTK_MENU_SHELL (impl->browse_shortcuts_popup_menu), item);
-
-  shortcuts_check_popup_sensitivity (impl);
 }
 
 static void
 shortcuts_update_popup_menu (GtkFileChooserDefault *impl)
 {
   shortcuts_build_popup_menu (impl);  
+  shortcuts_check_popup_sensitivity (impl);
 }
 
 static void
@@ -4632,7 +4637,7 @@ create_file_list (GtkFileChooserDefault *impl)
 					  GDK_BUTTON1_MASK,
 					  file_list_source_targets,
 					  num_file_list_source_targets,
-					  GDK_ACTION_COPY);
+					  GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
   g_signal_connect (selection, "changed",
 		    G_CALLBACK (list_selection_changed), impl);
@@ -5148,6 +5153,14 @@ location_mode_set (GtkFileChooserDefault *impl,
 static void
 location_toggle_popup_handler (GtkFileChooserDefault *impl)
 {
+  /* when in search or recent files mode, we are not showing the
+   * location_entry_box container, so there's no point in switching
+   * to it.
+   */
+  if (impl->operation_mode == OPERATION_MODE_SEARCH ||
+      impl->operation_mode == OPERATION_MODE_RECENT)
+    return;
+
   /* If the file entry is not visible, show it.
    * If it is visible, turn it off only if it is focused.  Otherwise, switch to the entry.
    */
@@ -6446,12 +6459,19 @@ static void
 browse_files_select_first_row (GtkFileChooserDefault *impl)
 {
   GtkTreePath *path;
+  GtkTreeIter dummy_iter;
+  GtkTreeModel *tree_model;
 
   if (!impl->sort_model)
     return;
 
   path = gtk_tree_path_new_from_indices (0, -1);
-  gtk_tree_view_set_cursor (GTK_TREE_VIEW (impl->browse_files_tree_view), path, NULL, FALSE);
+  tree_model = gtk_tree_view_get_model (GTK_TREE_VIEW (impl->browse_files_tree_view));
+
+  /* If the list is empty, do nothing. */
+  if (gtk_tree_model_get_iter (tree_model, &dummy_iter, path))
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (impl->browse_files_tree_view), path, NULL, FALSE);
+
   gtk_tree_path_free (path);
 }
 
@@ -6855,10 +6875,11 @@ update_chooser_entry (GtkFileChooserDefault *impl)
             g_strdup (gtk_file_info_get_display_name (info));
 
           if (impl->action == GTK_FILE_CHOOSER_ACTION_OPEN ||
-              impl->action == GTK_FILE_CHOOSER_ACTION_SAVE)
+              impl->action == GTK_FILE_CHOOSER_ACTION_SAVE ||
+	      impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
             change_entry = !gtk_file_info_get_is_folder (info); /* We don't want the name to change when clicking on a folder... */
           else
-	    change_entry = TRUE;                                /* ... unless we are in one of the folder modes */
+	    change_entry = TRUE;                                /* ... unless we are in SELECT_FOLDER mode */
 
           if (change_entry)
             {
@@ -6887,7 +6908,8 @@ update_chooser_entry (GtkFileChooserDefault *impl)
 
  maybe_clear_entry:
 
-  if (impl->browse_files_last_selected_name)
+  if ((impl->action == GTK_FILE_CHOOSER_ACTION_OPEN || impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER)
+      && impl->browse_files_last_selected_name)
     {
       const char *entry_text;
       int len;
@@ -8093,9 +8115,14 @@ confirm_dialog_should_accept_filename (GtkFileChooserDefault *impl,
 					    folder_display_name);
 
   gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-  add_custom_button_to_dialog (GTK_DIALOG (dialog), _("_Replace"), GTK_STOCK_SAVE_AS, GTK_RESPONSE_ACCEPT);
+  add_custom_button_to_dialog (GTK_DIALOG (dialog), _("_Replace"),
+                               GTK_STOCK_SAVE_AS, GTK_RESPONSE_ACCEPT);
+  gtk_dialog_set_alternative_button_order (GTK_DIALOG (dialog),
+                                           GTK_RESPONSE_ACCEPT,
+                                           GTK_RESPONSE_CANCEL,
+                                           -1);
   gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
-  
+
   if (toplevel->group)
     gtk_window_group_add_window (toplevel->group, GTK_WINDOW (dialog));
 
@@ -10288,7 +10315,7 @@ shortcuts_activate_volume_mount_cb (GtkFileSystemHandle *handle,
       char *msg;
 
       msg = g_strdup_printf (_("Could not mount %s"),
-			     gtk_file_system_volume_get_display_name (impl->file_system, volume));
+                             gtk_file_system_volume_get_display_name (impl->file_system, volume));
       error_message (impl, msg, error->message);
       g_free (msg);
 
@@ -10377,7 +10404,7 @@ shortcuts_activate_get_info_cb (GtkFileSystemHandle *handle,
 
   data->impl->shortcuts_activate_iter_handle = NULL;
 
-  if (cancelled)
+  if (cancelled || g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_INTR))
     goto out;
 
   if (!error && gtk_file_info_get_is_folder (info))
@@ -10402,7 +10429,9 @@ shortcuts_activate_iter (GtkFileChooserDefault *impl,
   gpointer col_data;
   ShortcutType shortcut_type;
 
-  if (impl->location_mode == LOCATION_MODE_FILENAME_ENTRY && impl->action != GTK_FILE_CHOOSER_ACTION_SAVE)
+  if (impl->location_mode == LOCATION_MODE_FILENAME_ENTRY
+      && !(impl->action == GTK_FILE_CHOOSER_ACTION_SAVE
+	   || impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER))
     _gtk_file_chooser_entry_set_file_part (GTK_FILE_CHOOSER_ENTRY (impl->location_entry), "");
 
   gtk_tree_model_get (GTK_TREE_MODEL (impl->shortcuts_model), iter,

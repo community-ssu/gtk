@@ -1,3 +1,156 @@
+Overview of Changes from GTK+ 2.12.11 to 2.12.12
+================================================
+
+* Bugs fixed:
+ 539164 Windows' System Menu blocks main loop
+ 540861 invalid UTF-8 in input device name
+ 540994 Some windows don't appear at the top when created
+ 541964 Setting modal hint to current value might confuse the stack
+ 541399 Widget tooltips: treat "" same as NULL
+ 520165 typeahead find (interactive search) only accepts one character
+ 528975 Can not maximize the window
+ 541950 Removing recently-added accelerator UI causes a wrong g_warning
+ 545931 small documentation typos
+ 538686 gtkprintoperation-win32.c: devmode_from_settings
+ 538863 Fixes assertion on entering empty folder
+ 541645 gtkfilechooserdefault segfaults when bookmark does not contain ://
+ 528845 segv from GtkBuilder on attempting <accelerator> under GtkCellView
+ 479780 Bookmarks in left pane of FileChooser cannot be renamed
+ 542523 GtkTextTag should handle setting properties to NULL
+ 543545 GtkAssistant crashes when gtk_widget_hide() is called inside... 
+ 545875 evo crashed when trying to print pages 6-7 of a 1 page email
+ 549354 Crash trying to open a file on a remote folder
+ 549810 Memory leaks in printing code
+ 550528 IconView DND interface does not work if only used as source
+ 319849 gtkcalendar look in RTL locales
+ 551699 gtk_scrolled_window_destroy() is broken
+ 551567 DND mark broken
+ 551378 Print dialog: should try UDS when fetching PPD for localhost
+ 532644 TIFF loader need to exclude CR2 files
+ 549711 Race condition when loading gdk-pixbuf image modules
+ 517233 Calling gdk_pixbuf_loader_close causes "GError set over the top...
+
+* Updated translations:
+ Assamese (as)
+ Czech (cs)
+ Spanish (es)
+ Italian (it)
+ Japanese (ja)
+ Russian (ru)
+
+
+Overview of Changes from GTK+ 2.12.10 to 2.12.11
+================================================
+
+* Bugs fixed:
+ 536757 regression: openoffice.org menus are placed at wrong
+        position since 2.12.10
+ 536990 updateiconcache.c: 'close ()' is redundant
+ 508751 gnome-terminal crashed with SIGSEGV after keypress
+ 419737 The file chooser clears the filename entry in SAVE/CREATE_FOLDER 
+        modes when it shouldn't.
+ 538784 Don't change the filename in the name entry in CREATE_FOLDER mode 
+        when changing folders
+ 536966 Paper selector crashes
+ 352738 gtk_tree_view_column_set_sort_indicator() fails to show a...
+ 378158 gdk_win32_selection_add_targets uses uninitialized hwnd v...
+ 537685 print to file crashes when the target can not be written 
+
+* Updated translations:
+ Assamese (as)
+ Catalan (ca)
+ French (fr)
+ Hungarian (hu)
+ Brazilian Portugese (pt_BR)
+ Swedish (sv)
+ Vietnamese (vi)
+
+
+Overview of Changes from GTK+ 2.12.9 to 2.12.10
+===============================================
+
+* Bugs fixed:
+ 523782 Leftover call to GDK_THREADS_LEAVE() in gtktoolbar.c
+ 524151 Dragging of 0-byte files results in an empty filename...
+ 524422 assertion when filechooser current name set to string...
+ 492134 The file chooser incorrectly substitutes and expands...
+ 330743 Up/down spinbuttons won't take zeros and exhibit very...
+ 529386 Printing options hidden by blacklisted option
+ 532059 Leak in win32 clipboard manipulation
+ 532558 Cannot build dll when using separate builddir
+ 496958 Wacom Bamboo doesn't function with GTK apps in Win32
+ 533891 Don't allow drag and drop from the file list into itself...
+ 504087 make gtk_tooltip_set_custom a no-op for setting the...
+ 449625 crash in gtk_tree_view_real_move_cursor 
+ 533108 leak of GDI region in function 'handle_wm_paint'
+ 534694 Col id in GtkListStore could be out of range
+ 314084 GTK+ dialogs should not be placed partially offscreen
+ 529841 incorrect position in directfb
+ 387972 gtkassistant drawing problem
+ 534463 non-editable GtkTextView should not call gtk_im_context_focus_in...
+ 522269 Evince windows sometimes incorrectly unmaximized...
+ 524110 Gdk should not assume reparenting WMs...
+ 523562 gtk-update-icon-cache core dumps when run concurrently...
+ 531008 Crash in gtkprintunixdialog.c
+ 106574 Inconsistent increment behavior for gtkspinbutton
+ 511217 potential memory corruption after refreshing a tree_view
+  56355 GtkLabel - Not all changes propagate correctly
+ 530146 Setting non-string tooltip with gtk_tree_view_set_tooltip_column...
+ 535862 gtk_action_create_icon can't create icons from the icon themes...
+ 536092 GtkEntryCompletion's popup window should set type hint
+ 532558 Cannot build dll when using separate builddir
+ 535453 gdk_pixbuf_format_get_license returns NULL for any loaders
+ 524862 Using GTK_WIN_POS_CENTER_ALWAYS gives jerky window resizing
+ 467698 crash because realizing a widget with NULL colormap
+ 526422 Crash in location_toggle_popup_handler
+ 474302 printing to an existing file overwrites without confirmation
+ 137717 Gtk+ filechooser should allow drag-n-drop of files in the...
+ 461805 The combo cell renderer is broken theme wise
+ 479197 Tries to search with tracker while it is uninstalled
+ 488820 gtk_page_setup_copy leaks
+ 518846 Restore toplevel maximized window
+ 520286 Non-deletable window has no minimize / maximize buttons.
+ 521442 x/y thickness is being overriden by the combobox realize ...
+ 521934 GtkIMSimpleContext does not send preedit_start and preedi...
+ 522067 compile error
+ 522191 overwrite-confirmation dialogs don't set alternative butt...
+ 522279 GtkTreeView should set type hint for search dialog
+ 523932 gtk-builder-convert failed on converting GLADE file
+ 527466 gtk_assistant_set_current_page records wrong visited page
+ 530153 Crash in _gtk_quartz_set_selection_data_for_pasteboard
+ 530156 Function keys don't work
+ 530963 Some suspicious code in gdkkeys-quartz.c
+ 467051 gdk_pixbuf_new_from_xpm_data segfaults on NULL data 
+ 
+* Translation updates:
+ Belarusian Latin (be@latin)
+ Catalan (ca)
+ Valencian-Catalan (ca@valencia)
+ Czech (cs)
+ German (de)
+ Greek (el)
+ British English (en_GB)
+ Spanish (es)
+ Estonian (et)
+ Basque (eu)
+ French (fr)
+ Galician (gl)
+ Hungarian (hu)
+ Italian (it)
+ Japanese (ja)
+ Georgian (ka)
+ Korean (ko)
+ Lithuanian (lt)
+ Macedonian (mk)
+ Dutch (nl)
+ Portugese (pt)
+ Slovak (sk)
+ Albanian (sq)
+ Swedish (sv)
+ Telugu (te)
+ Vietnamese (vi)
+ 
+ 
 Overview of Changes from GTK+ 2.12.8 to 2.12.9
 ==============================================
 

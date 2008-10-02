@@ -1,3 +1,34 @@
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.12 ===
+
+2008-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.11 ===
+
+2008-06-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.10 ===
+
+2008-04-10  Cody Russell  <bratsche@gnome.org>
+
+	* docs/reference/gdk/tmpl/windows.sgml: Fix to say
+	g_signal_connect_after rather than g_signal_register_after.
+	(reported by Guillaume Cottenceau)
+
+2008-04-10  Cody Russell  <bratsche@gnome.org>
+
+	* docs/reference/gtk/tmpl/gtktreeview.sgml: Fix a typo
+	in the markup. (reported by kraai -at- ftbfs.org)
+
+2008-03-30  Tor Lillqvist  <tml@novell.com>
+
+	Bug 524862 - Using GTK_WIN_POS_CENTER_ALWAYS gives jerky window
+	resizing in Win32
+
+	* gtk/tmpl/gtkenums.sgml: Recommend that GTK_WIN_POS_CENTER_ALWAYS
+	is not used.
+
 2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.9 ===

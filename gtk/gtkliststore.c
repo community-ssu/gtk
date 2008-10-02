@@ -2072,8 +2072,11 @@ list_store_start_element (GMarkupParseContext *context,
       int i, id = -1;
 
       if (data->row_column >= data->n_columns)
-	g_set_error (error, data->error_quark, 0,
-		     "Too many columns, maximum is %d\n", data->n_columns - 1);
+        {
+	  g_set_error (error, data->error_quark, 0,
+	  	       "Too many columns, maximum is %d\n", data->n_columns - 1);
+          return;
+        }
 
       for (i = 0; names[i]; i++)
 	if (strcmp (names[i], "id") == 0)
@@ -2081,13 +2084,26 @@ list_store_start_element (GMarkupParseContext *context,
 	    errno = 0;
 	    id = atoi (values[i]);
 	    if (errno)
-	      g_set_error (error, data->error_quark, 0,
-			   "the id tag %s could not be converted to an integer", values[i]);
+              {
+	        g_set_error (error, data->error_quark, 0,
+			     "the id tag %s could not be converted to an integer",
+			     values[i]);
+                return;
+              }
+	    if (id < 0 || id >= data->n_columns)
+              {
+                g_set_error (error, data->error_quark, 0,
+                             "id value %d out of range", id);
+                return;
+              }
 	  }
 
       if (id == -1)
-	g_set_error (error, data->error_quark, 0,
-		     "<col> needs an id attribute");
+        {
+	  g_set_error (error, data->error_quark, 0,
+	  	       "<col> needs an id attribute");
+          return;
+        }
 
       data->columns[data->row_column] = id;
       data->row_column++;
@@ -2189,7 +2205,7 @@ list_store_text (GMarkupParseContext *context,
   gint i;
   GError *tmp_error = NULL;
   gchar *string;
-  
+
   if (!data->is_data)
     return;
 

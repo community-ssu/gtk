@@ -1105,15 +1105,25 @@ show_window_internal (GdkWindow *window,
     }
 
   if (private->state & GDK_WINDOW_STATE_FULLSCREEN)
-    gdk_window_fullscreen (window);
+    {
+      gdk_window_fullscreen (window);
+    }
   else if (private->state & GDK_WINDOW_STATE_MAXIMIZED)
-    ShowWindow (GDK_WINDOW_HWND (window), SW_MAXIMIZE);
+    {
+      ShowWindow (GDK_WINDOW_HWND (window), SW_MAXIMIZE);
+    }
   else if (private->state & GDK_WINDOW_STATE_ICONIFIED)
-    ShowWindow (GDK_WINDOW_HWND (window), SW_RESTORE);
+    {
+      ShowWindow (GDK_WINDOW_HWND (window), SW_RESTORE);
+    }
   else if (GDK_WINDOW_TYPE (window) == GDK_WINDOW_TEMP || !focus_on_map)
-    ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNOACTIVATE);
+    {
+      ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNOACTIVATE);
+    }
   else
-    ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNORMAL);
+    {
+      ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNORMAL);
+    }
 
   if (raise)
     {
@@ -1125,17 +1135,25 @@ show_window_internal (GdkWindow *window,
 	       GDK_WINDOW_TYPE (window) == GDK_WINDOW_DIALOG)
 	{
           if (focus_on_map && private->accept_focus)
-            SetForegroundWindow (GDK_WINDOW_HWND (window));
+	    {
+	      SetForegroundWindow (GDK_WINDOW_HWND (window));
+	    }
 	  else
-            SetWindowPos (GDK_WINDOW_HWND (window), HWND_TOP,
-	  	          0, 0, 0, 0,
-		          SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+	    {
+	      SetWindowPos (GDK_WINDOW_HWND (window), HWND_TOP,
+			    0, 0, 0, 0,
+			    SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+	    }
 	}
       else
-        BringWindowToTop (GDK_WINDOW_HWND (window));
+	{
+	  BringWindowToTop (GDK_WINDOW_HWND (window));
+	}
     }
   else if (old_active_window != GDK_WINDOW_HWND (window))
-    SetActiveWindow (old_active_window);
+    {
+      SetActiveWindow (old_active_window);
+    }
 }
 
 static void
@@ -2842,14 +2860,15 @@ gdk_window_set_group (GdkWindow *window,
 }
 
 static void
-update_single_bit (LONG *style,
-                   BOOL  all,
-		   int   gdk_bit,
-		   int   style_bit)
+update_single_bit (LONG    *style,
+                   gboolean all,
+		   int      gdk_bit,
+		   int      style_bit)
 {
-  /* all controls the interpretation of gdk_bit -- if all is true, gdk_bit
-     indicates whether style_bit is off; if all is false, gdk bit indicate whether
-     style_bit is on */
+  /* all controls the interpretation of gdk_bit -- if all is TRUE,
+   * gdk_bit indicates whether style_bit is off; if all is FALSE, gdk
+   * bit indicate whether style_bit is on
+   */
   if ((!all && gdk_bit) || (all && !gdk_bit))
     *style |= style_bit;
   else
@@ -2860,9 +2879,8 @@ static void
 update_style_bits (GdkWindow *window)
 {
   GdkWMDecoration decorations;
-  GdkWMFunction functions;
   LONG style, exstyle;
-  BOOL all;
+  gboolean all;
   RECT rect, before, after;
 
   style = GetWindowLong (GDK_WINDOW_HWND (window), GWL_STYLE);
@@ -2871,6 +2889,8 @@ update_style_bits (GdkWindow *window)
   GetClientRect (GDK_WINDOW_HWND (window), &before);
   after = before;
   AdjustWindowRectEx (&before, style, FALSE, exstyle);
+
+  GDK_NOTE (MISC, g_print ("update_style_bits: style: %s", _gdk_win32_window_style_to_string (style)));
 
   if (get_effective_window_decorations (window, &decorations))
     {
@@ -2883,18 +2903,8 @@ update_style_bits (GdkWindow *window)
       update_single_bit (&style, all, decorations & GDK_DECOR_MAXIMIZE, WS_MAXIMIZEBOX);
     }
 
-  /* XXX this is actually incorrect.  The menu entries should be added or removed
-     from the system menu without affecting the window style. */
-  if (_gdk_window_get_functions (window, &functions))
-    {
-      all = (functions & GDK_DECOR_ALL);
-      update_single_bit (&style, all, functions & GDK_FUNC_RESIZE, WS_THICKFRAME);
-      update_single_bit (&style, all, functions & GDK_FUNC_MOVE, WS_THICKFRAME | WS_SYSMENU);
-      update_single_bit (&style, all, functions & GDK_FUNC_MINIMIZE, WS_MINIMIZE);
-      update_single_bit (&style, all, functions & GDK_FUNC_MOVE, WS_MAXIMIZE);
-      update_single_bit (&style, all, functions & GDK_FUNC_CLOSE, WS_SYSMENU);
-    }
-    
+  GDK_NOTE (MISC, g_print (" => %s\n", _gdk_win32_window_style_to_string (style)));
+
   SetWindowLong (GDK_WINDOW_HWND (window), GWL_STYLE, style);
 
   AdjustWindowRectEx (&after, style, FALSE, exstyle);
@@ -2910,6 +2920,41 @@ update_style_bits (GdkWindow *window)
 		rect.right - rect.left, rect.bottom - rect.top,
 		SWP_FRAMECHANGED | SWP_NOACTIVATE | 
 		SWP_NOREPOSITION | SWP_NOZORDER);
+}
+
+static void
+update_single_system_menu_entry (HMENU    hmenu,
+				 gboolean all,
+				 int      gdk_bit,
+				 int      menu_entry)
+{
+  /* all controls the interpretation of gdk_bit -- if all is TRUE,
+   * gdk_bit indicates whether menu entry is disabled; if all is
+   * FALSE, gdk bit indicate whether menu entry is enabled
+   */
+  if ((!all && gdk_bit) || (all && !gdk_bit))
+    EnableMenuItem (hmenu, menu_entry, MF_BYCOMMAND | MF_ENABLED);
+  else
+    EnableMenuItem (hmenu, menu_entry, MF_BYCOMMAND | MF_GRAYED);
+}
+
+static void
+update_system_menu (GdkWindow *window)
+{
+  GdkWMFunction functions;
+  BOOL all;
+
+  if (_gdk_window_get_functions (window, &functions))
+    {
+      HMENU hmenu = GetSystemMenu (GDK_WINDOW_HWND (window), FALSE);
+
+      all = (functions & GDK_DECOR_ALL);
+      update_single_system_menu_entry (hmenu, all, functions & GDK_FUNC_RESIZE, SC_SIZE);
+      update_single_system_menu_entry (hmenu, all, functions & GDK_FUNC_MOVE, SC_MOVE);
+      update_single_system_menu_entry (hmenu, all, functions & GDK_FUNC_MINIMIZE, SC_MINIMIZE);
+      update_single_system_menu_entry (hmenu, all, functions & GDK_FUNC_MAXIMIZE, SC_MAXIMIZE);
+      update_single_system_menu_entry (hmenu, all, functions & GDK_FUNC_CLOSE, SC_CLOSE);
+    }
 }
 
 static GQuark
@@ -2995,7 +3040,7 @@ gdk_window_set_functions (GdkWindow    *window,
   *functions_copy = functions;
   g_object_set_qdata_full (G_OBJECT (window), get_functions_quark (), functions_copy, g_free);
 
-  update_style_bits (window);
+  update_system_menu (window);
 }
 
 gboolean
@@ -3509,6 +3554,9 @@ gdk_window_set_modal_hint (GdkWindow *window,
     return;
 
   private = (GdkWindowObject*) window;
+
+  if (modal == private->modal_hint)
+    return;
 
   private->modal_hint = modal;
 

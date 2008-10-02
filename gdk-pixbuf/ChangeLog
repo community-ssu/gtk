@@ -1,3 +1,97 @@
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.12 ===
+
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk-pixbuf-io.c: Plug a small memory leak
+
+	Bug 517233 - Calling gdk_pixbuf_loader_close causes "GError set over
+	the top of a previous GError" warning
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Don't overwrite
+	errors. Reported by Andrey Tsyvarev
+	
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	Bug 517233 - Calling gdk_pixbuf_loader_close causes "GError set over
+	the top of a previous GError" warning
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Don't overwrite
+	errors. Reported by Andrey Tsyvarev
+
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	Bug 549711 - Race condition when loading gdk-pixbuf image modules
+
+	* gdk-pixbuf-io.c: Fix a race condition in module loading,
+	spotted by Chris Lord.
+
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	Bug 532644 - TIFF loader need to exclude CR2 files
+
+	* io-tiff.c: Add a pattern to exclude CR2 files.
+	Noticed by Hubert Figuire
+
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk-pixbuf-utils.c (gdk_pixbuf_saturate_and_pixelate):
+	Use gdk_pixbuf_copy_area() to copy between pixbufs.
+	Reported by Andrey Tsyvarev
+
+2008-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.11 ===
+
+2008-06-18  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* io-ico.c: Add image/x-win-bitmap to the supported mimetypes,
+	since that is what shared-mime-info uses for .cur
+
+2008-06-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.10 ===
+
+2008-06-02  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	Bug 535453 - gdk_pixbuf_format_get_license returns NULL for
+	any of the loaders
+
+	* queryloaders.c (write_loader_info): Add the license info
+	after the description.
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_io_init): Read the license info
+	from the module file. Reported by Andrey Tsyvarev.
+
+2008-06-02  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_xpm_data): Guard
+	against NULL pointer. (#467051, Gian Mario Tagliaretti)
+
+2008-05-12  Tor Lillqvist  <tml@novell.com>
+
+	Bug 532558 - Cannot build dll when using separate builddir
+
+	* Makefile.am: .def file belongs in $(srcdir). Patch by Marko
+	Lindqvist.
+
 2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.9 ===

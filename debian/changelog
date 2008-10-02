@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.12.12-1maemo1) unstable; urgency=low
+
+  * Upgrade to GTK+ 2.12.12
+
+ -- Michael Natterer <mitch@imendio.com>  Wed, 02 Oct 2008 12:12:12 +0200
+
 gtk+2.0 (2:2.12.9-1maemo2) unstable; urgency=low
 
   * Implements custom boolean accumulator for the tap-and-hold-query signal.

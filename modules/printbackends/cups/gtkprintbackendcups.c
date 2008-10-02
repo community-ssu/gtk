@@ -35,6 +35,7 @@
 #include <cairo-pdf.h>
 #include <cairo-ps.h>
 
+#include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 
@@ -413,6 +414,7 @@ gtk_print_backend_cups_print_stream (GtkPrintBackend         *print_backend,
   GtkCupsRequest *request;
   GtkPrintSettings *settings;
   const gchar *title;
+  char  printer_absolute_uri[HTTP_MAX_URI];
 
   GTK_NOTE (PRINTING,
             g_print ("CUPS Backend: %s\n", G_STRFUNC));   
@@ -427,9 +429,27 @@ gtk_print_backend_cups_print_stream (GtkPrintBackend         *print_backend,
 				  NULL,
 				  cups_printer->device_uri);
 
+#if (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2) || CUPS_VERSION_MAJOR > 1
+  httpAssembleURIf (HTTP_URI_CODING_ALL,
+                    printer_absolute_uri,
+                    sizeof (printer_absolute_uri),
+                    "ipp",
+                    NULL,
+                    "localhost",
+                    ippPort (),
+                    "/printers/%s",
+                    gtk_printer_get_name (gtk_print_job_get_printer (job)));
+#else
+  g_snprintf (printer_absolute_uri,
+              sizeof (printer_absolute_uri),
+              "ipp://localhost:%d/printers/%s",
+              ippPort (),
+              gtk_printer_get_name (gtk_print_job_get_printer (job)));
+#endif
+
   gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, 
                                    IPP_TAG_URI, "printer-uri",
-                                   NULL, cups_printer->printer_uri);
+                                   NULL, printer_absolute_uri);
 
   title = gtk_print_job_get_title (job);
   if (title)
@@ -1077,6 +1097,7 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 	  char hostname[HTTP_MAX_URI];	/* Hostname */
 	  char resource[HTTP_MAX_URI];	/* Resource name */
 	  int  port;			/* Port number */
+	  char *cups_server;            /* CUPS server */
 	  
           list_has_changed = TRUE;
 	  cups_printer = gtk_printer_cups_new (printer_name, backend);
@@ -1123,8 +1144,19 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
             }
 
 	  gethostname (uri, sizeof (uri));
+	  cups_server = g_strdup (cupsServer());
+
 	  if (strcasecmp (uri, hostname) == 0)
 	    strcpy (hostname, "localhost");
+
+          /* if the cups server is local and listening at a unix domain socket 
+           * then use the socket connection
+           */
+	  if ((strstr (hostname, "localhost") != NULL) &&
+	      (cups_server[0] == '/'))
+	    strcpy (hostname, cups_server);
+
+	  g_free (cups_server);
 
 	  cups_printer->hostname = g_strdup (hostname);
 	  cups_printer->port = port;
@@ -2483,7 +2515,7 @@ cups_printer_get_options (GtkPrinter           *printer,
 
   for (i = 0; i < num_opts; i++)
     {
-      if (STRING_IN_TABLE (opts->name, cups_option_blacklist))
+      if (STRING_IN_TABLE (opts[i].name, cups_option_blacklist))
         continue;
 
       name = get_option_name (opts[i].name);
@@ -2981,10 +3013,11 @@ cups_printer_prepare_for_print (GtkPrinter       *printer,
     {
       char width[G_ASCII_DTOSTR_BUF_SIZE];
       char height[G_ASCII_DTOSTR_BUF_SIZE];
+      char *custom_name;
 
       g_ascii_formatd (width, sizeof (width), "%.2f", gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS));
       g_ascii_formatd (height, sizeof (height), "%.2f", gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
-      char *custom_name = g_strdup_printf (("Custom.%sx%s"), width, height);
+      custom_name = g_strdup_printf (("Custom.%sx%s"), width, height);
       gtk_print_settings_set (settings, "cups-PageSize", custom_name);
       g_free (custom_name);
     }

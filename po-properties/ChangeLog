@@ -1,3 +1,33 @@
+2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.12 ===
+
+2008-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.11 ===
+
+2008-06-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.10 ===
+
+2008-04-04  Luca Ferretti  <elle.uca@libero.it>
+
+	* it.po: Fixed minor typos.
+
+2008-04-03  Jordi Mallach  <jordi@sindominio.net>
+
+        * ca.po: Minor corrections by Robert Millan.
+	* ca@valencia.po: New Valencian-Catalan translation by
+	Robert Millan, based on the latest Catalan file.
+
+2008-03-20  Laurent Dhima  <laurenti@alblinux.net>
+
+        * sq.po: Updated Albanian Translation.
+
+2008-03-18  Laurent Dhima  <laurenti@alblinux.net>
+
+	* sq.po: Updated Albanian Translation.
+
 2008-03-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.9 ===

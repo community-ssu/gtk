@@ -139,7 +139,7 @@ static HKL latin_locale = NULL;
 #endif
 
 static gboolean in_ime_composition = FALSE;
-static UINT     resize_timer;
+static UINT     modal_timer;
 
 static int debug_indent = 0;
 
@@ -1305,9 +1305,23 @@ show_window_recurse (GdkWindow *window, gboolean hide_window)
       if (GDK_WINDOW_IS_MAPPED (window))
 	{
 	  if (!hide_window)
-	    ShowWindow (GDK_WINDOW_HWND (window), SW_RESTORE);
+	    {
+	      if (GDK_WINDOW_OBJECT (window)->state & GDK_WINDOW_STATE_ICONIFIED)
+		{
+		  if (GDK_WINDOW_OBJECT (window)->state & GDK_WINDOW_STATE_MAXIMIZED)
+		    {
+		      ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWMAXIMIZED);
+		    }
+		  else
+		    {
+		      ShowWindow (GDK_WINDOW_HWND (window), SW_RESTORE);
+		    }
+		}
+	    }
 	  else
-	    ShowWindow (GDK_WINDOW_HWND (window), SW_MINIMIZE);
+	    {
+	      ShowWindow (GDK_WINDOW_HWND (window), SW_MINIMIZE);
+	    }
 	}
 
       impl->changing_state = FALSE;
@@ -1315,7 +1329,7 @@ show_window_recurse (GdkWindow *window, gboolean hide_window)
 }
 
 static void
-show_window_internal (GdkWindow *window, gboolean hide_window)
+do_show_window (GdkWindow *window, gboolean hide_window)
 {
   GdkWindow *tmp_window = NULL;
   GdkWindowImplWin32 *tmp_impl = GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (window)->impl);
@@ -1336,7 +1350,10 @@ show_window_internal (GdkWindow *window, gboolean hide_window)
 	}
 
       /* Recursively show/hide every window in the chain. */
-      show_window_recurse (tmp_window, hide_window);
+      if (tmp_window != window)
+	{
+	  show_window_recurse (tmp_window, hide_window);
+	}
     }
 }
 
@@ -1770,10 +1787,6 @@ doesnt_want_key (gint mask,
 {
   GdkWindow *modal_current = _gdk_modal_current ();
   GdkWindow *window = (GdkWindow *) gdk_win32_handle_table_lookup ((GdkNativeWindow)msg->hwnd);
-  gboolean modally_blocked = modal_current != NULL ? gdk_window_get_toplevel (window) != modal_current : FALSE;
-
-  if (modally_blocked == TRUE)
-    return TRUE;
 
   return (((msg->message == WM_KEYUP || msg->message == WM_SYSKEYUP) &&
 	   !(mask & GDK_KEY_RELEASE_MASK)) ||
@@ -1934,6 +1947,7 @@ handle_wm_paint (MSG        *msg,
   if (GetUpdateRgn (msg->hwnd, hrgn, FALSE) == ERROR)
     {
       WIN32_GDI_FAILED ("GetUpdateRgn");
+      DeleteObject (hrgn);
       return;
     }
 
@@ -2006,6 +2020,7 @@ handle_wm_paint (MSG        *msg,
 	    }
 	}
 
+      DeleteObject (hrgn);
       return;
     }
 
@@ -2029,7 +2044,7 @@ handle_stuff_while_moving_or_resizing (void)
 }
 
 static VOID CALLBACK
-resize_timer_proc (HWND     hwnd,
+modal_timer_proc (HWND     hwnd,
 		   UINT     msg,
 		   UINT     id,
 		   DWORD    time)
@@ -2943,7 +2958,7 @@ gdk_event_translate (MSG  *msg,
 	{
 	case SC_MINIMIZE:
 	case SC_RESTORE:
-	  show_window_internal (window, msg->wParam == SC_MINIMIZE ? TRUE : FALSE);
+	  do_show_window (window, msg->wParam == SC_MINIMIZE ? TRUE : FALSE);
 	  break;
 	}
 
@@ -2972,7 +2987,7 @@ gdk_event_translate (MSG  *msg,
 	  gdk_synthesize_window_state (window,
 				       GDK_WINDOW_STATE_WITHDRAWN,
 				       GDK_WINDOW_STATE_ICONIFIED);
-	  show_window_internal (window, TRUE);
+	  do_show_window (window, TRUE);
 	}
       else if ((msg->wParam == SIZE_RESTORED ||
 		msg->wParam == SIZE_MAXIMIZED) &&
@@ -2994,7 +3009,7 @@ gdk_event_translate (MSG  *msg,
 
 	      if (GDK_WINDOW_TYPE (window) != GDK_WINDOW_TEMP && !GDK_WINDOW_IS_MAPPED (window))
 		{
-		  show_window_internal (window, FALSE);
+		  do_show_window (window, FALSE);
 		}
 	    }
 	  else if (msg->wParam == SIZE_MAXIMIZED)
@@ -3017,12 +3032,22 @@ gdk_event_translate (MSG  *msg,
 
     case WM_ENTERSIZEMOVE:
       _sizemove_in_progress = TRUE;
-      resize_timer = SetTimer (NULL, 0, 20, resize_timer_proc);
+      modal_timer = SetTimer (NULL, 0, 20, modal_timer_proc);
       break;
 
     case WM_EXITSIZEMOVE:
       _sizemove_in_progress = FALSE;
-      KillTimer (NULL, resize_timer);
+      KillTimer (NULL, modal_timer);
+      break;
+
+    case WM_ENTERMENULOOP:
+      _sizemove_in_progress = TRUE;
+      modal_timer = SetTimer (NULL, 0, 20, modal_timer_proc);
+      break;
+
+    case WM_EXITMENULOOP:
+      _sizemove_in_progress = FALSE;
+      KillTimer (NULL, modal_timer);
       break;
 
     case WM_WINDOWPOSCHANGED :

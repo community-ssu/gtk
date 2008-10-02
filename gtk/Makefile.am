@@ -54,7 +54,7 @@ endif
 
 if OS_WIN32
 gtk_def = gtk.def
-gtk_win32_symbols = -export-symbols gtk.def
+gtk_win32_symbols = -export-symbols $(srcdir)/gtk.def
 
 gtk_win32_res = gtk-win32-res.o
 gtk_win32_res_ldflag = -Wl,gtk-win32-res.o
@@ -63,7 +63,7 @@ gtk-win32-res.o : gtk-win32.rc
 	$(WINDRES) gtk-win32.rc $@
 
 install-def-file: gtk.def
-	$(INSTALL) gtk.def $(DESTDIR)$(libdir)/gtk-win32-2.0.def
+	$(INSTALL) $(srcdir)/gtk.def $(DESTDIR)$(libdir)/gtk-win32-2.0.def
 uninstall-def-file:
 	-rm $(DESTDIR)$(libdir)/gtk-win32-2.0.def
 else
@@ -87,8 +87,10 @@ install-ms-lib:
 uninstall-ms-lib:
 endif
 
+# This places the generated .def file in srcdir, since it is expected to be there.
+# (The one from a tarball is)
 gtk.def: gtk.symbols
-	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 -DALL_FILES - <$(srcdir)/gtk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gtk.def
+	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 -DALL_FILES - <$(srcdir)/gtk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > $(srcdir)/gtk.def
 
 gtkalias.h: gtk.symbols
 	  $(PERL) $(srcdir)/makegtkalias.pl < $(srcdir)/gtk.symbols > gtkalias.h
@@ -352,8 +354,6 @@ gtk_semi_private_h_sources =    \
 
 # GTK+ header files that don't get installed
 gtk_private_h_sources =		\
-	gtksearchenginebeagle.h	\
-	gtksearchenginetracker.h\
 	gtksearchenginesimple.h	\
 	gtkdndcursors.h		\
 	gtkentryprivate.h	\
@@ -396,8 +396,6 @@ gtk_private_h_sources =		\
 gtk_base_c_sources =            \
 	gtkquery.c		\
 	gtksearchengine.c	\
-	gtksearchenginebeagle.c	\
-	gtksearchenginetracker.c\
 	gtksearchenginesimple.c	\
 	fnmatch.c		\
 	gtkaboutdialog.c	\
@@ -635,7 +633,9 @@ gtk_os_unix_c_sources = \
 	gtkprintjob.c			\
 	gtkprintoperation-unix.c	\
 	gtkprintunixdialog.c		\
-        gtkprintbackend.c
+        gtkprintbackend.c		\
+	gtksearchenginebeagle.c		\
+	gtksearchenginetracker.c
 gtk_all_c_sources += $(gtk_os_unix_c_sources)
 if OS_UNIX
 gtk_private_h_sources += \
@@ -645,7 +645,9 @@ gtk_private_h_sources += \
 	gtkprinter-private.h		\
 	gtkprinteroption.h		\
 	gtkprinteroptionset.h		\
-	gtkprinteroptionwidget.h
+	gtkprinteroptionwidget.h	\
+	gtksearchenginebeagle.h		\
+	gtksearchenginetracker.h
 gtk_c_sources += $(gtk_os_unix_c_sources)
 endif
 

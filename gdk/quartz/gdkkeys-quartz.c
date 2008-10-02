@@ -128,7 +128,8 @@ const static struct {
   { 111, GDK_F12, 0 },
   { 105, GDK_F13, 0 },
   { 107, GDK_F14, 0 },
-  { 113, GDK_F15, 0 }
+  { 113, GDK_F15, 0 },
+  { 106, GDK_F16, 0 }
 };
 
 const static struct {
@@ -255,7 +256,15 @@ maybe_update_keymap (void)
 			p[j] = GDK_ISO_Left_Tab;
 
 		      if (!found)
-			p[j] = gdk_unicode_to_keyval (uc);
+                        {
+                          guint tmp;
+                          
+                          tmp = gdk_unicode_to_keyval (uc);
+                          if (tmp != (uc | 0x01000000))
+                            p[j] = tmp;
+                          else
+                            p[j] = 0;
+                        }
 		    }
 		}
 	      
@@ -330,7 +339,15 @@ maybe_update_keymap (void)
 			p[j] = GDK_ISO_Left_Tab;
 		      
 		      if (!found)
-			p[j] = gdk_unicode_to_keyval (uc);
+                        {
+                          guint tmp;
+                          
+                          tmp = gdk_unicode_to_keyval (uc);
+                          if (tmp != (uc | 0x01000000))
+                            p[j] = tmp;
+                          else
+                            p[j] = 0;
+                        }
 		    }
 		}
 	      
@@ -364,8 +381,8 @@ maybe_update_keymap (void)
 	{
 	  p = keyval_array + known_numeric_keys[i].keycode * KEYVALS_PER_KEYCODE;
 
-	  if (p[0] == known_numeric_keys[i].normal_keyval);
-	      p[0] = known_numeric_keys[i].keypad_keyval;
+	  if (p[0] == known_numeric_keys[i].normal_keyval)
+            p[0] = known_numeric_keys[i].keypad_keyval;
 	}
       
       if (current_layout)
@@ -543,8 +560,8 @@ translate_keysym (guint           hardware_keycode,
   if (state & GDK_LOCK_MASK)
     {
       guint upper = gdk_keyval_to_upper (tmp_keyval);
-	if (upper != tmp_keyval)
-	  tmp_keyval = upper;
+      if (upper != tmp_keyval)
+        tmp_keyval = upper;
     }
 
   return tmp_keyval;

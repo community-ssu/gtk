@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nb\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-12 01:41-0400\n"
+"POT-Creation-Date: 2008-09-12 21:21-0400\n"
 "PO-Revision-Date: 2008-03-09 14:31+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -2903,7 +2903,7 @@ msgstr "Om innholdet i valgbar etikett skal markeres når den får fokus"
 msgid "Horizontal adjustment"
 msgstr "Horisontal justering"
 
-#: gtk/gtklayout.c:603 gtk/gtkscrolledwindow.c:222
+#: gtk/gtklayout.c:603 gtk/gtkscrolledwindow.c:220
 msgid "The GtkAdjustment for the horizontal position"
 msgstr "GtkAdjustment for horisontal posisjon"
 
@@ -2911,7 +2911,7 @@ msgstr "GtkAdjustment for horisontal posisjon"
 msgid "Vertical adjustment"
 msgstr "Vertikal justering"
 
-#: gtk/gtklayout.c:611 gtk/gtkscrolledwindow.c:229
+#: gtk/gtklayout.c:611 gtk/gtkscrolledwindow.c:227
 msgid "The GtkAdjustment for the vertical position"
 msgstr "GtkAdjustment for vertikal posisjon"
 
@@ -3583,7 +3583,7 @@ msgstr "Innstillinger"
 msgid "Printer settings"
 msgstr "Innstillinger for skriver"
 
-#: gtk/gtkprintjob.c:143 gtk/gtkprintjob.c:144 gtk/gtkprintunixdialog.c:241
+#: gtk/gtkprintjob.c:143 gtk/gtkprintjob.c:144 gtk/gtkprintunixdialog.c:246
 msgid "Page Setup"
 msgstr "Sideoppsett"
 
@@ -3605,11 +3605,11 @@ msgstr "Forvalgt sideoppsett"
 msgid "The GtkPageSetup used by default"
 msgstr "GtkPageSetup brukt som forvalg"
 
-#: gtk/gtkprintoperation.c:896 gtk/gtkprintunixdialog.c:259
+#: gtk/gtkprintoperation.c:896 gtk/gtkprintunixdialog.c:264
 msgid "Print Settings"
 msgstr "Skriverinnstillinger"
 
-#: gtk/gtkprintoperation.c:897 gtk/gtkprintunixdialog.c:260
+#: gtk/gtkprintoperation.c:897 gtk/gtkprintunixdialog.c:265
 msgid "The GtkPrintSettings used for initializing the dialog"
 msgstr ""
 
@@ -3629,11 +3629,11 @@ msgstr "Antall sider"
 msgid "The number of pages in the document."
 msgstr "Antall sider i dokumentet."
 
-#: gtk/gtkprintoperation.c:962 gtk/gtkprintunixdialog.c:249
+#: gtk/gtkprintoperation.c:962 gtk/gtkprintunixdialog.c:254
 msgid "Current Page"
 msgstr "Denne siden"
 
-#: gtk/gtkprintoperation.c:963 gtk/gtkprintunixdialog.c:250
+#: gtk/gtkprintoperation.c:963 gtk/gtkprintunixdialog.c:255
 msgid "The current page in the document"
 msgstr "Aktiv side i dokumentet"
 
@@ -3705,15 +3705,15 @@ msgstr "Egendefinert etikett for fane"
 msgid "Label for the tab containing custom widgets."
 msgstr ""
 
-#: gtk/gtkprintunixdialog.c:242
+#: gtk/gtkprintunixdialog.c:247
 msgid "The GtkPageSetup to use"
 msgstr "GtkPageSetup som skal brukes"
 
-#: gtk/gtkprintunixdialog.c:267
+#: gtk/gtkprintunixdialog.c:272
 msgid "Selected Printer"
 msgstr "Valgt skriver"
 
-#: gtk/gtkprintunixdialog.c:268
+#: gtk/gtkprintunixdialog.c:273
 msgid "The GtkPrinter which is selected"
 msgstr "GtkPrinter som er valgt"
 
@@ -4214,84 +4214,84 @@ msgid ""
 "Display a second forward arrow button on the opposite end of the scrollbar"
 msgstr "Vis en sekundær knapp med framoverpil på motsatt side av rullefeltet"
 
-#: gtk/gtkscrolledwindow.c:221 gtk/gtktext.c:541 gtk/gtktreeview.c:572
+#: gtk/gtkscrolledwindow.c:219 gtk/gtktext.c:541 gtk/gtktreeview.c:572
 msgid "Horizontal Adjustment"
 msgstr "Horisontal justering"
 
-#: gtk/gtkscrolledwindow.c:228 gtk/gtktext.c:549 gtk/gtktreeview.c:580
+#: gtk/gtkscrolledwindow.c:226 gtk/gtktext.c:549 gtk/gtktreeview.c:580
 msgid "Vertical Adjustment"
 msgstr "Vertikal justering"
 
-#: gtk/gtkscrolledwindow.c:235
+#: gtk/gtkscrolledwindow.c:233
 msgid "Horizontal Scrollbar Policy"
 msgstr "Oppførsel for horisontalt rullefelt"
 
-#: gtk/gtkscrolledwindow.c:236
+#: gtk/gtkscrolledwindow.c:234
 msgid "When the horizontal scrollbar is displayed"
 msgstr "Når horisontalt rullefelt skal vises"
 
-#: gtk/gtkscrolledwindow.c:243
+#: gtk/gtkscrolledwindow.c:241
 msgid "Vertical Scrollbar Policy"
 msgstr "Oppførsel for vertikalt rullefelt"
 
-#: gtk/gtkscrolledwindow.c:244
+#: gtk/gtkscrolledwindow.c:242
 msgid "When the vertical scrollbar is displayed"
 msgstr "Når vertikalt rullefelt skal vises"
 
-#: gtk/gtkscrolledwindow.c:252
+#: gtk/gtkscrolledwindow.c:250
 msgid "Window Placement"
 msgstr "Vinduplassering"
 
-#: gtk/gtkscrolledwindow.c:253
+#: gtk/gtkscrolledwindow.c:251
 #, fuzzy
 msgid ""
 "Where the contents are located with respect to the scrollbars. This property "
 "only takes effect if \"window-placement-set\" is TRUE."
 msgstr "Plassering av innhold i forhold til rullefeltene"
 
-#: gtk/gtkscrolledwindow.c:270
+#: gtk/gtkscrolledwindow.c:268
 msgid "Window Placement Set"
 msgstr "Vinduplassering satt"
 
-#: gtk/gtkscrolledwindow.c:271
+#: gtk/gtkscrolledwindow.c:269
 #, fuzzy
 msgid ""
 "Whether \"window-placement\" should be used to determine the location of the "
 "contents with respect to the scrollbars."
 msgstr "Plassering av innhold i forhold til rullefeltene"
 
-#: gtk/gtkscrolledwindow.c:277
+#: gtk/gtkscrolledwindow.c:275
 msgid "Shadow Type"
 msgstr "Skyggetype"
 
-#: gtk/gtkscrolledwindow.c:278
+#: gtk/gtkscrolledwindow.c:276
 msgid "Style of bevel around the contents"
 msgstr "Stil på kanten rundt innholdet"
 
-#: gtk/gtkscrolledwindow.c:292
+#: gtk/gtkscrolledwindow.c:290
 #, fuzzy
 msgid "Scrollbars within bevel"
 msgstr "Avstand for rullefelt"
 
-#: gtk/gtkscrolledwindow.c:293
+#: gtk/gtkscrolledwindow.c:291
 #, fuzzy
 msgid "Place scrollbars within the scrolled window's bevel"
 msgstr "Antall piksler mellom rullefeltet og vinduet som rulles"
 
-#: gtk/gtkscrolledwindow.c:299
+#: gtk/gtkscrolledwindow.c:297
 msgid "Scrollbar spacing"
 msgstr "Avstand for rullefelt"
 
-#: gtk/gtkscrolledwindow.c:300
+#: gtk/gtkscrolledwindow.c:298
 msgid "Number of pixels between the scrollbars and the scrolled window"
 msgstr "Antall piksler mellom rullefeltet og vinduet som rulles"
 
-#: gtk/gtkscrolledwindow.c:315
+#: gtk/gtkscrolledwindow.c:313
 #, fuzzy
 msgid "Scrolled Window Placement"
 msgstr "Vinduplassering"
 
-#: gtk/gtkscrolledwindow.c:316
+#: gtk/gtkscrolledwindow.c:314
 #, fuzzy
 msgid ""
 "Where the contents of scrolled windows are located with respect to the "

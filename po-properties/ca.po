@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtk+ 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-12 01:41-0400\n"
+"POT-Creation-Date: 2008-09-12 21:21-0400\n"
 "PO-Revision-Date: 2008-03-06 09:10+0100\n"
 "Last-Translator: David Planella Molas <david.planella@gmail.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -239,7 +239,7 @@ msgstr "Nom de la icona del logotip"
 
 #: gtk/gtkaboutdialog.c:399
 msgid "A named icon to use as the logo for the about box."
-msgstr "Una icona amb nom per a usar com a logotip a la caixa d'informació"
+msgstr "Una icona amb nom per a emprar com a logotip a la caixa d'informació"
 
 #: gtk/gtkaboutdialog.c:412
 msgid "Wrap license"
@@ -2110,7 +2110,7 @@ msgstr "Caràcter invisible"
 #: gtk/gtkentry.c:539
 msgid "The character to use when masking entry contents (in \"password mode\")"
 msgstr ""
-"El caràcter a usar quan s'emmascara el contingut de l'entrada (en «mode "
+"El caràcter a emprar quan s'emmascara el contingut de l'entrada (en «mode "
 "contrasenya»)"
 
 #: gtk/gtkentry.c:546
@@ -2955,7 +2955,7 @@ msgstr ""
 msgid "Horizontal adjustment"
 msgstr "Ajust horitzontal"
 
-#: gtk/gtklayout.c:603 gtk/gtkscrolledwindow.c:222
+#: gtk/gtklayout.c:603 gtk/gtkscrolledwindow.c:220
 msgid "The GtkAdjustment for the horizontal position"
 msgstr "El GtkAdjustment per a la posició horitzontal"
 
@@ -2963,7 +2963,7 @@ msgstr "El GtkAdjustment per a la posició horitzontal"
 msgid "Vertical adjustment"
 msgstr "Ajust vertical"
 
-#: gtk/gtklayout.c:611 gtk/gtkscrolledwindow.c:229
+#: gtk/gtklayout.c:611 gtk/gtkscrolledwindow.c:227
 msgid "The GtkAdjustment for the vertical position"
 msgstr "El GtkAdjustment per a la posició vertical"
 
@@ -3647,7 +3647,7 @@ msgstr "Paràmetres"
 msgid "Printer settings"
 msgstr "Paràmetres de la impressora"
 
-#: gtk/gtkprintjob.c:143 gtk/gtkprintjob.c:144 gtk/gtkprintunixdialog.c:241
+#: gtk/gtkprintjob.c:143 gtk/gtkprintjob.c:144 gtk/gtkprintunixdialog.c:246
 msgid "Page Setup"
 msgstr "Configuració de la pàgina"
 
@@ -3672,11 +3672,11 @@ msgstr "Configuració de la pàgina per defecte"
 msgid "The GtkPageSetup used by default"
 msgstr "El GtkPageSetup utilitzat per defecte"
 
-#: gtk/gtkprintoperation.c:896 gtk/gtkprintunixdialog.c:259
+#: gtk/gtkprintoperation.c:896 gtk/gtkprintunixdialog.c:264
 msgid "Print Settings"
 msgstr "Paràmetres de la impressora"
 
-#: gtk/gtkprintoperation.c:897 gtk/gtkprintunixdialog.c:260
+#: gtk/gtkprintoperation.c:897 gtk/gtkprintunixdialog.c:265
 msgid "The GtkPrintSettings used for initializing the dialog"
 msgstr "El GtkPrintSettings utilitzat per a inicialitzar el diàleg"
 
@@ -3696,11 +3696,11 @@ msgstr "Nombre de pàgines"
 msgid "The number of pages in the document."
 msgstr "El nombre de pàgines del document."
 
-#: gtk/gtkprintoperation.c:962 gtk/gtkprintunixdialog.c:249
+#: gtk/gtkprintoperation.c:962 gtk/gtkprintunixdialog.c:254
 msgid "Current Page"
 msgstr "Pàgina actual"
 
-#: gtk/gtkprintoperation.c:963 gtk/gtkprintunixdialog.c:250
+#: gtk/gtkprintoperation.c:963 gtk/gtkprintunixdialog.c:255
 msgid "The current page in the document"
 msgstr "La pàgina actual en el document"
 
@@ -3778,15 +3778,15 @@ msgstr "Etiqueta de pestanya personalitzada"
 msgid "Label for the tab containing custom widgets."
 msgstr "Etiqueta per a la pestanya que contingui ginys personalitzats."
 
-#: gtk/gtkprintunixdialog.c:242
+#: gtk/gtkprintunixdialog.c:247
 msgid "The GtkPageSetup to use"
 msgstr "El GtkPageSetup a utilitzar"
 
-#: gtk/gtkprintunixdialog.c:267
+#: gtk/gtkprintunixdialog.c:272
 msgid "Selected Printer"
 msgstr "Impressora seleccionada"
 
-#: gtk/gtkprintunixdialog.c:268
+#: gtk/gtkprintunixdialog.c:273
 msgid "The GtkPrinter which is selected"
 msgstr "La GtkPrinter seleccionada"
 
@@ -4310,35 +4310,35 @@ msgstr ""
 "Mostra un segon botó de desplaçament cap endavant a l'altra banda de la "
 "barra de desplaçament"
 
-#: gtk/gtkscrolledwindow.c:221 gtk/gtktext.c:541 gtk/gtktreeview.c:572
+#: gtk/gtkscrolledwindow.c:219 gtk/gtktext.c:541 gtk/gtktreeview.c:572
 msgid "Horizontal Adjustment"
 msgstr "Ajust horitzontal"
 
-#: gtk/gtkscrolledwindow.c:228 gtk/gtktext.c:549 gtk/gtktreeview.c:580
+#: gtk/gtkscrolledwindow.c:226 gtk/gtktext.c:549 gtk/gtktreeview.c:580
 msgid "Vertical Adjustment"
 msgstr "Ajust vertical"
 
-#: gtk/gtkscrolledwindow.c:235
+#: gtk/gtkscrolledwindow.c:233
 msgid "Horizontal Scrollbar Policy"
 msgstr "Política de la barra de desplaçament horitzontal"
 
-#: gtk/gtkscrolledwindow.c:236
+#: gtk/gtkscrolledwindow.c:234
 msgid "When the horizontal scrollbar is displayed"
 msgstr "Quan la barra de desplaçament horitzontal es mostra"
 
-#: gtk/gtkscrolledwindow.c:243
+#: gtk/gtkscrolledwindow.c:241
 msgid "Vertical Scrollbar Policy"
 msgstr "Política de la barra de desplaçament vertical"
 
-#: gtk/gtkscrolledwindow.c:244
+#: gtk/gtkscrolledwindow.c:242
 msgid "When the vertical scrollbar is displayed"
 msgstr "Quan es mostra la barra de desplaçament vertical"
 
-#: gtk/gtkscrolledwindow.c:252
+#: gtk/gtkscrolledwindow.c:250
 msgid "Window Placement"
 msgstr "Emplaçament de la finestra"
 
-#: gtk/gtkscrolledwindow.c:253
+#: gtk/gtkscrolledwindow.c:251
 msgid ""
 "Where the contents are located with respect to the scrollbars. This property "
 "only takes effect if \"window-placement-set\" is TRUE."
@@ -4346,11 +4346,11 @@ msgstr ""
 "Si els continguts se situen respecte de les barres de desplaçament. Aquesta "
 "propietat només té efecte si «windows-placement-set» és CERT."
 
-#: gtk/gtkscrolledwindow.c:270
+#: gtk/gtkscrolledwindow.c:268
 msgid "Window Placement Set"
 msgstr "Conjunt d'emplaçament de la finestra"
 
-#: gtk/gtkscrolledwindow.c:271
+#: gtk/gtkscrolledwindow.c:269
 msgid ""
 "Whether \"window-placement\" should be used to determine the location of the "
 "contents with respect to the scrollbars."
@@ -4358,39 +4358,39 @@ msgstr ""
 "Si s'ha d'utilitzar «window-placement» per a determinar la situació dels "
 "continguts de la finestra respecte de les barres de desplaçament."
 
-#: gtk/gtkscrolledwindow.c:277
+#: gtk/gtkscrolledwindow.c:275
 msgid "Shadow Type"
 msgstr "Tipus d'ombra"
 
-#: gtk/gtkscrolledwindow.c:278
+#: gtk/gtkscrolledwindow.c:276
 msgid "Style of bevel around the contents"
 msgstr "Estil del bisell que envolta els continguts"
 
-#: gtk/gtkscrolledwindow.c:292
+#: gtk/gtkscrolledwindow.c:290
 msgid "Scrollbars within bevel"
 msgstr "Barres de desplaçament dins del bisell"
 
-#: gtk/gtkscrolledwindow.c:293
+#: gtk/gtkscrolledwindow.c:291
 msgid "Place scrollbars within the scrolled window's bevel"
 msgstr ""
 "Situa les barres de desplaçament dins del bisell de la finestra amb "
 "desplaçament"
 
-#: gtk/gtkscrolledwindow.c:299
+#: gtk/gtkscrolledwindow.c:297
 msgid "Scrollbar spacing"
 msgstr "Espaiat de barra de desplaçament"
 
-#: gtk/gtkscrolledwindow.c:300
+#: gtk/gtkscrolledwindow.c:298
 msgid "Number of pixels between the scrollbars and the scrolled window"
 msgstr ""
 "Nombre de píxels entre les barres de desplaçament i la finestra amb "
 "desplaçament"
 
-#: gtk/gtkscrolledwindow.c:315
+#: gtk/gtkscrolledwindow.c:313
 msgid "Scrolled Window Placement"
 msgstr "Situació de la finestra amb desplaçament"
 
-#: gtk/gtkscrolledwindow.c:316
+#: gtk/gtkscrolledwindow.c:314
 msgid ""
 "Where the contents of scrolled windows are located with respect to the "
 "scrollbars, if not overridden by the scrolled window's own placement."
@@ -4585,7 +4585,7 @@ msgstr "Estil de transformació Xft"
 msgid ""
 "What degree of hinting to use; hintnone, hintslight, hintmedium, or hintfull"
 msgstr ""
-"Quin grau de transformació a usar; hintnone, hintslight, hintmedium, o "
+"Quin grau de transformació a emprar; hintnone, hintslight, hintmedium, o "
 "hintfull"
 
 #: gtk/gtksettings.c:385
@@ -4905,7 +4905,7 @@ msgstr ""
 
 #: gtk/gtkspinbutton.c:269
 msgid "Reads the current value, or sets a new value"
-msgstr "Llegeix el valor actual, o fixa un nou valor"
+msgstr "Llegeix el valor actual, o fixa'n un de nou"
 
 #: gtk/gtkspinbutton.c:278
 msgid "Style of bevel around the spin button"
@@ -5247,7 +5247,7 @@ msgid ""
 "when rendering the text. If not set, an appropriate default will be used."
 msgstr ""
 "El codi ISO de l'idioma del text. El Pango ho pot utilitzar com a pista en "
-"representar el text. Si no s'estableix, s'usarà el determinat més apropiat."
+"representar el text. Si no s'estableix, s'emprarà el determinat més apropiat."
 
 #: gtk/gtktexttag.c:386
 msgid "Left margin"
