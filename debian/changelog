@@ -1,8 +1,13 @@
 gtk+2.0 (2:2.12.12-1maemo1) unstable; urgency=low
 
+  [ Michael Natterer ]
   * Upgrade to GTK+ 2.12.12
 
- -- Michael Natterer <mitch@imendio.com>  Wed, 02 Oct 2008 12:12:12 +0200
+  [ Claudio Saavedra ]
+  * Force "make clean" before "maintainer-clean" during clean to remove
+    gtk/tests binaries.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 03 Oct 2008 10:16:56 +0300
 
 gtk+2.0 (2:2.12.9-1maemo2) unstable; urgency=low
 
