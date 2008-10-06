@@ -1,3 +1,9 @@
+2008-10-06  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo2
+
+	* debian/changelog: updates
+
 2008-10-06  Michael Natterer  <mitch@imendio.com>
 
 	* po/ca@valencia.po
