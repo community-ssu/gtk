@@ -1,3 +1,8 @@
+2008-10-06  Michael Natterer  <mitch@imendio.com>
+
+	* po/ca@valencia.po
+	* po-properties/ca@valencia.po: forgot to add these new files.
+
 2008-10-03  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo1
