@@ -1,3 +1,34 @@
+2008-10-09  Michael Natterer  <mitch@imendio.com>
+
+	Fixes NB#87440: Accelerator Labels not shown in menus created with
+	GtkUIManager
+
+	Merged from upstream trunk:
+
+    2008-10-09  Michael Natterer  <mitch@imendio.com>
+
+	Bug 516425 – Optionally display accelerators in popups
+
+	* gtk/gtkuimanager.h (enum GtkUIManagerItemType): add value
+	GTK_UI_MANAGER_POPUP_WITH_ACCELS which works like _POPUP but
+	shows the actions' accelerators.
+
+	* gtk/gtkuimanager.c: honor the new enum value for programmatically
+	created UIs, and support <popup accelerators="true"> in the XML
+	for the same purpose.
+
+	* docs/reference/gtk/tmpl/gtkuimanager.sgml: document the enhanced
+	XML syntax and the new enum value for popups with accelerators.
+
+    2008-06-13  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkuimanager.c (start_element_handler): silently skip
+	unknown attributes instead of bailing out with an error in order
+	to be compatible with possible future attribute names.
+
+	This is related to the discussion in bug #516425 but actually
+	needed for any kind of XML format extension.
+
 2008-10-06  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo2
