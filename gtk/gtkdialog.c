@@ -707,7 +707,20 @@ gtk_dialog_add_button (GtkDialog   *dialog,
 
   GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
   
+#ifdef MAEMO_CHANGES
+  if (response_id != GTK_RESPONSE_CANCEL &&
+      response_id != GTK_RESPONSE_REJECT &&
+      response_id != GTK_RESPONSE_CLOSE)
+    {
+      gtk_widget_show (button);
+    }
+    else
+    {
+      gtk_widget_set_no_show_all (button, TRUE);
+    }
+#else
   gtk_widget_show (button);
+#endif /* MAEMO_CHANGES */
   
   gtk_dialog_add_action_widget (dialog,
                                 button,

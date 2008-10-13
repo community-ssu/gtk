@@ -1,3 +1,12 @@
+2008-10-13  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Fixes NB#89865: Remove Close-like buttons from GtkDialog
+
+	reviewed by: Tim Janik
+
+	* gtk/gtkdialog.c: (gtk_dialog_add_button): Don't show
+	Cancel/Reject/Close buttons. Patch by Alberto Garcia.
+
 2008-10-09  Michael Natterer  <mitch@imendio.com>
 
 	Fixes NB#87440: Accelerator Labels not shown in menus created with
