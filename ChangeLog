@@ -1,3 +1,11 @@
+2008-10-15  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Fixes NB#89611: GtkTreeView: use of an uninitialized variable
+
+	* gtk/gtktreeview.c: (determine_row_height),
+	(initialize_fixed_height_mode): Initialize is_header properly. Patch
+	by Kristian Rietveld.
+
 2008-10-13  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Fixes NB#89865: Remove Close-like buttons from GtkDialog

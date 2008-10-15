@@ -6894,7 +6894,7 @@ determine_row_height (GtkTreeView *tree_view,
                       int          separator_height)
 {
   int height;
-  gboolean is_separator, is_header;
+  gboolean is_separator, is_header = FALSE;
 
   /* Determine the correct height for this node.  This is
    * analogous to what is found in validate_row().
@@ -7040,7 +7040,7 @@ initialize_fixed_height_mode (GtkTreeView *tree_view)
       /* Search for the first regular row */
       while (node)
         {
-          gboolean is_header, is_separator;
+          gboolean is_header = FALSE, is_separator;
 
           is_separator = row_is_separator (tree_view, NULL, &is_header, path);
           if (!is_separator && !is_header)
