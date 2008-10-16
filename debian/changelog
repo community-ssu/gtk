@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.12.12-1maemo3) unstable; urgency=low
+
+  * Fixes NB#89865: Remove Close-like buttons from GtkDialog
+  * Fixes NB#87440: Accelerator Labels not shown in menus created with
+    GtkUIManager
+  * Fixes NB#89611: GtkTreeView: use of an uninitialized variable
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 15 Oct 2008 13:01:36 +0300
+
 gtk+2.0 (2:2.12.12-1maemo2) unstable; urgency=low
 
   * Add missing ca@valencia translation that broke the build.

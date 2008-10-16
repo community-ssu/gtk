@@ -1,3 +1,9 @@
+2008-10-16  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo3
+
+	* debian/changelog: Updates
+
 2008-10-15  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Fixes NB#89611: GtkTreeView: use of an uninitialized variable
