@@ -1,3 +1,15 @@
+2008-10-27  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB#89408: Unable to select an item in the list picker
+	Part 1 / 3
+
+	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): when
+	switching selection modes in edit mode, make sure the anchor is
+	on a selected item, if not force it to be on the first selected
+	item.
+
+	* gtk/tests/treeview-hildon.c: add test.
+	
 2008-10-16  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo3
