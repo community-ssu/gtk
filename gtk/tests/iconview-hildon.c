@@ -215,6 +215,29 @@ edit_selection_multi (HildonIconViewFixture *fixture,
   gtk_tree_path_free (path);
 }
 
+static void
+edit_multi_to_single (HildonIconViewFixture *fixture,
+                      gconstpointer          test_data)
+{
+  GtkTreePath *path;
+
+  /* One item must be selected */
+  g_assert (gtk_icon_view_count_selected_rows (GTK_ICON_VIEW (fixture->icon_view)) == 1);
+
+  /* Select and unselect a row */
+  path = gtk_tree_path_new_from_indices (10, -1);
+  gtk_icon_view_select_path (GTK_ICON_VIEW (fixture->icon_view), path);
+  g_assert (gtk_icon_view_count_selected_rows (GTK_ICON_VIEW (fixture->icon_view)) == 2);
+  g_assert (gtk_icon_view_path_is_selected (GTK_ICON_VIEW (fixture->icon_view), path));
+
+  gtk_icon_view_unselect_path (GTK_ICON_VIEW (fixture->icon_view), path);
+  g_assert (gtk_icon_view_path_is_selected (GTK_ICON_VIEW (fixture->icon_view), path) != TRUE);
+  gtk_tree_path_free (path);
+
+  /* Switch selection mode, one item should stay selected */
+  gtk_icon_view_set_selection_mode (GTK_ICON_VIEW (fixture->icon_view), GTK_SELECTION_SINGLE);
+  g_assert (gtk_icon_view_count_selected_rows (GTK_ICON_VIEW (fixture->icon_view)) == 1);
+}
 
 int
 main (int argc, char **argv)
@@ -245,6 +268,12 @@ main (int argc, char **argv)
               HildonIconViewFixture, NULL,
               hildon_icon_view_fixture_edit_multi_setup,
               edit_selection_multi,
+              hildon_icon_view_fixture_teardown);
+
+  g_test_add ("/iconview/hildon/edit-multi-to-single-test",
+              HildonIconViewFixture, NULL,
+              hildon_icon_view_fixture_edit_multi_setup,
+              edit_multi_to_single,
               hildon_icon_view_fixture_teardown);
 
   return g_test_run ();

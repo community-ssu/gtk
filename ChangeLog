@@ -1,6 +1,18 @@
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes NB#89408: Unable to select an item in the list picker
+	Part 2 / 3
+
+	* gtk/gtkiconview.c (gtk_icon_view_set_selection_mode):
+	s/selection_mode/hildon_ui_mode/ in "if normal mode" check;
+	when switching selection modes, if the anchor is not on a
+	selected item, force it to be on the first selected item.
+
+	* gtk/tests/iconview-hildon.c: add test.
+
+2008-10-27  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB#89408: Unable to select an item in the list picker
 	Part 1 / 3
 
 	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): when

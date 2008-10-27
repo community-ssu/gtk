@@ -5787,18 +5787,51 @@ gtk_icon_view_set_selection_mode (GtkIconView      *icon_view,
                         NULL);
 
   if (hildon_mode == HILDON_FREMANTLE
-      && icon_view->priv->selection_mode == HILDON_UI_MODE_NORMAL
+      && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
       && mode != GTK_SELECTION_NONE)
     {
       g_warning ("Cannot change the selection mode to anything other than GTK_SELECTION_NONE in normal-mode.\n");
       return;
     }
+
+  if (hildon_mode == HILDON_FREMANTLE
+      && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+      && icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
+    {
+      if (!icon_view->priv->anchor_item
+          || !icon_view->priv->anchor_item->selected)
+        {
+          GList *list;
+
+          /* Look for the first selected item, make that the new
+           * anchor.
+           */
+
+          for (list = icon_view->priv->items; list; list = list->next)
+            {
+              GtkIconViewItem *item = list->data;
+
+              if (item->selected)
+                {
+                  icon_view->priv->anchor_item = item;
+                  break;
+                }
+            }
+        }
+
+      gtk_icon_view_unselect_all_internal (icon_view);
+      gtk_icon_view_select_item (icon_view, icon_view->priv->anchor_item);
+    }
+  else
+    {
 #endif /* MAEMO_CHANGES */
-  
   if (mode == GTK_SELECTION_NONE ||
       icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
     gtk_icon_view_unselect_all (icon_view);
-  
+#ifdef MAEMO_CHANGES
+    }
+#endif /* MAEMO_CHANGES */
+
   icon_view->priv->selection_mode = mode;
 
   g_object_notify (G_OBJECT (icon_view), "selection-mode");
