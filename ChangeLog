@@ -1,6 +1,16 @@
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes NB#89408: Unable to select an item in the list picker
+	Part 3 / 3
+
+	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): queue
+	a resize after changing selection mode, so that we re-allocate
+	space that might or might not be needed for displaying the
+	multiple selection tick marks.
+
+2008-10-27  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB#89408: Unable to select an item in the list picker
 	Part 2 / 3
 
 	* gtk/gtkiconview.c (gtk_icon_view_set_selection_mode):

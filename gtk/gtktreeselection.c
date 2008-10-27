@@ -295,6 +295,11 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
 	  gtk_tree_path_free (path);
 	}
     }
+
+  /* Have the tree view resize to allocate or deallocate space for the
+   * multiple selection mode tick marks.
+   */
+  gtk_widget_queue_resize (GTK_WIDGET (selection->tree_view));
 #endif /* MAEMO_CHANGES */
 }
 
