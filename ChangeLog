@@ -1,3 +1,10 @@
+2008-11-03  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes NB#91448: CSM shown no matter what tap-and-hold-query returns
+
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_query_accumulate): stop
+	emission as soon as a signal handler has run.
+
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes NB#89408: Unable to select an item in the list picker

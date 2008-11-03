@@ -10591,7 +10591,6 @@ gtk_widget_tap_and_hold_query_accumulator (GSignalInvocationHint *ihint,
                                            const GValue          *handler_return,
                                            gpointer               dummy)
 {
-  gboolean continue_emission;
   gboolean tap_and_hold_not_allowed;
 
   /* The semantics of the tap-and-hold-query return value differs from
@@ -10601,12 +10600,8 @@ gtk_widget_tap_and_hold_query_accumulator (GSignalInvocationHint *ihint,
   tap_and_hold_not_allowed = g_value_get_boolean (handler_return);
   g_value_set_boolean (return_accu, tap_and_hold_not_allowed);
 
-  /* tap_and_hold_not_allowed == FALSE means invoke tap-and-hold,
-   * in this case we do not continue emission.
-   */
-  continue_emission = (tap_and_hold_not_allowed != FALSE);
-
-  return continue_emission;
+  /* Now that a single handler has run, we stop emission. */
+  return FALSE;
 }
 
 static gboolean
