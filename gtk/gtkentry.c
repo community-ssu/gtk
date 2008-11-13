@@ -954,6 +954,21 @@ gtk_entry_class_init (GtkEntryClass *class)
                                                                GTK_TYPE_BORDER,
                                                                GTK_PARAM_READABLE));
 
+   /**
+    * GtkEntry:state-hint:
+    *
+    * Indicates whether to pass a proper widget state when
+    * drawing the shadow and the widget background.
+    *
+    * Since: 2.16
+    */
+   gtk_widget_class_install_style_property (widget_class,
+                                            g_param_spec_boolean ("state-hint",
+                                                                  P_("State Hint"),
+                                                                  P_("Whether to pass a proper state when drawing shadow or background"),
+                                                                  FALSE,
+                                                                  GTK_PARAM_READABLE));
+
    gtk_settings_install_property (g_param_spec_boolean ("gtk-entry-select-on-focus",
 						       P_("Select on focus"),
 						       P_("Whether to select the contents of an entry when it is focused"),
@@ -1639,7 +1654,9 @@ gtk_entry_draw_frame (GtkWidget    *widget,
 {
   GtkEntryPrivate *priv = GTK_ENTRY_GET_PRIVATE (widget);
   gint x = 0, y = 0, width, height;
-  
+  gboolean state_hint;
+  GtkStateType state;
+
   gdk_drawable_get_size (widget->window, &width, &height);
   
   if (GTK_WIDGET_HAS_FOCUS (widget) && !priv->interior_focus)
@@ -1650,9 +1667,16 @@ gtk_entry_draw_frame (GtkWidget    *widget,
       height -= 2 * priv->focus_width;
     }
 
+  gtk_widget_style_get (widget, "state-hint", &state_hint, NULL);
+  if (state_hint)
+      state = GTK_WIDGET_HAS_FOCUS (widget) ?
+        GTK_STATE_ACTIVE : GTK_WIDGET_STATE (widget);
+  else
+      state = GTK_STATE_NORMAL;
+
   gtk_paint_shadow (widget->style, widget->window,
-		    GTK_STATE_NORMAL, priv->shadow_type,
-		    area, widget, "entry", x, y, width, height);
+                    state, priv->shadow_type,
+                    area, widget, "entry", x, y, width, height);
 
   if (GTK_WIDGET_HAS_FOCUS (widget) && !priv->interior_focus)
     {
@@ -1742,6 +1766,8 @@ gtk_entry_expose (GtkWidget      *widget,
 		  GdkEventExpose *event)
 {
   GtkEntry *entry = GTK_ENTRY (widget);
+  gboolean state_hint;
+  GtkStateType state;
 
   if (widget->window == event->window)
     gtk_entry_draw_frame (widget, &event->area);
@@ -1751,8 +1777,15 @@ gtk_entry_expose (GtkWidget      *widget,
 
       get_text_area_size (entry, NULL, NULL, &area_width, &area_height);
 
+      gtk_widget_style_get (widget, "state-hint", &state_hint, NULL);
+      if (state_hint)
+        state = GTK_WIDGET_HAS_FOCUS (widget) ?
+          GTK_STATE_ACTIVE : GTK_WIDGET_STATE (widget);
+      else
+        state = GTK_WIDGET_STATE(widget);
+
       gtk_paint_flat_box (widget->style, entry->text_area, 
-			  GTK_WIDGET_STATE(widget), GTK_SHADOW_NONE,
+			  state, GTK_SHADOW_NONE,
 			  &event->area, widget, "entry_bg",
 			  0, 0, area_width, area_height);
 #ifdef MAEMO_CHANGES

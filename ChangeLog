@@ -1,3 +1,10 @@
+2008-11-13  Christian Dywan  <christian@imendio.com>
+
+	NB#91934: Set state for gtkentry painting
+
+	* gtk/gtkentry.c (gtk_entry_class_init), (gtk_entry_draw_frame),
+	(gtk_entry_expose): Set the state properly if state-hint is set
+
 2008-11-03  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes NB#91448: CSM shown no matter what tap-and-hold-query returns
