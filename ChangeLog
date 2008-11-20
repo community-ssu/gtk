@@ -1,20 +1,20 @@
 2008-11-13  Christian Dywan  <christian@imendio.com>
 
-	NB#91934: Set state for gtkentry painting
+	Fixes: NB#91934: Set state for gtkentry painting
 
 	* gtk/gtkentry.c (gtk_entry_class_init), (gtk_entry_draw_frame),
 	(gtk_entry_expose): Set the state properly if state-hint is set
 
 2008-11-03  Kristian Rietveld  <kris@imendio.com>
 
-	Fixes NB#91448: CSM shown no matter what tap-and-hold-query returns
+	Fixes: NB#91448: CSM shown no matter what tap-and-hold-query returns
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_query_accumulate): stop
 	emission as soon as a signal handler has run.
 
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
-	Fixes NB#89408: Unable to select an item in the list picker
+	Fixes: NB#89408: Unable to select an item in the list picker
 	Part 3 / 3
 
 	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): queue
@@ -24,7 +24,7 @@
 
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
-	Fixes NB#89408: Unable to select an item in the list picker
+	Fixes: NB#89408: Unable to select an item in the list picker
 	Part 2 / 3
 
 	* gtk/gtkiconview.c (gtk_icon_view_set_selection_mode):
@@ -36,7 +36,7 @@
 
 2008-10-27  Kristian Rietveld  <kris@imendio.com>
 
-	Fixes NB#89408: Unable to select an item in the list picker
+	Fixes: NB#89408: Unable to select an item in the list picker
 	Part 1 / 3
 
 	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): when
