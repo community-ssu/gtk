@@ -1,3 +1,10 @@
+2008-11-28  Christian Dywan  <christian@imendio.com>
+
+	Fixes: NB#90883: Progressbar height change
+
+	* gtk/gtkprogressbar.c (gtk_progress_bar_class_init),
+	(gtk_progress_bar_size_request): Add minimum size style properties
+
 2008-11-13  Christian Dywan  <christian@imendio.com>
 
 	Fixes: NB#91934: Set state for gtkentry painting
