@@ -493,8 +493,6 @@ static gboolean gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
 						  GdkEvent  *event);
 static void     free_queued_select_row           (GtkTreeView  *tree_view);
 static void     free_queued_activate_row         (GtkTreeView  *tree_view);
-static void     gtk_tree_view_set_hildon_ui_mode (GtkTreeView  *tree_view,
-                                                  HildonUIMode  hildon_ui_mode);
 #endif /* MAEMO_CHANGES */
 
 static guint tree_view_signals [LAST_SIGNAL] = { 0 };
@@ -810,6 +808,21 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 						       GTK_PARAM_READWRITE));
 
 #ifdef MAEMO_CHANGES
+    /**
+     * GtkTreeView:hildon-ui-mode:
+     *
+     * Specifies which UI mode to use.  A setting of #HILDON_UI_MODE_NORMAL
+     * will cause the tree view to disable selections and emit row-activated
+     * as soon as a row is pressed.  When #HILDON_UI_MODE_EDIT is set,
+     * selections can be made according to the setting of the mode on
+     * GtkTreeSelection.
+     *
+     * Toggling this property will cause the tree view to select an
+     * appropriate selection mode if not already done.
+     *
+     * Since: maemo 5.0
+     * Stability: unstable
+     */
     g_object_class_install_property (o_class,
                                      PROP_HILDON_UI_MODE,
                                      g_param_spec_enum ("hildon-ui-mode",
@@ -817,7 +830,7 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
                                                         P_("The Hildon UI mode according to which the tree view should behave"),
                                                         HILDON_TYPE_UI_MODE,
                                                         HILDON_UI_MODE_NORMAL,
-                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+                                                        GTK_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
 
   /* Style properties */
@@ -1581,7 +1594,7 @@ gtk_tree_view_set_property (GObject         *object,
       break;
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_UI_MODE:
-      gtk_tree_view_set_hildon_ui_mode (tree_view, g_value_get_enum (value));
+      hildon_tree_view_set_hildon_ui_mode (tree_view, g_value_get_enum (value));
       break;
 #endif /* MAEMO_CHANGES */
     default:
@@ -9016,7 +9029,7 @@ gtk_tree_view_style_set (GtkWidget *widget,
 
 #ifdef MAEMO_CHANGES
   /* Reset the UI mode */
-  gtk_tree_view_set_hildon_ui_mode (tree_view, tree_view->priv->hildon_ui_mode);
+  hildon_tree_view_set_hildon_ui_mode (tree_view, tree_view->priv->hildon_ui_mode);
 
   /* FIXME: possibly update row_header_layout if it exists */
 #endif /* MAEMO_CHANGES */
@@ -17297,18 +17310,27 @@ free_queued_activate_row (GtkTreeView *tree_view)
   tree_view->priv->queued_activate_row = NULL;
 }
 
-static void
-gtk_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
-                                  HildonUIMode   hildon_ui_mode)
+HildonUIMode
+hildon_tree_view_get_hildon_ui_mode (GtkTreeView *tree_view)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
+
+  return tree_view->priv->hildon_ui_mode;
+}
+
+void
+hildon_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
+                                     HildonUIMode   hildon_ui_mode)
 {
   HildonMode mode;
 
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  /* Don't check if the new mode matches the old mode; always continue
+   * so that the selection corrections below always happen.
+   */
   tree_view->priv->hildon_ui_mode = hildon_ui_mode;
 
-  /* Since hildon-mode is a construct-only property, we should not
-   * have to deal with the case where we switch from one mode to
-   * the other
-   */
   gtk_widget_style_get (GTK_WIDGET (tree_view),
                         "hildon-mode", &mode,
                         NULL);
@@ -17326,6 +17348,12 @@ gtk_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
     }
   else if (hildon_ui_mode == HILDON_UI_MODE_EDIT)
     {
+      if (gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_NONE)
+        {
+          gtk_tree_selection_set_mode (tree_view->priv->selection,
+                                       GTK_SELECTION_SINGLE);
+        }
+
       if (gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
         {
           GtkTreePath *path;

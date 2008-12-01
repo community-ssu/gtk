@@ -239,6 +239,32 @@ edit_multi_to_single (HildonIconViewFixture *fixture,
   g_assert (gtk_icon_view_count_selected_rows (GTK_ICON_VIEW (fixture->icon_view)) == 1);
 }
 
+static void
+normal_to_edit_test (HildonIconViewFixture *fixture,
+                     gconstpointer          test_data)
+{
+  normal_selection_none (fixture, test_data);
+
+  g_object_set (fixture->icon_view,
+                "hildon-ui-mode", HILDON_UI_MODE_EDIT,
+                NULL);
+
+  edit_selection_single (fixture, test_data);
+}
+
+static void
+edit_multi_to_normal_test (HildonIconViewFixture *fixture,
+                           gconstpointer          test_data)
+{
+  edit_selection_multi (fixture, test_data);
+
+  g_object_set (fixture->icon_view,
+                "hildon-ui-mode", HILDON_UI_MODE_NORMAL,
+                NULL);
+
+  normal_selection_none (fixture, test_data);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -274,6 +300,17 @@ main (int argc, char **argv)
               HildonIconViewFixture, NULL,
               hildon_icon_view_fixture_edit_multi_setup,
               edit_multi_to_single,
+              hildon_icon_view_fixture_teardown);
+
+  g_test_add ("/iconview/hildon/normal-to-edit-test",
+              HildonIconViewFixture, NULL,
+              hildon_icon_view_fixture_single_setup,
+              normal_to_edit_test,
+              hildon_icon_view_fixture_teardown);
+  g_test_add ("/iconview/hildon/edit-multi-to-normal-test",
+              HildonIconViewFixture, NULL,
+              hildon_icon_view_fixture_edit_multi_setup,
+              edit_multi_to_normal_test,
               hildon_icon_view_fixture_teardown);
 
   return g_test_run ();

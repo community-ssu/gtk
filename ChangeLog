@@ -1,3 +1,34 @@
+2008-12-01  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#91480 - GtkTreeView::hildon-ui-mode should not be
+	construct-only
+
+	* gtk/gtktreeview.[ch] (gtk_tree_view_class_init): document
+	hildon-ui-mode property, remove construct-only requirement,
+	(hildon_tree_view_set_hildon_ui_mode): set selection mode when
+	to edit mode and the current selection mode is none; make public,
+	(hildon_tree_view_get_hildon_ui_mode): new function.
+
+	* gtk/gtktreeselection.c (gtk_tree_selection_set_mode): only
+	select a row as anchor path if a selected row exists; otherwise
+	it is the responsibility of the tree view to select a row.
+
+	* gtk/gtkiconiew.[ch] (gtk_icon_view_class_init): document
+	hildon-ui-mode property, remove construct-only requirement,
+	(hildon_icon_view_set_hildon_ui_mode): set selection mode when
+	to edit mode and the current selection mode is none; make public,
+	(hildon_icon_view_get_hildon_ui_mode): new function.
+
+	* gtk/tests/treeview-hildon.c
+	* gtk/tests/iconview-hildon.c: add test cases for testing
+	switching between normal and edit mode.
+
+	* tests/testhildontreeview.c: add a simple window where mode
+	switching can be tested.  It is a little broken, but does the trick
+	;).
+
+	* gtk/gtk.symbols: update with new public functions.
+
 2008-11-28  Christian Dywan  <christian@imendio.com>
 
 	Fixes: NB#90883: Progressbar height change

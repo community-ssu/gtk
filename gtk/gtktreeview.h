@@ -408,6 +408,10 @@ void                        hildon_tree_view_set_row_header_func (GtkTreeView   
                                                                   HildonTreeViewRowHeaderFunc  func,
                                                                   gpointer                     data,
                                                                   GDestroyNotify               destroy);
+
+HildonUIMode                hildon_tree_view_get_hildon_ui_mode  (GtkTreeView                 *tree_view);
+void                        hildon_tree_view_set_hildon_ui_mode  (GtkTreeView                 *tree_view,
+                                                                  HildonUIMode                 mode);
 #endif /* MAEMO_CHANGES */
 
 GtkTreeViewGridLines        gtk_tree_view_get_grid_lines         (GtkTreeView                *tree_view);

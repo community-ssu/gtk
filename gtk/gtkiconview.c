@@ -484,8 +484,6 @@ static void     adjust_wrap_width                (GtkIconView     *icon_view,
 #ifdef MAEMO_CHANGES
 static void     free_queued_activate_item                (GtkIconView   *icon_view);
 static void     free_queued_select_item                  (GtkIconView   *icon_view);
-static void     gtk_icon_view_set_hildon_ui_mode         (GtkIconView   *icon_view,
-                                                          HildonUIMode   hildon_ui_mode);
 #endif /* MAEMO_CHANGES */
 
 /* GtkBuildable */
@@ -795,6 +793,21 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
                                                        GTK_PARAM_READWRITE));
 
 #ifdef MAEMO_CHANGES
+  /**
+   * GtkIconView::hildon-ui-mode
+   *
+   * Specifies which UI mode to use.  A setting of #HILDON_UI_MODE_NORMAL
+   * will cause the icon view to disable selections and emit item-activated
+   * as soon as an item is pressed.  When #HILDON_UI_MODE_EDIT is set,
+   * selections can be made according to the setting of the mode in
+   * GtkIconView::selection-mode.
+   *
+   * Toggling this property will cause the icon view to select an
+   * appropriate selection mode if not already done.
+   *
+   * Since: maemo 5.0
+   * Stability: unstable.
+   */
   g_object_class_install_property (gobject_class,
 				   PROP_HILDON_UI_MODE,
 				   g_param_spec_enum ("hildon-ui-mode",
@@ -802,7 +815,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 						      P_("The mode according to which the icon view should behave"),
 						      HILDON_TYPE_UI_MODE,
                                                       HILDON_UI_MODE_NORMAL,
-						      GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+						      GTK_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
 
 
@@ -1166,7 +1179,7 @@ gtk_icon_view_set_property (GObject      *object,
 
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_UI_MODE:
-      gtk_icon_view_set_hildon_ui_mode (icon_view, g_value_get_enum (value));
+      hildon_icon_view_set_hildon_ui_mode (icon_view, g_value_get_enum (value));
       break;
 #endif /* MAEMO_CHANGES */
 
@@ -1346,7 +1359,7 @@ gtk_icon_view_style_set (GtkWidget *widget,
 
 #ifdef MAEMO_CHANGES
   /* Reset the UI mode */
-  gtk_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
+  hildon_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
 
   /* FIXME: might want to update the row_header_layout if it exists */
 #endif /* MAEMO_CHANGES */
@@ -8132,11 +8145,21 @@ free_queued_select_item (GtkIconView *icon_view)
     }
 }
 
-static void
-gtk_icon_view_set_hildon_ui_mode (GtkIconView   *icon_view,
-                                  HildonUIMode   hildon_ui_mode)
+HildonUIMode
+hildon_icon_view_get_hildon_ui_mode (GtkIconView *icon_view)
+{
+  g_return_val_if_fail (GTK_IS_ICON_VIEW (icon_view), 0);
+
+  return icon_view->priv->hildon_ui_mode;
+}
+
+void
+hildon_icon_view_set_hildon_ui_mode (GtkIconView   *icon_view,
+                                     HildonUIMode   hildon_ui_mode)
 {
   HildonMode mode;
+
+  g_return_if_fail (GTK_IS_ICON_VIEW (icon_view));
 
   icon_view->priv->hildon_ui_mode = hildon_ui_mode;
 
@@ -8155,6 +8178,11 @@ gtk_icon_view_set_hildon_ui_mode (GtkIconView   *icon_view,
     {
       int count = 0;
       GList *list;
+
+      if (gtk_icon_view_get_selection_mode (icon_view) == GTK_SELECTION_NONE)
+        {
+          gtk_icon_view_set_selection_mode (icon_view, GTK_SELECTION_SINGLE);
+        }
 
       /* Instead of using gtk_icon_view_get_selected_items() we walk
        * over the list of items ourselves to save allocating/deallocating all

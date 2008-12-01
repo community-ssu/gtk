@@ -234,6 +234,10 @@ void                        hildon_icon_view_set_row_header_func (GtkIconView   
                                                                   HildonIconViewRowHeaderFunc  func,
                                                                   gpointer                     data,
                                                                   GDestroyNotify               destroy);
+
+HildonUIMode                hildon_icon_view_get_hildon_ui_mode  (GtkIconView                  *icon_view);
+void                        hildon_icon_view_set_hildon_ui_mode  (GtkIconView                  *icon_view,
+                                                                  HildonUIMode                  mode);
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS

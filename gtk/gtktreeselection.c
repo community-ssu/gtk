@@ -230,7 +230,9 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
           /* One item must stay selected; we look for the first selected
            * item we can find, that one becomes the anchor.  We silently
            * assume here that there is at least *one* selected row,
-           * as mandated by any new-style edit mode.
+           * as mandated by any new-style edit mode.  When switching
+           * from SELECTION_NONE there is no selected row, and the
+           * tree view will be responsible for selecting a node.
            */
 
           if (anchor_path)
@@ -242,19 +244,22 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
            * as soon as a selected node is found.
            */
           rows = gtk_tree_selection_get_selected_rows (selection, NULL);
-          anchor_path = gtk_tree_path_copy (rows->data);
-          g_list_foreach (rows, (GFunc)gtk_tree_path_free, NULL);
-          g_list_free (rows);
+          if (rows)
+            {
+              anchor_path = gtk_tree_path_copy (rows->data);
+              g_list_foreach (rows, (GFunc)gtk_tree_path_free, NULL);
+              g_list_free (rows);
 
-          _gtk_tree_view_find_node (selection->tree_view,
-                                    anchor_path,
-                                    &tree,
-                                    &node);
+              _gtk_tree_view_find_node (selection->tree_view,
+                                        anchor_path,
+                                        &tree,
+                                        &node);
 
-          if (node && GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
-            selected = TRUE;
+              if (node && GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
+                selected = TRUE;
 
-          g_return_if_fail (selected == TRUE);
+              g_return_if_fail (selected == TRUE);
+            }
         }
 #endif /* MAEMO_CHANGES */
 

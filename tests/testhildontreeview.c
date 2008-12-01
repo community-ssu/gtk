@@ -6,6 +6,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <string.h>
 
 enum
 {
@@ -33,6 +34,13 @@ create_model (void)
     }
 
   return GTK_TREE_MODEL (store);
+}
+
+static void
+selection_changed_callback (GtkTreeSelection *selection,
+                            gpointer          user_data)
+{
+  g_print ("selection changed.\n");
 }
 
 static void
@@ -90,6 +98,8 @@ create_tree_view (HildonUIMode  mode,
                             NULL);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
+  g_signal_connect (selection, "changed",
+                    G_CALLBACK (selection_changed_callback), NULL);
   if (multi_select)
     gtk_tree_selection_set_mode (selection, GTK_SELECTION_MULTIPLE);
   else if (mode != HILDON_UI_MODE_NORMAL)
@@ -157,6 +167,100 @@ create_tree_view_window (GtkWidget *button,
 
   gtk_widget_set_size_request (tree_view, 480, 800);
   gtk_container_add (GTK_CONTAINER (sw), tree_view);
+
+  gtk_widget_show_all (window);
+}
+
+static void
+ui_mode_changed (GtkComboBox *combo_box,
+                 gpointer     user_data)
+{
+  gchar *text;
+
+  text = gtk_combo_box_get_active_text (combo_box);
+  if (!strcmp (text, "UI_MODE_NORMAL"))
+    g_object_set (user_data, "hildon-ui-mode", HILDON_UI_MODE_NORMAL, NULL);
+  else if (!strcmp (text, "UI_MODE_EDIT"))
+    g_object_set (user_data, "hildon-ui-mode", HILDON_UI_MODE_EDIT, NULL);
+
+  g_free (text);
+}
+
+static void
+selection_mode_changed (GtkComboBox *combo_box,
+                        gpointer     user_data)
+{
+  gchar *text;
+  GtkTreeSelection *selection;
+
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (user_data));
+
+  text = gtk_combo_box_get_active_text (combo_box);
+  if (!strcmp (text, "SINGLE"))
+    gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+  else if (!strcmp (text, "MULTIPLE"))
+    gtk_tree_selection_set_mode (selection, GTK_SELECTION_MULTIPLE);
+
+  g_free (text);
+}
+
+static void
+create_mode_switch_window (GtkWidget *button,
+                           gpointer   user_data)
+{
+  GtkWidget *window;
+  GtkWidget *mainbox;
+  GtkWidget *sw;
+  GtkWidget *tree_view;
+  GtkWidget *vbox;
+  GtkWidget *combo_box;
+  GtkWidget *close;
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  g_signal_connect (window, "delete-event",
+                    G_CALLBACK (gtk_widget_destroy), window);
+  gtk_container_set_border_width (GTK_CONTAINER (window), 6);
+
+  mainbox = gtk_hbox_new (TRUE, 6);
+  gtk_container_add (GTK_CONTAINER (window), mainbox);
+
+  /* tree view */
+  sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_box_pack_start (GTK_BOX (mainbox), sw, TRUE, TRUE, 0);
+
+  tree_view = create_tree_view (HILDON_UI_MODE_NORMAL, "fremantle-widget",
+                                0);
+  g_signal_connect (tree_view, "row-activated",
+                    G_CALLBACK (row_activated_callback), NULL);
+
+  gtk_widget_set_size_request (tree_view, 280, 400);
+  gtk_container_add (GTK_CONTAINER (sw), tree_view);
+
+  /* combo boxes */
+  vbox = gtk_vbox_new (FALSE, 10);
+  gtk_box_pack_start (GTK_BOX (mainbox), vbox, TRUE, TRUE, 0);
+
+  combo_box = gtk_combo_box_new_text ();
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), "UI_MODE_NORMAL");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), "UI_MODE_EDIT");
+  gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+  g_signal_connect (combo_box, "changed",
+                    G_CALLBACK (ui_mode_changed), tree_view);
+  gtk_box_pack_start (GTK_BOX (vbox), combo_box, FALSE, FALSE, 0);
+
+  combo_box = gtk_combo_box_new_text ();
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), "SINGLE");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), "MULTIPLE");
+  gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+  g_signal_connect (combo_box, "changed",
+                    G_CALLBACK (selection_mode_changed), tree_view);
+  gtk_box_pack_start (GTK_BOX (vbox), combo_box, FALSE, FALSE, 0);
+
+  /* close */
+  close = gtk_button_new_with_label ("Close");
+  g_signal_connect_swapped (close, "clicked",
+                            G_CALLBACK (gtk_widget_destroy), window);
+  gtk_box_pack_end (GTK_BOX (vbox), close, FALSE, FALSE, 0);
 
   gtk_widget_show_all (window);
 }
@@ -259,6 +363,12 @@ main (int argc, char **argv)
                     G_CALLBACK (create_tree_view_window),
                     GINT_TO_POINTER (EDIT_MODE | MULTI_SELECT));
   gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 0);
+
+  /* Mode switching */
+  button = gtk_button_new_with_label ("Mode switching");
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (create_mode_switch_window), NULL);
+  gtk_box_pack_start (GTK_BOX (mainbox), button, FALSE, FALSE, 0);
 
 
   button = gtk_button_new_with_label ("Close");
