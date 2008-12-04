@@ -4642,6 +4642,21 @@ gtk_text_view_draw_focus (GtkWidget *widget)
                            widget->allocation.width,
                            widget->allocation.height);
         }
+#ifdef MAEMO_CHANGES
+      else if (!interior_focus)
+        {
+          HildonMode hildon_mode;
+
+          gtk_widget_style_get (widget, "hildon-mode", &hildon_mode, NULL);
+          if (hildon_mode == HILDON_FREMANTLE)
+            gtk_paint_shadow (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+                              GTK_SHADOW_OUT,
+                              NULL, widget, "textview",
+                              0, 0,
+                              widget->allocation.width,
+                              widget->allocation.height);
+        }
+#endif
       else
         {
           gdk_window_clear (widget->window);

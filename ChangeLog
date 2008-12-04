@@ -1,3 +1,10 @@
+2008-12-04  Christian Dywan  <christian@imendio.com>
+
+	Fixes: NB#88288 - GtkTextView doesn't allow to paint borders around it in theming.
+
+	* gtk/gtktextview.c (gtk_text_view_draw_focus):
+	Draw a shadow with GtkTextView depending on hildon-mode
+
 2008-12-01  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#91480 - GtkTreeView::hildon-ui-mode should not be
