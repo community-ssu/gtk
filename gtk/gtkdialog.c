@@ -678,6 +678,10 @@ gtk_dialog_add_action_widget (GtkDialog *dialog,
   if (response_id == GTK_RESPONSE_HELP)
     gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (dialog->action_area), child, TRUE);
 }
+#ifdef MAEMO_CHANGES
+  /* Buttons on a HildonDialog have fixed size */
+  #define HILDON_DIALOG_BUTTON_WIDTH 174
+#endif
 
 /**
  * gtk_dialog_add_button:
@@ -713,6 +717,8 @@ gtk_dialog_add_button (GtkDialog   *dialog,
       response_id != GTK_RESPONSE_CLOSE)
     {
       gtk_widget_show (button);
+      hildon_gtk_widget_set_theme_size (button, HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT);
+      g_object_set (button, "width-request", HILDON_DIALOG_BUTTON_WIDTH, NULL);
     }
     else
     {

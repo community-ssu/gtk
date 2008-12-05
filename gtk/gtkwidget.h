@@ -851,6 +851,9 @@ void gtk_widget_tap_and_hold_setup	       (GtkWidget                *widget,
 						GtkWidgetTapAndHoldFlags  flags);
 
 void gtk_widget_insensitive_press ( GtkWidget *widget );
+
+void hildon_gtk_widget_set_theme_size           (GtkWidget      *widget,
+                                                 HildonSizeType  size);
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS

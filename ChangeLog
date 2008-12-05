@@ -1,3 +1,11 @@
+2008-12-05 14:38:56  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkwidget.c, gtk/gtkwidget.h, gtk/gtkenums.h:
+	moved hildon_gtk_widget_set_theme_size and HildonSizeType from Hildon here.
+
+	* gtk/gtkdialog.c: automatically apply hildon sizing and theming to all
+	standard gtk dialogs, fixes: NB#90867.
+
 2008-12-05  Michael Natterer  <mitch@imendio.com>
 
 	Merged from upstream trunk, fixes NB#91712:
