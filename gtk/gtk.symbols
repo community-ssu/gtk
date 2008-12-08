@@ -196,6 +196,7 @@ gtk_action_group_translate_string
 #if IN_FILE(__GTK_ADJUSTMENT_C__)
 gtk_adjustment_changed
 gtk_adjustment_clamp_page
+gtk_adjustment_configure
 gtk_adjustment_get_type G_GNUC_CONST
 gtk_adjustment_get_value
 gtk_adjustment_new

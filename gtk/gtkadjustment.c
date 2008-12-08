@@ -57,8 +57,13 @@ static void gtk_adjustment_set_property (GObject      *object,
                                          guint         prop_id,
                                          const GValue *value,
                                          GParamSpec   *pspec);
+static void gtk_adjustment_dispatch_properties_changed (GObject      *object,
+                                                        guint         n_pspecs,
+                                                        GParamSpec  **pspecs);
 
 static guint adjustment_signals[LAST_SIGNAL] = { 0 };
+
+static guint64 adjustment_changed_stamp = 0; /* protected by global gdk lock */
 
 G_DEFINE_TYPE (GtkAdjustment, gtk_adjustment, GTK_TYPE_OBJECT)
 
@@ -69,6 +74,7 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 
   gobject_class->set_property = gtk_adjustment_set_property;
   gobject_class->get_property = gtk_adjustment_get_property;
+  gobject_class->dispatch_properties_changed = gtk_adjustment_dispatch_properties_changed;
 
   class->changed = NULL;
   class->value_changed = NULL;
@@ -296,6 +302,37 @@ gtk_adjustment_set_property (GObject * object, guint prop_id,
     }
 }
 
+static void
+gtk_adjustment_dispatch_properties_changed (GObject     *object,
+                                            guint        n_pspecs,
+                                            GParamSpec **pspecs)
+{
+  gboolean changed = FALSE;
+  gint i;
+
+  G_OBJECT_CLASS (gtk_adjustment_parent_class)->dispatch_properties_changed (object, n_pspecs, pspecs);
+
+  for (i = 0; i < n_pspecs; i++)
+    switch (pspecs[i]->param_id)
+      {
+      case PROP_LOWER:
+      case PROP_UPPER:
+      case PROP_STEP_INCREMENT:
+      case PROP_PAGE_INCREMENT:
+      case PROP_PAGE_SIZE:
+        changed = TRUE;
+        break;
+      default:
+        break;
+      }
+
+  if (changed)
+    {
+      adjustment_changed_stamp++;
+      gtk_adjustment_changed (GTK_ADJUSTMENT (object));
+    }
+}
+
 GtkObject*
 gtk_adjustment_new (gdouble value,
 		    gdouble lower,
@@ -345,6 +382,72 @@ gtk_adjustment_set_value (GtkAdjustment        *adjustment,
 
       gtk_adjustment_value_changed (adjustment);
     }
+}
+
+/**
+ * gtk_adjustment_configure:
+ * @adjustment: a #GtkAdjustment
+ * @value: the new value
+ * @lower: the new minimum value
+ * @upper: the new maximum value
+ * @step_increment: the new step increment
+ * @page_increment: the new page increment
+ * @page_size: the new page size
+ *
+ * Sets all properties of the adjustment at once.
+ *
+ * Use this function to avoid multiple emissions of the "changed"
+ * signal. See gtk_adjustment_set_lower() for an alternative way
+ * of compressing multiple emissions of "changed" into one.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_configure (GtkAdjustment *adjustment,
+                          gdouble        value,
+                          gdouble        lower,
+                          gdouble        upper,
+                          gdouble        step_increment,
+                          gdouble        page_increment,
+                          gdouble        page_size)
+{
+  gboolean value_changed = FALSE;
+  guint64 old_stamp = adjustment_changed_stamp;
+
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  g_object_freeze_notify (G_OBJECT (adjustment));
+
+  g_object_set (adjustment,
+                "lower", lower,
+                "upper", upper,
+                "step-increment", step_increment,
+                "page-increment", page_increment,
+                "page-size", page_size,
+                NULL);
+
+  /* don't use CLAMP() so we don't end up below lower if upper - page_size
+   * is smaller than lower
+   */
+  value = MIN (value, upper - page_size);
+  value = MAX (value, lower);
+
+  if (value != adjustment->value)
+    {
+      /* set value manually to make sure "changed" is emitted with the
+       * new value in place and is emitted before "value-changed"
+       */
+      adjustment->value = value;
+      value_changed = TRUE;
+    }
+
+  g_object_thaw_notify (G_OBJECT (adjustment));
+
+  if (old_stamp == adjustment_changed_stamp)
+    gtk_adjustment_changed (adjustment); /* force emission before ::value-changed */
+
+  if (value_changed)
+    gtk_adjustment_value_changed (adjustment);
 }
 
 void

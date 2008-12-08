@@ -86,6 +86,13 @@ void	   gtk_adjustment_clamp_page		(GtkAdjustment	 *adjustment,
 gdouble	   gtk_adjustment_get_value		(GtkAdjustment   *adjustment);
 void	   gtk_adjustment_set_value		(GtkAdjustment	 *adjustment,
 						 gdouble	  value);
+void       gtk_adjustment_configure             (GtkAdjustment   *adjustment,
+                                                 gdouble          value,
+						 gdouble          lower,
+						 gdouble          upper,
+						 gdouble          step_increment,
+						 gdouble          page_increment,
+						 gdouble          page_size);
 
 G_END_DECLS
 
