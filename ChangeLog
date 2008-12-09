@@ -1,3 +1,9 @@
+2008-12-09  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo1
+
+	* debian/changelog: updates
+
 2008-12-08  Christian Dywan  <christian@imendio.com>
 
 	Merged from 2.14, in the context of NB#93744:

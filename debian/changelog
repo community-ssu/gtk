@@ -1,3 +1,18 @@
+gtk+2.0 (2:2.12.12-1maemo4) unstable; urgency=low
+
+  * Fixes: NB#89408: Unable to select an item in the list picker
+  * Fixes: NB#91448: CSM shown no matter what tap-and-hold-query returns
+  * Fixes: NB#91934: Set state for gtkentry painting
+  * Fixes: NB#90883: Progressbar height change
+  * Fixes: NB#91480: GtkTreeView::hildon-ui-mode should not be construct-only
+  * Fixes: NB#88288: GtkTextView doesn't allow to paint borders around it
+    in theming.
+  * Fixes: NB#91712: Allow GtkEntry to draw progress
+  * Fixes: NB#90867: Automatically apply hildon sizing and theming to all standard
+    gtk dialogs.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 09 Dec 2008 10:20:40 +0100
+
 gtk+2.0 (2:2.12.12-1maemo3) unstable; urgency=low
 
   * Fixes NB#89865: Remove Close-like buttons from GtkDialog
