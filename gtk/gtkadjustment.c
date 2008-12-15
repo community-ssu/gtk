@@ -400,7 +400,8 @@ gtk_adjustment_set_value (GtkAdjustment        *adjustment,
  * signal. See gtk_adjustment_set_lower() for an alternative way
  * of compressing multiple emissions of "changed" into one.
  *
- * Since: 2.14
+ * Since: maemo 4.0
+ * Stability: Unstable
  **/
 void
 gtk_adjustment_configure (GtkAdjustment *adjustment,
