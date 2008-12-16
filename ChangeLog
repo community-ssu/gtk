@@ -1,3 +1,9 @@
+2008-12-16  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo5
+
+	* debian/changelog: updates
+
 2008-12-16  Christian Dywan  <christian@imendio.com>
 
 	Fixes: NB#93744 - Tapping should jump to location on GtkScale

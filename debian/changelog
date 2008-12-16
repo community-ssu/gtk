@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.12.12-1maemo5) unstable; urgency=low
+
+  * Fixes: NB#93744: Tapping should jump to location on GtkScale
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 16 Dec 2008 12:58:42 +0100
+
 gtk+2.0 (2:2.12.12-1maemo4) unstable; urgency=low
 
   * Fixes: NB#89408: Unable to select an item in the list picker
