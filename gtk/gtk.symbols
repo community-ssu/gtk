@@ -3062,6 +3062,9 @@ gtk_range_get_fill_level
 gtk_range_get_inverted
 gtk_range_get_lower_stepper_sensitivity
 gtk_range_get_restrict_to_fill_level
+#ifdef MAEMO_CHANGES
+gtk_range_get_jump_to_position
+#endif
 gtk_range_get_show_fill_level
 gtk_range_get_type G_GNUC_CONST
 gtk_range_get_update_policy
@@ -3074,6 +3077,9 @@ gtk_range_set_inverted
 gtk_range_set_lower_stepper_sensitivity
 gtk_range_set_range
 gtk_range_set_restrict_to_fill_level
+#ifdef MAEMO_CHANGES
+gtk_range_set_jump_to_position
+#endif
 gtk_range_set_show_fill_level
 gtk_range_set_update_policy
 gtk_range_set_upper_stepper_sensitivity

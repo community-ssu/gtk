@@ -1,3 +1,14 @@
+2008-12-16  Christian Dywan  <christian@imendio.com>
+
+	Fixes: NB#93744 - Tapping should jump to location on GtkScale
+
+	* gtk/gtk.symbols:
+	* gtk/gtkadjustment.c: Revert Since to "2.14".
+	* gtk/gtkrange.c (gtk_range_class_init), (gtk_range_set_property),
+	(gtk_range_get_property), (gtk_range_set_jump_to_position),
+	(gtk_range_get_jump_to_position), (gtk_range_button_press):
+	* gtk/gtkrange.h: Implement jump-to-position in GtkRange
+
 2008-12-15  Christian Dywan  <christian@imendio.com>
 
 	Use "Since: maemo 4.0" instead of "2.14" to avoid confusion

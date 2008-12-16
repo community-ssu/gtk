@@ -49,7 +49,10 @@ enum {
   PROP_UPPER_STEPPER_SENSITIVITY,
   PROP_SHOW_FILL_LEVEL,
   PROP_RESTRICT_TO_FILL_LEVEL,
-  PROP_FILL_LEVEL
+  PROP_FILL_LEVEL,
+#ifdef MAEMO_CHANGES
+  PROP_JUMP_TO_POSITION
+#endif
 };
 
 enum {
@@ -110,6 +113,9 @@ struct _GtkRangeLayout
   guint repaint_id;
 
   gdouble fill_level;
+#ifdef MAEMO_CHANGES
+  gboolean jump_to_position;
+#endif
 };
 
 
@@ -426,6 +432,25 @@ gtk_range_class_init (GtkRangeClass *class)
                                                         G_MAXDOUBLE,
                                                         GTK_PARAM_READWRITE));
 
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkRange:jump-to-position:
+   *
+   * Whether to jump to the destined position immediately
+   * instead of moving a number of steps
+   *
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_JUMP_TO_POSITION,
+                                   g_param_spec_boolean ("jump-to-position",
+                                                         P_("Jump to Position"),
+                                                         P_("Whether to jump to the destined position immediately instead of moving a number of steps"),
+                                                         FALSE,
+                                                         GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+#endif /* MAEMO_CHANGES */
+
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("slider-width",
 							     P_("Slider Width"),
@@ -576,6 +601,11 @@ gtk_range_set_property (GObject      *object,
     case PROP_FILL_LEVEL:
       gtk_range_set_fill_level (range, g_value_get_double (value));
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_JUMP_TO_POSITION:
+      gtk_range_set_jump_to_position (range, g_value_get_boolean (value));
+      break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -618,6 +648,11 @@ gtk_range_get_property (GObject      *object,
     case PROP_FILL_LEVEL:
       g_value_set_double (value, gtk_range_get_fill_level (range));
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_JUMP_TO_POSITION:
+      g_value_set_boolean (value, gtk_range_get_jump_to_position (range));
+      break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -1163,6 +1198,54 @@ gtk_range_get_fill_level (GtkRange *range)
 
   return range->layout->fill_level;
 }
+
+#ifdef MAEMO_CHANGES
+/**
+ * gtk_range_set_jump_to_position:
+ * @range: A #GtkRange
+ * @jump_to_position: Whether to jump to the position immediately
+ *
+ * Sets whether scrolling through user interaction should
+ * jump directly to the destined position, as opposed to moving
+ * a number of steps towards the destination.
+ *
+ * Since: maemo 4.0
+ * Stability: Unstable
+ **/
+void
+gtk_range_set_jump_to_position (GtkRange *range,
+                                gboolean  jump_to_position)
+{
+  g_return_if_fail (GTK_IS_RANGE (range));
+
+  if (jump_to_position != range->layout->jump_to_position)
+    {
+      range->layout->jump_to_position = jump_to_position;
+      g_object_notify (G_OBJECT (range), "jump-to-position");
+    }
+}
+
+/**
+ * gtk_range_get_jump_to_position:
+ * @range: A #GtkRange
+ *
+ * Determines whether the value should jump immediately to the
+ * destined position as opposed to moving a number of steps.
+ * See also gtk_range_set_jump_to_position().
+ *
+ * Return value: %TRUE if @range jumps directly to the destination
+ *
+ * Since: maemo 4.0
+ * Stability: Unstable
+ **/
+gboolean
+gtk_range_get_jump_to_position (GtkRange *range)
+{
+  g_return_val_if_fail (GTK_IS_RANGE (range), FALSE);
+
+  return range->layout->jump_to_position;
+}
+#endif
 
 static gboolean
 should_invert (GtkRange *range)
@@ -1916,7 +1999,11 @@ gtk_range_button_press (GtkWidget      *widget,
     gtk_widget_queue_draw (widget);
     
   if (range->layout->mouse_location == MOUSE_TROUGH  &&
+#ifdef MAEMO_CHANGES
+      event->button == 1 && !range->layout->jump_to_position)
+#else
       event->button == 1)
+#endif
     {
       /* button 1 steps by page increment, as with button 2 on a stepper
        */
@@ -1961,7 +2048,11 @@ gtk_range_button_press (GtkWidget      *widget,
       return TRUE;
     }
   else if ((range->layout->mouse_location == MOUSE_TROUGH &&
+#ifdef MAEMO_CHANGES
+            (event->button == 2 || range->layout->jump_to_position)) ||
+#else
             event->button == 2) ||
+#endif
            range->layout->mouse_location == MOUSE_SLIDER)
     {
       gboolean need_value_update = FALSE;
@@ -1972,7 +2063,11 @@ gtk_range_button_press (GtkWidget      *widget,
        * On button 2 press, we warp the slider to mouse position,
        * then begin the slider drag.
        */
+#ifdef MAEMO_CHANGES
+      if (event->button == 2 || range->layout->jump_to_position)
+#else
       if (event->button == 2)
+#endif
         {
           gdouble slider_low_value, slider_high_value, new_value;
           

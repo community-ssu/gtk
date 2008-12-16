@@ -169,6 +169,12 @@ gboolean           gtk_range_get_restrict_to_fill_level    (GtkRange      *range
 void               gtk_range_set_fill_level                (GtkRange      *range,
                                                             gdouble        fill_level);
 gdouble            gtk_range_get_fill_level                (GtkRange      *range);
+#ifdef MAEMO_CHANGES
+void               gtk_range_set_jump_to_position          (GtkRange      *range,
+                                                            gboolean       jump_to_position);
+gboolean           gtk_range_get_jump_to_position          (GtkRange      *range);
+#endif
+
 
 gdouble            _gtk_range_get_wheel_delta              (GtkRange      *range,
                                                             GdkScrollDirection direction);
