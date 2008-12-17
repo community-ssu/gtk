@@ -107,7 +107,8 @@ $(BUILD_SHARED_DIR)/config.status: $(SOURCE_DIR)/configure
 			--enable-shared \
 			--disable-static \
 			--disable-dependency-tracking \
-			$(ENABLE_GTK_DOC)
+			$(ENABLE_GTK_DOC) \
+			--with-maemo=yes
 
 	cd $(BUILD_SHARED_DIR) && \
 	sed < libtool > libtool-2 \

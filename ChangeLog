@@ -1,5 +1,9 @@
 2008-12-17  Kristian Rietveld  <kris@imendio.com>
 
+	* debian/rules: add --with-maemo=yes flag to configure.
+
+2008-12-17  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#91632 - Errors compiling gtk+ maemo version removing
 	MAEMO_CHANGES define
 
