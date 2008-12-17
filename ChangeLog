@@ -1,3 +1,28 @@
+2008-12-17  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#91632 - Errors compiling gtk+ maemo version removing
+	MAEMO_CHANGES define
+
+	* configure.in: introduce a --with-maemo argument that will
+	add the MAEMO_CHANGES define to the CFLAGS and GTK_EXTRA_FLAGS
+	and adds a MAEMO_CHANGES autoconf conditional.  The addition to
+	GTK_EXTRA_FLAGS will cause gtk+'s pkg-config file to pick up this
+	compile flag.
+
+	* acconfig.h: add MAEMO_CHANGES.
+
+	* gdk/makegdkalias.pl: support #ifdefs that start with M (like
+	the gtk/ equivalent already does).
+
+	* gdk/gdk.symbols
+	* gtk/gtk.symbols: guard maemo symbols in MAEMO_CHANGES #ifdefs.
+
+	* gtk/Makefile.am: define MAEMO_CHANGES in the gtktypebuiltins.c rule.
+
+	* gtk/tests/Makefile.am
+	* tests/Makefile.am: only build maemo specific tests if
+	--with-maemo has been enabled.
+
 2008-12-16  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo5

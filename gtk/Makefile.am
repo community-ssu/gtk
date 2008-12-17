@@ -819,7 +819,7 @@ stamp-gtktypebuiltins.h: @REBUILD@ $(gtk_public_h_sources) Makefile
 	&& echo timestamp > $(@F)
 gtktypebuiltins.c: @REBUILD@ $(gtk_public_h_sources) Makefile
 	( cd $(srcdir) && $(GLIB_MKENUMS) \
-			--fhead "#undef GTK_DISABLE_DEPRECATED\n#define GTK_ENABLE_BROKEN\n#include \"gtk.h\"\n#include \"gtkprivate.h\"\n#include \"gtkalias.h\"\n" \
+			--fhead "#undef GTK_DISABLE_DEPRECATED\n#define GTK_ENABLE_BROKEN\n#ifndef MAEMO_CHANGES\n#define MAEMO_CHANGES\n#endif\n#include \"gtk.h\"\n#undef MAEMO_CHANGES\n#include \"gtkprivate.h\"\n#include \"gtkalias.h\"\n" \
 			--ftail "#define __GTK_TYPE_BUILTINS_C__\n#include \"gtkaliasdef.c\"\n" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" \

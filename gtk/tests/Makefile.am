@@ -72,6 +72,7 @@ TEST_PROGS			+= textbuffer
 textbuffer_SOURCES		 = textbuffer.c pixbuf-init.c
 textbuffer_LDADD		 = $(progs_ldadd)
 
+if MAEMO_CHANGES
 TEST_PROGS			+= treeview-hildon
 treeview_hildon_SOURCES		 = treeview-hildon.c
 treeview_hildon_LDADD		 = $(progs_ldadd)
@@ -79,3 +80,4 @@ treeview_hildon_LDADD		 = $(progs_ldadd)
 TEST_PROGS			+= iconview-hildon
 iconview_hildon_SOURCES		 = iconview-hildon.c
 iconview_hildon_LDADD		 = $(progs_ldadd)
+endif

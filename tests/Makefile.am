@@ -25,6 +25,10 @@ if USE_X11
 testsocket_programs = testsocket testsocket_child
 endif
 
+if MAEMO_CHANGES
+testmaemo_programs = testhildontreeview testhildoniconview
+endif
+
 TESTS = floatingtest buildertest
 
 noinst_PROGRAMS =			\
@@ -53,6 +57,7 @@ noinst_PROGRAMS =			\
 	testicontheme			\
 	testimage			\
 	testinput			\
+	$(testmaemo_programs)		\
 	testmenus			\
 	testmenubars			\
 	testmultidisplay		\
@@ -90,9 +95,7 @@ noinst_PROGRAMS =			\
 	testactions			\
 	testgrouping			\
 	testtooltips			\
-	testvolumebutton		\
-	testhildoniconview		\
-	testhildontreeview
+	testvolumebutton
 
 if HAVE_CXX
 noinst_PROGRAMS += autotestkeywords

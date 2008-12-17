@@ -75,6 +75,8 @@
 /* #undef PACKAGE */
 /* #undef VERSION */
 
+#undef MAEMO_CHANGES
+
 
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
