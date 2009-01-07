@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.12.12-1maemo6) unstable; urgency=low
+
+  * Fixes: NB#91632 - Errors compiling gtk+ maemo version removing
+    MAEMO_CHANGES define
+
+  [ Kristian Rietveld ]
+  * add --with-maemo=yes flag to configure
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 07 Jan 2009 11:04:40 +0200
+
 gtk+2.0 (2:2.12.12-1maemo5) unstable; urgency=low
 
   * Fixes: NB#93744: Tapping should jump to location on GtkScale

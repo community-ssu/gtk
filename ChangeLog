@@ -1,3 +1,9 @@
+2009-01-07  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo6
+
+	* debian/changelog: updates
+
 2008-12-17  Kristian Rietveld  <kris@imendio.com>
 
 	* debian/rules: add --with-maemo=yes flag to configure.
