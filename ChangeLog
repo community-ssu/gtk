@@ -1,3 +1,10 @@
+2009-01-08  Christian Dywan  <christian@imendio.com>
+
+	Fixes: NB#93075 - Update icon size constants to Fremantle
+
+	* gtk/gtkiconfactory.c (init_icon_sizes):
+        Remove MAEMO_CHANGES from icon factory
+
 2009-01-07  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo6
