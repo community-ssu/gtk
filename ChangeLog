@@ -1,3 +1,10 @@
+2009-01-09  Christian Dywan  <christian@imendio.com>
+
+	Fixes: NB#95401 - crash at IA__gdk_window_new
+
+	* gdk/gdkwindow.c (gdk_window_new): Add g_return_val_if_fail
+        in case _gdk_window_new is NULL
+
 2009-01-08  Christian Dywan  <christian@imendio.com>
 
 	Fixes: NB#93075 - Update icon size constants to Fremantle
