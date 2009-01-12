@@ -1,5 +1,11 @@
 2009-01-12  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_motion_bin_window),
+	(gtk_tree_view_maybe_begin_dragging_row), (gtk_tree_view_set_model):
+	clean up the code a little with regard to queued action bookkeeping.
+
+2009-01-12  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#91657 - HildonPickerDialog closes immediatly when used
 	with some dynamic tree model
 
