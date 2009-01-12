@@ -49,7 +49,19 @@ row_activated_callback (GtkWidget         *tree_view,
                         GtkTreeViewColumn *column,
                         gpointer           user_data)
 {
-  g_print ("row-activated emitted.\n");
+  gchar *str = gtk_tree_path_to_string (path);
+  g_print ("row-activated emitted at %s.\n", str);
+  g_free (str);
+}
+
+static void
+hildon_row_tapped (GtkWidget   *tree_view,
+                   GtkTreePath *path,
+                   gpointer     user_data)
+{
+  gchar *str = gtk_tree_path_to_string (path);
+  g_print ("hildon-row-tapped emitted at %s.\n", str);
+  g_free (str);
 }
 
 static void
@@ -164,6 +176,8 @@ create_tree_view_window (GtkWidget *button,
                     G_CALLBACK (row_activated_callback), NULL);
   g_signal_connect (tree_view, "row-insensitive",
                     G_CALLBACK (row_insensitive_callback), NULL);
+  g_signal_connect (tree_view, "hildon-row-tapped",
+                    G_CALLBACK (hildon_row_tapped), NULL);
 
   gtk_widget_set_size_request (tree_view, 480, 800);
   gtk_container_add (GTK_CONTAINER (sw), tree_view);

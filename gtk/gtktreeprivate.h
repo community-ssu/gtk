@@ -278,6 +278,7 @@ struct _GtkTreeViewPrivate
   GtkTreeRowReference *queued_select_row;
   GtkTreeRowReference *queued_expand_row;
   GtkTreeRowReference *queued_activate_row;
+  GtkTreeRowReference *queued_tapped_row;
 
   GtkRBNode *highlighted_node;
   GtkRBTree *highlighted_tree;

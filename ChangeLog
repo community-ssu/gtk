@@ -1,3 +1,24 @@
+2009-01-12  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#91657 - HildonPickerDialog closes immediatly when used
+	with some dynamic tree model
+
+	* gtk/gtktreeview.c (gtk_tree_view_class_init): add
+	"hildon-row-tapped" signal,
+	(gtk_tree_view_button_press): set queued_tapped_row to the
+	last row pressed,
+	(gtk_tree_view_button_release): emit "hildon-row-tapped" if
+	the queued_tapped_row row reference still exists,
+	(gtk_tree_view_init), (gtk_tree_view_destroy),
+	(gtk_tree_view_bin_motion), (gtk_tree_view_set_model),
+	(gtk_tree_view_maybe_begin_dragging_row),
+	(gtk_tree_view_grab_notify): maintain queued_tapped_row.
+
+	* gtk/gtktreeprivate.h: add queued_tapped_row.
+
+	* tests/testhildontreeview.c (hildon_row_tapped): display
+	message as soon as a "hildon-row-tapped" signal is received.
+
 2009-01-12  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Merged from trunk:

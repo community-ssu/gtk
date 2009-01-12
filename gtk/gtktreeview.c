@@ -128,6 +128,7 @@ enum
   START_INTERACTIVE_SEARCH,
 #ifdef MAEMO_CHANGES
   ROW_INSENSITIVE,
+  HILDON_ROW_TAPPED,
 #endif /* MAEMO_CHANGES */
   LAST_SIGNAL
 };
@@ -1218,6 +1219,16 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
                   _gtk_marshal_VOID__OBJECT,
                   G_TYPE_NONE, 1,
                   GTK_TYPE_TREE_PATH);
+
+  tree_view_signals[HILDON_ROW_TAPPED] =
+      g_signal_new ("hildon_row_tapped",
+                    G_TYPE_FROM_CLASS (o_class),
+                    G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                    0,
+                    NULL, NULL,
+                    _gtk_marshal_VOID__BOXED,
+                    G_TYPE_NONE, 1,
+                    GTK_TYPE_TREE_PATH);
 #endif /* MAEMO_CHANGES */
 
   /* Key bindings */
@@ -1496,6 +1507,7 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->queued_select_row = NULL;
   tree_view->priv->queued_expand_row = NULL;
   tree_view->priv->queued_activate_row = NULL;
+  tree_view->priv->queued_tapped_row = NULL;
 
   tree_view->priv->highlighted_node = NULL;
   tree_view->priv->highlighted_tree = NULL;
@@ -1798,6 +1810,12 @@ gtk_tree_view_destroy (GtkObject *object)
     {
       gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
       tree_view->priv->queued_activate_row = NULL;
+    }
+
+  if (tree_view->priv->queued_tapped_row != NULL)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
     }
 #endif /* MAEMO_CHANGES */
 
@@ -3007,6 +3025,14 @@ gtk_tree_view_button_press (GtkWidget      *widget,
             gtk_tree_view_column_focus_cell (column, focus_cell);
 
 #ifdef MAEMO_CHANGES
+          /* The most reliable way is to use another row reference,
+           * instead of trying to get it done with the intricate
+           * logic below.
+           */
+          gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+          tree_view->priv->queued_tapped_row =
+              gtk_tree_row_reference_new (tree_view->priv->model, path);
+
           if (mode == HILDON_FREMANTLE
               && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
             {
@@ -3527,6 +3553,24 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
       gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
       tree_view->priv->queued_expand_row = NULL;
+    }
+
+  /* The hildon-row-tapped signal is executed as the last, so that
+   * any action (selection change, activation, expansion/collapse)
+   * has already been processed.
+   */
+  if (gtk_tree_row_reference_valid (tree_view->priv->queued_tapped_row))
+    {
+      GtkTreePath *path;
+
+      path = gtk_tree_row_reference_get_path (tree_view->priv->queued_tapped_row);
+      g_signal_emit (tree_view, tree_view_signals[HILDON_ROW_TAPPED],
+                     0, path);
+
+      gtk_tree_path_free (path);
+
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
     }
 #endif /* MAEMO_CHANGES */
 
@@ -4621,6 +4665,9 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
       gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
       tree_view->priv->queued_expand_row = NULL;
 
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
+
       free_queued_activate_row (tree_view);
 
       if (mode == HILDON_DIABLO
@@ -4664,6 +4711,9 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
         free_queued_activate_row (tree_view);
       else if (tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
         free_queued_select_row (tree_view);
+
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
     }
 #endif /* MAEMO_CHANGES */
 
@@ -8079,6 +8129,12 @@ gtk_tree_view_maybe_begin_dragging_row (GtkTreeView      *tree_view,
     {
       gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
       tree_view->priv->queued_expand_row = NULL;
+    }
+
+  if (tree_view->priv->queued_tapped_row)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
     }
 
   free_queued_select_row (tree_view);
@@ -12101,6 +12157,8 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       tree_view->priv->queued_activate_row = NULL;
       gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
       tree_view->priv->queued_expand_row = NULL;
+      gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+      tree_view->priv->queued_tapped_row = NULL;
 #endif /* MAEMO_CHANGES */
 
       tree_view->priv->scroll_to_column = NULL;
@@ -16601,6 +16659,12 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
         {
 	  gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
 	  tree_view->priv->queued_expand_row = NULL;
+	}
+
+      if (tree_view->priv->queued_tapped_row)
+        {
+	  gtk_tree_row_reference_free (tree_view->priv->queued_tapped_row);
+	  tree_view->priv->queued_tapped_row = NULL;
 	}
 
       free_queued_activate_row (tree_view);
