@@ -381,7 +381,16 @@ gdk_window_new (GdkWindow     *parent,
       private = GDK_WINDOW_OBJECT (window);
       private->redirect = parent_private->redirect;
     }
-  
+
+#ifdef MAEMO_CHANGES
+  /* auto-enable compositing for these widgets */
+  if (attributes->window_type == GDK_WINDOW_CHILD && gdk_drawable_get_depth (window) == 32)
+    {
+      gdk_window_set_composited (window, TRUE);
+      gdk_window_set_auto_composite (window, TRUE);
+    }
+#endif
+
   return window;
 }
 

@@ -1,5 +1,12 @@
 2009-01-14  Sven Herzberg  <sven@imendio.com>
 
+	Fixes: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_new): auto-enable compositing and
+	auto-composite for 32bit child windows
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
 	About: NB#89864 - RGBA support
 
 	* gdk/gdkwindow.c (gdk_window_is_ancestor),
