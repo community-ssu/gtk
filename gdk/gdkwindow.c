@@ -1136,6 +1136,18 @@ gdk_window_begin_paint_region (GdkWindow *window,
 		    MAX (clip_box.width, 1), MAX (clip_box.height, 1), -1);
 
   paint->surface = _gdk_drawable_ref_cairo_surface (paint->pixmap);
+#ifdef MAEMO_CHANGES
+  if (gdk_drawable_get_depth (paint->pixmap) == 32)
+    {
+      cairo_t* cr = gdk_cairo_create (paint->pixmap);
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+      gdk_cairo_region (cr, paint->region);
+      cairo_clip (cr);
+      cairo_paint (cr);
+      cairo_destroy (cr);
+    }
+#endif
   cairo_surface_set_device_offset (paint->surface,
 				   - paint->x_offset, - paint->y_offset);
   
@@ -1154,6 +1166,19 @@ gdk_window_begin_paint_region (GdkWindow *window,
 				     clip_box.x, clip_box.y,
 				     clip_box.width, clip_box.height);
     }
+
+#ifdef MAEMO_CHANGES
+  if (gdk_drawable_get_depth (window) == 32)
+    {
+      cairo_t* cr = gdk_cairo_create (window);
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+      gdk_cairo_region (cr, region);
+      cairo_clip (cr);
+      cairo_paint (cr);
+      cairo_destroy (cr);
+    }
+#endif
 #endif /* USE_BACKING_STORE */
 }
 
