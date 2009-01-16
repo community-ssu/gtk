@@ -1,3 +1,14 @@
+2009-01-09  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c,
+	* gdk/gdkwindow.h: added auto_composite property to GdkWindow; if
+	enabled a new code path in gdk_window_end_paint() will be triggered
+	that automatically renders compoited windows. Application developers
+	will only have to set_composited(TRUE) and set_auto_composite(TRUE) to
+	get nice RGBA subwindows
+
 2009-01-14  Sven Herzberg  <sven@imendio.com>
 
 	About: NB#89864 - RGBA support
