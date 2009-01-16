@@ -2,6 +2,17 @@
 
 	About: NB#89864 - RGBA support
 
+	* gdk/gdkwindow.c (gdk_window_is_ancestor),
+	(gdk_window_add_update_window), (gdk_window_remove_update_window),
+	(gdk_window_process_all_updates), (gdk_window_process_updates),
+	(gdk_window_invalidate_maybe_recurse),
+	(gdk_window_get_update_area), (_gdk_window_clear_update_area): copied
+	the window update ordering code from the offscreen branch
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+
 	* gdk/gdkwindow.c (gdk_window_begin_paint_region): clear the window's
 	background for each 32bit window
 
