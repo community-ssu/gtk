@@ -1,5 +1,13 @@
 2009-01-19  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#93161 - GTKTextView scrolls to cursor on size change
+	even if text view non-editable.
+
+	* gtk/gtktextview.c (gtk_text_view_size_allocate): only scroll
+	to cursor if the cursor is visible.
+
+2009-01-19  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#98272 - GtkTreeSelection: Conditional jump or move
 	depends on uninitialised value(s)
 

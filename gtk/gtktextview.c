@@ -3420,11 +3420,14 @@ gtk_text_view_size_allocate (GtkWidget *widget,
       gdk_window_invalidate_rect (widget->window, NULL, FALSE);
 
 #ifdef MAEMO_CHANGES
-      /* keep cursor visible (when IM opens, for instance) */
-      gtk_text_view_scroll_to_mark (text_view,
-                                    gtk_text_buffer_get_mark (get_buffer (text_view),
-                                                              "insert"),
-                                    0.0, FALSE, 0.0, 0.0);
+      /* Keep cursor visible (when IM opens, for instance), but
+       * only if the cursor is not hidden.
+       */
+      if (text_view->cursor_visible)
+        gtk_text_view_scroll_to_mark (text_view,
+                                      gtk_text_buffer_get_mark (get_buffer (text_view),
+                                                                "insert"),
+                                      0.0, FALSE, 0.0, 0.0);
 #endif /* MAEMO_CHANGES */
     }
 }
