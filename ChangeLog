@@ -1,3 +1,11 @@
+2009-01-19  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#98272 - GtkTreeSelection: Conditional jump or move
+	depends on uninitialised value(s)
+
+	* gtk/gtktreeselection.c (tree_column_is_sensitive): initialize
+	sensitive.
+
 2009-01-14  Sven Herzberg  <sven@imendio.com>
 
 	Fixes: NB#89864 - RGBA support

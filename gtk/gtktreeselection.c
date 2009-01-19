@@ -1323,7 +1323,7 @@ tree_column_is_sensitive (GtkTreeViewColumn *column,
 			  GtkTreeIter       *iter)
 {
   GList *cells, *list;
-  gboolean sensitive;
+  gboolean sensitive = TRUE;
   gboolean visible;
 
 #ifdef MAEMO_CHANGES
