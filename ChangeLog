@@ -1,3 +1,13 @@
+2009-01-22  Michael Natterer  <mitch@imendio.com>
+
+	Addresses: NB#95897 - Contacts application crashes on trying to
+	access new icon after doing gtk-update-icon-cache
+
+	Merged from upstream trunk:
+
+	* gtk/gtkicontheme.c (gtk_icon_theme_has_icon): g_return_if_fail()
+	on icon_name != NULL so we get a warning instead of a crash here.
+
 2009-01-19  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#93161 - GTKTextView scrolls to cursor on size change
