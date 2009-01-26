@@ -1,3 +1,17 @@
+2009-01-26  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gdk/gdkwindow.c: (gdk_window_new),
+	(gdk_window_begin_paint_region), (gdk_window_end_paint),
+	(gdk_window_process_all_updates), (gdk_window_process_updates),
+	(gdk_window_invalidate_maybe_recurse),
+	(gdk_window_get_update_area), (_gdk_window_clear_update_area):
+	* gdk/gdkwindow.h:
+	* gdk/x11/gdkcolor-x11.c: (gdk_screen_get_system_colormap):
+	* gdk/x11/gdkvisual-x11.c: (_gdk_visual_init):
+
+	Revert changes between 17228:17223 as the RGBA changes break some
+	widgets rendering. Bug 89864 reopened.
+
 2009-01-22  Michael Natterer  <mitch@imendio.com>
 
 	Addresses: NB#95897 - Contacts application crashes on trying to

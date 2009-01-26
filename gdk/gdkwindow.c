@@ -381,16 +381,7 @@ gdk_window_new (GdkWindow     *parent,
       private = GDK_WINDOW_OBJECT (window);
       private->redirect = parent_private->redirect;
     }
-
-#ifdef MAEMO_CHANGES
-  /* auto-enable compositing for these widgets */
-  if (attributes->window_type == GDK_WINDOW_CHILD && gdk_drawable_get_depth (window) == 32)
-    {
-      gdk_window_set_composited (window, TRUE);
-      gdk_window_set_auto_composite (window, TRUE);
-    }
-#endif
-
+  
   return window;
 }
 
@@ -1145,18 +1136,6 @@ gdk_window_begin_paint_region (GdkWindow *window,
 		    MAX (clip_box.width, 1), MAX (clip_box.height, 1), -1);
 
   paint->surface = _gdk_drawable_ref_cairo_surface (paint->pixmap);
-#ifdef MAEMO_CHANGES
-  if (gdk_drawable_get_depth (paint->pixmap) == 32)
-    {
-      cairo_t* cr = gdk_cairo_create (paint->pixmap);
-      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
-      gdk_cairo_region (cr, paint->region);
-      cairo_clip (cr);
-      cairo_paint (cr);
-      cairo_destroy (cr);
-    }
-#endif
   cairo_surface_set_device_offset (paint->surface,
 				   - paint->x_offset, - paint->y_offset);
   
@@ -1175,19 +1154,6 @@ gdk_window_begin_paint_region (GdkWindow *window,
 				     clip_box.x, clip_box.y,
 				     clip_box.width, clip_box.height);
     }
-
-#ifdef MAEMO_CHANGES
-  if (gdk_drawable_get_depth (window) == 32)
-    {
-      cairo_t* cr = gdk_cairo_create (window);
-      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
-      gdk_cairo_region (cr, region);
-      cairo_clip (cr);
-      cairo_paint (cr);
-      cairo_destroy (cr);
-    }
-#endif
 #endif /* USE_BACKING_STORE */
 }
 
@@ -1212,10 +1178,6 @@ gdk_window_end_paint (GdkWindow *window)
   GdkWindowObject *composited;
   GdkWindowPaint *paint;
   GdkGC *tmp_gc;
-#ifdef MAEMO_CHANGES
-  cairo_t *cr;
-  GList *subwindow;
-#endif
   GdkRectangle clip_box;
   gint x_offset, y_offset;
 
@@ -1272,31 +1234,7 @@ gdk_window_end_paint (GdkWindow *window)
 			 clip_box.width, clip_box.height);
       reset_redirect_clip (window, tmp_gc, &data);
     }
-
-#ifdef MAEMO_CHANGES
-  cr = gdk_cairo_create (window);
-  for (subwindow = gdk_window_peek_children (window);
-       subwindow;
-       subwindow = subwindow->next)
-    {
-      int x, y, w, h;
-
-      if (!gdk_window_get_auto_composite (subwindow->data))
-        continue;
-
-      gdk_window_get_position (subwindow->data,
-                               &x, &y);
-      gdk_window_get_size (subwindow->data, &w, &h);
-
-      cairo_save (cr);
-      gdk_cairo_set_source_pixmap (cr, subwindow->data, x, y);
-      cairo_rectangle (cr, x, y, w, h);
-      cairo_fill (cr);
-      cairo_restore (cr);
-    }
-  cairo_destroy (cr);
-#endif
-
+  
   /* Reset clip region of the cached GdkGC */
   gdk_gc_set_clip_region (tmp_gc, NULL);
 
@@ -2565,102 +2503,6 @@ static GSList *update_windows = NULL;
 static guint update_idle = 0;
 static gboolean debug_updates = FALSE;
 
-static inline gboolean
-gdk_window_is_ancestor (GdkWindow *window,
-                        GdkWindow *ancestor)
-{
-  while (window)
-    {
-      GdkWindow *parent = (GdkWindow*) ((GdkWindowObject*) window)->parent;
-
-      if (parent == ancestor)
-        return TRUE;
-
-      window = parent;
-    }
-
-  return FALSE;
-}
-
-static void
-gdk_window_add_update_window (GdkWindow *window)
-{
-  GSList *tmp;
-  GSList *prev = NULL;
-  gboolean has_ancestor_in_list = FALSE;
-
-  for (tmp = update_windows; tmp; tmp = tmp->next)
-    {
-      GdkWindowObject *parent = GDK_WINDOW_OBJECT (window)->parent;
-
-      /*  check if tmp is an ancestor of "window"; if it is, set a
-       *  flag indicating that all following windows are either
-       *  children of "window" or from a differen hierarchy
-       */
-      if (!has_ancestor_in_list && gdk_window_is_ancestor (window, tmp->data))
-        has_ancestor_in_list = TRUE;
-
-      /* insert in reverse stacking order when adding around siblings,
-       * so processing updates properly paints over lower stacked windows
-       */
-      if (parent == GDK_WINDOW_OBJECT (tmp->data)->parent)
-        {
-          gint index = g_list_index (parent->children, window);
-          for (; tmp && parent == GDK_WINDOW_OBJECT (tmp->data)->parent; tmp = tmp->next)
-            {
-              gint sibling_index = g_list_index (parent->children, tmp->data);
-              if (index > sibling_index)
-                break;
-              prev = tmp;
-            }
-          /* here, tmp got advanced past all lower stacked siblings */
-          tmp = g_slist_prepend (tmp, window);
-          if (prev)
-            prev->next = tmp;
-          else
-            update_windows = tmp;
-          return;
-        }
-
-      /*  if "window" has an ancestor in the list and tmp is one of
-       *  "window's" children, insert "window" before tmp
-       */
-      if (has_ancestor_in_list && gdk_window_is_ancestor (tmp->data, window))
-        {
-          tmp = g_slist_prepend (tmp, window);
-
-          if (prev)
-            prev->next = tmp;
-          else
-            update_windows = tmp;
-          return;
-        }
-
-      /*  if we're at the end of the list and had an ancestor it it,
-       *  append to the list
-       */
-      if (! tmp->next && has_ancestor_in_list)
-        {
-          tmp = g_slist_append (tmp, window);
-          return;
-        }
-
-      prev = tmp;
-    }
-
-  /*  if all above checks failed ("window" is from a different
-   *  hierarchy than what is already in the list) or the list is
-   *  empty, prepend
-   */
-  update_windows = g_slist_prepend (update_windows, window);
-}
-
-static void
-gdk_window_remove_update_window (GdkWindow *window)
-{
-  update_windows = g_slist_remove (update_windows, window);
-}
-
 static gboolean
 gdk_window_update_idle (gpointer data)
 {
@@ -2818,7 +2660,7 @@ gdk_window_process_all_updates (void)
         {
 	  if (private->update_freeze_count ||
 	      gdk_window_is_toplevel_frozen (tmp_list->data))
-            gdk_window_add_update_window (GDK_WINDOW (private));
+	    update_windows = g_slist_prepend (update_windows, private);
 	  else
 	    gdk_window_process_updates_internal (tmp_list->data);
 	}
@@ -2871,7 +2713,7 @@ gdk_window_process_updates (GdkWindow *window,
       !gdk_window_is_toplevel_frozen (window))
     {      
       gdk_window_process_updates_internal (window);
-      gdk_window_remove_update_window (window);
+      update_windows = g_slist_remove (update_windows, window);
     }
 
   if (update_children)
@@ -3072,7 +2914,7 @@ gdk_window_invalidate_maybe_recurse (GdkWindow *window,
 	}
       else
 	{
-          gdk_window_add_update_window (window);
+	  update_windows = g_slist_prepend (update_windows, window);
 	  private->update_area = gdk_region_copy (visible_region);
 	  
 	  gdk_window_schedule_update (window);
@@ -3151,8 +2993,8 @@ gdk_window_get_update_area (GdkWindow *window)
       tmp_region = private->update_area;
       private->update_area = NULL;
 
-      gdk_window_remove_update_window (window);
-
+      update_windows = g_slist_remove (update_windows, window);
+      
       return tmp_region;
     }
   else
@@ -3176,7 +3018,7 @@ _gdk_window_clear_update_area (GdkWindow *window)
 
   if (private->update_area)
     {
-      gdk_window_remove_update_window (window);
+      update_windows = g_slist_remove (update_windows, window);
       
       gdk_region_destroy (private->update_area);
       private->update_area = NULL;
@@ -4283,41 +4125,6 @@ gdk_window_set_static_gravities (GdkWindow *window,
 
   return GDK_WINDOW_IMPL_GET_IFACE (private->impl)->set_static_gravities (window, use_static);
 }
-
-#ifdef MAEMO_CHANGES
-gboolean
-gdk_window_get_auto_composite (GdkWindow *window)
-{
-  GdkWindowObject *private = (GdkWindowObject *)window;
-
-  g_return_val_if_fail (GDK_IS_WINDOW (window), FALSE);
-
-  return private->auto_composite;
-}
-
-void
-gdk_window_set_auto_composite (GdkWindow *window,
-                               gboolean   auto_composite)
-{
-  GdkWindowObject *private = (GdkWindowObject *)window;
-
-  g_return_if_fail (GDK_IS_WINDOW (window));
-
-  auto_composite = auto_composite != FALSE;
-
-  if (private->auto_composite == auto_composite)
-    return;
-
-  if (!private->composited && auto_composite)
-    {
-      g_warning ("gdk_window_set_auto_composite called but "
-                 "window is not composited");
-      return;
-    }
-
-  private->auto_composite = auto_composite;
-}
-#endif
 
 /**
  * gdk_window_set_composited:
