@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.12.12-1maemo7) unstable; urgency=low
+
+  * Fixes: NB#93075 - Update icon size constants to Fremantle
+  * Fixes: NB#95401 - crash at IA__gdk_window_new
+  * Fixes: NB#98272 - GtkTreeSelection: Conditional jump or move
+    depends on uninitialised value(s)
+  * Fixes: NB#93161 - GTKTextView scrolls to cursor on size change
+    even if text view non-editable.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 26 Jan 2009 16:19:33 +0200
+
 gtk+2.0 (2:2.12.12-1maemo6) unstable; urgency=low
 
   * Fixes: NB#91632 - Errors compiling gtk+ maemo version removing

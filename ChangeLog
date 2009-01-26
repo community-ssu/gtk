@@ -1,5 +1,11 @@
 2009-01-26  Claudio Saavedra  <csaavedra@igalia.com>
 
+	Released 2:2.12.12-1maemo7
+
+	* debian/changelog: updates
+
+2009-01-26  Claudio Saavedra  <csaavedra@igalia.com>
+
 	* gdk/gdkwindow.c: (gdk_window_new),
 	(gdk_window_begin_paint_region), (gdk_window_end_paint),
 	(gdk_window_process_all_updates), (gdk_window_process_updates),
