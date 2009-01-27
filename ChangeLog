@@ -1,5 +1,20 @@
 2009-01-27  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
+	Part 1.
+
+	* gtk/gtktreeview.c (gtk_tree_view_destroy),
+	(gtk_tree_view_style_set): load/free the icon,
+	(gtk_tree_view_bin_expose): draw tick mark icon from theme.
+
+	* gtk/gtktreeprivate.h: add field.
+
+	* gtk/gtkiconview.c (gtk_icon_view_destroy),
+	(gtk_icon_view_style_set): ditto,
+	(gtk_icon_view_expose): ditto.
+
+2009-01-27  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/tests/treeview-hildon.c: plug memleaks.
 
 2009-01-27  Kristian Rietveld  <kris@imendio.com>

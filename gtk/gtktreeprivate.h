@@ -287,6 +287,8 @@ struct _GtkTreeViewPrivate
 
   HildonUIMode hildon_ui_mode;
 
+  GdkPixbuf *tickmark_icon;
+
   HildonTreeViewRowHeaderFunc row_header_func;
   gpointer row_header_data;
   GDestroyNotify row_header_destroy;

@@ -43,6 +43,9 @@
 #include "gtkframe.h"
 #include "gtktreemodelsort.h"
 #include "gtktooltip.h"
+#ifdef MAEMO_CHANGES
+#include "gtkicontheme.h"
+#endif /* MAEMO_CHANGES */
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -54,9 +57,9 @@
 #define GTK_TREE_VIEW_SEARCH_DIALOG_TIMEOUT 5000
 #define AUTO_EXPAND_TIMEOUT 500
 
-/* The checkmarks that we need to draw are of a fixed size: 26x26 */
+/* The checkmarks that we need to draw are of a fixed size: 48x48 */
 #ifdef MAEMO_CHANGES
-#define HILDON_TICK_MARK_SIZE 26
+#define HILDON_TICK_MARK_SIZE 48
 #define HILDON_ROW_HEADER_HEIGHT 35
 #endif /* MAEMO_CHANGES */
 
@@ -1882,6 +1885,12 @@ gtk_tree_view_destroy (GtkObject *object)
     {
       g_object_unref (tree_view->priv->row_header_layout);
       tree_view->priv->row_header_layout = NULL;
+    }
+
+  if (tree_view->priv->tickmark_icon)
+    {
+      g_object_unref (tree_view->priv->tickmark_icon);
+      tree_view->priv->tickmark_icon = NULL;
     }
 #endif /* MAEMO_CHANGES */
   
@@ -5300,20 +5309,17 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
               background_area.width -= HILDON_TICK_MARK_SIZE;
               cell_area.width -= HILDON_TICK_MARK_SIZE;
 
-              /* FIXME: add padding if required. */
-              /* FIXME: draw the specified qgn_list_tick */
               if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
-                gtk_paint_check (widget->style,
-                                 event->window,
-                                 state,
-                                 GTK_SHADOW_IN,
-                                 &event->area,
-                                 widget,
-                                 "check",
+                gdk_draw_pixbuf (event->window,
+                                 NULL,
+                                 tree_view->priv->tickmark_icon,
+                                 0, 0,
                                  background_area.x + background_area.width,
                                  background_area.y + (background_area.height - HILDON_TICK_MARK_SIZE) / 2,
                                  HILDON_TICK_MARK_SIZE,
-                                 HILDON_TICK_MARK_SIZE);
+                                 HILDON_TICK_MARK_SIZE,
+                                 GDK_RGB_DITHER_MAX,
+                                 0, 0);
             }
 
 
@@ -9079,6 +9085,14 @@ gtk_tree_view_style_set (GtkWidget *widget,
   hildon_tree_view_set_hildon_ui_mode (tree_view, tree_view->priv->hildon_ui_mode);
 
   /* FIXME: possibly update row_header_layout if it exists */
+
+  if (tree_view->priv->tickmark_icon)
+    g_object_unref (tree_view->priv->tickmark_icon);
+
+  tree_view->priv->tickmark_icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                                             "widgets_tickmark_list",
+                                                             HILDON_TICK_MARK_SIZE,
+                                                             0, NULL);
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);

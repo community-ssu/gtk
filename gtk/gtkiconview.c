@@ -41,6 +41,9 @@
 #include "gtkcombobox.h"
 #include "gtktextbuffer.h"
 #include "gtktreednd.h"
+#ifdef MAEMO_CHANGES
+#include "gtkicontheme.h"
+#endif /* MAEMO_CHANGES */
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -49,6 +52,7 @@
 #define SCROLL_EDGE_SIZE 15
 
 #ifdef MAEMO_CHANGES
+#define HILDON_TICK_MARK_SIZE 48
 #define HILDON_ROW_HEADER_HEIGHT 35
 #endif /* MAEMO_CHANGES */
 
@@ -191,6 +195,8 @@ struct _GtkIconViewPrivate
   gpointer row_header_data;
   GDestroyNotify row_header_destroy;
   PangoLayout *row_header_layout;
+
+  GdkPixbuf *tickmark_icon;
 #endif /* MAEMO_CHANGES */
 
   /* scroll to */
@@ -1103,6 +1109,12 @@ gtk_icon_view_destroy (GtkObject *object)
       g_object_unref (icon_view->priv->row_header_layout);
       icon_view->priv->row_header_layout = NULL;
     }
+
+  if (icon_view->priv->tickmark_icon)
+    {
+      g_object_unref (icon_view->priv->tickmark_icon);
+      icon_view->priv->tickmark_icon = NULL;
+    }
 #endif /* MAEMO_CHANGES */
   
   clear_dest_info (icon_view);
@@ -1362,6 +1374,15 @@ gtk_icon_view_style_set (GtkWidget *widget,
   hildon_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
 
   /* FIXME: might want to update the row_header_layout if it exists */
+
+  if (icon_view->priv->tickmark_icon)
+    g_object_unref (icon_view->priv->tickmark_icon);
+
+  icon_view->priv->tickmark_icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                                             "widgets_tickmark_grid",
+                                                             HILDON_TICK_MARK_SIZE,
+                                                             0, NULL);
+
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);
@@ -1553,17 +1574,16 @@ gtk_icon_view_expose (GtkWidget *widget,
           && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
           && item->selected)
         {
-          /* FIXME Draws a hard coded 36x36 tick */
-          gtk_paint_check (widget->style,
-                           icon_view->priv->bin_window,
-                           GTK_STATE_SELECTED,
-                           GTK_SHADOW_IN,
-                           &expose->area,
-                           widget,
-                           "check",
-                           item->x + (item->width - 36) / 2,
-                           item->y + (item->height - 36) / 2,
-                           36, 36);
+          gdk_draw_pixbuf (icon_view->priv->bin_window,
+                           NULL,
+                           icon_view->priv->tickmark_icon,
+                           0, 0,
+                           item->x + (item->width - HILDON_TICK_MARK_SIZE) / 2,
+                           item->y + (item->height - HILDON_TICK_MARK_SIZE) / 2,
+                           HILDON_TICK_MARK_SIZE,
+                           HILDON_TICK_MARK_SIZE,
+                           GDK_RGB_DITHER_MAX,
+                           0, 0);
         }
 #endif /* MAEMO_CHANGES */
 
