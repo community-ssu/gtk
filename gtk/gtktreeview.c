@@ -6221,6 +6221,17 @@ gtk_tree_view_key_press (GtkWidget   *widget,
    * the typeahead find capabilities. */
   if (GTK_WIDGET_HAS_FOCUS (tree_view)
       && tree_view->priv->enable_search
+#ifdef MAEMO_CHANGES
+      /* These are usually handled via keybindings, but these do not
+       * function in Fremantle mode.  Therefore we need to explicitly
+       * check for these there.
+       */
+      && event->keyval != GDK_ISO_Enter
+      && event->keyval != GDK_KP_Enter
+      && event->keyval != GDK_Return
+      && event->keyval != GDK_space
+      && event->keyval != GDK_KP_Space
+#endif /* MAEMO_CHANGES */
       && !tree_view->priv->search_custom_entry_set)
     {
       GdkEvent *new_event;

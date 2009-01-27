@@ -1,3 +1,11 @@
+2009-01-27  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#98806 - An unexpected item appears in some Email views when
+	'Enter' HW key is pressed.
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): do not activate
+	the interactive search mode when enter/space is pressed.
+
 2009-01-26  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo7
