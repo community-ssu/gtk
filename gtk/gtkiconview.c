@@ -2387,35 +2387,10 @@ gtk_icon_view_button_release (GtkWidget      *widget,
         }
       else if (icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
         {
-          gboolean found = FALSE;
+          item->selected = !item->selected;
+          gtk_icon_view_queue_draw_item (icon_view, item);
 
-          if (item->selected)
-            {
-              GList *items;
-
-              /* This item will now be unselected, only possible if there
-               * are 2 items selected at this point.  We look for one
-               * *other* selected item.
-               */
-
-              for (items = icon_view->priv->items; items; items = items->next)
-                {
-                  GtkIconViewItem *tmp = items->data;
-
-                  if (tmp->selected && tmp != item)
-                    found = TRUE;
-                }
-            }
-          else
-            found = TRUE;
-
-          if (found)
-            {
-              item->selected = !item->selected;
-              gtk_icon_view_queue_draw_item (icon_view, item);
-
-              g_signal_emit (icon_view, icon_view_signals[SELECTION_CHANGED], 0);
-            }
+          g_signal_emit (icon_view, icon_view_signals[SELECTION_CHANGED], 0);
         }
 
       icon_view->priv->anchor_item = item;
@@ -4075,7 +4050,8 @@ gtk_icon_view_row_inserted (GtkTreeModel *model,
                             NULL);
 
       if (mode == HILDON_FREMANTLE
-          && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
+          && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+          && icon_view->priv->selection_mode != GTK_SELECTION_MULTIPLE)
         {
           GtkTreePath *tmppath;
 
@@ -4142,7 +4118,8 @@ gtk_icon_view_row_deleted (GtkTreeModel *model,
                             NULL);
 
       if (mode == HILDON_FREMANTLE
-          && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
+          && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+          && icon_view->priv->selection_mode != GTK_SELECTION_MULTIPLE)
         {
           GtkTreePath *path;
 
@@ -8184,30 +8161,33 @@ hildon_icon_view_set_hildon_ui_mode (GtkIconView   *icon_view,
           gtk_icon_view_set_selection_mode (icon_view, GTK_SELECTION_SINGLE);
         }
 
-      /* Instead of using gtk_icon_view_get_selected_items() we walk
-       * over the list of items ourselves to save allocating/deallocating all
-       * paths.
-       */
-      for (list = icon_view->priv->items; list; list = list->next)
+      if (icon_view->priv->selection_mode != GTK_SELECTION_MULTIPLE)
         {
-          GtkIconViewItem *item = list->data;
-
-          if (item->selected)
+          /* Instead of using gtk_icon_view_get_selected_items() we walk
+           * over the list of items ourselves to save allocating/deallocating
+           * all paths.
+           */
+          for (list = icon_view->priv->items; list; list = list->next)
             {
-              count++;
-              break;
+              GtkIconViewItem *item = list->data;
+
+              if (item->selected)
+                {
+                  count++;
+                  break;
+                }
             }
-        }
 
-      if (!count)
-        {
-          GtkTreePath *path;
+          if (!count)
+            {
+              GtkTreePath *path;
 
-          /* Select the first item */
-          path = gtk_tree_path_new_first ();
-          search_first_selectable_path (icon_view, &path, TRUE);
-          gtk_icon_view_select_path (icon_view, path);
-          gtk_tree_path_free (path);
+              /* Select the first item */
+              path = gtk_tree_path_new_first ();
+              search_first_selectable_path (icon_view, &path, TRUE);
+              gtk_icon_view_select_path (icon_view, path);
+              gtk_tree_path_free (path);
+            }
         }
     }
   else
