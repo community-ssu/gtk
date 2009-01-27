@@ -1,5 +1,9 @@
 2009-01-27  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/tests/treeview-hildon.c: plug memleaks.
+
+2009-01-27  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#99342 - behaviour change for multiple selection mode
 	Part 2 / 2 (GtkIconView)
 

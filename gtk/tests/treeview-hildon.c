@@ -186,12 +186,14 @@ edit_selection_multi (HildonTreeViewFixture *fixture,
   gtk_tree_selection_select_path (fixture->selection, path);
   g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+  gtk_tree_path_free (path);
 
   /* Selection should be extended */
   path = gtk_tree_path_new_from_indices (20, -1);
   gtk_tree_selection_select_path (fixture->selection, path);
   g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 2);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+  gtk_tree_path_free (path);
 }
 
 static void
@@ -218,11 +220,13 @@ edit_multi_to_single (HildonTreeViewFixture *fixture,
   gtk_tree_selection_select_path (fixture->selection, path);
   g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+  gtk_tree_path_free (path);
 
   path = gtk_tree_path_new_from_indices (20, -1);
   gtk_tree_selection_select_path (fixture->selection, path);
   g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 2);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+  gtk_tree_path_free (path);
 
   /* Switch selection mode, one item should stay selected */
   gtk_tree_selection_set_mode (fixture->selection, GTK_SELECTION_SINGLE);
