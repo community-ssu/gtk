@@ -1373,7 +1373,20 @@ gtk_icon_view_style_set (GtkWidget *widget,
   /* Reset the UI mode */
   hildon_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
 
-  /* FIXME: might want to update the row_header_layout if it exists */
+  if (icon_view->priv->row_header_layout)
+    {
+      /* Update font of the row header */
+      GtkStyle *font_style;
+
+      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
+                                              "SmallSystemFont",
+                                              NULL, G_TYPE_NONE);
+      if (font_style)
+        {
+          pango_layout_set_font_description (icon_view->priv->row_header_layout,
+                                             font_style->font_desc);
+        }
+    }
 
   if (icon_view->priv->tickmark_icon)
     g_object_unref (icon_view->priv->tickmark_icon);
@@ -8105,9 +8118,19 @@ hildon_icon_view_set_row_header_func (GtkIconView                 *icon_view,
 
   if (func && !icon_view->priv->row_header_layout)
     {
+      GtkStyle *font_style;
+
       icon_view->priv->row_header_layout =
           gtk_widget_create_pango_layout (GTK_WIDGET (icon_view), "");
-      /* FIXME: set specific font settings, etc */
+
+      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
+                                              "SmallSystemFont",
+                                              NULL, G_TYPE_NONE);
+      if (font_style)
+        {
+          pango_layout_set_font_description (icon_view->priv->row_header_layout,
+                                             font_style->font_desc);
+        }
     }
   else if (!func && icon_view->priv->row_header_layout)
     {

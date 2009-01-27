@@ -1,6 +1,18 @@
 2009-01-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
+	Part 2 / 2.
+
+	* gtk/gtktreeview.c (gtk_tree_view_style_set): update row
+	header layout,
+	(hildon_tree_view_set_row_header_func): use SmallSystemFont.
+
+	* gtk/gtkiconview.c (gtk_icon_view_style_set),
+	(hildon_icon_view_set_row_header_func): likewise.
+
+2009-01-27  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
 	Part 1.
 
 	* gtk/gtktreeview.c (gtk_tree_view_destroy),
