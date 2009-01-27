@@ -1,5 +1,22 @@
 2009-01-27  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#99342 - behaviour change for multiple selection mode
+	Part 1 / 2 (GtkTreeView)
+
+	* gtk/gtktreeselection.c (_gtk_tree_selection_internal_select_node):
+	remove one-must-be-selected-rule for multiple selection edit mode.
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_inserted),
+	(gtk_tree_view_set_model), (hildon_tree_view_set_hildon_ui_mode): do
+	not select a first item by default for multiple selection edit mode,
+	(gtk_tree_view_row_deleted): do not select the first item if the
+	last selected item was deleted.
+
+	* gtk/tests/treeview-hildon.c: update unit test to reflect the
+	changes.
+
+2009-01-27  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#98806 - An unexpected item appears in some Email views when
 	'Enter' HW key is pressed.
 

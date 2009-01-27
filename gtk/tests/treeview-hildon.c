@@ -165,33 +165,33 @@ edit_selection_multi (HildonTreeViewFixture *fixture,
   GtkTreePath *path;
   GtkTreeIter iter;
 
-  /* One item must be selected */
-  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
+  /* Selection must be empty */
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 0);
 
-  /* Selection should move */
+  /* Selection should be extended */
   path = gtk_tree_path_new_from_indices (10, -1);
+  gtk_tree_selection_select_path (fixture->selection, path);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
+  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+
+  /* When selected item is deleted, the selection will be empty */
+  gtk_tree_model_get_iter (fixture->model, &iter, path);
+  gtk_tree_path_free (path);
+
+  gtk_list_store_remove (GTK_LIST_STORE (fixture->model), &iter);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 0);
+
+  /* Selection should be extended */
+  path = gtk_tree_path_new_from_indices (10, -1);
+  gtk_tree_selection_select_path (fixture->selection, path);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
+  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+
+  /* Selection should be extended */
+  path = gtk_tree_path_new_from_indices (20, -1);
   gtk_tree_selection_select_path (fixture->selection, path);
   g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 2);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
-
-  /* When selected item is deleted, first item should get selection */
-  gtk_tree_model_get_iter (fixture->model, &iter, path);
-  gtk_tree_path_free (path);
-
-  gtk_list_store_remove (GTK_LIST_STORE (fixture->model), &iter);
-  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
-
-  /* Path 0 was selected and should still be selected */
-  path = gtk_tree_path_new_from_indices (0, -1);
-  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
-
-  /* Deleting path 0 should make the "new" path 0 selected */
-  gtk_tree_model_get_iter (fixture->model, &iter, path);
-  gtk_list_store_remove (GTK_LIST_STORE (fixture->model), &iter);
-  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
-
-  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
-  gtk_tree_path_free (path);
 }
 
 static void
@@ -200,18 +200,29 @@ edit_multi_to_single (HildonTreeViewFixture *fixture,
 {
   GtkTreePath *path;
 
-  /* One item must be selected */
-  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
+  /* Selection must be empty */
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 0);
 
   /* Select and unselect a row */
   path = gtk_tree_path_new_from_indices (10, -1);
   gtk_tree_selection_select_path (fixture->selection, path);
-  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 2);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
 
   gtk_tree_selection_unselect_path (fixture->selection, path);
   g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path) != TRUE);
   gtk_tree_path_free (path);
+
+  /* Select two rows */
+  path = gtk_tree_path_new_from_indices (10, -1);
+  gtk_tree_selection_select_path (fixture->selection, path);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 1);
+  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
+
+  path = gtk_tree_path_new_from_indices (20, -1);
+  gtk_tree_selection_select_path (fixture->selection, path);
+  g_assert (gtk_tree_selection_count_selected_rows (fixture->selection) == 2);
+  g_assert (gtk_tree_selection_path_is_selected (fixture->selection, path));
 
   /* Switch selection mode, one item should stay selected */
   gtk_tree_selection_set_mode (fixture->selection, GTK_SELECTION_SINGLE);

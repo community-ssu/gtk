@@ -9523,6 +9523,7 @@ gtk_tree_view_row_inserted (GtkTreeModel *model,
    */
   if (mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+      && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE
       && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
     {
       GtkTreePath *tmppath;
@@ -9744,6 +9745,7 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   if (selection_changed
       && mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+      && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE
       && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
     {
       GtkTreePath *tmppath;
@@ -12221,7 +12223,8 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
 	}
 #ifdef MAEMO_CHANGES
       if (mode == HILDON_FREMANTLE
-          && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
+          && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+          && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE)
         {
           /* Select the first item */
           search_first_focusable_path (tree_view, &path,
@@ -17415,7 +17418,8 @@ hildon_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
                                        GTK_SELECTION_SINGLE);
         }
 
-      if (gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
+      if (tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE
+          && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
         {
           GtkTreePath *path;
 
