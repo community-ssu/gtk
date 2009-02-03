@@ -1,3 +1,12 @@
+2009-02-03  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#99830 - Panned area panns back to the cursor and
+	doesn't stays where it is panned to
+
+	* gtk/gtktextview.c (gtk_text_view_size_allocate): remove
+	Maemo-specific patch that scrolls to cursor on each size
+	allocation.
+
 2009-01-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
