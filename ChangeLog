@@ -1,3 +1,11 @@
+2009-02-04  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Fixes: NB#95768 - Animation on CSM open is present in Bookmarks
+	view
+
+	* gtk/gtkwidget.c: undefine TAP_AND_HOLD_ANIMATION to disable
+	the tap 'n hold animation completely.
+
 2009-02-03  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#99830 - Panned area panns back to the cursor and
