@@ -1,3 +1,11 @@
+2009-02-06  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#91218 - "Advanced" button is missing in Connection setup
+	complete dialog for Internet settings.
+
+	* gtk/gtklabel.c (gtk_label_ensure_layout): wrap labels to
+	75% of the screen width instead of 85%.
+
 2009-02-06  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo8
