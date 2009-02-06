@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.12.12-1maemo8) unstable; urgency=low
+
+  * Fixes: NB#98806 - An unexpected item appears in some Email views when
+    'Enter' HW key is pressed.
+  * Fixes: NB#99342 - behaviour change for multiple selection mode
+  * Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
+  * Fixes: NB#99830 - Panned area panns back to the cursor and
+    doesn't stays where it is panned to
+  * Fixes: NB#95768 - Animation on CSM open is present in Bookmarks
+    view
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 06 Feb 2009 09:56:12 +0200
+
 gtk+2.0 (2:2.12.12-1maemo7) unstable; urgency=low
 
   * Fixes: NB#93075 - Update icon size constants to Fremantle

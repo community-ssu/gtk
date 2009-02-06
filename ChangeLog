@@ -1,3 +1,9 @@
+2009-02-06  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo8
+
+	* debian/changelog: updates.
+
 2009-02-04  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Fixes: NB#95768 - Animation on CSM open is present in Bookmarks
