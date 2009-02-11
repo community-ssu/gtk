@@ -1,3 +1,7 @@
+2009-02-11  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* ChangeLog.pre-2-12.mameo: Renamed to ChangeLog.pre-2-12.maemo
+
 2009-02-06  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#91218 - "Advanced" button is missing in Connection setup
