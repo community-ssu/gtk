@@ -294,8 +294,15 @@ struct _GtkTreeViewPrivate
   GDestroyNotify row_header_destroy;
   PangoLayout *row_header_layout;
 
+  gint rows_offset;
+  GtkOrientation action_area_orientation;
+  GtkWidget *action_area_event_box;
+  GtkWidget *action_area_box;
+
   guint queued_shift_pressed : 1;
   guint queued_ctrl_pressed : 1;
+
+  guint action_area_visible : 1;
 #endif /* MAEMO_CHANGES */
 };
 

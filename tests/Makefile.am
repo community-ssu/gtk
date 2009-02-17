@@ -26,7 +26,10 @@ testsocket_programs = testsocket testsocket_child
 endif
 
 if MAEMO_CHANGES
-testmaemo_programs = testhildontreeview testhildoniconview
+testmaemo_programs =			\
+	testhildontreeview		\
+	testhildoniconview		\
+	testtreeviewactionarea
 endif
 
 TESTS = floatingtest buildertest
@@ -169,6 +172,7 @@ testtooltips_DEPENDENCIES = $(TEST_DEPS)
 testvolumebutton_DEPENDENCIES = $(TEST_DEPS)
 testhildoniconview_DEPENDENCIES = $(TEST_DEPS)
 testhildontreeview_DEPENDENCIES = $(TEST_DEPS)
+testtreeviewactionarea_DEPENDENCIES = $(TEST_DEPS)
 
 autotestfilechooser_LDADD = $(LDADDS)
 simple_LDADD = $(LDADDS)
@@ -235,6 +239,7 @@ testtooltips_LDADD = $(LDADDS)
 testvolumebutton_LDADD = $(LDADDS)
 testhildoniconview_LDADD = $(LDADDS)
 testhildontreeview_LDADD = $(LDADDS)
+testtreeviewactionarea_LDADD = $(LDADDS)
 
 buildertest_LDFLAGS = -export-dynamic
 
@@ -332,6 +337,9 @@ testhildoniconview_SOURCES =	\
 
 testhildontreeview_SOURCES =	\
 	testhildontreeview.c
+
+testtreeviewactionarea_SOURCES =	\
+	testtreeviewactionarea.c
 
 EXTRA_DIST += 			\
 	prop-editor.h		\

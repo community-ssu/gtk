@@ -412,6 +412,17 @@ void                        hildon_tree_view_set_row_header_func (GtkTreeView   
 HildonUIMode                hildon_tree_view_get_hildon_ui_mode  (GtkTreeView                 *tree_view);
 void                        hildon_tree_view_set_hildon_ui_mode  (GtkTreeView                 *tree_view,
                                                                   HildonUIMode                 mode);
+
+
+void                        hildon_tree_view_set_action_area_visible       (GtkTreeView    *tree_view,
+                                                                            gboolean        visible);
+gboolean                    hildon_tree_view_get_action_area_visible       (GtkTreeView    *tree_view);
+
+void                        hildon_tree_view_set_action_area_orientation   (GtkTreeView    *tree_view,
+                                                                            GtkOrientation  orientation);
+GtkOrientation              hildon_tree_view_get_action_area_orientation   (GtkTreeView    *tree_view);
+
+GtkWidget                  *hildon_tree_view_get_action_area_box           (GtkTreeView    *tree_view);
 #endif /* MAEMO_CHANGES */
 
 GtkTreeViewGridLines        gtk_tree_view_get_grid_lines         (GtkTreeView                *tree_view);

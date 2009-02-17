@@ -45,6 +45,7 @@
 #include "gtktooltip.h"
 #ifdef MAEMO_CHANGES
 #include "gtkicontheme.h"
+#include "gtkeventbox.h"
 #endif /* MAEMO_CHANGES */
 #include "gtkprivate.h"
 #include "gtkalias.h"
@@ -160,7 +161,9 @@ enum {
   PROP_TOOLTIP_COLUMN
 #ifdef MAEMO_CHANGES
   ,
-  PROP_HILDON_UI_MODE
+  PROP_HILDON_UI_MODE,
+  PROP_ACTION_AREA_VISIBLE,
+  PROP_ACTION_AREA_ORIENTATION
 #endif /* MAEMO_CHANGES */
 };
 
@@ -498,6 +501,8 @@ static gboolean gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
 static void     free_queued_select_row           (GtkTreeView  *tree_view);
 static void     free_queued_activate_row         (GtkTreeView  *tree_view);
 static void     free_queued_actions              (GtkTreeView  *tree_view);
+
+static void     hildon_tree_view_set_action_area_height (GtkTreeView *tree_view);
 #endif /* MAEMO_CHANGES */
 
 static guint tree_view_signals [LAST_SIGNAL] = { 0 };
@@ -836,6 +841,44 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
                                                         HILDON_TYPE_UI_MODE,
                                                         HILDON_UI_MODE_NORMAL,
                                                         GTK_PARAM_READWRITE));
+
+    /**
+     * GtkTreeView:action-area-visible:
+     *
+     * Makes the action area of the GtkTreeView visible or invisible.
+     * Based on the value of the GtkTreeView:action-area-orientation
+     * property a certain height will be allocated above the first row
+     * for the action area.
+     *
+     * Since: maemo 5.0
+     * Stability: unstable
+     */
+    g_object_class_install_property (o_class,
+                                     PROP_ACTION_AREA_VISIBLE,
+                                     g_param_spec_boolean ("action-area-visible",
+                                                           P_("Action Area Visible"),
+                                                           P_("Whether the action area above the first row is visible"),
+                                                           FALSE,
+                                                           GTK_PARAM_READWRITE));
+
+    /**
+     * GtkTreeView:action-area-orientation:
+     *
+     * Sets the orientation of the action area.  This is either
+     * horizontal (landscape) or vertical (portrait).  The height of
+     * the action area depends on this setting.
+     *
+     * Since: maemo 5.0
+     * Stability: unstable
+     */
+    g_object_class_install_property (o_class,
+                                     PROP_ACTION_AREA_ORIENTATION,
+                                     g_param_spec_enum ("action-area-orientation",
+                                                         P_("Action Area Orientation"),
+                                                         P_("Determines the orientation of the action area."),
+                                                         GTK_TYPE_ORIENTATION,
+                                                         GTK_ORIENTATION_HORIZONTAL,
+                                                         GTK_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
 
   /* Style properties */
@@ -1532,6 +1575,14 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->tree_lines_enabled = FALSE;
 
   tree_view->priv->tooltip_column = -1;
+
+#ifdef MAEMO_CHANGES
+  tree_view->priv->rows_offset = 0;
+  tree_view->priv->action_area_visible = FALSE;
+  tree_view->priv->action_area_orientation = GTK_ORIENTATION_HORIZONTAL;
+  tree_view->priv->action_area_event_box = NULL;
+  tree_view->priv->action_area_box = NULL;
+#endif /* MAEMO_CHANGES */
 }
 
 
@@ -1612,6 +1663,12 @@ gtk_tree_view_set_property (GObject         *object,
     case PROP_HILDON_UI_MODE:
       hildon_tree_view_set_hildon_ui_mode (tree_view, g_value_get_enum (value));
       break;
+    case PROP_ACTION_AREA_VISIBLE:
+      hildon_tree_view_set_action_area_visible (tree_view, g_value_get_boolean (value));
+      break;
+    case PROP_ACTION_AREA_ORIENTATION:
+      hildon_tree_view_set_action_area_orientation (tree_view, g_value_get_enum (value));
+      break;
 #endif /* MAEMO_CHANGES */
     default:
       break;
@@ -1690,6 +1747,12 @@ gtk_tree_view_get_property (GObject    *object,
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_UI_MODE:
       g_value_set_enum (value, tree_view->priv->hildon_ui_mode);
+      break;
+    case PROP_ACTION_AREA_VISIBLE:
+      g_value_set_boolean (value, tree_view->priv->action_area_visible);
+      break;
+    case PROP_ACTION_AREA_ORIENTATION:
+      g_value_set_enum (value, tree_view->priv->action_area_orientation);
       break;
 #endif /* MAEMO_CHANGES */
     default:
@@ -2258,7 +2321,11 @@ gtk_tree_view_update_size (GtkTreeView *tree_view)
   if (tree_view->priv->tree == NULL)
     tree_view->priv->height = 0;
   else
+#ifdef MAEMO_CHANGES
+    tree_view->priv->height = tree_view->priv->tree->root->offset + tree_view->priv->rows_offset;
+#else /* !MAEMO_CHANGES */
     tree_view->priv->height = tree_view->priv->tree->root->offset;
+#endif /* !MAEMO_CHANGES */
 }
 
 static void
@@ -2567,6 +2634,19 @@ gtk_tree_view_size_allocate (GtkWidget     *widget,
       allocation.y = child->y;
       allocation.width = child->width;
       allocation.height = child->height;
+
+#ifdef MAEMO_CHANGES
+      if (tree_view->priv->rows_offset != 0
+          && tree_view->priv->action_area_event_box == child->widget)
+        {
+          /* Set the child's location to be the area above the first row */
+          allocation.x = 0;
+          allocation.y = -tree_view->priv->dy;
+          allocation.width = MAX (widget->allocation.width, tree_view->priv->width);
+          allocation.height = tree_view->priv->rows_offset;
+        }
+#endif /* MAEMO_CHANGES */
+
       gtk_widget_size_allocate (child->widget, &allocation);
     }
 
@@ -4932,6 +5012,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
   gboolean row_ending_details;
   gboolean draw_vgrid_lines, draw_hgrid_lines;
 #ifdef MAEMO_CHANGES
+  gint expose_start;
   gboolean render_checkboxes = FALSE;
   HildonMode mode;
 #endif /* MAEMO_CHANGES */
@@ -4965,11 +5046,33 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 
   validate_visible_area (tree_view);
 
-  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->area.y);
+#ifdef MAEMO_CHANGES
+  if (G_UNLIKELY (tree_view->priv->rows_offset != 0)
+      && tree_view->priv->dy <= tree_view->priv->rows_offset
+      && event->area.y <= tree_view->priv->rows_offset - tree_view->priv->dy)
+    {
+      /* As long as a part of the button window is visible ... */
+      expose_start = tree_view->priv->rows_offset - tree_view->priv->dy;
+      y_offset = -_gtk_rbtree_find_offset (tree_view->priv->tree,
+                                           tree_view->priv->rows_offset,
+                                           &tree, &node);
+    }
+  else
+    {
+      new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->area.y);
+      if (new_y < 0)
+        new_y = 0;
 
+      expose_start = event->area.y;
+      y_offset = -_gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+    }
+#else /* !MAEMO_CHANGES */
+  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->area.y);
   if (new_y < 0)
     new_y = 0;
   y_offset = -_gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+#endif /* !MAEMO_CHANGES */
+
   gdk_drawable_get_size (tree_view->priv->bin_window,
                          &bin_window_width, &bin_window_height);
 
@@ -5081,7 +5184,11 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
       highlight_x = 0; /* should match x coord of first cell */
       expander_cell_width = 0;
 
+#ifdef MAEMO_CHANGES
+      background_area.y = y_offset + expose_start;
+#else /* !MAEMO_CHANGES */
       background_area.y = y_offset + event->area.y;
+#endif /* !MAEMO_CHANGES */
       background_area.height = max_height;
 
       flags = 0;
@@ -9106,6 +9213,9 @@ gtk_tree_view_style_set (GtkWidget *widget,
                                                              "widgets_tickmark_list",
                                                              HILDON_TICK_MARK_SIZE,
                                                              0, NULL);
+
+  if (tree_view->priv->action_area_visible)
+    hildon_tree_view_set_action_area_height (tree_view);
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);
@@ -9475,7 +9585,16 @@ gtk_tree_view_row_inserted (GtkTreeModel *model,
     gtk_tree_model_get_iter (model, iter, path);
 
   if (tree_view->priv->tree == NULL)
+#ifdef MAEMO_CHANGES
+    {
+      tree_view->priv->tree = _gtk_rbtree_new ();
+      if (G_UNLIKELY (tree_view->priv->rows_offset != 0))
+        _gtk_rbtree_set_base_offset (tree_view->priv->tree,
+                                     tree_view->priv->rows_offset);
+    }
+#else /* !MAEMO_CHANGES */
     tree_view->priv->tree = _gtk_rbtree_new ();
+#endif /* !MAEMO_CHANGES */
 
   tmptree = tree = tree_view->priv->tree;
 
@@ -11109,6 +11228,10 @@ gtk_tree_view_move_cursor_page_up_down (GtkTreeView *tree_view,
 
   if (y >= tree_view->priv->height)
     y = tree_view->priv->height - 1;
+#ifdef MAEMO_CHANGES
+  else if (tree_view->priv->rows_offset != 0 && y < tree_view->priv->rows_offset)
+    y = tree_view->priv->rows_offset;
+#endif /* MAEMO_CHANGES */
 
   tree_view->priv->cursor_offset =
     _gtk_rbtree_find_offset (tree_view->priv->tree, y,
@@ -12246,6 +12369,12 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       if (gtk_tree_model_get_iter (tree_view->priv->model, &iter, path))
 	{
 	  tree_view->priv->tree = _gtk_rbtree_new ();
+#ifdef MAEMO_CHANGES
+          if (G_UNLIKELY (tree_view->priv->rows_offset != 0))
+            _gtk_rbtree_set_base_offset (tree_view->priv->tree,
+                                         tree_view->priv->rows_offset);
+#endif /* MAEMO_CHANGES */
+
 	  gtk_tree_view_build_tree (tree_view, tree_view->priv->tree, &iter, 1, FALSE);
 	}
 #ifdef MAEMO_CHANGES
@@ -17470,6 +17599,212 @@ hildon_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
     }
   else
     g_assert_not_reached ();
+}
+
+static void
+hildon_tree_view_set_rows_offset (GtkTreeView *tree_view,
+                                  int          rows_offset)
+{
+  if (tree_view->priv->rows_offset == rows_offset)
+    return;
+
+  tree_view->priv->rows_offset = rows_offset;
+  if (tree_view->priv->tree)
+    _gtk_rbtree_set_base_offset (tree_view->priv->tree, rows_offset);
+
+  gtk_widget_queue_resize (GTK_WIDGET (tree_view));
+}
+
+static void
+hildon_tree_view_create_action_area (GtkTreeView *tree_view)
+{
+  /* gtk_tree_view_put() takes over ownership and so we do not
+   * have to unref these values in gtk_tree_view_destroy().
+   */
+  tree_view->priv->action_area_event_box = gtk_event_box_new ();
+  gtk_tree_view_put (tree_view, tree_view->priv->action_area_event_box,
+                     0, 0, 0, 0);
+
+  if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_HORIZONTAL)
+    tree_view->priv->action_area_box = gtk_hbox_new (TRUE, 5);
+  else if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_VERTICAL)
+    tree_view->priv->action_area_box = gtk_vbox_new (TRUE, 5);
+
+  gtk_container_add (GTK_CONTAINER (tree_view->priv->action_area_event_box),
+                     tree_view->priv->action_area_box);
+}
+
+static void
+hildon_tree_view_set_action_area_height (GtkTreeView *tree_view)
+{
+  if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_HORIZONTAL)
+    {
+      int row_height;
+
+      gtk_widget_style_get (GTK_WIDGET (tree_view),
+                            "row-height", &row_height,
+                            NULL);
+      hildon_tree_view_set_rows_offset (tree_view, row_height);
+    }
+  else if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_VERTICAL)
+    {
+      GList *children;
+
+      /* The height in portrait mode is currently hardcoded to 93px per
+       * button.
+       */
+      children = gtk_container_get_children (GTK_CONTAINER (tree_view->priv->action_area_box));
+      hildon_tree_view_set_rows_offset (tree_view,
+                                        g_list_length (children) * 93);
+      g_list_free (children);
+    }
+}
+
+void
+hildon_tree_view_set_action_area_visible (GtkTreeView *tree_view,
+                                          gboolean     visible)
+{
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  if (tree_view->priv->action_area_visible == !!visible)
+    return;
+
+  tree_view->priv->action_area_visible = visible;
+
+  if (visible)
+    {
+      hildon_tree_view_set_action_area_height (tree_view);
+
+      if (!tree_view->priv->action_area_event_box)
+        hildon_tree_view_create_action_area (tree_view);
+
+      gtk_widget_show (tree_view->priv->action_area_box);
+      gtk_widget_show (tree_view->priv->action_area_event_box);
+    }
+  else
+    {
+      gtk_widget_hide (tree_view->priv->action_area_event_box);
+
+      hildon_tree_view_set_rows_offset (tree_view, 0);
+    }
+}
+
+gboolean
+hildon_tree_view_get_action_area_visible (GtkTreeView *tree_view)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), FALSE);
+
+  return tree_view->priv->action_area_visible;
+}
+
+static void
+hildon_tree_view_rotate_action_area_box (GtkBox *old_box,
+                                         GtkBox *new_box)
+{
+  int spacing, border_width;
+  GList *children, *child;
+  gboolean homogeneous;
+
+  g_object_get (old_box,
+                "homogeneous", &homogeneous,
+                "spacing", &spacing,
+                "border-width", &border_width,
+                NULL);
+
+  g_object_set (new_box,
+                "homogeneous", homogeneous,
+                "spacing", spacing,
+                "border-width", border_width,
+                NULL);
+
+  children = gtk_container_get_children (GTK_CONTAINER (old_box));
+  for (child = children; child; child = child->next)
+    {
+      guint padding;
+      gboolean expand, fill;
+      GtkPackType type;
+      GtkWidget *widget = child->data;
+
+      g_object_ref (widget);
+      gtk_box_query_child_packing (old_box, widget,
+                                   &expand, &fill, &padding, &type);
+      gtk_container_remove (GTK_CONTAINER (old_box), widget);
+      gtk_container_add (GTK_CONTAINER (new_box), widget);
+      gtk_box_set_child_packing (new_box, widget,
+                                 expand, fill, padding, type);
+      g_object_unref (widget);
+    }
+
+  g_list_free (children);
+
+  if (GTK_WIDGET_VISIBLE (old_box))
+    gtk_widget_show (GTK_WIDGET (new_box));
+}
+
+void
+hildon_tree_view_set_action_area_orientation (GtkTreeView    *tree_view,
+                                              GtkOrientation  orientation)
+{
+  GtkWidget *old_box;
+  GtkWidget *new_box;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  if (tree_view->priv->action_area_orientation == orientation)
+    return;
+
+  tree_view->priv->action_area_orientation = orientation;
+
+  old_box = tree_view->priv->action_area_box;
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    new_box = gtk_hbox_new (TRUE, 5);
+  else if (orientation == GTK_ORIENTATION_VERTICAL)
+    new_box = gtk_vbox_new (TRUE, 5);
+
+  if (tree_view->priv->action_area_visible)
+    hildon_tree_view_set_action_area_height (tree_view);
+
+  hildon_tree_view_rotate_action_area_box (GTK_BOX (old_box),
+                                           GTK_BOX (new_box));
+
+  gtk_widget_destroy (old_box);
+
+  tree_view->priv->action_area_box = new_box;
+  gtk_container_add (GTK_CONTAINER (tree_view->priv->action_area_event_box),
+                     tree_view->priv->action_area_box);
+}
+
+GtkOrientation
+hildon_tree_view_get_action_area_orientation (GtkTreeView *tree_view)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
+
+  return tree_view->priv->action_area_orientation;
+}
+
+/**
+ * hildon_tree_view_get_action_area_box:
+ * @tree_view: a #GtkTreeView
+ *
+ * Returns the GtkBox is embedded in GtkTreeView's action area.  Depending
+ * on the setting of the GtkTreeView:action-area-orientation property
+ * this is either a GtkHBox or GtkVBox.  You do not own a reference to
+ * the returned widget and thus this value should not be unreferenced.
+ *
+ * Returns: a pointer to a GtkBox.  This pointer should not be unreferenced.
+ *
+ * Since: maemo 5.0
+ * Stability: unstable
+ */
+GtkWidget *
+hildon_tree_view_get_action_area_box (GtkTreeView *tree_view)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
+
+  if (!tree_view->priv->action_area_event_box)
+    hildon_tree_view_create_action_area (tree_view);
+
+  return tree_view->priv->action_area_box;
 }
 #endif /* MAEMO_CHANGES */
 

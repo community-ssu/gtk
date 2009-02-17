@@ -1,3 +1,37 @@
+2009-02-17  Kristian Rietveld  <kris@imendio.com>
+
+	Allow for an action area above the first row in the scrollable
+	part of the tree view wherein arbitrary widgets can be embedded.
+
+	* gtk/gtktreeview.[ch] (gtk_tree_view_class_init),
+	(gtk_tree_view_init), (gtk_tree_view_[gs]et_property):
+	new action-area-visible, action-area-orientation properties,
+	(gtk_tree_view_update_size), (gtk_tree_view_size_allocate),
+	(gtk_tree_view_bin_expose), (gtk_tree_view_move_cursor_page_up_down):
+	take rows-offset into account,
+	(gtk_tree_view_row_inserted), (gtk_tree_view_set_model): set
+	rows offset after creating root rbtree,
+	(gtk_tree_view_style_set): update rows-offset from new style,
+	(hildon_tree_view_set_rows_offset),
+	(hildon_tree_view_create_action_area),
+	(hildon_tree_view_set_action_area_height),
+	(hildon_tree_view_rotate_action_area_box): new internal functions,
+	(hildon_tree_view_[gs]et_action_area_visible),
+	(hildon_tree_view_[gs]et_action_area_orientation),
+	(hildon_tree_view_get_action_area_box): new public functions.
+
+	* gtk/gtktreeprivate.h: add new fields.
+
+	* gtk/gtkrbtree.[ch] (_gtk_rbtree_set_base_offset): allow for
+	setting a base offset on a tree,
+	(_gtk_rbtree_node_find_offset), (_gtk_rbtree_find_offset): take
+	base offset into account.
+
+	* gtk/gtk.symbols: add new functions.
+
+	* tests/Makefile.am
+	* tests/testtreeviewactionarea.c: new test application.
+
 2009-02-11  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* ChangeLog.pre-2-12.mameo: Renamed to ChangeLog.pre-2-12.maemo
