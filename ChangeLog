@@ -1,3 +1,15 @@
+2009-02-18  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#98830 - Legal bug: gtk+ component: license references
+	missing from Nokia copyrighted files
+
+	* gtk/tests/iconview-hildon.c:
+	* gtk/tests/treeview-hildon.c: add LGPL license.
+
+	* tests/testhildoniconview.c:
+	* tests/testhildontreeview.c:
+	* tests/testtreeviewactionarea.c: add AS-IS license.
+
 2009-02-17  Kristian Rietveld  <kris@imendio.com>
 
 	Allow for an action area above the first row in the scrollable
