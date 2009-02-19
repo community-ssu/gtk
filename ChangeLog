@@ -12,6 +12,8 @@
 
 2009-02-17  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#101728
+
 	Allow for an action area above the first row in the scrollable
 	part of the tree view wherein arbitrary widgets can be embedded.
 
