@@ -1,3 +1,9 @@
+2009-02-19  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo9
+
+	* debian/changelog: updates
+
 2009-02-18  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#98830 - Legal bug: gtk+ component: license references

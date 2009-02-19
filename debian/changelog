@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.12.12-1maemo9) unstable; urgency=low
+
+  * Fixes: NB#98830 - Legal bug: gtk+ component: license references
+    missing from Nokia copyrighted files
+  * Fixes: NB#101728 - Tree view should support an action area to embed
+    buttons in the scrollable area of the view
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 19 Feb 2009 15:47:46 +0200
+
 gtk+2.0 (2:2.12.12-1maemo8) unstable; urgency=low
 
   * Fixes: NB#98806 - An unexpected item appears in some Email views when
