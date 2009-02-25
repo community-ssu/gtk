@@ -1,3 +1,8 @@
+2009-02-25  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gtk/gtkdialog.c (gtk_dialog_add_button): Make sure that all
+	buttons added get proper theming and size. See NB#99116.
+
 2009-02-19  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo9
