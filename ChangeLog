@@ -1,3 +1,9 @@
+2009-03-05  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo10
+
+	* debian/changelog: updates
+
 2009-03-05  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#102487 - Crash when closing conversation view window.

@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.12.12-1maemo10) unstable; urgency=low
+
+  * Fixes: NB#102487 - Crash when closing conversation view window.
+  * Fix dialogs' button size.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 05 Mar 2009 12:46:45 +0200
+
 gtk+2.0 (2:2.12.12-1maemo9) unstable; urgency=low
 
   * Fixes: NB#98830 - Legal bug: gtk+ component: license references
