@@ -1,3 +1,12 @@
+2009-03-05  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#102487 - Crash when closing conversation view window.
+
+	* gtk/gtktextview.c (gtk_text_view_set_buffer): when unsetting the old
+	buffer always set the buffer on the layout to NULL and more
+	importantly, clear the pending scroll.  Unref the buffer after
+	removing the selection from the clipboard.
+
 2009-02-25  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* gtk/gtkdialog.c (gtk_dialog_add_button): Make sure that all
