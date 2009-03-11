@@ -12294,6 +12294,9 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       tree_view->priv->scroll_to_path = NULL;
 
 #ifdef MAEMO_CHANGES
+      tree_view->priv->highlighted_tree = NULL;
+      tree_view->priv->highlighted_node = NULL;
+
       free_queued_actions (tree_view);
 #endif /* MAEMO_CHANGES */
 
