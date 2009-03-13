@@ -1,3 +1,9 @@
+2009-03-13  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo11
+
+	* debian/changelog: updates
+
 2009-03-11  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#101823 - Crash while browsing through file selection widget

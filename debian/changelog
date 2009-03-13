@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.12.12-1maemo11) unstable; urgency=low
+
+  * Fixes: NB#101823 - Crash while browsing through file selection widget
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 13 Mar 2009 14:37:26 +0200
+
 gtk+2.0 (2:2.12.12-1maemo10) unstable; urgency=low
 
   * Fixes: NB#102487 - Crash when closing conversation view window.
