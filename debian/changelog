@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
+
+  * Add GdkPixbufSimpleAnim:loop property and its accessors. See
+    related #NB103564.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 24 Mar 2009 16:31:32 +0200
+
 gtk+2.0 (2:2.12.12-1maemo11) unstable; urgency=low
 
   * Fixes: NB#101823 - Crash while browsing through file selection widget
