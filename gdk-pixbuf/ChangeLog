@@ -1,3 +1,18 @@
+2009-03-24  Claudio Saavedra  <csaavedra@igalia.com>
+
+	From bgo 561139 (GdkPixbufSimpleAnim can't be made to loop)
+
+	* gdk-pixbuf-simple-anim.c (gdk_pixbuf_simple_anim_class_init),
+	(advance), (gdk_pixbuf_simple_anim_get_property),
+	(gdk_pixbuf_simple_anim_set_property),
+	(gdk_pixbuf_simple_anim_set_loop),
+	(gdk_pixbuf_simple_anim_get_loop):
+	* gdk-pixbuf-simple-anim.h:
+	* gdk-pixbuf.symbols:
+
+	Add a GdkPixbufSimpleAnim:loop property and its accessors, to allow a
+	simple animation to loop forever. Based on a patch by Tim Evans.
+
 2008-09-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.12 ===
