@@ -1,15 +1,15 @@
+2009-03-26  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo12
+
+	* debian/changelog: updates
+
 2009-03-26  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#102487 - Crash when closing conversation view window.
 
 	* gtk/gtktextview.c (gtk_text_view_queue_scroll): check if the given
 	mark is in text view's current buffer, bail out if not.
-
-2009-03-24  Claudio Saavedra  <csaavedra@igalia.com>
-
-	Released 2:2.12.12-1maemo12
-
-	* debian/changelog: updates
 
 2009-03-13  Claudio Saavedra  <csaavedra@igalia.com>
 
