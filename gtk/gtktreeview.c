@@ -17629,9 +17629,9 @@ hildon_tree_view_create_action_area (GtkTreeView *tree_view)
                      0, 0, 0, 0);
 
   if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_HORIZONTAL)
-    tree_view->priv->action_area_box = gtk_hbox_new (TRUE, 5);
+    tree_view->priv->action_area_box = gtk_hbox_new (TRUE, 0);
   else if (tree_view->priv->action_area_orientation == GTK_ORIENTATION_VERTICAL)
-    tree_view->priv->action_area_box = gtk_vbox_new (TRUE, 5);
+    tree_view->priv->action_area_box = gtk_vbox_new (TRUE, 0);
 
   gtk_container_add (GTK_CONTAINER (tree_view->priv->action_area_event_box),
                      tree_view->priv->action_area_box);
@@ -17760,9 +17760,9 @@ hildon_tree_view_set_action_area_orientation (GtkTreeView    *tree_view,
 
   old_box = tree_view->priv->action_area_box;
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
-    new_box = gtk_hbox_new (TRUE, 5);
+    new_box = gtk_hbox_new (TRUE, 0);
   else if (orientation == GTK_ORIENTATION_VERTICAL)
-    new_box = gtk_vbox_new (TRUE, 5);
+    new_box = gtk_vbox_new (TRUE, 0);
 
   if (tree_view->priv->action_area_visible)
     hildon_tree_view_set_action_area_height (tree_view);
