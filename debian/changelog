@@ -2,7 +2,7 @@ gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
 
   * Add GdkPixbufSimpleAnim:loop property and its accessors. See
     related #NB103564.
-  * Fixes: NB#102487 - Crash when closing conversation view window.
+  * Fixes NB#102487 - Crash when closing conversation view window.
 
  -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 26 Mar 2009 19:44:18 +0200
 
