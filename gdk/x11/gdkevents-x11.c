@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdk.h"
 #include "gdkprivate-x11.h"
@@ -58,6 +58,10 @@
 #include <X11/extensions/Xfixes.h>
 #endif
 
+#ifdef HAVE_RANDR
+#include <X11/extensions/Xrandr.h>
+#endif
+
 #include <X11/Xatom.h>
 
 typedef struct _GdkIOClosure GdkIOClosure;
@@ -68,7 +72,7 @@ struct _GdkIOClosure
 {
   GdkInputFunction function;
   GdkInputCondition condition;
-  GdkDestroyNotify notify;
+  GDestroyNotify notify;
   gpointer data;
 };
 
@@ -2102,6 +2106,16 @@ gdk_event_translate (GdkDisplay *display,
 	}
       else
 #endif
+#ifdef HAVE_RANDR
+      if (xevent->type - display_x11->xrandr_event_base == RRNotify)
+	{
+	    XRRNotifyEvent *notify = (XRRNotifyEvent *)xevent;
+	    
+	    if (screen)
+		_gdk_x11_screen_process_monitors_change (screen);
+	}
+      else 
+#endif
 #if defined(HAVE_XCOMPOSITE) && defined (HAVE_XDAMAGE) && defined (HAVE_XFIXES)
       if (display_x11->have_xdamage && window_private && window_private->composited &&
 	  xevent->type == display_x11->xdamage_event_base + XDamageNotify &&
@@ -3069,6 +3083,17 @@ gdk_xsettings_watch_cb (Window   window,
     }
 
   return True;
+}
+
+void
+_gdk_windowing_event_data_copy (const GdkEvent *src,
+                                GdkEvent       *dst)
+{
+}
+
+void
+_gdk_windowing_event_data_free (GdkEvent *event)
+{
 }
 
 #define __GDK_EVENTS_X11_C__

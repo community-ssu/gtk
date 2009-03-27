@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtktooltip.h"
 #include "gtkintl.h"
 #include "gtkwindow.h"
@@ -144,9 +144,9 @@ gtk_tooltip_init (GtkTooltip *tooltip)
   gtk_container_add (GTK_CONTAINER (tooltip->window), tooltip->alignment);
   gtk_widget_show (tooltip->alignment);
 
-  g_signal_connect_swapped (tooltip->window, "style_set",
+  g_signal_connect_swapped (tooltip->window, "style-set",
 			    G_CALLBACK (gtk_tooltip_window_style_set), tooltip);
-  g_signal_connect_swapped (tooltip->window, "expose_event",
+  g_signal_connect_swapped (tooltip->window, "expose-event",
 			    G_CALLBACK (gtk_tooltip_paint_window), tooltip);
 
   tooltip->box = gtk_hbox_new (FALSE, tooltip->window->style->xthickness);
@@ -279,7 +279,7 @@ gtk_tooltip_set_icon (GtkTooltip *tooltip,
 /**
  * gtk_tooltip_set_icon_from_stock:
  * @tooltip: a #GtkTooltip
- * @stock_id: a stock icon name, or %NULL
+ * @stock_id: a stock id, or %NULL
  * @size: a stock icon size
  *
  * Sets the icon of the tooltip (which is in front of the text) to be
@@ -298,6 +298,33 @@ gtk_tooltip_set_icon_from_stock (GtkTooltip  *tooltip,
   gtk_image_set_from_stock (GTK_IMAGE (tooltip->image), stock_id, size);
 
   if (stock_id)
+    gtk_widget_show (tooltip->image);
+  else
+    gtk_widget_hide (tooltip->image);
+}
+
+/**
+ * gtk_tooltip_set_icon_from_icon_name:
+ * @tooltip: a #GtkTooltip
+ * @icon_name: an icon name, or %NULL
+ * @size: a stock icon size
+ *
+ * Sets the icon of the tooltip (which is in front of the text) to be
+ * the icon indicated by @icon_name with the size indicated
+ * by @size.  If @icon_name is %NULL, the image will be hidden.
+ *
+ * Since: 2.14
+ */
+void
+gtk_tooltip_set_icon_from_icon_name(GtkTooltip  *tooltip,
+				    const gchar *icon_name,
+				    GtkIconSize  size)
+{
+  g_return_if_fail (GTK_IS_TOOLTIP (tooltip));
+
+  gtk_image_set_from_icon_name (GTK_IMAGE (tooltip->image), icon_name, size);
+
+  if (icon_name)
     gtk_widget_show (tooltip->image);
   else
     gtk_widget_hide (tooltip->image);
@@ -370,8 +397,8 @@ gtk_tooltip_set_custom (GtkTooltip *tooltip,
  * Since: 2.12
  */
 void
-gtk_tooltip_set_tip_area (GtkTooltip   *tooltip,
-			  GdkRectangle *rect)
+gtk_tooltip_set_tip_area (GtkTooltip         *tooltip,
+			  const GdkRectangle *rect)
 {
   g_return_if_fail (GTK_IS_TOOLTIP (tooltip));
 
@@ -1174,24 +1201,35 @@ _gtk_tooltip_hide (GtkWidget *widget)
     gtk_tooltip_hide_tooltip (tooltip);
 }
 
+static gboolean
+tooltips_enabled (GdkWindow *window)
+{
+  gboolean enabled;
+  gboolean touchscreen;
+  GdkScreen *screen;
+  GtkSettings *settings;
+
+  screen = gdk_drawable_get_screen (window);
+  settings = gtk_settings_get_for_screen (screen);
+
+  g_object_get (settings,
+		"gtk-touchscreen-mode", &touchscreen,
+		"gtk-enable-tooltips", &enabled,
+		NULL);
+
+  return (!touchscreen && enabled);
+}
+
 void
 _gtk_tooltip_handle_event (GdkEvent *event)
 {
   gint x, y;
   gboolean return_value = FALSE;
-  gboolean touchscreen;
   GtkWidget *has_tooltip_widget = NULL;
-  GdkScreen *screen;
   GdkDisplay *display;
   GtkTooltip *current_tooltip;
-  GtkSettings *settings;
 
-  /* Disable tooltips in touchscreen mode */
-  screen = gdk_drawable_get_screen (event->any.window);
-  settings = gtk_settings_get_for_screen (screen);
-  g_object_get (settings, "gtk-touchscreen-mode", &touchscreen, NULL);
-
-  if (touchscreen)
+  if (!tooltips_enabled (event->any.window))
     return;
 
   /* Returns coordinates relative to has_tooltip_widget's allocation. */

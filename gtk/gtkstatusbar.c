@@ -22,10 +22,10 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkframe.h"
 #include "gtklabel.h"
 #include "gtkmarshalers.h"
@@ -51,9 +51,9 @@ enum
   SIGNAL_LAST
 };
 
-enum 
+enum
 {
-  PROP_ZERO,
+  PROP_0,
   PROP_HAS_RESIZE_GRIP
 };
 
@@ -152,7 +152,7 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
    * Is emitted whenever a new message gets pushed onto a statusbar's stack.
    */
   statusbar_signals[SIGNAL_TEXT_PUSHED] =
-    g_signal_new (I_("text_pushed"),
+    g_signal_new (I_("text-pushed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkStatusbarClass, text_pushed),
@@ -171,7 +171,7 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
    * Is emitted whenever a new message is popped off a statusbar's stack.
    */
   statusbar_signals[SIGNAL_TEXT_POPPED] =
-    g_signal_new (I_("text_popped"),
+    g_signal_new (I_("text-popped"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkStatusbarClass, text_popped),
@@ -483,12 +483,8 @@ gtk_statusbar_get_has_resize_grip (GtkStatusbar *statusbar)
 static void
 gtk_statusbar_destroy (GtkObject *object)
 {
-  GtkStatusbar *statusbar;
+  GtkStatusbar *statusbar = GTK_STATUSBAR (object);
   GSList *list;
-
-  g_return_if_fail (GTK_IS_STATUSBAR (object));
-
-  statusbar = GTK_STATUSBAR (object);
 
   for (list = statusbar->messages; list; list = list->next)
     {
@@ -679,8 +675,8 @@ gtk_statusbar_realize (GtkWidget *widget)
   GtkStatusbar *statusbar;
 
   statusbar = GTK_STATUSBAR (widget);
-  
-  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->realize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->realize (widget);
 
   if (statusbar->has_resize_grip)
     gtk_statusbar_create_window (statusbar);
@@ -695,8 +691,8 @@ gtk_statusbar_unrealize (GtkWidget *widget)
 
   if (statusbar->grip_window)
     gtk_statusbar_destroy_window (statusbar);
-  
-  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unrealize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unrealize (widget);
 }
 
 static void
@@ -705,9 +701,9 @@ gtk_statusbar_map (GtkWidget *widget)
   GtkStatusbar *statusbar;
 
   statusbar = GTK_STATUSBAR (widget);
-  
-  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->map) (widget);
-  
+
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->map (widget);
+
   if (statusbar->grip_window)
     gdk_window_show (statusbar->grip_window);
 }
@@ -721,8 +717,8 @@ gtk_statusbar_unmap (GtkWidget *widget)
 
   if (statusbar->grip_window)
     gdk_window_hide (statusbar->grip_window);
-  
-  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unmap) (widget);
+
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unmap (widget);
 }
 
 static gboolean
@@ -825,6 +821,10 @@ has_extra_children (GtkStatusbar *statusbar)
   GList *l;
   GtkBoxChild *child, *frame;
 
+  /* If the internal frame has been modified assume we have extra children */
+  if (gtk_bin_get_child (GTK_BIN (statusbar->frame)) != statusbar->label)
+    return TRUE;
+
   frame = NULL;
   for (l = GTK_BOX (statusbar)->children; l; l = l->next)
     {
@@ -858,7 +858,6 @@ gtk_statusbar_size_allocate  (GtkWidget     *widget,
 
   if (statusbar->has_resize_grip)
     {
-      widget->allocation = *allocation;
       get_grip_rect (statusbar, &rect);    
       
       extra_children = has_extra_children (statusbar);

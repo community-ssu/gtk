@@ -921,7 +921,7 @@ events come.</para>
     gtk_main ();
 </programlisting>
 
-<para>And the final return. Control returns here after gtk_quit() is called.</para>
+<para>And the final return. Control returns here after gtk_main_quit() is called.</para>
 
 <programlisting role="C">
     return 0;
@@ -2851,7 +2851,7 @@ values set to <literal>0.0</literal> (which isn't very useful in this case).
 In order to avoid confusing yourself, you probably want to create your
 adjustment with a <literal>page_size</literal> of <literal>0.0</literal> so 
 that its <literal>upper</literal> value actually corresponds to the highest 
-value the user can select. The _new_with_range() variants take care of creating
+value the user can select. The _new_with_range()ï¿½variants take care of creating
 a suitable adjustment. (If you're <emphasis>already</emphasis> thoroughly
 confused, read the section on <link linkend="ch-Adjustments">Adjustments</link> 
 again for an explanation of what exactly adjustments do and how to create and 
@@ -4204,7 +4204,7 @@ GtkWidget *gtk_vruler_new( void );    /* vertical ruler   */
 </programlisting>
 
 <para>Once a ruler is created, we can define the unit of measurement. Units
-of measure for rulers can be<literal>GTK_PIXELS</literal>, <literal>GTK_INCHES</literal> or
+of measure for rulers can be <literal>GTK_PIXELS</literal>, <literal>GTK_INCHES</literal> or
 <literal>GTK_CENTIMETERS</literal>. This is set using</para>
 
 <programlisting role="C">
@@ -4768,7 +4768,7 @@ buttons. Lets look at how to create a Spin Button:</para>
 
 <programlisting role="C">
 GtkWidget *gtk_spin_button_new( GtkAdjustment *adjustment,
-                                gdouble         climb_rate,
+                                gdouble        climb_rate,
                                 guint          digits );
 </programlisting>
 
@@ -4913,7 +4913,7 @@ void gtk_spin_button_set_update_policy( GtkSpinButton  *spin_button,
 inserted text and syncing its value with the values of the
 Adjustment.</para>
 
-<para>In the case of <literal>GTK_UPDATE_IF_VALID</literal> the Spin Button only value
+<para>In the case of <literal>GTK_UPDATE_IF_VALID</literal> the Spin Button value only
 gets changed if the text input is a numeric value that is within the
 range specified by the Adjustment. Otherwise the text is reset to the
 current value.</para>
@@ -5519,7 +5519,7 @@ example code.</para>
 <programlisting role="C">
 <!-- example-start calendar calendar.c -->
 /*
- * Copyright (C) 1998 Cesar Miquel, Shawn T. Amundson, Mattias Grönlund
+ * Copyright (C) 1998 Cesar Miquel, Shawn T. Amundson, Mattias Grï¿½nlund
  * Copyright (C) 2000 Tony Gale
  *
  * This program is free software; you can redistribute it and/or modify
@@ -11943,7 +11943,7 @@ gtk_dial_realize (GtkWidget *widget)
   attributes.colormap = gtk_widget_get_colormap (widget);
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-  widget->window = gdk_window_new (widget->parent->window, &amp;attributes, attributes_mask);
+  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &amp;attributes, attributes_mask);
 
   widget->style = gtk_style_attach (widget->style, widget->window);
 

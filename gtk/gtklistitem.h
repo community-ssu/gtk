@@ -24,14 +24,12 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#ifndef GTK_DISABLE_DEPRECATED
+#if !defined (GTK_DISABLE_DEPRECATED) || defined (__GTK_LIST_ITEM_C__)
 
 #ifndef __GTK_LIST_ITEM_H__
 #define __GTK_LIST_ITEM_H__
 
-
-#include <gdk/gdk.h>
-#include <gtk/gtkitem.h>
+#include <gtk/gtk.h>
 
 
 G_BEGIN_DECLS

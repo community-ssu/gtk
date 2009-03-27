@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -143,6 +143,13 @@ del_pwds_parent_as_shortcut_clicked_cb (GtkWidget *button,
 }
 
 static void
+unselect_all_clicked_cb (GtkWidget *button,
+                         gpointer   user_data)
+{
+  gtk_file_chooser_unselect_all (user_data);
+}
+
+static void
 tests_button_clicked_cb (GtkButton *real_button,
 			 gpointer   user_data)
 {
@@ -180,6 +187,12 @@ tests_button_clicked_cb (GtkButton *real_button,
       button = gtk_button_new_with_label ("Remove $PWD's Parent as Shortcut");
       g_signal_connect (button, "clicked",
 			G_CALLBACK (del_pwds_parent_as_shortcut_clicked_cb), user_data);
+      gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
+      gtk_widget_show (button);
+
+      button = gtk_button_new_with_label ("Unselect all");
+      g_signal_connect (button, "clicked",
+			G_CALLBACK (unselect_all_clicked_cb), user_data);
       gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
       gtk_widget_show (button);
 
@@ -237,9 +250,12 @@ chooser_update_preview_cb (GtkFileChooser *chooser,
   gchar *filename;
 
   filename = gtk_file_chooser_get_preview_uri (chooser);
-  g_message ("%s::update-preview\n\tPreview Filename: `%s'\nDone.\n",
-	     G_OBJECT_TYPE_NAME (chooser), filename);
-  g_free (filename);
+  if (filename != NULL)
+    {
+      g_message ("%s::update-preview\n\tPreview Filename: `%s'\nDone.\n",
+		 G_OBJECT_TYPE_NAME (chooser), filename);
+      g_free (filename);
+    }
 }
 
 
@@ -357,8 +373,6 @@ main (int   argc,
   gtk_window_present (GTK_WINDOW (win));
 
   gtk_main ();
-
-  gtk_widget_destroy (win);
 
   return 0;
 }

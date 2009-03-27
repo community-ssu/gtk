@@ -18,7 +18,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <config.h>
+#include "config.h"
 #include "gtkdebug.h"
 #include "gtkkeyhash.h"
 #include "gtkalias.h"
@@ -128,7 +128,7 @@ _gtk_key_hash_new (GdkKeymap      *keymap,
   GtkKeyHash *key_hash = g_new (GtkKeyHash, 1);
 
   key_hash->keymap = keymap;
-  g_signal_connect (keymap, "keys_changed",
+  g_signal_connect (keymap, "keys-changed",
 		    G_CALLBACK (key_hash_keys_changed), key_hash);
 
   key_hash->entries_list = NULL;

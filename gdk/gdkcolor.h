@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
 
 #ifndef __GDK_COLOR_H__
 #define __GDK_COLOR_H__
@@ -108,25 +112,25 @@ void gdk_colormap_change (GdkColormap	*colormap,
 			  gint		 ncolors);
 #endif 
 
-gint  gdk_colormap_alloc_colors   (GdkColormap *colormap,
-				   GdkColor    *colors,
-				   gint         ncolors,
-				   gboolean     writeable,
-				   gboolean     best_match,
-				   gboolean    *success);
-gboolean gdk_colormap_alloc_color (GdkColormap *colormap,
-				   GdkColor    *color,
-				   gboolean     writeable,
-				   gboolean     best_match);
-void     gdk_colormap_free_colors (GdkColormap *colormap,
-				   GdkColor    *colors,
-				   gint         ncolors);
-void     gdk_colormap_query_color (GdkColormap *colormap,
-				   gulong       pixel,
-				   GdkColor    *result);
+gint  gdk_colormap_alloc_colors   (GdkColormap    *colormap,
+				   GdkColor       *colors,
+				   gint            n_colors,
+				   gboolean        writeable,
+				   gboolean        best_match,
+				   gboolean       *success);
+gboolean gdk_colormap_alloc_color (GdkColormap    *colormap,
+				   GdkColor       *color,
+				   gboolean        writeable,
+				   gboolean        best_match);
+void     gdk_colormap_free_colors (GdkColormap    *colormap,
+				   const GdkColor *colors,
+				   gint            n_colors);
+void     gdk_colormap_query_color (GdkColormap    *colormap,
+				   gulong          pixel,
+				   GdkColor       *result);
 
 GdkVisual *gdk_colormap_get_visual (GdkColormap *colormap);
-     
+
 GdkColor *gdk_color_copy      (const GdkColor *color);
 void      gdk_color_free      (GdkColor       *color);
 gboolean  gdk_color_parse     (const gchar    *spec,

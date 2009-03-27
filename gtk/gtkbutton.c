@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkalignment.h"
 #include "gtkbutton.h"
@@ -309,7 +309,7 @@ gtk_button_class_init (GtkButtonClass *klass)
    *
    * Emitted when the button is pressed.
    * 
-   * @Deprecated: Use the #GtkWidget::button-press-event signal.
+   * Deprecated: 2.8: Use the #GtkWidget::button-press-event signal.
    */ 
   button_signals[PRESSED] =
     g_signal_new (I_("pressed"),
@@ -326,7 +326,7 @@ gtk_button_class_init (GtkButtonClass *klass)
    *
    * Emitted when the button is released.
    * 
-   * @Deprecated: Use the #GtkWidget::button-release-event signal.
+   * Deprecated: 2.8: Use the #GtkWidget::button-release-event signal.
    */ 
   button_signals[RELEASED] =
     g_signal_new (I_("released"),
@@ -358,7 +358,7 @@ gtk_button_class_init (GtkButtonClass *klass)
    *
    * Emitted when the pointer enters the button.
    * 
-   * @Deprecated: Use the #GtkWidget::enter-notify-event signal.
+   * Deprecated: 2.8: Use the #GtkWidget::enter-notify-event signal.
    */ 
   button_signals[ENTER] =
     g_signal_new (I_("enter"),
@@ -375,7 +375,7 @@ gtk_button_class_init (GtkButtonClass *klass)
    *
    * Emitted when the pointer leaves the button.
    * 
-   * @Deprecated: Use the #GtkWidget::leave-notify-event signal.
+   * Deprecated: 2.8: Use the #GtkWidget::leave-notify-event signal.
    */ 
   button_signals[LEAVE] =
     g_signal_new (I_("leave"),
@@ -447,8 +447,8 @@ gtk_button_class_init (GtkButtonClass *klass)
 					   g_param_spec_boolean ("displace-focus",
 								 P_("Displace focus"),
 								 P_("Whether the child_displacement_x/_y properties should also affect the focus rectangle"),
-						       FALSE,
-						       GTK_PARAM_READABLE));
+								 FALSE,
+								 GTK_PARAM_READABLE));
 
   /**
    * GtkButton:inner-border:
@@ -496,16 +496,22 @@ gtk_button_class_init (GtkButtonClass *klass)
                                            g_param_spec_int ("tree-view-separator-area",
                                                              P_("Tree View Separator Area"),
                                                              P_("Amount of pixels to reserve for a separator"),
-							     0,
-							     G_MAXINT,
-							     0,
-							     GTK_PARAM_READABLE));
+                                                             0,
+                                                             G_MAXINT,
+                                                             0,
+                                                             GTK_PARAM_READABLE));
 #endif /* MAEMO_CHANGES */
-  
 
+  /**
+   * GtkSettings::gtk-button-images:
+   *
+   * Whether images should be shown on buttons
+   *
+   * Since: 2.4
+   */
   gtk_settings_install_property (g_param_spec_boolean ("gtk-button-images",
 						       P_("Show button images"),
-						       P_("Whether stock icons should be shown in buttons"),
+						       P_("Whether images should be shown on buttons"),
 						       TRUE,
 						       GTK_PARAM_READWRITE));
 
@@ -555,8 +561,8 @@ gtk_button_destroy (GtkObject *object)
       g_free (button->label_text);
       button->label_text = NULL;
     }
-  
-  (* GTK_OBJECT_CLASS (gtk_button_parent_class)->destroy) (object);
+
+  GTK_OBJECT_CLASS (gtk_button_parent_class)->destroy (object);
 }
 
 static GObject*
@@ -567,9 +573,9 @@ gtk_button_constructor (GType                  type,
   GObject *object;
   GtkButton *button;
 
-  object = (* G_OBJECT_CLASS (gtk_button_parent_class)->constructor) (type,
-								      n_construct_properties,
-								      construct_params);
+  object = G_OBJECT_CLASS (gtk_button_parent_class)->constructor (type,
+                                                                  n_construct_properties,
+                                                                  construct_params);
 
   button = GTK_BUTTON (object);
   button->constructed = TRUE;
@@ -1264,12 +1270,12 @@ gtk_button_size_allocate (GtkWidget     *widget,
 }
 
 void
-_gtk_button_paint (GtkButton    *button,
-		   GdkRectangle *area,
-		   GtkStateType  state_type,
-		   GtkShadowType shadow_type,
-		   const gchar  *main_detail,
-		   const gchar  *default_detail)
+_gtk_button_paint (GtkButton          *button,
+		   const GdkRectangle *area,
+		   GtkStateType        state_type,
+		   GtkShadowType       shadow_type,
+		   const gchar        *main_detail,
+		   const gchar        *default_detail)
 {
   GtkWidget *widget;
   gint width, height;
@@ -1404,10 +1410,10 @@ gtk_button_expose (GtkWidget      *widget,
 			 GTK_WIDGET_STATE (widget),
 			 button->depressed ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
 			 "button", "buttondefault");
-      
-      (* GTK_WIDGET_CLASS (gtk_button_parent_class)->expose_event) (widget, event);
+
+      GTK_WIDGET_CLASS (gtk_button_parent_class)->expose_event (widget, event);
     }
-  
+
   return FALSE;
 }
 
@@ -1517,7 +1523,8 @@ gtk_button_leave_notify (GtkWidget        *widget,
   event_widget = gtk_get_event_widget ((GdkEvent*) event);
 
   if ((event_widget == widget) &&
-      (event->detail != GDK_NOTIFY_INFERIOR))
+      (event->detail != GDK_NOTIFY_INFERIOR) &&
+      (GTK_WIDGET_SENSITIVE (event_widget)))
     {
       button->in_button = FALSE;
       gtk_button_leave (button);

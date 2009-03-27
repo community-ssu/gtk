@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkframe.h"
 #include "gtklabel.h"
@@ -349,7 +349,7 @@ gtk_frame_get_label (GtkFrame *frame)
 {
   g_return_val_if_fail (GTK_IS_FRAME (frame), NULL);
 
-  if (frame->label_widget && GTK_IS_LABEL (frame->label_widget))
+  if (GTK_IS_LABEL (frame->label_widget))
     return gtk_label_get_text (GTK_LABEL (frame->label_widget));
   else
     return NULL;
@@ -592,7 +592,7 @@ gtk_frame_expose (GtkWidget      *widget,
     {
       gtk_frame_paint (widget, &event->area);
 
-      (* GTK_WIDGET_CLASS (gtk_frame_parent_class)->expose_event) (widget, event);
+      GTK_WIDGET_CLASS (gtk_frame_parent_class)->expose_event (widget, event);
     }
 
   return FALSE;

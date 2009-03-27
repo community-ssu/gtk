@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkfilechooserprivate.h"
 #include "gtkfilechooserdialog.h"
 #include "gtkfilechooserwidget.h"
@@ -185,7 +185,6 @@ file_chooser_widget_default_size_changed (GtkWidget            *widget,
   gint width, height;
   gint default_width, default_height;
   GtkRequisition req, widget_req;
-  gboolean resizable;
 
   priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
 
@@ -208,7 +207,6 @@ file_chooser_widget_default_size_changed (GtkWidget            *widget,
       height = GTK_WIDGET (dialog)->allocation.height - widget->allocation.height;
     }
 
-  resizable = _gtk_file_chooser_embed_get_resizable (GTK_FILE_CHOOSER_EMBED (priv->widget));
   _gtk_file_chooser_embed_get_default_size (GTK_FILE_CHOOSER_EMBED (priv->widget),
 					    &default_width, &default_height);
 
@@ -219,16 +217,7 @@ file_chooser_widget_default_size_changed (GtkWidget            *widget,
   if (GTK_WIDGET_REALIZED (dialog))
     clamp_to_screen (GTK_WIDGET (dialog), &width, &height);
 
-  if (resizable)
-    {
-      gtk_window_set_resizable (GTK_WINDOW (dialog), resizable);
-      gtk_window_resize (GTK_WINDOW (dialog), width, height);
-    }
-  else
-    {
-      gtk_widget_set_size_request (GTK_WIDGET (dialog), width, -1);
-      gtk_window_set_resizable (GTK_WINDOW (dialog), resizable);
-    }
+  gtk_window_resize (GTK_WINDOW (dialog), width, height);
 }
 
 static void
@@ -335,57 +324,6 @@ gtk_file_chooser_dialog_get_property (GObject         *object,
   g_object_get_property (G_OBJECT (priv->widget), pspec->name, value);
 }
 
-#if 0
-static void
-set_default_size (GtkFileChooserDialog *dialog)
-{
-  GtkWidget *widget;
-  GtkWindow *window;
-  int default_width, default_height;
-  int width, height;
-  int font_size;
-  GdkScreen *screen;
-  int monitor_num;
-  GtkRequisition req;
-  GdkRectangle monitor;
-
-  widget = GTK_WIDGET (dialog);
-  window = GTK_WINDOW (dialog);
-
-  /* Size based on characters */
-
-  font_size = pango_font_description_get_size (widget->style->font_desc);
-  font_size = PANGO_PIXELS (font_size);
-
-  width = font_size * NUM_CHARS;
-  height = font_size * NUM_LINES;
-
-  /* Use at least the requisition size... */
-
-  gtk_widget_size_request (widget, &req);
-  width = MAX (width, req.width);
-  height = MAX (height, req.height);
-
-  /* ... but no larger than the monitor */
-
-  screen = gtk_widget_get_screen (widget);
-  monitor_num = gdk_screen_get_monitor_at_window (screen, widget->window);
-
-  gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
-
-  width = MIN (width, monitor.width * 3 / 4);
-  height = MIN (height, monitor.height * 3 / 4);
-
-  /* Set size */
-
-  gtk_window_get_default_size (window, &default_width, &default_height);
-
-  gtk_window_set_default_size (window,
-			       (default_width == -1) ? width : default_width,
-			       (default_height == -1) ? height : default_height);
-}
-#endif
-
 static void
 foreach_ensure_default_response_cb (GtkWidget *widget,
 				    gpointer   data)
@@ -418,7 +356,6 @@ gtk_file_chooser_dialog_map (GtkWidget *widget)
   if (!GTK_WIDGET_MAPPED (priv->widget))
     gtk_widget_map (priv->widget);
 
-  file_chooser_widget_default_size_changed (priv->widget, dialog);
   _gtk_file_chooser_embed_initial_focus (GTK_FILE_CHOOSER_EMBED (priv->widget));
 
   GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->map (widget);
@@ -477,7 +414,6 @@ gtk_file_chooser_dialog_new_valist (const gchar          *title,
   result = g_object_new (GTK_TYPE_FILE_CHOOSER_DIALOG,
 			 "title", title,
 			 "action", action,
-			 "file-system-backend", backend,
 			 NULL);
 
   if (parent)
@@ -544,6 +480,7 @@ gtk_file_chooser_dialog_new (const gchar         *title,
  * Return value: a new #GtkFileChooserDialog
  *
  * Since: 2.4
+ * Deprecated: 2.14
  **/
 GtkWidget *
 gtk_file_chooser_dialog_new_with_backend (const gchar          *title,

@@ -1,3 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+]>
 <refentry id="gtk-question-index" revision="1 Jan 2002">
 <refmeta>
 <refentrytitle>Common Questions</refentrytitle>
@@ -190,9 +194,10 @@ to read the documentation.
 <para>
 The short checklist on how to use gettext is: call bindtextdomain() so gettext 
 can find the files containing your translations, call textdomain() to set the 
-default translation domain, then call gettext() to look up each string to be 
-translated in the default domain. Conventionally, people define macros as
-follows for convenience:
+default translation domain, call bind_textdomain_codeset() to request that
+all translated strings are returned in UTF-8, then call gettext() to look up 
+each string to be translated in the default domain. 
+Conventionally, people define macros as follows for convenience:
 <informalexample>
 <programlisting>
   #define  _(x)  gettext (x)
@@ -353,6 +358,11 @@ text = g_convert ("runtime conversion: &copy;", -1, "ISO-8859-1", "UTF-8", NULL,
 g_print(text);
 g_free (text);
 </programlisting></informalexample>
+</para>
+<para>
+If you are using gettext() to localize your application, you need to
+call bind_textdomain_codeset() to ensure that translated strings are
+returned in UTF-8 encoding.
 </para>
 </answer>
 </qandaentry>
@@ -552,7 +562,7 @@ GdkColormap *colormap;
 
 colormap = gdk_screen_get_rgba_colormap (screen);
 if (!colormap)
-  colormap = gtk_screen_get_rgb_colormap (screen);
+  colormap = gdk_screen_get_rgb_colormap (screen);
 
 gtk_widget_set_colormap (widget, colormap);
 </programlisting></informalexample>

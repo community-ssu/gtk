@@ -29,7 +29,7 @@
 /* Following code adapted from io-tiff.c, which was ``(almost) blatantly
    ripped from Imlib'' */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
@@ -289,20 +289,20 @@ gdk_pixbuf__xbm_image_load_real (FILE     *f,
 	GdkPixbuf *pixbuf;
 
 	if (!read_bitmap_file_data (f, &w, &h, &data, &x_hot, &y_hot)) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("Invalid XBM file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("Invalid XBM file"));
 		return NULL;
 	}
 
 	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8, w, h);
 
         if (pixbuf == NULL) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Insufficient memory to load XBM image file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Insufficient memory to load XBM image file"));
                 return NULL;
         }
         
@@ -447,10 +447,10 @@ gdk_pixbuf__xbm_image_load_increment (gpointer       data,
 	if (fwrite (buf, sizeof (guchar), size, context->file) != size) {
 		gint save_errno = errno;
 		context->all_okay = FALSE;
-                g_set_error (error,
-                             G_FILE_ERROR,
-                             g_file_error_from_errno (save_errno),
-                             _("Failed to write to temporary file when loading XBM image"));
+                g_set_error_literal (error,
+                                     G_FILE_ERROR,
+                                     g_file_error_from_errno (save_errno),
+                                     _("Failed to write to temporary file when loading XBM image"));
 		return FALSE;
 	}
 
@@ -458,13 +458,12 @@ gdk_pixbuf__xbm_image_load_increment (gpointer       data,
 }
 
 #ifndef INCLUDE_xbm
-#define MODULE_ENTRY(type,function) function
+#define MODULE_ENTRY(function) G_MODULE_EXPORT void function
 #else
-#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#define MODULE_ENTRY(function) void _gdk_pixbuf__xbm_ ## function
 #endif
 
-void
-MODULE_ENTRY (xbm, fill_vtable) (GdkPixbufModule *module)
+MODULE_ENTRY (fill_vtable) (GdkPixbufModule *module)
 {
 	module->load = gdk_pixbuf__xbm_image_load;
 	module->begin_load = gdk_pixbuf__xbm_image_begin_load;
@@ -472,8 +471,7 @@ MODULE_ENTRY (xbm, fill_vtable) (GdkPixbufModule *module)
 	module->load_increment = gdk_pixbuf__xbm_image_load_increment;
 }
 
-void
-MODULE_ENTRY (xbm, fill_info) (GdkPixbufFormat *info)
+MODULE_ENTRY (fill_info) (GdkPixbufFormat *info)
 {
 	static GdkPixbufModulePattern signature[] = {
 		{ "#define ", NULL, 100 },

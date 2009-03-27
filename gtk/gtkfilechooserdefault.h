@@ -22,7 +22,7 @@
 #define __GTK_FILE_CHOOSER_DEFAULT_H__
 
 #include "gtkfilesystem.h"
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 typedef struct _GtkFileChooserDefault      GtkFileChooserDefault;
 
 GType      _gtk_file_chooser_default_get_type (void) G_GNUC_CONST;
-GtkWidget *_gtk_file_chooser_default_new      (const char *file_system);
+GtkWidget *_gtk_file_chooser_default_new      (void);
 
 G_END_DECLS
 

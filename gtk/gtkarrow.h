@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2001.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_ARROW_H__
 #define __GTK_ARROW_H__
@@ -50,8 +54,8 @@ struct _GtkArrow
 {
   GtkMisc misc;
 
-  gint16 arrow_type;
-  gint16 shadow_type;
+  gint16 GSEAL (arrow_type);
+  gint16 GSEAL (shadow_type);
 };
 
 struct _GtkArrowClass

@@ -22,7 +22,7 @@
 #define GTK_ENABLE_BROKEN
 #include <string.h>
 #include <gtk/gtk.h>
-//#include <gtk/gtkunixprint.h>
+#include <gtk/gtkunixprint.h>
 
 static void
 check_property (const char *output,
@@ -76,7 +76,7 @@ test_type (gconstpointer data)
     return;
 
   /* These can't be freely constructed/destroyed */
-  if (/* g_type_is_a (type, GTK_TYPE_PRINT_JOB) || */
+  if (g_type_is_a (type, GTK_TYPE_PRINT_JOB) ||
       g_type_is_a (type, GDK_TYPE_PIXBUF_LOADER) ||
       g_type_is_a (type, gdk_pixbuf_simple_anim_iter_get_type ()))
     return;
@@ -161,6 +161,13 @@ test_type (gconstpointer data)
 	  strcmp (pspec->name, "current-color") == 0)
 	continue;
 
+      if (g_type_is_a (type, GTK_TYPE_COLOR_SELECTION_DIALOG) &&
+	  (strcmp (pspec->name, "color-selection") == 0 ||
+	   strcmp (pspec->name, "ok-button") == 0 ||
+	   strcmp (pspec->name, "help-button") == 0 ||
+	   strcmp (pspec->name, "cancel-button") == 0))
+	continue;
+
       /* Gets set to the cwd */
       if (g_type_is_a (type, GTK_TYPE_FILE_SELECTION) &&
 	  strcmp (pspec->name, "filename") == 0)
@@ -183,12 +190,10 @@ test_type (gconstpointer data)
 	  strcmp (pspec->name, "job-name") == 0)
 	continue;
 
-#if 0
       if (g_type_is_a (type, GTK_TYPE_PRINT_UNIX_DIALOG) &&
 	  (strcmp (pspec->name, "page-setup") == 0 ||
 	   strcmp (pspec->name, "print-settings") == 0))
 	continue;
-#endif
 
       if (g_type_is_a (type, GTK_TYPE_PROGRESS_BAR) &&
           strcmp (pspec->name, "adjustment") == 0)
@@ -218,10 +223,12 @@ test_type (gconstpointer data)
           (strcmp (pspec->name, "color-hash") == 0 ||
 	   strcmp (pspec->name, "gtk-cursor-theme-name") == 0 ||
 	   strcmp (pspec->name, "gtk-cursor-theme-size") == 0 ||
+	   strcmp (pspec->name, "gtk-dnd-drag-threshold") == 0 ||
 	   strcmp (pspec->name, "gtk-double-click-time") == 0 ||
+	   strcmp (pspec->name, "gtk-fallback-icon-theme") == 0 ||
 	   strcmp (pspec->name, "gtk-file-chooser-backend") == 0 ||
 	   strcmp (pspec->name, "gtk-icon-theme-name") == 0 ||
-	   strcmp (pspec->name, "gtk-fallback-icon-theme") == 0 ||
+	   strcmp (pspec->name, "gtk-im-module") == 0 ||
 	   strcmp (pspec->name, "gtk-key-theme-name") == 0 ||
 	   strcmp (pspec->name, "gtk-theme-name") == 0))
         continue;
@@ -275,6 +282,10 @@ test_type (gconstpointer data)
 	   strcmp (pspec->name, "style") == 0))
 	continue;
 
+      if (g_test_verbose ())
+      g_print ("Property %s.%s\n", 
+	     g_type_name (pspec->owner_type),
+	     pspec->name);
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_object_get_property (instance, pspec->name, &value);
       check_property ("Property", pspec, &value);

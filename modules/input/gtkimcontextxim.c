@@ -17,16 +17,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "locale.h"
 #include <string.h>
 #include <stdlib.h>
 
-#include "gtk/gtkintl.h"
-#include "gtk/gtklabel.h"
-#include "gtk/gtksignal.h"
-#include "gtk/gtkwindow.h"
 #include "gtkimcontextxim.h"
+
+#include "gtk/gtkintl.h"
 
 typedef struct _StatusWindow StatusWindow;
 typedef struct _GtkXIMInfo GtkXIMInfo;
@@ -624,7 +622,7 @@ reinitialize_ic (GtkIMContextXIM *context_xim)
 	{
 	  context_xim->preedit_length = 0;
 	  if (!context_xim->finalizing)
-	    g_signal_emit_by_name (context_xim, "preedit_changed");
+	    g_signal_emit_by_name (context_xim, "preedit-changed");
 	}
     }
   /* 
@@ -932,7 +930,7 @@ gtk_im_context_xim_reset (GtkIMContext *context)
   if (context_xim->preedit_length)
     {
       context_xim->preedit_length = 0;
-      g_signal_emit_by_name (context, "preedit_changed");
+      g_signal_emit_by_name (context, "preedit-changed");
     }
 
   XFree (result);
@@ -1034,7 +1032,7 @@ preedit_start_callback (XIC      xic,
   GtkIMContextXIM *context_xim = GTK_IM_CONTEXT_XIM (context);
   
   if (!context_xim->finalizing)
-    g_signal_emit_by_name (context, "preedit_start");
+    g_signal_emit_by_name (context, "preedit-start");
 
   return -1;			/* No length limit */
 }		     
@@ -1051,11 +1049,11 @@ preedit_done_callback (XIC      xic,
     {
       context_xim->preedit_length = 0;
       if (!context_xim->finalizing)
-	g_signal_emit_by_name (context_xim, "preedit_changed");
+	g_signal_emit_by_name (context_xim, "preedit-changed");
     }
 
   if (!context_xim->finalizing)
-    g_signal_emit_by_name (context, "preedit_end");  
+    g_signal_emit_by_name (context, "preedit-end");
 }		     
 
 static gint
@@ -1180,7 +1178,7 @@ preedit_draw_callback (XIC                           xic,
   g_free (new_text);
 
   if (!context->finalizing)
-    g_signal_emit_by_name (context, "preedit_changed");
+    g_signal_emit_by_name (context, "preedit-changed");
 }
     
 
@@ -1195,7 +1193,7 @@ preedit_caret_callback (XIC                            xic,
     {
       context->preedit_cursor = call_data->position;
       if (!context->finalizing)
-	g_signal_emit_by_name (context, "preedit_changed");
+	g_signal_emit_by_name (context, "preedit-changed");
     }
   else
     {
@@ -1756,7 +1754,7 @@ status_window_get (GtkWidget *toplevel)
   g_signal_connect (toplevel, "destroy",
 		    G_CALLBACK (on_status_toplevel_destroy),
 		    status_window);
-  g_signal_connect (toplevel, "configure_event",
+  g_signal_connect (toplevel, "configure-event",
 		    G_CALLBACK (on_status_toplevel_configure),
 		    status_window);
   g_signal_connect (toplevel, "notify::screen",
@@ -1824,11 +1822,11 @@ status_window_make_window (StatusWindow *status_window)
   gtk_misc_set_padding (GTK_MISC (status_label), 1, 1);
   gtk_widget_show (status_label);
   
-  g_signal_connect (window, "style_set",
+  g_signal_connect (window, "style-set",
 		    G_CALLBACK (on_status_window_style_set), status_label);
   gtk_container_add (GTK_CONTAINER (window), status_label);
   
-  g_signal_connect (window, "expose_event",
+  g_signal_connect (window, "expose-event",
 		    G_CALLBACK (on_status_window_expose_event), NULL);
   
   gtk_window_set_screen (GTK_WINDOW (status_window->window),

@@ -16,7 +16,9 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <config.h>
+#define PANGO_ENABLE_BACKEND /* for pango_fc_font_map_cache_clear() */
+
+#include "config.h"
 
 #include <string.h>
 
@@ -30,6 +32,7 @@
 
 #ifdef GDK_WINDOWING_X11
 #include "x11/gdkx.h"
+#include <pango/pangofc-fontmap.h>
 #endif
 
 #define DEFAULT_TIMEOUT_INITIAL 200
@@ -106,7 +109,14 @@ enum {
   PROP_PRINT_PREVIEW_COMMAND,
   PROP_ENABLE_MNEMONICS,
   PROP_ENABLE_ACCELS,
-  PROP_RECENT_FILES_LIMIT
+  PROP_RECENT_FILES_LIMIT,
+  PROP_IM_MODULE,
+  PROP_RECENT_FILES_MAX_AGE,
+  PROP_FONTCONFIG_TIMESTAMP,
+  PROP_SOUND_THEME_NAME,
+  PROP_ENABLE_INPUT_FEEDBACK_SOUNDS,
+  PROP_ENABLE_EVENT_SOUNDS,
+  PROP_ENABLE_TOOLTIPS
 };
 
 
@@ -132,6 +142,7 @@ static void    settings_update_modules           (GtkSettings           *setting
 static void    settings_update_cursor_theme      (GtkSettings           *settings);
 static void    settings_update_resolution        (GtkSettings           *settings);
 static void    settings_update_font_options      (GtkSettings           *settings);
+static gboolean settings_update_fontconfig       (GtkSettings           *settings);
 #endif
 static void    settings_update_color_scheme      (GtkSettings *settings);
 
@@ -331,6 +342,20 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                              NULL);
   g_assert (result == PROP_FONT_NAME);
 
+  /**
+   * GtkSettings:gtk-icon-sizes:
+   *
+   * A list of icon sizes. The list is separated by colons, and
+   * item has the form:
+   *
+   * <replaceable>size-name</replaceable> = <replaceable>width</replaceable> , <replaceable>height</replaceable>
+   *
+   * E.g. "gtk-menu=16,16:gtk-button=20,20:gtk-dialog=48,48". 
+   * GTK+ itself use the following named icon sizes: gtk-menu, 
+   * gtk-button, gtk-small-toolbar, gtk-large-toolbar, gtk-dnd, 
+   * gtk-dialog. Applications can register their own named icon 
+   * sizes with gtk_icon_size_register().
+   */
   result = settings_install_property_parser (class,
                                              g_param_spec_string ("gtk-icon-sizes",
 								   P_("Icon Sizes"),
@@ -805,6 +830,133 @@ gtk_settings_class_init (GtkSettingsClass *class)
  							       GTK_PARAM_READWRITE),
 					     NULL);
   g_assert (result == PROP_RECENT_FILES_LIMIT);
+
+  /**
+   * GtkSettings:gtk-im-module:
+   *
+   * Which IM module should be used by default.
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_string ("gtk-im-module",
+								  P_("Default IM module"),
+								  P_("Which IM module should be used by default"),
+								  NULL,
+								  GTK_PARAM_READWRITE),
+					     NULL);
+  g_assert (result == PROP_IM_MODULE);
+
+  /**
+   * GtkSettings:gtk-recent-files-max-age:
+   *
+   * The maximum age, in days, of the items inside the recently used
+   * resources list. Items older than this setting will be excised
+   * from the list. If set to 0, the list will always be empty; if
+   * set to -1, no item will be removed.
+   *
+   * Since: 2.14
+   */
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-recent-files-max-age",
+ 							       P_("Recent Files Max Age"),
+ 							       P_("Maximum age of recently used files, in days"),
+ 							       -1, G_MAXINT,
+							       30,
+ 							       GTK_PARAM_READWRITE),
+					     NULL);
+  g_assert (result == PROP_RECENT_FILES_MAX_AGE);
+
+  result = settings_install_property_parser (class,
+					     g_param_spec_int ("gtk-fontconfig-timestamp",
+ 							       P_("Fontconfig configuration timestamp"),
+ 							       P_("Timestamp of current fontconfig configuration"),
+ 							       G_MININT, G_MAXINT, 0,
+ 							       GTK_PARAM_READWRITE),
+					     NULL);
+  
+  g_assert (result == PROP_FONTCONFIG_TIMESTAMP);
+
+  /**
+   * GtkSettings:gtk-sound-theme-name:
+   *
+   * The XDG sound theme to use for event sounds.
+   *
+   * See the <ulink url="http://www.freedesktop.org/wiki/Specifications/sound-theme-spec">Sound Theme spec</ulink> 
+   * for more information on event sounds and sound themes.
+   *
+   * GTK+ itself does not support event sounds, you have to use a loadable 
+   * module like the one that comes with libcanberra.
+   *
+   * Since: 2.14
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_string ("gtk-sound-theme-name",
+                                                                  P_("Sound Theme Name"),
+                                                                  P_("XDG sound theme name"),
+                                                                  "freedesktop",
+                                                                  GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_SOUND_THEME_NAME);
+
+  /**
+   * GtkSettings:gtk-enable-input-feedback-sounds:
+   *
+   * Whether to play event sounds as feedback to user input.
+   *
+   * See the <ulink url="http://www.freedesktop.org/wiki/Specifications/sound-theme-spec">Sound Theme spec</ulink> 
+   * for more information on event sounds and sound themes.
+   *
+   * GTK+ itself does not support event sounds, you have to use a loadable 
+   * module like the one that comes with libcanberra.
+   *
+   * Since: 2.14
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_boolean ("gtk-enable-input-feedback-sounds",
+                                                                   /* Translators: this means sounds that are played as feedback to user input */
+								   P_("Audible Input Feedback"),
+								   P_("Whether to play event sounds as feedback to user input"),
+								   TRUE,
+								   GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_ENABLE_INPUT_FEEDBACK_SOUNDS);
+
+  /**
+   * GtkSettings:gtk-enable-event-sounds:
+   *
+   * Whether to play any event sounds at all.
+   *
+   * See the <ulink url="http://www.freedesktop.org/wiki/Specifications/sound-theme-spec">Sound Theme spec</ulink> 
+   * for more information on event sounds and sound themes.
+   *
+   * GTK+ itself does not support event sounds, you have to use a loadable 
+   * module like the one that comes with libcanberra.
+   *
+   * Since: 2.14
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_boolean ("gtk-enable-event-sounds",
+								   P_("Enable Event Sounds"),
+								   P_("Whether to play any event sounds at all"),
+								   TRUE,
+								   GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_ENABLE_EVENT_SOUNDS);
+
+  /**
+   * GtkSettings:gtk-enable-tooltips:
+   *
+   * Whether tooltips should be shown on widgets.
+   *
+   * Since: 2.14
+   */
+  result = settings_install_property_parser (class,
+                                             g_param_spec_boolean ("gtk-enable-tooltips",
+                                                                   P_("Enable Tooltips"),
+                                                                   P_("Whether tooltips should be shown on widgets"),
+                                                                   TRUE,
+                                                                   GTK_PARAM_READWRITE),
+                                             NULL);
+  g_assert (result == PROP_ENABLE_TOOLTIPS);
 }
 
 static void
@@ -1018,6 +1170,10 @@ gtk_settings_notify (GObject    *object,
       settings_update_font_options (settings);
       gtk_rc_reset_styles (GTK_SETTINGS (object));
       break;
+    case PROP_FONTCONFIG_TIMESTAMP:
+      if (settings_update_fontconfig (settings))
+	gtk_rc_reset_styles (GTK_SETTINGS (object));
+      break;
     case PROP_CURSOR_THEME_NAME:
     case PROP_CURSOR_THEME_SIZE:
       settings_update_cursor_theme (settings);
@@ -1224,23 +1380,33 @@ _gtk_rc_property_parser_from_type (GType type)
 void
 gtk_settings_install_property (GParamSpec *pspec)
 {
+  static GtkSettingsClass *klass = NULL;
+
   GtkRcPropertyParser parser;
 
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
 
+  if (! klass)
+    klass = g_type_class_ref (GTK_TYPE_SETTINGS);
+
   parser = _gtk_rc_property_parser_from_type (G_PARAM_SPEC_VALUE_TYPE (pspec));
 
-  settings_install_property_parser (gtk_type_class (GTK_TYPE_SETTINGS), pspec, parser);
+  settings_install_property_parser (klass, pspec, parser);
 }
 
 void
 gtk_settings_install_property_parser (GParamSpec          *pspec,
 				      GtkRcPropertyParser  parser)
 {
+  static GtkSettingsClass *klass = NULL;
+
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (parser != NULL);
-  
-  settings_install_property_parser (gtk_type_class (GTK_TYPE_SETTINGS), pspec, parser);
+
+  if (! klass)
+    klass = g_type_class_ref (GTK_TYPE_SETTINGS);
+
+  settings_install_property_parser (klass, pspec, parser);
 }
 
 static void
@@ -1250,7 +1416,7 @@ free_value (gpointer data)
   
   g_value_unset (&qvalue->public.value);
   g_free (qvalue->public.origin);
-  g_free (qvalue);
+  g_slice_free (GtkSettingsValuePrivate, qvalue);
 }
 
 static void
@@ -1281,7 +1447,7 @@ gtk_settings_set_property_value_internal (GtkSettings            *settings,
   qvalue = g_datalist_id_get_data (&settings->queued_settings, name_quark);
   if (!qvalue)
     {
-      qvalue = g_new0 (GtkSettingsValuePrivate, 1);
+      qvalue = g_slice_new0 (GtkSettingsValuePrivate);
       g_datalist_id_set_data_full (&settings->queued_settings, name_quark, qvalue, free_value);
     }
   else
@@ -1848,9 +2014,9 @@ settings_update_font_options (GtkSettings *settings)
 {
   gint hinting;
   gchar *hint_style_str;
-  cairo_hint_style_t hint_style = CAIRO_HINT_STYLE_DEFAULT;
+  cairo_hint_style_t hint_style = CAIRO_HINT_STYLE_NONE;
   gint antialias;
-  cairo_antialias_t antialias_mode = CAIRO_ANTIALIAS_DEFAULT;
+  cairo_antialias_t antialias_mode = CAIRO_ANTIALIAS_GRAY;
   gchar *rgba_str;
   cairo_subpixel_order_t subpixel_order = CAIRO_SUBPIXEL_ORDER_DEFAULT;
   cairo_font_options_t *options;
@@ -1863,6 +2029,8 @@ settings_update_font_options (GtkSettings *settings)
 		NULL);
 
   options = cairo_font_options_create ();
+
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
   
   if (hinting >= 0 && !hinting)
     {
@@ -1914,6 +2082,44 @@ settings_update_font_options (GtkSettings *settings)
   cairo_font_options_destroy (options);
 }
 
+#ifdef GDK_WINDOWING_X11
+static gboolean
+settings_update_fontconfig (GtkSettings *settings)
+{
+  static guint    last_update_timestamp;
+  static gboolean last_update_needed;
+
+  guint timestamp;
+
+  g_object_get (settings,
+		"gtk-fontconfig-timestamp", &timestamp,
+		NULL);
+
+  /* if timestamp is the same as last_update_timestamp, we already have
+   * updated fontconig on this timestamp (another screen requested it perhaps?),
+   * just return the cached result.*/
+
+  if (timestamp != last_update_timestamp)
+    {
+      PangoFontMap *fontmap = pango_cairo_font_map_get_default ();
+      gboolean update_needed = FALSE;
+
+      /* bug 547680 */
+      if (PANGO_IS_FC_FONT_MAP (fontmap) && !FcConfigUptoDate (NULL))
+	{
+	  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (fontmap));
+	  if (FcInitReinitialize ())
+	    update_needed = TRUE;
+	}
+
+      last_update_timestamp = timestamp;
+      last_update_needed = update_needed;
+    }
+
+  return last_update_needed;
+}
+#endif /* GDK_WINDOWING_X11 */
+
 static void
 settings_update_resolution (GtkSettings *settings)
 {
@@ -1953,7 +2159,7 @@ color_scheme_data_free (ColorSchemeData *data)
       g_free (data->lastentry[i]);
     }
 
-  g_free (data);
+  g_slice_free (ColorSchemeData, data);
 }
 
 static void
@@ -1964,7 +2170,7 @@ settings_update_color_scheme (GtkSettings *settings)
       ColorSchemeData *data;
       GValue value = { 0, };
 
-      data = g_new0 (ColorSchemeData, 1);
+      data = g_slice_new0 (ColorSchemeData);
       data->color_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
 					        (GDestroyNotify) gdk_color_free);
       g_object_set_data_full (G_OBJECT (settings), "gtk-color-scheme",

@@ -77,7 +77,7 @@
  */
 
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
-#include <config.h>
+#include "config.h"
 #include "gtkmarshalers.h"
 #include "gtktextlayout.h"
 #include "gtktextbtree.h"
@@ -205,7 +205,7 @@ gtk_text_layout_class_init (GtkTextLayoutClass *klass)
                   G_TYPE_INT);
 
   signals[ALLOCATE_CHILD] =
-    g_signal_new (I_("allocate_child"),
+    g_signal_new (I_("allocate-child"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextLayoutClass, allocate_child),
@@ -286,7 +286,7 @@ gtk_text_layout_finalize (GObject *object)
     }
 
 
-  (* G_OBJECT_CLASS (gtk_text_layout_parent_class)->finalize) (object);
+  G_OBJECT_CLASS (gtk_text_layout_parent_class)->finalize (object);
 }
 
 void
@@ -329,11 +329,11 @@ gtk_text_layout_set_buffer (GtkTextLayout *layout,
       _gtk_text_btree_add_view (_gtk_text_buffer_get_btree (buffer), layout);
 
       /* Bind to all signals that move the insert mark. */
-      g_signal_connect_after (layout->buffer, "mark_set",
+      g_signal_connect_after (layout->buffer, "mark-set",
                               G_CALLBACK (gtk_text_layout_mark_set_handler), layout);
-      g_signal_connect_after (layout->buffer, "insert_text",
+      g_signal_connect_after (layout->buffer, "insert-text",
                               G_CALLBACK (gtk_text_layout_buffer_insert_text), layout);
-      g_signal_connect_after (layout->buffer, "delete_range",
+      g_signal_connect_after (layout->buffer, "delete-range",
                               G_CALLBACK (gtk_text_layout_buffer_delete_range), layout);
 
       gtk_text_layout_update_cursor_line (layout);
@@ -665,8 +665,7 @@ gtk_text_layout_free_line_data (GtkTextLayout     *layout,
                                 GtkTextLine       *line,
                                 GtkTextLineData   *line_data)
 {
-  (* GTK_TEXT_LAYOUT_GET_CLASS (layout)->free_line_data)
-    (layout, line, line_data);
+  GTK_TEXT_LAYOUT_GET_CLASS (layout)->free_line_data (layout, line, line_data);
 }
 
 void
@@ -674,8 +673,7 @@ gtk_text_layout_invalidate (GtkTextLayout *layout,
                             const GtkTextIter *start_index,
                             const GtkTextIter *end_index)
 {
-  (* GTK_TEXT_LAYOUT_GET_CLASS (layout)->invalidate)
-    (layout, start_index, end_index);
+  GTK_TEXT_LAYOUT_GET_CLASS (layout)->invalidate (layout, start_index, end_index);
 }
 
 void
@@ -683,8 +681,7 @@ gtk_text_layout_invalidate_cursors (GtkTextLayout *layout,
 				    const GtkTextIter *start_index,
 				    const GtkTextIter *end_index)
 {
-  (* GTK_TEXT_LAYOUT_GET_CLASS (layout)->invalidate_cursors)
-    (layout, start_index, end_index);
+  GTK_TEXT_LAYOUT_GET_CLASS (layout)->invalidate_cursors (layout, start_index, end_index);
 }
 
 GtkTextLineData*
@@ -693,7 +690,7 @@ gtk_text_layout_wrap (GtkTextLayout *layout,
                       /* may be NULL */
                       GtkTextLineData *line_data)
 {
-  return (* GTK_TEXT_LAYOUT_GET_CLASS (layout)->wrap) (layout, line, line_data);
+  return GTK_TEXT_LAYOUT_GET_CLASS (layout)->wrap (layout, line, line_data);
 }
 
 GSList*
@@ -1821,7 +1818,7 @@ allocate_child_widgets (GtkTextLayout      *text_layout,
           /* shaped_object is NULL for child anchors with no
            * widgets stored at them
            */
-          if (shaped_object && GTK_IS_WIDGET (shaped_object))
+          if (GTK_IS_WIDGET (shaped_object))
             {
               PangoRectangle extents;
 

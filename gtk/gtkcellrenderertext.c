@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include "gtkcellrenderertext.h"
 #include "gtkeditable.h"
@@ -167,11 +167,13 @@ gtk_cell_renderer_text_init (GtkCellRendererText *celltext)
   GTK_CELL_RENDERER (celltext)->xpad = 0;
   GTK_CELL_RENDERER (celltext)->ypad = 0;
 #endif /* MAEMO_CHANGES */
+  celltext->font_scale = 1.0;
   celltext->fixed_height_rows = -1;
   celltext->font = pango_font_description_new ();
 
   priv->width_chars = -1;
   priv->wrap_width = -1;
+  priv->wrap_mode = PANGO_WRAP_CHAR;
   priv->align = PANGO_ALIGN_LEFT;
   priv->align_set = FALSE;
 }
@@ -607,7 +609,7 @@ gtk_cell_renderer_text_finalize (GObject *object)
   if (priv->language)
     g_object_unref (priv->language);
 
-  (* G_OBJECT_CLASS (gtk_cell_renderer_text_parent_class)->finalize) (object);
+  G_OBJECT_CLASS (gtk_cell_renderer_text_parent_class)->finalize (object);
 }
 
 static PangoFontMask
@@ -1079,7 +1081,7 @@ gtk_cell_renderer_text_set_property (GObject      *object,
         GdkColor color;
 
         if (!g_value_get_string (value))
-          set_bg_color (celltext, NULL);       /* reset to backgrounmd_set to FALSE */
+          set_bg_color (celltext, NULL);       /* reset to background_set to FALSE */
         else if (gdk_color_parse (g_value_get_string (value), &color))
           set_bg_color (celltext, &color);
         else
@@ -1541,8 +1543,7 @@ get_size (GtkCellRenderer *cell,
   else
     layout = get_layout (celltext, widget, FALSE, 0);
 
-  pango_layout_get_extents (layout, NULL, &rect);
-  pango_extents_to_pixels (&rect, NULL);
+  pango_layout_get_pixel_extents (layout, NULL, &rect);
 
   if (height)
     *height = cell->ypad * 2 + rect.height;
@@ -1881,14 +1882,14 @@ gtk_cell_renderer_text_start_editing (GtkCellRenderer      *cell,
     }
 
   g_signal_connect (priv->entry,
-		    "editing_done",
+		    "editing-done",
 		    G_CALLBACK (gtk_cell_renderer_text_editing_done),
 		    celltext);
-  priv->focus_out_id = g_signal_connect_after (priv->entry, "focus_out_event",
+  priv->focus_out_id = g_signal_connect_after (priv->entry, "focus-out-event",
 					       G_CALLBACK (gtk_cell_renderer_text_focus_out_event),
 					       celltext);
   priv->populate_popup_id =
-    g_signal_connect (priv->entry, "populate_popup",
+    g_signal_connect (priv->entry, "populate-popup",
                       G_CALLBACK (gtk_cell_renderer_text_populate_popup),
                       celltext);
  

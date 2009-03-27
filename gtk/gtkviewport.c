@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkviewport.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
@@ -126,7 +126,7 @@ gtk_viewport_class_init (GtkViewportClass *class)
 						      GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
-    g_signal_new (I_("set_scroll_adjustments"),
+    g_signal_new (I_("set-scroll-adjustments"),
 		  G_OBJECT_CLASS_TYPE (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkViewportClass, set_scroll_adjustments),
@@ -221,7 +221,7 @@ gtk_viewport_new (GtkAdjustment *hadjustment,
 {
   GtkWidget *viewport;
 
-  viewport = gtk_widget_new (GTK_TYPE_VIEWPORT,
+  viewport = g_object_new (GTK_TYPE_VIEWPORT,
 			     "hadjustment", hadjustment,
 			     "vadjustment", vadjustment,
 			     NULL);
@@ -442,7 +442,7 @@ viewport_set_adjustment (GtkViewport    *viewport,
   else
     viewport_set_vadjustment_values (viewport, &value_changed);
 
-  g_signal_connect (adjustment, "value_changed",
+  g_signal_connect (adjustment, "value-changed",
 		    G_CALLBACK (gtk_viewport_adjustment_value_changed),
 		    viewport);
 
@@ -637,22 +637,16 @@ gtk_viewport_unrealize (GtkWidget *widget)
   gdk_window_destroy (viewport->bin_window);
   viewport->bin_window = NULL;
 
-  if (GTK_WIDGET_CLASS (gtk_viewport_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_viewport_parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (gtk_viewport_parent_class)->unrealize (widget);
 }
 
 static void
 gtk_viewport_paint (GtkWidget    *widget,
 		    GdkRectangle *area)
 {
-  GtkViewport *viewport;
-
-  g_return_if_fail (GTK_IS_VIEWPORT (widget));
-  g_return_if_fail (area != NULL);
-
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      viewport = GTK_VIEWPORT (widget);
+      GtkViewport *viewport = GTK_VIEWPORT (widget);
 
       gtk_paint_shadow (widget->style, widget->window,
 			GTK_STATE_NORMAL, viewport->shadow_type,
@@ -679,8 +673,8 @@ gtk_viewport_expose (GtkWidget      *widget,
 			     GTK_STATE_NORMAL, GTK_SHADOW_NONE,
 			     &event->area, widget, "viewportbin",
 			     0, 0, -1, -1);
-	  
-	  (* GTK_WIDGET_CLASS (gtk_viewport_parent_class)->expose_event) (widget, event);
+
+	  GTK_WIDGET_CLASS (gtk_viewport_parent_class)->expose_event (widget, event);
 	}
     }
 
@@ -691,11 +685,8 @@ static void
 gtk_viewport_add (GtkContainer *container,
 		  GtkWidget    *child)
 {
-  GtkBin *bin;
+  GtkBin *bin = GTK_BIN (container);
 
-  g_return_if_fail (GTK_IS_WIDGET (child));
-
-  bin = GTK_BIN (container);
   g_return_if_fail (bin->child == NULL);
 
   gtk_widget_set_parent_window (child, GTK_VIEWPORT (bin)->bin_window);
@@ -707,10 +698,8 @@ static void
 gtk_viewport_size_request (GtkWidget      *widget,
 			   GtkRequisition *requisition)
 {
-  GtkBin *bin;
+  GtkBin *bin = GTK_BIN (widget);
   GtkRequisition child_requisition;
-
-  bin = GTK_BIN (widget);
 
   requisition->width = GTK_CONTAINER (widget)->border_width;
 
@@ -796,14 +785,8 @@ static void
 gtk_viewport_adjustment_value_changed (GtkAdjustment *adjustment,
 				       gpointer       data)
 {
-  GtkViewport *viewport;
-  GtkBin *bin;
-
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  g_return_if_fail (GTK_IS_VIEWPORT (data));
-
-  viewport = GTK_VIEWPORT (data);
-  bin = GTK_BIN (data);
+  GtkViewport *viewport = GTK_VIEWPORT (data);
+  GtkBin *bin = GTK_BIN (data);
 
   if (bin->child && GTK_WIDGET_VISIBLE (bin->child)  &&
       GTK_WIDGET_REALIZED (viewport))
@@ -829,13 +812,11 @@ static void
 gtk_viewport_style_set (GtkWidget *widget,
 			GtkStyle  *previous_style)
 {
-   GtkViewport *viewport;
-   
    if (GTK_WIDGET_REALIZED (widget) &&
        !GTK_WIDGET_NO_WINDOW (widget))
      {
-	viewport = GTK_VIEWPORT (widget);
-	
+	GtkViewport *viewport = GTK_VIEWPORT (widget);
+
 	gtk_style_set_background (widget->style, viewport->bin_window, GTK_STATE_NORMAL);
 	gtk_style_set_background (widget->style, widget->window, widget->state);
      }

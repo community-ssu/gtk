@@ -17,9 +17,15 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_BUILDER_H__
 #define __GTK_BUILDER_H__
 
+#include <gdkconfig.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -45,7 +51,8 @@ typedef enum
   GTK_BUILDER_ERROR_INVALID_ATTRIBUTE,
   GTK_BUILDER_ERROR_INVALID_TAG,
   GTK_BUILDER_ERROR_MISSING_PROPERTY_VALUE,
-  GTK_BUILDER_ERROR_INVALID_VALUE
+  GTK_BUILDER_ERROR_INVALID_VALUE,
+  GTK_BUILDER_ERROR_VERSION_MISMATCH
 } GtkBuilderError;
 
 GQuark gtk_builder_error_quark (void);
@@ -54,7 +61,7 @@ struct _GtkBuilder
 {
   GObject parent_instance;
 
-  GtkBuilderPrivate *priv;
+  GtkBuilderPrivate *GSEAL (priv);
 };
 
 struct _GtkBuilderClass
@@ -92,6 +99,15 @@ guint        gtk_builder_add_from_file           (GtkBuilder    *builder,
 guint        gtk_builder_add_from_string         (GtkBuilder    *builder,
                                                   const gchar   *buffer,
                                                   gsize          length,
+                                                  GError       **error);
+guint        gtk_builder_add_objects_from_file   (GtkBuilder    *builder,
+                                                  const gchar   *filename,
+                                                  gchar        **object_ids,
+                                                  GError       **error);
+guint        gtk_builder_add_objects_from_string (GtkBuilder    *builder,
+                                                  const gchar   *buffer,
+                                                  gsize          length,
+                                                  gchar        **object_ids,
                                                   GError       **error);
 GObject*     gtk_builder_get_object              (GtkBuilder    *builder,
                                                   const gchar   *name);

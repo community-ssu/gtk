@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -238,13 +238,13 @@ output_test_from_settings (GtkPrintSettings *settings,
 
       if (locale_name != NULL)
         {
-          gchar *current_dir = g_get_current_dir ();
+	  gchar *current_dir = g_get_current_dir ();
           path = g_build_filename (current_dir, locale_name, NULL);
           g_free (locale_name);
 
           uri = g_filename_to_uri (path, NULL, NULL);
           g_free (path);
-          g_free (current_dir);
+	  g_free (current_dir);
 	}
     }
 

@@ -21,10 +21,10 @@
  * Modified by the GTK+ Team and others 1997-2001.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include "gtkarrow.h"
 #include "gtkprivate.h"
@@ -37,28 +37,26 @@
 
 enum {
   PROP_0,
-
   PROP_ARROW_TYPE,
-  PROP_SHADOW_TYPE,
-  
-  PROP_LAST
+  PROP_SHADOW_TYPE
 };
 
 
-static gint gtk_arrow_expose     (GtkWidget      *widget,
-				  GdkEventExpose *event);
-static void gtk_arrow_set_property (GObject         *object,
-				    guint            prop_id,
-				    const GValue    *value,
-				    GParamSpec      *pspec);
-static void gtk_arrow_get_property (GObject         *object,
-				    guint            prop_id,
-				    GValue          *value,
-				    GParamSpec      *pspec);
+static void     gtk_arrow_set_property (GObject        *object,
+                                        guint           prop_id,
+                                        const GValue   *value,
+                                        GParamSpec     *pspec);
+static void     gtk_arrow_get_property (GObject        *object,
+                                        guint           prop_id,
+                                        GValue         *value,
+                                        GParamSpec     *pspec);
+static gboolean gtk_arrow_expose       (GtkWidget      *widget,
+                                        GdkEventExpose *event);
 #if defined(MAEMO_CHANGES)
-static void gtk_arrow_size_request (GtkWidget *widget,
-                                    GtkRequisition *requisition);
+static void     gtk_arrow_size_request (GtkWidget      *widget,
+                                        GtkRequisition *requisition);
 #endif
+
 
 G_DEFINE_TYPE (GtkArrow, gtk_arrow, GTK_TYPE_MISC)
 
@@ -75,6 +73,8 @@ gtk_arrow_class_init (GtkArrowClass *class)
   gobject_class->set_property = gtk_arrow_set_property;
   gobject_class->get_property = gtk_arrow_get_property;
 
+  widget_class->expose_event = gtk_arrow_expose;
+
 #if defined(MAEMO_CHANGES)
   widget_class->size_request = gtk_arrow_size_request;
 #endif
@@ -87,6 +87,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
 						      GTK_TYPE_ARROW_TYPE,
 						      GTK_ARROW_RIGHT,
                                                       GTK_PARAM_READWRITE));
+
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
                                    g_param_spec_enum ("shadow-type",
@@ -95,6 +96,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_OUT,
                                                       GTK_PARAM_READWRITE));
+
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_float ("arrow-scaling",
                                                                P_("Arrow Scaling"),
@@ -120,6 +122,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                              G_MAXINT,
                                                              15,
                                                              GTK_PARAM_READABLE));
+
   /**
    *
    * GtkArrow::maemo-aspect-ratio
@@ -139,8 +142,6 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                                1.0,
                                                                GTK_PARAM_READABLE));
 #endif
-
-  widget_class->expose_event = gtk_arrow_expose;
 }
 
 static void
@@ -149,9 +150,7 @@ gtk_arrow_set_property (GObject         *object,
 			const GValue    *value,
 			GParamSpec      *pspec)
 {
-  GtkArrow *arrow;
-  
-  arrow = GTK_ARROW (object);
+  GtkArrow *arrow = GTK_ARROW (object);
 
   switch (prop_id)
     {
@@ -171,16 +170,14 @@ gtk_arrow_set_property (GObject         *object,
     }
 }
 
-
 static void
 gtk_arrow_get_property (GObject         *object,
 			guint            prop_id,
 			GValue          *value,
 			GParamSpec      *pspec)
 {
-  GtkArrow *arrow;
-  
-  arrow = GTK_ARROW (object);
+  GtkArrow *arrow = GTK_ARROW (object);
+
   switch (prop_id)
     {
     case PROP_ARROW_TYPE:
@@ -194,23 +191,6 @@ gtk_arrow_get_property (GObject         *object,
       break;
     }
 }
-
-#if defined(MAEMO_CHANGES)
-static void
-gtk_arrow_size_request (GtkWidget *widget, GtkRequisition *requisition)
-{
-  gint arrow_min_size;
-  gfloat aspect_ratio;
-
-  gtk_widget_style_get (widget,
-                        "maemo-min-size", &arrow_min_size,
-                        "maemo-aspect-ratio", &aspect_ratio,
-                        NULL);
-
-  requisition->width = arrow_min_size + GTK_MISC (widget)->xpad * 2;
-  requisition->height = (arrow_min_size *aspect_ratio) + GTK_MISC (widget)->ypad * 2;
-}
-#endif
 
 static void
 gtk_arrow_init (GtkArrow *arrow)
@@ -272,24 +252,24 @@ gtk_arrow_set (GtkArrow      *arrow,
 }
 
 
-static gboolean 
+static gboolean
 gtk_arrow_expose (GtkWidget      *widget,
 		  GdkEventExpose *event)
 {
-  GtkShadowType shadow_type;
-  gint width, height;
-  gint x, y;
-#ifndef MAEMO_CHANGES
-  gint extent;
-#endif
-  gfloat xalign;
-  GtkArrowType effective_arrow_type;
-
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       GtkArrow *arrow = GTK_ARROW (widget);
       GtkMisc *misc = GTK_MISC (widget);
+      GtkShadowType shadow_type;
+      gint width, height;
+      gint x, y;
+#ifndef MAEMO_CHANGES
+      gint extent;
+#endif
+      gfloat xalign;
+      GtkArrowType effective_arrow_type;
       gfloat arrow_scaling;
+
       gtk_widget_style_get (widget, "arrow-scaling", &arrow_scaling, NULL);
 
       width = widget->allocation.width - misc->xpad * 2;
@@ -315,17 +295,18 @@ gtk_arrow_expose (GtkWidget      *widget,
 
       x = floor (widget->allocation.x + misc->xpad
 #ifndef MAEMO_CHANGES
-		 + ((widget->allocation.width - extent) * xalign));
+                 + ((widget->allocation.width - extent) * xalign));
 #else
                  + ((widget->allocation.width - width) * xalign));
 #endif
-      y = floor (widget->allocation.y + misc->ypad 
+      y = floor (widget->allocation.y + misc->ypad
 #ifndef MAEMO_CHANGES
 		 + ((widget->allocation.height - extent) * misc->yalign));
 #else
-		 + ((widget->allocation.height - height) * misc->yalign));
+                 + ((widget->allocation.height - height) * misc->yalign));
 #endif
-     
+
+
       shadow_type = arrow->shadow_type;
 
       if (widget->state == GTK_STATE_ACTIVE)
@@ -353,6 +334,24 @@ gtk_arrow_expose (GtkWidget      *widget,
 
   return FALSE;
 }
+
+#if defined(MAEMO_CHANGES)
+static void
+gtk_arrow_size_request (GtkWidget      *widget,
+                        GtkRequisition *requisition)
+{
+  gint arrow_min_size;
+  gfloat aspect_ratio;
+
+  gtk_widget_style_get (widget,
+                        "maemo-min-size", &arrow_min_size,
+                        "maemo-aspect-ratio", &aspect_ratio,
+                        NULL);
+
+  requisition->width = arrow_min_size + GTK_MISC (widget)->xpad * 2;
+  requisition->height = (arrow_min_size *aspect_ratio) + GTK_MISC (widget)->ypad * 2;
+}
+#endif
 
 #define __GTK_ARROW_C__
 #include "gtkaliasdef.c"

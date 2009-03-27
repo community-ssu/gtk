@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include <atk/atk.h>
@@ -33,7 +33,6 @@
 #include "gtkbindings.h"
 #include "gtkdnd.h"
 #include "gtkmain.h"
-#include "gtksignal.h"
 #include "gtkintl.h"
 #include "gtkaccessible.h"
 #include "gtkwindow.h"
@@ -843,7 +842,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 
   /* Signals */
   widget_class->set_scroll_adjustments_signal =
-    g_signal_new (I_("set_scroll_adjustments"),
+    g_signal_new (I_("set-scroll-adjustments"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkIconViewClass, set_scroll_adjustments),
@@ -853,7 +852,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  GTK_TYPE_ADJUSTMENT, GTK_TYPE_ADJUSTMENT);
 
   icon_view_signals[ITEM_ACTIVATED] =
-    g_signal_new (I_("item_activated"),
+    g_signal_new (I_("item-activated"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkIconViewClass, item_activated),
@@ -872,7 +871,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_NONE, 0);
   
   icon_view_signals[SELECT_ALL] =
-    g_signal_new (I_("select_all"),
+    g_signal_new (I_("select-all"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, select_all),
@@ -881,7 +880,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_NONE, 0);
   
   icon_view_signals[UNSELECT_ALL] =
-    g_signal_new (I_("unselect_all"),
+    g_signal_new (I_("unselect-all"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, unselect_all),
@@ -890,7 +889,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_NONE, 0);
 
   icon_view_signals[SELECT_CURSOR_ITEM] =
-    g_signal_new (I_("select_cursor_item"),
+    g_signal_new (I_("select-cursor-item"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, select_cursor_item),
@@ -899,7 +898,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_NONE, 0);
 
   icon_view_signals[TOGGLE_CURSOR_ITEM] =
-    g_signal_new (I_("toggle_cursor_item"),
+    g_signal_new (I_("toggle-cursor-item"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, toggle_cursor_item),
@@ -908,7 +907,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_NONE, 0);
 
   icon_view_signals[ACTIVATE_CURSOR_ITEM] =
-    g_signal_new (I_("activate_cursor_item"),
+    g_signal_new (I_("activate-cursor-item"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, activate_cursor_item),
@@ -917,7 +916,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 		  G_TYPE_BOOLEAN, 0);
   
   icon_view_signals[MOVE_CURSOR] =
-    g_signal_new (I_("move_cursor"),
+    g_signal_new (I_("move-cursor"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkIconViewClass, move_cursor),
@@ -929,24 +928,24 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 
   /* Key bindings */
   gtk_binding_entry_add_signal (binding_set, GDK_a, GDK_CONTROL_MASK, 
-				"select_all", 0);
+				"select-all", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_a, GDK_CONTROL_MASK | GDK_SHIFT_MASK, 
-				"unselect_all", 0);
+				"unselect-all", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_space, GDK_CONTROL_MASK, 
-				"toggle_cursor_item", 0);
+				"toggle-cursor-item", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Space, GDK_CONTROL_MASK,
-				"toggle_cursor_item", 0);
+				"toggle-cursor-item", 0);
 
   gtk_binding_entry_add_signal (binding_set, GDK_space, 0, 
-				"activate_cursor_item", 0);
+				"activate-cursor-item", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Space, 0,
-				"activate_cursor_item", 0);
+				"activate-cursor-item", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_Return, 0, 
-				"activate_cursor_item", 0);
+				"activate-cursor-item", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_ISO_Enter, 0, 
-				"activate_cursor_item", 0);
+				"activate-cursor-item", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Enter, 0, 
-				"activate_cursor_item", 0);
+				"activate-cursor-item", 0);
 
   gtk_icon_view_add_move_binding (binding_set, GDK_Up, 0,
 				  GTK_MOVEMENT_DISPLAY_LINES, -1);
@@ -1120,7 +1119,7 @@ gtk_icon_view_destroy (GtkObject *object)
   clear_dest_info (icon_view);
   clear_source_info (icon_view);
 
-  (* GTK_OBJECT_CLASS (gtk_icon_view_parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (gtk_icon_view_parent_class)->destroy (object);
 }
 
 /* GObject methods */
@@ -1129,7 +1128,7 @@ gtk_icon_view_finalize (GObject *object)
 {
   gtk_icon_view_cell_layout_clear (GTK_CELL_LAYOUT (object));
 
-  (* G_OBJECT_CLASS (gtk_icon_view_parent_class)->finalize) (object);
+  G_OBJECT_CLASS (gtk_icon_view_parent_class)->finalize (object);
 }
 
 
@@ -1333,9 +1332,7 @@ gtk_icon_view_unrealize (GtkWidget *widget)
   gdk_window_destroy (icon_view->priv->bin_window);
   icon_view->priv->bin_window = NULL;
 
-  /* GtkWidget::unrealize destroys children and widget->window */
-  if (GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->unrealize (widget);
 }
 
 static void
@@ -1357,11 +1354,7 @@ static void
 gtk_icon_view_style_set (GtkWidget *widget,
 			 GtkStyle *previous_style)
 {
-  GtkIconView *icon_view;
-
-  g_return_if_fail (GTK_IS_ICON_VIEW (widget));
-
-  icon_view = GTK_ICON_VIEW (widget);
+  GtkIconView *icon_view = GTK_ICON_VIEW (widget);
 
   if (GTK_WIDGET_REALIZED (widget))
     {
@@ -1405,10 +1398,8 @@ static void
 gtk_icon_view_size_request (GtkWidget      *widget,
 			    GtkRequisition *requisition)
 {
-  GtkIconView *icon_view;
+  GtkIconView *icon_view = GTK_ICON_VIEW (widget);
   GList *tmp_list;
-
-  icon_view = GTK_ICON_VIEW (widget);
 
   requisition->width = icon_view->priv->width;
   requisition->height = icon_view->priv->height;
@@ -1679,7 +1670,7 @@ gtk_icon_view_expose (GtkWidget *widget,
 
   cairo_destroy (cr);
 
-  (* GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->expose_event) (widget, expose);
+  GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->expose_event (widget, expose);
 
   return TRUE;
 }
@@ -1980,7 +1971,7 @@ gtk_icon_view_start_editing (GtkIconView         *icon_view,
       gtk_cell_editable_start_editing (GTK_CELL_EDITABLE (editable), 
 				       (GdkEvent *)event);
       gtk_widget_grab_focus (GTK_WIDGET (editable));
-      g_signal_connect (editable, "remove_widget",
+      g_signal_connect (editable, "remove-widget",
 			G_CALLBACK (gtk_icon_view_remove_widget), 
 			icon_view);
 
@@ -2451,7 +2442,7 @@ gtk_icon_view_key_press (GtkWidget      *widget,
       return TRUE;
     }
 
-  return (* GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->key_press_event) (widget, event);
+  return GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->key_press_event (widget, event);
 }
 
 static gboolean
@@ -2463,7 +2454,7 @@ gtk_icon_view_key_release (GtkWidget      *widget,
   if (icon_view->priv->doing_rubberband)
     return TRUE;
 
-  return (* GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->key_press_event) (widget, event);
+  return GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->key_press_event (widget, event);
 }
 
 static void
@@ -2704,7 +2695,7 @@ gtk_icon_view_set_adjustments (GtkIconView   *icon_view,
       icon_view->priv->hadjustment = hadj;
       g_object_ref_sink (icon_view->priv->hadjustment);
 
-      g_signal_connect (icon_view->priv->hadjustment, "value_changed",
+      g_signal_connect (icon_view->priv->hadjustment, "value-changed",
 			G_CALLBACK (gtk_icon_view_adjustment_changed),
 			icon_view);
       need_adjust = TRUE;
@@ -2715,7 +2706,7 @@ gtk_icon_view_set_adjustments (GtkIconView   *icon_view,
       icon_view->priv->vadjustment = vadj;
       g_object_ref_sink (icon_view->priv->vadjustment);
 
-      g_signal_connect (icon_view->priv->vadjustment, "value_changed",
+      g_signal_connect (icon_view->priv->vadjustment, "value-changed",
 			G_CALLBACK (gtk_icon_view_adjustment_changed),
 			icon_view);
       need_adjust = TRUE;
@@ -3464,7 +3455,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 			  gint             y,
 			  gboolean         draw_focus)
 {
-  gint focus_width, focus_pad;
+  gint focus_width;
   gint padding;
   GdkRectangle cell_area, box;
   GList *l;
@@ -3490,7 +3481,6 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 
   gtk_widget_style_get (GTK_WIDGET (icon_view),
 			"focus-line-width", &focus_width,
-			"focus-padding", &focus_pad,
 			NULL);
   
   padding = focus_width; 
@@ -4258,12 +4248,12 @@ gtk_icon_view_add_move_binding (GtkBindingSet  *binding_set,
 {
   
   gtk_binding_entry_add_signal (binding_set, keyval, modmask,
-                                I_("move_cursor"), 2,
+                                I_("move-cursor"), 2,
                                 G_TYPE_ENUM, step,
                                 G_TYPE_INT, count);
 
   gtk_binding_entry_add_signal (binding_set, keyval, GDK_SHIFT_MASK,
-                                "move_cursor", 2,
+                                "move-cursor", 2,
                                 G_TYPE_ENUM, step,
                                 G_TYPE_INT, count);
 
@@ -4271,12 +4261,12 @@ gtk_icon_view_add_move_binding (GtkBindingSet  *binding_set,
    return;
 
   gtk_binding_entry_add_signal (binding_set, keyval, GDK_CONTROL_MASK | GDK_SHIFT_MASK,
-                                "move_cursor", 2,
+                                "move-cursor", 2,
                                 G_TYPE_ENUM, step,
                                 G_TYPE_INT, count);
 
   gtk_binding_entry_add_signal (binding_set, keyval, GDK_CONTROL_MASK,
-                                "move_cursor", 2,
+                                "move-cursor", 2,
                                 G_TYPE_ENUM, step,
                                 G_TYPE_INT, count);
 }
@@ -5314,6 +5304,7 @@ gtk_icon_view_new_with_model (GtkTreeModel *model)
 
 /**
  * gtk_icon_view_convert_widget_to_bin_window_coords:
+ * @icon_view: a #GtkIconView 
  * @wx: X coordinate relative to the widget
  * @wy: Y coordinate relative to the widget
  * @bx: return location for bin_window X coordinate
@@ -5633,7 +5624,6 @@ gtk_icon_view_set_tooltip_query_cb (GtkWidget  *widget,
 /**
  * gtk_icon_view_set_tooltip_column:
  * @icon_view: a #GtkIconView
- * 
  * @column: an integer, which is a valid column number for @icon_view's model
  *
  * If you only plan to have simple (text-only) tooltips on full items, you
@@ -5810,51 +5800,18 @@ gtk_icon_view_set_selection_mode (GtkIconView      *icon_view,
                         NULL);
 
   if (hildon_mode == HILDON_FREMANTLE
-      && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
+      && icon_view->priv->selection_mode == HILDON_UI_MODE_NORMAL
       && mode != GTK_SELECTION_NONE)
     {
       g_warning ("Cannot change the selection mode to anything other than GTK_SELECTION_NONE in normal-mode.\n");
       return;
     }
-
-  if (hildon_mode == HILDON_FREMANTLE
-      && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
-      && icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
-    {
-      if (!icon_view->priv->anchor_item
-          || !icon_view->priv->anchor_item->selected)
-        {
-          GList *list;
-
-          /* Look for the first selected item, make that the new
-           * anchor.
-           */
-
-          for (list = icon_view->priv->items; list; list = list->next)
-            {
-              GtkIconViewItem *item = list->data;
-
-              if (item->selected)
-                {
-                  icon_view->priv->anchor_item = item;
-                  break;
-                }
-            }
-        }
-
-      gtk_icon_view_unselect_all_internal (icon_view);
-      gtk_icon_view_select_item (icon_view, icon_view->priv->anchor_item);
-    }
-  else
-    {
 #endif /* MAEMO_CHANGES */
+  
   if (mode == GTK_SELECTION_NONE ||
       icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
     gtk_icon_view_unselect_all (icon_view);
-#ifdef MAEMO_CHANGES
-    }
-#endif /* MAEMO_CHANGES */
-
+  
   icon_view->priv->selection_mode = mode;
 
   g_object_notify (G_OBJECT (icon_view), "selection-mode");
@@ -5973,19 +5930,19 @@ gtk_icon_view_set_model (GtkIconView *icon_view,
     {
       g_object_ref (icon_view->priv->model);
       g_signal_connect (icon_view->priv->model,
-			"row_changed",
+			"row-changed",
 			G_CALLBACK (gtk_icon_view_row_changed),
 			icon_view);
       g_signal_connect (icon_view->priv->model,
-			"row_inserted",
+			"row-inserted",
 			G_CALLBACK (gtk_icon_view_row_inserted),
 			icon_view);
       g_signal_connect (icon_view->priv->model,
-			"row_deleted",
+			"row-deleted",
 			G_CALLBACK (gtk_icon_view_row_deleted),
 			icon_view);
       g_signal_connect (icon_view->priv->model,
-			"rows_reordered",
+			"rows-reordered",
 			G_CALLBACK (gtk_icon_view_rows_reordered),
 			icon_view);
 
@@ -6410,10 +6367,10 @@ gtk_icon_view_unselect_path (GtkIconView *icon_view,
  * To do this, you can use gtk_tree_row_reference_new().
  *
  * To free the return value, use:
- * <informalexample><programlisting>
+ * |[
  * g_list_foreach (list, gtk_tree_path_free, NULL);
  * g_list_free (list);
- * </programlisting></informalexample>
+ * ]|
  *
  * Return value: A #GList containing a #GtkTreePath for each selected row.
  *
@@ -7443,7 +7400,7 @@ gtk_icon_view_drag_data_delete (GtkWidget      *widget,
   icon_view = GTK_ICON_VIEW (widget);
   model = gtk_icon_view_get_model (icon_view);
 
-  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_SOURCE, "drag_data_delete"))
+  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_SOURCE, "drag-data-delete"))
     return;
 
   if (!icon_view->priv->source_set)
@@ -7560,7 +7517,7 @@ gtk_icon_view_drag_drop (GtkWidget      *widget,
   if (!icon_view->priv->dest_set)
     return FALSE;
 
-  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_DEST, "drag_drop"))
+  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_DEST, "drag-drop"))
     return FALSE;
 
   if (!set_destination (icon_view, context, x, y, &suggested_action, &target))
@@ -7613,7 +7570,7 @@ gtk_icon_view_drag_data_received (GtkWidget        *widget,
   icon_view = GTK_ICON_VIEW (widget);  
   model = gtk_icon_view_get_model (icon_view);
 
-  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_DEST, "drag_data_received"))
+  if (!check_model_dnd (model, GTK_TYPE_TREE_DRAG_DEST, "drag-data-received"))
     return;
 
   if (!icon_view->priv->dest_set)
@@ -9257,7 +9214,7 @@ gtk_icon_view_item_accessible_add_state (GtkIconViewItemAccessible *item,
       atk_object_notify_state_change (ATK_OBJECT (item), state_type, TRUE);
       /* If state_type is ATK_STATE_VISIBLE, additional notification */
       if (state_type == ATK_STATE_VISIBLE)
-        g_signal_emit_by_name (item, "visible_data_changed");
+        g_signal_emit_by_name (item, "visible-data-changed");
     }
 
   return rc;
@@ -9284,7 +9241,7 @@ gtk_icon_view_item_accessible_remove_state (GtkIconViewItemAccessible *item,
           atk_object_notify_state_change (ATK_OBJECT (item), state_type, FALSE);
           /* If state_type is ATK_STATE_VISIBLE, additional notification */
           if (state_type == ATK_STATE_VISIBLE)
-            g_signal_emit_by_name (item, "visible_data_changed");
+            g_signal_emit_by_name (item, "visible-data-changed");
         }
 
       return rc;
@@ -9820,7 +9777,7 @@ gtk_icon_view_accessible_model_row_changed (GtkTreeModel *tree_model,
   AtkObject *atk_obj;
 
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (user_data));
-  g_signal_emit_by_name (atk_obj, "visible_data_changed");
+  g_signal_emit_by_name (atk_obj, "visible-data-changed");
 
   return;
 }
@@ -9865,7 +9822,7 @@ gtk_icon_view_accessible_model_row_inserted (GtkTreeModel *tree_model,
       items = items->next;
     }
   gtk_icon_view_accessible_traverse_items (view, tmp_list);
-  g_signal_emit_by_name (atk_obj, "children_changed::add",
+  g_signal_emit_by_name (atk_obj, "children-changed::add",
                          index, NULL, NULL);
   return;
 }
@@ -9906,8 +9863,8 @@ gtk_icon_view_accessible_model_row_deleted (GtkTreeModel *tree_model,
         {
           if (tmp_list == NULL)
             tmp_list = items;
-          else    
-            info->index = item->item->index;
+            
+          info->index = item->item->index;
         }
 
       items = items->next;
@@ -9917,11 +9874,8 @@ gtk_icon_view_accessible_model_row_deleted (GtkTreeModel *tree_model,
     {
       info = deleted_item->data;
       gtk_icon_view_item_accessible_add_state (GTK_ICON_VIEW_ITEM_ACCESSIBLE (info->item), ATK_STATE_DEFUNCT, TRUE);
-    }
-  g_signal_emit_by_name (atk_obj, "children_changed::remove",
-                         index, NULL, NULL);
-  if (deleted_item)
-    {
+      g_signal_emit_by_name (atk_obj, "children-changed::remove",
+                             index, NULL, NULL);
       priv->items = g_list_remove_link (priv->items, deleted_item);
       g_free (info);
     }
@@ -9988,16 +9942,16 @@ gtk_icon_view_accessible_connect_model_signals (GtkIconView *icon_view)
   GObject *obj;
 
   obj = G_OBJECT (icon_view->priv->model);
-  g_signal_connect_data (obj, "row_changed",
+  g_signal_connect_data (obj, "row-changed",
                          (GCallback) gtk_icon_view_accessible_model_row_changed,
                          icon_view, NULL, 0);
-  g_signal_connect_data (obj, "row_inserted",
+  g_signal_connect_data (obj, "row-inserted",
                          (GCallback) gtk_icon_view_accessible_model_row_inserted, 
                          icon_view, NULL, G_CONNECT_AFTER);
-  g_signal_connect_data (obj, "row_deleted",
+  g_signal_connect_data (obj, "row-deleted",
                          (GCallback) gtk_icon_view_accessible_model_row_deleted, 
                          icon_view, NULL, G_CONNECT_AFTER);
-  g_signal_connect_data (obj, "rows_reordered",
+  g_signal_connect_data (obj, "rows-reordered",
                          (GCallback) gtk_icon_view_accessible_model_rows_reordered, 
                          icon_view, NULL, G_CONNECT_AFTER);
 }
@@ -10090,7 +10044,7 @@ gtk_icon_view_accessible_initialize (AtkObject *accessible,
                         icon_view);
     }
   g_signal_connect_after (data,
-                          "set_scroll_adjustments",
+                          "set-scroll-adjustments",
                           G_CALLBACK (gtk_icon_view_accessible_set_scroll_adjustments),
                           NULL);
   g_signal_connect (data,
@@ -10553,7 +10507,7 @@ gtk_icon_view_get_accessible (GtkWidget *widget)
 				       gtk_icon_view_accessible_factory_get_type ());
       first_time = FALSE;
     } 
-  return (* GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->get_accessible) (widget);
+  return GTK_WIDGET_CLASS (gtk_icon_view_parent_class)->get_accessible (widget);
 }
 
 static gboolean

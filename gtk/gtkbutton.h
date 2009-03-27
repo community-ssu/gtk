@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2001.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_BUTTON_H__
 #define __GTK_BUTTON_H__
@@ -50,21 +54,21 @@ struct _GtkButton
 {
   GtkBin bin;
 
-  GdkWindow *event_window;
+  GdkWindow *GSEAL (event_window);
 
-  gchar *label_text;
+  gchar *GSEAL (label_text);
 
-  guint activate_timeout;
+  guint GSEAL (activate_timeout);
 
-  guint constructed : 1;
-  guint in_button : 1;
-  guint button_down : 1;
-  guint relief : 2;
-  guint use_underline : 1;
-  guint use_stock : 1;
-  guint depressed : 1;
-  guint depress_on_activate : 1;
-  guint focus_on_click : 1;
+  guint GSEAL (constructed) : 1;
+  guint GSEAL (in_button) : 1;
+  guint GSEAL (button_down) : 1;
+  guint GSEAL (relief) : 2;
+  guint GSEAL (use_underline) : 1;
+  guint GSEAL (use_stock) : 1;
+  guint GSEAL (depressed) : 1;
+  guint GSEAL (depress_on_activate) : 1;
+  guint GSEAL (focus_on_click) : 1;
 };
 
 struct _GtkButtonClass
@@ -125,14 +129,14 @@ void                  gtk_button_set_image_position (GtkButton      *button,
 						     GtkPositionType position);
 GtkPositionType       gtk_button_get_image_position (GtkButton      *button);
 
-void _gtk_button_set_depressed             (GtkButton     *button,
-					    gboolean       depressed);
-void _gtk_button_paint                     (GtkButton     *button,
-					    GdkRectangle  *area,
-					    GtkStateType   state_type,
-					    GtkShadowType  shadow_type,
-					    const gchar   *main_detail,
-					    const gchar   *default_detail);
+void _gtk_button_set_depressed             (GtkButton          *button,
+					    gboolean            depressed);
+void _gtk_button_paint                     (GtkButton          *button,
+					    const GdkRectangle *area,
+					    GtkStateType        state_type,
+					    GtkShadowType       shadow_type,
+					    const gchar        *main_detail,
+					    const gchar        *default_detail);
 
 G_END_DECLS
 

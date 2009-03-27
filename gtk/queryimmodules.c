@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib.h>
 #include <glib/gprintf.h>
@@ -37,7 +37,6 @@
 #define SOEXT ("." G_MODULE_SUFFIX)
 #endif
 
-#include <pango/pango-utils.h>
 #include "gtk/gtkrc.h"
 #include "gtk/gtkimmodule.h"
 #include "gtk/gtkversion.h"
@@ -95,6 +94,11 @@ query_module (const char *dir, const char *name)
   void          (*exit)   (void);
   GtkIMContext *(*create) (const gchar             *context_id);
 
+  gpointer list_ptr;
+  gpointer init_ptr;
+  gpointer exit_ptr;
+  gpointer create_ptr;
+
   GModule *module;
   gchar *path;
   gboolean error = FALSE;
@@ -113,14 +117,19 @@ query_module (const char *dir, const char *name)
     }
 	  
   if (module &&
-      g_module_symbol (module, "im_module_list", (gpointer *) &list) &&
-      g_module_symbol (module, "im_module_init", (gpointer *) &init) &&
-      g_module_symbol (module, "im_module_exit", (gpointer *) &exit) &&
-      g_module_symbol (module, "im_module_create", (gpointer *) &create))
+      g_module_symbol (module, "im_module_list", &list_ptr) &&
+      g_module_symbol (module, "im_module_init", &init_ptr) &&
+      g_module_symbol (module, "im_module_exit", &exit_ptr) &&
+      g_module_symbol (module, "im_module_create", &create_ptr))
     {
       const GtkIMContextInfo **contexts;
       guint n_contexts;
       int i;
+
+      list = list_ptr;
+      init = init_ptr;
+      exit = exit_ptr;
+      create = create_ptr;
 
       print_escaped (path);
       fputs ("\n", stdout);

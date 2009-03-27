@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtktreemodelfilter.h"
 #include "gtkintl.h"
 #include "gtktreednd.h"
@@ -91,13 +91,13 @@ struct _GtkTreeModelFilterPrivate
 
   GtkTreeModelFilterVisibleFunc visible_func;
   gpointer visible_data;
-  GtkDestroyNotify visible_destroy;
+  GDestroyNotify visible_destroy;
 
   gint modify_n_columns;
   GType *modify_types;
   GtkTreeModelFilterModifyFunc modify_func;
   gpointer modify_data;
-  GtkDestroyNotify modify_destroy;
+  GDestroyNotify modify_destroy;
 
   gint visible_column;
 
@@ -1391,6 +1391,11 @@ gtk_tree_model_filter_row_inserted (GtkTreeModel *c_model,
 
   if (!filter->priv->root)
     {
+      /* No point in building the level if this node is not visible. */
+      if (!filter->priv->virtual_root
+          && !gtk_tree_model_filter_visible (filter, c_iter))
+        goto done;
+
       /* build level will pull in the new child */
       gtk_tree_model_filter_build_level (filter, NULL, NULL, FALSE);
 
@@ -2938,23 +2943,23 @@ gtk_tree_model_filter_set_model (GtkTreeModelFilter *filter,
     {
       g_object_ref (filter->priv->child_model);
       filter->priv->changed_id =
-        g_signal_connect (child_model, "row_changed",
+        g_signal_connect (child_model, "row-changed",
                           G_CALLBACK (gtk_tree_model_filter_row_changed),
                           filter);
       filter->priv->inserted_id =
-        g_signal_connect (child_model, "row_inserted",
+        g_signal_connect (child_model, "row-inserted",
                           G_CALLBACK (gtk_tree_model_filter_row_inserted),
                           filter);
       filter->priv->has_child_toggled_id =
-        g_signal_connect (child_model, "row_has_child_toggled",
+        g_signal_connect (child_model, "row-has-child-toggled",
                           G_CALLBACK (gtk_tree_model_filter_row_has_child_toggled),
                           filter);
       filter->priv->deleted_id =
-        g_signal_connect (child_model, "row_deleted",
+        g_signal_connect (child_model, "row-deleted",
                           G_CALLBACK (gtk_tree_model_filter_row_deleted),
                           filter);
       filter->priv->reordered_id =
-        g_signal_connect (child_model, "rows_reordered",
+        g_signal_connect (child_model, "rows-reordered",
                           G_CALLBACK (gtk_tree_model_filter_rows_reordered),
                           filter);
 
@@ -3089,13 +3094,36 @@ gtk_tree_model_filter_get_model (GtkTreeModelFilter *filter)
  * gtk_tree_model_filter_refilter() to keep the visibility information of 
  * the model uptodate.
  *
+ * Note that @func is called whenever a row is inserted, when it may still be
+ * empty. The visible function should therefore take special care of empty
+ * rows, like in the example below.
+ *
+ * <informalexample><programlisting>
+ * static gboolean
+ * visible_func (GtkTreeModel *model,
+ *               GtkTreeIter  *iter,
+ *               gpointer      data)
+ * {
+ *   /&ast; Visible if row is non-empty and first column is "HI" &ast;/
+ *   gchar *str;
+ *   gboolean visible = FALSE;
+ *
+ *   gtk_tree_model_get (model, iter, 0, &str, -1);
+ *   if (str && strcmp (str, "HI") == 0)
+ *     visible = TRUE;
+ *   g_free (str);
+ *
+ *   return visible;
+ * }
+ * </programlisting></informalexample>
+ *
  * Since: 2.4
  */
 void
 gtk_tree_model_filter_set_visible_func (GtkTreeModelFilter            *filter,
                                         GtkTreeModelFilterVisibleFunc  func,
                                         gpointer                       data,
-                                        GtkDestroyNotify               destroy)
+                                        GDestroyNotify                 destroy)
 {
   g_return_if_fail (GTK_IS_TREE_MODEL_FILTER (filter));
   g_return_if_fail (func != NULL);
@@ -3103,7 +3131,7 @@ gtk_tree_model_filter_set_visible_func (GtkTreeModelFilter            *filter,
 
   if (filter->priv->visible_func)
     {
-      GtkDestroyNotify d = filter->priv->visible_destroy;
+      GDestroyNotify d = filter->priv->visible_destroy;
 
       filter->priv->visible_destroy = NULL;
       d (filter->priv->visible_data);
@@ -3141,7 +3169,7 @@ gtk_tree_model_filter_set_modify_func (GtkTreeModelFilter           *filter,
                                        GType                        *types,
                                        GtkTreeModelFilterModifyFunc  func,
                                        gpointer                      data,
-                                       GtkDestroyNotify              destroy)
+                                       GDestroyNotify                destroy)
 {
   g_return_if_fail (GTK_IS_TREE_MODEL_FILTER (filter));
   g_return_if_fail (func != NULL);
@@ -3149,7 +3177,7 @@ gtk_tree_model_filter_set_modify_func (GtkTreeModelFilter           *filter,
 
   if (filter->priv->modify_destroy)
     {
-      GtkDestroyNotify d = filter->priv->modify_destroy;
+      GDestroyNotify d = filter->priv->modify_destroy;
 
       filter->priv->modify_destroy = NULL;
       d (filter->priv->modify_data);

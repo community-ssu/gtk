@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkentrycompletion.h"
 #include "gtkentryprivate.h"
 #include "gtkcelllayout.h"
@@ -32,7 +32,6 @@
 #include "gtkwindow.h"
 #include "gtkentry.h"
 #include "gtkmain.h"
-#include "gtksignal.h"
 #include "gtkmarshalers.h"
 
 #include "gtkprivate.h"
@@ -103,6 +102,7 @@ static void     gtk_entry_completion_clear_attributes    (GtkCellLayout         
 static void     gtk_entry_completion_reorder             (GtkCellLayout         *cell_layout,
                                                           GtkCellRenderer       *cell,
                                                           gint                   position);
+static GList *  gtk_entry_completion_get_cells           (GtkCellLayout         *cell_layout);
 
 static gboolean gtk_entry_completion_visible_func        (GtkTreeModel       *model,
                                                           GtkTreeIter        *iter,
@@ -202,7 +202,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.6
    */ 
   entry_completion_signals[INSERT_PREFIX] =
-    g_signal_new (I_("insert_prefix"),
+    g_signal_new (I_("insert-prefix"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, insert_prefix),
@@ -227,7 +227,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.4
    */ 
   entry_completion_signals[MATCH_SELECTED] =
-    g_signal_new (I_("match_selected"),
+    g_signal_new (I_("match-selected"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, match_selected),
@@ -253,7 +253,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    */ 
 
   entry_completion_signals[CURSOR_ON_MATCH] =
-    g_signal_new (I_("cursor_on_match"),
+    g_signal_new (I_("cursor-on-match"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkEntryCompletionClass, cursor_on_match),
@@ -273,12 +273,12 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.4
    */
   entry_completion_signals[ACTION_ACTIVATED] =
-    g_signal_new (I_("action_activated"),
+    g_signal_new (I_("action-activated"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, action_activated),
                   NULL, NULL,
-                  _gtk_marshal_NONE__INT,
+                  _gtk_marshal_VOID__INT,
                   G_TYPE_NONE, 1,
                   G_TYPE_INT);
 
@@ -420,6 +420,7 @@ gtk_entry_completion_cell_layout_init (GtkCellLayoutIface *iface)
   iface->set_cell_data_func = gtk_entry_completion_set_cell_data_func;
   iface->clear_attributes = gtk_entry_completion_clear_attributes;
   iface->reorder = gtk_entry_completion_reorder;
+  iface->get_cells = gtk_entry_completion_get_cells;
 }
 
 static void
@@ -446,13 +447,13 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   priv->filter_model = NULL;
 
   priv->tree_view = gtk_tree_view_new ();
-  g_signal_connect (priv->tree_view, "button_press_event",
+  g_signal_connect (priv->tree_view, "button-press-event",
                     G_CALLBACK (gtk_entry_completion_list_button_press),
                     completion);
-  g_signal_connect (priv->tree_view, "enter_notify_event",
+  g_signal_connect (priv->tree_view, "enter-notify-event",
 		    G_CALLBACK (gtk_entry_completion_list_enter_notify),
 		    completion);
-  g_signal_connect (priv->tree_view, "motion_notify_event",
+  g_signal_connect (priv->tree_view, "motion-notify-event",
 		    G_CALLBACK (gtk_entry_completion_list_motion_notify),
 		    completion);
 
@@ -486,13 +487,13 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   priv->action_view =
     gtk_tree_view_new_with_model (GTK_TREE_MODEL (priv->actions));
   g_object_ref_sink (priv->action_view);
-  g_signal_connect (priv->action_view, "button_press_event",
+  g_signal_connect (priv->action_view, "button-press-event",
                     G_CALLBACK (gtk_entry_completion_action_button_press),
                     completion);
-  g_signal_connect (priv->action_view, "enter_notify_event",
+  g_signal_connect (priv->action_view, "enter-notify-event",
 		    G_CALLBACK (gtk_entry_completion_list_enter_notify),
 		    completion);
-  g_signal_connect (priv->action_view, "motion_notify_event",
+  g_signal_connect (priv->action_view, "motion-notify-event",
 		    G_CALLBACK (gtk_entry_completion_list_motion_notify),
 		    completion);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (priv->action_view), FALSE);
@@ -513,14 +514,15 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   /* pack it all */
   priv->popup_window = gtk_window_new (GTK_WINDOW_POPUP);
   gtk_window_set_resizable (GTK_WINDOW (priv->popup_window), FALSE);
-  gtk_window_set_type_hint(GTK_WINDOW(priv->popup_window), GDK_WINDOW_TYPE_HINT_COMBO);
-  g_signal_connect (priv->popup_window, "key_press_event",
+  gtk_window_set_type_hint (GTK_WINDOW(priv->popup_window),
+                            GDK_WINDOW_TYPE_HINT_COMBO);
+  g_signal_connect (priv->popup_window, "key-press-event",
                     G_CALLBACK (gtk_entry_completion_popup_key_event),
                     completion);
-  g_signal_connect (priv->popup_window, "key_release_event",
+  g_signal_connect (priv->popup_window, "key-release-event",
                     G_CALLBACK (gtk_entry_completion_popup_key_event),
                     completion);
-  g_signal_connect (priv->popup_window, "button_press_event",
+  g_signal_connect (priv->popup_window, "button-press-event",
                     G_CALLBACK (gtk_entry_completion_popup_button_press),
                     completion);
 #ifdef MAEMO_CHANGES
@@ -690,8 +692,6 @@ gtk_entry_completion_pack_start (GtkCellLayout   *cell_layout,
 {
   GtkEntryCompletionPrivate *priv;
 
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
-
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
   gtk_tree_view_column_pack_start (priv->column, cell, expand);
@@ -704,8 +704,6 @@ gtk_entry_completion_pack_end (GtkCellLayout   *cell_layout,
 {
   GtkEntryCompletionPrivate *priv;
 
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
-
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
   gtk_tree_view_column_pack_end (priv->column, cell, expand);
@@ -715,8 +713,6 @@ static void
 gtk_entry_completion_clear (GtkCellLayout *cell_layout)
 {
   GtkEntryCompletionPrivate *priv;
-
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
 
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
@@ -730,8 +726,6 @@ gtk_entry_completion_add_attribute (GtkCellLayout   *cell_layout,
                                     gint             column)
 {
   GtkEntryCompletionPrivate *priv;
-
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
 
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
@@ -747,8 +741,6 @@ gtk_entry_completion_set_cell_data_func (GtkCellLayout          *cell_layout,
 {
   GtkEntryCompletionPrivate *priv;
 
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
-
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
   gtk_cell_layout_set_cell_data_func (GTK_CELL_LAYOUT (priv->column),
@@ -760,8 +752,6 @@ gtk_entry_completion_clear_attributes (GtkCellLayout   *cell_layout,
                                        GtkCellRenderer *cell)
 {
   GtkEntryCompletionPrivate *priv;
-
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
 
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
@@ -775,11 +765,19 @@ gtk_entry_completion_reorder (GtkCellLayout   *cell_layout,
 {
   GtkEntryCompletionPrivate *priv;
 
-  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (cell_layout));
-
   priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
 
   gtk_cell_layout_reorder (GTK_CELL_LAYOUT (priv->column), cell, position);
+}
+
+static GList *
+gtk_entry_completion_get_cells (GtkCellLayout *cell_layout)
+{
+  GtkEntryCompletionPrivate *priv;
+
+  priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (cell_layout);
+
+  return gtk_tree_view_column_get_cell_renderers (priv->column);
 }
 
 /* all those callbacks */
@@ -1400,7 +1398,7 @@ gboolean
 _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 {
   gint x, y;
-  gint matches, items, height, x_border, y_border;
+  gint matches, actions, items, height, x_border, y_border;
   GdkScreen *screen;
   gint monitor_num;
   gint vertical_separator;
@@ -1428,8 +1426,7 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   _gtk_entry_get_borders (GTK_ENTRY (completion->priv->entry), &x_border, &y_border);
 
   matches = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (completion->priv->filter_model), NULL);
-
-  items = MIN (matches, 15);
+  actions = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (completion->priv->actions), NULL);
 
   gtk_tree_view_column_cell_get_size (completion->priv->column, NULL,
                                       NULL, NULL, NULL, &height);
@@ -1442,15 +1439,22 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   
   gtk_widget_realize (completion->priv->tree_view);
 
-  if (items <= 0)
-    gtk_widget_hide (completion->priv->scrolled_window);
-  else
-    gtk_widget_show (completion->priv->scrolled_window);
-
   screen = gtk_widget_get_screen (GTK_WIDGET (completion->priv->entry));
   monitor_num = gdk_screen_get_monitor_at_window (screen, 
 						  GTK_WIDGET (completion->priv->entry)->window);
   gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
+
+  
+
+  if (y > monitor.height / 2)
+    items = MIN (matches, (monitor.y + y) / height - actions);
+  else
+    items = MIN (matches, (monitor.height - y) / height - 1  - actions);
+
+  if (items <= 0)
+    gtk_widget_hide (completion->priv->scrolled_window);
+  else
+    gtk_widget_show (completion->priv->scrolled_window);
 
   if (completion->priv->popup_set_width)
     width = MIN (completion->priv->entry->allocation.width, monitor.width) - 2 * x_border;
@@ -1463,9 +1467,7 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   /* default on no match */
   completion->priv->current_selected = -1;
 
-  items = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (completion->priv->actions), NULL);
-
-  if (items)
+  if (actions)
     {
       gtk_widget_show (completion->priv->action_view);
       gtk_widget_set_size_request (completion->priv->action_view, width, -1);

@@ -23,11 +23,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GDK_PIXBUF_DISABLE_SINGLE_INCLUDES) && !defined (GDK_PIXBUF_H_INSIDE) && !defined (GDK_PIXBUF_COMPILATION)
+#error "Only <gdk-pixbuf/gdk-pixbuf.h> can be included directly."
+#endif
+
 #ifndef GDK_PIXBUF_CORE_H
 #define GDK_PIXBUF_CORE_H
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -213,6 +218,24 @@ gboolean gdk_pixbuf_save_to_bufferv     (GdkPixbuf  *pixbuf,
 					 char      **option_keys,
 					 char      **option_values,
 					 GError    **error);
+
+GdkPixbuf *gdk_pixbuf_new_from_stream   (GInputStream   *stream,
+					 GCancellable   *cancellable,
+                                         GError        **error);
+
+GdkPixbuf *gdk_pixbuf_new_from_stream_at_scale   (GInputStream   *stream,
+                                                  gint            width,
+                                                  gint            height,
+                                                  gboolean        preserve_aspect_ratio,
+						  GCancellable   *cancellable,
+                                                  GError        **error);
+
+gboolean   gdk_pixbuf_save_to_stream    (GdkPixbuf      *pixbuf,
+                                         GOutputStream  *stream,
+                                         const char     *type,
+					 GCancellable   *cancellable,
+                                         GError        **error,
+                                         ...);
 
 /* Adding an alpha channel */
 GdkPixbuf *gdk_pixbuf_add_alpha (const GdkPixbuf *pixbuf, gboolean substitute_color,

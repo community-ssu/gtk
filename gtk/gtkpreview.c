@@ -24,10 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-
-#include <config.h>
+#include "config.h"
 
 #include <math.h>
 #include <string.h>
@@ -35,9 +32,10 @@
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
-#include "gdk/gdkrgb.h"
+
+#undef GTK_DISABLE_DEPRECATED
+
 #include "gtkpreview.h"
-#include "gtksignal.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
 #include "gtkalias.h"
@@ -96,8 +94,6 @@ gtk_preview_class_init (GtkPreviewClass *klass)
   klass->info.lookup = NULL;
 
   klass->info.gamma = 1.0;
-
-  gdk_rgb_init ();
 
   g_object_class_install_property (gobject_class,
                                    PROP_EXPAND,
@@ -410,11 +406,8 @@ gtk_preview_get_info (void)
 static void
 gtk_preview_finalize (GObject *object)
 {
-  GtkPreview *preview;
+  GtkPreview *preview = GTK_PREVIEW (object);
 
-  g_return_if_fail (GTK_IS_PREVIEW (object));
-
-  preview = GTK_PREVIEW (object);
   g_free (preview->buffer);
 
   G_OBJECT_CLASS (gtk_preview_parent_class)->finalize (object);
@@ -423,14 +416,11 @@ gtk_preview_finalize (GObject *object)
 static void
 gtk_preview_realize (GtkWidget *widget)
 {
-  GtkPreview *preview;
+  GtkPreview *preview = GTK_PREVIEW (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
 
-  g_return_if_fail (GTK_IS_PREVIEW (widget));
-
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-  preview = GTK_PREVIEW (widget);
 
   attributes.window_type = GDK_WINDOW_CHILD;
 
@@ -463,12 +453,9 @@ static void
 gtk_preview_size_allocate (GtkWidget        *widget,
 			   GtkAllocation    *allocation)
 {
-  GtkPreview *preview;
+  GtkPreview *preview = GTK_PREVIEW (widget);
   gint width, height;
 
-  g_return_if_fail (GTK_IS_PREVIEW (widget));
-
-  preview = GTK_PREVIEW (widget);
   widget->allocation = *allocation;
 
   if (GTK_WIDGET_REALIZED (widget))
@@ -498,14 +485,11 @@ gtk_preview_expose (GtkWidget      *widget,
   GtkPreview *preview;
   gint width, height;
 
-  g_return_val_if_fail (GTK_IS_PREVIEW (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       preview = GTK_PREVIEW (widget);
-      
-      gdk_window_get_size (widget->window, &width, &height);
+
+      gdk_drawable_get_size (widget->window, &width, &height);
 
       gtk_preview_put (GTK_PREVIEW (widget),
 		       widget->window, widget->style->black_gc,

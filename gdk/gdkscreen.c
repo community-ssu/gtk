@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk.h"		/* For gdk_rectangle_intersect() */
 #include "gdkcolor.h"
 #include "gdkwindow.h"
@@ -51,6 +51,7 @@ enum
 {
   SIZE_CHANGED,
   COMPOSITED_CHANGED,
+  MONITORS_CHANGED,
   LAST_SIGNAL
 };
 
@@ -91,13 +92,13 @@ gdk_screen_class_init (GdkScreenClass *klass)
    * GdkScreen::size-changed:
    * @screen: the object on which the signal is emitted
    * 
-   * The ::size_changed signal is emitted when the pixel width or 
+   * The ::size-changed signal is emitted when the pixel width or 
    * height of a screen changes.
    *
    * Since: 2.2
    */
   signals[SIZE_CHANGED] =
-    g_signal_new (g_intern_static_string ("size_changed"),
+    g_signal_new (g_intern_static_string ("size-changed"),
                   G_OBJECT_CLASS_TYPE (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GdkScreenClass, size_changed),
@@ -110,16 +111,38 @@ gdk_screen_class_init (GdkScreenClass *klass)
    * GdkScreen::composited-changed:
    * @screen: the object on which the signal is emitted
    *
-   * The ::composited_changed signal is emitted when the composited
+   * The ::composited-changed signal is emitted when the composited
    * status of the screen changes
    *
    * Since: 2.10
    */
   signals[COMPOSITED_CHANGED] =
-    g_signal_new (g_intern_static_string ("composited_changed"),
+    g_signal_new (g_intern_static_string ("composited-changed"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GdkScreenClass, composited_changed),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__VOID,
+		  G_TYPE_NONE,
+		  0);
+	
+  /**
+   * GdkScreen::monitors-changed:
+   * @screen: the object on which the signal is emitted
+   *
+   * The ::monitors-changed signal is emitted when the number, size
+   * or position of the monitors attached to the screen change. 
+   *
+   * Only for X for now. Future implementations for Win32 and
+   * OS X may be a possibility.
+   *
+   * Since: 2.14
+   */
+  signals[MONITORS_CHANGED] =
+    g_signal_new (g_intern_static_string ("monitors-changed"),
+		  G_OBJECT_CLASS_TYPE (klass),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GdkScreenClass, monitors_changed),
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__VOID,
 		  G_TYPE_NONE,
@@ -483,7 +506,7 @@ gdk_screen_get_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_FONT_OPTIONS:
-      g_value_set_pointer (value, gdk_screen_get_font_options (screen));
+      g_value_set_pointer (value, (gpointer) gdk_screen_get_font_options (screen));
       break;
     case PROP_RESOLUTION:
       g_value_set_double (value, gdk_screen_get_resolution (screen));

@@ -21,8 +21,13 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
+
 #ifndef __GDK_DRAWABLE_H__
 #define __GDK_DRAWABLE_H__
 
@@ -109,7 +114,7 @@ struct _GdkDrawableClass
 			  GdkGC	       *gc,
 			  GdkSegment   *segs,
 			  gint		nsegs);
- void (*draw_lines)     (GdkDrawable  *drawable,
+  void (*draw_lines)     (GdkDrawable  *drawable,
 			  GdkGC        *gc,
 			  GdkPoint     *points,
 			  gint          npoints);
@@ -276,8 +281,8 @@ void gdk_draw_arc       (GdkDrawable      *drawable,
 void gdk_draw_polygon   (GdkDrawable      *drawable,
 			 GdkGC            *gc,
 			 gboolean          filled,
-			 GdkPoint         *points,
-			 gint              npoints);
+			 const GdkPoint   *points,
+			 gint              n_points);
 #if !defined (GDK_DISABLE_DEPRECATED) || defined (GTK_COMPILATION)
 /* Used by gtk_default_draw_string () */
 void gdk_draw_string    (GdkDrawable      *drawable,
@@ -325,19 +330,19 @@ void gdk_draw_image     (GdkDrawable      *drawable,
 			 gint              height);
 void gdk_draw_points    (GdkDrawable      *drawable,
 			 GdkGC            *gc,
-			 GdkPoint         *points,
-			 gint              npoints);
+			 const GdkPoint   *points,
+			 gint              n_points);
 void gdk_draw_segments  (GdkDrawable      *drawable,
 			 GdkGC            *gc,
-			 GdkSegment       *segs,
-			 gint              nsegs);
+			 const GdkSegment *segs,
+			 gint              n_segs);
 void gdk_draw_lines     (GdkDrawable      *drawable,
 			 GdkGC            *gc,
-			 GdkPoint         *points,
-			 gint              npoints);
+			 const GdkPoint   *points,
+			 gint              n_points);
 void gdk_draw_pixbuf    (GdkDrawable      *drawable,
 			 GdkGC            *gc,
-			 GdkPixbuf        *pixbuf,
+			 const GdkPixbuf  *pixbuf,
 			 gint              src_x,
 			 gint              src_y,
 			 gint              dest_x,
@@ -380,17 +385,17 @@ void gdk_draw_layout_with_colors      (GdkDrawable     *drawable,
                                        const GdkColor  *foreground,
                                        const GdkColor  *background);
 
-void gdk_draw_glyphs_transformed (GdkDrawable      *drawable,
-				  GdkGC	           *gc,
-				  PangoMatrix      *matrix,
-				  PangoFont        *font,
-				  gint              x,
-				  gint              y,
-				  PangoGlyphString *glyphs);
-void gdk_draw_trapezoids         (GdkDrawable      *drawable,
-				  GdkGC	           *gc,
-				  GdkTrapezoid     *trapezoids,
-				  gint              n_trapezoids);
+void gdk_draw_glyphs_transformed (GdkDrawable        *drawable,
+				  GdkGC	             *gc,
+				  const PangoMatrix  *matrix,
+				  PangoFont          *font,
+				  gint                x,
+				  gint                y,
+				  PangoGlyphString   *glyphs);
+void gdk_draw_trapezoids         (GdkDrawable        *drawable,
+				  GdkGC	             *gc,
+				  const GdkTrapezoid *trapezoids,
+				  gint                n_trapezoids);
 
 #ifndef GDK_DISABLE_DEPRECATED
 #define gdk_draw_pixmap                gdk_draw_drawable

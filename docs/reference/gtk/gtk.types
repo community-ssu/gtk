@@ -1,8 +1,5 @@
 #include <gtk/gtk.h>
-#include <gtk/gtkprintunixdialog.h>
-#include <gtk/gtkpagesetupunixdialog.h>
-#include <gtk/gtkprinter.h>
-#include <gtk/gtkprintjob.h>
+#include <gtk/gtkunixprint.h>
 
 gtk_about_dialog_get_type
 gtk_accel_group_get_type
@@ -114,6 +111,7 @@ gtk_printer_get_type
 gtk_print_context_get_type
 gtk_print_job_get_type
 gtk_print_operation_get_type
+gtk_print_operation_preview_get_type
 gtk_print_settings_get_type
 gtk_print_unix_dialog_get_type
 gtk_progress_bar_get_type

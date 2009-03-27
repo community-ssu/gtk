@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkeventbox.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
@@ -450,8 +450,7 @@ gtk_event_box_unrealize (GtkWidget *widget)
       priv->event_window = NULL;
     }
 
-  if (GTK_WIDGET_CLASS (gtk_event_box_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_event_box_parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (gtk_event_box_parent_class)->unrealize (widget);
 }
 
 static void
@@ -463,8 +462,8 @@ gtk_event_box_map (GtkWidget *widget)
 
   if (priv->event_window != NULL && !priv->above_child)
     gdk_window_show (priv->event_window);
-  
-  (* GTK_WIDGET_CLASS (gtk_event_box_parent_class)->map) (widget);
+
+  GTK_WIDGET_CLASS (gtk_event_box_parent_class)->map (widget);
 
   if (priv->event_window != NULL && priv->above_child)
     gdk_window_show (priv->event_window);
@@ -479,8 +478,8 @@ gtk_event_box_unmap (GtkWidget *widget)
 
   if (priv->event_window != NULL)
     gdk_window_hide (priv->event_window);
-  
-  (* GTK_WIDGET_CLASS (gtk_event_box_parent_class)->unmap) (widget);
+
+  GTK_WIDGET_CLASS (gtk_event_box_parent_class)->unmap (widget);
 }
 
 
@@ -571,8 +570,8 @@ gtk_event_box_expose (GtkWidget      *widget,
     {
       if (!GTK_WIDGET_NO_WINDOW (widget))
 	gtk_event_box_paint (widget, &event->area);
-      
-      (* GTK_WIDGET_CLASS (gtk_event_box_parent_class)->expose_event) (widget, event);
+
+      GTK_WIDGET_CLASS (gtk_event_box_parent_class)->expose_event (widget, event);
     }
 
   return FALSE;

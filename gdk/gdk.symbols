@@ -1,17 +1,17 @@
 /* This file lists all exported symbols. It is used to generate
  * the gdk.def file used to control exports on Windows and the
- * gdkalias.h/gdkaliasdef.c files used to avoid PLT entries for 
+ * gdkalias.h/gdkaliasdef.c files used to avoid PLT entries for
  * internal uses of exported functions (see makegdkalias.pl).
- * 
+ *
  * Every symbol must be included in the right
  * #ifdef IN_HEADER(sym) #endif and
  * #ifdef IN_FILE(sym) #endif sections.
- * 
+ *
  * gdkalias.h must be included *after* all other gdk headers
  * in each source file, gdkaliasdef.c must be included at the
  * very bottom, after a line defining the right symbol.
- *  
- * (This would be much easier if there was a rational 1-1 
+ *
+ * (This would be much easier if there was a rational 1-1
  *  relation between headers and source files.)
  */
 #ifdef ALL_FILES
@@ -150,6 +150,8 @@ gdk_threads_add_idle
 gdk_threads_add_idle_full
 gdk_threads_add_timeout
 gdk_threads_add_timeout_full
+gdk_threads_add_timeout_seconds
+gdk_threads_add_timeout_seconds_full
 #endif
 #endif
 
@@ -1056,6 +1058,9 @@ gdk_screen_get_default_colormap
 gdk_screen_set_default_colormap
 gdk_screen_get_n_monitors
 gdk_screen_get_monitor_geometry
+gdk_screen_get_monitor_width_mm 
+gdk_screen_get_monitor_height_mm
+gdk_screen_get_monitor_plug_name
 gdk_screen_get_rgba_colormap
 gdk_screen_get_rgba_visual
 gdk_screen_get_active_window
@@ -1234,6 +1239,7 @@ gdk_x11_image_get_ximage
 #if IN_FILE(__GDK_SCREEN_X11_C__)
 gdk_x11_screen_get_screen_number
 gdk_x11_screen_get_xscreen
+gdk_x11_screen_get_monitor_output
 #endif
 
 #if IN_FILE(__GDK_VISUAL_X11_C__)
@@ -1251,6 +1257,25 @@ gdk_x11_window_move_to_current_desktop
 gdk_xid_table_lookup
 gdk_xid_table_lookup_for_display
 #endif
+#endif
+#endif
+
+#if IN_HEADER(__GDK_APP_LAUNCH_CONTEXT_H__)
+#if IN_FILE(__GDK_APP_LAUNCH_CONTEXT_C__)
+gdk_app_launch_context_get_type G_GNUC_CONST
+gdk_app_launch_context_new
+gdk_app_launch_context_set_display
+gdk_app_launch_context_set_screen
+gdk_app_launch_context_set_desktop
+gdk_app_launch_context_set_timestamp
+gdk_app_launch_context_set_icon
+gdk_app_launch_context_set_icon_name
+#endif
+#endif
+
+#if IN_HEADER(__GDK_WINDOW_IMPL_H__)
+#if IN_FILE(__GDK_WINDOW_IMPL_C__)
+gdk_window_impl_get_type G_GNUC_CONST
 #endif
 #endif
 

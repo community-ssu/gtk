@@ -38,7 +38,7 @@
  * so that big window emulation finally works.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk.h"		/* For gdk_rectangle_intersect */
 #include "gdkregion.h"
 #include "gdkregion-generic.h"
@@ -165,9 +165,9 @@ _gdk_win32_window_scroll (GdkWindow *window,
 
 void
 _gdk_win32_window_move_region (GdkWindow       *window,
-                               const GdkRegion *region,
-                               gint             dx,
-                               gint             dy)
+			       const GdkRegion *region,
+			       gint             dx,
+			       gint             dy)
 {
   GdkRegion *invalidate_region;
   GdkWindowImplWin32 *impl;

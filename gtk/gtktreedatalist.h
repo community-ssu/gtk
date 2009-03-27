@@ -17,13 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
 #ifndef __GTK_TREE_DATA_LIST_H__
 #define __GTK_TREE_DATA_LIST_H__
 
-#include <glib.h>
-#include <glib-object.h>
-#include "gtktreesortable.h"
+#include <gtk/gtk.h>
 
 typedef struct _GtkTreeDataList GtkTreeDataList;
 struct _GtkTreeDataList
@@ -50,7 +47,7 @@ typedef struct _GtkTreeDataSortHeader
   gint sort_column_id;
   GtkTreeIterCompareFunc func;
   gpointer data;
-  GtkDestroyNotify destroy;
+  GDestroyNotify destroy;
 } GtkTreeDataSortHeader;
 
 GtkTreeDataList *_gtk_tree_data_list_alloc          (void);
@@ -80,6 +77,6 @@ GList                 *_gtk_tree_data_list_set_header  (GList                  *
 							gint                    sort_column_id,
 							GtkTreeIterCompareFunc  func,
 							gpointer                data,
-							GtkDestroyNotify        destroy);
+							GDestroyNotify          destroy);
 
 #endif /* __GTK_TREE_DATA_LIST_H__ */

@@ -28,7 +28,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkcolorbutton.h"
 #include "gdk/gdkkeysyms.h"
@@ -41,7 +41,6 @@
 #include "gtkdnd.h"
 #include "gtkdrawingarea.h"
 #include "gtkframe.h"
-#include "gtksignal.h"
 #include "gtkmarshalers.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
@@ -233,7 +232,7 @@ gtk_color_button_class_init (GtkColorButtonClass *klass)
    *
    * Since: 2.4
    */
-  color_button_signals[COLOR_SET] = g_signal_new (I_("color_set"),
+  color_button_signals[COLOR_SET] = g_signal_new (I_("color-set"),
 						  G_TYPE_FROM_CLASS (gobject_class),
 						  G_SIGNAL_RUN_FIRST,
 						  G_STRUCT_OFFSET (GtkColorButtonClass, color_set),
@@ -583,11 +582,11 @@ gtk_color_button_init (GtkColorButton *color_button)
                        GDK_BUTTON1_MASK|GDK_BUTTON3_MASK,
                        drop_types, 1,
                        GDK_ACTION_COPY);
-  g_signal_connect (color_button, "drag_begin",
+  g_signal_connect (color_button, "drag-begin",
 		    G_CALLBACK (gtk_color_button_drag_begin), color_button);
-  g_signal_connect (color_button, "drag_data_received",
+  g_signal_connect (color_button, "drag-data-received",
                     G_CALLBACK (gtk_color_button_drag_data_received), color_button);
-  g_signal_connect (color_button, "drag_data_get",
+  g_signal_connect (color_button, "drag-data-get",
                     G_CALLBACK (gtk_color_button_drag_data_get), color_button);
 
   gtk_widget_pop_composite_child ();

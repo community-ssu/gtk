@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkcontainer.h"
 #include "gtkmisc.h"
 #include "gtkintl.h"
@@ -309,8 +309,6 @@ gtk_misc_realize (GtkWidget *widget)
 {
   GdkWindowAttr attributes;
   gint attributes_mask;
-
-  g_return_if_fail (GTK_IS_MISC (widget));
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 

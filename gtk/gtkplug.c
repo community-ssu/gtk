@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
@@ -71,6 +71,7 @@ typedef struct
 enum {
   PROP_0,
   PROP_EMBEDDED,
+  PROP_SOCKET_WINDOW
 };
 
 enum {
@@ -94,6 +95,9 @@ gtk_plug_get_property (GObject    *object,
     {
     case PROP_EMBEDDED:
       g_value_set_boolean (value, plug->socket_window != NULL);
+      break;
+    case PROP_SOCKET_WINDOW:
+      g_value_set_object (value, plug->socket_window);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -147,6 +151,21 @@ gtk_plug_class_init (GtkPlugClass *class)
 							 P_("Whether or not the plug is embedded"),
 							 FALSE,
 							 GTK_PARAM_READABLE));
+
+  /**
+   * GtkPlug:socket-window:
+   *
+   * The window of the socket the plug is embedded in.
+   *
+   * Since: 2.14
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_SOCKET_WINDOW,
+				   g_param_spec_object ("socket-window",
+							P_("Socket Window"),
+							P_("The window of the socket the plug is embedded in"),
+							GDK_TYPE_WINDOW,
+							GTK_PARAM_READABLE));
 
   /**
    * GtkPlug::embedded:
@@ -245,6 +264,42 @@ gtk_plug_get_id (GtkPlug *plug)
 }
 
 /**
+ * gtk_plug_get_embedded:
+ * @plug: a #GtkPlug
+ *
+ * Determines whether the plug is embedded in a socket.
+ *
+ * Return value: %TRUE if the plug is embedded in a socket
+ *
+ * Since: 2.14
+ **/
+gboolean
+gtk_plug_get_embedded (GtkPlug *plug)
+{
+  g_return_val_if_fail (GTK_IS_PLUG (plug), FALSE);
+
+  return plug->socket_window != NULL;
+}
+
+/**
+ * gtk_plug_get_socket_window:
+ * @plug: a #GtkPlug
+ *
+ * Retrieves the socket the plug is embedded in.
+ *
+ * Return value: the window of the socket, or %NULL
+ *
+ * Since: 2.14
+ **/
+GdkWindow *
+gtk_plug_get_socket_window (GtkPlug *plug)
+{
+  g_return_val_if_fail (GTK_IS_PLUG (plug), NULL);
+
+  return plug->socket_window;
+}
+
+/**
  * _gtk_plug_add_to_socket:
  * @plug: a #GtkPlug
  * @socket_: a #GtkSocket
@@ -279,7 +334,7 @@ _gtk_plug_add_to_socket (GtkPlug   *plug,
 
   gtk_widget_set_parent (widget, GTK_WIDGET (socket_));
 
-  g_signal_emit_by_name (socket_, "plug_added");
+  g_signal_emit_by_name (socket_, "plug-added");
 }
 
 /**
@@ -294,16 +349,16 @@ void
 _gtk_plug_send_delete_event (GtkWidget *widget)
 {
   GdkEvent *event = gdk_event_new (GDK_DELETE);
-  
+
   event->any.window = g_object_ref (widget->window);
   event->any.send_event = FALSE;
 
-  gtk_widget_ref (widget);
-  
+  g_object_ref (widget);
+
   if (!gtk_widget_event (widget, event))
     gtk_widget_destroy (widget);
-  
-  gtk_widget_unref (widget);
+
+  g_object_unref (widget);
 
   gdk_event_free (event);
 }
@@ -359,7 +414,7 @@ _gtk_plug_remove_from_socket (GtkPlug   *plug,
 
   gtk_plug_set_is_child (plug, FALSE);
 		    
-  g_signal_emit_by_name (socket_, "plug_removed", &result);
+  g_signal_emit_by_name (socket_, "plug-removed", &result);
   if (!result)
     gtk_widget_destroy (GTK_WIDGET (socket_));
 
@@ -492,11 +547,7 @@ gtk_plug_finalize (GObject *object)
 static void
 gtk_plug_unrealize (GtkWidget *widget)
 {
-  GtkPlug *plug;
-
-  g_return_if_fail (GTK_IS_PLUG (widget));
-
-  plug = GTK_PLUG (widget);
+  GtkPlug *plug = GTK_PLUG (widget);
 
   if (plug->socket_window != NULL)
     {
@@ -515,24 +566,19 @@ gtk_plug_unrealize (GtkWidget *widget)
       gtk_window_group_remove_window (plug->modality_group, GTK_WINDOW (plug));
       g_object_unref (plug->modality_group);
     }
-  
-  if (GTK_WIDGET_CLASS (gtk_plug_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_plug_parent_class)->unrealize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_plug_parent_class)->unrealize (widget);
 }
 
 static void
 gtk_plug_realize (GtkWidget *widget)
 {
-  GtkWindow *window;
-  GtkPlug *plug;
+  GtkWindow *window = GTK_WINDOW (widget);
+  GtkPlug *plug = GTK_PLUG (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
 
-  g_return_if_fail (GTK_IS_PLUG (widget));
-
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-  window = GTK_WINDOW (widget);
-  plug = GTK_PLUG (widget);
 
   attributes.window_type = GDK_WINDOW_CHILD;	/* XXX GDK_WINDOW_PLUG ? */
   attributes.title = window->title;

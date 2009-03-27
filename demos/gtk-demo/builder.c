@@ -6,9 +6,15 @@
 #include <gtk/gtk.h>
 #include "demo-common.h"
 
+static GtkBuilder *builder;
+
 G_MODULE_EXPORT void
 quit_activate (GtkAction *action)
 {
+  GtkWidget *window;
+
+  window = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
+  gtk_widget_destroy (window);
 }
 
 G_MODULE_EXPORT void
@@ -16,17 +22,15 @@ about_activate (GtkAction *action)
 {
   GtkWidget *about_dlg;
 
-  about_dlg = gtk_about_dialog_new ();
-  gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (about_dlg), "GtkBuilder demo");
+  about_dlg = GTK_WIDGET (gtk_builder_get_object (builder, "aboutdialog1"));
   gtk_dialog_run (GTK_DIALOG (about_dlg));
-  gtk_widget_destroy (about_dlg);
+  gtk_widget_hide (about_dlg);
 }
 
 GtkWidget *
 do_builder (GtkWidget *do_widget)
 {
   static GtkWidget *window = NULL;
-  GtkBuilder *builder;
   GError *err = NULL;
   gchar *filename;
   

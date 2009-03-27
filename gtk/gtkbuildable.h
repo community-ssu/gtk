@@ -18,10 +18,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_BUILDABLE_H__
 #define __GTK_BUILDABLE_H__
 
-#include <glib.h>
 #include <gtk/gtkbuilder.h>
 #include <gtk/gtktypeutils.h>
 
@@ -32,6 +35,7 @@ G_BEGIN_DECLS
 #define GTK_BUILDABLE_CLASS(obj)      (G_TYPE_CHECK_CLASS_CAST ((obj), GTK_TYPE_BUILDABLE, GtkBuildableIface))
 #define GTK_IS_BUILDABLE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_BUILDABLE))
 #define GTK_BUILDABLE_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GTK_TYPE_BUILDABLE, GtkBuildableIface))
+
 
 typedef struct _GtkBuildable      GtkBuildable; /* Dummy typedef */
 typedef struct _GtkBuildableIface GtkBuildableIface;

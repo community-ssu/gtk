@@ -40,7 +40,7 @@
  * not have TrackMouseEvent at all (?) --hb
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib/gprintf.h>
 
@@ -128,7 +128,6 @@ GPollFD event_poll_fd;
 static GdkWindow *current_window = NULL;
 static gint current_x, current_y;
 static gint current_root_x, current_root_y;
-static UINT msh_mousewheel;
 static UINT client_message;
 
 static UINT got_gdk_events_message;
@@ -140,6 +139,7 @@ static HKL latin_locale = NULL;
 
 static gboolean in_ime_composition = FALSE;
 static UINT     modal_timer;
+static UINT     sync_timer = 0;
 
 static int debug_indent = 0;
 
@@ -292,8 +292,11 @@ _gdk_win32_window_procedure (HWND   hwnd,
   retval = inner_window_procedure (hwnd, message, wparam, lparam);
   debug_indent -= 2;
 
-  GDK_NOTE (EVENTS, g_print (" => %ld%s",
-			     retval, (debug_indent == 0 ? "\n" : "")));
+#ifdef _WIN64
+  GDK_NOTE (EVENTS, g_print (" => %I64d%s", retval, (debug_indent == 0 ? "\n" : "")));
+#else
+  GDK_NOTE (EVENTS, g_print (" => %ld%s", retval, (debug_indent == 0 ? "\n" : "")));
+#endif
 
   return retval;
 }
@@ -344,13 +347,6 @@ _gdk_events_init (void)
 #endif
   };
 #endif
-
-  /* This is the string MSH_MOUSEWHEEL from zmouse.h,
-   * http://www.microsoft.com/mouse/intellimouse/sdk/zmouse.h
-   * This message is used by mouse drivers than cannot generate WM_MOUSEWHEEL
-   * or on Win95.
-   */
-  msh_mousewheel = RegisterWindowMessage ("MSWHEEL_ROLLMSG");
 
   client_message = RegisterWindowMessage ("GDK_WIN32_CLIENT_MESSAGE");
   got_gdk_events_message = RegisterWindowMessage ("GDK_WIN32_GOT_EVENTS");
@@ -2045,12 +2041,29 @@ handle_stuff_while_moving_or_resizing (void)
 
 static VOID CALLBACK
 modal_timer_proc (HWND     hwnd,
-		   UINT     msg,
-		   UINT     id,
-		   DWORD    time)
+		  UINT     msg,
+		  UINT_PTR id,
+		  DWORD    time)
 {
   if (_sizemove_in_progress)
     handle_stuff_while_moving_or_resizing ();
+}
+
+static VOID CALLBACK
+sync_timer_proc (HWND     hwnd,
+		 UINT     msg,
+		 UINT_PTR id,
+		 DWORD    time)
+{
+  MSG message;
+  if (PeekMessageW (&message, hwnd, WM_PAINT, WM_PAINT, PM_REMOVE))
+    {
+      return;
+    }
+
+  RedrawWindow (hwnd, NULL, NULL, RDW_INVALIDATE|RDW_UPDATENOW|RDW_ALLCHILDREN);
+
+  KillTimer (hwnd, sync_timer);
 }
 
 static void
@@ -2147,7 +2160,7 @@ gdk_event_translate (MSG  *msg,
       /* XXX Handle WM_QUIT here ? */
       if (msg->message == WM_QUIT)
 	{
-	  GDK_NOTE (EVENTS, g_print (" %d", msg->wParam));
+	  GDK_NOTE (EVENTS, g_print (" %d", (int) msg->wParam));
 	  exit (msg->wParam);
 	}
       else if (msg->message == WM_MOVE ||
@@ -2197,54 +2210,7 @@ gdk_event_translate (MSG  *msg,
 	}
     }
 
-  if (msg->message == msh_mousewheel)
-    {
-      GDK_NOTE (EVENTS, g_print (" (MSH_MOUSEWHEEL)"));
-      
-      /* MSH_MOUSEWHEEL is delivered to the foreground window.  Work
-       * around that. Also, the position is in screen coordinates, not
-       * client coordinates as with the button messages.
-       */
-      point.x = GET_X_LPARAM (msg->lParam);
-      point.y = GET_Y_LPARAM (msg->lParam);
-      if ((hwnd = WindowFromPoint (point)) == NULL)
-	goto done;
-
-      msg->hwnd = hwnd;
-      if ((new_window = gdk_win32_handle_table_lookup ((GdkNativeWindow) msg->hwnd)) == NULL)
-	goto done;
-
-      assign_object (&window, new_window);
-
-      if (!propagate (&window, msg,
-		      p_grab_window, p_grab_owner_events, p_grab_mask,
-		      doesnt_want_scroll, TRUE))
-	goto done;
-
-      if (GDK_WINDOW_DESTROYED (window))
-	goto done;
-
-      ScreenToClient (msg->hwnd, &point);
-
-      event = gdk_event_new (GDK_SCROLL);
-      event->scroll.window = window;
-      event->scroll.direction = ((int) msg->wParam > 0) ?
-	GDK_SCROLL_UP : GDK_SCROLL_DOWN;
-      event->scroll.time = _gdk_win32_get_next_tick (msg->time);
-      _gdk_windowing_window_get_offsets (window, &xoffset, &yoffset);
-      event->scroll.x = (gint16) point.x + xoffset;
-      event->scroll.y = (gint16) point.y + yoffset;
-      event->scroll.x_root = (gint16) GET_X_LPARAM (msg->lParam) + _gdk_offset_x;
-      event->scroll.y_root = (gint16) GET_Y_LPARAM (msg->lParam) + _gdk_offset_y;
-      event->scroll.state = 0;	/* No state information with MSH_MOUSEWHEEL */
-      event->scroll.device = _gdk_display->core_pointer;
-
-      append_event (event);
-
-      return_val = TRUE;
-      goto done;
-    }
-  else if (msg->message == client_message)
+  if (msg->message == client_message)
     {
       GList *tmp_list;
       GdkFilterReturn result = GDK_FILTER_CONTINUE;
@@ -2308,9 +2274,9 @@ gdk_event_translate (MSG  *msg,
       _gdk_input_codepage = atoi (buf);
       _gdk_keymap_serial++;
       GDK_NOTE (EVENTS,
-		g_print (" cs:%lu hkl:%lx%s cp:%d",
+		g_print (" cs:%lu hkl:%p%s cp:%d",
 			 (gulong) msg->wParam,
-			 msg->lParam, _gdk_input_locale_is_ime ? " (IME)" : "",
+			 (gpointer) msg->lParam, _gdk_input_locale_is_ime ? " (IME)" : "",
 			 _gdk_input_codepage));
       break;
 
@@ -2319,7 +2285,7 @@ gdk_event_translate (MSG  *msg,
       GDK_NOTE (EVENTS,
 		g_print (" %s ch:%.02x %s",
 			 _gdk_win32_key_to_string (msg->lParam),
-			 msg->wParam,
+			 (int) msg->wParam,
 			 decode_key_lparam (msg->lParam)));
 
       /* If posted without us having keyboard focus, ignore */
@@ -2344,7 +2310,7 @@ gdk_event_translate (MSG  *msg,
       GDK_NOTE (EVENTS, 
 		g_print (" %s ch:%.02x %s",
 			 _gdk_win32_key_to_string (msg->lParam),
-			 msg->wParam,
+			 (int) msg->wParam,
 			 decode_key_lparam (msg->lParam)));
 
     keyup_or_down:
@@ -2451,7 +2417,7 @@ gdk_event_translate (MSG  *msg,
        * WM_IME_CHAR might work on NT4 or Win9x with ActiveIMM, but
        * use WM_IME_COMPOSITION there, too, to simplify the code.
        */
-      GDK_NOTE (EVENTS, g_print (" %#lx", msg->lParam));
+      GDK_NOTE (EVENTS, g_print (" %#lx", (long) msg->lParam));
 
       if (!(msg->lParam & GCS_RESULTSTR))
 	break;
@@ -2633,8 +2599,8 @@ gdk_event_translate (MSG  *msg,
 
     case WM_MOUSEMOVE:
       GDK_NOTE (EVENTS,
-		g_print (" %#x (%d,%d)",
-			 msg->wParam,
+		g_print (" %p (%d,%d)",
+			 (gpointer) msg->wParam,
 			 GET_X_LPARAM (msg->lParam), GET_Y_LPARAM (msg->lParam)));
 
       /* If we haven't moved, don't create any GDK event. Windows
@@ -2830,6 +2796,7 @@ gdk_event_translate (MSG  *msg,
      case WM_MOUSEACTIVATE:
        {
 	 GdkWindow *tmp;
+
 	 if (gdk_window_get_window_type (window) == GDK_WINDOW_TEMP 
 	     || !((GdkWindowObject *)window)->accept_focus)
 	   {
@@ -2884,6 +2851,13 @@ gdk_event_translate (MSG  *msg,
       *ret_valp = 1;
       break;
 
+    case WM_SYNCPAINT:
+
+      sync_timer = SetTimer (GDK_WINDOW_HWND (window),
+			     1,
+			     200, sync_timer_proc);
+      break;
+
     case WM_PAINT:
       handle_wm_paint (msg, window, FALSE, NULL);
       break;
@@ -2912,7 +2886,7 @@ gdk_event_translate (MSG  *msg,
       break;
 
     case WM_SHOWWINDOW:
-      GDK_NOTE (EVENTS, g_print (" %d", msg->wParam));
+      GDK_NOTE (EVENTS, g_print (" %d", (int) msg->wParam));
 
       if (!(((GdkWindowObject *) window)->event_mask & GDK_STRUCTURE_MASK))
 	break;
@@ -3445,7 +3419,7 @@ gdk_event_translate (MSG  *msg,
 	  event->selection.selection = GDK_SELECTION_CLIPBOARD;
 	  event->selection.target = target;
 	  event->selection.property = _gdk_selection_property;
-	  event->selection.requestor = (guint32) msg->hwnd;
+	  event->selection.requestor = msg->hwnd;
 	  event->selection.time = msg->time;
 
 	  fixup_event (event);
@@ -3511,18 +3485,18 @@ gdk_event_translate (MSG  *msg,
        * constants as case labels.
        */
     case WT_PACKET:
-      GDK_NOTE (EVENTS, g_print (" %d %#lx",
-				 msg->wParam, msg->lParam));
+      GDK_NOTE (EVENTS, g_print (" %d %p",
+				 (int) msg->wParam, (gpointer) msg->lParam));
       goto wintab;
       
     case WT_CSRCHANGE:
-      GDK_NOTE (EVENTS, g_print (" %d %#lx",
-				 msg->wParam, msg->lParam));
+      GDK_NOTE (EVENTS, g_print (" %d %p",
+				 (int) msg->wParam, (gpointer) msg->lParam));
       goto wintab;
       
     case WT_PROXIMITY:
-      GDK_NOTE (EVENTS, g_print (" %#x %d %d",
-				 msg->wParam,
+      GDK_NOTE (EVENTS, g_print (" %p %d %d",
+				 (gpointer) msg->wParam,
 				 LOWORD (msg->lParam),
 				 HIWORD (msg->lParam)));
       /* Fall through */
@@ -3723,4 +3697,15 @@ gboolean
 gdk_net_wm_supports (GdkAtom property)
 {
   return FALSE;
+}
+
+void
+_gdk_windowing_event_data_copy (const GdkEvent *src,
+                                GdkEvent       *dst)
+{
+}
+
+void
+_gdk_windowing_event_data_free (GdkEvent *event)
+{
 }

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtktreeselection.h"
 #include "gtktreeprivate.h"
@@ -77,7 +77,7 @@ gtk_tree_selection_finalize (GObject *object)
 
   if (selection->destroy)
     {
-      GtkDestroyNotify d = selection->destroy;
+      GDestroyNotify d = selection->destroy;
 
       selection->destroy = NULL;
       d (selection->user_data);
@@ -300,11 +300,6 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
 	  gtk_tree_path_free (path);
 	}
     }
-
-  /* Have the tree view resize to allocate or deallocate space for the
-   * multiple selection mode tick marks.
-   */
-  gtk_widget_queue_resize (GTK_WIDGET (selection->tree_view));
 #endif /* MAEMO_CHANGES */
 }
 
@@ -341,14 +336,14 @@ void
 gtk_tree_selection_set_select_function (GtkTreeSelection     *selection,
 					GtkTreeSelectionFunc  func,
 					gpointer              data,
-					GtkDestroyNotify      destroy)
+					GDestroyNotify        destroy)
 {
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   g_return_if_fail (func != NULL);
 
   if (selection->destroy)
     {
-      GtkDestroyNotify d = selection->destroy;
+      GDestroyNotify d = selection->destroy;
 
       selection->destroy = NULL;
       d (selection->user_data);
@@ -357,6 +352,24 @@ gtk_tree_selection_set_select_function (GtkTreeSelection     *selection,
   selection->user_func = func;
   selection->user_data = data;
   selection->destroy = destroy;
+}
+
+/**
+ * gtk_tree_selection_get_select_function:
+ * @selection: A #GtkTreeSelection.
+ *
+ * Returns the current selection function.
+ *
+ * Return value: The function.
+ *
+ * Since: 2.14
+ **/
+GtkTreeSelectionFunc
+gtk_tree_selection_get_select_function (GtkTreeSelection *selection)
+{
+  g_return_val_if_fail (GTK_IS_TREE_SELECTION (selection), NULL);
+
+  return selection->user_func;
 }
 
 /**
@@ -477,10 +490,10 @@ gtk_tree_selection_get_selected (GtkTreeSelection  *selection,
  * To do this, you can use gtk_tree_row_reference_new().
  *
  * To free the return value, use:
- * <informalexample><programlisting>
+ * |[
  * g_list_foreach (list, gtk_tree_path_free, NULL);
  * g_list_free (list);
- * </programlisting></informalexample>
+ * ]|
  *
  * Return value: A #GList containing a #GtkTreePath for each selected row.
  *
@@ -704,13 +717,13 @@ gtk_tree_selection_selected_foreach (GtkTreeSelection            *selection,
   g_object_ref (model);
 
   /* connect to signals to monitor changes in treemodel */
-  inserted_id = g_signal_connect_swapped (model, "row_inserted",
+  inserted_id = g_signal_connect_swapped (model, "row-inserted",
 					  G_CALLBACK (model_changed),
 				          &stop);
-  deleted_id = g_signal_connect_swapped (model, "row_deleted",
+  deleted_id = g_signal_connect_swapped (model, "row-deleted",
 					 G_CALLBACK (model_changed),
 				         &stop);
-  reordered_id = g_signal_connect_swapped (model, "rows_reordered",
+  reordered_id = g_signal_connect_swapped (model, "rows-reordered",
 					   G_CALLBACK (model_changed),
 				           &stop);
   changed_id = g_signal_connect_swapped (selection->tree_view, "notify::model",

@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -39,17 +39,15 @@
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 
-#include <gtk/gtkprintoperation.h>
-#include <gtk/gtkprintsettings.h>
+#include <gtk/gtk.h>
 #include <gtk/gtkprintbackend.h>
-#include <gtk/gtkprinter.h>
+#include <gtk/gtkunixprint.h>
 #include <gtk/gtkprinter-private.h>
 
 #include "gtkprintbackendcups.h"
 #include "gtkprintercups.h"
 
 #include "gtkcupsutils.h"
-#include "gtkdebug.h"
 
 
 typedef struct _GtkPrintBackendCupsClass GtkPrintBackendCupsClass;
@@ -108,6 +106,13 @@ struct _GtkPrintBackendCups
   guint list_printers_poll;
   guint list_printers_pending : 1;
   guint got_default_printer   : 1;
+  guint default_printer_poll;
+  GtkCupsConnectionTest *cups_connection_test;
+
+  char **covers;
+  char  *default_cover_before;
+  char  *default_cover_after;
+  int    number_of_covers;
 };
 
 static GObjectClass *backend_parent_class;
@@ -117,6 +122,8 @@ static void                 gtk_print_backend_cups_init            (GtkPrintBack
 static void                 gtk_print_backend_cups_finalize        (GObject                           *object);
 static void                 gtk_print_backend_cups_dispose         (GObject                           *object);
 static void                 cups_get_printer_list                  (GtkPrintBackend                   *print_backend);
+static void                 cups_get_default_printer               (GtkPrintBackendCups               *print_backend);
+static void                 cups_get_local_default_printer         (GtkPrintBackendCups               *print_backend);
 static void                 cups_request_execute                   (GtkPrintBackendCups               *print_backend,
 								    GtkCupsRequest                    *request,
 								    GtkPrintCupsResponseCallbackFunc   callback,
@@ -136,8 +143,9 @@ static void                 cups_printer_prepare_for_print         (GtkPrinter  
 								    GtkPrintSettings                  *settings,
 								    GtkPageSetup                      *page_setup);
 static GList *              cups_printer_list_papers               (GtkPrinter                        *printer);
+static GtkPageSetup *       cups_printer_get_default_page_size     (GtkPrinter                        *printer);
 static void                 cups_printer_request_details           (GtkPrinter                        *printer);
-static void                 cups_request_default_printer           (GtkPrintBackendCups               *print_backend);
+static gboolean             cups_request_default_printer           (GtkPrintBackendCups               *print_backend);
 static void                 cups_request_ppd                       (GtkPrinter                        *printer);
 static void                 cups_printer_get_hard_margins          (GtkPrinter                        *printer,
 								    double                            *top,
@@ -255,6 +263,7 @@ gtk_print_backend_cups_class_init (GtkPrintBackendCupsClass *class)
   backend_class->printer_get_settings_from_options = cups_printer_get_settings_from_options;
   backend_class->printer_prepare_for_print = cups_printer_prepare_for_print;
   backend_class->printer_list_papers = cups_printer_list_papers;
+  backend_class->printer_get_default_page_size = cups_printer_get_default_page_size;
   backend_class->printer_get_hard_margins = cups_printer_get_hard_margins;
   backend_class->printer_get_capabilities = cups_printer_get_capabilities;
 }
@@ -305,10 +314,29 @@ cups_printer_create_cairo_surface (GtkPrinter       *printer,
 				   GIOChannel       *cache_io)
 {
   cairo_surface_t *surface; 
+  ppd_file_t      *ppd_file = NULL;
+  ppd_attr_t      *ppd_attr = NULL;
+  int              level = 2;
  
   /* TODO: check if it is a ps or pdf printer */
   
   surface = cairo_ps_surface_create_for_stream  (_cairo_write_to_cups, cache_io, width, height);
+
+  ppd_file = gtk_printer_cups_get_ppd (GTK_PRINTER_CUPS (printer));
+
+  if (ppd_file != NULL)
+    {
+      ppd_attr = ppdFindAttr (ppd_file, "LanguageLevel", NULL);
+
+      if (ppd_attr != NULL)
+        level = atoi (ppd_attr->value);
+    }
+
+  if (level == 2)
+    cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
+
+  if (level == 3)
+    cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_3);
 
   /* TODO: DPI from settings object? */
   cairo_surface_set_fallback_resolution (surface, 300, 300);
@@ -426,7 +454,7 @@ gtk_print_backend_cups_print_stream (GtkPrintBackend         *print_backend,
                                   GTK_CUPS_POST,
                                   IPP_PRINT_JOB,
 				  data_io,
-				  NULL,
+				  NULL, 
 				  cups_printer->device_uri);
 
 #if (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2) || CUPS_VERSION_MAJOR > 1
@@ -480,7 +508,15 @@ gtk_print_backend_cups_init (GtkPrintBackendCups *backend_cups)
   backend_cups->got_default_printer = FALSE;  
   backend_cups->list_printers_pending = FALSE;
 
-  cups_request_default_printer (backend_cups);
+  backend_cups->covers = NULL;
+  backend_cups->default_cover_before = NULL;
+  backend_cups->default_cover_after = NULL;
+  backend_cups->number_of_covers = 0;
+
+  backend_cups->default_printer_poll = 0;
+  backend_cups->cups_connection_test = NULL;
+
+  cups_get_local_default_printer (backend_cups);
 }
 
 static void
@@ -495,7 +531,16 @@ gtk_print_backend_cups_finalize (GObject *object)
 
   g_free (backend_cups->default_printer);
   backend_cups->default_printer = NULL;
-  
+
+  g_strfreev (backend_cups->covers);
+  backend_cups->number_of_covers = 0;
+
+  g_free (backend_cups->default_cover_before);
+  g_free (backend_cups->default_cover_after);
+
+  gtk_cups_connection_test_free (backend_cups->cups_connection_test);
+  backend_cups->cups_connection_test = NULL;
+
   backend_parent_class->finalize (object);
 }
 
@@ -513,6 +558,10 @@ gtk_print_backend_cups_dispose (GObject *object)
     g_source_remove (backend_cups->list_printers_poll);
   backend_cups->list_printers_poll = 0;
   
+  if (backend_cups->default_printer_poll > 0)
+    g_source_remove (backend_cups->default_printer_poll);
+  backend_cups->default_printer_poll = 0;
+
   backend_parent_class->dispose (object);
 }
 
@@ -775,7 +824,9 @@ cups_request_printer_info (GtkPrintBackendCups *print_backend,
       "printer-info",
       "printer-state-message",
       "printer-state",
-      "queued-job-count"
+      "queued-job-count",
+      "job-sheets-supported",
+      "job-sheets-default"
     };
 
   request = gtk_cups_request_new (NULL,
@@ -1035,6 +1086,54 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
       gint job_count = 0;
       gboolean status_changed = FALSE;
       GList *node;
+      gint i,j;
+      const gchar *reason_msg = NULL;
+      gchar *reason_msg_desc = NULL;
+      gchar *tmp_msg = NULL;
+      gchar *tmp_msg2 = NULL;
+      gint printer_state_reason_level = 0; /* 0 - none, 1 - report, 2 - warning, 3 - error */
+      gboolean interested_in = FALSE;
+      gboolean found = FALSE;
+      static const char * const reasons[] =	/* Reasons we're interested in */
+        {
+          "toner-low",
+          "toner-empty",
+          "developer-low",
+          "developer-empty",
+          "marker-supply-low",
+          "marker-supply-empty",
+          "cover-open",
+          "door-open",
+          "media-low",
+          "media-empty",
+          "offline",
+          "connecting-to-device",
+          "other"
+        };
+      static const char * reasons_descs[] =
+        {
+          N_("Printer '%s' is low on toner."),
+          N_("Printer '%s' has no toner left."),
+          /* Translators: "Developer" like on photo development context */
+          N_("Printer '%s' is low on developer."),
+          /* Translators: "Developer" like on photo development context */
+          N_("Printer '%s' is out of developer."),
+          /* Translators: "marker" is one color bin of the printer */
+          N_("Printer '%s' is low on at least one marker supply."),
+          /* Translators: "marker" is one color bin of the printer */
+          N_("Printer '%s' is out of at least one marker supply."),
+          N_("The cover is open on printer '%s'."),
+          N_("The door is open on printer '%s'."),
+          N_("Printer '%s' is low on paper."),
+          N_("Printer '%s' is out of paper."),
+          N_("Printer '%s' is currently off-line."),
+          N_("Printer '%s' may not be connected."),
+          N_("There is a problem on printer '%s'.")
+        };
+      gboolean is_paused = FALSE;
+      gboolean is_accepting_jobs = TRUE;
+      gboolean default_printer = FALSE;
+      gboolean got_printer_type = FALSE;
       
       /* Skip leading attributes until we hit a printer...
        */
@@ -1061,10 +1160,98 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
           description = attr->values[0].string.text;
         else if (strcmp (attr->name, "printer-state-message") == 0)
           state_msg = attr->values[0].string.text;
+        else if (strcmp (attr->name, "printer-state-reasons") == 0)
+          /* Store most important reason to reason_msg and set
+             its importance at printer_state_reason_level */
+          {
+            for (i = 0; i < attr->num_values; i++)
+              {
+                if (strcmp (attr->values[i].string.text, "none") != 0)
+                  {
+                    /* Sets is_paused flag for paused printer. */
+                    if (strcmp (attr->values[i].string.text, "paused") == 0)
+                      {
+                        is_paused = TRUE;
+                      }
+
+                    interested_in = FALSE;
+                    for (j = 0; j < G_N_ELEMENTS (reasons); j++)
+                        if (strncmp (attr->values[i].string.text, reasons[j], strlen (reasons[j])) == 0)
+                          {
+                            interested_in = TRUE;
+                            break;
+                          }
+
+                    if (interested_in)
+                      {
+                        if (g_str_has_suffix (attr->values[i].string.text, "-report"))
+                          {
+                            if (printer_state_reason_level <= 1)
+                              {
+                                reason_msg = attr->values[i].string.text;
+                                printer_state_reason_level = 1;
+                              }
+                          }
+                        else if (g_str_has_suffix (attr->values[i].string.text, "-warning"))
+                          {
+                            if (printer_state_reason_level <= 2)
+                              {
+                                reason_msg = attr->values[i].string.text;
+                                printer_state_reason_level = 2;
+                              }
+                          }
+                        else  /* It is error in the case of no suffix. */
+                          {
+                            reason_msg = attr->values[i].string.text;
+                            printer_state_reason_level = 3;
+                          }
+                      }
+                  }
+              }
+          }
         else if (strcmp (attr->name, "printer-state") == 0)
           state = attr->values[0].integer;
         else if (strcmp (attr->name, "queued-job-count") == 0)
           job_count = attr->values[0].integer;
+        else if (strcmp (attr->name, "printer-is-accepting-jobs") == 0)
+          {
+            if (attr->values[0].boolean == 1)
+              is_accepting_jobs = TRUE;
+            else
+              is_accepting_jobs = FALSE;
+          }
+        else if (strcmp (attr->name, "job-sheets-supported") == 0)
+          {
+            if (cups_backend->covers == NULL)
+              {
+                cups_backend->number_of_covers = attr->num_values;
+                cups_backend->covers = g_new (char *, cups_backend->number_of_covers + 1);
+
+                for (i = 0; i < cups_backend->number_of_covers; i++)
+                  cups_backend->covers[i] = g_strdup (attr->values[i].string.text);
+
+                cups_backend->covers[cups_backend->number_of_covers] = NULL;
+              }
+          }
+        else if (strcmp (attr->name, "job-sheets-default") == 0)
+          {
+            if ( (cups_backend->default_cover_before == NULL) && (cups_backend->default_cover_after == NULL))
+              {
+                if (attr->num_values == 2)
+                  {
+                    cups_backend->default_cover_before = g_strdup (attr->values[0].string.text);
+                    cups_backend->default_cover_after = g_strdup (attr->values[1].string.text);
+                  }
+              }
+          }
+        else if (strcmp (attr->name, "printer-type") == 0)
+          {
+            got_printer_type = TRUE;
+            if (attr->values[0].integer & 0x00020000)
+              default_printer = TRUE;
+            else
+              default_printer = FALSE;
+          }
         else
 	  {
 	    GTK_NOTE (PRINTING,
@@ -1082,7 +1269,21 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 	else
           continue;
       }
-   
+
+      if (got_printer_type)
+        {
+          if (default_printer && !cups_backend->got_default_printer)
+            {
+              cups_backend->got_default_printer = TRUE;
+              cups_backend->default_printer = g_strdup (printer_name);
+            }
+        }
+      else
+        {
+          if (!cups_backend->got_default_printer)
+            cups_get_default_printer (cups_backend);
+        }
+
       /* remove name from checklist if it was found */
       node = g_list_find_custom (removed_printer_checklist, printer_name, (GCompareFunc) find_printer);
       removed_printer_checklist = g_list_delete_link (removed_printer_checklist, node);
@@ -1173,6 +1374,9 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
       else
 	g_object_ref (printer);
 
+      gtk_printer_set_is_paused (printer, is_paused);
+      gtk_printer_set_is_accepting_jobs (printer, is_accepting_jobs);
+
       if (!gtk_printer_is_active (printer))
         {
 	  gtk_printer_set_is_active (printer, TRUE);
@@ -1198,7 +1402,73 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
       status_changed = gtk_printer_set_job_count (printer, job_count);
       status_changed |= gtk_printer_set_location (printer, location);
       status_changed |= gtk_printer_set_description (printer, description);
+
+      if (state_msg != NULL && strlen (state_msg) == 0)
+        {
+          if (is_paused && !is_accepting_jobs)
+		  /* Translators: this is a printer status. */
+            tmp_msg2 = g_strdup ( N_("Paused ; Rejecting Jobs"));
+          if (is_paused && is_accepting_jobs)
+		  /* Translators: this is a printer status. */
+            tmp_msg2 = g_strdup ( N_("Paused"));
+          if (!is_paused && !is_accepting_jobs)
+		  /* Translators: this is a printer status. */
+            tmp_msg2 = g_strdup ( N_("Rejecting Jobs"));
+
+          if (tmp_msg2 != NULL)
+            state_msg = tmp_msg2;
+        }
+
+      /* Set description of the reason and combine it with printer-state-message. */
+      if ( (reason_msg != NULL))
+        {
+          for (i = 0; i < G_N_ELEMENTS (reasons); i++)
+            {
+              if (strncmp (reason_msg, reasons[i], strlen (reasons[i])) == 0)
+                {
+                  reason_msg_desc = g_strdup_printf (reasons_descs[i], printer_name);
+                  found = TRUE;
+                  break;
+                }
+            }
+
+          if (!found)
+            printer_state_reason_level = 0;
+
+          if (printer_state_reason_level >= 2)
+            {
+              if (strlen (state_msg) == 0)
+                state_msg = reason_msg_desc;
+              else
+                {
+                  tmp_msg = g_strjoin (" ; ", state_msg, reason_msg_desc, NULL);
+                  state_msg = tmp_msg;
+                }
+            }
+        }
+
       status_changed |= gtk_printer_set_state_message (printer, state_msg);
+      status_changed |= gtk_printer_set_is_accepting_jobs (printer, is_accepting_jobs);
+
+      if (tmp_msg != NULL)
+        g_free (tmp_msg);
+
+      if (tmp_msg2 != NULL)
+        g_free (tmp_msg2);
+
+      if (reason_msg_desc != NULL)
+        g_free (reason_msg_desc);
+
+      /* Set printer icon according to importance
+         (none, report, warning, error - report is omitted). */
+      if (printer_state_reason_level == 3)
+        gtk_printer_set_icon_name (printer, "gtk-print-error");
+      else if (printer_state_reason_level == 2)
+        gtk_printer_set_icon_name (printer, "gtk-print-warning");
+      else if (gtk_printer_is_paused (printer))
+        gtk_printer_set_icon_name (printer, "gtk-print-paused");
+      else
+        gtk_printer_set_icon_name (printer, "gtk-print");
 
       if (status_changed)
         g_signal_emit_by_name (GTK_PRINT_BACKEND (backend),
@@ -1229,9 +1499,26 @@ done:
   GDK_THREADS_LEAVE ();
 }
 
+static void
+update_backend_status (GtkPrintBackendCups    *cups_backend,
+                       GtkCupsConnectionState  state)
+{
+  switch (state)
+    {
+    case GTK_CUPS_CONNECTION_NOT_AVAILABLE:
+      g_object_set (cups_backend, "status", GTK_PRINT_BACKEND_STATUS_UNAVAILABLE, NULL);
+      break;
+    case GTK_CUPS_CONNECTION_AVAILABLE:
+      g_object_set (cups_backend, "status", GTK_PRINT_BACKEND_STATUS_OK, NULL);
+      break;
+    default: ;
+    }
+}
+
 static gboolean
 cups_request_printer_list (GtkPrintBackendCups *cups_backend)
 {
+  GtkCupsConnectionState state;
   GtkCupsRequest *request;
   static const char * const pattrs[] =	/* Attributes we're interested in */
     {
@@ -1241,12 +1528,22 @@ cups_request_printer_list (GtkPrintBackendCups *cups_backend)
       "printer-location",
       "printer-info",
       "printer-state-message",
+      "printer-state-reasons",
       "printer-state",
-      "queued-job-count"
+      "queued-job-count",
+      "printer-is-accepting-jobs",
+      "job-sheets-supported",
+      "job-sheets-default",
+      "printer-type"
     };
- 
-  if (cups_backend->list_printers_pending ||
-      !cups_backend->got_default_printer)
+
+  if (cups_backend->list_printers_pending)
+    return TRUE;
+
+  state = gtk_cups_connection_test_get_state (cups_backend->cups_connection_test);
+  update_backend_status (cups_backend, state);
+
+  if (state == GTK_CUPS_CONNECTION_IN_PROGRESS || state == GTK_CUPS_CONNECTION_NOT_AVAILABLE)
     return TRUE;
 
   cups_backend->list_printers_pending = TRUE;
@@ -1277,10 +1574,14 @@ cups_get_printer_list (GtkPrintBackend *backend)
   GtkPrintBackendCups *cups_backend;
 
   cups_backend = GTK_PRINT_BACKEND_CUPS (backend);
+
+  if (cups_backend->cups_connection_test == NULL)
+    cups_backend->cups_connection_test = gtk_cups_connection_test_new (NULL);
+
   if (cups_backend->list_printers_poll == 0)
     {
-      cups_request_printer_list (cups_backend);
-      cups_backend->list_printers_poll = gdk_threads_add_timeout (3000,
+      if (cups_request_printer_list (cups_backend))
+        cups_backend->list_printers_poll = gdk_threads_add_timeout_seconds (3,
                                                         (GSourceFunc) cups_request_printer_list,
                                                         backend);
     }
@@ -1341,6 +1642,8 @@ cups_request_ppd_cb (GtkPrintBackendCups *print_backend,
   /* let ppdOpenFd take over the ownership of the open file */
   g_io_channel_seek_position (data->ppd_io, 0, G_SEEK_SET, NULL);
   data->printer->ppd_file = ppdOpenFd (dup (g_io_channel_unix_get_fd (data->ppd_io)));
+
+  ppdMarkDefaults (data->printer->ppd_file);
   
   gtk_printer_set_has_details (printer, TRUE);
   g_signal_emit_by_name (printer, "details-acquired", TRUE);
@@ -1589,6 +1892,60 @@ cups_get_user_options (const char     *printer_name,
   return num_options;
 }
 
+/* This function requests default printer from a CUPS server in regular intervals.
+ * In the case of unreachable CUPS server the request is repeated later.
+ * The default printer is not requested in the case of previous success.
+ */
+static void
+cups_get_default_printer (GtkPrintBackendCups *backend)
+{
+  GtkPrintBackendCups *cups_backend;
+
+  cups_backend = backend;
+
+  if (cups_backend->cups_connection_test == NULL)
+    cups_backend->cups_connection_test = gtk_cups_connection_test_new (NULL);
+
+  if (cups_backend->default_printer_poll == 0)
+    {
+      if (cups_request_default_printer (cups_backend))
+        cups_backend->default_printer_poll = gdk_threads_add_timeout (500,
+                                                                      (GSourceFunc) cups_request_default_printer,
+                                                                      backend);
+    }
+}
+
+/* This function gets default printer from local settings.*/
+static void
+cups_get_local_default_printer (GtkPrintBackendCups *backend)
+{
+  const char *str;
+  char *name = NULL;
+
+  if ((str = g_getenv ("LPDEST")) != NULL)
+    {
+      backend->default_printer = g_strdup (str);
+      backend->got_default_printer = TRUE;
+      return;
+    }
+  else if ((str = g_getenv ("PRINTER")) != NULL &&
+	   strcmp (str, "lp") != 0)
+    {
+      backend->default_printer = g_strdup (str);
+      backend->got_default_printer = TRUE;
+      return;
+    }
+  
+  /* Figure out user setting for default printer */  
+  cups_get_user_default_printer (&name);
+  if (name != NULL)
+    {
+      backend->default_printer = name;
+      backend->got_default_printer = TRUE;
+      return;
+    }
+}
+
 static void
 cups_request_default_printer_cb (GtkPrintBackendCups *print_backend,
 				 GtkCupsResult       *result,
@@ -1596,6 +1953,9 @@ cups_request_default_printer_cb (GtkPrintBackendCups *print_backend,
 {
   ipp_t *response;
   ipp_attribute_t *attr;
+  GtkPrinter *printer;
+
+  GDK_THREADS_ENTER ();
 
   response = gtk_cups_result_get_response (result);
   
@@ -1604,42 +1964,36 @@ cups_request_default_printer_cb (GtkPrintBackendCups *print_backend,
 
   print_backend->got_default_printer = TRUE;
 
+  if (print_backend->default_printer != NULL)
+    {
+      printer = gtk_print_backend_find_printer (GTK_PRINT_BACKEND (print_backend), print_backend->default_printer);
+      if (printer != NULL)
+        {
+          gtk_printer_set_is_default (printer, TRUE);
+          g_signal_emit_by_name (GTK_PRINT_BACKEND (print_backend), "printer-status-changed", printer);
+        }
+    }
+
   /* Make sure to kick off get_printers if we are polling it, 
    * as we could have blocked this reading the default printer 
    */
   if (print_backend->list_printers_poll != 0)
     cups_request_printer_list (print_backend);
+
+  GDK_THREADS_LEAVE ();
 }
 
-static void
+static gboolean
 cups_request_default_printer (GtkPrintBackendCups *print_backend)
 {
+  GtkCupsConnectionState state;
   GtkCupsRequest *request;
-  const char *str;
-  char *name = NULL;
 
-  if ((str = g_getenv ("LPDEST")) != NULL)
-    {
-      print_backend->default_printer = g_strdup (str);
-      print_backend->got_default_printer = TRUE;
-      return;
-    }
-  else if ((str = g_getenv ("PRINTER")) != NULL &&
-	   strcmp (str, "lp") != 0)
-    {
-      print_backend->default_printer = g_strdup (str);
-      print_backend->got_default_printer = TRUE;
-      return;
-    }
-  
-  /* Figure out user setting for default printer */  
-  cups_get_user_default_printer (&name);
-  if (name != NULL)
-    {
-       print_backend->default_printer = name;
-       print_backend->got_default_printer = TRUE;
-       return;
-    }
+  state = gtk_cups_connection_test_get_state (print_backend->cups_connection_test);
+  update_backend_status (print_backend, state);
+
+  if (state == GTK_CUPS_CONNECTION_IN_PROGRESS || state == GTK_CUPS_CONNECTION_NOT_AVAILABLE)
+    return TRUE;
 
   request = gtk_cups_request_new (NULL,
                                   GTK_CUPS_POST,
@@ -1653,6 +2007,8 @@ cups_request_default_printer (GtkPrintBackendCups *print_backend)
                         (GtkPrintCupsResponseCallbackFunc) cups_request_default_printer_cb,
 		        g_object_ref (print_backend),
 		        g_object_unref);
+
+  return FALSE;
 }
 
 static void
@@ -1738,11 +2094,17 @@ static const struct {
   const char *translation;
 } cups_choice_translations[] = {
   { "Duplex", "None", N_("One Sided") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "Auto", N_("Auto Select") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "AutoSelect", N_("Auto Select") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "Default", N_("Printer Default") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "None", N_("Printer Default") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "PrinterDefault", N_("Printer Default") },
+  /* Translators: this is an option of "Paper Source" */
   { "InputSlot", "Unspecified", N_("Auto Select") },
 };
 
@@ -2406,19 +2768,33 @@ cups_printer_get_options (GtkPrinter           *printer,
   char *print_at[] = { "now", "at", "on-hold" };
   char *n_up[] = {"1", "2", "4", "6", "9", "16" };
   char *prio[] = {"100", "80", "50", "30" };
+  /* Translators: These strings name the possible values of the 
+   * job priority option in the print dialog
+   */
   char *prio_display[] = {N_("Urgent"), N_("High"), N_("Medium"), N_("Low") };
-  char *cover[] = {"none", "classified", "confidential", "secret", "standard", "topsecret", "unclassified" };
-  char *cover_display[] = {N_("None"), N_("Classified"), N_("Confidential"), N_("Secret"), N_("Standard"), N_("Top Secret"), N_("Unclassified"),};
+  char *n_up_layout[] = { "lrtb", "lrbt", "rltb", "rlbt", "tblr", "tbrl", "btlr", "btrl" };
+  /* Translators: These strings name the possible arrangements of
+   * multiple pages on a sheet when printing
+   */
+  char *n_up_layout_display[] = { N_("Left to right, top to bottom"), N_("Left to right, bottom to top"), 
+                                  N_("Right to left, top to bottom"), N_("Right to left, bottom to top"), 
+                                  N_("Top to bottom, left to right"), N_("Top to bottom, right to left"), 
+                                  N_("Bottom to top, left to right"), N_("Bottom to top, right to left") };
   char *name;
   int num_opts;
   cups_option_t *opts = NULL;
+  GtkPrintBackendCups *backend;
+  GtkTextDirection text_direction;
 
 
   set = gtk_printer_option_set_new ();
 
   /* Cups specific, non-ppd related settings */
 
-  option = gtk_printer_option_new ("gtk-n-up", "Pages Per Sheet", GTK_PRINTER_OPTION_TYPE_PICKONE);
+   /* Translators, this string is used to label the pages-per-sheet option 
+    * in the print dialog 
+    */
+  option = gtk_printer_option_new ("gtk-n-up", _("Pages per Sheet"), GTK_PRINTER_OPTION_TYPE_PICKONE);
   gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (n_up),
 					 n_up, n_up);
   gtk_printer_option_set (option, "1");
@@ -2426,10 +2802,36 @@ cups_printer_get_options (GtkPrinter           *printer,
   gtk_printer_option_set_add (set, option);
   g_object_unref (option);
 
+  if (cups_printer_get_capabilities (printer) & GTK_PRINT_CAPABILITY_NUMBER_UP_LAYOUT)
+    {
+      for (i = 0; i < G_N_ELEMENTS (n_up_layout_display); i++)
+        n_up_layout_display[i] = _(n_up_layout_display[i]);
+  
+       /* Translators, this string is used to label the option in the print 
+        * dialog that controls in what order multiple pages are arranged 
+        */
+      option = gtk_printer_option_new ("gtk-n-up-layout", _("Page Ordering"), GTK_PRINTER_OPTION_TYPE_PICKONE);
+      gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (n_up_layout),
+                                             n_up_layout, n_up_layout_display);
+
+      text_direction = gtk_widget_get_default_direction ();
+      if (text_direction == GTK_TEXT_DIR_LTR)
+        gtk_printer_option_set (option, "lrtb");
+      else
+        gtk_printer_option_set (option, "rltb");
+
+      set_option_from_settings (option, settings);
+      gtk_printer_option_set_add (set, option);
+      g_object_unref (option);
+    }
+
   for (i = 0; i < G_N_ELEMENTS(prio_display); i++)
     prio_display[i] = _(prio_display[i]);
   
-  option = gtk_printer_option_new ("gtk-job-prio", "Job Priority", GTK_PRINTER_OPTION_TYPE_PICKONE);
+  /* Translators, this string is used to label the job priority option 
+   * in the print dialog 
+   */
+  option = gtk_printer_option_new ("gtk-job-prio", _("Job Priority"), GTK_PRINTER_OPTION_TYPE_PICKONE);
   gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (prio),
 					 prio, prio_display);
   gtk_printer_option_set (option, "50");
@@ -2437,32 +2839,94 @@ cups_printer_get_options (GtkPrinter           *printer,
   gtk_printer_option_set_add (set, option);
   g_object_unref (option);
 
-  option = gtk_printer_option_new ("gtk-billing-info", "Billing Info", GTK_PRINTER_OPTION_TYPE_STRING);
+  /* Translators, this string is used to label the billing info entry
+   * in the print dialog 
+   */
+  option = gtk_printer_option_new ("gtk-billing-info", _("Billing Info"), GTK_PRINTER_OPTION_TYPE_STRING);
   gtk_printer_option_set (option, "");
   set_option_from_settings (option, settings);
   gtk_printer_option_set_add (set, option);
   g_object_unref (option);
 
-  for (i = 0; i < G_N_ELEMENTS(cover_display); i++)
-    cover_display[i] = _(cover_display[i]);
+  backend = GTK_PRINT_BACKEND_CUPS (gtk_printer_get_backend (printer));
+
+  if (backend != NULL)
+    {
+      char *cover_default[] = {"none", "classified", "confidential", "secret", "standard", "topsecret", "unclassified" };
+      /* Translators, these strings are names for various 'standard' cover 
+       * pages that the printing system may support.
+       */
+      char *cover_display_default[] = {N_("None"), N_("Classified"), N_("Confidential"), N_("Secret"), N_("Standard"), N_("Top Secret"), N_("Unclassified"),};
+      char **cover = NULL;
+      char **cover_display = NULL;
+      char **cover_display_translated = NULL;
+      gint num_of_covers = 0;
+      gpointer value;
+      gint j;
+
+      num_of_covers = backend->number_of_covers;
+      cover = g_new (char *, num_of_covers + 1);
+      cover[num_of_covers] = NULL;
+      cover_display = g_new (char *, num_of_covers + 1);
+      cover_display[num_of_covers] = NULL;
+      cover_display_translated = g_new (char *, num_of_covers + 1);
+      cover_display_translated[num_of_covers] = NULL;
+
+      for (i = 0; i < num_of_covers; i++)
+        {
+          cover[i] = g_strdup (backend->covers[i]);
+          value = NULL;
+          for (j = 0; j < G_N_ELEMENTS (cover_default); j++)
+            if (strcmp (cover_default[j], cover[i]) == 0)
+              {
+                value = cover_display_default[j];
+                break;
+              }
+          cover_display[i] = (value != NULL) ? g_strdup (value) : g_strdup (backend->covers[i]);
+        }
+
+      for (i = 0; i < num_of_covers; i++)
+        cover_display_translated[i] = _(cover_display[i]);
   
-  option = gtk_printer_option_new ("gtk-cover-before", "Before", GTK_PRINTER_OPTION_TYPE_PICKONE);
-  gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (cover),
-					 cover, cover_display);
-  gtk_printer_option_set (option, "none");
-  set_option_from_settings (option, settings);
-  gtk_printer_option_set_add (set, option);
-  g_object_unref (option);
+      /* Translators, this is the label used for the option in the print 
+       * dialog that controls the front cover page.
+       */
+      option = gtk_printer_option_new ("gtk-cover-before", _("Before"), GTK_PRINTER_OPTION_TYPE_PICKONE);
+      gtk_printer_option_choices_from_array (option, num_of_covers,
+					 cover, cover_display_translated);
 
-  option = gtk_printer_option_new ("gtk-cover-after", "After", GTK_PRINTER_OPTION_TYPE_PICKONE);
-  gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (cover),
-					 cover, cover_display);
-  gtk_printer_option_set (option, "none");
-  set_option_from_settings (option, settings);
-  gtk_printer_option_set_add (set, option);
-  g_object_unref (option);
+      if (backend->default_cover_before != NULL)
+        gtk_printer_option_set (option, backend->default_cover_before);
+      else
+        gtk_printer_option_set (option, "none");
+      set_option_from_settings (option, settings);
+      gtk_printer_option_set_add (set, option);
+      g_object_unref (option);
 
-  option = gtk_printer_option_new ("gtk-print-time", "Print at", GTK_PRINTER_OPTION_TYPE_PICKONE);
+      /* Translators, this is the label used for the option in the print 
+       * dialog that controls the back cover page.
+       */
+      option = gtk_printer_option_new ("gtk-cover-after", _("After"), GTK_PRINTER_OPTION_TYPE_PICKONE);
+      gtk_printer_option_choices_from_array (option, num_of_covers,
+					 cover, cover_display_translated);
+      if (backend->default_cover_after != NULL)
+        gtk_printer_option_set (option, backend->default_cover_after);
+      else
+        gtk_printer_option_set (option, "none");
+      set_option_from_settings (option, settings);
+      gtk_printer_option_set_add (set, option);
+      g_object_unref (option);
+
+      g_strfreev (cover);
+      g_strfreev (cover_display);
+      g_free (cover_display_translated);
+    }
+
+  /* Translators: this is the name of the option that controls when
+   * a print job is printed. Possible values are 'now', a specified time,
+   * or 'on hold'
+   */
+  option = gtk_printer_option_new ("gtk-print-time", _("Print at"), GTK_PRINTER_OPTION_TYPE_PICKONE);
   gtk_printer_option_choices_from_array (option, G_N_ELEMENTS (print_at),
 					 print_at, print_at);
   gtk_printer_option_set (option, "now");
@@ -2470,7 +2934,10 @@ cups_printer_get_options (GtkPrinter           *printer,
   gtk_printer_option_set_add (set, option);
   g_object_unref (option);
   
-  option = gtk_printer_option_new ("gtk-print-time-text", "Print at time", GTK_PRINTER_OPTION_TYPE_STRING);
+  /* Translators: this is the name of the option that allows the user
+   * to specify a time when a print job will be printed.
+   */
+  option = gtk_printer_option_new ("gtk-print-time-text", _("Print at time"), GTK_PRINTER_OPTION_TYPE_STRING);
   gtk_printer_option_set (option, "");
   set_option_from_settings (option, settings);
   gtk_printer_option_set_add (set, option);
@@ -2501,6 +2968,10 @@ cups_printer_get_options (GtkPrinter           *printer,
 
 	  g_ascii_formatd (width, sizeof (width), "%.2f", gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS));
 	  g_ascii_formatd (height, sizeof (height), "%.2f", gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+          /* Translators: this format is used to display a custom paper
+           * size. The two placeholders are replaced with the width and height
+           * in points. E.g: "Custom 230.4x142.9"
+           */
 	  custom_name = g_strdup_printf (_("Custom %sx%s"), width, height);
           strncpy (option->defchoice, custom_name, PPD_MAX_NAME);
           g_free (custom_name);
@@ -2827,6 +3298,11 @@ set_option_from_settings (GtkPrinterOption *option,
       map_settings_to_option (option, all_map, G_N_ELEMENTS (all_map),
 			      settings, GTK_PRINT_SETTINGS_NUMBER_UP, "number-up");
     }
+  else if (strcmp (option->name, "gtk-n-up-layout") == 0)
+    {
+      map_settings_to_option (option, all_map, G_N_ELEMENTS (all_map),
+			      settings, GTK_PRINT_SETTINGS_NUMBER_UP_LAYOUT, "number-up-layout");
+    }
   else if (strcmp (option->name, "gtk-billing-info") == 0)
     {
       cups_value = gtk_print_settings_get (settings, "cups-job-billing");
@@ -2907,6 +3383,9 @@ foreach_option_get_settings (GtkPrinterOption *option,
   else if (strcmp (option->name, "gtk-n-up") == 0)
     map_option_to_settings (value, all_map, G_N_ELEMENTS (all_map),
 			    settings, GTK_PRINT_SETTINGS_NUMBER_UP, "number-up");
+  else if (strcmp (option->name, "gtk-n-up-layout") == 0)
+    map_option_to_settings (value, all_map, G_N_ELEMENTS (all_map),
+			    settings, GTK_PRINT_SETTINGS_NUMBER_UP_LAYOUT, "number-up-layout");
   else if (strcmp (option->name, "gtk-billing-info") == 0 && strlen (value) > 0)
     gtk_print_settings_set (settings, "cups-job-billing", value);
   else if (strcmp (option->name, "gtk-job-prio") == 0)
@@ -3025,16 +3504,52 @@ cups_printer_prepare_for_print (GtkPrinter       *printer,
   print_job->rotate_to_orientation = TRUE;
 }
 
+static GtkPageSetup *
+create_page_setup (ppd_file_t *ppd_file,
+		   ppd_size_t *size)
+ {
+   char *display_name;
+   GtkPageSetup *page_setup;
+   GtkPaperSize *paper_size;
+   ppd_option_t *option;
+   ppd_choice_t *choice;
+
+  display_name = NULL;
+  option = ppdFindOption (ppd_file, "PageSize");
+  if (option)
+    {
+      choice = ppdFindChoice (option, size->name);
+      if (choice)
+	display_name = ppd_text_to_utf8 (ppd_file, choice->text);
+    }
+
+  if (display_name == NULL)
+    display_name = g_strdup (size->name);
+  
+  page_setup = gtk_page_setup_new ();
+  paper_size = gtk_paper_size_new_from_ppd (size->name,
+					    display_name,
+					    size->width,
+					    size->length);
+  gtk_page_setup_set_paper_size (page_setup, paper_size);
+  gtk_paper_size_free (paper_size);
+  
+  gtk_page_setup_set_top_margin (page_setup, size->length - size->top, GTK_UNIT_POINTS);
+  gtk_page_setup_set_bottom_margin (page_setup, size->bottom, GTK_UNIT_POINTS);
+  gtk_page_setup_set_left_margin (page_setup, size->left, GTK_UNIT_POINTS);
+  gtk_page_setup_set_right_margin (page_setup, size->width - size->right, GTK_UNIT_POINTS);
+  
+  g_free (display_name);
+
+  return page_setup;
+}
+
 static GList *
 cups_printer_list_papers (GtkPrinter *printer)
 {
   ppd_file_t *ppd_file;
   ppd_size_t *size;
-  char *display_name;
   GtkPageSetup *page_setup;
-  GtkPaperSize *paper_size;
-  ppd_option_t *option;
-  ppd_choice_t *choice;
   GList *l;
   int i;
 
@@ -3046,38 +3561,32 @@ cups_printer_list_papers (GtkPrinter *printer)
   
   for (i = 0; i < ppd_file->num_sizes; i++)
     {
-      size = &ppd_file->sizes[i];
+      size = &ppd_file->sizes[i];      
 
-      display_name = NULL;
-      option = ppdFindOption (ppd_file, "PageSize");
-      if (option)
-	{
-	  choice = ppdFindChoice (option, size->name);
-	  if (choice)
-	    display_name = ppd_text_to_utf8 (ppd_file, choice->text);
-	}
-      if (display_name == NULL)
-	display_name = g_strdup (size->name);
-
-      page_setup = gtk_page_setup_new ();
-      paper_size = gtk_paper_size_new_from_ppd (size->name,
-						display_name,
-						size->width,
-						size->length);
-      gtk_page_setup_set_paper_size (page_setup, paper_size);
-      gtk_paper_size_free (paper_size);
-
-      gtk_page_setup_set_top_margin (page_setup, size->length - size->top, GTK_UNIT_POINTS);
-      gtk_page_setup_set_bottom_margin (page_setup, size->bottom, GTK_UNIT_POINTS);
-      gtk_page_setup_set_left_margin (page_setup, size->left, GTK_UNIT_POINTS);
-      gtk_page_setup_set_right_margin (page_setup, size->width - size->right, GTK_UNIT_POINTS);
-	
-      g_free (display_name);
+      page_setup = create_page_setup (ppd_file, size);
 
       l = g_list_prepend (l, page_setup);
     }
 
   return g_list_reverse (l);
+}
+
+static GtkPageSetup *
+cups_printer_get_default_page_size (GtkPrinter *printer)
+{
+  ppd_file_t *ppd_file;
+  ppd_size_t *size;
+  ppd_option_t *option;
+
+
+  ppd_file = gtk_printer_cups_get_ppd (GTK_PRINTER_CUPS (printer));
+  if (ppd_file == NULL)
+    return NULL;
+
+  option = ppdFindOption (ppd_file, "PageSize");
+  size = ppdPageSize (ppd_file, option->defchoice); 
+
+  return create_page_setup (ppd_file, size);
 }
 
 static void
@@ -3106,5 +3615,8 @@ cups_printer_get_capabilities (GtkPrinter *printer)
     GTK_PRINT_CAPABILITY_COPIES |
     GTK_PRINT_CAPABILITY_COLLATE |
     GTK_PRINT_CAPABILITY_REVERSE |
+#if (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 1 && CUPS_VERSION_PATCH >= 15) || (CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR > 1) || CUPS_VERSION_MAJOR > 1
+    GTK_PRINT_CAPABILITY_NUMBER_UP_LAYOUT |
+#endif
     GTK_PRINT_CAPABILITY_NUMBER_UP;
 }

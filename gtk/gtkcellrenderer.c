@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkcellrenderer.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
@@ -47,7 +47,7 @@ struct _GtkCellRendererPrivate
 
 
 enum {
-  PROP_ZERO,
+  PROP_0,
   PROP_MODE,
   PROP_VISIBLE,
   PROP_SENSITIVE,
@@ -61,7 +61,8 @@ enum {
   PROP_IS_EXPANDED,
   PROP_CELL_BACKGROUND,
   PROP_CELL_BACKGROUND_GDK,
-  PROP_CELL_BACKGROUND_SET
+  PROP_CELL_BACKGROUND_SET,
+  PROP_EDITING
 };
 
 /* Signal IDs */
@@ -139,8 +140,7 @@ gtk_cell_renderer_class_init (GtkCellRendererClass *class)
    * continue to use the same kind of widget for editing in future
    * releases, therefore you should check the type of @editable
    * before doing any specific setup, as in the following example:
-   *
-   * <informalexample><programlisting>
+   * |[
    * static void
    * text_editing_started (GtkCellRenderer *cell,
    *                       GtkCellEditable *editable,
@@ -150,13 +150,13 @@ gtk_cell_renderer_class_init (GtkCellRendererClass *class)
    *   if (GTK_IS_ENTRY (editable)) 
    *     {
    *       GtkEntry *entry = GTK_ENTRY (editable);
-   *       <!-- -->
-   *       /<!-- -->* ... create a GtkEntryCompletion *<!-- -->/
-   *       <!-- -->
+   *       
+   *       /&ast; ... create a GtkEntryCompletion &ast;/
+   *       
    *       gtk_entry_set_completion (entry, completion);
    *     }
    * }
-   * </programlisting></informalexample>
+   * ]|
    *
    * Since: 2.6
    */
@@ -288,6 +288,14 @@ gtk_cell_renderer_class_init (GtkCellRendererClass *class)
 						       GDK_TYPE_COLOR,
 						       GTK_PARAM_READWRITE));
 
+  g_object_class_install_property (object_class,
+				   PROP_EDITING,
+				   g_param_spec_boolean ("editing",
+							 P_("Editing"),
+							 P_("Whether the cell renderer is currently in editing mode"),
+							 FALSE,
+							 GTK_PARAM_READABLE));
+
 
 #define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (object_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READWRITE))
 
@@ -317,6 +325,9 @@ gtk_cell_renderer_get_property (GObject     *object,
       break;
     case PROP_SENSITIVE:
       g_value_set_boolean (value, cell->sensitive);
+      break;
+    case PROP_EDITING:
+      g_value_set_boolean (value, cell->editing);
       break;
     case PROP_XALIGN:
       g_value_set_float (value, cell->xalign);
@@ -382,6 +393,9 @@ gtk_cell_renderer_set_property (GObject      *object,
       break;
     case PROP_SENSITIVE:
       cell->sensitive = g_value_get_boolean (value);
+      break;
+    case PROP_EDITING:
+      cell->editing = g_value_get_boolean (value);
       break;
     case PROP_XALIGN:
       cell->xalign = g_value_get_float (value);
@@ -480,13 +494,13 @@ set_cell_bg_color (GtkCellRenderer *cell,
  * in @x_offset and @y_offset are inclusive of the xpad and ypad properties.
  **/
 void
-gtk_cell_renderer_get_size (GtkCellRenderer *cell,
-			    GtkWidget       *widget,
-			    GdkRectangle    *cell_area,
-			    gint            *x_offset,
-			    gint            *y_offset,
-			    gint            *width,
-			    gint            *height)
+gtk_cell_renderer_get_size (GtkCellRenderer    *cell,
+			    GtkWidget          *widget,
+			    const GdkRectangle *cell_area,
+			    gint               *x_offset,
+			    gint               *y_offset,
+			    gint               *width,
+			    gint               *height)
 {
   gint *real_width = width;
   gint *real_height = height;
@@ -507,7 +521,7 @@ gtk_cell_renderer_get_size (GtkCellRenderer *cell,
 
   GTK_CELL_RENDERER_GET_CLASS (cell)->get_size (cell,
 						widget,
-						cell_area,
+						(GdkRectangle *) cell_area,
 						x_offset,
 						y_offset,
 						real_width,
@@ -534,13 +548,13 @@ gtk_cell_renderer_get_size (GtkCellRenderer *cell,
  * @window.  @expose_area is a clip rectangle.
  **/
 void
-gtk_cell_renderer_render (GtkCellRenderer     *cell,
-			  GdkWindow           *window,
-			  GtkWidget           *widget,
-			  GdkRectangle        *background_area,
-			  GdkRectangle        *cell_area,
-			  GdkRectangle        *expose_area,
-			  GtkCellRendererState flags)
+gtk_cell_renderer_render (GtkCellRenderer      *cell,
+			  GdkWindow            *window,
+			  GtkWidget            *widget,
+			  const GdkRectangle   *background_area,
+			  const GdkRectangle   *cell_area,
+			  const GdkRectangle   *expose_area,
+			  GtkCellRendererState  flags)
 {
   gboolean selected = FALSE;
   GtkCellRendererPrivate *priv = GTK_CELL_RENDERER_GET_PRIVATE (cell);
@@ -564,9 +578,9 @@ gtk_cell_renderer_render (GtkCellRenderer     *cell,
   GTK_CELL_RENDERER_GET_CLASS (cell)->render (cell,
 					      window,
 					      widget,
-					      background_area,
-					      cell_area,
-					      expose_area,
+					      (GdkRectangle *) background_area,
+					      (GdkRectangle *) cell_area,
+					      (GdkRectangle *) expose_area,
 					      flags);
 }
 
@@ -592,8 +606,8 @@ gtk_cell_renderer_activate (GtkCellRenderer      *cell,
 			    GdkEvent             *event,
 			    GtkWidget            *widget,
 			    const gchar          *path,
-			    GdkRectangle         *background_area,
-			    GdkRectangle         *cell_area,
+			    const GdkRectangle   *background_area,
+			    const GdkRectangle   *cell_area,
 			    GtkCellRendererState  flags)
 {
   g_return_val_if_fail (GTK_IS_CELL_RENDERER (cell), FALSE);
@@ -608,8 +622,8 @@ gtk_cell_renderer_activate (GtkCellRenderer      *cell,
 						       event,
 						       widget,
 						       path,
-						       background_area,
-						       cell_area,
+						       (GdkRectangle *) background_area,
+						       (GdkRectangle *) cell_area,
 						       flags);
 }
 
@@ -633,8 +647,8 @@ gtk_cell_renderer_start_editing (GtkCellRenderer      *cell,
 				 GdkEvent             *event,
 				 GtkWidget            *widget,
 				 const gchar          *path,
-				 GdkRectangle         *background_area,
-				 GdkRectangle         *cell_area,
+				 const GdkRectangle   *background_area,
+				 const GdkRectangle   *cell_area,
 				 GtkCellRendererState  flags)
 
 {
@@ -652,8 +666,8 @@ gtk_cell_renderer_start_editing (GtkCellRenderer      *cell,
 								event,
 								widget,
 								path,
-								background_area,
-								cell_area,
+								(GdkRectangle *) background_area,
+								(GdkRectangle *) cell_area,
 								flags);
 
   g_signal_emit (cell, 

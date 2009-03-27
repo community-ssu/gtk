@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdktypes.h"
 #include "gdkprivate-win32.h"
 
@@ -34,7 +34,7 @@ GdkScreen	 *_gdk_screen = NULL;
 GdkWindow	 *_gdk_root = NULL;
 
 gint		  _gdk_num_monitors;
-GdkRectangle     *_gdk_monitors = NULL;
+GdkWin32Monitor  *_gdk_monitors = NULL;
 
 gint		  _gdk_offset_x, _gdk_offset_y;
 

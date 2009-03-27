@@ -27,10 +27,11 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include <stdarg.h>
 #include <gdkkeysyms.h>
+
 #include "gtkbindings.h"
 #include "gtkkeyhash.h"
 #include "gtkwidget.h"
@@ -688,26 +689,16 @@ gtk_binding_set_activate (GtkBindingSet	 *binding_set,
   return FALSE;
 }
 
-/**
- * gtk_binding_entry_clear:
- * @binding_set:
- * @keyval:
- * @modifiers:
- *
- * Use of this function is deprecated.
- **/
-void
-gtk_binding_entry_clear (GtkBindingSet	*binding_set,
-			 guint		 keyval,
-			 GdkModifierType modifiers)
+static void
+gtk_binding_entry_clear_internal (GtkBindingSet  *binding_set,
+                                  guint           keyval,
+                                  GdkModifierType modifiers)
 {
   GtkBindingEntry *entry;
-  
-  g_return_if_fail (binding_set != NULL);
-  
+
   keyval = gdk_keyval_to_lower (keyval);
   modifiers = modifiers & BINDING_MOD_MASK ();
-  
+
   entry = binding_ht_lookup_entry (binding_set, keyval, modifiers);
   if (entry)
     binding_entry_destroy (entry);
@@ -716,16 +707,34 @@ gtk_binding_entry_clear (GtkBindingSet	*binding_set,
 }
 
 /**
+ * gtk_binding_entry_clear:
+ * @binding_set: @binding_set to clear an entry of
+ * @keyval:      key value of binding to clear
+ * @modifiers:   key modifier of binding to clear
+ *
+ * Use of this function is deprecated.
+ **/
+void
+gtk_binding_entry_clear (GtkBindingSet	*binding_set,
+			 guint		 keyval,
+			 GdkModifierType modifiers)
+{
+  g_return_if_fail (binding_set != NULL);
+
+  gtk_binding_entry_clear_internal (binding_set, keyval, modifiers);
+}
+
+/**
  * gtk_binding_entry_skip:
  * @binding_set: @binding_set to skip an entry of
  * @keyval:      key value of binding to skip
  * @modifiers:   key modifier of binding to skip
  *
- * Since: 2.12
- *
  * Install a binding on @binding_set which causes key lookups
  * to be aborted, to prevent bindings from lower priority sets
  * to be activated.
+ *
+ * Since: 2.12
  **/
 void
 gtk_binding_entry_skip (GtkBindingSet  *binding_set,
@@ -864,7 +873,7 @@ _gtk_binding_entry_add_signall (GtkBindingSet  *binding_set,
   entry = binding_ht_lookup_entry (binding_set, keyval, modifiers);
   if (!entry)
     {
-      gtk_binding_entry_add (binding_set, keyval, modifiers);
+      gtk_binding_entry_clear_internal (binding_set, keyval, modifiers);
       entry = binding_ht_lookup_entry (binding_set, keyval, modifiers);
     }
   signal_p = &entry->signals;
@@ -880,7 +889,7 @@ _gtk_binding_entry_add_signall (GtkBindingSet  *binding_set,
  * @modifiers:   key modifier of binding to install
  * @signal_name: signal to execute upon activation
  * @n_args:      number of arguments to @signal_name
- * @:            arguments to @signal_name
+ * @Varargs:     arguments to @signal_name
  *
  * Override or install a new key binding for @keyval with @modifiers on
  * @binding_set.  When the binding is activated, @signal_name will be
@@ -911,7 +920,7 @@ gtk_binding_entry_add_signal (GtkBindingSet  *binding_set,
       arg = g_slice_new0 (GtkBindingArg);
       slist = g_slist_prepend (slist, arg);
 
-      arg->arg_type = va_arg (args, GtkType);
+      arg->arg_type = va_arg (args, GType);
       switch (G_TYPE_FUNDAMENTAL (arg->arg_type))
 	{
 	case G_TYPE_CHAR:
@@ -958,7 +967,7 @@ gtk_binding_entry_add_signal (GtkBindingSet  *binding_set,
   if (i == n_args || i == 0)
     {
       slist = g_slist_reverse (slist);
-      gtk_binding_entry_add_signall (binding_set, keyval, modifiers, signal_name, slist);
+      _gtk_binding_entry_add_signall (binding_set, keyval, modifiers, signal_name, slist);
     }
 
   free_slist = slist;
@@ -1469,11 +1478,11 @@ gtk_binding_parse_signal (GScanner       *scanner,
 	  if (!(need_arg && seen_comma) && !negate)
 	    {
 	      args = g_slist_reverse (args);
-	      gtk_binding_entry_add_signall (binding_set,
-					     keyval,
-					     modifiers,
-					     signal,
-					     args);
+	      _gtk_binding_entry_add_signall (binding_set,
+                                              keyval,
+                                              modifiers,
+                                              signal,
+                                              args);
 	      expected_token = G_TOKEN_NONE;
 	    }
 	  done = TRUE;
@@ -1535,8 +1544,8 @@ gtk_binding_parse_bind (GScanner       *scanner,
   if (scanner->token != '{')
     return '{';
 
-  gtk_binding_entry_clear (binding_set, keyval, modifiers);
-  
+  gtk_binding_entry_clear_internal (binding_set, keyval, modifiers);
+
   g_scanner_peek_next_token (scanner);
   while (scanner->next_token != '}')
     {
@@ -1696,35 +1705,6 @@ _gtk_binding_reset_parsed (void)
 
       slist = next;
     }
-}
-
-guint
-_gtk_binding_signal_new (const gchar	    *signal_name,
-			 GType		     itype,
-			 GSignalFlags	     signal_flags,
-			 GCallback           handler,
-			 GSignalAccumulator  accumulator,
-			 gpointer	     accu_data,
-			 GSignalCMarshaller  c_marshaller,
-			 GType		     return_type,
-			 guint		     n_params,
-			 ...)
-{
-  va_list args;
-  guint signal_id;
-
-  g_return_val_if_fail (signal_name != NULL, 0);
-  
-  va_start (args, n_params);
-
-  signal_id = g_signal_new_valist (signal_name, itype, signal_flags,
-                                   g_cclosure_new (handler, NULL, NULL),
-				   accumulator, accu_data, c_marshaller,
-                                   return_type, n_params, args);
-
-  va_end (args);
- 
-  return signal_id;
 }
 
 #define __GTK_BINDINGS_C__

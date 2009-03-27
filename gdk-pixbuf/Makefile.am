@@ -13,6 +13,8 @@ gdk_pixbuf_symbols = -export-symbols $(srcdir)/gdk_pixbuf.def
 gdk_pixbuf_win32_res = gdk_pixbuf-win32-res.o
 gdk_pixbuf_win32_res_ldflag = -Wl,gdk_pixbuf-win32-res.o
 
+libole32 = -lole32
+
 gdk_pixbuf-win32-res.o : gdk_pixbuf.rc
 	$(WINDRES) gdk_pixbuf.rc $@
 
@@ -29,7 +31,7 @@ if MS_LIB_AVAILABLE
 noinst_DATA = gdk_pixbuf-$(GTK_API_VERSION).lib
 
 gdk_pixbuf-$(GTK_API_VERSION).lib: libgdk_pixbuf-$(GTK_API_VERSION).la gdk_pixbuf.def
-	lib -name:libgdk_pixbuf-$(GTK_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:gdk_pixbuf.def -out:$@
+	lib -machine:@LIB_EXE_MACHINE_FLAG@ -name:libgdk_pixbuf-$(GTK_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:gdk_pixbuf.def -out:$@
 
 install-ms-lib:
 	$(INSTALL) gdk_pixbuf-$(GTK_API_VERSION).lib $(DESTDIR)$(libdir)
@@ -66,10 +68,10 @@ module_libs = libgdk_pixbuf-$(GTK_API_VERSION).la $(GDK_PIXBUF_DEP_LIBS)
 #
 # The PNG loader
 #
+libstatic_pixbufloader_png_la_SOURCES = io-png.c
 libpixbufloader_png_la_SOURCES = io-png.c
 libpixbufloader_png_la_LDFLAGS = -avoid-version -module $(no_undefined)
 libpixbufloader_png_la_LIBADD = $(LIBPNG) $(module_libs)
-libstatic_pixbufloader_png_la_SOURCES = io-png.c
 
 #
 # The BMP loader
@@ -168,6 +170,14 @@ libpixbufloader_tga_la_LDFLAGS = -avoid-version -module $(no_undefined)
 libpixbufloader_tga_la_LIBADD = $(module_libs)
 
 #
+# The .icns loader
+#
+libstatic_pixbufloader_icns_la_SOURCES = io-icns.c
+libpixbufloader_icns_la_SOURCES = io-icns.c
+libpixbufloader_icns_la_LDFLAGS = -avoid-version -module $(no_undefined)
+libpixbufloader_icns_la_LIBADD = $(module_libs)
+
+#
 # The PCX loader
 #
 libstatic_pixbufloader_pcx_la_SOURCES = io-pcx.c
@@ -175,24 +185,169 @@ libpixbufloader_pcx_la_SOURCES = io-pcx.c
 libpixbufloader_pcx_la_LDFLAGS = -avoid-version -module $(no_undefined)
 libpixbufloader_pcx_la_LIBADD = $(module_libs)
 
-if HAVE_PNG
-if INCLUDE_PNG
-STATIC_PNG_LIB = libstatic-pixbufloader-png.la
+#
+# The JPEG2000 loader
+#
+libstatic_pixbufloader_jasper_la_SOURCES = io-jasper.c
+libpixbufloader_jasper_la_SOURCES = io-jasper.c
+libpixbufloader_jasper_la_LDFLAGS = -avoid-version -module $(no_undefined)
+libpixbufloader_jasper_la_LIBADD = $(LIBJASPER) $(module_libs)
+
+if BUILD_GDIPLUS_LOADERS
+
+if INCLUDE_GDIPLUS
+
+# When building the GDI+ loader statically, we put the "common" objects
+# only in one of the archives to avoid duplicate definitions
+
+STATIC_GDIPLUS_LIBS = \
+	libstatic-pixbufloader-gdip-ico.la \
+	libstatic-pixbufloader-gdip-wmf.la \
+	libstatic-pixbufloader-gdip-emf.la \
+	libstatic-pixbufloader-gdip-bmp.la \
+	libstatic-pixbufloader-gdip-gif.la \
+	libstatic-pixbufloader-gdip-jpeg.la \
+	libstatic-pixbufloader-gdip-tiff.la
+
+libstatic_pixbufloader_gdip_ico_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-ico.c
+
+libstatic_pixbufloader_gdip_wmf_la_SOURCES = 	\
+	io-gdip-wmf.c
+
+libstatic_pixbufloader_gdip_emf_la_SOURCES = 	\
+	io-gdip-emf.c
+
+libstatic_pixbufloader_gdip_bmp_la_SOURCES = 	\
+	io-gdip-bmp.c
+
+libstatic_pixbufloader_gdip_gif_la_SOURCES = 	\
+	io-gdip-gif.c
+
+libstatic_pixbufloader_gdip_jpeg_la_SOURCES = 	\
+	io-gdip-jpeg.c
+
+libstatic_pixbufloader_gdip_png_la_SOURCES = 	\
+	io-gdip-png.c
+
+libstatic_pixbufloader_gdip_tiff_la_SOURCES = 	\
+	io-gdip-tiff.c
+
 else
-PNG_LIB = libpixbufloader-png.la
+
+GDIPLUS_LIBS = \
+	libpixbufloader-gdip-ico.la \
+	libpixbufloader-gdip-wmf.la \
+	libpixbufloader-gdip-emf.la \
+	libpixbufloader-gdip-bmp.la \
+	libpixbufloader-gdip-gif.la \
+	libpixbufloader-gdip-jpeg.la \
+	libpixbufloader-gdip-tiff.la
+
+libpixbufloader_gdip_ico_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_ico_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-ico.c
+libpixbufloader_gdip_ico_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_wmf_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_wmf_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-wmf.c
+libpixbufloader_gdip_wmf_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_emf_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_emf_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-emf.c
+libpixbufloader_gdip_emf_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_bmp_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_bmp_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-bmp.c
+libpixbufloader_gdip_bmp_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_gif_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_gif_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-gif.c
+libpixbufloader_gdip_gif_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_jpeg_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_jpeg_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-jpeg.c
+libpixbufloader_gdip_jpeg_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_png_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_png_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-png.c
+libpixbufloader_gdip_png_la_LIBADD = $(module_libs) $(libole32)
+
+libpixbufloader_gdip_tiff_la_LDFLAGS = -avoid-version -module -no-undefined
+libpixbufloader_gdip_tiff_la_SOURCES = 	\
+	io-gdip-native.h		\
+	io-gdip-propertytags.h		\
+	io-gdip-utils.h			\
+	io-gdip-utils.c			\
+	io-gdip-animation.c		\
+	io-gdip-animation.h		\
+	io-gdip-tiff.c
+libpixbufloader_gdip_tiff_la_LIBADD = $(module_libs) $(libole32)
+
 endif
-endif
+
+else
+
+# Loaders that aren't built if we build the GDI+ loader
 
 if INCLUDE_BMP
 STATIC_BMP_LIB = libstatic-pixbufloader-bmp.la
 else
 BMP_LIB = libpixbufloader-bmp.la
-endif
-
-if INCLUDE_WBMP
-STATIC_WBMP_LIB = libstatic-pixbufloader-wbmp.la
-else
-WBMP_LIB = libpixbufloader-wbmp.la
 endif
 
 if INCLUDE_GIF
@@ -207,18 +362,43 @@ else
 ICO_LIB = libpixbufloader-ico.la
 endif
 
-if INCLUDE_ANI
-STATIC_ANI_LIB = libstatic-pixbufloader-ani.la
-else
-ANI_LIB = libpixbufloader-ani.la
-endif
-
 if HAVE_JPEG
 if INCLUDE_JPEG
 STATIC_JPEG_LIB = libstatic-pixbufloader-jpeg.la
 else
 JPEG_LIB = libpixbufloader-jpeg.la
 endif
+endif
+
+if HAVE_TIFF
+if INCLUDE_TIFF
+STATIC_TIFF_LIB = libstatic-pixbufloader-tiff.la
+else
+TIFF_LIB = libpixbufloader-tiff.la
+endif
+endif
+
+# End of loaders not built if building GDI+ loader
+endif
+
+if HAVE_PNG
+if INCLUDE_PNG
+STATIC_PNG_LIB = libstatic-pixbufloader-png.la
+else
+PNG_LIB = libpixbufloader-png.la
+endif
+endif
+
+if INCLUDE_WBMP
+STATIC_WBMP_LIB = libstatic-pixbufloader-wbmp.la
+else
+WBMP_LIB = libpixbufloader-wbmp.la
+endif
+
+if INCLUDE_ANI
+STATIC_ANI_LIB = libstatic-pixbufloader-ani.la
+else
+ANI_LIB = libpixbufloader-ani.la
 endif
 
 if INCLUDE_PNM
@@ -231,14 +411,6 @@ if INCLUDE_RAS
 STATIC_RAS_LIB = libstatic-pixbufloader-ras.la
 else
 RAS_LIB = libpixbufloader-ras.la
-endif
-
-if HAVE_TIFF
-if INCLUDE_TIFF
-STATIC_TIFF_LIB = libstatic-pixbufloader-tiff.la
-else
-TIFF_LIB = libpixbufloader-tiff.la
-endif
 endif
 
 if INCLUDE_XPM
@@ -265,6 +437,20 @@ else
 PCX_LIB = libpixbufloader-pcx.la
 endif
 
+if INCLUDE_ICNS
+STATIC_ICNS_LIB = libstatic-pixbufloader-icns.la
+else
+ICNS_LIB = libpixbufloader-icns.la
+endif
+
+if HAVE_JASPER
+if INCLUDE_JASPER
+STATIC_JASPER_LIB = libstatic-pixbufloader-jasper.la
+else
+JASPER_LIB = libpixbufloader-jasper.la
+endif
+endif
+
 if BUILD_DYNAMIC_MODULES
 
 loader_LTLIBRARIES = 	\
@@ -281,7 +467,10 @@ loader_LTLIBRARIES = 	\
 	$(XPM_LIB)	\
 	$(XBM_LIB)	\
 	$(TGA_LIB)	\
-	$(PCX_LIB)
+	$(ICNS_LIB)	\
+	$(PCX_LIB)	\
+	$(JASPER_LIB)	\
+	$(GDIPLUS_LIBS)
 
 
 endif
@@ -300,7 +489,10 @@ noinst_LTLIBRARIES =		\
 	$(STATIC_XPM_LIB)	\
 	$(STATIC_XBM_LIB)	\
 	$(STATIC_TGA_LIB)	\
-	$(STATIC_PCX_LIB)
+	$(STATIC_ICNS_LIB)	\
+	$(STATIC_PCX_LIB)	\
+	$(STATIC_JASPER_LIB)	\
+	$(STATIC_GDIPLUS_LIBS)
 
 builtin_objs = @INCLUDED_LOADER_OBJ@
 
@@ -308,6 +500,7 @@ builtin_objs = @INCLUDED_LOADER_OBJ@
 DEPS = libgdk_pixbuf-$(GTK_API_VERSION).la
 INCLUDES = \
 	-DG_LOG_DOMAIN=\"GdkPixbuf\"		\
+	-DGDK_PIXBUF_COMPILATION		\
 	-I$(top_srcdir) -I$(top_builddir) 	\
 	-I$(top_srcdir)/gdk-pixbuf 		\
 	-I$(top_builddir)/gdk-pixbuf 		\
@@ -321,7 +514,7 @@ INCLUDES = \
 	-DGDK_PIXBUF_ENABLE_BACKEND
 
 AM_CPPFLAGS = "-DPIXBUF_LIBDIR=\"$(loaderdir)\"" "-DBUILT_MODULES_DIR=\"$(srcdir)/.libs\""
-LDADDS = libgdk_pixbuf-$(GTK_API_VERSION).la $(GLIB_LIBS)
+LDADDS = libgdk_pixbuf-$(GTK_API_VERSION).la $(GDK_PIXBUF_DEP_LIBS)
 
 noinst_PROGRAMS = test-gdk-pixbuf
 test_gdk_pixbuf_LDADD = $(LDADDS)
@@ -362,7 +555,7 @@ libgdk_pixbuf_2_0_la_LDFLAGS = \
 	$(gdk_pixbuf_symbols)
 
 
-libgdk_pixbuf_2_0_la_LIBADD = pixops/libpixops.la $(builtin_objs) $(GDK_PIXBUF_DEP_LIBS)
+libgdk_pixbuf_2_0_la_LIBADD = pixops/libpixops.la $(builtin_objs) $(GDK_PIXBUF_DEP_LIBS) $(libole32)
 libgdk_pixbuf_2_0_la_DEPENDENCIES = pixops/libpixops.la $(builtin_objs) $(gdk_pixbuf_def) $(gdk_pixbuf_win32_res)
 
 gdk_pixbuf_headers = 			\
@@ -393,7 +586,8 @@ BUILT_SOURCES = 		\
 	gdk-pixbuf-enum-types.h \
 	gdk-pixbuf-enum-types.c \
 	gdk-pixbuf-marshal.h 	\
-	gdk-pixbuf-marshal.c
+	gdk-pixbuf-marshal.c	\
+	gdk-pixbuf-features.h
 
 CLEANFILES =
 MAINTAINERCLEANFILES = 		\
@@ -410,12 +604,8 @@ MAINTAINERCLEANFILES = 		\
 gdk-pixbuf-enum-types.h: s-enum-types-h
 	@true
 
-s-enum-types-h: @REBUILD@ $(gdk_pixbuf_headers) Makefile
-	( cd $(srcdir) && $(GLIB_MKENUMS) \
-			--fhead "#ifndef __GDK_PIXBUF_ENUM_TYPES_H__\n#define __GDK_PIXBUF_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
-			--fprod "/* enumerations from \"@filename@\" */\n" \
-			--vhead "GType @enum_name@_get_type (void) G_GNUC_CONST;\n#define @ENUMPREFIX@_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n"         \
-			--ftail "G_END_DECLS\n\n#endif /* __GDK_PIXBUF_ENUM_TYPES_H__ */" \
+s-enum-types-h: @REBUILD@ $(gdk_pixbuf_headers) gdk-pixbuf-enum-types.h.template
+	( cd $(srcdir) && $(GLIB_MKENUMS) --template gdk-pixbuf-enum-types.h.template \
 		$(gdk_pixbuf_headers) ) > tmp-gdk-pixbuf-enum-types.h \
 	&& (cmp -s tmp-gdk-pixbuf-enum-types.h gdk-pixbuf-enum-types.h || cp tmp-gdk-pixbuf-enum-types.h gdk-pixbuf-enum-types.h ) \
 	&& rm -f tmp-gdk-pixbuf-enum-types.h \
@@ -427,14 +617,8 @@ MAINTAINERCLEANFILES += s-enum-types-h
 #
 # gdk-pixbuf-enum-types.c
 #
-gdk-pixbuf-enum-types.c: @REBUILD@ $(gdk_pixbuf_headers) Makefile
-	(cd $(srcdir) && $(GLIB_MKENUMS) \
-		--fhead "#include <gdk-pixbuf/gdk-pixbuf.h>\n#include \"gdk-pixbuf-alias.h\"\n" \
-		--fprod "\n/* enumerations from \"@filename@\" */" \
-		--ftail "\n#define __GDK_PIXBUF_ENUM_TYPES_C__\n#include \"gdk-pixbuf-aliasdef.c\"" \
-		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {"       \
-		--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (g_intern_static_string (\"@EnumName@\"), values);\n  }\n  return etype;\n}\n" \
+gdk-pixbuf-enum-types.c: @REBUILD@ $(gdk_pixbuf_headers) gdk-pixbuf-enum-types.c.template
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template gdk-pixbuf-enum-types.c.template \
 		  $(gdk_pixbuf_headers)) > gdk-pixbuf-enum-types.c
 
 #
@@ -444,7 +628,9 @@ gdk-pixbuf-marshal.h: @REBUILD@ stamp-gdk-pixbuf-marshal.h
 	@true
 
 stamp-gdk-pixbuf-marshal.h: @REBUILD@ $(srcdir)/gdk-pixbuf-marshal.list
-	$(GLIB_GENMARSHAL) --prefix=_gdk_pixbuf_marshal $(srcdir)/gdk-pixbuf-marshal.list --header >> xgen-gmh \
+	echo "#if !defined(GDK_PIXBUF_DISABLE_DEPRECATED) || defined(GDK_PIXBUF_COMPILATION)" > xgen-gmh \
+	&& $(GLIB_GENMARSHAL) --prefix=_gdk_pixbuf_marshal $(srcdir)/gdk-pixbuf-marshal.list --header >> xgen-gmh \
+	&& echo "#endif /* !GDK_PIXBUF_DISABLE_DEPRECATED || GDK_PIXBUF_COMPILATION */" >> xgen-gmh \
 	&& (cmp -s xgen-gmh gdk-pixbuf-marshal.h || cp xgen-gmh gdk-pixbuf-marshal.h) \
 	&& rm -f xgen-gmh xgen-gmh~ \
 	&& echo timestamp > $(@F)
@@ -480,6 +666,8 @@ EXTRA_DIST +=					\
 	gdk_pixbuf.rc				\
 	gdk-pixbuf-marshal.c			\
 	gdk-pixbuf-marshal.list			\
+	gdk-pixbuf-enum-types.c.template	\
+	gdk-pixbuf-enum-types.h.template	\
 	gen-color-table.pl
 
 if CROSS_COMPILING

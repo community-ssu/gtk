@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include "glib.h"
 #include <stdio.h>
@@ -34,7 +34,7 @@ disaster (const char *what)
 }
 
 static void
-randomly_modify (const guchar *image, guint size)
+randomly_modify (const gchar *image, guint size)
 {
   int i;
 

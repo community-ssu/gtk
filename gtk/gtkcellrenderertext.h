@@ -17,6 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_CELL_RENDERER_TEXT_H__
 #define __GTK_CELL_RENDERER_TEXT_H__
 
@@ -42,36 +46,36 @@ struct _GtkCellRendererText
   GtkCellRenderer parent;
 
   /*< private >*/
-  gchar *text;
-  PangoFontDescription *font;
-  gdouble font_scale;
-  PangoColor foreground;
-  PangoColor background;
-  
-  PangoAttrList *extra_attrs;
+  gchar *GSEAL (text);
+  PangoFontDescription *GSEAL (font);
+  gdouble GSEAL (font_scale);
+  PangoColor GSEAL (foreground);
+  PangoColor GSEAL (background);
 
-  PangoUnderline underline_style;
+  PangoAttrList *GSEAL (extra_attrs);
 
-  gint rise;
-  gint fixed_height_rows;
+  PangoUnderline GSEAL (underline_style);
 
-  guint strikethrough : 1;
+  gint GSEAL (rise);
+  gint GSEAL (fixed_height_rows);
 
-  guint editable  : 1;
+  guint GSEAL (strikethrough) : 1;
 
-  guint scale_set : 1;
-  
-  guint foreground_set : 1;
-  guint background_set : 1;
-  
-  guint underline_set : 1;
+  guint GSEAL (editable)  : 1;
 
-  guint rise_set : 1;
-  
-  guint strikethrough_set : 1;
+  guint GSEAL (scale_set) : 1;
 
-  guint editable_set : 1;
-  guint calc_fixed_height : 1;
+  guint GSEAL (foreground_set) : 1;
+  guint GSEAL (background_set) : 1;
+
+  guint GSEAL (underline_set) : 1;
+
+  guint GSEAL (rise_set) : 1;
+
+  guint GSEAL (strikethrough_set) : 1;
+
+  guint GSEAL (editable_set) : 1;
+  guint GSEAL (calc_fixed_height) : 1;
 };
 
 struct _GtkCellRendererTextClass
@@ -97,6 +101,5 @@ void             gtk_cell_renderer_text_set_fixed_height_from_font (GtkCellRende
 
 
 G_END_DECLS
-
 
 #endif /* __GTK_CELL_RENDERER_TEXT_H__ */

@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkfixed.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
@@ -436,13 +436,9 @@ gtk_fixed_forall (GtkContainer *container,
 		  GtkCallback   callback,
 		  gpointer      callback_data)
 {
-  GtkFixed *fixed;
+  GtkFixed *fixed = GTK_FIXED (container);
   GtkFixedChild *child;
   GList *children;
-
-  g_return_if_fail (callback != NULL);
-
-  fixed = GTK_FIXED (container);
 
   children = fixed->children;
   while (children)
@@ -489,7 +485,7 @@ gtk_fixed_set_has_window (GtkFixed *fixed,
  * @fixed: a #GtkWidget
  * 
  * Gets whether the #GtkFixed has its own #GdkWindow.
- * See gdk_fixed_set_has_window().
+ * See gtk_fixed_set_has_window().
  * 
  * Return value: %TRUE if @fixed has its own window.
  **/

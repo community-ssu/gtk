@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include "gtkcellrenderertoggle.h"
 #include "gtkintl.h"
@@ -63,7 +63,7 @@ enum {
 };
 
 enum {
-  PROP_ZERO,
+  PROP_0,
   PROP_ACTIVATABLE,
   PROP_ACTIVE,
   PROP_RADIO,

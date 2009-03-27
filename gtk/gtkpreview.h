@@ -29,8 +29,7 @@
 #ifndef __GTK_PREVIEW_H__
 #define __GTK_PREVIEW_H__
 
-
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 
 G_BEGIN_DECLS
@@ -119,10 +118,8 @@ void            gtk_preview_set_install_cmap   (gint             install_cmap);
 void            gtk_preview_set_reserved       (gint             nreserved);
 void            gtk_preview_set_dither         (GtkPreview      *preview,
 						GdkRgbDither     dither);
-#ifndef GTK_DISABLE_DEPRECATED
 GdkVisual*      gtk_preview_get_visual         (void);
 GdkColormap*    gtk_preview_get_cmap           (void);
-#endif
 GtkPreviewInfo* gtk_preview_get_info           (void);
 
 /* This function reinitializes the preview colormap and visual from

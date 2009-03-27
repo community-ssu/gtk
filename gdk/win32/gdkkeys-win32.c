@@ -36,7 +36,7 @@
 #include "gdkinternals.h"
 #include "gdkkeysyms.h"
 
-#include <config.h>
+#include "config.h"
 
 guint _gdk_keymap_serial = 0;
 gboolean _gdk_keyboard_has_altgr = FALSE;
@@ -504,7 +504,7 @@ gdk_keymap_get_direction (GdkKeymap *keymap)
 {
   update_keymap ();
 
-  switch (PRIMARYLANGID (LOWORD ((DWORD) _gdk_input_locale)))
+  switch (PRIMARYLANGID (LOWORD ((DWORD) (gintptr) _gdk_input_locale)))
     {
     case LANG_HEBREW:
     case LANG_ARABIC:

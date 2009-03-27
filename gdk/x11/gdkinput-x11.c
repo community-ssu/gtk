@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdkinputprivate.h"
 #include "gdkinternals.h"
 #include "gdkx.h"
@@ -469,6 +469,11 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
   else
     device_height = (gdkdev->axes[y_axis].max_value -
                      gdkdev->axes[y_axis].min_value);
+#else
+  device_width = gdkdev->axes[x_axis].max_value - 
+		   gdkdev->axes[x_axis].min_value;
+  device_height = gdkdev->axes[y_axis].max_value - 
+                    gdkdev->axes[y_axis].min_value;
 #endif /* MAEMO_CHANGES */
 
   if (gdkdev->info.mode == GDK_MODE_SCREEN) 

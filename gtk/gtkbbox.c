@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkbbox.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
@@ -32,8 +32,7 @@
 
 enum {
   PROP_0,
-  PROP_LAYOUT_STYLE,
-  PROP_LAST
+  PROP_LAYOUT_STYLE
 };
 
 enum {

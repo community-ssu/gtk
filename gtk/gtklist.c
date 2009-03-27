@@ -24,10 +24,11 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
-#include <config.h>
+#include "config.h"
 #include <string.h> /* memset */
+
+#undef GTK_DISABLE_DEPRECATED
+#define __GTK_LIST_C__
 
 #include "gtklist.h"
 #include "gtklistitem.h"
@@ -36,6 +37,7 @@
 #include "gtklabel.h"
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
+
 #include "gtkalias.h"
 
 enum {
@@ -254,7 +256,7 @@ gtk_list_class_init (GtkListClass *class)
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   list_signals[SELECT_CHILD] =
-    gtk_signal_new (I_("select_child"),
+    gtk_signal_new (I_("select-child"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkListClass, select_child),
@@ -262,7 +264,7 @@ gtk_list_class_init (GtkListClass *class)
 		    GTK_TYPE_NONE, 1,
 		    GTK_TYPE_WIDGET);
   list_signals[UNSELECT_CHILD] =
-    gtk_signal_new (I_("unselect_child"),
+    gtk_signal_new (I_("unselect-child"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkListClass, unselect_child),
@@ -367,14 +369,10 @@ static void
 gtk_list_size_request (GtkWidget      *widget,
 		       GtkRequisition *requisition)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (widget);
   GtkWidget *child;
   GList *children;
 
-  g_return_if_fail (GTK_IS_LIST (widget));
-  g_return_if_fail (requisition != NULL);
-
-  list = GTK_LIST (widget);
   requisition->width = 0;
   requisition->height = 0;
 
@@ -407,15 +405,10 @@ static void
 gtk_list_size_allocate (GtkWidget     *widget,
 			GtkAllocation *allocation)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (widget);
   GtkWidget *child;
   GtkAllocation child_allocation;
   GList *children;
-
-  g_return_if_fail (GTK_IS_LIST (widget));
-  g_return_if_fail (allocation != NULL);
-
-  list = GTK_LIST (widget);
 
   widget->allocation = *allocation;
   if (GTK_WIDGET_REALIZED (widget))
@@ -458,8 +451,6 @@ gtk_list_realize (GtkWidget *widget)
   GdkWindowAttr attributes;
   gint attributes_mask;
 
-  g_return_if_fail (GTK_IS_LIST (widget));
-
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
   attributes.window_type = GDK_WINDOW_CHILD;
@@ -494,14 +485,10 @@ list_has_grab (GtkList *list)
 static void
 gtk_list_unmap (GtkWidget *widget)
 {
-  GtkList *list;
-
-  g_return_if_fail (GTK_IS_LIST (widget));
+  GtkList *list = GTK_LIST (widget);
 
   if (!GTK_WIDGET_MAPPED (widget))
     return;
-
-  list = GTK_LIST (widget);
 
   GTK_WIDGET_UNSET_FLAGS (widget, GTK_MAPPED);
 
@@ -520,7 +507,7 @@ static gint
 gtk_list_motion_notify (GtkWidget      *widget,
 			GdkEventMotion *event)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (widget);
   GtkWidget *item = NULL;
   GtkAdjustment *adj;
   GtkContainer *container;
@@ -530,11 +517,6 @@ gtk_list_motion_notify (GtkWidget      *widget,
   gint row = -1;
   gint focus_row = 0;
   gint length = 0;
-
-  g_return_val_if_fail (GTK_IS_LIST (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-
-  list = GTK_LIST (widget);
 
   if (!list->drag_selection || !list->children)
     return FALSE;
@@ -631,16 +613,12 @@ static gint
 gtk_list_button_press (GtkWidget      *widget,
 		       GdkEventButton *event)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (widget);
   GtkWidget *item;
-
-  g_return_val_if_fail (GTK_IS_LIST (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
 
   if (event->button != 1)
     return FALSE;
 
-  list = GTK_LIST (widget);
   item = gtk_get_event_widget ((GdkEvent*) event);
 
   while (item && !GTK_IS_LIST_ITEM (item))
@@ -760,13 +738,8 @@ static gint
 gtk_list_button_release (GtkWidget	*widget,
 			 GdkEventButton *event)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (widget);
   GtkWidget *item;
-
-  g_return_val_if_fail (GTK_IS_LIST (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-
-  list = GTK_LIST (widget);
 
   /* we don't handle button 2 and 3 */
   if (event->button != 1)
@@ -812,8 +785,6 @@ static void
 gtk_list_style_set	(GtkWidget      *widget,
 			 GtkStyle       *previous_style)
 {
-  g_return_if_fail (widget != NULL);
-
   if (previous_style && GTK_WIDGET_REALIZED (widget))
     gdk_window_set_background (widget->window, &widget->style->base[GTK_WIDGET_STATE (widget)]);
 }
@@ -832,7 +803,6 @@ gtk_list_add (GtkContainer *container,
 {
   GList *item_list;
 
-  g_return_if_fail (GTK_IS_LIST (container));
   g_return_if_fail (GTK_IS_LIST_ITEM (widget));
 
   item_list = g_list_alloc ();
@@ -846,9 +816,7 @@ gtk_list_remove (GtkContainer *container,
 		 GtkWidget    *widget)
 {
   GList *item_list;
-  
-  g_return_if_fail (GTK_IS_LIST (container));
-  g_return_if_fail (widget != NULL);
+
   g_return_if_fail (container == GTK_CONTAINER (widget->parent));
   
   item_list = g_list_alloc ();
@@ -865,14 +833,10 @@ gtk_list_forall (GtkContainer  *container,
 		 GtkCallback	callback,
 		 gpointer	callback_data)
 {
-  GtkList *list;
+  GtkList *list = GTK_LIST (container);
   GtkWidget *child;
   GList *children;
 
-  g_return_if_fail (GTK_IS_LIST (container));
-  g_return_if_fail (callback != NULL);
-
-  list = GTK_LIST (container);
   children = list->children;
 
   while (children)
@@ -908,11 +872,11 @@ gtk_list_set_focus_child (GtkContainer *container,
       if (container->focus_child)
 	{
 	  list->last_focus_child = container->focus_child;
-	  gtk_widget_unref (container->focus_child);
+	  g_object_unref (container->focus_child);
 	}
       container->focus_child = child;
       if (container->focus_child)
-        gtk_widget_ref (container->focus_child);
+        g_object_ref (container->focus_child);
     }
 
   /* check for v adjustment */
@@ -1020,37 +984,37 @@ gtk_list_insert_items (GtkList *list,
       tmp_list = tmp_list->next;
 
       gtk_widget_set_parent (widget, GTK_WIDGET (list));
-      gtk_signal_connect (GTK_OBJECT (widget), "drag_begin",
+      gtk_signal_connect (GTK_OBJECT (widget), "drag-begin",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_drag_begin),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "toggle_focus_row",
+      gtk_signal_connect (GTK_OBJECT (widget), "toggle-focus-row",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_toggle_focus_row),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "select_all",
+      gtk_signal_connect (GTK_OBJECT (widget), "select-all",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_select_all),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "unselect_all",
+      gtk_signal_connect (GTK_OBJECT (widget), "unselect-all",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_unselect_all),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "undo_selection",
+      gtk_signal_connect (GTK_OBJECT (widget), "undo-selection",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_undo_selection),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "start_selection",
+      gtk_signal_connect (GTK_OBJECT (widget), "start-selection",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_start_selection),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "end_selection",
+      gtk_signal_connect (GTK_OBJECT (widget), "end-selection",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_end_selection),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "extend_selection",
+      gtk_signal_connect (GTK_OBJECT (widget), "extend-selection",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_extend_selection),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "scroll_horizontal",
+      gtk_signal_connect (GTK_OBJECT (widget), "scroll-horizontal",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_scroll_horizontal),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "scroll_vertical",
+      gtk_signal_connect (GTK_OBJECT (widget), "scroll-vertical",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_scroll_vertical),
 			  list);
-      gtk_signal_connect (GTK_OBJECT (widget), "toggle_add_mode",
+      gtk_signal_connect (GTK_OBJECT (widget), "toggle-add-mode",
 			  GTK_SIGNAL_FUNC (gtk_list_signal_toggle_add_mode),
 			  list);
       gtk_signal_connect (GTK_OBJECT (widget), "select",
@@ -1207,7 +1171,7 @@ gtk_list_clear_items (GtkList *list,
       widget = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      gtk_widget_ref (widget);
+      g_object_ref (widget);
 
       if (widget->state == GTK_STATE_SELECTED)
 	gtk_list_unselect_child (list, widget);
@@ -1220,7 +1184,7 @@ gtk_list_clear_items (GtkList *list,
       if (widget == list->last_focus_child)
 	list->last_focus_child = NULL;
 
-      gtk_widget_unref (widget);
+      g_object_unref (widget);
     }
 
   g_list_free (start_list);
@@ -1328,9 +1292,9 @@ gtk_list_remove_items_internal (GtkList	 *list,
       widget = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      gtk_widget_ref (widget);
+      g_object_ref (widget);
       if (no_unref)
-	gtk_widget_ref (widget);
+	g_object_ref (widget);
 
       if (widget == new_focus_child) 
 	{
@@ -1356,7 +1320,7 @@ gtk_list_remove_items_internal (GtkList	 *list,
       if (widget == list->last_focus_child)
 	list->last_focus_child = NULL;
 
-      gtk_widget_unref (widget);
+      g_object_unref (widget);
     }
   
   if (new_focus_child && new_focus_child != old_focus_child)
@@ -2513,7 +2477,7 @@ gtk_list_signal_item_select (GtkListItem *list_item,
       if (!sel_list)
 	{
 	  list->selection = g_list_prepend (list->selection, list_item);
-	  gtk_widget_ref (GTK_WIDGET (list_item));
+	  g_object_ref (list_item);
 	}
       gtk_signal_emit (GTK_OBJECT (list), list_signals[SELECTION_CHANGED]);
       break;
@@ -2541,7 +2505,7 @@ gtk_list_signal_item_deselect (GtkListItem *list_item,
     {
       list->selection = g_list_remove_link (list->selection, node);
       g_list_free_1 (node);
-      gtk_widget_unref (GTK_WIDGET (list_item));
+      g_object_unref (list_item);
       gtk_signal_emit (GTK_OBJECT (list), list_signals[SELECTION_CHANGED]);
     }
 }
@@ -2614,5 +2578,4 @@ gtk_list_drag_begin (GtkWidget      *widget,
     }
 }
 
-#define __GTK_LIST_C__
 #include "gtkaliasdef.c"

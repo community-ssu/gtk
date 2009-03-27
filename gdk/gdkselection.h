@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
 
 #ifndef __GDK_SELECTION_H__
 #define __GDK_SELECTION_H__
@@ -88,19 +92,19 @@ gboolean   gdk_selection_property_get (GdkWindow  *requestor,
 				       gint	  *prop_format);
 
 #ifndef GDK_MULTIHEAD_SAFE
-void	   gdk_selection_send_notify (guint32	    requestor,
-				      GdkAtom	    selection,
-				      GdkAtom	    target,
-				      GdkAtom	    property,
-				      guint32	    time_);
+void	   gdk_selection_send_notify (GdkNativeWindow requestor,
+				      GdkAtom	      selection,
+				      GdkAtom	      target,
+				      GdkAtom	      property,
+				      guint32	      time_);
 #endif /* GDK_MULTIHEAD_SAFE */
 
-void       gdk_selection_send_notify_for_display (GdkDisplay *display,
-						  guint32     requestor,
-						  GdkAtom     selection,
-						  GdkAtom     target,
-						  GdkAtom     property,
-						  guint32     time_);
+void       gdk_selection_send_notify_for_display (GdkDisplay      *display,
+						  GdkNativeWindow  requestor,
+						  GdkAtom     	   selection,
+						  GdkAtom     	   target,
+						  GdkAtom     	   property,
+						  guint32     	   time_);
 
 G_END_DECLS
 

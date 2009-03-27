@@ -1,4 +1,4 @@
-/* GtkPrinter 
+/* GtkPrinter
  * Copyright (C) 2006 John (J5) Palmieri <johnp@redhat.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -16,13 +16,16 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_UNIX_PRINT_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtkunixprint.h> can be included directly."
+#endif
+
 #ifndef __GTK_PRINTER_H__
 #define __GTK_PRINTER_H__
 
-#include <glib-object.h>
 #include <cairo.h>
-#include <gtk/gtkprintsettings.h>
-#include <gtk/gtkpagesetup.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -33,15 +36,16 @@ G_BEGIN_DECLS
  */
 typedef enum
 {
-  GTK_PRINT_CAPABILITY_PAGE_SET     = 1 << 0,
-  GTK_PRINT_CAPABILITY_COPIES       = 1 << 1,
-  GTK_PRINT_CAPABILITY_COLLATE      = 1 << 2,
-  GTK_PRINT_CAPABILITY_REVERSE      = 1 << 3,
-  GTK_PRINT_CAPABILITY_SCALE        = 1 << 4,
-  GTK_PRINT_CAPABILITY_GENERATE_PDF = 1 << 5,
-  GTK_PRINT_CAPABILITY_GENERATE_PS  = 1 << 6,
-  GTK_PRINT_CAPABILITY_PREVIEW      = 1 << 7,
-  GTK_PRINT_CAPABILITY_NUMBER_UP    = 1 << 8
+  GTK_PRINT_CAPABILITY_PAGE_SET         = 1 << 0,
+  GTK_PRINT_CAPABILITY_COPIES           = 1 << 1,
+  GTK_PRINT_CAPABILITY_COLLATE          = 1 << 2,
+  GTK_PRINT_CAPABILITY_REVERSE          = 1 << 3,
+  GTK_PRINT_CAPABILITY_SCALE            = 1 << 4,
+  GTK_PRINT_CAPABILITY_GENERATE_PDF     = 1 << 5,
+  GTK_PRINT_CAPABILITY_GENERATE_PS      = 1 << 6,
+  GTK_PRINT_CAPABILITY_PREVIEW          = 1 << 7,
+  GTK_PRINT_CAPABILITY_NUMBER_UP        = 1 << 8,
+  GTK_PRINT_CAPABILITY_NUMBER_UP_LAYOUT = 1 << 9
 } GtkPrintCapabilities;
 
 GType gtk_print_capabilities_get_type (void) G_GNUC_CONST;
@@ -64,15 +68,16 @@ struct _GtkPrinter
 {
   GObject parent_instance;
 
-  GtkPrinterPrivate *priv;
+  GtkPrinterPrivate *GSEAL (priv);
 };
 
 struct _GtkPrinterClass
 {
   GObjectClass parent_class;
 
-  void (*details_acquired) (GtkPrinter *printer, gboolean success);
-  
+  void (*details_acquired) (GtkPrinter *printer,
+                            gboolean    success);
+
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
@@ -83,28 +88,31 @@ struct _GtkPrinterClass
   void (*_gtk_reserved7) (void);
 };
 
-GType                    gtk_printer_get_type          (void) G_GNUC_CONST;
-GtkPrinter              *gtk_printer_new               (const gchar     *name,
-							GtkPrintBackend *backend,
-							gboolean         virtual_);
-GtkPrintBackend         *gtk_printer_get_backend       (GtkPrinter      *printer);
-G_CONST_RETURN gchar    *gtk_printer_get_name          (GtkPrinter      *printer);
-G_CONST_RETURN gchar    *gtk_printer_get_state_message (GtkPrinter      *printer);
-G_CONST_RETURN gchar    *gtk_printer_get_description   (GtkPrinter      *printer);
-G_CONST_RETURN gchar    *gtk_printer_get_location      (GtkPrinter      *printer);
-G_CONST_RETURN gchar    *gtk_printer_get_icon_name     (GtkPrinter      *printer);
-gint                     gtk_printer_get_job_count     (GtkPrinter      *printer);
-gboolean                 gtk_printer_is_active         (GtkPrinter      *printer);
-gboolean                 gtk_printer_is_virtual        (GtkPrinter      *printer);
-gboolean                 gtk_printer_is_default        (GtkPrinter      *printer);
-gboolean                 gtk_printer_accepts_pdf       (GtkPrinter      *printer);
-gboolean                 gtk_printer_accepts_ps        (GtkPrinter      *printer);
-GList                   *gtk_printer_list_papers       (GtkPrinter      *printer);
-gint                     gtk_printer_compare           (GtkPrinter *a,
-							GtkPrinter *b);
-gboolean                 gtk_printer_has_details       (GtkPrinter       *printer);
-void                     gtk_printer_request_details   (GtkPrinter       *printer);
-GtkPrintCapabilities     gtk_printer_get_capabilities  (GtkPrinter       *printer);
+GType                    gtk_printer_get_type              (void) G_GNUC_CONST;
+GtkPrinter              *gtk_printer_new                   (const gchar     *name,
+							    GtkPrintBackend *backend,
+							    gboolean         virtual_);
+GtkPrintBackend         *gtk_printer_get_backend           (GtkPrinter      *printer);
+G_CONST_RETURN gchar    *gtk_printer_get_name              (GtkPrinter      *printer);
+G_CONST_RETURN gchar    *gtk_printer_get_state_message     (GtkPrinter      *printer);
+G_CONST_RETURN gchar    *gtk_printer_get_description       (GtkPrinter      *printer);
+G_CONST_RETURN gchar    *gtk_printer_get_location          (GtkPrinter      *printer);
+G_CONST_RETURN gchar    *gtk_printer_get_icon_name         (GtkPrinter      *printer);
+gint                     gtk_printer_get_job_count         (GtkPrinter      *printer);
+gboolean                 gtk_printer_is_active             (GtkPrinter      *printer);
+gboolean                 gtk_printer_is_paused             (GtkPrinter      *printer);
+gboolean                 gtk_printer_is_accepting_jobs     (GtkPrinter      *printer);
+gboolean                 gtk_printer_is_virtual            (GtkPrinter      *printer);
+gboolean                 gtk_printer_is_default            (GtkPrinter      *printer);
+gboolean                 gtk_printer_accepts_pdf           (GtkPrinter      *printer);
+gboolean                 gtk_printer_accepts_ps            (GtkPrinter      *printer);
+GList                   *gtk_printer_list_papers           (GtkPrinter      *printer);
+GtkPageSetup            *gtk_printer_get_default_page_size (GtkPrinter      *printer);
+gint                     gtk_printer_compare               (GtkPrinter *a,
+						    	    GtkPrinter *b);
+gboolean                 gtk_printer_has_details           (GtkPrinter       *printer);
+void                     gtk_printer_request_details       (GtkPrinter       *printer);
+GtkPrintCapabilities     gtk_printer_get_capabilities      (GtkPrinter       *printer);
 
 typedef gboolean (*GtkPrinterFunc) (GtkPrinter *printer,
 				    gpointer    data);

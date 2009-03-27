@@ -1,22 +1,22 @@
 /* This list defines the GTK+ ABI. It is used to generate the gtk.def
- * file and the gtkalias.h header. 
+ * file and the gtkalias.h header.
  *
- * Variables must be put into ifdef INCLUDE_VARIABLES ... endif sections. 
+ * Variables must be put into ifdef INCLUDE_VARIABLES ... endif sections.
  *
- * Internal symbols must be protected by ifdef INCLUDE_INTERNAL_SYMBOLS. 
+ * Internal symbols must be protected by ifdef INCLUDE_INTERNAL_SYMBOLS.
  *
  * Symbols which occur only on Windows, or only on Unix, or only with
  * the X11 backend must be included in similar ifdefs, using the
  * symbols G_OS_WIN32, G_OS_UNIX and GTK_WINDOWING_X11.
- * 
+ *
  * Every symbol must be included in the right
  * #ifdef IN_HEADER(sym) #endif and
  * #ifdef IN_FILE(sym) #endif sections.
- * 
+ *
  * gdkalias.h must be included *after* all other gdk headers
  * in each source file, gdkaliasdef.c must be included at the
  * very bottom, after a line defining the right symbol.
- */ 
+ */
 #ifdef ALL_FILES
 #define IN_FILE(x) 1
 #define IN_HEADER(x) 1
@@ -81,6 +81,8 @@ gtk_accel_group_disconnect_key
 gtk_accel_group_find
 gtk_accel_group_from_accel_closure
 gtk_accel_group_get_type G_GNUC_CONST
+gtk_accel_group_get_is_locked
+gtk_accel_group_get_modifier_mask
 gtk_accel_group_lock
 gtk_accel_group_new
 gtk_accel_group_query
@@ -111,7 +113,9 @@ gtk_accel_map_foreach
 gtk_accel_map_foreach_unfiltered
 gtk_accel_map_get
 gtk_accel_map_get_type G_GNUC_CONST
+#ifndef _WIN64
 gtk_accel_map_load PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_accel_map_load_utf8
 #endif
@@ -119,7 +123,9 @@ gtk_accel_map_load_fd
 gtk_accel_map_load_scanner
 gtk_accel_map_lock_path
 gtk_accel_map_lookup_entry
+#ifndef _WIN64
 gtk_accel_map_save PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_accel_map_save_utf8
 #endif
@@ -199,8 +205,18 @@ gtk_adjustment_clamp_page
 gtk_adjustment_configure
 gtk_adjustment_get_type G_GNUC_CONST
 gtk_adjustment_get_value
+gtk_adjustment_get_lower
+gtk_adjustment_get_upper
+gtk_adjustment_get_step_increment
+gtk_adjustment_get_page_increment
+gtk_adjustment_get_page_size
 gtk_adjustment_new
 gtk_adjustment_set_value
+gtk_adjustment_set_lower
+gtk_adjustment_set_upper
+gtk_adjustment_set_step_increment
+gtk_adjustment_set_page_increment
+gtk_adjustment_set_page_size
 gtk_adjustment_value_changed
 #endif
 #endif
@@ -250,6 +266,7 @@ gtk_pack_direction_get_type G_GNUC_CONST
 gtk_ui_manager_item_type_get_type G_GNUC_CONST
 gtk_spin_button_update_policy_get_type G_GNUC_CONST
 gtk_notebook_tab_get_type G_GNUC_CONST
+gtk_number_up_layout_get_type G_GNUC_CONST
 gtk_anchor_type_get_type G_GNUC_CONST
 gtk_arg_flags_get_type G_GNUC_CONST
 gtk_arrow_type_get_type G_GNUC_CONST
@@ -411,9 +428,11 @@ gtk_box_get_homogeneous
 gtk_box_get_spacing
 gtk_box_get_type G_GNUC_CONST
 gtk_box_pack_end
-gtk_box_pack_end_defaults
 gtk_box_pack_start
+#ifndef GTK_DISABLE_DEPRECATED
+gtk_box_pack_end_defaults
 gtk_box_pack_start_defaults
+#endif
 gtk_box_query_child_packing
 gtk_box_reorder_child
 gtk_box_set_child_packing
@@ -442,6 +461,8 @@ gtk_buildable_set_buildable_property
 #if IN_FILE(__GTK_BUILDER_C__)
 gtk_builder_add_from_file
 gtk_builder_add_from_string
+gtk_builder_add_objects_from_file
+gtk_builder_add_objects_from_string
 gtk_builder_error_quark
 gtk_builder_get_object
 gtk_builder_get_objects
@@ -513,12 +534,17 @@ gtk_calendar_thaw
 #endif
 gtk_calendar_clear_marks
 gtk_calendar_get_date
+gtk_calendar_get_detail_height_rows
+gtk_calendar_get_detail_width_chars
 gtk_calendar_get_display_options
 gtk_calendar_get_type G_GNUC_CONST
 gtk_calendar_mark_day
 gtk_calendar_new
 gtk_calendar_select_day
 gtk_calendar_select_month
+gtk_calendar_set_detail_func
+gtk_calendar_set_detail_height_rows
+gtk_calendar_set_detail_width_chars
 gtk_calendar_set_display_options
 gtk_calendar_unmark_day
 #endif
@@ -675,6 +701,7 @@ gtk_clipboard_request_image
 gtk_clipboard_request_rich_text
 gtk_clipboard_request_targets
 gtk_clipboard_request_text
+gtk_clipboard_request_uris
 gtk_clipboard_set_can_store
 gtk_clipboard_set_image
 gtk_clipboard_set_text
@@ -684,11 +711,13 @@ gtk_clipboard_store
 gtk_clipboard_wait_for_contents
 gtk_clipboard_wait_for_image
 gtk_clipboard_wait_for_rich_text
+gtk_clipboard_wait_for_uris
 gtk_clipboard_wait_for_targets
 gtk_clipboard_wait_for_text
 gtk_clipboard_wait_is_image_available
 gtk_clipboard_wait_is_rich_text_available
 gtk_clipboard_wait_is_text_available
+gtk_clipboard_wait_is_uris_available
 gtk_clipboard_wait_is_target_available
 #endif
 #endif
@@ -823,6 +852,7 @@ gtk_color_selection_set_previous_color
 #if IN_FILE(__GTK_COLOR_SELECTION_DIALOG_C__)
 gtk_color_selection_dialog_get_type G_GNUC_CONST
 gtk_color_selection_dialog_new
+gtk_color_selection_dialog_get_color_selection
 #endif
 #endif
 
@@ -839,6 +869,7 @@ gtk_combo_box_get_model
 gtk_combo_box_get_popup_accessible
 gtk_combo_box_get_row_separator_func
 gtk_combo_box_get_row_span_column
+gtk_combo_box_get_button_sensitivity
 gtk_combo_box_get_title
 gtk_combo_box_get_type G_GNUC_CONST
 gtk_combo_box_get_wrap_width
@@ -858,6 +889,7 @@ gtk_combo_box_set_focus_on_click
 gtk_combo_box_set_model
 gtk_combo_box_set_row_separator_func
 gtk_combo_box_set_row_span_column
+gtk_combo_box_set_button_sensitivity
 gtk_combo_box_set_title
 gtk_combo_box_set_wrap_width
 #endif
@@ -913,6 +945,7 @@ gtk_container_foreach_full
 gtk_container_get_border_width
 gtk_container_get_children
 gtk_container_get_focus_chain
+gtk_container_get_focus_child
 gtk_container_get_focus_hadjustment
 gtk_container_get_focus_vadjustment
 gtk_container_get_resize_mode
@@ -1033,6 +1066,8 @@ gtk_decorated_window_set_title
 gtk_dialog_add_action_widget
 gtk_dialog_add_button
 gtk_dialog_add_buttons G_GNUC_NULL_TERMINATED
+gtk_dialog_get_action_area
+gtk_dialog_get_content_area
 gtk_dialog_get_has_separator
 gtk_dialog_get_response_for_widget
 gtk_dialog_get_type G_GNUC_CONST
@@ -1100,15 +1135,18 @@ gtk_status_icon_new_from_pixbuf
 gtk_status_icon_new_from_file
 gtk_status_icon_new_from_stock
 gtk_status_icon_new_from_icon_name
+gtk_status_icon_new_from_gicon
 gtk_status_icon_set_from_pixbuf
 gtk_status_icon_set_from_file
 gtk_status_icon_set_from_stock
 gtk_status_icon_set_from_icon_name
+gtk_status_icon_set_from_gicon
 gtk_status_icon_get_storage_type
 gtk_status_icon_get_pixbuf
 gtk_status_icon_get_screen
 gtk_status_icon_get_stock
 gtk_status_icon_get_icon_name
+gtk_status_icon_get_gicon
 gtk_status_icon_get_size
 gtk_status_icon_set_screen
 gtk_status_icon_set_tooltip
@@ -1119,6 +1157,7 @@ gtk_status_icon_get_blinking
 gtk_status_icon_is_embedded
 gtk_status_icon_position_menu
 gtk_status_icon_get_geometry
+gtk_status_icon_get_x11_window_id
 #endif
 #endif
 
@@ -1136,7 +1175,6 @@ gtk_draw_flat_box
 gtk_draw_focus
 gtk_draw_handle
 gtk_draw_hline
-gtk_draw_insertion_cursor
 gtk_draw_layout
 gtk_draw_option
 gtk_draw_polygon
@@ -1173,6 +1211,7 @@ gtk_paint_shadow_gap
 gtk_paint_slider
 gtk_paint_tab
 gtk_paint_vline
+gtk_border_new G_GNUC_MALLOC
 gtk_border_copy
 gtk_border_free
 gtk_border_get_type G_GNUC_CONST
@@ -1189,6 +1228,7 @@ gtk_style_lookup_logical_color
 gtk_style_new
 gtk_style_render_icon
 gtk_style_set_background
+gtk_draw_insertion_cursor
 #endif
 #endif
 
@@ -1232,9 +1272,11 @@ gtk_entry_get_invisible_char
 gtk_entry_get_layout
 gtk_entry_get_layout_offsets
 gtk_entry_get_max_length
+gtk_entry_get_overwrite_mode
 gtk_entry_get_progress_fraction
 gtk_entry_get_progress_pulse_step
 gtk_entry_get_text
+gtk_entry_get_text_length
 gtk_entry_get_type G_GNUC_CONST
 gtk_entry_get_visibility
 gtk_entry_get_width_chars
@@ -1256,6 +1298,7 @@ gtk_entry_set_has_frame
 gtk_entry_set_inner_border
 gtk_entry_set_invisible_char
 gtk_entry_set_max_length
+gtk_entry_set_overwrite_mode
 gtk_entry_set_progress_fraction
 gtk_entry_set_progress_pulse_step
 gtk_entry_set_text
@@ -1267,7 +1310,6 @@ gtk_entry_get_cursor_hadjustment
 #ifdef MAEMO_CHANGES
 hildon_gtk_entry_get_input_mode
 hildon_gtk_entry_set_input_mode
-hildon_gtk_entry_set_progress_adjustment
 #endif
 #endif
 #endif
@@ -1337,30 +1379,44 @@ gtk_expander_set_use_underline
 #if IN_HEADER(__GTK_FILE_CHOOSER_H__)
 #if IN_FILE(__GTK_FILE_CHOOSER_C__)
 gtk_file_chooser_add_filter
+#ifndef _WIN64
 gtk_file_chooser_add_shortcut_folder PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_add_shortcut_folder_utf8
 #endif
 gtk_file_chooser_add_shortcut_folder_uri
 gtk_file_chooser_error_quark
 gtk_file_chooser_get_action
+#ifndef _WIN64
 gtk_file_chooser_get_current_folder PRIVATE
+#endif
+gtk_file_chooser_get_current_folder_file
 #ifdef G_OS_WIN32
 gtk_file_chooser_get_current_folder_utf8
 #endif
 gtk_file_chooser_get_current_folder_uri
 gtk_file_chooser_get_extra_widget
+gtk_file_chooser_get_file
+#ifndef _WIN64
 gtk_file_chooser_get_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_get_filename_utf8
 #endif
+#ifndef _WIN64
 gtk_file_chooser_get_filenames PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_get_filenames_utf8
 #endif
+gtk_file_chooser_get_files
 gtk_file_chooser_get_filter
 gtk_file_chooser_get_local_only
+gtk_file_chooser_get_preview_file
+#ifndef _WIN64
 gtk_file_chooser_get_preview_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_get_preview_filename_utf8
 #endif
@@ -1376,32 +1432,45 @@ gtk_file_chooser_get_uri
 gtk_file_chooser_get_uris
 gtk_file_chooser_get_use_preview_label
 gtk_file_chooser_list_filters
+#ifndef _WIN64
 gtk_file_chooser_list_shortcut_folders PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_list_shortcut_folders_utf8
 #endif
 gtk_file_chooser_list_shortcut_folder_uris
 gtk_file_chooser_remove_filter
+#ifndef _WIN64
 gtk_file_chooser_remove_shortcut_folder PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_remove_shortcut_folder_utf8
 #endif
 gtk_file_chooser_remove_shortcut_folder_uri
 gtk_file_chooser_select_all
+gtk_file_chooser_select_file
+#ifndef _WIN64
 gtk_file_chooser_select_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_select_filename_utf8
 #endif
 gtk_file_chooser_select_uri
 gtk_file_chooser_set_action
+#ifndef _WIN64
 gtk_file_chooser_set_current_folder PRIVATE
+#endif
+gtk_file_chooser_set_current_folder_file
 #ifdef G_OS_WIN32
 gtk_file_chooser_set_current_folder_utf8
 #endif
 gtk_file_chooser_set_current_folder_uri
 gtk_file_chooser_set_current_name
 gtk_file_chooser_set_extra_widget
+gtk_file_chooser_set_file
+#ifndef _WIN64
 gtk_file_chooser_set_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_set_filename_utf8
 #endif
@@ -1414,7 +1483,10 @@ gtk_file_chooser_set_show_hidden
 gtk_file_chooser_set_uri
 gtk_file_chooser_set_use_preview_label
 gtk_file_chooser_unselect_all
+gtk_file_chooser_unselect_file
+#ifndef _WIN64
 gtk_file_chooser_unselect_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_chooser_unselect_filename_utf8
 #endif
@@ -1426,14 +1498,8 @@ gtk_file_chooser_unselect_uri
 #if IN_FILE(__GTK_FILE_CHOOSER_DIALOG_C__)
 gtk_file_chooser_dialog_get_type G_GNUC_CONST
 gtk_file_chooser_dialog_new
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_file_chooser_dialog_new_with_backend
-#endif
-#endif
-
-#if IN_HEADER(__GTK_FILE_CHOOSER_UTILS_H__)
-#if IN_FILE(__GTK_FILE_CHOOSER_UTILS_C__)
-#ifdef MAEMO_CHANGES
-hildon_gtk_file_chooser_install_properties
 #endif
 #endif
 #endif
@@ -1442,7 +1508,9 @@ hildon_gtk_file_chooser_install_properties
 #if IN_FILE(__GTK_FILE_CHOOSER_WIDGET_C__)
 gtk_file_chooser_widget_get_type G_GNUC_CONST
 gtk_file_chooser_widget_new
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_file_chooser_widget_new_with_backend
+#endif
 #endif
 #endif
 
@@ -1452,7 +1520,9 @@ gtk_file_chooser_button_get_title
 gtk_file_chooser_button_get_type G_GNUC_CONST
 gtk_file_chooser_button_get_width_chars
 gtk_file_chooser_button_new
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_file_chooser_button_new_with_backend
+#endif
 gtk_file_chooser_button_new_with_dialog
 gtk_file_chooser_button_set_title
 gtk_file_chooser_button_set_width_chars
@@ -1476,99 +1546,19 @@ gtk_file_filter_set_name
 #endif
 #endif
 
-#if IN_HEADER(__GTK_FILE_SYSTEM_H__)
-#if IN_FILE(__GTK_FILE_SYSTEM_C__)
-gtk_file_folder_get_info
-gtk_file_folder_get_type G_GNUC_CONST
-gtk_file_folder_is_finished_loading
-gtk_file_folder_list_children
-gtk_file_info_copy
-gtk_file_info_free
-gtk_file_info_get_display_key
-gtk_file_info_get_display_name
-gtk_file_info_get_icon_name
-gtk_file_info_get_is_folder
-gtk_file_info_get_is_hidden
-gtk_file_info_get_mime_type
-gtk_file_info_get_modification_time
-gtk_file_info_get_size
-gtk_file_info_get_type G_GNUC_CONST
-gtk_file_info_new
-gtk_file_info_render_icon
-gtk_file_info_set_display_name
-gtk_file_info_set_icon_name
-#ifdef MAEMO_CHANGES
-gtk_file_info_set_icon_pixbuf
-#endif
-gtk_file_info_set_is_folder
-gtk_file_info_set_is_hidden
-gtk_file_info_set_mime_type
-gtk_file_info_set_modification_time
-gtk_file_info_set_size
-gtk_file_path_get_type G_GNUC_CONST
-gtk_file_paths_copy
-gtk_file_paths_free
-gtk_file_paths_sort
-gtk_file_system_cancel_operation
-gtk_file_system_create
-gtk_file_system_create_folder
-gtk_file_system_error_quark
-gtk_file_system_filename_to_path
-gtk_file_system_get_info
-gtk_file_system_get_folder
-gtk_file_system_get_parent
-gtk_file_system_get_type G_GNUC_CONST
-gtk_file_system_get_volume_for_path
-gtk_file_system_handle_get_type G_GNUC_CONST
-gtk_file_system_insert_bookmark
-gtk_file_system_list_bookmarks
-gtk_file_system_list_volumes
-gtk_file_system_make_path
-gtk_file_system_parse
-gtk_file_system_path_is_local
-gtk_file_system_path_to_filename
-gtk_file_system_path_to_uri
-gtk_file_system_remove_bookmark
-gtk_file_system_uri_to_path
-gtk_file_system_volume_free
-gtk_file_system_volume_get_base_path
-gtk_file_system_volume_get_display_name
-gtk_file_system_volume_get_icon_name
-gtk_file_system_volume_get_is_mounted
-gtk_file_system_volume_mount
-gtk_file_system_volume_render_icon
-gtk_file_system_get_bookmark_label
-gtk_file_system_set_bookmark_label
-#endif
-#endif
-
-#if IN_HEADER(__GTK_FILE_SYSTEM_UNIX_H__)
-#if IN_FILE(__GTK_FILE_SYSTEM_UNIX_C__)
-#ifdef G_OS_UNIX
-gtk_file_system_unix_get_type G_GNUC_CONST
-gtk_file_system_unix_new
-#endif
-#endif
-#endif
-
-#if IN_HEADER(__GTK_FILE_SYSTEM_WIN32_H__)
-#if IN_FILE(__GTK_FILE_SYSTEM_WIN32_C__)
-#ifdef G_OS_WIN32
-gtk_file_system_win32_get_type G_GNUC_CONST
-gtk_file_system_win32_new
-#endif
-#endif
-#endif
-
 #if IN_HEADER(__GTK_FILESEL_H__)
 #if IN_FILE(__GTK_FILESEL_C__)
 #ifndef GTK_DISABLE_DEPRECATED
 gtk_file_selection_complete
+#ifndef _WIN64
 gtk_file_selection_get_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_selection_get_filename_utf8
 #endif
+#ifndef _WIN64
 gtk_file_selection_get_selections PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_selection_get_selections_utf8
 #endif
@@ -1576,7 +1566,9 @@ gtk_file_selection_get_select_multiple
 gtk_file_selection_get_type G_GNUC_CONST
 gtk_file_selection_hide_fileop_buttons
 gtk_file_selection_new
+#ifndef _WIN64
 gtk_file_selection_set_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_file_selection_set_filename_utf8
 #endif
@@ -1619,7 +1611,10 @@ gtk_font_button_set_use_size
 
 #if IN_HEADER(__GTK_FONTSEL_H__)
 #if IN_FILE(__GTK_FONTSEL_C__)
+gtk_font_selection_dialog_get_apply_button
+gtk_font_selection_dialog_get_cancel_button
 gtk_font_selection_dialog_get_font_name
+gtk_font_selection_dialog_get_ok_button
 gtk_font_selection_dialog_get_preview_text
 gtk_font_selection_dialog_get_type G_GNUC_CONST
 gtk_font_selection_dialog_new
@@ -1629,8 +1624,16 @@ gtk_font_selection_dialog_set_preview_text
 gtk_font_selection_get_font
 gtk_font_selection_dialog_get_font
 #endif
+gtk_font_selection_get_face
+gtk_font_selection_get_face_list
+gtk_font_selection_get_family
+gtk_font_selection_get_family_list
 gtk_font_selection_get_font_name
+gtk_font_selection_get_preview_entry
 gtk_font_selection_get_preview_text
+gtk_font_selection_get_size
+gtk_font_selection_get_size_entry
+gtk_font_selection_get_size_list
 gtk_font_selection_get_type G_GNUC_CONST
 gtk_font_selection_new
 gtk_font_selection_set_font_name
@@ -1672,6 +1675,7 @@ gtk_gc_release
 gtk_handle_box_get_handle_position
 gtk_handle_box_get_shadow_type
 gtk_handle_box_get_snap_edge
+gtk_handle_box_get_child_detached
 gtk_handle_box_get_type G_GNUC_CONST
 gtk_handle_box_new
 gtk_handle_box_set_handle_position
@@ -1778,7 +1782,9 @@ gtk_icon_source_copy
 gtk_icon_source_free
 gtk_icon_source_get_direction
 gtk_icon_source_get_direction_wildcarded
+#ifndef _WIN64
 gtk_icon_source_get_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_source_get_filename_utf8
 #endif
@@ -1792,7 +1798,9 @@ gtk_icon_source_get_type G_GNUC_CONST
 gtk_icon_source_new
 gtk_icon_source_set_direction
 gtk_icon_source_set_direction_wildcarded
+#ifndef _WIN64
 gtk_icon_source_set_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_source_set_filename_utf8
 #endif
@@ -1809,12 +1817,15 @@ gtk_icon_source_set_state_wildcarded
 #if IN_FILE(__GTK_ICON_THEME_C__)
 gtk_icon_info_copy
 gtk_icon_info_free
+gtk_icon_info_new_for_pixbuf
 gtk_icon_info_get_attach_points
 gtk_icon_info_get_base_size
 gtk_icon_info_get_builtin_pixbuf
 gtk_icon_info_get_display_name
 gtk_icon_info_get_embedded_rect
+#ifndef _WIN64
 gtk_icon_info_get_filename PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_info_get_filename_utf8
 #endif
@@ -1822,7 +1833,9 @@ gtk_icon_info_get_type G_GNUC_CONST
 gtk_icon_info_load_icon
 gtk_icon_info_set_raw_coordinates
 gtk_icon_theme_add_builtin_icon
+#ifndef _WIN64
 gtk_icon_theme_append_search_path PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_theme_append_search_path_utf8
 #endif
@@ -1831,7 +1844,9 @@ gtk_icon_theme_get_default
 gtk_icon_theme_get_example_icon_name
 gtk_icon_theme_get_for_screen
 gtk_icon_theme_get_icon_sizes
+#ifndef _WIN64
 gtk_icon_theme_get_search_path PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_theme_get_search_path_utf8
 #endif
@@ -1841,16 +1856,21 @@ gtk_icon_theme_list_contexts
 gtk_icon_theme_list_icons
 gtk_icon_theme_load_icon
 gtk_icon_theme_lookup_icon
+gtk_icon_theme_lookup_by_gicon
 gtk_icon_theme_choose_icon
 gtk_icon_theme_new
+#ifndef _WIN64
 gtk_icon_theme_prepend_search_path PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_theme_prepend_search_path_utf8
 #endif
 gtk_icon_theme_rescan_if_needed
 gtk_icon_theme_set_custom_theme
 gtk_icon_theme_set_screen
+#ifndef _WIN64
 gtk_icon_theme_set_search_path PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_icon_theme_set_search_path_utf8
 #endif
@@ -1917,9 +1937,7 @@ gtk_icon_view_get_tooltip_context
 gtk_icon_view_set_tooltip_column
 gtk_icon_view_get_tooltip_column
 #ifdef MAEMO_CHANGES
-hildon_icon_view_get_hildon_ui_mode
 hildon_icon_view_get_row_header_func
-hildon_icon_view_set_hildon_ui_mode
 hildon_icon_view_set_row_header_func
 #endif
 #endif
@@ -1940,11 +1958,14 @@ gtk_image_get_pixbuf
 gtk_image_get_pixel_size
 gtk_image_get_pixmap
 gtk_image_get_stock
+gtk_image_get_gicon
 gtk_image_get_storage_type
 gtk_image_get_type G_GNUC_CONST
 gtk_image_new
 gtk_image_new_from_animation
+#ifndef _WIN64
 gtk_image_new_from_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_image_new_from_file_utf8
 #endif
@@ -1954,8 +1975,11 @@ gtk_image_new_from_image
 gtk_image_new_from_pixbuf
 gtk_image_new_from_pixmap
 gtk_image_new_from_stock
+gtk_image_new_from_gicon
 gtk_image_set_from_animation
+#ifndef _WIN64
 gtk_image_set_from_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_image_set_from_file_utf8
 #endif
@@ -1965,6 +1989,7 @@ gtk_image_set_from_image
 gtk_image_set_from_pixbuf
 gtk_image_set_from_pixmap
 gtk_image_set_from_stock
+gtk_image_set_from_gicon
 gtk_image_set_pixel_size
 #endif
 #endif
@@ -2130,6 +2155,7 @@ gtk_label_set_width_chars
 
 #if IN_HEADER(__GTK_LAYOUT_H__)
 #if IN_FILE(__GTK_LAYOUT_C__)
+gtk_layout_get_bin_window
 gtk_layout_get_hadjustment
 gtk_layout_get_size
 gtk_layout_get_type G_GNUC_CONST
@@ -2155,6 +2181,8 @@ gtk_link_button_new_with_label
 gtk_link_button_get_uri
 gtk_link_button_set_uri
 gtk_link_button_set_uri_hook
+gtk_link_button_get_visited
+gtk_link_button_set_visited
 #endif
 #endif
 
@@ -2345,7 +2373,9 @@ gtk_menu_attach
 gtk_menu_attach_to_widget
 gtk_menu_detach
 gtk_menu_get_accel_group
+gtk_menu_get_accel_path
 gtk_menu_get_active
+gtk_menu_get_monitor
 gtk_menu_get_attach_widget
 gtk_menu_get_for_attach_widget
 gtk_menu_get_tearoff_state
@@ -2370,6 +2400,7 @@ gtk_menu_set_title
 #if IN_FILE(__GTK_MENU_ITEM_C__)
 gtk_menu_item_activate
 gtk_menu_item_deselect
+gtk_menu_item_get_accel_path
 gtk_menu_item_get_right_justified
 gtk_menu_item_get_submenu
 gtk_menu_item_get_type G_GNUC_CONST
@@ -2429,6 +2460,7 @@ gtk_message_dialog_new G_GNUC_PRINTF(5,6)
 gtk_message_dialog_new_with_markup G_GNUC_PRINTF(5,6)
 gtk_message_dialog_set_markup
 gtk_message_dialog_set_image
+gtk_message_dialog_get_image
 #endif
 #endif
 
@@ -2439,6 +2471,18 @@ gtk_misc_get_padding
 gtk_misc_get_type G_GNUC_CONST
 gtk_misc_set_alignment
 gtk_misc_set_padding
+#endif
+#endif
+
+#if IN_HEADER(__GTK_MOUNT_OPERATION_H__)
+#if IN_FILE(__GTK_MOUNT_OPERATION_C__)
+gtk_mount_operation_get_type G_GNUC_CONST
+gtk_mount_operation_new
+gtk_mount_operation_is_showing
+gtk_mount_operation_set_parent
+gtk_mount_operation_get_parent
+gtk_mount_operation_set_screen
+gtk_mount_operation_get_screen
 #endif
 #endif
 
@@ -2589,6 +2633,8 @@ gtk_pixmap_set_build_insensitive
 gtk_plug_construct
 gtk_plug_construct_for_display
 gtk_plug_get_id
+gtk_plug_get_embedded
+gtk_plug_get_socket_window
 gtk_plug_get_type G_GNUC_CONST
 gtk_plug_new
 gtk_plug_new_for_display
@@ -2624,6 +2670,8 @@ gtk_page_setup_get_type G_GNUC_CONST
 gtk_page_setup_new
 gtk_page_setup_new_from_file
 gtk_page_setup_new_from_key_file
+gtk_page_setup_load_file
+gtk_page_setup_load_key_file
 gtk_page_setup_to_file
 gtk_page_setup_to_key_file
 gtk_page_setup_copy
@@ -2692,11 +2740,11 @@ gtk_paper_size_get_default
 #ifdef G_OS_UNIX
 gtk_print_backend_error_quark
 gtk_print_backend_get_type G_GNUC_CONST
-gtk_print_backend_add_printer  
-gtk_print_backend_remove_printer  
-gtk_print_backend_set_list_done  
-gtk_print_backend_destroy  
-gtk_print_backend_get_printer_list  
+gtk_print_backend_add_printer
+gtk_print_backend_remove_printer
+gtk_print_backend_set_list_done
+gtk_print_backend_destroy
+gtk_print_backend_get_printer_list
 gtk_print_backend_printer_list_is_done
 gtk_print_backend_find_printer
 gtk_print_backend_print_stream
@@ -2728,6 +2776,7 @@ gtk_printer_get_type G_GNUC_CONST
 gtk_printer_get_backend
 gtk_printer_get_name
 gtk_printer_get_description
+gtk_printer_get_default_page_size
 gtk_printer_get_state_message
 gtk_printer_get_location
 gtk_printer_get_icon_name
@@ -2754,16 +2803,20 @@ gtk_printer_set_description
 gtk_printer_set_has_details
 gtk_printer_set_icon_name
 gtk_printer_set_is_active
+gtk_printer_set_is_paused
+gtk_printer_set_is_accepting_jobs
 gtk_printer_set_is_default
 gtk_printer_set_is_new
 gtk_printer_set_job_count
 gtk_printer_set_location
 gtk_printer_set_state_message
 gtk_printer_is_active
+gtk_printer_is_paused
+gtk_printer_is_accepting_jobs
 gtk_printer_is_new
 gtk_printer_is_default
-#endif 
-#endif 
+#endif
+#endif
 #endif
 
 #if IN_HEADER(__GTK_PRINTER_OPTION_H__)
@@ -2891,6 +2944,8 @@ gtk_print_settings_get_type G_GNUC_CONST
 gtk_print_settings_new
 gtk_print_settings_new_from_file
 gtk_print_settings_new_from_key_file
+gtk_print_settings_load_file
+gtk_print_settings_load_key_file
 gtk_print_settings_to_file
 gtk_print_settings_to_key_file
 gtk_print_settings_copy
@@ -2933,6 +2988,8 @@ gtk_print_settings_get_n_copies
 gtk_print_settings_set_n_copies
 gtk_print_settings_get_number_up
 gtk_print_settings_set_number_up
+gtk_print_settings_get_number_up_layout
+gtk_print_settings_set_number_up_layout
 gtk_print_settings_get_resolution
 gtk_print_settings_set_resolution
 gtk_print_settings_get_scale
@@ -3122,7 +3179,9 @@ gtk_rc_add_class_style
 gtk_rc_add_widget_class_style
 gtk_rc_add_widget_name_style
 #endif
+#ifndef _WIN64
 gtk_rc_add_default_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_rc_add_default_file_utf8
 #endif
@@ -3135,7 +3194,9 @@ gtk_rc_get_module_dir
 gtk_rc_get_style
 gtk_rc_get_style_by_paths
 gtk_rc_get_theme_dir
+#ifndef _WIN64
 gtk_rc_parse PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_rc_parse_utf8
 #endif
@@ -3148,7 +3209,9 @@ gtk_rc_reparse_all
 gtk_rc_reparse_all_for_settings
 gtk_rc_reset_styles
 gtk_rc_scanner_new
+#ifndef _WIN64
 gtk_rc_set_default_files PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_rc_set_default_files_utf8
 #endif
@@ -3188,8 +3251,10 @@ gtk_recent_chooser_set_limit
 gtk_recent_chooser_get_limit
 gtk_recent_chooser_set_show_tips
 gtk_recent_chooser_get_show_tips
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_recent_chooser_set_show_numbers
 gtk_recent_chooser_get_show_numbers
+#endif
 gtk_recent_chooser_set_sort_type
 gtk_recent_chooser_get_sort_type
 gtk_recent_chooser_set_sort_func
@@ -3313,6 +3378,7 @@ gtk_test_find_sibling
 gtk_test_find_widget
 gtk_test_init
 gtk_test_register_all_types
+gtk_test_list_all_types
 gtk_test_slider_get_value
 gtk_test_slider_set_perc
 gtk_test_spin_button_click
@@ -3375,6 +3441,11 @@ gtk_scale_button_set_icons
 gtk_scale_button_set_value
 gtk_scale_button_get_adjustment
 gtk_scale_button_set_adjustment
+gtk_scale_button_get_orientation
+gtk_scale_button_set_orientation
+gtk_scale_button_get_plus_button
+gtk_scale_button_get_minus_button
+gtk_scale_button_get_popup
 #endif
 #endif
 
@@ -3414,6 +3485,12 @@ gtk_selection_clear_targets
 gtk_selection_convert
 gtk_selection_data_copy
 gtk_selection_data_free
+gtk_selection_data_get_target
+gtk_selection_data_get_data_type
+gtk_selection_data_get_display
+gtk_selection_data_get_format
+gtk_selection_data_get_data
+gtk_selection_data_get_length
 gtk_selection_data_get_pixbuf
 gtk_selection_data_get_targets
 gtk_selection_data_get_text
@@ -3524,11 +3601,17 @@ gtk_size_group_set_mode
 #endif
 #endif
 
+#if IN_HEADER(__GTK_SHOW_H__)
+#if IN_FILE(__GTK_SHOW_C__)
+gtk_show_uri
+#endif
+#endif
 
 #if IN_HEADER(__GTK_SOCKET_H__)
 #if IN_FILE(__GTK_SOCKET_C__)
 gtk_socket_add_id
 gtk_socket_get_id
+gtk_socket_get_plug_window
 gtk_socket_get_type G_GNUC_CONST
 gtk_socket_new
 #ifndef GTK_DISABLE_DEPRECATED
@@ -3677,7 +3760,7 @@ gtk_text_buffer_copy_clipboard
 gtk_text_buffer_create_child_anchor
 gtk_text_buffer_add_mark
 gtk_text_buffer_create_mark
-gtk_text_buffer_create_tag 
+gtk_text_buffer_create_tag
 gtk_text_buffer_cut_clipboard
 gtk_text_buffer_delete
 gtk_text_buffer_delete_interactive
@@ -4085,7 +4168,9 @@ gtk_toolbar_get_orientation
 gtk_toolbar_get_relief_style
 gtk_toolbar_get_show_arrow
 gtk_toolbar_get_style
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_toolbar_get_tooltips
+#endif
 gtk_toolbar_get_type G_GNUC_CONST
 gtk_toolbar_insert
 gtk_toolbar_new
@@ -4093,8 +4178,21 @@ gtk_toolbar_set_drop_highlight_item
 gtk_toolbar_set_orientation
 gtk_toolbar_set_show_arrow
 gtk_toolbar_set_style
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_toolbar_set_tooltips
+#endif
 gtk_toolbar_unset_style
+#endif
+#endif
+
+#if IN_HEADER(__GTK_TOOL_SHELL_H__)
+#if IN_FILE(__GTK_TOOL_SHELL_C__)
+gtk_tool_shell_get_type G_GNUC_CONST
+gtk_tool_shell_get_icon_size
+gtk_tool_shell_get_orientation
+gtk_tool_shell_get_style
+gtk_tool_shell_get_relief_style
+gtk_tool_shell_rebuild_menu
 #endif
 #endif
 
@@ -4147,6 +4245,7 @@ gtk_tool_item_set_tooltip_text
 gtk_tool_item_set_use_drag_window
 gtk_tool_item_set_visible_horizontal
 gtk_tool_item_set_visible_vertical
+gtk_tool_item_toolbar_reconfigured
 #endif
 #endif
 
@@ -4156,6 +4255,7 @@ gtk_tooltip_get_type G_GNUC_CONST
 gtk_tooltip_set_custom
 gtk_tooltip_set_icon
 gtk_tooltip_set_icon_from_stock
+gtk_tooltip_set_icon_from_icon_name
 gtk_tooltip_set_markup
 gtk_tooltip_set_text
 gtk_tooltip_set_tip_area
@@ -4336,6 +4436,7 @@ gtk_tree_model_filter_set_visible_func
 #if IN_FILE(__GTK_TREE_SELECTION_C__)
 gtk_tree_selection_count_selected_rows
 gtk_tree_selection_get_mode
+gtk_tree_selection_get_select_function
 gtk_tree_selection_get_selected
 gtk_tree_selection_get_selected_rows
 gtk_tree_selection_get_tree_view
@@ -4405,17 +4506,11 @@ gtk_tree_view_column_cell_get_position
 gtk_tree_view_column_cell_get_size
 gtk_tree_view_column_cell_is_visible
 gtk_tree_view_column_cell_set_cell_data
-#ifdef MAEMO_CHANGES
-gtk_tree_view_column_cell_set_cell_data_with_hint
-#endif
 gtk_tree_view_column_clear
 gtk_tree_view_column_clear_attributes
 gtk_tree_view_column_clicked
 gtk_tree_view_column_focus_cell
 gtk_tree_view_column_get_alignment
-#ifdef MAEMO_CHANGES
-gtk_tree_view_column_get_cell_data_hint
-#endif
 gtk_tree_view_column_get_cell_renderers
 gtk_tree_view_column_get_clickable
 gtk_tree_view_column_get_expand
@@ -4583,7 +4678,6 @@ hildon_tree_view_set_row_header_func
 
 #if IN_HEADER(__GTK_TYPE_UTILS_H__)
 #if IN_FILE(__GTK_TYPE_UTILS_C__)
-gtk_type_class
 gtk_identifier_get_type G_GNUC_CONST
 #ifndef GTK_DISABLE_DEPRECATED
 gtk_type_enum_find_value
@@ -4593,6 +4687,7 @@ gtk_type_flags_get_values
 gtk_type_init
 gtk_type_new
 gtk_type_unique
+gtk_type_class
 #endif
 #endif
 #endif
@@ -4600,7 +4695,9 @@ gtk_type_unique
 #if IN_HEADER(__GTK_UI_MANAGER_H__)
 #if IN_FILE(__GTK_UI_MANAGER_C__)
 gtk_ui_manager_add_ui
+#ifndef _WIN64
 gtk_ui_manager_add_ui_from_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_ui_manager_add_ui_from_file_utf8
 #endif
@@ -4784,7 +4881,7 @@ gtk_widget_modify_cursor
 gtk_widget_modify_font
 gtk_widget_modify_style
 gtk_widget_modify_text
-gtk_widget_new 
+gtk_widget_new
 gtk_widget_path
 gtk_widget_pop_colormap
 gtk_widget_pop_composite_child
@@ -4797,6 +4894,8 @@ gtk_widget_queue_clear_area
 gtk_widget_set
 gtk_widget_set_uposition
 gtk_widget_set_usize
+gtk_widget_ref
+gtk_widget_unref
 #endif
 #ifdef MAEMO_CHANGES
 gtk_widget_tap_and_hold_menu_position_top
@@ -4807,7 +4906,6 @@ gtk_widget_queue_draw_area
 gtk_widget_queue_resize
 gtk_widget_queue_resize_no_redraw
 gtk_widget_realize
-gtk_widget_ref
 gtk_widget_region_intersect
 gtk_widget_remove_accelerator
 gtk_widget_remove_mnemonic_label
@@ -4857,7 +4955,7 @@ gtk_widget_trigger_tooltip_query
 gtk_widget_unmap
 gtk_widget_unparent
 gtk_widget_unrealize
-gtk_widget_unref
+gtk_widget_get_window
 #endif
 #endif
 
@@ -4871,14 +4969,12 @@ gtk_window_add_embedded_xid
 gtk_window_add_mnemonic
 gtk_window_begin_move_drag
 gtk_window_begin_resize_drag
-#ifdef MAEMO_CHANGES
-gtk_window_close_other_temporaries
-#endif
 gtk_window_deiconify
 gtk_window_fullscreen
 gtk_window_get_accept_focus
 gtk_window_get_decorated
 gtk_window_get_deletable
+gtk_window_get_default_widget
 gtk_window_get_default_icon_list
 gtk_window_get_default_size
 gtk_window_get_destroy_with_parent
@@ -4891,9 +4987,6 @@ gtk_window_get_has_frame
 gtk_window_get_icon
 gtk_window_get_icon_list
 gtk_window_get_icon_name
-#ifdef MAEMO_CHANGES
-gtk_window_get_is_temporary
-#endif
 gtk_window_get_mnemonic_modifier
 gtk_window_get_modal
 gtk_window_get_position
@@ -4912,6 +5005,7 @@ gtk_window_group_add_window
 gtk_window_group_get_type G_GNUC_CONST
 gtk_window_group_new
 gtk_window_group_remove_window
+gtk_window_group_list_windows
 gtk_window_has_toplevel_focus
 gtk_window_iconify
 gtk_window_is_active
@@ -4935,7 +5029,9 @@ gtk_window_set_decorated
 gtk_window_set_deletable
 gtk_window_set_default
 gtk_window_set_default_icon
+#ifndef _WIN64
 gtk_window_set_default_icon_from_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_window_set_default_icon_from_file_utf8
 #endif
@@ -4951,7 +5047,9 @@ gtk_window_set_geometry_hints
 gtk_window_set_gravity
 gtk_window_set_has_frame
 gtk_window_set_icon
+#ifndef _WIN64
 gtk_window_set_icon_from_file PRIVATE
+#endif
 #ifdef G_OS_WIN32
 gtk_window_set_icon_from_file_utf8
 #endif
@@ -4973,9 +5071,6 @@ gtk_window_set_screen
 gtk_window_set_skip_pager_hint
 gtk_window_set_skip_taskbar_hint
 gtk_window_set_urgency_hint
-#ifdef MAEMO_CHANGES
-gtk_window_set_is_temporary
-#endif
 gtk_window_set_title
 gtk_window_set_transient_for
 gtk_window_set_type_hint

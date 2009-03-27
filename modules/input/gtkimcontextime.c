@@ -31,9 +31,8 @@
 
 #include "gdk/win32/gdkwin32.h"
 #include "gdk/gdkkeysyms.h"
-#include "gtk/gtkwidget.h"
 
-#include <pango/pango-utils.h>
+#include <pango/pango.h>
 
 /* avoid warning */
 #ifdef STRICT
@@ -354,7 +353,7 @@ gtk_im_context_ime_reset (GtkIMContext *context)
     ImmNotifyIME (himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
 
   context_ime->preediting = FALSE;
-  g_signal_emit_by_name (context, "preedit_changed");
+  g_signal_emit_by_name (context, "preedit-changed");
 
   ImmReleaseContext (hwnd, himc);
 }
@@ -947,7 +946,7 @@ gtk_im_context_ime_message_filter (GdkXEvent *xevent,
         ImmSetCandidateWindow (himc, &cf);
 
         if ((msg->lParam & GCS_COMPSTR))
-          g_signal_emit_by_name (context, "preedit_changed");
+          g_signal_emit_by_name (context, "preedit-changed");
 
         if (msg->lParam & GCS_RESULTSTR)
           {
@@ -986,15 +985,15 @@ gtk_im_context_ime_message_filter (GdkXEvent *xevent,
     case WM_IME_STARTCOMPOSITION:
       context_ime->preediting = TRUE;
       gtk_im_context_ime_set_cursor_location (context, NULL);
-      g_signal_emit_by_name (context, "preedit_start");
+      g_signal_emit_by_name (context, "preedit-start");
       if (context_ime->use_preedit)
         retval = TRUE;
       break;
 
     case WM_IME_ENDCOMPOSITION:
       context_ime->preediting = FALSE;
-      g_signal_emit_by_name (context, "preedit_changed");
-      g_signal_emit_by_name (context, "preedit_end");
+      g_signal_emit_by_name (context, "preedit-changed");
+      g_signal_emit_by_name (context, "preedit-end");
       if (context_ime->use_preedit)
         retval = TRUE;
       break;

@@ -27,7 +27,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "gtkaccellabel.h"
@@ -36,6 +36,7 @@
 #include "gtkprivate.h"
 #include "gtkintl.h"
 #include "gtkalias.h"
+#include <gdk/gdkkeysyms.h>
 
 enum {
   PROP_0,
@@ -80,6 +81,8 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
 
   class->signal_quote1 = g_strdup ("<:");
   class->signal_quote2 = g_strdup (":>");
+
+#ifndef GDK_WINDOWING_QUARTZ
   /* This is the text that should appear next to menu accelerators
    * that use the shift key. If the text on this key isn't typically
    * translated on keyboards used for your language, don't translate
@@ -105,6 +108,18 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
    */
   class->mod_name_alt = g_strdup (Q_("keyboard label|Alt"));
   class->mod_separator = g_strdup ("+");
+#else /* GDK_WINDOWING_QUARTZ */
+
+  /* U+21E7 UPWARDS WHITE ARROW */
+  class->mod_name_shift = g_strdup ("\xe2\x87\xa7");
+  /* U+2303 UP ARROWHEAD */
+  class->mod_name_control = g_strdup ("\xe2\x8c\x83");
+  /* U+2325 OPTION KEY */
+  class->mod_name_alt = g_strdup ("\xe2\x8c\xa5");
+  class->mod_separator = g_strdup ("");
+
+#endif /* GDK_WINDOWING_QUARTZ */
+
   class->accel_seperator = g_strdup (" / ");
   class->latin1_to_char = TRUE;
   
@@ -251,9 +266,8 @@ gtk_accel_label_size_request (GtkWidget	     *widget,
   GtkAccelLabel *accel_label = GTK_ACCEL_LABEL (widget);
   PangoLayout *layout;
   gint width;
-  
-  if (GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->size_request)
-    GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->size_request (widget, requisition);
+
+  GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->size_request (widget, requisition);
 
   layout = gtk_widget_create_pango_layout (widget, gtk_accel_label_get_string (accel_label));
   pango_layout_get_pixel_size (layout, &width, NULL);
@@ -402,7 +416,7 @@ gtk_accel_label_set_accel_widget (GtkAccelLabel *accel_label,
       if (accel_label->accel_widget)
 	{
 	  g_object_ref (accel_label->accel_widget);
-	  g_signal_connect_object (accel_label->accel_widget, "accel_closures_changed",
+	  g_signal_connect_object (accel_label->accel_widget, "accel-closures-changed",
 				   G_CALLBACK (refetch_widget_accel_closure),
 				   accel_label, G_CONNECT_SWAPPED);
 	  refetch_widget_accel_closure (accel_label);
@@ -465,7 +479,7 @@ gtk_accel_label_set_accel_closure (GtkAccelLabel *accel_label,
 	{
 	  g_closure_ref (accel_label->accel_closure);
 	  accel_label->accel_group = gtk_accel_group_from_accel_closure (accel_closure);
-	  g_signal_connect_object (accel_label->accel_group, "accel_changed",
+	  g_signal_connect_object (accel_label->accel_group, "accel-changed",
 				   G_CALLBACK (check_accel_changed),
 				   accel_label, 0);
 	}
@@ -502,6 +516,90 @@ substitute_underscores (char *str)
   for (p = str; *p; p++)
     if (*p == '_')
       *p = ' ';
+}
+
+/* On Mac, if the key has symbolic representation (e.g. arrow keys),
+ * append it to gstring and return TRUE; otherwise return FALSE.
+ * See http://docs.info.apple.com/article.html?path=Mac/10.5/en/cdb_symbs.html 
+ * for the list of special keys. */
+static gboolean
+append_keyval_symbol (guint    accelerator_key,
+                      GString *gstring)
+{
+#ifdef GDK_WINDOWING_QUARTZ
+  switch (accelerator_key)
+  {
+  case GDK_Return:
+    /* U+21A9 LEFTWARDS ARROW WITH HOOK */
+    g_string_append (gstring, "\xe2\x86\xa9");
+    return TRUE;
+
+  case GDK_ISO_Enter:
+    /* U+2324 UP ARROWHEAD BETWEEN TWO HORIZONTAL BARS */
+    g_string_append (gstring, "\xe2\x8c\xa4");
+    return TRUE;
+
+  case GDK_Left:
+    /* U+2190 LEFTWARDS ARROW */
+    g_string_append (gstring, "\xe2\x86\x90");
+    return TRUE;
+
+  case GDK_Up:
+    /* U+2191 UPWARDS ARROW */
+    g_string_append (gstring, "\xe2\x86\x91");
+    return TRUE;
+
+  case GDK_Right:
+    /* U+2192 RIGHTWARDS ARROW */
+    g_string_append (gstring, "\xe2\x86\x92");
+    return TRUE;
+
+  case GDK_Down:
+    /* U+2193 DOWNWARDS ARROW */
+    g_string_append (gstring, "\xe2\x86\x93");
+    return TRUE;
+
+  case GDK_Page_Up:
+    /* U+21DE UPWARDS ARROW WITH DOUBLE STROKE */
+    g_string_append (gstring, "\xe2\x87\x9e");
+    return TRUE;
+
+  case GDK_Page_Down:
+    /* U+21DF DOWNWARDS ARROW WITH DOUBLE STROKE */
+    g_string_append (gstring, "\xe2\x87\x9f");
+    return TRUE;
+
+  case GDK_Home:
+    /* U+2196 NORTH WEST ARROW */
+    g_string_append (gstring, "\xe2\x86\x96");
+    return TRUE;
+
+  case GDK_End:
+    /* U+2198 SOUTH EAST ARROW */
+    g_string_append (gstring, "\xe2\x86\x98");
+    return TRUE;
+
+  case GDK_Escape:
+    /* U+238B BROKEN CIRCLE WITH NORTHWEST ARROW */
+    g_string_append (gstring, "\xe2\x8e\x8b");
+    return TRUE;
+
+  case GDK_BackSpace:
+    /* U+232B ERASE TO THE LEFT */
+    g_string_append (gstring, "\xe2\x8c\xab");
+    return TRUE;
+
+  case GDK_Delete:
+    /* U+2326 ERASE TO THE RIGHT */
+    g_string_append (gstring, "\xe2\x8c\xa6");
+    return TRUE;
+
+  default:
+    return FALSE;
+  }
+#else /* !GDK_WINDOWING_QUARTZ */
+  return FALSE;
+#endif
 }
 
 gchar *
@@ -599,6 +697,7 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
       if (seen_mod)
 	g_string_append (gstring, klass->mod_separator);
 
+#ifndef GDK_WINDOWING_QUARTZ
       /* This is the text that should appear next to menu accelerators
        * that use the meta key. If the text on this key isn't typically
        * translated on keyboards used for your language, don't translate
@@ -606,6 +705,10 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
        * And do not translate the part before the |.
        */
       g_string_append (gstring, Q_("keyboard label|Meta"));
+#else
+      /* Command key symbol U+2318 PLACE OF INTEREST SIGN */
+      g_string_append (gstring, "\xe2\x8c\x98");
+#endif
       seen_mod = TRUE;
     }
   if (seen_mod)
@@ -630,7 +733,7 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
 	  break;
 	}
     }
-  else
+  else if (!append_keyval_symbol (accelerator_key, gstring))
     {
       gchar *tmp;
 
@@ -646,7 +749,7 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
 	      
 	      strcpy (msg, "keyboard label|");
 	      g_strlcat (msg, tmp, 128);
-	      str = dgettext (GETTEXT_PACKAGE, msg);
+	      str = _(msg);
 	      if (str == msg)
 		{
 		  g_string_append (gstring, tmp);

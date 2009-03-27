@@ -18,11 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include <pango/pangocairo.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkprintoperation.h>
 #include "testprintfileoperation.h"
 
 static void

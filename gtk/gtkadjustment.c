@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkadjustment.h"
 #include "gtkmarshalers.h"
 #include "gtkprivate.h"
@@ -42,21 +42,25 @@ enum
   PROP_PAGE_SIZE
 };
 
-enum {
+enum
+{
   CHANGED,
   VALUE_CHANGED,
   LAST_SIGNAL
 };
 
 
-static void gtk_adjustment_get_property (GObject      *object,
-                                         guint         prop_id,
-                                         GValue       *value,
-                                         GParamSpec   *pspec);
-static void gtk_adjustment_set_property (GObject      *object,
-                                         guint         prop_id,
-                                         const GValue *value,
-                                         GParamSpec   *pspec);
+static void gtk_adjustment_get_property                (GObject      *object,
+                                                        guint         prop_id,
+                                                        GValue       *value,
+                                                        GParamSpec   *pspec);
+static void gtk_adjustment_set_property                (GObject      *object,
+                                                        guint         prop_id,
+                                                        const GValue *value,
+                                                        GParamSpec   *pspec);
+static void gtk_adjustment_dispatch_properties_changed (GObject      *object,
+                                                        guint         n_pspecs,
+                                                        GParamSpec  **pspecs);
 static void gtk_adjustment_dispatch_properties_changed (GObject      *object,
                                                         guint         n_pspecs,
                                                         GParamSpec  **pspecs);
@@ -72,8 +76,9 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
-  gobject_class->set_property = gtk_adjustment_set_property;
-  gobject_class->get_property = gtk_adjustment_get_property;
+  gobject_class->set_property                = gtk_adjustment_set_property;
+  gobject_class->get_property                = gtk_adjustment_get_property;
+  gobject_class->dispatch_properties_changed = gtk_adjustment_dispatch_properties_changed;
   gobject_class->dispatch_properties_changed = gtk_adjustment_dispatch_properties_changed;
 
   class->changed = NULL;
@@ -186,7 +191,6 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 							G_MAXDOUBLE, 
 							0.0, 
 							GTK_PARAM_READWRITE));
-  
 
   adjustment_signals[CHANGED] =
     g_signal_new (I_("changed"),
@@ -196,8 +200,9 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
   adjustment_signals[VALUE_CHANGED] =
-    g_signal_new (I_("value_changed"),
+    g_signal_new (I_("value-changed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkAdjustmentClass, value_changed),
@@ -218,8 +223,10 @@ gtk_adjustment_init (GtkAdjustment *adjustment)
 }
 
 static void
-gtk_adjustment_get_property (GObject *object, guint prop_id, GValue *value, 
-	                     GParamSpec *pspec)
+gtk_adjustment_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
 {
   GtkAdjustment *adjustment = GTK_ADJUSTMENT (object);
 
@@ -250,8 +257,10 @@ gtk_adjustment_get_property (GObject *object, guint prop_id, GValue *value,
 }
 
 static void
-gtk_adjustment_set_property (GObject * object, guint prop_id, 
-	                     const GValue * value, GParamSpec * pspec)
+gtk_adjustment_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
 {
   GtkAdjustment *adjustment = GTK_ADJUSTMENT (object);
   gdouble double_value = g_value_get_double (value);
@@ -259,42 +268,22 @@ gtk_adjustment_set_property (GObject * object, guint prop_id,
   switch (prop_id)
     {
     case PROP_VALUE:
-      gtk_adjustment_set_value (GTK_ADJUSTMENT (object), double_value);
+      gtk_adjustment_set_value (adjustment, double_value);
       break;
     case PROP_LOWER:
-      if (adjustment->lower != double_value)
-        {
-          adjustment->lower = double_value;
-          g_object_notify (G_OBJECT (adjustment), "lower");
-        }
+      adjustment->lower = double_value;
       break;
     case PROP_UPPER:
-      if (adjustment->upper != double_value)
-        {
-          adjustment->upper = double_value;
-          g_object_notify (G_OBJECT (adjustment), "upper");
-        }
+      adjustment->upper = double_value;
       break;
     case PROP_STEP_INCREMENT:
-      if (adjustment->step_increment != double_value)
-        {
-          adjustment->step_increment = double_value;
-          g_object_notify (G_OBJECT (adjustment), "step-increment");
-        }
+      adjustment->step_increment = double_value;
       break;
     case PROP_PAGE_INCREMENT:
-      if (adjustment->page_increment != double_value)
-        {
-          adjustment->page_increment = double_value;
-          g_object_notify (G_OBJECT (adjustment), "page-increment");
-        }
+      adjustment->page_increment = double_value;
       break;
     case PROP_PAGE_SIZE:
-      if (adjustment->page_size != double_value)
-        {
-          adjustment->page_size = double_value;
-          g_object_notify (G_OBJECT (adjustment), "page-size");
-        }
+      adjustment->page_size = double_value;
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -341,7 +330,7 @@ gtk_adjustment_new (gdouble value,
 		    gdouble page_increment,
 		    gdouble page_size)
 {
-  return g_object_new (GTK_TYPE_ADJUSTMENT, 
+  return g_object_new (GTK_TYPE_ADJUSTMENT,
 		       "lower", lower,
 		       "upper", upper,
 		       "step-increment", step_increment,
@@ -363,14 +352,14 @@ gtk_adjustment_new (gdouble value,
 gdouble
 gtk_adjustment_get_value (GtkAdjustment *adjustment)
 {
-  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.);
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
 
   return adjustment->value;
 }
 
 void
-gtk_adjustment_set_value (GtkAdjustment        *adjustment,
-			  gdouble               value)
+gtk_adjustment_set_value (GtkAdjustment *adjustment,
+			  gdouble        value)
 {
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
 
@@ -382,6 +371,223 @@ gtk_adjustment_set_value (GtkAdjustment        *adjustment,
 
       gtk_adjustment_value_changed (adjustment);
     }
+}
+
+/**
+ * gtk_adjustment_get_lower:
+ * @adjustment: a #GtkAdjustment
+ *
+ * Retrieves the minimum value of the adjustment.
+ *
+ * Return value: The current minimum value of the adjustment.
+ *
+ * Since: 2.14
+ **/
+gdouble
+gtk_adjustment_get_lower (GtkAdjustment *adjustment)
+{
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
+
+  return adjustment->lower;
+}
+
+/**
+ * gtk_adjustment_set_lower:
+ * @adjustment: a #GtkAdjustment
+ * @lower: the new minimum value
+ *
+ * Sets the minimum value of the adjustment.
+ *
+ * When setting multiple adjustment properties via their individual
+ * setters, multiple "changed" signals will be emitted. However, since
+ * the emission of the "changed" signal is tied to the emission of the
+ * "GObject::notify" signals of the changed properties, it's possible
+ * to compress the "changed" signals into one by calling
+ * g_object_freeze_notify() and g_object_thaw_notify() around the
+ * calls to the individual setters.
+ *
+ * Alternatively, using a single g_object_set() for all the properties
+ * to change, or using gtk_adjustment_configure() has the same effect
+ * of compressing "changed" emissions.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_set_lower (GtkAdjustment *adjustment,
+                          gdouble        lower)
+{
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (lower != adjustment->lower)
+    g_object_set (adjustment, "lower", lower, NULL);
+}
+
+/**
+ * gtk_adjustment_get_upper:
+ * @adjustment: a #GtkAdjustment
+ *
+ * Retrieves the maximum value of the adjustment.
+ *
+ * Return value: The current maximum value of the adjustment.
+ *
+ * Since: 2.14
+ **/
+gdouble
+gtk_adjustment_get_upper (GtkAdjustment *adjustment)
+{
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
+
+  return adjustment->upper;
+}
+
+/**
+ * gtk_adjustment_set_upper:
+ * @adjustment: a #GtkAdjustment
+ * @upper: the new maximum value
+ *
+ * Sets the maximum value of the adjustment.
+ *
+ * Note that values will be restricted by
+ * <literal>upper - page-size</literal> if the page-size
+ * property is nonzero.
+ *
+ * See gtk_adjustment_set_lower() about how to compress multiple
+ * emissions of the "changed" signal when setting multiple adjustment
+ * properties.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_set_upper (GtkAdjustment *adjustment,
+                          gdouble        upper)
+{
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (upper != adjustment->upper)
+    g_object_set (adjustment, "upper", upper, NULL);
+}
+
+/**
+ * gtk_adjustment_get_step_increment:
+ * @adjustment: a #GtkAdjustment
+ *
+ * Retrieves the step increment of the adjustment.
+ *
+ * Return value: The current step increment of the adjustment.
+ *
+ * Since: 2.14
+ **/
+gdouble
+gtk_adjustment_get_step_increment (GtkAdjustment *adjustment)
+{
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
+
+  return adjustment->step_increment;
+}
+
+/**
+ * gtk_adjustment_set_step_increment:
+ * @adjustment: a #GtkAdjustment
+ * @step_increment: the new step increment
+ *
+ * Sets the step increment of the adjustment.
+ *
+ * See gtk_adjustment_set_lower() about how to compress multiple
+ * emissions of the "changed" signal when setting multiple adjustment
+ * properties.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_set_step_increment (GtkAdjustment *adjustment,
+                                   gdouble        step_increment)
+{
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (step_increment != adjustment->step_increment)
+    g_object_set (adjustment, "step-increment", step_increment, NULL);
+}
+
+/**
+ * gtk_adjustment_get_page_increment:
+ * @adjustment: a #GtkAdjustment
+ *
+ * Retrieves the page increment of the adjustment.
+ *
+ * Return value: The current page increment of the adjustment.
+ *
+ * Since: 2.14
+ **/
+gdouble
+gtk_adjustment_get_page_increment (GtkAdjustment *adjustment)
+{
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
+
+  return adjustment->page_increment;
+}
+
+/**
+ * gtk_adjustment_set_page_increment:
+ * @adjustment: a #GtkAdjustment
+ * @page_increment: the new page increment
+ *
+ * Sets the page increment of the adjustment.
+ *
+ * See gtk_adjustment_set_lower() about how to compress multiple
+ * emissions of the "changed" signal when setting multiple adjustment
+ * properties.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_set_page_increment (GtkAdjustment *adjustment,
+                                   gdouble        page_increment)
+{
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (page_increment != adjustment->page_increment)
+    g_object_set (adjustment, "page-increment", page_increment, NULL);
+}
+
+/**
+ * gtk_adjustment_get_page_size:
+ * @adjustment: a #GtkAdjustment
+ *
+ * Retrieves the page size of the adjustment.
+ *
+ * Return value: The current page size of the adjustment.
+ *
+ * Since: 2.14
+ **/
+gdouble
+gtk_adjustment_get_page_size (GtkAdjustment *adjustment)
+{
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), 0.0);
+
+  return adjustment->page_size;
+}
+
+/**
+ * gtk_adjustment_set_page_size:
+ * @adjustment: a #GtkAdjustment
+ * @page_size: the new page size
+ *
+ * Sets the page size of the adjustment.
+ *
+ * See gtk_adjustment_set_lower() about how to compress multiple
+ * emissions of the "changed" signal when setting multiple adjustment
+ * properties.
+ *
+ * Since: 2.14
+ **/
+void
+gtk_adjustment_set_page_size (GtkAdjustment *adjustment,
+                              gdouble        page_size)
+{
+  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+
+  if (page_size != adjustment->page_size)
+    g_object_set (adjustment, "page-size", page_size, NULL);
 }
 
 /**
@@ -451,7 +657,7 @@ gtk_adjustment_configure (GtkAdjustment *adjustment,
 }
 
 void
-gtk_adjustment_changed (GtkAdjustment        *adjustment)
+gtk_adjustment_changed (GtkAdjustment *adjustment)
 {
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
 
@@ -459,7 +665,7 @@ gtk_adjustment_changed (GtkAdjustment        *adjustment)
 }
 
 void
-gtk_adjustment_value_changed (GtkAdjustment        *adjustment)
+gtk_adjustment_value_changed (GtkAdjustment *adjustment)
 {
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
 

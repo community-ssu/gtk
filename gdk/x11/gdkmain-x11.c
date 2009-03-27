@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib/gprintf.h>
 #include <stdlib.h>
@@ -817,11 +817,11 @@ _gdk_send_xevent (GdkDisplay *display,
 }
 
 void
-_gdk_region_get_xrectangles (GdkRegion   *region,
-                             gint         x_offset,
-                             gint         y_offset,
-                             XRectangle **rects,
-                             gint        *n_rects)
+_gdk_region_get_xrectangles (const GdkRegion *region,
+                             gint             x_offset,
+                             gint             y_offset,
+                             XRectangle     **rects,
+                             gint            *n_rects)
 {
   XRectangle *rectangles = g_new (XRectangle, region->numRects);
   GdkRegionBox *boxes = region->rects;

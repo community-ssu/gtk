@@ -22,7 +22,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -60,6 +60,10 @@
 
 #ifdef HAVE_XDAMAGE
 #include <X11/extensions/Xdamage.h>
+#endif
+
+#ifdef HAVE_RANDR
+#include <X11/extensions/Xrandr.h>
 #endif
 
 
@@ -168,6 +172,21 @@ gdk_display_open (const gchar *display_name)
   /* Set up handlers for Xlib internal connections */
   XAddConnectionWatch (xdisplay, gdk_internal_connection_watch, NULL);
 #endif /* HAVE_X11R6 */
+  
+  /* RandR must be initialized before we initialize the screens */
+  display_x11->have_randr12 = FALSE;
+#ifdef HAVE_RANDR
+  if (XRRQueryExtension (display_x11->xdisplay,
+			 &display_x11->xrandr_event_base, &ignore))
+  {
+      int major, minor;
+      
+      XRRQueryVersion (display_x11->xdisplay, &major, &minor);
+
+      if ((major == 1 && minor >= 2) || major > 1)
+	  display_x11->have_randr12 = TRUE;
+  }
+#endif
   
   /* initialize the display's screens */ 
   display_x11->screens = g_new (GdkScreen *, ScreenCount (display_x11->xdisplay));
@@ -1285,11 +1304,11 @@ gdk_display_supports_clipboard_persistence (GdkDisplay *display)
  * Since: 2.6
  */
 void
-gdk_display_store_clipboard (GdkDisplay *display,
-			     GdkWindow  *clipboard_window,
-			     guint32     time_,
-			     GdkAtom    *targets,
-			     gint        n_targets)
+gdk_display_store_clipboard (GdkDisplay    *display,
+			     GdkWindow     *clipboard_window,
+			     guint32        time_,
+			     const GdkAtom *targets,
+			     gint           n_targets)
 {
   GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (display);
   Atom clipboard_manager, save_targets;

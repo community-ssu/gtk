@@ -16,9 +16,11 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <config.h>
+#include "config.h"
 
+#define __GTK_H_INSIDE__
 #include "../gtk/gtkversion.h"	/* versioning */
+#undef __GTK_H_INSIDE__
 #include "gdk-pixbuf.h"
 #include "gdk-pixdata.h"
 #include <glib/gprintf.h>

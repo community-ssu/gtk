@@ -22,19 +22,16 @@
 #define __GTK_PRINT_BACKEND_H__
 
 /* This is a "semi-private" header; it is meant only for
- * alternate GtkPrintDialog backend modules; no stability guarantees 
+ * alternate GtkPrintDialog backend modules; no stability guarantees
  * are made at this point
  */
 #ifndef GTK_PRINT_BACKEND_ENABLE_UNSUPPORTED
 #error "GtkPrintBackend is not supported API for general use"
 #endif
 
-#include <glib-object.h>
-#include <cairo.h>
-
-#include "gtkprintsettings.h"
-#include "gtkprinteroptionset.h"
-#include "gtkprintjob.h"
+#include <gtk/gtk.h>
+#include <gtk/gtkunixprint.h>
+#include <gtk/gtkprinteroptionset.h>
 
 G_BEGIN_DECLS
 
@@ -57,6 +54,13 @@ GQuark     gtk_print_backend_error_quark      (void);
 #define GTK_IS_PRINT_BACKEND(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_PRINT_BACKEND))
 #define GTK_IS_PRINT_BACKEND_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PRINT_BACKEND))
 #define GTK_PRINT_BACKEND_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_PRINT_BACKEND, GtkPrintBackendClass))
+
+typedef enum 
+{
+  GTK_PRINT_BACKEND_STATUS_UNKNOWN,
+  GTK_PRINT_BACKEND_STATUS_OK,
+  GTK_PRINT_BACKEND_STATUS_UNAVAILABLE
+} GtkPrintBackendStatus;
 
 struct _GtkPrintBackend
 {
@@ -99,6 +103,7 @@ struct _GtkPrintBackendClass
 							      GtkPrintSettings    *settings,
 							      GtkPageSetup        *page_setup);
   GList  *              (*printer_list_papers)               (GtkPrinter          *printer);
+  GtkPageSetup *        (*printer_get_default_page_size)     (GtkPrinter          *printer);
   void                  (*printer_get_hard_margins)          (GtkPrinter          *printer,
 							      double              *top,
 							      double              *bottom,
@@ -123,7 +128,6 @@ struct _GtkPrintBackendClass
   void (*_gtk_reserved4) (void);
   void (*_gtk_reserved5) (void);
   void (*_gtk_reserved6) (void);
-  void (*_gtk_reserved7) (void);
 };
 
 GType   gtk_print_backend_get_type       (void) G_GNUC_CONST;
@@ -152,30 +156,32 @@ void        gtk_print_backend_set_list_done        (GtkPrintBackend         *bac
 
 /* Backend-only functions for GtkPrinter */
 
-GtkPrinter *gtk_printer_new               (const char      *name,
-					   GtkPrintBackend *backend,
-					   gboolean         is_virtual);
-gboolean    gtk_printer_is_new            (GtkPrinter      *printer);
-void        gtk_printer_set_is_new        (GtkPrinter      *printer,
-					   gboolean         val);
-void        gtk_printer_set_is_active     (GtkPrinter      *printer,
-					   gboolean         val);
-void        gtk_printer_set_has_details   (GtkPrinter      *printer,
-					   gboolean         val);
-void        gtk_printer_set_is_default    (GtkPrinter      *printer,
-					   gboolean         val);
-void        gtk_printer_set_icon_name     (GtkPrinter      *printer,
-					   const gchar     *icon);
-gboolean    gtk_printer_set_job_count     (GtkPrinter      *printer,
-					   gint             count);
-gboolean    gtk_printer_set_location      (GtkPrinter      *printer,
-					   const gchar     *location);
-gboolean    gtk_printer_set_description   (GtkPrinter      *printer,
-					   const gchar     *description);
-gboolean    gtk_printer_set_state_message (GtkPrinter      *printer,
-					   const gchar     *message);
-void        gtk_printer_set_is_active     (GtkPrinter      *printer,
-					   gboolean         active);
+GtkPrinter *gtk_printer_new                   (const char      *name,
+					       GtkPrintBackend *backend,
+					       gboolean         is_virtual);
+gboolean    gtk_printer_is_new                (GtkPrinter      *printer);
+void        gtk_printer_set_is_new            (GtkPrinter      *printer,
+					       gboolean         val);
+void        gtk_printer_set_is_active         (GtkPrinter      *printer,
+					       gboolean         val);
+gboolean    gtk_printer_set_is_paused         (GtkPrinter      *printer,
+					       gboolean         val);
+gboolean    gtk_printer_set_is_accepting_jobs (GtkPrinter      *printer,
+					       gboolean         val);
+void        gtk_printer_set_has_details       (GtkPrinter      *printer,
+					       gboolean         val);
+void        gtk_printer_set_is_default        (GtkPrinter      *printer,
+					       gboolean         val);
+void        gtk_printer_set_icon_name         (GtkPrinter      *printer,
+					       const gchar     *icon);
+gboolean    gtk_printer_set_job_count         (GtkPrinter      *printer,
+					       gint             count);
+gboolean    gtk_printer_set_location          (GtkPrinter      *printer,
+					       const gchar     *location);
+gboolean    gtk_printer_set_description       (GtkPrinter      *printer,
+					       const gchar     *description);
+gboolean    gtk_printer_set_state_message     (GtkPrinter      *printer,
+					       const gchar     *message);
 
 
 G_END_DECLS

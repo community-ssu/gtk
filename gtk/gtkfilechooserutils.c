@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkfilechooserutils.h"
 #include "gtkfilechooser.h"
 #include "gtkfilesystem.h"
@@ -28,20 +28,20 @@
 #include "gtkalias.h"
 
 static gboolean       delegate_set_current_folder     (GtkFileChooser    *chooser,
-						       const GtkFilePath *path,
+						       GFile             *file,
 						       GError           **error);
-static GtkFilePath *  delegate_get_current_folder     (GtkFileChooser    *chooser);
+static GFile *        delegate_get_current_folder     (GtkFileChooser    *chooser);
 static void           delegate_set_current_name       (GtkFileChooser    *chooser,
 						       const gchar       *name);
-static gboolean       delegate_select_path            (GtkFileChooser    *chooser,
-						       const GtkFilePath *path,
+static gboolean       delegate_select_file            (GtkFileChooser    *chooser,
+						       GFile             *file,
 						       GError           **error);
-static void           delegate_unselect_path          (GtkFileChooser    *chooser,
-						       const GtkFilePath *path);
+static void           delegate_unselect_file          (GtkFileChooser    *chooser,
+						       GFile             *file);
 static void           delegate_select_all             (GtkFileChooser    *chooser);
 static void           delegate_unselect_all           (GtkFileChooser    *chooser);
-static GSList *       delegate_get_paths              (GtkFileChooser    *chooser);
-static GtkFilePath *  delegate_get_preview_path       (GtkFileChooser    *chooser);
+static GSList *       delegate_get_files              (GtkFileChooser    *chooser);
+static GFile *        delegate_get_preview_file       (GtkFileChooser    *chooser);
 static GtkFileSystem *delegate_get_file_system        (GtkFileChooser    *chooser);
 static void           delegate_add_filter             (GtkFileChooser    *chooser,
 						       GtkFileFilter     *filter);
@@ -49,10 +49,10 @@ static void           delegate_remove_filter          (GtkFileChooser    *choose
 						       GtkFileFilter     *filter);
 static GSList *       delegate_list_filters           (GtkFileChooser    *chooser);
 static gboolean       delegate_add_shortcut_folder    (GtkFileChooser    *chooser,
-						       const GtkFilePath *path,
+						       GFile             *file,
 						       GError           **error);
 static gboolean       delegate_remove_shortcut_folder (GtkFileChooser    *chooser,
-						       const GtkFilePath *path,
+						       GFile             *file,
 						       GError           **error);
 static GSList *       delegate_list_shortcut_folders  (GtkFileChooser    *chooser);
 static void           delegate_notify                 (GObject           *object,
@@ -119,23 +119,6 @@ _gtk_file_chooser_install_properties (GObjectClass *klass)
 				    "do-overwrite-confirmation");
 }
 
-#ifdef MAEMO_CHANGES
-/**
- * hildon_gtk_file_chooser_install_properties:
- *
- * Exactly the same as the private _gtk_file_chooser_install_properties()
- * but exported for hildon-fm.
- *
- * Since: maemo 2.0
- * Stability: Unstable
- */
-void
-hildon_gtk_file_chooser_install_properties (GObjectClass *klass)
-{
-  _gtk_file_chooser_install_properties (klass);
-}
-#endif /* MAEMO_CHANGES */
-
 /**
  * _gtk_file_chooser_delegate_iface_init:
  * @iface: a #GtkFileChoserIface structure
@@ -153,12 +136,12 @@ _gtk_file_chooser_delegate_iface_init (GtkFileChooserIface *iface)
   iface->set_current_folder = delegate_set_current_folder;
   iface->get_current_folder = delegate_get_current_folder;
   iface->set_current_name = delegate_set_current_name;
-  iface->select_path = delegate_select_path;
-  iface->unselect_path = delegate_unselect_path;
+  iface->select_file = delegate_select_file;
+  iface->unselect_file = delegate_unselect_file;
   iface->select_all = delegate_select_all;
   iface->unselect_all = delegate_unselect_all;
-  iface->get_paths = delegate_get_paths;
-  iface->get_preview_path = delegate_get_preview_path;
+  iface->get_files = delegate_get_files;
+  iface->get_preview_file = delegate_get_preview_file;
   iface->get_file_system = delegate_get_file_system;
   iface->add_filter = delegate_add_filter;
   iface->remove_filter = delegate_remove_filter;
@@ -220,18 +203,18 @@ get_delegate (GtkFileChooser *receiver)
 }
 
 static gboolean
-delegate_select_path (GtkFileChooser    *chooser,
-		      const GtkFilePath *path,
+delegate_select_file (GtkFileChooser    *chooser,
+		      GFile             *file,
 		      GError           **error)
 {
-  return _gtk_file_chooser_select_path (get_delegate (chooser), path, error);
+  return gtk_file_chooser_select_file (get_delegate (chooser), file, error);
 }
 
 static void
-delegate_unselect_path (GtkFileChooser    *chooser,
-			const GtkFilePath *path)
+delegate_unselect_file (GtkFileChooser *chooser,
+			GFile          *file)
 {
-  _gtk_file_chooser_unselect_path (get_delegate (chooser), path);
+  gtk_file_chooser_unselect_file (get_delegate (chooser), file);
 }
 
 static void
@@ -247,15 +230,15 @@ delegate_unselect_all (GtkFileChooser *chooser)
 }
 
 static GSList *
-delegate_get_paths (GtkFileChooser *chooser)
+delegate_get_files (GtkFileChooser *chooser)
 {
-  return _gtk_file_chooser_get_paths (get_delegate (chooser));
+  return gtk_file_chooser_get_files (get_delegate (chooser));
 }
 
-static GtkFilePath *
-delegate_get_preview_path (GtkFileChooser *chooser)
+static GFile *
+delegate_get_preview_file (GtkFileChooser *chooser)
 {
-  return _gtk_file_chooser_get_preview_path (get_delegate (chooser));
+  return gtk_file_chooser_get_preview_file (get_delegate (chooser));
 }
 
 static GtkFileSystem *
@@ -285,19 +268,19 @@ delegate_list_filters (GtkFileChooser *chooser)
 }
 
 static gboolean
-delegate_add_shortcut_folder (GtkFileChooser    *chooser,
-			      const GtkFilePath *path,
-			      GError           **error)
+delegate_add_shortcut_folder (GtkFileChooser  *chooser,
+			      GFile           *file,
+			      GError         **error)
 {
-  return _gtk_file_chooser_add_shortcut_folder (get_delegate (chooser), path, error);
+  return _gtk_file_chooser_add_shortcut_folder (get_delegate (chooser), file, error);
 }
 
 static gboolean
-delegate_remove_shortcut_folder (GtkFileChooser    *chooser,
-				 const GtkFilePath *path,
-				 GError           **error)
+delegate_remove_shortcut_folder (GtkFileChooser  *chooser,
+				 GFile           *file,
+				 GError         **error)
 {
-  return _gtk_file_chooser_remove_shortcut_folder (get_delegate (chooser), path, error);
+  return _gtk_file_chooser_remove_shortcut_folder (get_delegate (chooser), file, error);
 }
 
 static GSList *
@@ -307,17 +290,17 @@ delegate_list_shortcut_folders (GtkFileChooser *chooser)
 }
 
 static gboolean
-delegate_set_current_folder (GtkFileChooser    *chooser,
-			     const GtkFilePath *path,
-			     GError           **error)
+delegate_set_current_folder (GtkFileChooser  *chooser,
+			     GFile           *file,
+			     GError         **error)
 {
-  return _gtk_file_chooser_set_current_folder_path (get_delegate (chooser), path, error);
+  return gtk_file_chooser_set_current_folder_file (get_delegate (chooser), file, error);
 }
 
-static GtkFilePath *
+static GFile *
 delegate_get_current_folder (GtkFileChooser *chooser)
 {
-  return _gtk_file_chooser_get_current_folder_path (get_delegate (chooser));
+  return gtk_file_chooser_get_current_folder_file (get_delegate (chooser));
 }
 
 static void
@@ -377,8 +360,3 @@ delegate_confirm_overwrite (GtkFileChooser    *chooser,
   g_signal_emit_by_name (data, "confirm-overwrite", &conf);
   return conf;
 }
-
-#ifdef MAEMO_CHANGES
-#define __GTK_FILE_CHOOSER_UTILS_C__
-#include "gtkaliasdef.c"
-#endif /* MAEMO_CHANGES */

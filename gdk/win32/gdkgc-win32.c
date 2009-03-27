@@ -29,7 +29,7 @@
 #define LINE_ATTRIBUTES (GDK_GC_LINE_WIDTH|GDK_GC_LINE_STYLE| \
 			 GDK_GC_CAP_STYLE|GDK_GC_JOIN_STYLE)
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "gdkgc.h"
@@ -571,8 +571,8 @@ gdk_win32_gc_set_dashes (GdkGC *gc,
 }
 
 void
-_gdk_windowing_gc_set_clip_region (GdkGC	  *gc,
-				   GdkRegion *region)
+_gdk_windowing_gc_set_clip_region (GdkGC           *gc,
+                                   const GdkRegion *region)
 {
   GdkGCWin32 *win32_gc = GDK_GC_WIN32 (gc);
 
@@ -1100,9 +1100,9 @@ _gdk_win32_bitmap_to_hrgn (GdkPixmap *pixmap)
 }
 
 HRGN
-_gdk_win32_gdkregion_to_hrgn (GdkRegion *region,
-			      gint       x_origin,
-			      gint       y_origin)
+_gdk_win32_gdkregion_to_hrgn (const GdkRegion *region,
+			      gint             x_origin,
+			      gint             y_origin)
 {
   HRGN hrgn;
   RGNDATA *rgndata;

@@ -24,10 +24,13 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include <string.h>
+
 #undef GTK_DISABLE_DEPRECATED
+#define __GTK_PROGRESS_C__
+
 #include "gtkprogress.h" 
 #include "gtkprivate.h" 
 #include "gtkintl.h"
@@ -205,13 +208,10 @@ gtk_progress_init (GtkProgress *progress)
 static void
 gtk_progress_realize (GtkWidget *widget)
 {
-  GtkProgress *progress;
+  GtkProgress *progress = GTK_PROGRESS (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
 
-  g_return_if_fail (GTK_IS_PROGRESS (widget));
-
-  progress = GTK_PROGRESS (widget);
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
   attributes.window_type = GDK_WINDOW_CHILD;
@@ -240,11 +240,7 @@ gtk_progress_realize (GtkWidget *widget)
 static void
 gtk_progress_destroy (GtkObject *object)
 {
-  GtkProgress *progress;
-
-  g_return_if_fail (GTK_IS_PROGRESS (object));
-
-  progress = GTK_PROGRESS (object);
+  GtkProgress *progress = GTK_PROGRESS (object);
 
   if (progress->adjustment)
     {
@@ -264,11 +260,7 @@ gtk_progress_destroy (GtkObject *object)
 static void
 gtk_progress_finalize (GObject *object)
 {
-  GtkProgress *progress;
-
-  g_return_if_fail (GTK_IS_PROGRESS (object));
-
-  progress = GTK_PROGRESS (object);
+  GtkProgress *progress = GTK_PROGRESS (object);
 
   if (progress->offscreen_pixmap)
     g_object_unref (progress->offscreen_pixmap);
@@ -282,9 +274,6 @@ static gboolean
 gtk_progress_expose (GtkWidget      *widget,
 		     GdkEventExpose *event)
 {
-  g_return_val_if_fail (GTK_IS_PROGRESS (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-
   if (GTK_WIDGET_DRAWABLE (widget))
     gdk_draw_drawable (widget->window,
 		       widget->style->black_gc,
@@ -301,9 +290,6 @@ static void
 gtk_progress_size_allocate (GtkWidget     *widget,
 			    GtkAllocation *allocation)
 {
-  g_return_if_fail (GTK_IS_PROGRESS (widget));
-  g_return_if_fail (allocation != NULL);
-
   widget->allocation = *allocation;
 
   if (GTK_WIDGET_REALIZED (widget))
@@ -508,7 +494,7 @@ gtk_progress_set_adjustment (GtkProgress   *progress,
           g_signal_connect (adjustment, "changed",
 			    G_CALLBACK (gtk_progress_changed),
 			    progress);
-          g_signal_connect (adjustment, "value_changed",
+          g_signal_connect (adjustment, "value-changed",
 			    G_CALLBACK (gtk_progress_value_changed),
 			    progress);
         }
@@ -724,5 +710,4 @@ gtk_progress_set_activity_mode (GtkProgress *progress,
     }
 }
 
-#define __GTK_PROGRESS_C__
 #include "gtkaliasdef.c"

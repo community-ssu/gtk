@@ -41,6 +41,8 @@
 #include "gtk/gtkfilechooserdefault.h"
 #include "gtk/gtkfilechooserentry.h"
 
+#if 0
+
 static void
 log_test (gboolean passed, const char *test_name, ...)
 {
@@ -1071,9 +1073,12 @@ log_override_cb (const gchar   *log_domain,
   (* default_log_handler) (log_domain, log_level, message, user_data);
 }
 
+#endif
+
 int
 main (int argc, char **argv)
 {
+#if 0
   gboolean passed;
   gboolean zero_warnings;
   gboolean zero_errors;
@@ -1109,6 +1114,8 @@ main (int argc, char **argv)
   passed = passed && zero_warnings && zero_errors && zero_critical_errors;
 
   log_test (passed, "main(): ALL TESTS");
+
+#endif
 
   return 0;
 }

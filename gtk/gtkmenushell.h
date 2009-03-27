@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_MENU_SHELL_H__
 #define __GTK_MENU_SHELL_H__
@@ -48,20 +52,20 @@ typedef struct _GtkMenuShellClass  GtkMenuShellClass;
 struct _GtkMenuShell
 {
   GtkContainer container;
-  
-  GList *children;
-  GtkWidget *active_menu_item;
-  GtkWidget *parent_menu_shell;
-  
-  guint button;
-  guint32 activate_time;
 
-  guint active : 1;
-  guint have_grab : 1;
-  guint have_xgrab : 1;
-  guint ignore_leave : 1;	/* unused */
-  guint menu_flag : 1;		/* unused */
-  guint ignore_enter : 1;
+  GList *GSEAL (children);
+  GtkWidget *GSEAL (active_menu_item);
+  GtkWidget *GSEAL (parent_menu_shell);
+
+  guint GSEAL (button);
+  guint32 GSEAL (activate_time);
+
+  guint GSEAL (active) : 1;
+  guint GSEAL (have_grab) : 1;
+  guint GSEAL (have_xgrab) : 1;
+  guint GSEAL (ignore_leave) : 1; /* unused */
+  guint GSEAL (menu_flag) : 1;    /* unused */
+  guint GSEAL (ignore_enter) : 1;
 };
 
 struct _GtkMenuShellClass

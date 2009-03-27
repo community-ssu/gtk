@@ -24,15 +24,12 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#  if STDC_HEADERS
-#    include <string.h>
-#    include <stdio.h>
-#  endif
-#else
-#  include <stdio.h>
-#endif
+#include "config.h"
+
+#include <string.h>
+
+#undef GTK_DISABLE_DEPRECATED
+#define __GTK_PROGRESS_BAR_C__
 
 #include "gtkprogressbar.h"
 #include "gtkprivate.h"
@@ -194,7 +191,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 				   g_param_spec_string ("text",
 							P_("Text"),
 							P_("Text to be displayed in the progress bar"),
-							"%P %%",
+							NULL,
 							GTK_PARAM_READWRITE));
 
   /**
@@ -405,11 +402,11 @@ gtk_progress_bar_new (void)
   GtkWidget *pbar;
 
 #ifdef MAEMO_CHANGES
-  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
-			 "text-xalign", 0.0,
-			 NULL);
+  pbar = g_object_new (GTK_TYPE_PROGRESS_BAR,
+                       "text-xalign", 0.0,
+                       NULL);
 #else /* !MAEMO_CHANGES */
-  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR, NULL);
+  pbar = g_object_new (GTK_TYPE_PROGRESS_BAR, NULL);
 #endif /* !MAEMO_CHANGES */
 
   return pbar;
@@ -422,7 +419,7 @@ gtk_progress_bar_new_with_adjustment (GtkAdjustment *adjustment)
 
   g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), NULL);
 
-  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
+  pbar = g_object_new (GTK_TYPE_PROGRESS_BAR,
 			 "adjustment", adjustment,
 			 NULL);
 
@@ -1398,5 +1395,4 @@ gtk_progress_bar_get_ellipsize (GtkProgressBar *pbar)
   return pbar->ellipsize;
 }
 
-#define __GTK_PROGRESS_BAR_C__
 #include "gtkaliasdef.c"

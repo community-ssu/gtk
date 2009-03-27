@@ -21,15 +21,19 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_STOCK_H__
 #define __GTK_STOCK_H__
 
 
 #include <gdk/gdk.h>
-#include <gtk/gtkitemfactory.h> /* for GtkTranslateFunc */
+#include <gtk/gtktypeutils.h> /* for GtkTranslateFunc */
 
 G_BEGIN_DECLS
 
@@ -62,7 +66,7 @@ void          gtk_stock_item_free (GtkStockItem       *item);
 void          gtk_stock_set_translate_func (const gchar      *domain,
 					    GtkTranslateFunc  func,
 					    gpointer          data,
-					    GtkDestroyNotify  notify);
+					    GDestroyNotify    notify);
 
 /* Stock IDs (not all are stock items; some are images only) */
 #define GTK_STOCK_DIALOG_AUTHENTICATION \
@@ -139,10 +143,15 @@ void          gtk_stock_set_translate_func (const gchar      *domain,
 #define GTK_STOCK_ORIENTATION_LANDSCAPE "gtk-orientation-landscape"
 #define GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE "gtk-orientation-reverse-landscape"
 #define GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT "gtk-orientation-reverse-portrait"
+#define GTK_STOCK_PAGE_SETUP       "gtk-page-setup"
 #define GTK_STOCK_PASTE            "gtk-paste"
 #define GTK_STOCK_PREFERENCES      "gtk-preferences"
 #define GTK_STOCK_PRINT            "gtk-print"
+#define GTK_STOCK_PRINT_ERROR      "gtk-print-error"
+#define GTK_STOCK_PRINT_PAUSED     "gtk-print-paused"
 #define GTK_STOCK_PRINT_PREVIEW    "gtk-print-preview"
+#define GTK_STOCK_PRINT_REPORT     "gtk-print-report"
+#define GTK_STOCK_PRINT_WARNING    "gtk-print-warning"
 #define GTK_STOCK_PROPERTIES       "gtk-properties"
 #define GTK_STOCK_QUIT             "gtk-quit"
 #define GTK_STOCK_REDO             "gtk-redo"

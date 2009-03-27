@@ -21,7 +21,7 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 /*
@@ -33,6 +33,10 @@
  * the widget, and it will eventually move out of the GTK+
  * distribution.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_INPUTDIALOG_H__
 #define __GTK_INPUTDIALOG_H__
@@ -59,18 +63,18 @@ struct _GtkInputDialog
 {
   GtkDialog dialog;
 
-  GtkWidget *axis_list;
-  GtkWidget *axis_listbox;
-  GtkWidget *mode_optionmenu;
+  GtkWidget *GSEAL (axis_list);
+  GtkWidget *GSEAL (axis_listbox);
+  GtkWidget *GSEAL (mode_optionmenu);
 
-  GtkWidget *close_button;
-  GtkWidget *save_button;
-  
-  GtkWidget *axis_items[GDK_AXIS_LAST];
-  GdkDevice *current_device;
+  GtkWidget *GSEAL (close_button);
+  GtkWidget *GSEAL (save_button);
 
-  GtkWidget *keys_list;
-  GtkWidget *keys_listbox;
+  GtkWidget *GSEAL (axis_items[GDK_AXIS_LAST]);
+  GdkDevice *GSEAL (current_device);
+
+  GtkWidget *GSEAL (keys_list);
+  GtkWidget *GSEAL (keys_listbox);
 };
 
 struct _GtkInputDialogClass

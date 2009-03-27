@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtktexttagtable.h"
 #include "gtkmarshalers.h"
 #include "gtktextbuffer.h" /* just for the lame notify_will_remove_tag hack */
@@ -69,7 +69,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
   object_class->finalize = gtk_text_tag_table_finalize;
   
   signals[TAG_CHANGED] =
-    g_signal_new (I_("tag_changed"),
+    g_signal_new (I_("tag-changed"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_changed),
@@ -81,7 +81,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
                   G_TYPE_BOOLEAN);  
 
   signals[TAG_ADDED] =
-    g_signal_new (I_("tag_added"),
+    g_signal_new (I_("tag-added"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_added),
@@ -92,7 +92,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
                   GTK_TYPE_TEXT_TAG);
 
   signals[TAG_REMOVED] =
-    g_signal_new (I_("tag_removed"),  
+    g_signal_new (I_("tag-removed"),  
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_removed),
@@ -162,8 +162,8 @@ gtk_text_tag_table_finalize (GObject *object)
   g_slist_free (table->anonymous);
 
   g_slist_free (table->buffers);
-  
-  (* G_OBJECT_CLASS (gtk_text_tag_table_parent_class)->finalize) (object);
+
+  G_OBJECT_CLASS (gtk_text_tag_table_parent_class)->finalize (object);
 }
 static void
 gtk_text_tag_table_set_property (GObject      *object,

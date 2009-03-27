@@ -60,16 +60,6 @@ an application.)
 
 </para>
 
-<!-- ##### ARG GtkArrow:maemo-aspect-ratio ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkArrow:maemo-min-size ##### -->
-<para>
-
-</para>
-
 <!-- ##### FUNCTION gtk_arrow_new ##### -->
 <para>
 Creates a new arrow widget.

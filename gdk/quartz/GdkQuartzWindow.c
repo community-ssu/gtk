@@ -453,6 +453,7 @@
 }
 
 
+
 static GdkDragContext *current_context = NULL;
 
 static GdkDragAction

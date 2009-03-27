@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkcontainer.h"
 #include "gtkintl.h"
@@ -275,7 +275,7 @@ initialize_size_group_quarks (void)
   if (!size_groups_quark)
     {
       size_groups_quark = g_quark_from_static_string (size_groups_tag);
-      visited_quark = g_quark_from_string (visited_tag);
+      visited_quark = g_quark_from_static_string (visited_tag);
     }
 }
 
@@ -618,7 +618,7 @@ do_size_request (GtkWidget *widget)
       gtk_widget_ensure_style (widget);      
       GTK_PRIVATE_UNSET_FLAG (widget, GTK_REQUEST_NEEDED);
       g_signal_emit_by_name (widget,
-			     "size_request",
+			     "size-request",
 			     &widget->requisition);
     }
 }

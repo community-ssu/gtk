@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
@@ -303,7 +303,7 @@ gtk_container_class_init (GtkContainerClass *class)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
   container_signals[CHECK_RESIZE] =
-    g_signal_new (I_("check_resize"),
+    g_signal_new (I_("check-resize"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkContainerClass, check_resize),
@@ -396,9 +396,11 @@ attributes_start_element (GMarkupParseContext *context,
   guint i;
 
   if (strcmp (element_name, "property") == 0)
-    for (i = 0; names[i]; i++)
-      if (strcmp (names[i], "name") == 0)
-	parser_data->child_prop_name = g_strdup (values[i]);
+    {
+      for (i = 0; names[i]; i++)
+	if (strcmp (names[i], "name") == 0)
+	  parser_data->child_prop_name = g_strdup (values[i]);
+    }
   else if (strcmp (element_name, "packing") == 0)
     return;
   else
@@ -566,8 +568,8 @@ container_set_child_property (GtkContainer       *container,
  * @container: a #GtkContainer
  * @child: a widget which is a child of @container
  * @first_property_name: the name of the first property to get
- * @var_args: a %NULL-terminated list of property names and #GValue*, 
- *           starting with @first_prop_name.
+ * @var_args: return location for the first property, followed 
+ *     optionally by more name/return location pairs, followed by %NULL
  * 
  * Gets the values of one or more child properties for @child and @container.
  **/
@@ -900,8 +902,8 @@ gtk_container_child_set (GtkContainer      *container,
  * @container: a #GtkContainer
  * @child: a widget which is a child of @container
  * @first_prop_name: the name of the first property to get
- * @Varargs: a %NULL-terminated list of property names and #GValue*, 
- *           starting with @first_prop_name
+ * @Varargs: return location for the first property, followed 
+ *     optionally by more name/return location pairs, followed by %NULL
  * 
  * Gets the values of one or more child properties for @child and @container.
  **/
@@ -1041,7 +1043,7 @@ static void
 gtk_container_destroy (GtkObject *object)
 {
   GtkContainer *container = GTK_CONTAINER (object);
-  
+
   if (GTK_CONTAINER_RESIZE_PENDING (container))
     _gtk_container_dequeue_resize_handler (container);
 
@@ -1054,11 +1056,10 @@ gtk_container_destroy (GtkObject *object)
    */
   if (container->has_focus_chain)
     gtk_container_unset_focus_chain (container);
-  
+
   gtk_container_foreach (container, (GtkCallback) gtk_widget_destroy, NULL);
-  
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -1183,7 +1184,8 @@ gtk_container_add (GtkContainer *container,
     {
       g_warning ("Attempting to add a widget with type %s to a container of "
                  "type %s, but the widget is already inside a container of type %s, "
-                 "the GTK+ FAQ at http://www.gtk.org/faq/ explains how to reparent a widget.",
+                 "the GTK+ FAQ at http://library.gnome.org/devel/gtk-faq/stable/ "
+                 "explains how to reparent a widget.",
                  g_type_name (G_OBJECT_TYPE (widget)),
                  g_type_name (G_OBJECT_TYPE (container)),
                  g_type_name (G_OBJECT_TYPE (widget->parent)));
@@ -1598,7 +1600,7 @@ gtk_container_foreach_full (GtkContainer       *container,
 			    GtkCallback         callback,
 			    GtkCallbackMarshal  marshal,
 			    gpointer            callback_data,
-			    GtkDestroyNotify    notify)
+			    GDestroyNotify      notify)
 {
   g_return_if_fail (GTK_IS_CONTAINER (container));
 
@@ -1623,15 +1625,45 @@ gtk_container_foreach_full (GtkContainer       *container,
     notify (callback_data);
 }
 
+/**
+ * gtk_container_set_focus_child:
+ * @container: a #GtkContainer
+ * @child: a #GtkWidget, or %NULL
+ *
+ * Sets, or unsets if @child is %NULL, the focused child of @container.
+ *
+ * This function emits the GtkContainer::set_focus_child signal of
+ * @container. Implementations of #GtkContainer can override the
+ * default behaviour by overriding the class closure of this signal.
+ */
 void
 gtk_container_set_focus_child (GtkContainer *container,
-			       GtkWidget    *widget)
+			       GtkWidget    *child)
 {
   g_return_if_fail (GTK_IS_CONTAINER (container));
-  if (widget)
-    g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (child)
+    g_return_if_fail (GTK_IS_WIDGET (child));
 
-  g_signal_emit (container, container_signals[SET_FOCUS_CHILD], 0, widget);
+  g_signal_emit (container, container_signals[SET_FOCUS_CHILD], 0, child);
+}
+
+/**
+ * gtk_container_get_focus_child:
+ * @container: a #GtkContainer
+ *
+ * Returns the current focus child widget inside @container.
+ *
+ * Returns: The child widget which has the focus
+ *          inside @container, or %NULL if none is set.
+ *
+ * Since: 2.14
+ **/
+GtkWidget *
+gtk_container_get_focus_child (GtkContainer *container)
+{
+  g_return_val_if_fail (GTK_IS_CONTAINER (container), NULL);
+
+  return container->focus_child;
 }
 
 /**
@@ -1976,8 +2008,8 @@ old_focus_coords (GtkContainer *container,
 {
   GtkWidget *widget = GTK_WIDGET (container);
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  
-  if (toplevel && GTK_IS_WINDOW (toplevel) && GTK_WINDOW (toplevel)->focus_widget)
+
+  if (GTK_IS_WINDOW (toplevel) && GTK_WINDOW (toplevel)->focus_widget)
     {
       GtkWidget *old_focus = GTK_WINDOW (toplevel)->focus_widget;
       

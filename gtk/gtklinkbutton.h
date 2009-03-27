@@ -1,12 +1,12 @@
 /* GTK - The GIMP Toolkit
  * gtklinkbutton.h - an hyperlink-enabled button
- * 
+ *
  * Copyright (C) 2005 Emmanuele Bassi <ebassi@gmail.com>
  * All rights reserved.
  *
  * Based on gnome-href code by:
  * 	James Henstridge <james@daa.com.au>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -22,10 +22,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Cambridge, MA 02139, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_LINK_BUTTON_H__
 #define __GTK_LINK_BUTTON_H__
 
-#include <glib.h>
 #include <gtk/gtkbutton.h>
 
 G_BEGIN_DECLS
@@ -48,14 +51,14 @@ typedef void (*GtkLinkButtonUriFunc) (GtkLinkButton *button,
 struct _GtkLinkButton
 {
   GtkButton parent_instance;
-  
-  GtkLinkButtonPrivate *priv;
+
+  GtkLinkButtonPrivate *GSEAL (priv);
 };
 
 struct _GtkLinkButtonClass
 {
   GtkButtonClass parent_class;
-  
+
   void (*_gtk_padding1) (void);
   void (*_gtk_padding2) (void);
   void (*_gtk_padding3) (void);
@@ -75,6 +78,11 @@ void                  gtk_link_button_set_uri           (GtkLinkButton *link_but
 GtkLinkButtonUriFunc  gtk_link_button_set_uri_hook      (GtkLinkButtonUriFunc func,
 							 gpointer             data,
 							 GDestroyNotify       destroy);
+
+gboolean              gtk_link_button_get_visited       (GtkLinkButton *link_button);
+void                  gtk_link_button_set_visited       (GtkLinkButton *link_button,
+                                                         gboolean       visited);
+
 
 G_END_DECLS
 

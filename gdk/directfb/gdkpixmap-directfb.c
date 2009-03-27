@@ -31,7 +31,7 @@
  *            Sven Neumann <sven@convergence.de>
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk.h"
 
 #include <stdlib.h>
@@ -109,8 +109,6 @@ gdk_pixmap_impl_directfb_class_init (GdkPixmapImplDirectFBClass *klass)
 static void
 gdk_pixmap_impl_directfb_finalize (GObject *object)
 {
-  GdkDrawableImplDirectFB *impl = GDK_DRAWABLE_IMPL_DIRECTFB (object);
-
   if (G_OBJECT_CLASS (parent_class)->finalize)
     G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -172,7 +170,7 @@ gdk_pixmap_new (GdkDrawable *drawable,
           format = DSPF_RGB32;
           break;
         default:
-          g_message ("unimplemented %s for depth %d", G_STRLOC, depth);
+          g_message ("unimplemented %s for depth %d", __FUNCTION__, depth);
           return NULL;
         }
     }

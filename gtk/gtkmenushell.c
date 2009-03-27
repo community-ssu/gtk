@@ -26,7 +26,7 @@
 
 #define GTK_MENU_INTERNALS
 
-#include <config.h>
+#include "config.h"
 #include "gdk/gdkkeysyms.h"
 #include "gtkbindings.h"
 #include "gtkkeyhash.h"
@@ -282,6 +282,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
   menu_shell_signals[SELECTION_DONE] =
     g_signal_new (I_("selection-done"),
 		  G_OBJECT_CLASS_TYPE (object_class),
@@ -290,24 +291,27 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
   menu_shell_signals[MOVE_CURRENT] =
-    g_signal_new (I_("move_current"),
+    g_signal_new (I_("move-current"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkMenuShellClass, move_current),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__ENUM,
-		  G_TYPE_NONE, 1, 
+		  G_TYPE_NONE, 1,
 		  GTK_TYPE_MENU_DIRECTION_TYPE);
+
   menu_shell_signals[ACTIVATE_CURRENT] =
-    g_signal_new (I_("activate_current"),
+    g_signal_new (I_("activate-current"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkMenuShellClass, activate_current),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__BOOLEAN,
-		  G_TYPE_NONE, 1, 
+		  G_TYPE_NONE, 1,
 		  G_TYPE_BOOLEAN);
+
   menu_shell_signals[CANCEL] =
     g_signal_new (I_("cancel"),
 		  G_OBJECT_CLASS_TYPE (object_class),
@@ -316,29 +320,31 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
   menu_shell_signals[CYCLE_FOCUS] =
-    _gtk_binding_signal_new (I_("cycle_focus"),
-			     G_OBJECT_CLASS_TYPE (object_class),
-			     G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-			     G_CALLBACK (gtk_real_menu_shell_cycle_focus),
-			     NULL, NULL,
-			     _gtk_marshal_VOID__ENUM,
-			     G_TYPE_NONE, 1,
-			     GTK_TYPE_DIRECTION_TYPE);
+    g_signal_new_class_handler (I_("cycle-focus"),
+                                G_OBJECT_CLASS_TYPE (object_class),
+                                G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                                G_CALLBACK (gtk_real_menu_shell_cycle_focus),
+                                NULL, NULL,
+                                _gtk_marshal_VOID__ENUM,
+                                G_TYPE_NONE, 1,
+                                GTK_TYPE_DIRECTION_TYPE);
+
   /**
    * GtkMenuShell::move-selected:
    * @menu_shell: the object on which the signal is emitted
    * @distance: +1 to move to the next item, -1 to move to the previous
    *
    * The ::move-selected signal is emitted to move the selection to
-   * another item. 
-   * 
+   * another item.
+   *
    * Returns: %TRUE to stop the signal emission, %FALSE to continue
    *
    * Since: 2.12
-   */ 
+   */
   menu_shell_signals[MOVE_SELECTED] =
-    g_signal_new (I_("move_selected"),
+    g_signal_new (I_("move-selected"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkMenuShellClass, move_selected),
@@ -353,36 +359,36 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 				"cancel", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Return, 0,
-				"activate_current", 1,
+				"activate-current", 1,
 				G_TYPE_BOOLEAN,
 				TRUE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_ISO_Enter, 0,
-				"activate_current", 1,
+				"activate-current", 1,
 				G_TYPE_BOOLEAN,
 				TRUE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Enter, 0,
-				"activate_current", 1,
+				"activate-current", 1,
 				G_TYPE_BOOLEAN,
 				TRUE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_space, 0,
-				"activate_current", 1,
+				"activate-current", 1,
 				G_TYPE_BOOLEAN,
 				FALSE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Space, 0,
-				"activate_current", 1,
+				"activate-current", 1,
 				G_TYPE_BOOLEAN,
 				FALSE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F10, 0,
-				"cycle_focus", 1,
+				"cycle-focus", 1,
                                 GTK_TYPE_DIRECTION_TYPE, GTK_DIR_TAB_FORWARD);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F10, GDK_SHIFT_MASK,
-				"cycle_focus", 1,
+				"cycle-focus", 1,
                                 GTK_TYPE_DIRECTION_TYPE, GTK_DIR_TAB_BACKWARD);
 
   /**
@@ -545,8 +551,6 @@ gtk_menu_shell_realize (GtkWidget *widget)
 {
   GdkWindowAttr attributes;
   gint attributes_mask;
-
-  g_return_if_fail (GTK_IS_MENU_SHELL (widget));
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
@@ -894,13 +898,8 @@ static gint
 gtk_menu_shell_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
-  GtkMenuShell *menu_shell;
+  GtkMenuShell *menu_shell = GTK_MENU_SHELL (widget);
   gboolean enable_mnemonics;
-  
-  g_return_val_if_fail (GTK_IS_MENU_SHELL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-      
-  menu_shell = GTK_MENU_SHELL (widget);
 
   if (!menu_shell->active_menu_item && menu_shell->parent_menu_shell)
     return gtk_widget_event (menu_shell->parent_menu_shell, (GdkEvent *)event);
@@ -922,12 +921,12 @@ static gint
 gtk_menu_shell_enter_notify (GtkWidget        *widget,
 			     GdkEventCrossing *event)
 {
-  GtkMenuShell *menu_shell;
+  GtkMenuShell *menu_shell = GTK_MENU_SHELL (widget);
 
-  g_return_val_if_fail (GTK_IS_MENU_SHELL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-
-  menu_shell = GTK_MENU_SHELL (widget);
+  if (event->mode == GDK_CROSSING_GTK_GRAB ||
+      event->mode == GDK_CROSSING_GTK_UNGRAB ||
+      event->mode == GDK_CROSSING_STATE_CHANGED)
+    return TRUE;
 
   if (menu_shell->active)
     {
@@ -995,17 +994,16 @@ static gint
 gtk_menu_shell_leave_notify (GtkWidget        *widget,
 			     GdkEventCrossing *event)
 {
-  GtkMenuShell *menu_shell;
-  GtkMenuItem *menu_item;
-  GtkWidget *event_widget;
-
-  g_return_val_if_fail (GTK_IS_MENU_SHELL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
+  if (event->mode == GDK_CROSSING_GTK_GRAB ||
+      event->mode == GDK_CROSSING_GTK_GRAB ||
+      event->mode == GDK_CROSSING_STATE_CHANGED)
+    return TRUE;
 
   if (GTK_WIDGET_VISIBLE (widget))
     {
-      menu_shell = GTK_MENU_SHELL (widget);
-      event_widget = gtk_get_event_widget ((GdkEvent*) event);
+      GtkMenuShell *menu_shell = GTK_MENU_SHELL (widget);
+      GtkWidget *event_widget = gtk_get_event_widget ((GdkEvent*) event);
+      GtkMenuItem *menu_item;
 
       if (!event_widget || !GTK_IS_MENU_ITEM (event_widget))
 	return TRUE;
@@ -1051,14 +1049,10 @@ static void
 gtk_menu_shell_remove (GtkContainer *container,
 		       GtkWidget    *widget)
 {
-  GtkMenuShell *menu_shell;
+  GtkMenuShell *menu_shell = GTK_MENU_SHELL (container);
   gint was_visible;
-  
-  g_return_if_fail (GTK_IS_MENU_SHELL (container));
-  g_return_if_fail (GTK_IS_MENU_ITEM (widget));
-  
+
   was_visible = GTK_WIDGET_VISIBLE (widget);
-  menu_shell = GTK_MENU_SHELL (container);
   menu_shell->children = g_list_remove (menu_shell->children, widget);
   
   if (widget == menu_shell->active_menu_item)
@@ -1082,14 +1076,9 @@ gtk_menu_shell_forall (GtkContainer *container,
 		       GtkCallback   callback,
 		       gpointer      callback_data)
 {
-  GtkMenuShell *menu_shell;
+  GtkMenuShell *menu_shell = GTK_MENU_SHELL (container);
   GtkWidget *child;
   GList *children;
-
-  g_return_if_fail (GTK_IS_MENU_SHELL (container));
-  g_return_if_fail (callback != NULL);
-
-  menu_shell = GTK_MENU_SHELL (container);
 
   children = menu_shell->children;
   while (children)
@@ -1143,7 +1132,7 @@ gtk_menu_shell_is_item (GtkMenuShell *menu_shell,
   g_return_val_if_fail (child != NULL, FALSE);
 
   parent = child->parent;
-  while (parent && GTK_IS_MENU_SHELL (parent))
+  while (GTK_IS_MENU_SHELL (parent))
     {
       if (parent == (GtkWidget*) menu_shell)
 	return TRUE;
@@ -1475,7 +1464,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell         *menu_shell,
           _gtk_menu_item_popdown_submenu (menu_shell->active_menu_item);
         }
       else if (parent_menu_shell)
-        {
+	{
           if (touchscreen_mode)
             {
               /* close menu when returning from submenu. */
@@ -1483,7 +1472,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell         *menu_shell,
               break;
             }
 
-          if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
+	  if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
               GTK_MENU_SHELL_GET_CLASS (menu_shell)->submenu_placement)
 	    gtk_menu_shell_deselect (menu_shell);
 	  else

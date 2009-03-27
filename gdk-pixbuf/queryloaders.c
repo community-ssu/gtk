@@ -22,7 +22,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib.h>
 #include <glib/gprintf.h>
@@ -104,7 +104,7 @@ loader_sanity_check (const char *path, GdkPixbufFormat *info, GdkPixbufModule *v
 		goto error;
 	}
 
-	if ((info->flags & GDK_PIXBUF_FORMAT_WRITABLE) && !vtable->save) 
+	if ((info->flags & GDK_PIXBUF_FORMAT_WRITABLE) && !(vtable->save || vtable->save_to_callback)) 
 	{
 		error = "loader claims to support saving but doesn't implement save";
 		goto error;
@@ -127,9 +127,9 @@ write_loader_info (const char *path, GdkPixbufFormat *info)
 	char **ext; 
 
 	g_printf("\"%s\"\n", path);
-	g_printf ("\"%s\" %u \"%s\" \"%s\"\n", 
+	g_printf ("\"%s\" %u \"%s\" \"%s\" \"%s\"\n", 
 		  info->name, info->flags, 
-		  info->domain ? info->domain : GETTEXT_PACKAGE, info->description);
+		  info->domain ? info->domain : GETTEXT_PACKAGE, info->description, info->license);
 	for (mime = info->mime_types; *mime; mime++) {
 		g_printf ("\"%s\" ", *mime);
 	}
@@ -153,6 +153,8 @@ query_module (const char *dir, const char *file)
 	GModule *module;
 	void                    (*fill_info)     (GdkPixbufFormat *info);
 	void                    (*fill_vtable)   (GdkPixbufModule *module);
+	gpointer fill_info_ptr;
+	gpointer fill_vtable_ptr;
 
 	if (g_path_is_absolute (file)) 
 		path = g_strdup (file);
@@ -161,8 +163,8 @@ query_module (const char *dir, const char *file)
 
 	module = g_module_open (path, 0);
 	if (module &&
-	    g_module_symbol (module, "fill_info", (gpointer *) &fill_info) &&
-	    g_module_symbol (module, "fill_vtable", (gpointer *) &fill_vtable)) {
+	    g_module_symbol (module, "fill_info", &fill_info_ptr) &&
+	    g_module_symbol (module, "fill_vtable", &fill_vtable_ptr)) {
 		GdkPixbufFormat *info;
 		GdkPixbufModule *vtable;
 		
@@ -183,6 +185,9 @@ query_module (const char *dir, const char *file)
 		vtable = g_new0 (GdkPixbufModule, 1);
 
 		vtable->module = module;
+
+		fill_info = fill_info_ptr;
+		fill_vtable = fill_vtable_ptr;
 
 		(*fill_info) (info);
 		(*fill_vtable) (vtable);

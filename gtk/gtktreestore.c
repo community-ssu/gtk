@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 #include "gtktreemodel.h"
@@ -110,11 +110,11 @@ static void     gtk_tree_store_set_sort_func           (GtkTreeSortable        *
 							gint                    sort_column_id,
 							GtkTreeIterCompareFunc  func,
 							gpointer                data,
-							GtkDestroyNotify        destroy);
+							GDestroyNotify          destroy);
 static void     gtk_tree_store_set_default_sort_func   (GtkTreeSortable        *sortable,
 							GtkTreeIterCompareFunc  func,
 							gpointer                data,
-							GtkDestroyNotify        destroy);
+							GDestroyNotify          destroy);
 static gboolean gtk_tree_store_has_default_sort_func   (GtkTreeSortable        *sortable);
 
 
@@ -431,7 +431,7 @@ gtk_tree_store_finalize (GObject *object)
 
   if (tree_store->default_sort_destroy)
     {
-      GtkDestroyNotify d = tree_store->default_sort_destroy;
+      GDestroyNotify d = tree_store->default_sort_destroy;
 
       tree_store->default_sort_destroy = NULL;
       d (tree_store->default_sort_data);
@@ -1070,6 +1070,7 @@ gtk_tree_store_set_valist (GtkTreeStore *tree_store,
  * The list is terminated by a -1. For example, to set column 0 with type
  * %G_TYPE_STRING to "Foo", you would write 
  * <literal>gtk_tree_store_set (store, iter, 0, "Foo", -1)</literal>.
+ * The value will be copied or referenced by the store if appropriate.
  **/
 void
 gtk_tree_store_set (GtkTreeStore *tree_store,
@@ -1388,10 +1389,10 @@ gtk_tree_store_insert_after (GtkTreeStore *tree_store,
  * Calling
  * <literal>gtk_tree_store_insert_with_values (tree_store, iter, position, ...)</literal>
  * has the same effect as calling
- * <informalexample><programlisting>
+ * |[
  * gtk_tree_store_insert (tree_store, iter, position);
  * gtk_tree_store_set (tree_store, iter, ...);
- * </programlisting></informalexample>
+ * ]|
  * with the different that the former will only emit a row_inserted signal,
  * while the latter will emit row_inserted, row_changed and if the tree store
  * is sorted, rows_reordered.  Since emitting the rows_reordered signal
@@ -3139,7 +3140,7 @@ gtk_tree_store_set_sort_func (GtkTreeSortable        *sortable,
 			      gint                    sort_column_id,
 			      GtkTreeIterCompareFunc  func,
 			      gpointer                data,
-			      GtkDestroyNotify        destroy)
+			      GDestroyNotify          destroy)
 {
   GtkTreeStore *tree_store = (GtkTreeStore *) sortable;
 
@@ -3155,13 +3156,13 @@ static void
 gtk_tree_store_set_default_sort_func (GtkTreeSortable        *sortable,
 				      GtkTreeIterCompareFunc  func,
 				      gpointer                data,
-				      GtkDestroyNotify        destroy)
+				      GDestroyNotify          destroy)
 {
   GtkTreeStore *tree_store = (GtkTreeStore *) sortable;
 
   if (tree_store->default_sort_destroy)
     {
-      GtkDestroyNotify d = tree_store->default_sort_destroy;
+      GDestroyNotify d = tree_store->default_sort_destroy;
 
       tree_store->default_sort_destroy = NULL;
       d (tree_store->default_sort_data);
@@ -3236,7 +3237,6 @@ tree_model_end_element (GMarkupParseContext *context,
 			gpointer             user_data,
 			GError             **error)
 {
-  guint i;
   GSListSubParserData *data = (GSListSubParserData*)user_data;
 
   g_assert(data->builder);

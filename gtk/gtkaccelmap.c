@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkaccelmap.h"
 
@@ -149,6 +149,10 @@ _gtk_accel_path_is_valid (const gchar *accel_path)
  * e.g. "File/Save As", "Image/View/Zoom" or "Edit/Select All".
  * So a full valid accelerator path may look like:
  * "&lt;Gimp-Toolbox&gt;/File/Dialogs/Tool Options...".
+ * 
+ * Note that @accel_path string will be stored in a #GQuark. Therefore, if you
+ * pass a static string, you can save some memory by interning it first with 
+ * g_intern_static_string().
  */
 void
 gtk_accel_map_add_entry (const gchar    *accel_path,
@@ -429,6 +433,10 @@ internal_change_entry (const gchar    *accel_path,
  * conflicts. A change will only occur if all conflicts could be resolved (which
  * might not be the case if conflicting accelerators are locked). Successful
  * changes are indicated by a %TRUE return value.
+ * 
+ * Note that @accel_path string will be stored in a #GQuark. Therefore, if you
+ * pass a static string, you can save some memory by interning it first with 
+ * g_intern_static_string().
  */
 gboolean
 gtk_accel_map_change_entry (const gchar    *accel_path,
@@ -997,7 +1005,7 @@ do_accel_map_changed (AccelEntry *entry)
 		   entry->accel_mods);
 }
 
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
 
 #undef gtk_accel_map_load
 

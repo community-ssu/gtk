@@ -79,14 +79,6 @@ The #GtkEntry-struct struct contains only private data.
 @entry: the object which received the signal.
 @arg1: 
 
-<!-- ##### SIGNAL GtkEntry::invalid-input ##### -->
-<para>
-
-</para>
-
-@entry: the object which received the signal.
-@arg1: 
-
 <!-- ##### SIGNAL GtkEntry::move-cursor ##### -->
 <para>
 
@@ -139,11 +131,6 @@ The #GtkEntry-struct struct contains only private data.
 
 </para>
 
-<!-- ##### ARG GtkEntry:hildon-input-mode ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkEntry:inner-border ##### -->
 <para>
 
@@ -155,6 +142,11 @@ The #GtkEntry-struct struct contains only private data.
 </para>
 
 <!-- ##### ARG GtkEntry:max-length ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkEntry:overwrite-mode ##### -->
 <para>
 
 </para>
@@ -175,6 +167,11 @@ The #GtkEntry-struct struct contains only private data.
 </para>
 
 <!-- ##### ARG GtkEntry:text ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkEntry:text-length ##### -->
 <para>
 
 </para>
@@ -257,6 +254,15 @@ The #GtkEntry-struct struct contains only private data.
 
 
 <!-- ##### FUNCTION gtk_entry_get_text ##### -->
+<para>
+
+</para>
+
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_entry_get_text_length ##### -->
 <para>
 
 </para>
@@ -409,6 +415,24 @@ The #GtkEntry-struct struct contains only private data.
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_entry_set_overwrite_mode ##### -->
+<para>
+
+</para>
+
+@entry: 
+@overwrite: 
+
+
+<!-- ##### FUNCTION gtk_entry_get_overwrite_mode ##### -->
+<para>
+
+</para>
+
+@entry: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_entry_get_layout ##### -->
 <para>
 
@@ -500,23 +524,5 @@ The #GtkEntry-struct struct contains only private data.
 
 @entry: 
 @Returns: 
-
-
-<!-- ##### FUNCTION hildon_gtk_entry_get_input_mode ##### -->
-<para>
-
-</para>
-
-@entry: 
-@Returns: 
-
-
-<!-- ##### FUNCTION hildon_gtk_entry_set_input_mode ##### -->
-<para>
-
-</para>
-
-@entry: 
-@input_mode: 
 
 

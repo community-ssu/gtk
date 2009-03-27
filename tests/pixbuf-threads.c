@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@ load_image (gpointer  data,
   gchar *filename = data;
   FILE *file;
   int nbytes;
-  char buf[1024];
+  guchar buf[1024];
   size_t bufsize = 1024;
   GdkPixbufLoader *loader;
   GError *error = NULL;

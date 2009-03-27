@@ -1,14 +1,13 @@
 ## Makefile.am for gtk+/tests
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES =					\
-	-I$(top_srcdir)				\
-	-I$(top_builddir)/gdk			\
-	-I$(top_srcdir)/gdk			\
-	-DGDK_PIXBUF_DISABLE_DEPRECATED		\
-	-DGDK_DISABLE_DEPRECATED		\
-	-DGTK_DISABLE_DEPRECATED		\
-	$(GTK_DEBUG_FLAGS)			\
+INCLUDES =				\
+	-I$(top_srcdir)			\
+	-I$(top_builddir)/gdk		\
+	-I$(top_srcdir)/gdk		\
+	-DGDK_DISABLE_DEPRECATED	\
+	-DGTK_DISABLE_DEPRECATED	\
+	$(GTK_DEBUG_FLAGS)		\
 	$(GTK_DEP_CFLAGS)
 
 DEPS =									\
@@ -63,6 +62,7 @@ noinst_PROGRAMS =			\
 	$(testmaemo_programs)		\
 	testmenus			\
 	testmenubars			\
+	testmountoperation		\
 	testmultidisplay		\
 	testmultiscreen			\
 	testnotebookdnd			\
@@ -77,7 +77,7 @@ noinst_PROGRAMS =			\
 	testspinbutton			\
 	teststatusicon			\
 	testtext			\
-        testtextbuffer			\
+	testtextbuffer			\
 	testtoolbar			\
 	stresstest-toolbar		\
 	testtreeedit			\
@@ -86,6 +86,7 @@ noinst_PROGRAMS =			\
 	testtreefocus			\
 	testtreeflow			\
 	testtreecolumns			\
+	testtreecolumnsizing		\
 	testtreesort			\
 	treestoretest			\
 	testxinerama			\
@@ -102,7 +103,7 @@ noinst_PROGRAMS =			\
 
 if HAVE_CXX
 noinst_PROGRAMS += autotestkeywords
-TESTS += autotestkeywords
+TESTS = autotestkeywords
 
 autotestkeywords_SOURCES = autotestkeywords.cc
 autotestkeywords_CPPFLAGS = -I$(srcdir)/dummy-headers
@@ -140,6 +141,7 @@ testinput_DEPENDENCIES = $(TEST_DEPS)
 testimage_DEPENDENCIES = $(TEST_DEPS)
 testmenus_DEPENDENCIES = $(TEST_DEPS)
 testmenubars_DEPENDENCIES = $(TEST_DEPS)
+testmountoperation_DEPENDENCIES = $(TEST_DEPS)
 testmultidisplay_DEPENDENCIES = $(TEST_DEPS)
 testmultiscreen_DEPENDENCIES = $(TEST_DEPS)
 testnotebookdnd_DEPENDENCIES = $(TEST_DEPS)
@@ -162,6 +164,7 @@ testtreeview_DEPENDENCIES = $(DEPS)
 testtreefocus_DEPENDENCIES = $(DEPS)
 testtreeflow_DEPENDENCIES = $(DEPS)
 testtreecolumns_DEPENDENCIES = $(DEPS)
+testtreecolumnsizing_DEPENDENCIES = $(DEPS)
 testtreesort_DEPENDENCIES = $(DEPS)
 treestoretest_DEPENDENCIES = $(TEST_DEPS)
 testxinerama_DEPENDENCIES = $(TEST_DEPS)
@@ -200,6 +203,7 @@ testinput_LDADD = $(LDADDS)
 testimage_LDADD = $(LDADDS)
 testmenus_LDADD = $(LDADDS)
 testmenubars_LDADD = $(LDADDS)
+testmountoperation_LDADD = $(LDADDS)
 testmultidisplay_LDADD = $(LDADDS)
 testmultiscreen_LDADD = $(LDADDS)
 testnotebookdnd_LDADD = $(LDADDS)
@@ -223,6 +227,7 @@ testtreeview_LDADD = $(LDADDS)
 testtreefocus_LDADD = $(LDADDS)
 testtreeflow_LDADD = $(LDADDS)
 testtreecolumns_LDADD = $(LDADDS)
+testtreecolumnsizing_LDADD = $(LDADDS)
 testtreesort_LDADD = $(LDADDS)
 testtext_LDADD = $(LDADDS)
 treestoretest_LDADD = $(LDADDS)
@@ -241,10 +246,6 @@ testhildoniconview_LDADD = $(LDADDS)
 testhildontreeview_LDADD = $(LDADDS)
 testtreeviewactionarea_LDADD = $(LDADDS)
 
-buildertest_LDFLAGS = -export-dynamic
-
-autotestfilechooser_SOURCES =	\
-	autotestfilechooser.c
 
 testentrycompletion_SOURCES = 	\
 	prop-editor.c		\
@@ -332,10 +333,10 @@ testrecentchoosermenu_SOURCES =	\
 testvolumebutton_SOURCES =	\
 	testvolumebutton.c
 
-testhildoniconview_SOURCES =	\
+testhildoniconview_SOURCES = \
 	testhildoniconview.c
 
-testhildontreeview_SOURCES =	\
+testhildontreeview_SOURCES = \
 	testhildontreeview.c
 
 testtreeviewactionarea_SOURCES =	\
@@ -361,5 +362,7 @@ EXTRA_DIST += 			\
 	merge-2.ui		\
 	merge-3.ui		\
 	gnome-textfile.png	\
-	makefile.msc
+	makefile.msc		\
+	file-chooser-test-dir/empty \
+	file-chooser-test-dir/text.txt
 

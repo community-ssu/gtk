@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkalignment.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
@@ -41,9 +41,7 @@ enum {
   PROP_TOP_PADDING,
   PROP_BOTTOM_PADDING,
   PROP_LEFT_PADDING,
-  PROP_RIGHT_PADDING,
-  
-  PROP_LAST
+  PROP_RIGHT_PADDING
 };
 
 #define GTK_ALIGNMENT_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_ALIGNMENT, GtkAlignmentPrivate))

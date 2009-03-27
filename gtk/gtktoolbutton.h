@@ -20,10 +20,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_TOOL_BUTTON_H__
 #define __GTK_TOOL_BUTTON_H__
 
-#include "gtktoolitem.h"
+#include <gtk/gtktoolitem.h>
 
 G_BEGIN_DECLS
 
@@ -43,13 +47,13 @@ struct _GtkToolButton
   GtkToolItem parent;
 
   /*< private >*/
-  GtkToolButtonPrivate *priv;
+  GtkToolButtonPrivate *GSEAL (priv);
 };
 
 struct _GtkToolButtonClass
 {
   GtkToolItemClass parent_class;
- 
+
   GType button_type;
 
   /* signal */
@@ -86,7 +90,7 @@ void                  gtk_tool_button_set_label_widget  (GtkToolButton *button,
 							 GtkWidget     *label_widget);
 GtkWidget *           gtk_tool_button_get_label_widget  (GtkToolButton *button);
 
-								   
+
 /* internal function */
 GtkWidget *_gtk_tool_button_get_button (GtkToolButton *button);
 

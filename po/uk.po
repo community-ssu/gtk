@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtk+\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-12 21:20-0400\n"
-"PO-Revision-Date: 2007-09-07 14:52+0200\n"
+"POT-Creation-Date: 2008-09-23 23:08-0400\n"
+"PO-Revision-Date: 2008-08-24 14:52+0200\n"
 "Last-Translator: Maxim Dziumanenko <dziumanenko@gmail.com>\n"
 "Language-Team: Ukrainian <linux@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,7 @@ msgstr "Встановити налагоджувальні ознаки Gdk"
 #. Placeholder in --gdk-no-debug=FLAGS in --help output
 #. Placeholder in --gtk-debug=FLAGS in --help output
 #. Placeholder in --gtk-no-debug=FLAGS in --help output
-#: gdk/gdk.c:140 gdk/gdk.c:143 gtk/gtkmain.c:434 gtk/gtkmain.c:437
+#: gdk/gdk.c:140 gdk/gdk.c:143 gtk/gtkmain.c:452 gtk/gtkmain.c:455
 msgid "FLAGS"
 msgstr "ОЗНАКИ"
 
@@ -231,19 +231,19 @@ msgstr "KP_Delete"
 msgid "keyboard label|Delete"
 msgstr "Delete"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:154 gdk-pixbuf/gdk-pixbuf-io.c:858
-#: gdk-pixbuf/gdk-pixbuf-io.c:1115 tests/testfilechooser.c:218
+#: gdk-pixbuf/gdk-pixbuf-animation.c:133 gdk-pixbuf/gdk-pixbuf-io.c:965
+#: gdk-pixbuf/gdk-pixbuf-io.c:1225 tests/testfilechooser.c:222
 #, c-format
 msgid "Failed to open file '%s': %s"
 msgstr "Не вдається відкрити файл \"%s\": %s"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:167 gdk-pixbuf/gdk-pixbuf-io.c:870
+#: gdk-pixbuf/gdk-pixbuf-animation.c:146 gdk-pixbuf/gdk-pixbuf-io.c:977
 #, c-format
 msgid "Image file '%s' contains no data"
 msgstr "Файл зображення \"%s\" не містить даних"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:209 gdk-pixbuf/gdk-pixbuf-io.c:906
-#: gdk-pixbuf/gdk-pixbuf-io.c:1166 tests/testfilechooser.c:263
+#: gdk-pixbuf/gdk-pixbuf-animation.c:188 gdk-pixbuf/gdk-pixbuf-io.c:1013
+#: gdk-pixbuf/gdk-pixbuf-io.c:1277 tests/testfilechooser.c:267
 #, c-format
 msgid ""
 "Failed to load image '%s': reason not known, probably a corrupt image file"
@@ -251,7 +251,7 @@ msgstr ""
 "Не вдається завантажити зображення \"%s\": причина невідома, можливо файл "
 "пошкоджений"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:242
+#: gdk-pixbuf/gdk-pixbuf-animation.c:221
 #, c-format
 msgid ""
 "Failed to load animation '%s': reason not known, probably a corrupt "
@@ -260,12 +260,12 @@ msgstr ""
 "Не вдається завантажити анімацію \"%s\": причина невідома, можливо файл "
 "зіпсований"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:624
+#: gdk-pixbuf/gdk-pixbuf-io.c:701
 #, c-format
 msgid "Unable to load image-loading module: %s: %s"
 msgstr "Не вдається завантажити модуль завантаження зображення: %s: %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:639
+#: gdk-pixbuf/gdk-pixbuf-io.c:716
 #, c-format
 msgid ""
 "Image-loading module %s does not export the proper interface; perhaps it's "
@@ -274,58 +274,54 @@ msgstr ""
 "Модуль завантаження зображень %s не експортує відповідний інтерфейс; "
 "можливо, модуль лишився від іншої версії GTK?"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:648 gdk-pixbuf/gdk-pixbuf-io.c:699
+#: gdk-pixbuf/gdk-pixbuf-io.c:725 gdk-pixbuf/gdk-pixbuf-io.c:776
 #, c-format
 msgid "Image type '%s' is not supported"
 msgstr "Зображення типу \"%s\" не підтримуються"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:739
+#: gdk-pixbuf/gdk-pixbuf-io.c:846
 #, c-format
 msgid "Couldn't recognize the image file format for file '%s'"
 msgstr "Не вдається розпізнати формат зображення у файлі \"%s\""
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:747
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:854
 msgid "Unrecognized image file format"
 msgstr "Нерозпізнаний формат файлу зображення"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:915
+#: gdk-pixbuf/gdk-pixbuf-io.c:1022
 #, c-format
 msgid "Failed to load image '%s': %s"
 msgstr "Не вдається завантажити зображення \"%s\": %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1394
+#: gdk-pixbuf/gdk-pixbuf-io.c:1656 gdk-pixbuf/io-gdip-utils.c:952
 #, c-format
 msgid "Error writing to image file: %s"
 msgstr "Помилка при записуванні файлу зображення: %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1439 gdk-pixbuf/gdk-pixbuf-io.c:1569
+#: gdk-pixbuf/gdk-pixbuf-io.c:1701 gdk-pixbuf/gdk-pixbuf-io.c:1831
 #, c-format
 msgid "This build of gdk-pixbuf does not support saving the image format: %s"
 msgstr ""
 "Ця збірка gdk-pixbuf не підтримує збереження зображень у такому форматі: %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1473
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1735
 msgid "Insufficient memory to save image to callback"
 msgstr "Недостатньо пам'яті для збереження файлу зображення"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1486
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1748
 msgid "Failed to open temporary file"
 msgstr "Не вдається відкрити тимчасовий файл"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1512
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1774
 msgid "Failed to read from temporary file"
 msgstr "Не вдається прочитати тимчасовий файл"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1746
+#: gdk-pixbuf/gdk-pixbuf-io.c:2008
 #, c-format
 msgid "Failed to open '%s' for writing: %s"
 msgstr "Не вдається відкрити \"%s\" для запису: %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1771
+#: gdk-pixbuf/gdk-pixbuf-io.c:2033
 #, c-format
 msgid ""
 "Failed to close '%s' while writing image, all data may not have been saved: %"
@@ -334,10 +330,13 @@ msgstr ""
 "Не вдається закрити \"%s\" після запису зображення, можливо збережено не всі "
 "дані: %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1991 gdk-pixbuf/gdk-pixbuf-io.c:2041
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:2253 gdk-pixbuf/gdk-pixbuf-io.c:2304
 msgid "Insufficient memory to save image into a buffer"
 msgstr "Недостатньо пам'яті для збереження файлу у буфері"
+
+#: gdk-pixbuf/gdk-pixbuf-io.c:2350
+msgid "Error writing to image stream"
+msgstr "Помилка при записі у потік зображення"
 
 #: gdk-pixbuf/gdk-pixbuf-loader.c:330
 #, c-format
@@ -354,17 +353,14 @@ msgid "Incremental loading of image type '%s' is not supported"
 msgstr "Не підтримується поступове завантаження зображення у форматі \"%s\""
 
 #: gdk-pixbuf/gdk-pixdata.c:147
-#, c-format
 msgid "Image header corrupt"
 msgstr "Заголовок зображення пошкоджений"
 
 #: gdk-pixbuf/gdk-pixdata.c:152
-#, c-format
 msgid "Image format unknown"
 msgstr "Невідомий формат зображення"
 
 #: gdk-pixbuf/gdk-pixdata.c:157 gdk-pixbuf/gdk-pixdata.c:487
-#, c-format
 msgid "Image pixel data corrupt"
 msgstr "Пошкоджені піксельні дані зображення"
 
@@ -377,73 +373,61 @@ msgstr[1] "не вдається розподілити %u байти для б�
 msgstr[2] "не вдається розподілити %u байтів для буферу зображення"
 
 #: gdk-pixbuf/io-ani.c:244
-#, c-format
 msgid "Unexpected icon chunk in animation"
 msgstr "Несподівана послідовність кадрів в анімації"
 
 #: gdk-pixbuf/io-ani.c:337
-#, c-format
 msgid "Unsupported animation type"
 msgstr "Непідтримуваний тип анімації"
 
 #: gdk-pixbuf/io-ani.c:348 gdk-pixbuf/io-ani.c:406 gdk-pixbuf/io-ani.c:432
 #: gdk-pixbuf/io-ani.c:455 gdk-pixbuf/io-ani.c:482 gdk-pixbuf/io-ani.c:569
-#, c-format
 msgid "Invalid header in animation"
 msgstr "Неправильний заголовок у анімації"
 
 #: gdk-pixbuf/io-ani.c:358 gdk-pixbuf/io-ani.c:380 gdk-pixbuf/io-ani.c:464
 #: gdk-pixbuf/io-ani.c:491 gdk-pixbuf/io-ani.c:542 gdk-pixbuf/io-ani.c:614
-#, c-format
 msgid "Not enough memory to load animation"
 msgstr "Недостатньо пам'яті для завантаження анімації"
 
 #: gdk-pixbuf/io-ani.c:398 gdk-pixbuf/io-ani.c:424 gdk-pixbuf/io-ani.c:443
-#, c-format
 msgid "Malformed chunk in animation"
 msgstr "Неправильний фрагмент у анімації"
 
-#: gdk-pixbuf/io-ani.c:713
+#: gdk-pixbuf/io-ani.c:711
 msgid "The ANI image format"
 msgstr "Формат зображень ANI"
 
 #: gdk-pixbuf/io-bmp.c:230 gdk-pixbuf/io-bmp.c:267 gdk-pixbuf/io-bmp.c:338
 #: gdk-pixbuf/io-bmp.c:370 gdk-pixbuf/io-bmp.c:393 gdk-pixbuf/io-bmp.c:496
-#, c-format
 msgid "BMP image has bogus header data"
 msgstr "Зображення формату BMP містить неправильні дані в заголовку"
 
 #: gdk-pixbuf/io-bmp.c:241 gdk-pixbuf/io-bmp.c:433
-#, c-format
 msgid "Not enough memory to load bitmap image"
 msgstr "Недостатньо пам'яті для завантаження растрового зображення"
 
 #: gdk-pixbuf/io-bmp.c:319
-#, c-format
 msgid "BMP image has unsupported header size"
 msgstr "Зображення BMP має непідтримуваний розмір заголовка"
 
 #: gdk-pixbuf/io-bmp.c:357
-#, c-format
 msgid "Topdown BMP images cannot be compressed"
 msgstr "Перегорнуті зображення формату BMP не можуть бути стиснені"
 
 #: gdk-pixbuf/io-bmp.c:717 gdk-pixbuf/io-pnm.c:709
-#, c-format
 msgid "Premature end-of-file encountered"
 msgstr "Передчасне завершення файлу"
 
 #: gdk-pixbuf/io-bmp.c:1329
-#, c-format
 msgid "Couldn't allocate memory for saving BMP file"
 msgstr "Не вдається виділити пам'ять для завантаження файлу BMP"
 
 #: gdk-pixbuf/io-bmp.c:1370
-#, c-format
 msgid "Couldn't write to BMP file"
 msgstr "Не вдається записати файл BMP"
 
-#: gdk-pixbuf/io-bmp.c:1425
+#: gdk-pixbuf/io-bmp.c:1423 gdk-pixbuf/io-gdip-bmp.c:82
 msgid "The BMP image format"
 msgstr "Формат зображень BMP"
 
@@ -452,8 +436,7 @@ msgstr "Формат зображень BMP"
 msgid "Failure reading GIF: %s"
 msgstr "Не вдається зчитати GIF: %s"
 
-#: gdk-pixbuf/io-gif.c:496 gdk-pixbuf/io-gif.c:1477 gdk-pixbuf/io-gif.c:1638
-#, c-format
+#: gdk-pixbuf/io-gif.c:496 gdk-pixbuf/io-gif.c:1481 gdk-pixbuf/io-gif.c:1642
 msgid "GIF file was missing some data (perhaps it was truncated somehow?)"
 msgstr "Файл формату GIF містив пошкоджені дані (можливо його було обрізано?)"
 
@@ -463,53 +446,44 @@ msgid "Internal error in the GIF loader (%s)"
 msgstr "Внутрішня помилка при завантаженні GIF (%s)"
 
 #: gdk-pixbuf/io-gif.c:579
-#, c-format
 msgid "Stack overflow"
 msgstr "Стек переповнений"
 
 #: gdk-pixbuf/io-gif.c:639
-#, c-format
 msgid "GIF image loader cannot understand this image."
 msgstr "Завантажувач зображень GIF формату не може зрозуміти це зображення."
 
 #: gdk-pixbuf/io-gif.c:668
-#, c-format
 msgid "Bad code encountered"
 msgstr "Виявлено неправильний код"
 
 #: gdk-pixbuf/io-gif.c:678
-#, c-format
 msgid "Circular table entry in GIF file"
 msgstr "Циклічний табличний запис у файлі формату GIF"
 
-#: gdk-pixbuf/io-gif.c:866 gdk-pixbuf/io-gif.c:1464 gdk-pixbuf/io-gif.c:1511
-#: gdk-pixbuf/io-gif.c:1626
-#, c-format
+#: gdk-pixbuf/io-gif.c:866 gdk-pixbuf/io-gif.c:1468 gdk-pixbuf/io-gif.c:1515
+#: gdk-pixbuf/io-gif.c:1630
 msgid "Not enough memory to load GIF file"
 msgstr "Недостатньо пам'яті для завантаження файлу GIF"
 
-#: gdk-pixbuf/io-gif.c:956
-#, c-format
+#: gdk-pixbuf/io-gif.c:960
 msgid "Not enough memory to composite a frame in GIF file"
 msgstr "Недостатньо пам'яті для створення кадру файлу GIF"
 
-#: gdk-pixbuf/io-gif.c:1128
-#, c-format
+#: gdk-pixbuf/io-gif.c:1132
 msgid "GIF image is corrupt (incorrect LZW compression)"
 msgstr "Зображення GIF пошкоджене (невірне стиснення LZW)"
 
-#: gdk-pixbuf/io-gif.c:1178
-#, c-format
+#: gdk-pixbuf/io-gif.c:1182
 msgid "File does not appear to be a GIF file"
 msgstr "Файл не схожий на GIF"
 
-#: gdk-pixbuf/io-gif.c:1190
+#: gdk-pixbuf/io-gif.c:1194
 #, c-format
 msgid "Version %s of the GIF file format is not supported"
 msgstr "Формат файлу GIF версії %s не підтримується"
 
-#: gdk-pixbuf/io-gif.c:1299
-#, c-format
+#: gdk-pixbuf/io-gif.c:1303
 msgid ""
 "GIF image has no global colormap, and a frame inside it has no local "
 "colormap."
@@ -517,69 +491,105 @@ msgstr ""
 "Зображення формату GIF не має глобальної мапи кольорів, і кадр в ньому не "
 "має локальної мапи кольорів."
 
-#: gdk-pixbuf/io-gif.c:1533
-#, c-format
+#: gdk-pixbuf/io-gif.c:1537
 msgid "GIF image was truncated or incomplete."
 msgstr "Зображення формату GIF обрізане чи незавершене."
 
-#: gdk-pixbuf/io-gif.c:1691
+#: gdk-pixbuf/io-gif.c:1693 gdk-pixbuf/io-gdip-gif.c:80
 msgid "The GIF image format"
 msgstr "Формат зображень GIF"
 
-#: gdk-pixbuf/io-ico.c:217 gdk-pixbuf/io-ico.c:277 gdk-pixbuf/io-ico.c:346
-#: gdk-pixbuf/io-ico.c:409 gdk-pixbuf/io-ico.c:439
-#, c-format
-msgid "Not enough memory to load icon"
-msgstr "Недостатньо пам'яті для завантаження значка"
-
-#: gdk-pixbuf/io-ico.c:254 gdk-pixbuf/io-ico.c:267 gdk-pixbuf/io-ico.c:336
-#, c-format
+#: gdk-pixbuf/io-ico.c:211 gdk-pixbuf/io-ico.c:225 gdk-pixbuf/io-ico.c:277
+#: gdk-pixbuf/io-ico.c:290 gdk-pixbuf/io-ico.c:359
 msgid "Invalid header in icon"
 msgstr "Неправильний заголовок у файлі значка"
 
-#: gdk-pixbuf/io-ico.c:299
-#, c-format
+#: gdk-pixbuf/io-ico.c:240 gdk-pixbuf/io-ico.c:300 gdk-pixbuf/io-ico.c:369
+#: gdk-pixbuf/io-ico.c:432 gdk-pixbuf/io-ico.c:462
+msgid "Not enough memory to load icon"
+msgstr "Недостатньо пам'яті для завантаження значка"
+
+#: gdk-pixbuf/io-ico.c:322
 msgid "Icon has zero width"
 msgstr "Ширина значка дорівнює нулю"
 
-#: gdk-pixbuf/io-ico.c:309
-#, c-format
+#: gdk-pixbuf/io-ico.c:332
 msgid "Icon has zero height"
 msgstr "Висота значка дорівнює нулю"
 
-#: gdk-pixbuf/io-ico.c:361
-#, c-format
+#: gdk-pixbuf/io-ico.c:384
 msgid "Compressed icons are not supported"
 msgstr "Стиснуті значки не підтримуються"
 
-#: gdk-pixbuf/io-ico.c:394
-#, c-format
+#: gdk-pixbuf/io-ico.c:417
 msgid "Unsupported icon type"
 msgstr "Непідтримуваний тип значка"
 
-#: gdk-pixbuf/io-ico.c:488
-#, c-format
+#: gdk-pixbuf/io-ico.c:511
 msgid "Not enough memory to load ICO file"
 msgstr "Недостатньо пам'яті для завантаження файлу у форматі ICO"
 
-#: gdk-pixbuf/io-ico.c:953
-#, c-format
+#: gdk-pixbuf/io-ico.c:976
 msgid "Image too large to be saved as ICO"
 msgstr "Зображення надто велике для збереження у форматі ICO"
 
-#: gdk-pixbuf/io-ico.c:964
-#, c-format
+#: gdk-pixbuf/io-ico.c:987
 msgid "Cursor hotspot outside image"
 msgstr "Активна область визначена за межами зображення"
 
-#: gdk-pixbuf/io-ico.c:987
+#: gdk-pixbuf/io-ico.c:1010
 #, c-format
 msgid "Unsupported depth for ICO file: %d"
 msgstr "Глибина кольору %d для формату ICO не підтримується"
 
-#: gdk-pixbuf/io-ico.c:1224
+#: gdk-pixbuf/io-ico.c:1245 gdk-pixbuf/io-gdip-ico.c:59
 msgid "The ICO image format"
 msgstr "Формат зображень ICO"
+
+#: gdk-pixbuf/io-icns.c:345
+#, c-format
+msgid "Error reading ICNS image: %s"
+msgstr "При читанні зображення ICNS виникла помилка: %s"
+
+#: gdk-pixbuf/io-icns.c:362
+msgid "Could not decode ICNS file"
+msgstr "Не вдається файл декодувати файл ICNS"
+
+#: gdk-pixbuf/io-icns.c:395
+msgid "The ICNS image format"
+msgstr "Формат зображень ICNS"
+
+#: gdk-pixbuf/io-jasper.c:75
+msgid "Couldn't allocate memory for stream"
+msgstr "Не вдається виділити пам'ять для потоку"
+
+#: gdk-pixbuf/io-jasper.c:105
+msgid "Couldn't decode image"
+msgstr "Не вдається декодувати зображення"
+
+#: gdk-pixbuf/io-jasper.c:123
+msgid "Transformed JPEG2000 has zero width or height"
+msgstr "Перетворене зображення формату JPEG2000 має нульову ширину чи висоту."
+
+#: gdk-pixbuf/io-jasper.c:137
+msgid "Image type currently not supported"
+msgstr "Тип зображення не підтримується у цій версії"
+
+#: gdk-pixbuf/io-jasper.c:149 gdk-pixbuf/io-jasper.c:157
+msgid "Couldn't allocate memory for color profile"
+msgstr "Не вдається виділити пам'ять для кольорового профілю"
+
+#: gdk-pixbuf/io-jasper.c:182
+msgid "Insufficient memory to open JPEG 2000 file"
+msgstr "Не достатньо пам'яті для відкривання файлу JPEG 2000"
+
+#: gdk-pixbuf/io-jasper.c:264
+msgid "Couldn't allocate memory to buffer image data"
+msgstr "Не вдається виділити пам'ять для буфера даних зображення"
+
+#: gdk-pixbuf/io-jasper.c:308
+msgid "The JPEG 2000 image format"
+msgstr "Формат зображень JPEG 2000"
 
 #: gdk-pixbuf/io-jpeg.c:117
 #, c-format
@@ -587,7 +597,6 @@ msgid "Error interpreting JPEG image file (%s)"
 msgstr "Помилка інтерпретації файлу зображення JPEG (%s)"
 
 #: gdk-pixbuf/io-jpeg.c:529
-#, c-format
 msgid ""
 "Insufficient memory to load image, try exiting some applications to free "
 "memory"
@@ -602,16 +611,14 @@ msgstr "Простір кольорів (%s) формату JPEG не підтр
 
 #: gdk-pixbuf/io-jpeg.c:668 gdk-pixbuf/io-jpeg.c:944 gdk-pixbuf/io-jpeg.c:1177
 #: gdk-pixbuf/io-jpeg.c:1186
-#, c-format
 msgid "Couldn't allocate memory for loading JPEG file"
 msgstr "Не вдається виділити пам'ять для завантаження файлу JPEG"
 
 #: gdk-pixbuf/io-jpeg.c:920
-#, c-format
 msgid "Transformed JPEG has zero width or height."
 msgstr "Перетворене зображення формату JPEG має нульову ширину чи висоту."
 
-#: gdk-pixbuf/io-jpeg.c:1133
+#: gdk-pixbuf/io-jpeg.c:1133 gdk-pixbuf/io-gdip-jpeg.c:53
 #, c-format
 msgid ""
 "JPEG quality must be a value between 0 and 100; value '%s' could not be "
@@ -620,7 +627,7 @@ msgstr ""
 "Якість формату JPEG має бути в діапазоні від 0 до 100; значення \"%s\" не "
 "вдається опрацювати."
 
-#: gdk-pixbuf/io-jpeg.c:1148
+#: gdk-pixbuf/io-jpeg.c:1148 gdk-pixbuf/io-gdip-jpeg.c:68
 #, c-format
 msgid ""
 "JPEG quality must be a value between 0 and 100; value '%d' is not allowed."
@@ -628,27 +635,23 @@ msgstr ""
 "Якість формату JPEG має бути в діапазоні від 0 до 100; значення \"%d\" "
 "неприпустиме."
 
-#: gdk-pixbuf/io-jpeg.c:1311
+#: gdk-pixbuf/io-jpeg.c:1309 gdk-pixbuf/io-gdip-jpeg.c:136
 msgid "The JPEG image format"
 msgstr "Формат зображень JPEG"
 
 #: gdk-pixbuf/io-pcx.c:187
-#, c-format
 msgid "Couldn't allocate memory for header"
 msgstr "Не вдається виділити пам'ять для заголовка"
 
 #: gdk-pixbuf/io-pcx.c:202 gdk-pixbuf/io-pcx.c:560
-#, c-format
 msgid "Couldn't allocate memory for context buffer"
 msgstr "Не вдається виділити пам'ять для буфера контексту"
 
 #: gdk-pixbuf/io-pcx.c:601
-#, c-format
 msgid "Image has invalid width and/or height"
 msgstr "Зображення має неправильну висоту та/чи ширину"
 
 #: gdk-pixbuf/io-pcx.c:613 gdk-pixbuf/io-pcx.c:674
-#, c-format
 msgid "Image has unsupported bpp"
 msgstr "Зображення має непідтримувану кількість біт на точку"
 
@@ -658,58 +661,48 @@ msgid "Image has unsupported number of %d-bit planes"
 msgstr "Зображення має непідтримувану кількість %d-бітових площин"
 
 #: gdk-pixbuf/io-pcx.c:642
-#, c-format
 msgid "Couldn't create new pixbuf"
 msgstr "Не вдається створити новий об'єкт Pixbuf"
 
 #: gdk-pixbuf/io-pcx.c:650
-#, c-format
 msgid "Couldn't allocate memory for line data"
 msgstr "Не вдається виділити пам'ять для даних рядка"
 
 #: gdk-pixbuf/io-pcx.c:657
-#, c-format
 msgid "Couldn't allocate memory for paletted data"
 msgstr "Не вдається виділити пам'ять для даних палітри"
 
 #: gdk-pixbuf/io-pcx.c:704
-#, c-format
 msgid "Didn't get all lines of PCX image"
 msgstr "Отримані не всі рядки зображення PCX"
 
 #: gdk-pixbuf/io-pcx.c:711
-#, c-format
 msgid "No palette found at end of PCX data"
 msgstr "Не знайдено палітри в кінці файлі формату PCX"
 
-#: gdk-pixbuf/io-pcx.c:758
+#: gdk-pixbuf/io-pcx.c:756
 msgid "The PCX image format"
 msgstr "Формат зображень PCX"
 
 #: gdk-pixbuf/io-png.c:55
-#, c-format
 msgid "Bits per channel of PNG image is invalid."
 msgstr ""
 "Неправильне значення кількості бітів на канал для зображення формату PNM."
 
 #: gdk-pixbuf/io-png.c:136 gdk-pixbuf/io-png.c:618
-#, c-format
 msgid "Transformed PNG has zero width or height."
 msgstr "Перетворене зображення формату PNG має нульову ширину чи висоту."
 
 #: gdk-pixbuf/io-png.c:144
-#, c-format
 msgid "Bits per channel of transformed PNG is not 8."
 msgstr ""
 "Значення кількості бітів на канал у зображенні формату PNM не дорівнює 8."
 
 #: gdk-pixbuf/io-png.c:153
-#, c-format
 msgid "Transformed PNG not RGB or RGBA."
 msgstr "Перетворене зображення формату PNG не має тип RGB чи RGBA."
 
 #: gdk-pixbuf/io-png.c:162
-#, c-format
 msgid "Transformed PNG has unsupported number of channels, must be 3 or 4."
 msgstr ""
 "Перетворене зображення формату PNG має непідтримувану кількість каналів, їх "
@@ -721,7 +714,6 @@ msgid "Fatal error in PNG image file: %s"
 msgstr "Критична помилка у файлі зображення PNG: %s"
 
 #: gdk-pixbuf/io-png.c:310
-#, c-format
 msgid "Insufficient memory to load PNG file"
 msgstr "Недостатньо пам'яті для завантаження файлу PNG"
 
@@ -735,7 +727,6 @@ msgstr ""
 "деякі програми, щоб зменшити кількість використаної пам'яті"
 
 #: gdk-pixbuf/io-png.c:684
-#, c-format
 msgid "Fatal error reading PNG image file"
 msgstr "Критична помилка зчитування файлу зображення PNG"
 
@@ -745,7 +736,6 @@ msgid "Fatal error reading PNG image file: %s"
 msgstr "Критична помилка зчитування файлу зображення PNG: %s"
 
 #: gdk-pixbuf/io-png.c:825
-#, c-format
 msgid ""
 "Keys for PNG text chunks must have at least 1 and at most 79 characters."
 msgstr ""
@@ -753,13 +743,12 @@ msgstr ""
 "не більше 79 символів."
 
 #: gdk-pixbuf/io-png.c:833
-#, c-format
 msgid "Keys for PNG text chunks must be ASCII characters."
 msgstr ""
 "Ключі для блоків тексту в зображенні формату PNG мають бути символами з "
 "набору ASCII."
 
-#: gdk-pixbuf/io-png.c:846
+#: gdk-pixbuf/io-png.c:846 gdk-pixbuf/io-gdip-png.c:56
 #, c-format
 msgid ""
 "PNG compression level must be a value between 0 and 9; value '%s' could not "
@@ -768,7 +757,7 @@ msgstr ""
 "Стиснення формату PNG має бути в діапазоні від 0 до 9; значення \"%s\" не "
 "вдається опрацювати."
 
-#: gdk-pixbuf/io-png.c:858
+#: gdk-pixbuf/io-png.c:858 gdk-pixbuf/io-gdip-png.c:68
 #, c-format
 msgid ""
 "PNG compression level must be a value between 0 and 9; value '%d' is not "
@@ -784,177 +773,146 @@ msgstr ""
 "Значення для блоку тексту \"%s\" в зображенні формату PNG не може бути "
 "перетворено в кодування ISO-8859-1."
 
-#: gdk-pixbuf/io-png.c:1047
+#: gdk-pixbuf/io-png.c:1045 gdk-pixbuf/io-gdip-png.c:133
 msgid "The PNG image format"
 msgstr "Формат зображень PNG"
 
 #: gdk-pixbuf/io-pnm.c:250
-#, c-format
 msgid "PNM loader expected to find an integer, but didn't"
 msgstr ""
 "Завантажувач зображень формату PNM очікував знайти ціле число, але не "
 "знайшов його"
 
 #: gdk-pixbuf/io-pnm.c:282
-#, c-format
 msgid "PNM file has an incorrect initial byte"
 msgstr "Файл PNM має некоректний перший байт"
 
 #: gdk-pixbuf/io-pnm.c:312
-#, c-format
 msgid "PNM file is not in a recognized PNM subformat"
 msgstr "Файл формату PNM має незрозумілий підформат PNM"
 
 #: gdk-pixbuf/io-pnm.c:337
-#, c-format
 msgid "PNM file has an image width of 0"
 msgstr "Файл PNM містить зображення нульової ширини"
 
 #: gdk-pixbuf/io-pnm.c:358
-#, c-format
 msgid "PNM file has an image height of 0"
 msgstr "Файл PNM містить зображення нульової висоти"
 
 #: gdk-pixbuf/io-pnm.c:381
-#, c-format
 msgid "Maximum color value in PNM file is 0"
 msgstr "Максимальне значення кольору у файлі формату PNM дорівнює 0"
 
 #: gdk-pixbuf/io-pnm.c:389
-#, c-format
 msgid "Maximum color value in PNM file is too large"
 msgstr "Максимальне значення кольору у файлі формату PNM надто велике"
 
 #: gdk-pixbuf/io-pnm.c:429 gdk-pixbuf/io-pnm.c:459 gdk-pixbuf/io-pnm.c:504
-#, c-format
 msgid "Raw PNM image type is invalid"
 msgstr "Неправильний тип зображення формату Raw PNM"
 
 #: gdk-pixbuf/io-pnm.c:654
-#, c-format
 msgid "PNM image loader does not support this PNM subformat"
 msgstr "Завантажувач зображень формату PNM не підтримує цей підформат PNM"
 
 #: gdk-pixbuf/io-pnm.c:741 gdk-pixbuf/io-pnm.c:968
-#, c-format
 msgid "Raw PNM formats require exactly one whitespace before sample data"
 msgstr "Формат Raw PNM вимагає точно один пропуск перед даними зразка"
 
 #: gdk-pixbuf/io-pnm.c:768
-#, c-format
 msgid "Cannot allocate memory for loading PNM image"
 msgstr "Не вдається виділити пам'ять для завантаження файлу PNM"
 
 #: gdk-pixbuf/io-pnm.c:818
-#, c-format
 msgid "Insufficient memory to load PNM context struct"
 msgstr "Недостатньо пам'яті для завантаження структури вмісту PNM"
 
 #: gdk-pixbuf/io-pnm.c:869
-#, c-format
 msgid "Unexpected end of PNM image data"
 msgstr "Несподіване завершення даних зображення PNM"
 
 #: gdk-pixbuf/io-pnm.c:997
-#, c-format
 msgid "Insufficient memory to load PNM file"
 msgstr "Недостатньо пам'яті для завантаження файлу PNM"
 
-#: gdk-pixbuf/io-pnm.c:1083
+#: gdk-pixbuf/io-pnm.c:1081
 msgid "The PNM/PBM/PGM/PPM image format family"
 msgstr "Родина форматів зображень PNM/PBM/PGM/PPM"
 
 #: gdk-pixbuf/io-ras.c:126
-#, c-format
 msgid "RAS image has bogus header data"
 msgstr "Заголовок зображення формату RAS містить неправильні дані"
 
 #: gdk-pixbuf/io-ras.c:148
-#, c-format
 msgid "RAS image has unknown type"
 msgstr "RAS-зображення має невідомий тип"
 
 #: gdk-pixbuf/io-ras.c:156
-#, c-format
 msgid "unsupported RAS image variation"
 msgstr "непідтримуваний тип зображення формату RAS"
 
 #: gdk-pixbuf/io-ras.c:171 gdk-pixbuf/io-ras.c:200
-#, c-format
 msgid "Not enough memory to load RAS image"
 msgstr "Недостатньо пам'яті для завантаження RAS-зображення"
 
-#: gdk-pixbuf/io-ras.c:547
+#: gdk-pixbuf/io-ras.c:545
 msgid "The Sun raster image format"
 msgstr "Формат растрових зображень компанії Sun"
 
 #: gdk-pixbuf/io-tga.c:154
-#, c-format
 msgid "Cannot allocate memory for IOBuffer struct"
 msgstr "Не вдається виділити пам'ять для структури IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:173
-#, c-format
 msgid "Cannot allocate memory for IOBuffer data"
 msgstr "Не вдається виділити пам'ять для даних IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:184
-#, c-format
 msgid "Cannot realloc IOBuffer data"
 msgstr "Не вдається перерозподілити дані структури IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:214
-#, c-format
 msgid "Cannot allocate temporary IOBuffer data"
 msgstr "Не вдається виділити пам'ять для тимчасових даних структури IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:347
-#, c-format
 msgid "Cannot allocate new pixbuf"
 msgstr "Не вдається виділити новий об'єкт Pixbuf"
 
 #: gdk-pixbuf/io-tga.c:687
-#, c-format
 msgid "Cannot allocate colormap structure"
 msgstr "Не вдається виділити пам'ять для структури мапи кольорів"
 
 #: gdk-pixbuf/io-tga.c:694
-#, c-format
 msgid "Cannot allocate colormap entries"
 msgstr "Не вдається виділити пам'ять для елементів мапи кольорів"
 
 #: gdk-pixbuf/io-tga.c:716
-#, c-format
 msgid "Unexpected bitdepth for colormap entries"
 msgstr "Несподівана бітова глибина для елементів мапи кольорів"
 
 #: gdk-pixbuf/io-tga.c:734
-#, c-format
 msgid "Cannot allocate TGA header memory"
 msgstr "Не вдається виділити пам'ять для заголовка формату TGA"
 
 #: gdk-pixbuf/io-tga.c:767
-#, c-format
 msgid "TGA image has invalid dimensions"
 msgstr "Неправильний розмір зображення у форматі TGA"
 
 #: gdk-pixbuf/io-tga.c:773 gdk-pixbuf/io-tga.c:782 gdk-pixbuf/io-tga.c:792
 #: gdk-pixbuf/io-tga.c:802 gdk-pixbuf/io-tga.c:809
-#, c-format
 msgid "TGA image type not supported"
 msgstr "Тип зображення TGA не підтримується"
 
 #: gdk-pixbuf/io-tga.c:856
-#, c-format
 msgid "Cannot allocate memory for TGA context struct"
 msgstr "Не вдається виділити пам'ять для структури контексту формату TGA"
 
 #: gdk-pixbuf/io-tga.c:921
-#, c-format
 msgid "Excess data in file"
 msgstr "Надлишкові дані у файлі"
 
-#: gdk-pixbuf/io-tga.c:1002
+#: gdk-pixbuf/io-tga.c:1000
 msgid "The Targa image format"
 msgstr "Формат зображень Targa"
 
@@ -967,17 +925,14 @@ msgid "Could not get image height (bad TIFF file)"
 msgstr "Не вдається отримати висоту (неправильний файл TIFF)"
 
 #: gdk-pixbuf/io-tiff.c:175
-#, c-format
 msgid "Width or height of TIFF image is zero"
 msgstr "Ширина чи висота зображення TIFF дорівнює нулю"
 
 #: gdk-pixbuf/io-tiff.c:184 gdk-pixbuf/io-tiff.c:193
-#, c-format
 msgid "Dimensions of TIFF image too large"
 msgstr "Зображення формату TIFF надто велике"
 
 #: gdk-pixbuf/io-tiff.c:217 gdk-pixbuf/io-tiff.c:229 gdk-pixbuf/io-tiff.c:541
-#, c-format
 msgid "Insufficient memory to open TIFF file"
 msgstr "Не достатньо пам'яті для відкривання файлу TIFF"
 
@@ -1006,106 +961,134 @@ msgid "Failed to write TIFF data"
 msgstr "Не вдається записати дані TIFF"
 
 #: gdk-pixbuf/io-tiff.c:760
-#, c-format
 msgid "Couldn't write to TIFF file"
 msgstr "Не вдається записати у файл TIFF"
 
-#: gdk-pixbuf/io-tiff.c:817
+#: gdk-pixbuf/io-tiff.c:815
 msgid "The TIFF image format"
 msgstr "Формат зображень TIFF"
 
 #: gdk-pixbuf/io-wbmp.c:246
-#, c-format
 msgid "Image has zero width"
 msgstr "Зображення має нульову ширину"
 
 #: gdk-pixbuf/io-wbmp.c:264
-#, c-format
 msgid "Image has zero height"
 msgstr "Зображення має нульову висоту"
 
 #: gdk-pixbuf/io-wbmp.c:275
-#, c-format
 msgid "Not enough memory to load image"
 msgstr "Недостатньо пам'яті для завантаження зображення"
 
 #: gdk-pixbuf/io-wbmp.c:334
-#, c-format
 msgid "Couldn't save the rest"
 msgstr "Не вдається зберегти залишок"
 
-#: gdk-pixbuf/io-wbmp.c:377
+#: gdk-pixbuf/io-wbmp.c:375
 msgid "The WBMP image format"
 msgstr "Формат зображень WBMP"
 
 #: gdk-pixbuf/io-xbm.c:295
-#, c-format
 msgid "Invalid XBM file"
 msgstr "Неправильний файл XBM"
 
 #: gdk-pixbuf/io-xbm.c:305
-#, c-format
 msgid "Insufficient memory to load XBM image file"
 msgstr "Недостатньо пам'яті для завантаження файлу зображення XBM"
 
 #: gdk-pixbuf/io-xbm.c:453
-#, c-format
 msgid "Failed to write to temporary file when loading XBM image"
 msgstr "Не вдається записати тимчасовий файл при завантаженні зображення XBM"
 
-#: gdk-pixbuf/io-xbm.c:494
+#: gdk-pixbuf/io-xbm.c:492
 msgid "The XBM image format"
 msgstr "Формат зображень XBM"
 
 #: gdk-pixbuf/io-xpm.c:468
-#, c-format
 msgid "No XPM header found"
 msgstr "Не знайдено заголовок XPM"
 
 #: gdk-pixbuf/io-xpm.c:477
-#, c-format
 msgid "Invalid XPM header"
 msgstr "Неправильний заголовок XBM"
 
 #: gdk-pixbuf/io-xpm.c:485
-#, c-format
 msgid "XPM file has image width <= 0"
 msgstr "Ширина зображення XPM <= 0"
 
 #: gdk-pixbuf/io-xpm.c:493
-#, c-format
 msgid "XPM file has image height <= 0"
 msgstr "Висота зображення XPM <= 0"
 
 #: gdk-pixbuf/io-xpm.c:501
-#, c-format
 msgid "XPM has invalid number of chars per pixel"
 msgstr "XPM має неправильну кількість байтів на точку"
 
 #: gdk-pixbuf/io-xpm.c:510
-#, c-format
 msgid "XPM file has invalid number of colors"
 msgstr "XPM має неправильну кількість кольорів"
 
 #: gdk-pixbuf/io-xpm.c:522 gdk-pixbuf/io-xpm.c:531 gdk-pixbuf/io-xpm.c:583
-#, c-format
 msgid "Cannot allocate memory for loading XPM image"
 msgstr "Не вдається виділити пам'ять для завантаження зображення XPM"
 
 #: gdk-pixbuf/io-xpm.c:545
-#, c-format
 msgid "Cannot read XPM colormap"
 msgstr "Не вдається зчитати мапу кольорів XPM"
 
 #: gdk-pixbuf/io-xpm.c:777
-#, c-format
 msgid "Failed to write to temporary file when loading XPM image"
 msgstr ""
 "Не вдається записати тимчасовий файл під час завантаження зображення XPM"
 
-#: gdk-pixbuf/io-xpm.c:818
+#: gdk-pixbuf/io-xpm.c:816
 msgid "The XPM image format"
 msgstr "Формат зображень XPM"
+
+#: gdk-pixbuf/io-gdip-emf.c:59
+msgid "The EMF image format"
+msgstr "Формат зображень EMF"
+
+#: gdk-pixbuf/io-gdip-utils.c:220
+#, c-format
+msgid "Could not allocate memory: %s"
+msgstr "Не вдається виділити пам'ять: %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:245 gdk-pixbuf/io-gdip-utils.c:360
+#: gdk-pixbuf/io-gdip-utils.c:394
+#, c-format
+msgid "Could not create stream: %s"
+msgstr "Не вдається створити потік: %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:259
+#, c-format
+msgid "Could not seek stream: %s"
+msgstr "Не вдається змінити позицію у потоці: %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:271
+#, c-format
+msgid "Could not read from stream: %s"
+msgstr "Не вдається прочитати з потоку: %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:683 gdk-pixbuf/io-gdip-utils.c:815
+msgid "Couldn't load bitmap"
+msgstr "Не вдається завантажити растрове зображення"
+
+#: gdk-pixbuf/io-gdip-utils.c:838
+msgid "Couldn't load metafile"
+msgstr "Не вдається завантажити метафайл"
+
+#: gdk-pixbuf/io-gdip-utils.c:997
+msgid "Unsupported image format for GDI+"
+msgstr "Цей формат зображень не підтримується для GDI+"
+
+#: gdk-pixbuf/io-gdip-utils.c:1004
+msgid "Couldn't save"
+msgstr "Не вдається зберегти"
+
+#: gdk-pixbuf/io-gdip-wmf.c:58
+msgid "The WMF image format"
+msgstr "Формат зображень WMF"
 
 #. Description of --sync in --help output
 #: gdk/win32/gdkmain-win32.c:54
@@ -1142,7 +1125,25 @@ msgstr "COLORS"
 msgid "Make X calls synchronous"
 msgstr "Вимкнути синхронні виклики X"
 
-#: gtk/gtkaboutdialog.c:264 gtk/gtkaboutdialog.c:2101
+#: gdk/x11/gdkapplaunchcontext-x11.c:311
+#, c-format
+msgid "Starting %s"
+msgstr "Запускається %s"
+
+#: gdk/x11/gdkapplaunchcontext-x11.c:313
+#, c-format
+msgid "Opening %s"
+msgstr "Відкривається '%s'"
+
+#: gdk/x11/gdkapplaunchcontext-x11.c:316
+#, c-format
+msgid "Opening %d Item"
+msgid_plural "Opening %d Items"
+msgstr[0] "Відкривається %d елемент"
+msgstr[1] "Відкривається %d елементи"
+msgstr[2] "Відкривається %d елементів"
+
+#: gtk/gtkaboutdialog.c:264 gtk/gtkaboutdialog.c:2108
 msgid "License"
 msgstr "Ліцензія"
 
@@ -1156,32 +1157,32 @@ msgid "C_redits"
 msgstr "_Подяки"
 
 #. Add the license button
-#: gtk/gtkaboutdialog.c:513
+#: gtk/gtkaboutdialog.c:514
 msgid "_License"
 msgstr "_Ліцензія"
 
-#: gtk/gtkaboutdialog.c:742
+#: gtk/gtkaboutdialog.c:744
 #, c-format
 msgid "About %s"
 msgstr "Про %s"
 
-#: gtk/gtkaboutdialog.c:2025
+#: gtk/gtkaboutdialog.c:2032
 msgid "Credits"
 msgstr "Подяки"
 
-#: gtk/gtkaboutdialog.c:2054
+#: gtk/gtkaboutdialog.c:2061
 msgid "Written by"
 msgstr "Автор"
 
-#: gtk/gtkaboutdialog.c:2057
+#: gtk/gtkaboutdialog.c:2064
 msgid "Documented by"
 msgstr "Автор документації"
 
-#: gtk/gtkaboutdialog.c:2069
+#: gtk/gtkaboutdialog.c:2076
 msgid "Translated by"
 msgstr "Переклад"
 
-#: gtk/gtkaboutdialog.c:2073
+#: gtk/gtkaboutdialog.c:2080
 msgid "Artwork by"
 msgstr "Графіка"
 
@@ -1192,7 +1193,7 @@ msgstr "Графіка"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:90
+#: gtk/gtkaccellabel.c:93
 msgid "keyboard label|Shift"
 msgstr "Shift"
 
@@ -1203,7 +1204,7 @@ msgstr "Shift"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:98
+#: gtk/gtkaccellabel.c:101
 msgid "keyboard label|Ctrl"
 msgstr "Ctrl"
 
@@ -1214,7 +1215,7 @@ msgstr "Ctrl"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:106
+#: gtk/gtkaccellabel.c:109
 msgid "keyboard label|Alt"
 msgstr "Alt"
 
@@ -1224,7 +1225,7 @@ msgstr "Alt"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:580
+#: gtk/gtkaccellabel.c:678
 msgid "keyboard label|Super"
 msgstr "Super"
 
@@ -1234,7 +1235,7 @@ msgstr "Super"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:594
+#: gtk/gtkaccellabel.c:692
 msgid "keyboard label|Hyper"
 msgstr "Hyper"
 
@@ -1244,31 +1245,31 @@ msgstr "Hyper"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:608
+#: gtk/gtkaccellabel.c:707
 msgid "keyboard label|Meta"
 msgstr "Meta"
 
 #. do not translate the part before the |
-#: gtk/gtkaccellabel.c:622
+#: gtk/gtkaccellabel.c:725
 msgid "keyboard label|Space"
 msgstr "Пробіл"
 
 #. do not translate the part before the |
-#: gtk/gtkaccellabel.c:626
+#: gtk/gtkaccellabel.c:729
 msgid "keyboard label|Backslash"
 msgstr "Backslash"
 
-#: gtk/gtkbuilderparser.c:269
+#: gtk/gtkbuilderparser.c:340
 #, c-format
 msgid "Invalid type function: `%s'"
 msgstr "Неправильний тип функції: `%s'"
 
-#: gtk/gtkbuilderparser.c:723
+#: gtk/gtkbuilderparser.c:823
 #, c-format
 msgid "Invalid root element: '%s'"
 msgstr "Неправильний кореневий елемент: '%s'"
 
-#: gtk/gtkbuilderparser.c:755
+#: gtk/gtkbuilderparser.c:862
 #, c-format
 msgid "Unhandled tag: '%s'"
 msgstr "Необроблюваний тег: '%s'"
@@ -1282,7 +1283,7 @@ msgstr "Необроблюваний тег: '%s'"
 #. * so if you have a default text direction of RTL and YM, then
 #. * the year will appear on the right.
 #.
-#: gtk/gtkcalendar.c:670
+#: gtk/gtkcalendar.c:758
 msgid "calendar:MY"
 msgstr "calendar:MY"
 
@@ -1290,7 +1291,7 @@ msgstr "calendar:MY"
 #. * first day of the week to calendar:week_start:1 if you want Monday
 #. * to be the first day of the week, and so on.
 #.
-#: gtk/gtkcalendar.c:708
+#: gtk/gtkcalendar.c:796
 msgid "calendar:week_start:0"
 msgstr "calendar:week_start:1"
 
@@ -1302,7 +1303,7 @@ msgstr "calendar:week_start:1"
 #. *
 #. * If you don't understand this, leave it as "2000"
 #.
-#: gtk/gtkcalendar.c:1605
+#: gtk/gtkcalendar.c:1806
 msgid "year measurement template|2000"
 msgstr "2000"
 
@@ -1317,7 +1318,7 @@ msgstr "2000"
 #. * digits.  That needs support from your system and locale definition
 #. * too.
 #.
-#: gtk/gtkcalendar.c:1636 gtk/gtkcalendar.c:2214
+#: gtk/gtkcalendar.c:1837 gtk/gtkcalendar.c:2498
 #, c-format
 msgid "calendar:day:digits|%d"
 msgstr "%d"
@@ -1333,7 +1334,7 @@ msgstr "%d"
 #. * digits.  That needs support from your system and locale definition
 #. * too.
 #.
-#: gtk/gtkcalendar.c:1670 gtk/gtkcalendar.c:2088
+#: gtk/gtkcalendar.c:1869 gtk/gtkcalendar.c:2360
 #, c-format
 msgid "calendar:week:digits|%d"
 msgstr "%d"
@@ -1349,7 +1350,7 @@ msgstr "%d"
 #. * Don't include the prefix "calendar year format|" in the
 #. * translation. "%Y" is appropriate for most locales.
 #.
-#: gtk/gtkcalendar.c:1879
+#: gtk/gtkcalendar.c:2150
 msgid "calendar year format|%Y"
 msgstr "%Y"
 
@@ -1375,15 +1376,107 @@ msgstr "Нова комбінація клавіш..."
 msgid "progress bar label|%d %%"
 msgstr "%d %%"
 
-#: gtk/gtkcolorbutton.c:189 gtk/gtkcolorbutton.c:560
+#: gtk/gtkcolorbutton.c:188 gtk/gtkcolorbutton.c:559
 msgid "Pick a Color"
 msgstr "Вибір кольору"
 
-#: gtk/gtkcolorbutton.c:449
+#: gtk/gtkcolorbutton.c:448
 msgid "Received invalid color data\n"
 msgstr "Отримано неправильні дані кольору\n"
 
-#: gtk/gtkcolorsel.c:550
+#: gtk/gtkcolorsel.c:354
+msgid ""
+"Select the color you want from the outer ring. Select the darkness or "
+"lightness of that color using the inner triangle."
+msgstr ""
+"Виберіть бажаний колір на зовнішньому колі. Виберіть темніший чи світліший "
+"відтінок, використовуючи внутрішній трикутник."
+
+#: gtk/gtkcolorsel.c:378
+msgid ""
+"Click the eyedropper, then click a color anywhere on your screen to select "
+"that color."
+msgstr ""
+"Клацніть на піпетці, а потім по кольору в будь-якому місці екрана, щоб "
+"вибрати цей колір."
+
+#: gtk/gtkcolorsel.c:387
+msgid "_Hue:"
+msgstr "Відт_інок:"
+
+#: gtk/gtkcolorsel.c:388
+msgid "Position on the color wheel."
+msgstr "Позиція у колірному крузі."
+
+#: gtk/gtkcolorsel.c:390
+msgid "_Saturation:"
+msgstr "Нас_иченість:"
+
+#: gtk/gtkcolorsel.c:391
+msgid "\"Deepness\" of the color."
+msgstr "\"Глибина\" кольору."
+
+#: gtk/gtkcolorsel.c:392
+msgid "_Value:"
+msgstr "_Яскравість:"
+
+#: gtk/gtkcolorsel.c:393
+msgid "Brightness of the color."
+msgstr "Яскравість кольору."
+
+#: gtk/gtkcolorsel.c:394
+msgid "_Red:"
+msgstr "_Червоний:"
+
+#: gtk/gtkcolorsel.c:395
+msgid "Amount of red light in the color."
+msgstr "Кількість червоного в кольорі."
+
+#: gtk/gtkcolorsel.c:396
+msgid "_Green:"
+msgstr "_Зелений:"
+
+#: gtk/gtkcolorsel.c:397
+msgid "Amount of green light in the color."
+msgstr "Кількість зеленого в кольорі."
+
+#: gtk/gtkcolorsel.c:398
+msgid "_Blue:"
+msgstr "_Синій:"
+
+#: gtk/gtkcolorsel.c:399
+msgid "Amount of blue light in the color."
+msgstr "Кількість синього в кольорі."
+
+#: gtk/gtkcolorsel.c:402
+msgid "Op_acity:"
+msgstr "Не_прозорість:"
+
+#: gtk/gtkcolorsel.c:409 gtk/gtkcolorsel.c:419
+msgid "Transparency of the color."
+msgstr "Прозорість вибраного кольору."
+
+#: gtk/gtkcolorsel.c:426
+msgid "Color _name:"
+msgstr "Н_азва кольору:"
+
+#: gtk/gtkcolorsel.c:440
+msgid ""
+"You can enter an HTML-style hexadecimal color value, or simply a color name "
+"such as 'orange' in this entry."
+msgstr ""
+"Ви можете ввести в цьому рядку або шістнадцяткове значення кольору (в стилі "
+"HTML), або назву кольору англійською. Наприклад, \"orange\"."
+
+#: gtk/gtkcolorsel.c:470
+msgid "_Palette:"
+msgstr "_Палітра:"
+
+#: gtk/gtkcolorsel.c:499
+msgid "Color Wheel"
+msgstr "Колірне коло"
+
+#: gtk/gtkcolorsel.c:976
 msgid ""
 "The previously-selected color, for comparison to the color you're selecting "
 "now. You can drag this color to a palette entry, or select this color as "
@@ -1393,7 +1486,7 @@ msgstr ""
 "перетягти цей колір у палітру чи зробити цей колір поточним, перетягнувши "
 "його у розміщений збоку зразок."
 
-#: gtk/gtkcolorsel.c:554
+#: gtk/gtkcolorsel.c:980
 msgid ""
 "The color you've chosen. You can drag this color to a palette entry to save "
 "it for use in the future."
@@ -1401,11 +1494,11 @@ msgstr ""
 "Вибраний вами колір. Можете перетягнути його в палітру, щоб зберегти для "
 "подальшого використання."
 
-#: gtk/gtkcolorsel.c:942
+#: gtk/gtkcolorsel.c:1363
 msgid "_Save color here"
 msgstr "З_берегти колір тут"
 
-#: gtk/gtkcolorsel.c:1147
+#: gtk/gtkcolorsel.c:1568
 msgid ""
 "Click this palette entry to make it the current color. To change this entry, "
 "drag a color swatch here or right-click it and select \"Save color here.\""
@@ -1414,149 +1507,51 @@ msgstr ""
 "змінити цей елемент, перетягніть сюди зразок кольору, клацніть правою "
 "клавішею і виберіть \"Зберегти колір тут\""
 
-#: gtk/gtkcolorsel.c:1922
-msgid ""
-"Select the color you want from the outer ring. Select the darkness or "
-"lightness of that color using the inner triangle."
-msgstr ""
-"Виберіть бажаний колір на зовнішньому колі. Виберіть темніший чи світліший "
-"відтінок, використовуючи внутрішній трикутник."
-
-#: gtk/gtkcolorsel.c:1946
-msgid ""
-"Click the eyedropper, then click a color anywhere on your screen to select "
-"that color."
-msgstr ""
-"Клацніть на піпетці, а потім по кольору в будь-якому місці екрана, щоб "
-"вибрати цей колір."
-
-#: gtk/gtkcolorsel.c:1955
-msgid "_Hue:"
-msgstr "Відт_інок:"
-
-#: gtk/gtkcolorsel.c:1956
-msgid "Position on the color wheel."
-msgstr "Позиція у колірному крузі."
-
-#: gtk/gtkcolorsel.c:1958
-msgid "_Saturation:"
-msgstr "Нас_иченість:"
-
-#: gtk/gtkcolorsel.c:1959
-msgid "\"Deepness\" of the color."
-msgstr "\"Глибина\" кольору."
-
-#: gtk/gtkcolorsel.c:1960
-msgid "_Value:"
-msgstr "_Яскравість:"
-
-#: gtk/gtkcolorsel.c:1961
-msgid "Brightness of the color."
-msgstr "Яскравість кольору."
-
-#: gtk/gtkcolorsel.c:1962
-msgid "_Red:"
-msgstr "_Червоний:"
-
-#: gtk/gtkcolorsel.c:1963
-msgid "Amount of red light in the color."
-msgstr "Кількість червоного в кольорі."
-
-#: gtk/gtkcolorsel.c:1964
-msgid "_Green:"
-msgstr "_Зелений:"
-
-#: gtk/gtkcolorsel.c:1965
-msgid "Amount of green light in the color."
-msgstr "Кількість зеленого в кольорі."
-
-#: gtk/gtkcolorsel.c:1966
-msgid "_Blue:"
-msgstr "_Синій:"
-
-#: gtk/gtkcolorsel.c:1967
-msgid "Amount of blue light in the color."
-msgstr "Кількість синього в кольорі."
-
-#: gtk/gtkcolorsel.c:1970
-msgid "Op_acity:"
-msgstr "Не_прозорість:"
-
-#: gtk/gtkcolorsel.c:1977 gtk/gtkcolorsel.c:1987
-msgid "Transparency of the color."
-msgstr "Прозорість вибраного кольору."
-
-#: gtk/gtkcolorsel.c:1994
-msgid "Color _name:"
-msgstr "Н_азва кольору:"
-
-#: gtk/gtkcolorsel.c:2008
-msgid ""
-"You can enter an HTML-style hexadecimal color value, or simply a color name "
-"such as 'orange' in this entry."
-msgstr ""
-"Ви можете ввести в цьому рядку або шістнадцяткове значення кольору (в стилі "
-"HTML), або назву кольору англійською. Наприклад, \"orange\"."
-
-#: gtk/gtkcolorsel.c:2038
-msgid "_Palette:"
-msgstr "_Палітра:"
-
-#: gtk/gtkcolorsel.c:2067
-msgid "Color Wheel"
-msgstr "Колірне коло"
-
-#: gtk/gtkcolorseldialog.c:101
+#: gtk/gtkcolorseldialog.c:170
 msgid "Color Selection"
 msgstr "Вибір кольору"
 
-#: gtk/gtkentry.c:5255 gtk/gtktextview.c:7669
+#: gtk/gtkentry.c:5380 gtk/gtktextview.c:7686
 msgid "Input _Methods"
 msgstr "М_етоди вводу"
 
-#: gtk/gtkentry.c:5269 gtk/gtktextview.c:7683
+#: gtk/gtkentry.c:5394 gtk/gtktextview.c:7700
 msgid "_Insert Unicode Control Character"
 msgstr "Вс_тавити керівний символ Юнікоду"
 
-#: gtk/gtkfilechooserbutton.c:68
+#: gtk/gtkfilechooserbutton.c:64
 msgid "Select A File"
 msgstr "Виберіть файл"
 
-#: gtk/gtkfilechooserbutton.c:69 gtk/gtkfilechooserdefault.c:1979
+#: gtk/gtkfilechooserbutton.c:65 gtk/gtkfilechooserdefault.c:1925
 msgid "Desktop"
 msgstr "Робочий стіл"
 
-#: gtk/gtkfilechooserbutton.c:70
+#: gtk/gtkfilechooserbutton.c:66
 msgid "(None)"
 msgstr "(Немає)"
 
-#: gtk/gtkfilechooserbutton.c:2048
+#: gtk/gtkfilechooserbutton.c:2011
 msgid "Other..."
 msgstr "Інший..."
 
-#: gtk/gtkfilechooser.c:1697 gtk/gtkfilechooser.c:1741
-#: gtk/gtkfilechooser.c:1816 gtk/gtkfilechooser.c:1860
-#, c-format
-msgid "Invalid filename: %s"
-msgstr "Неправильна назва файлу: %s"
-
-#: gtk/gtkfilechooserdefault.c:1100
+#: gtk/gtkfilechooserdefault.c:1058
 msgid "Could not retrieve information about the file"
 msgstr "Не вдається отримати інформацію про файл"
 
-#: gtk/gtkfilechooserdefault.c:1111
+#: gtk/gtkfilechooserdefault.c:1069
 msgid "Could not add a bookmark"
 msgstr "Не вдається додати закладку"
 
-#: gtk/gtkfilechooserdefault.c:1122
+#: gtk/gtkfilechooserdefault.c:1080
 msgid "Could not remove bookmark"
 msgstr "Не вдається видалити закладку"
 
-#: gtk/gtkfilechooserdefault.c:1133
+#: gtk/gtkfilechooserdefault.c:1091
 msgid "The folder could not be created"
 msgstr "Не вдається створити теку"
 
-#: gtk/gtkfilechooserdefault.c:1146
+#: gtk/gtkfilechooserdefault.c:1104
 msgid ""
 "The folder could not be created, as a file with the same name already "
 "exists.  Try using a different name for the folder, or rename the file first."
@@ -1564,11 +1559,11 @@ msgstr ""
 "Не вдається створити теку, вже існує файл з тією самою назвою. Спробуйте "
 "вказати іншу назву теки, чи перейменувати існуючий файл."
 
-#: gtk/gtkfilechooserdefault.c:1159
+#: gtk/gtkfilechooserdefault.c:1115
 msgid "Invalid file name"
 msgstr "Неправильна назва файлу"
 
-#: gtk/gtkfilechooserdefault.c:1169
+#: gtk/gtkfilechooserdefault.c:1125
 msgid "The folder contents could not be displayed"
 msgstr "Не вдається відобразити вміст теки"
 
@@ -1576,180 +1571,169 @@ msgstr "Не вдається відобразити вміст теки"
 #. * is a hostname. Nautilus and the panel contain the same string
 #. * to translate.
 #.
-#: gtk/gtkfilechooserdefault.c:1723
+#: gtk/gtkfilechooserdefault.c:1677
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s на %2$s"
 
-#: gtk/gtkfilechooserdefault.c:1906
+#: gtk/gtkfilechooserdefault.c:1853
 msgid "Search"
 msgstr "Пошук"
 
-#: gtk/gtkfilechooserdefault.c:1930
+#: gtk/gtkfilechooserdefault.c:1877
 msgid "Recently Used"
 msgstr "Недавні документи"
 
-#: gtk/gtkfilechooserdefault.c:2595
+#: gtk/gtkfilechooserdefault.c:2494
 msgid "Select which types of files are shown"
 msgstr "Виберіть типи файлів, що відображаються"
 
-#: gtk/gtkfilechooserdefault.c:3023
+#: gtk/gtkfilechooserdefault.c:2923
 #, c-format
 msgid "Add the folder '%s' to the bookmarks"
 msgstr "Додати теку '%s' до закладок"
 
-#: gtk/gtkfilechooserdefault.c:3064
+#: gtk/gtkfilechooserdefault.c:2964
 #, c-format
 msgid "Add the current folder to the bookmarks"
 msgstr "Додати поточну теку до закладок"
 
-#: gtk/gtkfilechooserdefault.c:3066
+#: gtk/gtkfilechooserdefault.c:2966
 #, c-format
 msgid "Add the selected folders to the bookmarks"
 msgstr "Додати виділені теки до закладок"
 
-#: gtk/gtkfilechooserdefault.c:3106
+#: gtk/gtkfilechooserdefault.c:3006
 #, c-format
 msgid "Remove the bookmark '%s'"
 msgstr "Видалити закладку '%s'"
 
-#: gtk/gtkfilechooserdefault.c:3538
-#, c-format
-msgid "Could not add a bookmark for '%s' because it is an invalid path name."
-msgstr "Не вдається додати закладку для '%s', тому що цей шлях - неправильний."
-
-#: gtk/gtkfilechooserdefault.c:3777
+#: gtk/gtkfilechooserdefault.c:3724
 msgid "Remove"
 msgstr "Видалити"
 
-#: gtk/gtkfilechooserdefault.c:3786
+#: gtk/gtkfilechooserdefault.c:3733
 msgid "Rename..."
 msgstr "Перейменувати..."
 
 #. Accessible object name for the file chooser's shortcuts pane
-#: gtk/gtkfilechooserdefault.c:3927
+#: gtk/gtkfilechooserdefault.c:3879
 msgid "Places"
 msgstr "Місця"
 
 #. Column header for the file chooser's shortcuts pane
-#: gtk/gtkfilechooserdefault.c:3978
+#: gtk/gtkfilechooserdefault.c:3936
 msgid "_Places"
 msgstr "_Місця"
 
-#: gtk/gtkfilechooserdefault.c:4033 gtk/gtkstock.c:297
+#: gtk/gtkfilechooserdefault.c:3991 gtk/gtkstock.c:297
 msgid "_Add"
 msgstr "_Додати"
 
-#: gtk/gtkfilechooserdefault.c:4040
+#: gtk/gtkfilechooserdefault.c:3998
 msgid "Add the selected folder to the Bookmarks"
 msgstr "Додати вибрану теку до закладок"
 
-#: gtk/gtkfilechooserdefault.c:4045 gtk/gtkstock.c:385
+#: gtk/gtkfilechooserdefault.c:4003 gtk/gtkstock.c:386
 msgid "_Remove"
 msgstr "В_идалити"
 
-#: gtk/gtkfilechooserdefault.c:4052
+#: gtk/gtkfilechooserdefault.c:4010
 msgid "Remove the selected bookmark"
 msgstr "Видалити виділену закладку"
 
-#: gtk/gtkfilechooserdefault.c:4149
+#: gtk/gtkfilechooserdefault.c:4107
 msgid "Could not select file"
 msgstr "Не вдається виділити файл"
 
-#: gtk/gtkfilechooserdefault.c:4286
-#, c-format
-msgid "Could not select file '%s' because it is an invalid path name."
-msgstr "Не вдається виділити файл '%s', тому що цей шлях - неправильний."
-
-#: gtk/gtkfilechooserdefault.c:4343
+#: gtk/gtkfilechooserdefault.c:4283
 msgid "_Add to Bookmarks"
 msgstr "_Додати до закладок"
 
-#: gtk/gtkfilechooserdefault.c:4357
+#: gtk/gtkfilechooserdefault.c:4297
 msgid "Show _Hidden Files"
 msgstr "Показати при_ховані файли"
 
-#: gtk/gtkfilechooserdefault.c:4601 gtk/gtkfilesel.c:729
+#: gtk/gtkfilechooserdefault.c:4540 gtk/gtkfilesel.c:730
 msgid "Files"
 msgstr "Файли"
 
-#: gtk/gtkfilechooserdefault.c:4650
+#: gtk/gtkfilechooserdefault.c:4589
 msgid "Name"
 msgstr "Назва"
 
-#: gtk/gtkfilechooserdefault.c:4675
+#: gtk/gtkfilechooserdefault.c:4614
 msgid "Size"
 msgstr "Розмір"
 
-#: gtk/gtkfilechooserdefault.c:4689
+#: gtk/gtkfilechooserdefault.c:4628
 msgid "Modified"
 msgstr "Змінено"
 
 #. Label
-#: gtk/gtkfilechooserdefault.c:4909 gtk/gtkprinteroptionwidget.c:786
+#: gtk/gtkfilechooserdefault.c:4848 gtk/gtkprinteroptionwidget.c:786
 msgid "_Name:"
 msgstr "_Назва:"
 
-#: gtk/gtkfilechooserdefault.c:4951
+#: gtk/gtkfilechooserdefault.c:4890
 msgid "_Browse for other folders"
 msgstr "О_глянути інші теки"
 
-#: gtk/gtkfilechooserdefault.c:5225
+#: gtk/gtkfilechooserdefault.c:5160
 msgid "Type a file name"
 msgstr "Введіть назву файлу"
 
 #. Create Folder
-#: gtk/gtkfilechooserdefault.c:5262
+#: gtk/gtkfilechooserdefault.c:5197
 msgid "Create Fo_lder"
 msgstr "Створити _теку"
 
-#: gtk/gtkfilechooserdefault.c:5272
+#: gtk/gtkfilechooserdefault.c:5207
 msgid "_Location:"
 msgstr "_Адреса:"
 
-#: gtk/gtkfilechooserdefault.c:5510
+#: gtk/gtkfilechooserdefault.c:5407
 msgid "Save in _folder:"
 msgstr "Зберегти у _теці:"
 
-#: gtk/gtkfilechooserdefault.c:5512
+#: gtk/gtkfilechooserdefault.c:5409
 msgid "Create in _folder:"
 msgstr "Створити у _теці:"
 
-#: gtk/gtkfilechooserdefault.c:7128
-#, c-format
+#: gtk/gtkfilechooserdefault.c:6990
 msgid "Cannot change to folder because it is not local"
 msgstr "Не вдається перейти у вказану теку, тому що вона не локальна"
 
-#: gtk/gtkfilechooserdefault.c:7744 gtk/gtkfilechooserdefault.c:7765
+#: gtk/gtkfilechooserdefault.c:7615 gtk/gtkfilechooserdefault.c:7636
 #, c-format
 msgid "Shortcut %s already exists"
 msgstr "Ярлик %s вже існує"
 
-#: gtk/gtkfilechooserdefault.c:7855
+#: gtk/gtkfilechooserdefault.c:7726
 #, c-format
 msgid "Shortcut %s does not exist"
 msgstr "Ярлика %s не існує"
 
-#: gtk/gtkfilechooserdefault.c:8110 gtk/gtkprintunixdialog.c:356
+#: gtk/gtkfilechooserdefault.c:7974 gtk/gtkprintunixdialog.c:370
 #, c-format
 msgid "A file named \"%s\" already exists.  Do you want to replace it?"
 msgstr "Файл з назвою \"%s\" вже існує. Бажаєте замінити його?"
 
-#: gtk/gtkfilechooserdefault.c:8113 gtk/gtkprintunixdialog.c:360
+#: gtk/gtkfilechooserdefault.c:7977 gtk/gtkprintunixdialog.c:374
 #, c-format
 msgid ""
 "The file already exists in \"%s\".  Replacing it will overwrite its contents."
 msgstr "Файл вже існує у \"%s\". Перезапис призведе до втрати вмісту."
 
-#: gtk/gtkfilechooserdefault.c:8118 gtk/gtkprintunixdialog.c:367
+#: gtk/gtkfilechooserdefault.c:7982 gtk/gtkprintunixdialog.c:381
 msgid "_Replace"
 msgstr "_Замінити"
 
-#: gtk/gtkfilechooserdefault.c:8921
+#: gtk/gtkfilechooserdefault.c:8743
 msgid "Could not start the search process"
 msgstr "Не вдається почати пошук"
 
-#: gtk/gtkfilechooserdefault.c:8922
+#: gtk/gtkfilechooserdefault.c:8744
 msgid ""
 "The program was not able to create a connection to the indexer daemon.  "
 "Please make sure it is running."
@@ -1757,85 +1741,109 @@ msgstr ""
 "Не вдається з'єднатися з службою індексованого пошуку. Перевірте, що службу "
 "запущено."
 
-#: gtk/gtkfilechooserdefault.c:8936
+#: gtk/gtkfilechooserdefault.c:8758
 msgid "Could not send the search request"
 msgstr "Не вдається надіслати запит на пошук"
 
 #. Label
-#: gtk/gtkfilechooserdefault.c:9364
+#: gtk/gtkfilechooserdefault.c:9198
 msgid "_Search:"
 msgstr "П_ошук:"
 
-#: gtk/gtkfilechooserdefault.c:10317
+#: gtk/gtkfilechooserdefault.c:10145
 #, c-format
 msgid "Could not mount %s"
 msgstr "Не вдається підключити %s"
 
-#: gtk/gtkfilechooserdefault.c:10923
+#: gtk/gtkfilechooserdefault.c:10799
 msgid "Type name of new folder"
 msgstr "Введіть назву нової теки"
 
-#: gtk/gtkfilechooserdefault.c:10971
-#, c-format
-msgid "%d byte"
-msgid_plural "%d bytes"
-msgstr[0] "%d байт"
-msgstr[1] "%d байти"
-msgstr[2] "%d байтів"
-
-#: gtk/gtkfilechooserdefault.c:10973
+#: gtk/gtkfilechooserdefault.c:10849
 #, c-format
 msgid "%.1f KB"
 msgstr "%.1f Кб"
 
-#: gtk/gtkfilechooserdefault.c:10975
+#: gtk/gtkfilechooserdefault.c:10851
 #, c-format
 msgid "%.1f MB"
 msgstr "%.1f Мб"
 
-#: gtk/gtkfilechooserdefault.c:10977
+#: gtk/gtkfilechooserdefault.c:10853
 #, c-format
 msgid "%.1f GB"
 msgstr "%.1f Гб"
 
-#: gtk/gtkfilechooserdefault.c:11078 gtk/gtkfilechooserdefault.c:11100
-#: gtk/gtkfilechooserdefault.c:11171
+#: gtk/gtkfilechooserdefault.c:10956 gtk/gtkfilechooserdefault.c:10978
+#: gtk/gtkfilechooserdefault.c:11049
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: gtk/gtkfilechooserdefault.c:11118
-msgid "Today at %H:%M"
-msgstr "Сьогодні о %H:%M"
+#: gtk/gtkfilechooserdefault.c:10996
+msgid "%H:%M"
+msgstr "%H:%M"
 
-#: gtk/gtkfilechooserdefault.c:11120
+#: gtk/gtkfilechooserdefault.c:10998
 msgid "Yesterday at %H:%M"
 msgstr "Вчора о %H:%M"
 
-#: gtk/gtkfilechoosersettings.c:262 gtk/gtkfilesel.c:1408
-#: gtk/gtkfilesel.c:1417 gtk/gtkfilesystemunix.c:1048
-#: gtk/gtkfilesystemwin32.c:1227
+#: gtk/gtkfilechooserentry.c:659 gtk/gtkfilechooserentry.c:1115
+msgid "Invalid path"
+msgstr "Неправильний шлях"
+
+#. translators: this text is shown when there are no completions
+#. * for something the user typed in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1070
+msgid "No match"
+msgstr "Немає відповідності"
+
+#. translators: this text is shown when there is exactly one completion
+#. * for something the user typed in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1081
+msgid "Sole completion"
+msgstr "Єдиний тип стиснення"
+
+#. translators: this text is shown when the text in a file chooser
+#. * entry is a complete filename, but could be continued to find
+#. * a longer match
+#.
+#: gtk/gtkfilechooserentry.c:1097
+msgid "Complete, but not unique"
+msgstr "Доповнено, але не є унікальним"
+
+#. translators: this text is shown while the system is searching
+#. * for possible completions for text in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1133
+msgid "Completing..."
+msgstr "Доповнення..."
+
+#: gtk/gtkfilechoosersettings.c:262 gtk/gtkfilesel.c:1349
+#: gtk/gtkfilesel.c:1358
 #, c-format
 msgid "Error creating folder '%s': %s"
 msgstr "Помилка створення теки \"%s\": %s"
 
-#: gtk/gtkfilesel.c:693
+#: gtk/gtkfilesel.c:694
 msgid "Folders"
 msgstr "Теки"
 
-#: gtk/gtkfilesel.c:697
+#: gtk/gtkfilesel.c:698
 msgid "Fol_ders"
 msgstr "_Теки"
 
-#: gtk/gtkfilesel.c:733
+#: gtk/gtkfilesel.c:734
 msgid "_Files"
 msgstr "_Файли"
 
-#: gtk/gtkfilesel.c:820 gtk/gtkfilesel.c:2207
+#: gtk/gtkfilesel.c:821 gtk/gtkfilesel.c:2148
 #, c-format
 msgid "Folder unreadable: %s"
 msgstr "Не вдається зчитати каталог: %s"
 
-#: gtk/gtkfilesel.c:949
+#: gtk/gtkfilesel.c:905
 #, c-format
 msgid ""
 "The file \"%s\" resides on another machine (called %s) and may not be "
@@ -1846,91 +1854,91 @@ msgstr ""
 "недоступним цій програмі.\n"
 "Бажаєте вибрати саме його?"
 
-#: gtk/gtkfilesel.c:1079
+#: gtk/gtkfilesel.c:1020
 msgid "_New Folder"
 msgstr "_Створити теку"
 
-#: gtk/gtkfilesel.c:1090
+#: gtk/gtkfilesel.c:1031
 msgid "De_lete File"
 msgstr "В_идалити файл"
 
-#: gtk/gtkfilesel.c:1101
+#: gtk/gtkfilesel.c:1042
 msgid "_Rename File"
 msgstr "Перей_менувати файл"
 
-#: gtk/gtkfilesel.c:1406
+#: gtk/gtkfilesel.c:1347
 #, c-format
 msgid ""
 "The folder name \"%s\" contains symbols that are not allowed in filenames"
 msgstr ""
 "Назва теки \"%s\" містить символи, які не можна використовувати у назвах тек"
 
-#: gtk/gtkfilesel.c:1451
+#: gtk/gtkfilesel.c:1392
 msgid "New Folder"
 msgstr "Створити теку"
 
-#: gtk/gtkfilesel.c:1466
+#: gtk/gtkfilesel.c:1407
 msgid "_Folder name:"
 msgstr "Назва _теки:"
 
-#: gtk/gtkfilesel.c:1490
+#: gtk/gtkfilesel.c:1431
 msgid "C_reate"
 msgstr "_Створити"
 
-#: gtk/gtkfilesel.c:1533 gtk/gtkfilesel.c:1640 gtk/gtkfilesel.c:1653
+#: gtk/gtkfilesel.c:1474 gtk/gtkfilesel.c:1581 gtk/gtkfilesel.c:1594
 #, c-format
 msgid "The filename \"%s\" contains symbols that are not allowed in filenames"
 msgstr ""
 "Назва файлу \"%s\" містить символи, які не можна використовувати у назвах "
 "файлів"
 
-#: gtk/gtkfilesel.c:1536 gtk/gtkfilesel.c:1546
+#: gtk/gtkfilesel.c:1477 gtk/gtkfilesel.c:1487
 #, c-format
 msgid "Error deleting file '%s': %s"
 msgstr "Помилка видалення файлу \"%s\": %s"
 
-#: gtk/gtkfilesel.c:1589
+#: gtk/gtkfilesel.c:1530
 #, c-format
 msgid "Really delete file \"%s\"?"
 msgstr "Дійсно видалити файл \"%s\"?"
 
-#: gtk/gtkfilesel.c:1594
+#: gtk/gtkfilesel.c:1535
 msgid "Delete File"
 msgstr "Видалення файлу"
 
-#: gtk/gtkfilesel.c:1642
+#: gtk/gtkfilesel.c:1583
 #, c-format
 msgid "Error renaming file to \"%s\": %s"
 msgstr "Помилка перейменування файлу в \"%s\": %s"
 
-#: gtk/gtkfilesel.c:1655
+#: gtk/gtkfilesel.c:1596
 #, c-format
 msgid "Error renaming file \"%s\": %s"
 msgstr "Помилка перейменування файлу \"%s\": %s"
 
-#: gtk/gtkfilesel.c:1664
+#: gtk/gtkfilesel.c:1605
 #, c-format
 msgid "Error renaming file \"%s\" to \"%s\": %s"
 msgstr "Помилка перейменування файлу \"%s\" у \"%s\": %s"
 
-#: gtk/gtkfilesel.c:1711
+#: gtk/gtkfilesel.c:1652
 msgid "Rename File"
 msgstr "Перейменування файлу"
 
-#: gtk/gtkfilesel.c:1726
+#: gtk/gtkfilesel.c:1667
 #, c-format
 msgid "Rename file \"%s\" to:"
 msgstr "Перейменувати файл \"%s\" на:"
 
-#: gtk/gtkfilesel.c:1755
+#: gtk/gtkfilesel.c:1696
 msgid "_Rename"
 msgstr "Перей_менувати"
 
-#: gtk/gtkfilesel.c:2187
+#: gtk/gtkfilesel.c:2128
 msgid "_Selection: "
 msgstr "_Вибір: "
 
-#: gtk/gtkfilesel.c:3107
+#: gtk/gtkfilesel.c:3048
 #, c-format
 msgid ""
 "The filename \"%s\" couldn't be converted to UTF-8. (try setting the "
@@ -1939,97 +1947,45 @@ msgstr ""
 "Назву файлу \"%s\" не вдається перетворити в UTF-8 (спробуйте встановити "
 "змінну середовища G_FILENAME_ENCODING): %s"
 
-#: gtk/gtkfilesel.c:3110
+#: gtk/gtkfilesel.c:3051
 msgid "Invalid UTF-8"
 msgstr "Неправильний UTF-8"
 
-#: gtk/gtkfilesel.c:3984
+#: gtk/gtkfilesel.c:3925
 msgid "Name too long"
 msgstr "Назва надто довга"
 
-#: gtk/gtkfilesel.c:3986
+#: gtk/gtkfilesel.c:3927
 msgid "Couldn't convert filename"
 msgstr "Не вдається перетворити назву файлу"
 
-#: gtk/gtkfilesystem.c:315
-#, c-format
-msgid "Could not get a stock icon for %s\n"
-msgstr "Не вдається отримати вбудований значок для '%s'\n"
-
-#: gtk/gtkfilesystemmodel.c:743
-#, c-format
-msgid "Could not obtain root folder"
-msgstr "Не вдається отримати кореневу теку"
-
-#: gtk/gtkfilesystemmodel.c:1336
-msgid "(Empty)"
-msgstr "(Пусто)"
-
-#: gtk/gtkfilesystemunix.c:961 gtk/gtkfilesystemunix.c:1209
-#: gtk/gtkfilesystemunix.c:2198 gtk/gtkfilesystemunix.c:2238
-#: gtk/gtkfilesystemwin32.c:2305 gtk/gtkfilesystemwin32.c:2355
-#, c-format
-msgid "Error getting information for '%s': %s"
-msgstr "Помилка отримання інформації про '%s': %s"
-
-#: gtk/gtkfilesystemunix.c:1154 gtk/gtkfilesystemwin32.c:1334
-#, c-format
-msgid "This file system does not support mounting"
-msgstr "Ця файлова система не підтримує монтування"
-
-#: gtk/gtkfilesystemunix.c:1166
+#. The pointers we return for a GtkFileSystemVolume are opaque tokens; they are
+#. * really pointers to GDrive, GVolume or GMount objects.  We need an extra
+#. * token for the fake "File System" volume.  So, we'll return a pointer to
+#. * this particular string.
+#.
+#: gtk/gtkfilesystem.c:52
 msgid "File System"
 msgstr "Файлова система"
 
-#: gtk/gtkfilesystemunix.c:1330 gtk/gtkfilesystemwin32.c:1644
-#, c-format
-msgid ""
-"The name \"%s\" is not valid because it contains the character \"%s\". "
-"Please use a different name."
-msgstr ""
-"Назва \"%s\" неправильна, бо вона містить символ \"%s\". Будь ласка, "
-"виберіть іншу назву."
+#: gtk/gtkfilesystemmodel.c:700
+msgid "Could not obtain root folder"
+msgstr "Не вдається отримати кореневу теку"
 
-#: gtk/gtkfilesystemunix.c:1880 gtk/gtkfilesystemwin32.c:1985
-#, c-format
-msgid "Bookmark saving failed: %s"
-msgstr "Помилка збереження закладки: %s"
+#: gtk/gtkfilesystemmodel.c:1299
+msgid "(Empty)"
+msgstr "(Пусто)"
 
-#: gtk/gtkfilesystemunix.c:1935 gtk/gtkfilesystemwin32.c:2040
-#, c-format
-msgid "'%s' already exists in the bookmarks list"
-msgstr "'%s' вже існує у списку закладок"
-
-#: gtk/gtkfilesystemunix.c:2007 gtk/gtkfilesystemwin32.c:2112
-#, c-format
-msgid "'%s' does not exist in the bookmarks list"
-msgstr "'%s' не існує у списку закладок"
-
-#: gtk/gtkfilesystemwin32.c:1150
-#, c-format
-msgid "Path is not a folder: '%s'"
-msgstr "Шлях не є текою: '%s'"
-
-#: gtk/gtkfilesystemwin32.c:1352
-#, c-format
-msgid "Network Drive (%s)"
-msgstr "Мережний пристрій (%s)"
-
-#: gtk/gtkfilesystemwin32.c:1374
-#, c-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-#: gtk/gtkfontbutton.c:145 gtk/gtkfontbutton.c:267
+#: gtk/gtkfontbutton.c:144 gtk/gtkfontbutton.c:266
 msgid "Pick a Font"
 msgstr "Виберіть шрифт"
 
 #. Initialize fields
-#: gtk/gtkfontbutton.c:261
+#: gtk/gtkfontbutton.c:260
 msgid "Sans 12"
 msgstr "Sans 12"
 
-#: gtk/gtkfontbutton.c:781
+#: gtk/gtkfontbutton.c:780
 msgid "Font"
 msgstr "Шрифт"
 
@@ -2039,24 +1995,24 @@ msgstr "Шрифт"
 msgid "abcdefghijk ABCDEFGHIJK"
 msgstr "абвгґд АБВГҐД abcde ABCDE"
 
-#: gtk/gtkfontsel.c:326
+#: gtk/gtkfontsel.c:328
 msgid "_Family:"
 msgstr "_Гарнітура:"
 
-#: gtk/gtkfontsel.c:332
+#: gtk/gtkfontsel.c:334
 msgid "_Style:"
 msgstr "_Стиль:"
 
-#: gtk/gtkfontsel.c:338
+#: gtk/gtkfontsel.c:340
 msgid "Si_ze:"
 msgstr "_Розмір:"
 
 #. create the text entry widget
-#: gtk/gtkfontsel.c:515
+#: gtk/gtkfontsel.c:517
 msgid "_Preview:"
 msgstr "_Перегляд:"
 
-#: gtk/gtkfontsel.c:1359
+#: gtk/gtkfontsel.c:1542
 msgid "Font Selection"
 msgstr "Вибір шрифту"
 
@@ -2071,12 +2027,12 @@ msgstr "_Гама-значення"
 #. Remove this icon source so we don't keep trying to
 #. * load it.
 #.
-#: gtk/gtkiconfactory.c:1374
+#: gtk/gtkiconfactory.c:1403
 #, c-format
 msgid "Error loading icon: %s"
 msgstr "Помилка завантаження значка: %s"
 
-#: gtk/gtkicontheme.c:1321
+#: gtk/gtkicontheme.c:1363
 #, c-format
 msgid ""
 "Could not find the icon '%s'. The '%s' theme\n"
@@ -2089,137 +2045,132 @@ msgstr ""
 "Завантажити тему можна з:\n"
 "\t%s"
 
-#: gtk/gtkicontheme.c:1501
+#: gtk/gtkicontheme.c:1543
 #, c-format
 msgid "Icon '%s' not present in theme"
 msgstr "Значок \"%s\" відсутній у темі"
 
-#: gtk/gtkicontheme.c:2915
-#, c-format
+#: gtk/gtkicontheme.c:3058
 msgid "Failed to load icon"
 msgstr "Не вдається завантажити значок"
 
-#: gtk/gtkimmodule.c:421
-msgid "Default"
-msgstr "Типовий"
+#: gtk/gtkimmodule.c:515
+msgid "Simple"
+msgstr "Просте"
 
-#: gtk/gtkinputdialog.c:190
+#: gtk/gtkimmulticontext.c:543
+msgid "input method menu|System"
+msgstr "Системний"
+
+#: gtk/gtkinputdialog.c:192
 msgid "Input"
 msgstr "Ввід"
 
-#: gtk/gtkinputdialog.c:205
+#: gtk/gtkinputdialog.c:207
 msgid "No extended input devices"
 msgstr "Розширені пристрої вводу відсутні"
 
-#: gtk/gtkinputdialog.c:218
+#: gtk/gtkinputdialog.c:220
 msgid "_Device:"
 msgstr "_Пристрій:"
 
-#: gtk/gtkinputdialog.c:235
+#: gtk/gtkinputdialog.c:237
 msgid "Disabled"
 msgstr "Вимкнений"
 
-#: gtk/gtkinputdialog.c:242
+#: gtk/gtkinputdialog.c:244
 msgid "Screen"
 msgstr "Екран"
 
-#: gtk/gtkinputdialog.c:249
+#: gtk/gtkinputdialog.c:251
 msgid "Window"
 msgstr "Вікно"
 
-#: gtk/gtkinputdialog.c:256
+#: gtk/gtkinputdialog.c:258
 msgid "_Mode:"
 msgstr "_Режим:"
 
 #. The axis listbox
-#: gtk/gtkinputdialog.c:277
+#: gtk/gtkinputdialog.c:279
 msgid "Axes"
 msgstr "Вісі"
 
 #. Keys listbox
-#: gtk/gtkinputdialog.c:295
+#: gtk/gtkinputdialog.c:297
 msgid "Keys"
 msgstr "Клавіші"
 
-#: gtk/gtkinputdialog.c:522
+#: gtk/gtkinputdialog.c:524
 msgid "_X:"
 msgstr "_X:"
 
-#: gtk/gtkinputdialog.c:523
+#: gtk/gtkinputdialog.c:525
 msgid "_Y:"
 msgstr "_Y:"
 
-#: gtk/gtkinputdialog.c:524
+#: gtk/gtkinputdialog.c:526
 msgid "_Pressure:"
 msgstr "_Натиск:"
 
-#: gtk/gtkinputdialog.c:525
+#: gtk/gtkinputdialog.c:527
 msgid "X _tilt:"
 msgstr "Н_ахил X"
 
-#: gtk/gtkinputdialog.c:526
+#: gtk/gtkinputdialog.c:528
 msgid "Y t_ilt:"
 msgstr "На_хил Y:"
 
-#: gtk/gtkinputdialog.c:527
+#: gtk/gtkinputdialog.c:529
 msgid "_Wheel:"
 msgstr "_Колесо"
 
-#: gtk/gtkinputdialog.c:579
+#: gtk/gtkinputdialog.c:581
 msgid "none"
 msgstr "немає"
 
-#: gtk/gtkinputdialog.c:616 gtk/gtkinputdialog.c:652
+#: gtk/gtkinputdialog.c:618 gtk/gtkinputdialog.c:654
 msgid "(disabled)"
 msgstr "(вимкнено)"
 
-#: gtk/gtkinputdialog.c:645
+#: gtk/gtkinputdialog.c:647
 msgid "(unknown)"
 msgstr "(невідомо)"
 
 #. and clear button
-#: gtk/gtkinputdialog.c:749
+#: gtk/gtkinputdialog.c:751
 msgid "Cl_ear"
 msgstr "О_чистити"
 
-#: gtk/gtklinkbutton.c:141
-msgid "URI"
-msgstr "URI"
-
-#: gtk/gtklinkbutton.c:142
-msgid "The URI bound to this button"
-msgstr "URI, що прив'язаний до цієї кнопки"
-
-#: gtk/gtklinkbutton.c:396
+#: gtk/gtklinkbutton.c:427
 msgid "Copy URL"
 msgstr "Копіювати URL"
 
-#: gtk/gtklinkbutton.c:536
+#: gtk/gtklinkbutton.c:565
 msgid "Invalid URI"
 msgstr "Неправильний URI"
 
 #. Description of --gtk-module=MODULES in --help output
-#: gtk/gtkmain.c:427
+#: gtk/gtkmain.c:445
 msgid "Load additional GTK+ modules"
 msgstr "Завантажити додаткові модулі GTK+"
 
 #. Placeholder in --gtk-module=MODULES in --help output
-#: gtk/gtkmain.c:428
+#: gtk/gtkmain.c:446
 msgid "MODULES"
 msgstr "MODULES"
 
 #. Description of --g-fatal-warnings in --help output
-#: gtk/gtkmain.c:430
+#: gtk/gtkmain.c:448
 msgid "Make all warnings fatal"
 msgstr "Зробити усі попередження фатальними"
 
 #. Description of --gtk-debug=FLAGS in --help output
-#: gtk/gtkmain.c:433
+#: gtk/gtkmain.c:451
 msgid "GTK+ debugging flags to set"
 msgstr "Встановити вказані ознаки налагодження GTK+"
 
 #. Description of --gtk-no-debug=FLAGS in --help output
-#: gtk/gtkmain.c:436
+#: gtk/gtkmain.c:454
 msgid "GTK+ debugging flags to unset"
 msgstr "Скинути вказані налагоджувальні ознаки GTK+"
 
@@ -2228,33 +2179,65 @@ msgstr "Скинути вказані налагоджувальні ознак�
 #. * Do *not* translate it to "predefinito:LTR", if it
 #. * it isn't default:LTR or default:RTL it will not work
 #.
-#: gtk/gtkmain.c:672
+#: gtk/gtkmain.c:702
 msgid "default:LTR"
 msgstr "default:LTR"
 
 #: gtk/gtkmain.c:768
+#, c-format
+msgid "Cannot open display: %s"
+msgstr "Неможливо відкрити дисплей: %s"
+
+#: gtk/gtkmain.c:805
 msgid "GTK+ Options"
 msgstr "Параметри GTK+"
 
-#: gtk/gtkmain.c:768
+#: gtk/gtkmain.c:805
 msgid "Show GTK+ Options"
 msgstr "Показати параметри GTK+"
 
-#: gtk/gtknotebook.c:828
-msgid "Arrow spacing"
-msgstr "Простір навколо стрілки"
+#: gtk/gtkmountoperation.c:476
+msgid "Co_nnect"
+msgstr "З_єднатися"
 
-#: gtk/gtknotebook.c:829
-msgid "Scroll arrow spacing"
-msgstr "Простір навколо стрілки прокрутки"
+#: gtk/gtkmountoperation.c:520
+msgid "Connect _anonymously"
+msgstr "З'єднатися _анонімно"
 
-#: gtk/gtknotebook.c:4404 gtk/gtknotebook.c:6910
+#: gtk/gtkmountoperation.c:529
+msgid "Connect as u_ser:"
+msgstr "З'єднатися _як:"
+
+#: gtk/gtkmountoperation.c:566
+msgid "_Username:"
+msgstr "_Ім'я користувача:"
+
+#: gtk/gtkmountoperation.c:570
+msgid "_Domain:"
+msgstr "_Домен:"
+
+#: gtk/gtkmountoperation.c:575
+msgid "_Password:"
+msgstr "_Пароль:"
+
+#: gtk/gtkmountoperation.c:590
+msgid "Forget password _immediately"
+msgstr "_Забути пароль негайно"
+
+#: gtk/gtkmountoperation.c:598
+msgid "Remember password until you _logout"
+msgstr "Запам'ятати пароль _до виходу з сеансу"
+
+#: gtk/gtkmountoperation.c:606
+msgid "Remember _forever"
+msgstr "Запам'ятати _назавжди"
+
+#: gtk/gtknotebook.c:4417 gtk/gtknotebook.c:6924
 #, c-format
 msgid "Page %u"
 msgstr "Сторінка %u"
 
-#: gtk/gtkpagesetup.c:571 gtk/gtkpapersize.c:825 gtk/gtkpapersize.c:865
-#, c-format
+#: gtk/gtkpagesetup.c:597 gtk/gtkpapersize.c:825 gtk/gtkpapersize.c:865
 msgid "Not a valid page setup file"
 msgstr "Некоректний файл налаштовування друку"
 
@@ -2276,15 +2259,15 @@ msgstr ""
 "<b>Будь-який принтер</b>\n"
 "Для переносимих документів"
 
-#: gtk/gtkpagesetupunixdialog.c:883 gtk/gtkpagesetupunixdialog.c:1395
+#: gtk/gtkpagesetupunixdialog.c:894 gtk/gtkpagesetupunixdialog.c:1403
 msgid "mm"
 msgstr "mm"
 
-#: gtk/gtkpagesetupunixdialog.c:885 gtk/gtkpagesetupunixdialog.c:1393
+#: gtk/gtkpagesetupunixdialog.c:896 gtk/gtkpagesetupunixdialog.c:1401
 msgid "inch"
 msgstr "дюйми"
 
-#: gtk/gtkpagesetupunixdialog.c:904
+#: gtk/gtkpagesetupunixdialog.c:915
 #, c-format
 msgid ""
 "Margins:\n"
@@ -2299,68 +2282,68 @@ msgstr ""
 " верхнє: %s %s\n"
 " нижнє: %s %s"
 
-#: gtk/gtkpagesetupunixdialog.c:953
+#: gtk/gtkpagesetupunixdialog.c:964
 msgid "Manage Custom Sizes..."
 msgstr "Керування власними розмірами..."
 
-#: gtk/gtkpagesetupunixdialog.c:1001
+#: gtk/gtkpagesetupunixdialog.c:1012
 msgid "_Format for:"
 msgstr "_Формат для:"
 
-#: gtk/gtkpagesetupunixdialog.c:1022
+#: gtk/gtkpagesetupunixdialog.c:1034
 msgid "_Paper size:"
-msgstr "_Розмір паперу:"
+msgstr "Розмір _паперу:"
 
-#: gtk/gtkpagesetupunixdialog.c:1058
+#: gtk/gtkpagesetupunixdialog.c:1065
 msgid "_Orientation:"
 msgstr "_Розташування:"
 
-#: gtk/gtkpagesetupunixdialog.c:1121 gtk/gtkprintunixdialog.c:2315
+#: gtk/gtkpagesetupunixdialog.c:1129 gtk/gtkprintunixdialog.c:2662
 msgid "Page Setup"
 msgstr "Параметри сторінки"
 
-#: gtk/gtkpagesetupunixdialog.c:1440
+#: gtk/gtkpagesetupunixdialog.c:1448
 msgid "Margins from Printer..."
 msgstr "Поля з принтера..."
 
-#: gtk/gtkpagesetupunixdialog.c:1600
+#: gtk/gtkpagesetupunixdialog.c:1608
 #, c-format
 msgid "Custom Size %d"
 msgstr "Власний розмір %d"
 
-#: gtk/gtkpagesetupunixdialog.c:1829
+#: gtk/gtkpagesetupunixdialog.c:1837
 msgid "Manage Custom Sizes"
 msgstr "Керування власними розмірами"
 
-#: gtk/gtkpagesetupunixdialog.c:1925
+#: gtk/gtkpagesetupunixdialog.c:1933
 msgid "_Width:"
 msgstr "_Ширина:"
 
-#: gtk/gtkpagesetupunixdialog.c:1937
+#: gtk/gtkpagesetupunixdialog.c:1945
 msgid "_Height:"
 msgstr "_Висота:"
 
-#: gtk/gtkpagesetupunixdialog.c:1949
+#: gtk/gtkpagesetupunixdialog.c:1957
 msgid "Paper Size"
 msgstr "Розмір паперу"
 
-#: gtk/gtkpagesetupunixdialog.c:1959
+#: gtk/gtkpagesetupunixdialog.c:1967
 msgid "_Top:"
 msgstr "_Верхнє:"
 
-#: gtk/gtkpagesetupunixdialog.c:1971
+#: gtk/gtkpagesetupunixdialog.c:1979
 msgid "_Bottom:"
 msgstr "_Нижнє:"
 
-#: gtk/gtkpagesetupunixdialog.c:1983
+#: gtk/gtkpagesetupunixdialog.c:1991
 msgid "_Left:"
 msgstr "_Ліве:"
 
-#: gtk/gtkpagesetupunixdialog.c:1995
+#: gtk/gtkpagesetupunixdialog.c:2003
 msgid "_Right:"
 msgstr "_Праве:"
 
-#: gtk/gtkpagesetupunixdialog.c:2036
+#: gtk/gtkpagesetupunixdialog.c:2044
 msgid "Paper Margins"
 msgstr "Поля сторінки"
 
@@ -2372,7 +2355,7 @@ msgstr "Вгору по дереву"
 msgid "Down Path"
 msgstr "Вниз по дереву"
 
-#: gtk/gtkpathbar.c:1475
+#: gtk/gtkpathbar.c:1472
 msgid "File System Root"
 msgstr "Корінь файлової системи"
 
@@ -2388,165 +2371,181 @@ msgstr "З_берегти у теці:"
 #. * jobs. %s gets replaced by the application name, %d gets replaced
 #. * by the job number.
 #.
-#: gtk/gtkprintoperation.c:171
+#: gtk/gtkprintoperation.c:173
 #, c-format
 msgid "%s job #%d"
 msgstr "%s завдання №%d"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1497
+#: gtk/gtkprintoperation.c:1504
 msgid "print operation status|Initial state"
 msgstr "Початковий стан"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1499
+#: gtk/gtkprintoperation.c:1506
 msgid "print operation status|Preparing to print"
 msgstr "Підготовка до друку"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1501
+#: gtk/gtkprintoperation.c:1508
 msgid "print operation status|Generating data"
 msgstr "Генерування даних"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1503
+#: gtk/gtkprintoperation.c:1510
 msgid "print operation status|Sending data"
 msgstr "Передача даних"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1505
+#: gtk/gtkprintoperation.c:1512
 msgid "print operation status|Waiting"
 msgstr "Очікування"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1507
+#: gtk/gtkprintoperation.c:1514
 msgid "print operation status|Blocking on issue"
 msgstr "Оновлено внаслідок помилки"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1509
+#: gtk/gtkprintoperation.c:1516
 msgid "print operation status|Printing"
 msgstr "Друк"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1511
+#: gtk/gtkprintoperation.c:1518
 msgid "print operation status|Finished"
 msgstr "Завершено"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1513
+#: gtk/gtkprintoperation.c:1520
 msgid "print operation status|Finished with error"
 msgstr "Завершено з помилкою"
 
-#: gtk/gtkprintoperation.c:2036
+#: gtk/gtkprintoperation.c:2043
 #, c-format
 msgid "Preparing %d"
 msgstr "Підготовка %d"
 
-#: gtk/gtkprintoperation.c:2038 gtk/gtkprintoperation.c:2294
+#: gtk/gtkprintoperation.c:2045 gtk/gtkprintoperation.c:2301
 #, c-format
 msgid "Preparing"
 msgstr "Підготовка"
 
-#: gtk/gtkprintoperation.c:2041
+#: gtk/gtkprintoperation.c:2048
 #, c-format
 msgid "Printing %d"
 msgstr "Друк %d"
 
-#: gtk/gtkprintoperation-unix.c:243
+#: gtk/gtkprintoperation.c:2331
+#, c-format
+msgid "Error creating print preview"
+msgstr "Помилка при створенні попереднього перегляду"
+
+#: gtk/gtkprintoperation.c:2334
+#, c-format
+msgid "The most probable reason is that a temporary file could not be created."
+msgstr "Найбільш ймовірна причина: не вдається створити тимчасовий файл."
+
+#: gtk/gtkprintoperation-unix.c:242
 #, c-format
 msgid "Error launching preview"
 msgstr "Помилка попереднього перегляду"
 
-#: gtk/gtkprintoperation-unix.c:281
+#: gtk/gtkprintoperation-unix.c:280
 #, c-format
 msgid "Error printing"
 msgstr "Помилка друку"
 
-#: gtk/gtkprintoperation-unix.c:388 gtk/gtkprintoperation-win32.c:1401
+#: gtk/gtkprintoperation-unix.c:381 gtk/gtkprintoperation-win32.c:1425
 msgid "Application"
 msgstr "Програма"
 
-#: gtk/gtkprintoperation-win32.c:566
+#: gtk/gtkprintoperation-win32.c:590
 msgid "Printer offline"
 msgstr "Принтер вимкнено"
 
-#: gtk/gtkprintoperation-win32.c:568
+#: gtk/gtkprintoperation-win32.c:592
 msgid "Out of paper"
 msgstr "Немає паперу"
 
-#: gtk/gtkprintoperation-win32.c:570
+#. Translators: this is a printer status.
+#: gtk/gtkprintoperation-win32.c:594
+#: modules/printbackends/cups/gtkprintbackendcups.c:1413
 msgid "Paused"
 msgstr "Призупинено"
 
-#: gtk/gtkprintoperation-win32.c:572
+#: gtk/gtkprintoperation-win32.c:596
 msgid "Need user intervention"
 msgstr "Потрібне втручання користувача"
 
-#: gtk/gtkprintoperation-win32.c:672
+#: gtk/gtkprintoperation-win32.c:696
 msgid "Custom size"
 msgstr "Власний розмір"
 
-#: gtk/gtkprintoperation-win32.c:1491 gtk/gtkprintoperation-win32.c:1514
-#: gtk/gtkprintoperation-win32.c:1562
-#, c-format
-msgid "Not enough free memory"
-msgstr "Недостатньо вільної пам'яті"
+#: gtk/gtkprintoperation-win32.c:1517
+msgid "No printer found"
+msgstr "Принтери не знайдено"
 
-#: gtk/gtkprintoperation-win32.c:1567
-#, c-format
-msgid "Invalid argument to PrintDlgEx"
-msgstr "Неправильний аргумент для PrintDlgEx"
+#: gtk/gtkprintoperation-win32.c:1544
+msgid "Invalid argument to CreateDC"
+msgstr "Неправильний аргумент для CreateDC"
 
-#: gtk/gtkprintoperation-win32.c:1572
-#, c-format
-msgid "Invalid pointer to PrintDlgEx"
-msgstr "Неправильний вказівник для PrintDlgEx"
-
-#: gtk/gtkprintoperation-win32.c:1577
-#, c-format
-msgid "Invalid handle to PrintDlgEx"
-msgstr "Неправильний дескриптор для PrintDlgEx"
-
-#: gtk/gtkprintoperation-win32.c:1582
-#, c-format
-msgid "Unspecified error"
-msgstr "Невизначена помилка"
-
-#: gtk/gtkprintoperation-win32.c:1633
-#, c-format
+#: gtk/gtkprintoperation-win32.c:1578 gtk/gtkprintoperation-win32.c:1801
 msgid "Error from StartDoc"
 msgstr "Помилка від StartDoc"
 
-#: gtk/gtkprintunixdialog.c:1643
+#: gtk/gtkprintoperation-win32.c:1658 gtk/gtkprintoperation-win32.c:1681
+#: gtk/gtkprintoperation-win32.c:1729
+msgid "Not enough free memory"
+msgstr "Недостатньо вільної пам'яті"
+
+#: gtk/gtkprintoperation-win32.c:1734
+msgid "Invalid argument to PrintDlgEx"
+msgstr "Неправильний аргумент для PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1739
+msgid "Invalid pointer to PrintDlgEx"
+msgstr "Неправильний вказівник для PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1744
+msgid "Invalid handle to PrintDlgEx"
+msgstr "Неправильний дескриптор для PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1749
+msgid "Unspecified error"
+msgstr "Невизначена помилка"
+
+#: gtk/gtkprintunixdialog.c:1748
 msgid "Printer"
 msgstr "Принтер"
 
-#: gtk/gtkprintunixdialog.c:1651
+#. Translators: this is the header for the location column in the print dialog
+#: gtk/gtkprintunixdialog.c:1758
 msgid "Location"
 msgstr "Розташування"
 
-#: gtk/gtkprintunixdialog.c:1660
+#. Translators: this is the header for the printer status column in the print dialog
+#: gtk/gtkprintunixdialog.c:1769
 msgid "Status"
 msgstr "Стан"
 
-#: gtk/gtkprintunixdialog.c:1682
-msgid "Print Pages"
-msgstr "Друкувати сторінки"
+#: gtk/gtkprintunixdialog.c:1792
+msgid "Range"
+msgstr "Діапазон"
 
-#: gtk/gtkprintunixdialog.c:1686
-msgid "_All"
-msgstr "_Всі"
+#: gtk/gtkprintunixdialog.c:1796
+msgid "_All Pages"
+msgstr "_Усі сторінки"
 
-#: gtk/gtkprintunixdialog.c:1693
-msgid "C_urrent"
-msgstr "_Поточну"
+#: gtk/gtkprintunixdialog.c:1803
+msgid "C_urrent Page"
+msgstr "Пото_чну сторінку"
 
-#: gtk/gtkprintunixdialog.c:1702
-msgid "Ra_nge"
-msgstr "_Діапазон"
+#: gtk/gtkprintunixdialog.c:1812
+msgid "Pag_es:"
+msgstr "С_торінки:"
 
-#: gtk/gtkprintunixdialog.c:1703
+#: gtk/gtkprintunixdialog.c:1813
 msgid ""
 "Specify one or more page ranges,\n"
 " e.g. 1-3,7,11"
@@ -2554,202 +2553,226 @@ msgstr ""
 "Вкажіть один або більше діапазонів,\n"
 " наприклад 1-3,7,11"
 
-#: gtk/gtkprintunixdialog.c:1722
+#: gtk/gtkprintunixdialog.c:1832
 msgid "Copies"
 msgstr "Копії"
 
 #. FIXME chpe: too much space between Copies and spinbutton, put those 2 in a hbox and make it span 2 columns
-#: gtk/gtkprintunixdialog.c:1727
+#: gtk/gtkprintunixdialog.c:1837
 msgid "Copie_s:"
 msgstr "Ко_пій:"
 
-#: gtk/gtkprintunixdialog.c:1745
+#: gtk/gtkprintunixdialog.c:1855
 msgid "C_ollate"
 msgstr "_Впорядкувати"
 
-#: gtk/gtkprintunixdialog.c:1753
+#: gtk/gtkprintunixdialog.c:1863
 msgid "_Reverse"
 msgstr "_Обернено"
 
-#: gtk/gtkprintunixdialog.c:1770
+#: gtk/gtkprintunixdialog.c:1883
 msgid "General"
 msgstr "Загальні"
 
-#: gtk/gtkprintunixdialog.c:2171
+#. Translators, this string is used to label the option in the print
+#. * dialog that controls in what order multiple pages are arranged
+#.
+#: gtk/gtkprintunixdialog.c:2423
+#: modules/printbackends/cups/gtkprintbackendcups.c:2813
+msgid "Page Ordering"
+msgstr "Порядок сторінок"
+
+#: gtk/gtkprintunixdialog.c:2429
+msgid "Left to right"
+msgstr "Зліва направо"
+
+#: gtk/gtkprintunixdialog.c:2430
+msgid "Right to left"
+msgstr "Справа наліво"
+
+#: gtk/gtkprintunixdialog.c:2499
 msgid "Layout"
 msgstr "Розташування"
 
-#: gtk/gtkprintunixdialog.c:2175
-msgid "Pages per _side:"
-msgstr "Сторінок на _сторону:"
-
-#: gtk/gtkprintunixdialog.c:2191
+#: gtk/gtkprintunixdialog.c:2503
 msgid "T_wo-sided:"
 msgstr "З _двох сторін:"
 
-#: gtk/gtkprintunixdialog.c:2206
+#: gtk/gtkprintunixdialog.c:2518
+msgid "Pages per _side:"
+msgstr "Сторінок на с_торону:"
+
+#: gtk/gtkprintunixdialog.c:2536
+msgid "Page or_dering:"
+msgstr "_Порядок сторінок:"
+
+#: gtk/gtkprintunixdialog.c:2552
 msgid "_Only print:"
 msgstr "Друкувати _лише:"
 
 #. In enum order
-#: gtk/gtkprintunixdialog.c:2221
+#: gtk/gtkprintunixdialog.c:2567
 msgid "All sheets"
 msgstr "Усі сторінки"
 
-#: gtk/gtkprintunixdialog.c:2222
+#: gtk/gtkprintunixdialog.c:2568
 msgid "Even sheets"
 msgstr "Парні сторінки"
 
-#: gtk/gtkprintunixdialog.c:2223
+#: gtk/gtkprintunixdialog.c:2569
 msgid "Odd sheets"
 msgstr "Непарні сторінки"
 
-#: gtk/gtkprintunixdialog.c:2226
+#: gtk/gtkprintunixdialog.c:2572
 msgid "Sc_ale:"
 msgstr "_Масштаб:"
 
-#: gtk/gtkprintunixdialog.c:2253
+#: gtk/gtkprintunixdialog.c:2599
 msgid "Paper"
 msgstr "Папір"
 
-#: gtk/gtkprintunixdialog.c:2257
+#: gtk/gtkprintunixdialog.c:2603
 msgid "Paper _type:"
 msgstr "_Тип паперу:"
 
-#: gtk/gtkprintunixdialog.c:2272
+#: gtk/gtkprintunixdialog.c:2618
 msgid "Paper _source:"
 msgstr "Д_жерело паперу:"
 
-#: gtk/gtkprintunixdialog.c:2287
+#: gtk/gtkprintunixdialog.c:2633
 msgid "Output t_ray:"
 msgstr "_Лоток виводу:"
 
-#: gtk/gtkprintunixdialog.c:2338
+#: gtk/gtkprintunixdialog.c:2685
 msgid "Job Details"
 msgstr "Відомості про завдання"
 
-#: gtk/gtkprintunixdialog.c:2344
+#: gtk/gtkprintunixdialog.c:2691
 msgid "Pri_ority:"
 msgstr "_Пріоритет:"
 
-#: gtk/gtkprintunixdialog.c:2359
+#: gtk/gtkprintunixdialog.c:2706
 msgid "_Billing info:"
 msgstr "_Розташування:"
 
-#: gtk/gtkprintunixdialog.c:2377
+#: gtk/gtkprintunixdialog.c:2724
 msgid "Print Document"
 msgstr "Друкувати документ"
 
-#: gtk/gtkprintunixdialog.c:2383
+#. Translators: this is one of the choices for the print at option
+#. * in the print dialog
+#.
+#: gtk/gtkprintunixdialog.c:2733
 msgid "_Now"
 msgstr "_Зараз"
 
-#: gtk/gtkprintunixdialog.c:2390
+#: gtk/gtkprintunixdialog.c:2744
 msgid "A_t:"
 msgstr "_у:"
 
-#: gtk/gtkprintunixdialog.c:2405
+#: gtk/gtkprintunixdialog.c:2763
 msgid "On _hold"
 msgstr "О_чікування"
 
-#: gtk/gtkprintunixdialog.c:2424
+#: gtk/gtkprintunixdialog.c:2782
 msgid "Add Cover Page"
 msgstr "Додати титульну сторінку"
 
-#: gtk/gtkprintunixdialog.c:2430
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the front cover page.
+#.
+#: gtk/gtkprintunixdialog.c:2791
 msgid "Be_fore:"
 msgstr "_До:"
 
-#: gtk/gtkprintunixdialog.c:2445
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the back cover page.
+#.
+#: gtk/gtkprintunixdialog.c:2809
 msgid "_After:"
 msgstr "_Після:"
 
-#: gtk/gtkprintunixdialog.c:2460
+#. Translators: this is the tab label for the notebook tab containing
+#. * job-specific options in the print dialog
+#.
+#: gtk/gtkprintunixdialog.c:2827
 msgid "Job"
 msgstr "Завдання"
 
-#: gtk/gtkprintunixdialog.c:2526
+#: gtk/gtkprintunixdialog.c:2893
 msgid "Advanced"
 msgstr "Додатково"
 
-#: gtk/gtkprintunixdialog.c:2561
+#: gtk/gtkprintunixdialog.c:2928
 msgid "Image Quality"
 msgstr "Якість зображення"
 
-#: gtk/gtkprintunixdialog.c:2564
+#: gtk/gtkprintunixdialog.c:2931
 msgid "Color"
 msgstr "Колір"
 
-#: gtk/gtkprintunixdialog.c:2567
+#: gtk/gtkprintunixdialog.c:2934
 msgid "Finishing"
 msgstr "Завершення"
 
-#: gtk/gtkprintunixdialog.c:2577
+#: gtk/gtkprintunixdialog.c:2944
 msgid "Some of the settings in the dialog conflict"
 msgstr "Деякі параметри у діалоговому вікні конфліктують"
 
-#: gtk/gtkprintunixdialog.c:2600
+#: gtk/gtkprintunixdialog.c:2967
 msgid "Print"
 msgstr "Друк"
 
-#: gtk/gtkradiotoolbutton.c:65
-msgid "Group"
-msgstr "Група"
-
-#: gtk/gtkradiotoolbutton.c:66
-msgid "The radio tool button whose group this button belongs to."
-msgstr "Кнопка-перемикач, до групи якої належить дана кнопка."
-
-#: gtk/gtkrc.c:2866
+#: gtk/gtkrc.c:2872
 #, c-format
 msgid "Unable to find include file: \"%s\""
 msgstr "Не вдається знайти файл, що включається: \"%s\""
 
-#: gtk/gtkrc.c:3494 gtk/gtkrc.c:3497
+#: gtk/gtkrc.c:3500 gtk/gtkrc.c:3503
 #, c-format
 msgid "Unable to locate image file in pixmap_path: \"%s\""
 msgstr "Файл із зображенням не знайдено в pixmap_path: \"%s\""
 
 #: gtk/gtkrecentaction.c:155 gtk/gtkrecentaction.c:163
-#: gtk/gtkrecentchoosermenu.c:554 gtk/gtkrecentchoosermenu.c:562
+#: gtk/gtkrecentchoosermenu.c:551 gtk/gtkrecentchoosermenu.c:559
 #, c-format
 msgid "This function is not implemented for widgets of class '%s'"
 msgstr "Ця функція не реалізована для віджета класу '%s'"
 
-#: gtk/gtkrecentchooserdefault.c:465
+#: gtk/gtkrecentchooserdefault.c:454
 msgid "Select which type of documents are shown"
 msgstr "Виберіть типи документів, що відображаються"
 
-#: gtk/gtkrecentchooserdefault.c:1107 gtk/gtkrecentchooserdefault.c:1144
+#: gtk/gtkrecentchooserdefault.c:1095 gtk/gtkrecentchooserdefault.c:1132
 #, c-format
 msgid "No item for URI '%s' found"
 msgstr "Для URI не знайдено '%s'"
 
-#: gtk/gtkrecentchooserdefault.c:1271
+#: gtk/gtkrecentchooserdefault.c:1259
 msgid "Untitled filter"
 msgstr "Фільтр без назви"
 
-#: gtk/gtkrecentchooserdefault.c:1626
+#: gtk/gtkrecentchooserdefault.c:1612
 msgid "Could not remove item"
 msgstr "Не вдається видалити елемент"
 
-#: gtk/gtkrecentchooserdefault.c:1669
+#: gtk/gtkrecentchooserdefault.c:1655
 msgid "Could not clear list"
 msgstr "Не вдається очистити елемент"
 
-#: gtk/gtkrecentchooserdefault.c:1753
+#: gtk/gtkrecentchooserdefault.c:1739
 msgid "Copy _Location"
 msgstr "Копіювати _адресу"
 
-#: gtk/gtkrecentchooserdefault.c:1766
+#: gtk/gtkrecentchooserdefault.c:1752
 msgid "_Remove From List"
 msgstr "В_идалити зі списку"
 
-#: gtk/gtkrecentchooserdefault.c:1775
+#: gtk/gtkrecentchooserdefault.c:1761
 msgid "_Clear List"
 msgstr "О_чистити список"
 
-#: gtk/gtkrecentchooserdefault.c:1789
+#: gtk/gtkrecentchooserdefault.c:1775
 msgid "Show _Private Resources"
 msgstr "_Показати особисті ресурси"
 
@@ -2763,21 +2786,21 @@ msgstr "_Показати особисті ресурси"
 #. * user appended or prepended custom menu items to the
 #. * recent chooser menu widget.
 #.
-#: gtk/gtkrecentchoosermenu.c:320
+#: gtk/gtkrecentchoosermenu.c:317
 msgid "No items found"
 msgstr "Елементи не знайдені"
 
-#: gtk/gtkrecentchoosermenu.c:474 gtk/gtkrecentchoosermenu.c:530
+#: gtk/gtkrecentchoosermenu.c:471 gtk/gtkrecentchoosermenu.c:527
 #, c-format
 msgid "No recently used resource found with URI `%s'"
 msgstr "Ресурс, що нещодавно використовувався не знайдено URI `%s'"
 
-#: gtk/gtkrecentchoosermenu.c:741
+#: gtk/gtkrecentchoosermenu.c:738
 #, c-format
 msgid "Open '%s'"
 msgstr "Відкрити '%s'"
 
-#: gtk/gtkrecentchoosermenu.c:771
+#: gtk/gtkrecentchoosermenu.c:768
 msgid "Unknown item"
 msgstr "Невідомий елемент"
 
@@ -2788,7 +2811,7 @@ msgstr "Невідомий елемент"
 #. *
 #. * Don't include the prefix "recent menu label|" in the translation.
 #.
-#: gtk/gtkrecentchoosermenu.c:784
+#: gtk/gtkrecentchoosermenu.c:781
 #, c-format
 msgid "recent menu label|_%d. %s"
 msgstr "_%d. %s"
@@ -2798,13 +2821,15 @@ msgstr "_%d. %s"
 #. *
 #. * Don't include the prefix "recent menu label|" in the translation.
 #.
-#: gtk/gtkrecentchoosermenu.c:791
+#: gtk/gtkrecentchoosermenu.c:788
 #, c-format
 msgid "recent menu label|%d. %s"
 msgstr "%d. %s"
 
-#: gtk/gtkrecentmanager.c:1041 gtk/gtkrecentmanager.c:1187
-#: gtk/gtkrecentmanager.c:1197 gtk/gtkrecentmanager.c:1250
+#: gtk/gtkrecentmanager.c:1020 gtk/gtkrecentmanager.c:1033
+#: gtk/gtkrecentmanager.c:1171 gtk/gtkrecentmanager.c:1181
+#: gtk/gtkrecentmanager.c:1234 gtk/gtkrecentmanager.c:1243
+#: gtk/gtkrecentmanager.c:1258
 #, c-format
 msgid "Unable to find an item with URI '%s'"
 msgstr "Не вдається знайти елемент з URI '%s'"
@@ -3086,110 +3111,114 @@ msgid "Reverse portrait"
 msgstr "Обернена книжкова"
 
 #: gtk/gtkstock.c:377
+msgid "Page Set_up"
+msgstr "Пара_метри сторінки"
+
+#: gtk/gtkstock.c:378
 msgid "_Paste"
 msgstr "Вст_авити"
 
-#: gtk/gtkstock.c:378
+#: gtk/gtkstock.c:379
 msgid "_Preferences"
 msgstr "П_араметри"
 
-#: gtk/gtkstock.c:379
+#: gtk/gtkstock.c:380
 msgid "_Print"
 msgstr "Д_рук"
 
-#: gtk/gtkstock.c:380
+#: gtk/gtkstock.c:381
 msgid "Print Pre_view"
 msgstr "_Попередній перегляд"
 
-#: gtk/gtkstock.c:381
+#: gtk/gtkstock.c:382
 msgid "_Properties"
 msgstr "В_ластивості"
 
-#: gtk/gtkstock.c:382
+#: gtk/gtkstock.c:383
 msgid "_Quit"
 msgstr "Ви_йти"
 
-#: gtk/gtkstock.c:383
+#: gtk/gtkstock.c:384
 msgid "_Redo"
 msgstr "Пов_торити"
 
-#: gtk/gtkstock.c:384
+#: gtk/gtkstock.c:385
 msgid "_Refresh"
 msgstr "_Оновити"
 
-#: gtk/gtkstock.c:386
+#: gtk/gtkstock.c:387
 msgid "_Revert"
 msgstr "Від_новити"
 
-#: gtk/gtkstock.c:387
+#: gtk/gtkstock.c:388
 msgid "_Save"
 msgstr "З_берегти"
 
-#: gtk/gtkstock.c:388
+#: gtk/gtkstock.c:389
 msgid "Save _As"
 msgstr "Зберегти _як"
 
-#: gtk/gtkstock.c:389
+#: gtk/gtkstock.c:390
 msgid "Select _All"
 msgstr "Виді_лити все"
 
-#: gtk/gtkstock.c:390
+#: gtk/gtkstock.c:391
 msgid "_Color"
 msgstr "_Колір"
 
-#: gtk/gtkstock.c:391
+#: gtk/gtkstock.c:392
 msgid "_Font"
 msgstr "_Шрифт"
 
-#: gtk/gtkstock.c:392
+#: gtk/gtkstock.c:393
 msgid "_Ascending"
 msgstr "За _зростанням"
 
-#: gtk/gtkstock.c:393
+#: gtk/gtkstock.c:394
 msgid "_Descending"
 msgstr "За _спаданням"
 
-#: gtk/gtkstock.c:394
+#: gtk/gtkstock.c:395
 msgid "_Spell Check"
 msgstr "Перевірка _орфографії"
 
-#: gtk/gtkstock.c:395
+#: gtk/gtkstock.c:396
 msgid "_Stop"
 msgstr "З_упинити"
 
-#: gtk/gtkstock.c:396
+#: gtk/gtkstock.c:397
 msgid "_Strikethrough"
 msgstr "Зак_реслений"
 
-#: gtk/gtkstock.c:397
+#: gtk/gtkstock.c:398
 msgid "_Undelete"
 msgstr "_Скасувати видалення"
 
-#: gtk/gtkstock.c:398
+#: gtk/gtkstock.c:399
 msgid "_Underline"
 msgstr "П_ідкреслений"
 
-#: gtk/gtkstock.c:399
+#: gtk/gtkstock.c:400
 msgid "_Undo"
 msgstr "В_ернути"
 
-#: gtk/gtkstock.c:400
+#: gtk/gtkstock.c:401
 msgid "_Yes"
 msgstr "_Так"
 
-#: gtk/gtkstock.c:401
+#: gtk/gtkstock.c:402
 msgid "_Normal Size"
 msgstr "З_вичайний розмір"
 
-#: gtk/gtkstock.c:402
+#: gtk/gtkstock.c:403
 msgid "Best _Fit"
 msgstr "Найкраще за_повнення"
 
-#: gtk/gtkstock.c:403
+#: gtk/gtkstock.c:404
 msgid "Zoom _In"
 msgstr "З_більшити"
 
-#: gtk/gtkstock.c:404
+#: gtk/gtkstock.c:405
 msgid "Zoom _Out"
 msgstr "З_меншити"
 
@@ -3301,55 +3330,53 @@ msgid "A <text> element can't occur before a <tags> element"
 msgstr "Елемент <text> не може зустрічатись перед елементом <tags>"
 
 #: gtk/gtktextbufferserialize.c:1779
-#, c-format
 msgid "Serialized data is malformed"
 msgstr "Серіалізовані дані неправильно сформовані"
 
 #: gtk/gtktextbufferserialize.c:1857
-#, c-format
 msgid ""
 "Serialized data is malformed. First section isn't GTKTEXTBUFFERCONTENTS-0001"
 msgstr ""
 "Серіалізовані дані неправильно сформовані. Першим розділом не є "
 "GTKTEXTBUFFERCONTENTS-0001"
 
-#: gtk/gtktextutil.c:60
+#: gtk/gtktextutil.c:61
 msgid "LRM _Left-to-right mark"
 msgstr "LRM Позначка з_ліва направо"
 
-#: gtk/gtktextutil.c:61
+#: gtk/gtktextutil.c:62
 msgid "RLM _Right-to-left mark"
 msgstr "RLM Позначка с_права наліво"
 
-#: gtk/gtktextutil.c:62
+#: gtk/gtktextutil.c:63
 msgid "LRE Left-to-right _embedding"
 msgstr "LRE Вс_тавка зліва направо"
 
-#: gtk/gtktextutil.c:63
+#: gtk/gtktextutil.c:64
 msgid "RLE Right-to-left e_mbedding"
 msgstr "LRE Вст_авка справа наліво"
 
-#: gtk/gtktextutil.c:64
+#: gtk/gtktextutil.c:65
 msgid "LRO Left-to-right _override"
 msgstr "LRO Пе_рекривання зліва направо"
 
-#: gtk/gtktextutil.c:65
+#: gtk/gtktextutil.c:66
 msgid "RLO Right-to-left o_verride"
 msgstr "RLO Пере_кривання справа наліво"
 
-#: gtk/gtktextutil.c:66
+#: gtk/gtktextutil.c:67
 msgid "PDF _Pop directional formatting"
 msgstr "PDF П_опередній напрям"
 
-#: gtk/gtktextutil.c:67
+#: gtk/gtktextutil.c:68
 msgid "ZWS _Zero width space"
 msgstr "ZWS _Нульовий пропуск"
 
-#: gtk/gtktextutil.c:68
+#: gtk/gtktextutil.c:69
 msgid "ZWJ Zero width _joiner"
 msgstr "ZWJ Нульовий _з'єднувач"
 
-#: gtk/gtktextutil.c:69
+#: gtk/gtktextutil.c:70
 msgid "ZWNJ Zero width _non-joiner"
 msgstr "ZWNJ Нульовий _роз'єднувач"
 
@@ -3358,46 +3385,57 @@ msgstr "ZWNJ Нульовий _роз'єднувач"
 msgid "Unable to locate theme engine in module_path: \"%s\","
 msgstr "Не вдається віднайти механізм роботи з темами у module_path: \"%s\","
 
-#: gtk/gtktipsquery.c:187
+#: gtk/gtktipsquery.c:188
 msgid "--- No Tip ---"
 msgstr "--- Немає підказки ---"
 
-#: gtk/gtkuimanager.c:1226
-#, c-format
-msgid "Unknown attribute '%s' on line %d char %d"
-msgstr "Невідомий атрибут \"%s\" (рядок %d, символ %d)"
-
-#: gtk/gtkuimanager.c:1443
+#: gtk/gtkuimanager.c:1453
 #, c-format
 msgid "Unexpected start tag '%s' on line %d char %d"
 msgstr "Несподіваний початковий тег \"%s\" (рядок %d, символ %d)"
 
-#: gtk/gtkuimanager.c:1533
+#: gtk/gtkuimanager.c:1543
 #, c-format
 msgid "Unexpected character data on line %d char %d"
 msgstr "Несподівані символьні дані (рядок %d, символ %d)"
 
-#: gtk/gtkuimanager.c:2356
+#: gtk/gtkuimanager.c:2366
 msgid "Empty"
 msgstr "Пусто"
 
-#: gtk/gtkvolumebutton.c:81
+#: gtk/gtkvolumebutton.c:77
 msgid "Volume"
 msgstr "Гучність:"
 
-#: gtk/gtkvolumebutton.c:83
+#: gtk/gtkvolumebutton.c:79
+msgid "Turns volume down or up"
+msgstr "Збільшує чи зменшує гучність"
+
+#: gtk/gtkvolumebutton.c:82
+msgid "Adjusts the volume"
+msgstr "Регулює гучність"
+
+#: gtk/gtkvolumebutton.c:85 gtk/gtkvolumebutton.c:88
 msgid "Volume Down"
 msgstr "Тихіше"
 
-#: gtk/gtkvolumebutton.c:85
+#: gtk/gtkvolumebutton.c:87
+msgid "Decreases the volume"
+msgstr "Зменшує гучність"
+
+#: gtk/gtkvolumebutton.c:91 gtk/gtkvolumebutton.c:94
 msgid "Volume Up"
 msgstr "Гучніше"
 
-#: gtk/gtkvolumebutton.c:139
+#: gtk/gtkvolumebutton.c:93
+msgid "Increases the volume"
+msgstr "Збільшує гучність"
+
+#: gtk/gtkvolumebutton.c:151
 msgid "Muted"
 msgstr "Приглушити"
 
-#: gtk/gtkvolumebutton.c:143
+#: gtk/gtkvolumebutton.c:155
 msgid "Full Volume"
 msgstr "Повна гучність"
 
@@ -3408,7 +3446,7 @@ msgstr "Повна гучність"
 #. * Do not translate and do not include the "volume percentage|"
 #. * part in the translation!
 #.
-#: gtk/gtkvolumebutton.c:158
+#: gtk/gtkvolumebutton.c:170
 #, c-format
 msgid "volume percentage|%d %%"
 msgstr "%d %%"
@@ -4253,17 +4291,17 @@ msgstr "Не вдається записати індекс каталогу\n"
 msgid "Failed to rewrite header\n"
 msgstr "Не вдається перезаписати заголовок\n"
 
-#: gtk/updateiconcache.c:1454
-#, fuzzy, c-format
+#: gtk/updateiconcache.c:1455
+#, c-format
 msgid "Failed to open file %s : %s\n"
-msgstr "Не вдається відкрити файл \"%s\": %s"
+msgstr "Не вдається відкрити файл %s : %s\n"
 
-#: gtk/updateiconcache.c:1462
+#: gtk/updateiconcache.c:1463
 #, c-format
 msgid "Failed to write cache file: %s\n"
 msgstr "Не вдається записати файл кешу: %s\n"
 
-#: gtk/updateiconcache.c:1497
+#: gtk/updateiconcache.c:1499
 #, c-format
 msgid "The generated cache was invalid.\n"
 msgstr "Створений кеш містить помилки.\n"
@@ -4325,7 +4363,7 @@ msgstr "Некоректний кеш: %s\n"
 #: gtk/updateiconcache.c:1682
 #, c-format
 msgid "No theme index file."
-msgstr ""
+msgstr "Немає файлу з індексом теми."
 
 #: gtk/updateiconcache.c:1686
 #, c-format
@@ -4343,7 +4381,7 @@ msgid "Amharic (EZ+)"
 msgstr "Амхарське (EZ+)"
 
 #. ID
-#: modules/input/imcedilla.c:91
+#: modules/input/imcedilla.c:92
 msgid "Cedilla"
 msgstr "Цеділла"
 
@@ -4392,128 +4430,305 @@ msgstr "В'єтнамська (VIQR)"
 msgid "X Input Method"
 msgstr "Метод XInput"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1728
+#: modules/printbackends/cups/gtkprintbackendcups.c:1115
+#, c-format
+msgid "Printer '%s' is low on toner."
+msgstr "У принтері «%s» закінчується тонер."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1116
+#, c-format
+msgid "Printer '%s' has no toner left."
+msgstr "У принтері «%s» закінчився тонер."
+
+#. Translators: "Developer" like on photo development context
+#: modules/printbackends/cups/gtkprintbackendcups.c:1118
+#, c-format
+msgid "Printer '%s' is low on developer."
+msgstr "У принтері «%s» закінчується проявник."
+
+#. Translators: "Developer" like on photo development context
+#: modules/printbackends/cups/gtkprintbackendcups.c:1120
+#, c-format
+msgid "Printer '%s' is out of developer."
+msgstr "У принтері «%s» закінчується проявник."
+
+#. Translators: "marker" is one color bin of the printer
+#: modules/printbackends/cups/gtkprintbackendcups.c:1122
+#, c-format
+msgid "Printer '%s' is low on at least one marker supply."
+msgstr "У принтері «%s» закінчується один з тонерів."
+
+#. Translators: "marker" is one color bin of the printer
+#: modules/printbackends/cups/gtkprintbackendcups.c:1124
+#, c-format
+msgid "Printer '%s' is out of at least one marker supply."
+msgstr "У принтері «%s» закінчився один з тонерів."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1125
+#, c-format
+msgid "The cover is open on printer '%s'."
+msgstr "У принтері «%s» відкрито кришку."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1126
+#, c-format
+msgid "The door is open on printer '%s'."
+msgstr "У принтері «%s» відкрито дверці."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1127
+#, c-format
+msgid "Printer '%s' is low on paper."
+msgstr "У принтері «%s» закінчується папір."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1128
+#, c-format
+msgid "Printer '%s' is out of paper."
+msgstr "У принтері «%s» закінчився папір."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1129
+#, c-format
+msgid "Printer '%s' is currently off-line."
+msgstr "Принтер «%s» наразі вимкнено."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1130
+#, c-format
+msgid "Printer '%s' may not be connected."
+msgstr "Можливо, принтер «%s» не під'єднаний."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1131
+#, c-format
+msgid "There is a problem on printer '%s'."
+msgstr "Проблема з принтером «%s»."
+
+#. Translators: this is a printer status.
+#: modules/printbackends/cups/gtkprintbackendcups.c:1410
+msgid "Paused ; Rejecting Jobs"
+msgstr "Призупинено ; скасування завдань"
+
+#. Translators: this is a printer status.
+#: modules/printbackends/cups/gtkprintbackendcups.c:1416
+msgid "Rejecting Jobs"
+msgstr "Скасування завдань"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2084
 msgid "Two Sided"
 msgstr "З двох сторін"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1729
+#: modules/printbackends/cups/gtkprintbackendcups.c:2085
 msgid "Paper Type"
 msgstr "Тип паперу"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1730
+#: modules/printbackends/cups/gtkprintbackendcups.c:2086
 msgid "Paper Source"
 msgstr "Джерело паперу"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1731
+#: modules/printbackends/cups/gtkprintbackendcups.c:2087
 msgid "Output Tray"
 msgstr "Лоток виводу"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1740
+#: modules/printbackends/cups/gtkprintbackendcups.c:2096
 msgid "One Sided"
 msgstr "З однієї сторони"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1741
-#: modules/printbackends/cups/gtkprintbackendcups.c:1742
-#: modules/printbackends/cups/gtkprintbackendcups.c:1746
+#. Translators: this is an option of "Paper Source"
+#: modules/printbackends/cups/gtkprintbackendcups.c:2098
+#: modules/printbackends/cups/gtkprintbackendcups.c:2100
+#: modules/printbackends/cups/gtkprintbackendcups.c:2108
 msgid "Auto Select"
 msgstr "Автовибір"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1743
-#: modules/printbackends/cups/gtkprintbackendcups.c:1744
-#: modules/printbackends/cups/gtkprintbackendcups.c:1745
-#: modules/printbackends/cups/gtkprintbackendcups.c:2215
+#. Translators: this is an option of "Paper Source"
+#: modules/printbackends/cups/gtkprintbackendcups.c:2102
+#: modules/printbackends/cups/gtkprintbackendcups.c:2104
+#: modules/printbackends/cups/gtkprintbackendcups.c:2106
+#: modules/printbackends/cups/gtkprintbackendcups.c:2577
 msgid "Printer Default"
 msgstr "Типовий принтер"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#. Translators: These strings name the possible values of the
+#. * job priority option in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Urgent"
 msgstr "Терміново"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "High"
 msgstr "Високий"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Medium"
 msgstr "Середній"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Low"
 msgstr "Низький"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#. Translators: These strings name the possible arrangements of
+#. * multiple pages on a sheet when printing
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2779
+msgid "Left to right, top to bottom"
+msgstr "Зліва направо, згори вниз"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2779
+msgid "Left to right, bottom to top"
+msgstr "Зліва направо, знизу вгору"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2780
+msgid "Right to left, top to bottom"
+msgstr "Справа наліво, згори вниз"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2780
+msgid "Right to left, bottom to top"
+msgstr "Справа наліво, знизу вгору"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2781
+msgid "Top to bottom, left to right"
+msgstr "Згори вниз, зліва направо"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2781
+msgid "Top to bottom, right to left"
+msgstr "Згори вниз, справа наліво"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2782
+msgid "Bottom to top, left to right"
+msgstr "Знизу вгору, зліва направо"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2782
+msgid "Bottom to top, right to left"
+msgstr "Знизу вгору, справа наліво"
+
+#. Cups specific, non-ppd related settings
+#. Translators, this string is used to label the pages-per-sheet option
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2797
+msgid "Pages per Sheet"
+msgstr "Сторінок на аркуш"
+
+#. Translators, this string is used to label the job priority option
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2834
+msgid "Job Priority"
+msgstr "Пріоритет завдання"
+
+#. Translators, this string is used to label the billing info entry
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2845
+msgid "Billing Info"
+msgstr "Інформація про облік"
+
+#. Translators, these strings are names for various 'standard' cover
+#. * pages that the printing system may support.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "None"
 msgstr "Немає"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Classified"
 msgstr "Класифіковано"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Confidential"
 msgstr "Конфіденційно"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Secret"
 msgstr "Секретно"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Standard"
 msgstr "Стандарт"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Top Secret"
 msgstr "Цілковито секретно"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Unclassified"
 msgstr "Не класифіковано"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2504
-#, fuzzy, c-format
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the front cover page.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2894
+msgid "Before"
+msgstr "Перед"
+
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the back cover page.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2909
+msgid "After"
+msgstr "Після"
+
+#. Translators: this is the name of the option that controls when
+#. * a print job is printed. Possible values are 'now', a specified time,
+#. * or 'on hold'
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2929
+msgid "Print at"
+msgstr "Друкувати"
+
+#. Translators: this is the name of the option that allows the user
+#. * to specify a time when a print job will be printed.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2940
+msgid "Print at time"
+msgstr "Друкувати о"
+
+#. Translators: this format is used to display a custom paper
+#. * size. The two placeholders are replaced with the width and height
+#. * in points. E.g: "Custom 230.4x142.9"
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2975
+#, c-format
 msgid "Custom %sx%s"
-msgstr "Інший %2fx%.2f"
+msgstr "Інший %sx%s"
 
 #. default filename used for print-to-file
-#: modules/printbackends/file/gtkprintbackendfile.c:236
+#: modules/printbackends/file/gtkprintbackendfile.c:235
 #, c-format
 msgid "output.%s"
 msgstr "вивід.%s"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:467
+#: modules/printbackends/file/gtkprintbackendfile.c:466
 msgid "Print to File"
 msgstr "Друкувати у файл"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:544
+#: modules/printbackends/file/gtkprintbackendfile.c:543
 msgid "PDF"
 msgstr "PDF"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:544
+#: modules/printbackends/file/gtkprintbackendfile.c:543
 msgid "Postscript"
 msgstr "Postscript"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:556
+#: modules/printbackends/file/gtkprintbackendfile.c:555
 #: modules/printbackends/test/gtkprintbackendtest.c:503
 msgid "Pages per _sheet:"
 msgstr "Сторінок на _аркуш:"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:602
+#: modules/printbackends/file/gtkprintbackendfile.c:601
 msgid "File"
 msgstr "Файл"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:611
+#: modules/printbackends/file/gtkprintbackendfile.c:610
 msgid "_Output format"
 msgstr "Формат _виводу"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:399
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:398
 msgid "Print to LPR"
 msgstr "Друкувати на LPR"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:425
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:424
 msgid "Pages Per Sheet"
 msgstr "Сторінок на аркуш"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:432
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:431
 msgid "Command Line"
 msgstr "Командний рядок"
 
@@ -4527,7 +4742,94 @@ msgstr "тест-друку.%s"
 msgid "Print to Test Printer"
 msgstr "Друкувати на текстовий принтер"
 
-#: tests/testfilechooser.c:205
+#: tests/testfilechooser.c:207
 #, c-format
 msgid "Could not get information for file '%s': %s"
 msgstr "Не вдається отримати інформацію про файл '%s': %s"
+
+#~ msgid "Couldn't create pixbuf"
+#~ msgstr "Не вдається створити Pixbuf"
+
+#~ msgid "URI"
+#~ msgstr "URI"
+
+#~ msgid "The URI bound to this button"
+#~ msgstr "URI, що прив'язаний до цієї кнопки"
+
+#~ msgid "Arrow spacing"
+#~ msgstr "Простір навколо стрілки"
+
+#~ msgid "Scroll arrow spacing"
+#~ msgstr "Простір навколо стрілки прокрутки"
+
+#~ msgid "Group"
+#~ msgstr "Група"
+
+#~ msgid "The radio tool button whose group this button belongs to."
+#~ msgstr "Кнопка-перемикач, до групи якої належить дана кнопка."
+
+#~ msgid "Invalid filename: %s"
+#~ msgstr "Неправильна назва файлу: %s"
+
+#~ msgid ""
+#~ "Could not add a bookmark for '%s' because it is an invalid path name."
+#~ msgstr ""
+#~ "Не вдається додати закладку для '%s', тому що цей шлях - неправильний."
+
+#~ msgid "Could not select file '%s' because it is an invalid path name."
+#~ msgstr "Не вдається виділити файл '%s', тому що цей шлях - неправильний."
+
+#~ msgid "%d byte"
+#~ msgid_plural "%d bytes"
+#~ msgstr[0] "%d байт"
+#~ msgstr[1] "%d байти"
+#~ msgstr[2] "%d байтів"
+
+#~ msgid "Could not get a stock icon for %s\n"
+#~ msgstr "Не вдається отримати вбудований значок для '%s'\n"
+
+#~ msgid "Error getting information for '%s': %s"
+#~ msgstr "Помилка отримання інформації про '%s': %s"
+
+#~ msgid "This file system does not support mounting"
+#~ msgstr "Ця файлова система не підтримує монтування"
+
+#~ msgid ""
+#~ "The name \"%s\" is not valid because it contains the character \"%s\". "
+#~ "Please use a different name."
+#~ msgstr ""
+#~ "Назва \"%s\" неправильна, бо вона містить символ \"%s\". Будь ласка, "
+#~ "виберіть іншу назву."
+
+#~ msgid "Bookmark saving failed: %s"
+#~ msgstr "Помилка збереження закладки: %s"
+
+#~ msgid "'%s' already exists in the bookmarks list"
+#~ msgstr "'%s' вже існує у списку закладок"
+
+#~ msgid "'%s' does not exist in the bookmarks list"
+#~ msgstr "'%s' не існує у списку закладок"
+
+#~ msgid "Path is not a folder: '%s'"
+#~ msgstr "Шлях не є текою: '%s'"
+
+#~ msgid "Network Drive (%s)"
+#~ msgstr "Мережний пристрій (%s)"
+
+#~ msgid "%s (%s)"
+#~ msgstr "%s (%s)"
+
+#~ msgid "Unknown attribute '%s' on line %d char %d"
+#~ msgstr "Невідомий атрибут \"%s\" (рядок %d, символ %d)"
+
+#~ msgid "Today at %H:%M"
+#~ msgstr "Сьогодні о %H:%M"
+
+#~ msgid "Default"
+#~ msgstr "Типовий"
+
+#~ msgid "Print Pages"
+#~ msgstr "Друкувати сторінки"
+
+#~ msgid "_All"
+#~ msgstr "_Всі"

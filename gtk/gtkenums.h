@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_ENUMS_H__
 #define __GTK_ENUMS_H__
@@ -72,7 +76,7 @@ typedef enum
 } GtkAttachOptions;
 
 /* Button box styles */
-typedef enum 
+typedef enum
 {
   GTK_BUTTONBOX_DEFAULT_STYLE,
   GTK_BUTTONBOX_SPREAD,
@@ -89,8 +93,9 @@ typedef enum
   GTK_CURVE_TYPE_SPLINE,       /* spline interpolation */
   GTK_CURVE_TYPE_FREE          /* free form curve */
 } GtkCurveType;
- 
-typedef enum {
+
+typedef enum
+{
   GTK_DELETE_CHARS,
   GTK_DELETE_WORD_ENDS,           /* delete only the portion of the word to the
                                    * left/right of cursor if we're in the middle
@@ -200,7 +205,7 @@ typedef enum
   GTK_CENTIMETERS
 } GtkMetricType;
 
-typedef enum 
+typedef enum
 {
   GTK_MOVEMENT_LOGICAL_POSITIONS, /* move by forw/back graphemes */
   GTK_MOVEMENT_VISUAL_POSITIONS,  /* move by left/right graphemes */
@@ -214,7 +219,7 @@ typedef enum
   GTK_MOVEMENT_HORIZONTAL_PAGES   /* move horizontally by pages */
 } GtkMovementStep;
 
-typedef enum 
+typedef enum
 {
   GTK_SCROLL_STEPS,
   GTK_SCROLL_PAGES,
@@ -468,54 +473,74 @@ typedef enum
   GTK_PACK_DIRECTION_BTT
 } GtkPackDirection;
 
-typedef enum {
+typedef enum
+{
   GTK_PRINT_PAGES_ALL,
   GTK_PRINT_PAGES_CURRENT,
   GTK_PRINT_PAGES_RANGES
 } GtkPrintPages;
 
-typedef enum {
+typedef enum
+{
   GTK_PAGE_SET_ALL,
   GTK_PAGE_SET_EVEN,
   GTK_PAGE_SET_ODD
 } GtkPageSet;
 
-typedef enum {
+typedef enum
+{
+  GTK_NUMBER_UP_LAYOUT_LEFT_TO_RIGHT_TOP_TO_BOTTOM, /*< nick=lrtb >*/
+  GTK_NUMBER_UP_LAYOUT_LEFT_TO_RIGHT_BOTTOM_TO_TOP, /*< nick=lrbt >*/
+  GTK_NUMBER_UP_LAYOUT_RIGHT_TO_LEFT_TOP_TO_BOTTOM, /*< nick=rltb >*/
+  GTK_NUMBER_UP_LAYOUT_RIGHT_TO_LEFT_BOTTOM_TO_TOP, /*< nick=rlbt >*/
+  GTK_NUMBER_UP_LAYOUT_TOP_TO_BOTTOM_LEFT_TO_RIGHT, /*< nick=tblr >*/
+  GTK_NUMBER_UP_LAYOUT_TOP_TO_BOTTOM_RIGHT_TO_LEFT, /*< nick=tbrl >*/
+  GTK_NUMBER_UP_LAYOUT_BOTTOM_TO_TOP_LEFT_TO_RIGHT, /*< nick=btlr >*/
+  GTK_NUMBER_UP_LAYOUT_BOTTOM_TO_TOP_RIGHT_TO_LEFT  /*< nick=btrl >*/
+} GtkNumberUpLayout;
+
+typedef enum
+{
   GTK_PAGE_ORIENTATION_PORTRAIT,
   GTK_PAGE_ORIENTATION_LANDSCAPE,
   GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT,
   GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE
 } GtkPageOrientation;
 
-typedef enum {
+typedef enum
+{
   GTK_PRINT_QUALITY_LOW,
   GTK_PRINT_QUALITY_NORMAL,
   GTK_PRINT_QUALITY_HIGH,
   GTK_PRINT_QUALITY_DRAFT
 } GtkPrintQuality;
 
-typedef enum {
+typedef enum
+{
   GTK_PRINT_DUPLEX_SIMPLEX,
   GTK_PRINT_DUPLEX_HORIZONTAL,
   GTK_PRINT_DUPLEX_VERTICAL
 } GtkPrintDuplex;
 
 
-typedef enum {
+typedef enum
+{
   GTK_UNIT_PIXEL,
   GTK_UNIT_POINTS,
   GTK_UNIT_INCH,
   GTK_UNIT_MM
 } GtkUnit;
 
-typedef enum {
+typedef enum
+{
   GTK_TREE_VIEW_GRID_LINES_NONE,
   GTK_TREE_VIEW_GRID_LINES_HORIZONTAL,
   GTK_TREE_VIEW_GRID_LINES_VERTICAL,
   GTK_TREE_VIEW_GRID_LINES_BOTH
 } GtkTreeViewGridLines;
 
-typedef enum {
+typedef enum
+{
   GTK_DRAG_RESULT_SUCCESS,
   GTK_DRAG_RESULT_NO_TARGET,
   GTK_DRAG_RESULT_USER_CANCELLED,

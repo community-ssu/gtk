@@ -1,4 +1,4 @@
-/* GtkPrintUnixDialog 
+/* GtkPrintUnixDialog
  * Copyright (C) 2006 John (J5) Palmieri <johnp@redhat.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -16,14 +16,17 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_UNIX_PRINT_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtkunixprint.h> can be included directly."
+#endif
+
 #ifndef __GTK_PRINT_UNIX_DIALOG_H__
 #define __GTK_PRINT_UNIX_DIALOG_H__
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 #include <gtk/gtkprinter.h>
 #include <gtk/gtkprintjob.h>
-#include <gtk/gtkprintsettings.h>
-#include <gtk/gtkpagesetup.h>
 
 G_BEGIN_DECLS
 
@@ -43,7 +46,7 @@ struct _GtkPrintUnixDialog
 {
   GtkDialog parent_instance;
 
-  GtkPrintUnixDialogPrivate *priv;
+  GtkPrintUnixDialogPrivate *GSEAL (priv);
 };
 
 struct _GtkPrintUnixDialogClass

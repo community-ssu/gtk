@@ -21,12 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 #define GTK_MENU_INTERNALS
-#include <config.h>
-#include <string.h> /* memset */
+#include "config.h"
+#include <string.h>
 #ifdef MAEMO_CHANGES
 #include <math.h>
 #include <stdlib.h>
@@ -35,42 +35,38 @@
 #include "gtkaccellabel.h"
 #include "gtkaccelmap.h"
 #include "gtkbindings.h"
-#include "gtklabel.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkmenu.h"
-#include "gtkmenuitem.h"
+#ifdef MAEMO_CHANGES
+#include "gtkmenubar.h"
+#endif /* MAEMO_CHANGES */
 #include "gtktearoffmenuitem.h"
 #include "gtkwindow.h"
 #include "gtkhbox.h"
 #include "gtkvscrollbar.h"
 #include "gtksettings.h"
 #include "gtkprivate.h"
-#ifdef MAEMO_CHANGES
-#include "gtkmenubar.h"
-#endif /* MAEMO_CHANGES */
 #include "gtkintl.h"
 #include "gtkalias.h"
 
-
-#define MENU_ITEM_CLASS(w)   GTK_MENU_ITEM_GET_CLASS (w)
 
 #ifdef MAEMO_CHANGES
 #define SCROLL_DELAY_FACTOR 5    /* Scroll repeat multiplier */
 #endif /* MAEMO_CHANGES */
 
-#define DEFAULT_POPUP_DELAY    225
+#define DEFAULT_POPUP_DELAY     225
 #define DEFAULT_POPDOWN_DELAY  1000
 
 #define NAVIGATION_REGION_OVERSHOOT 50  /* How much the navigation region
 					 * extends below the submenu
 					 */
 
-#define MENU_SCROLL_STEP1 8
-#define MENU_SCROLL_STEP2 15
-#define MENU_SCROLL_FAST_ZONE 8
-#define MENU_SCROLL_TIMEOUT1 50
-#define MENU_SCROLL_TIMEOUT2 20
+#define MENU_SCROLL_STEP1      8
+#define MENU_SCROLL_STEP2     15
+#define MENU_SCROLL_FAST_ZONE  8
+#define MENU_SCROLL_TIMEOUT1  50
+#define MENU_SCROLL_TIMEOUT2  20
 
 #define ATTACH_INFO_KEY "gtk-menu-child-attach-info-key"
 #define ATTACHED_MENUS "gtk-attached-menus"
@@ -139,8 +135,13 @@ enum {
 
 enum {
   PROP_0,
+  PROP_ACTIVE,
+  PROP_ACCEL_GROUP,
+  PROP_ACCEL_PATH,
+  PROP_ATTACH_WIDGET,
   PROP_TEAROFF_STATE,
-  PROP_TEAROFF_TITLE
+  PROP_TEAROFF_TITLE,
+  PROP_MONITOR
 };
 
 enum {
@@ -170,7 +171,6 @@ static void     gtk_menu_get_child_property(GtkContainer     *container,
                                             GValue           *value,
                                             GParamSpec       *pspec);
 static void     gtk_menu_destroy           (GtkObject        *object);
-static void     gtk_menu_finalize          (GObject          *object);
 static void     gtk_menu_realize           (GtkWidget        *widget);
 static void     gtk_menu_unrealize         (GtkWidget        *widget);
 static void     gtk_menu_size_request      (GtkWidget        *widget,
@@ -262,7 +262,7 @@ static gboolean gtk_menu_real_can_activate_accel (GtkWidget *widget,
 static void _gtk_menu_refresh_accel_paths (GtkMenu *menu,
 					   gboolean group_changed);
 
-static const gchar	  attach_data_key[] = "gtk-menu-attach-data";
+static const gchar attach_data_key[] = "gtk-menu-attach-data";
 
 static guint menu_signals[LAST_SIGNAL] = { 0 };
 
@@ -287,6 +287,12 @@ menu_queue_resize (GtkMenu *menu)
   gtk_widget_queue_resize (GTK_WIDGET (menu));
 }
 
+static void
+attach_info_free (AttachInfo *info)
+{
+  g_slice_free (AttachInfo, info);
+}
+
 static AttachInfo *
 get_attach_info (GtkWidget *child)
 {
@@ -295,8 +301,9 @@ get_attach_info (GtkWidget *child)
 
   if (!ai)
     {
-      ai = g_new0 (AttachInfo, 1);
-      g_object_set_data_full (object, I_(ATTACH_INFO_KEY), ai, g_free);
+      ai = g_slice_new0 (AttachInfo);
+      g_object_set_data_full (object, I_(ATTACH_INFO_KEY), ai,
+                              (GDestroyNotify) attach_info_free);
     }
 
   return ai;
@@ -453,7 +460,6 @@ gtk_menu_class_init (GtkMenuClass *class)
   GtkMenuShellClass *menu_shell_class = GTK_MENU_SHELL_CLASS (class);
   GtkBindingSet *binding_set;
   
-  gobject_class->finalize = gtk_menu_finalize;
   gobject_class->set_property = gtk_menu_set_property;
   gobject_class->get_property = gtk_menu_get_property;
 
@@ -491,21 +497,84 @@ gtk_menu_class_init (GtkMenuClass *class)
   menu_shell_class->move_current = gtk_menu_move_current;
 
   menu_signals[MOVE_SCROLL] =
-    _gtk_binding_signal_new (I_("move_scroll"),
-			     G_OBJECT_CLASS_TYPE (object_class),
-			     G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-			     G_CALLBACK (gtk_menu_real_move_scroll),
-			     NULL, NULL,
-			     _gtk_marshal_VOID__ENUM,
-			     G_TYPE_NONE, 1,
-			     GTK_TYPE_SCROLL_TYPE);
-  
+    g_signal_new_class_handler (I_("move-scroll"),
+                                G_OBJECT_CLASS_TYPE (object_class),
+                                G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                                G_CALLBACK (gtk_menu_real_move_scroll),
+                                NULL, NULL,
+                                _gtk_marshal_VOID__ENUM,
+                                G_TYPE_NONE, 1,
+                                GTK_TYPE_SCROLL_TYPE);
+
+  /**
+   * GtkMenu:active:
+   *
+   * The index of the currently selected menu item, or -1 if no
+   * menu item is selected.
+   *
+   * Since: 2.14
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_ACTIVE,
+                                   g_param_spec_int ("active",
+				                     P_("Active"),
+						     P_("The currently selected menu item"),
+						     -1, G_MAXINT, -1,
+						     GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMenu:accel-group:
+   *
+   * The accel group holding accelerators for the menu.
+   *
+   * Since: 2.14
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_ACCEL_GROUP,
+                                   g_param_spec_object ("accel-group",
+				                        P_("Accel Group"),
+						        P_("The accel group holding accelerators for the menu"),
+						        GTK_TYPE_ACCEL_GROUP,
+						        GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMenu:accel-path:
+   *
+   * An accel path used to conveniently construct accel paths of child items.
+   *
+   * Since: 2.14
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_ACCEL_PATH,
+                                   g_param_spec_string ("accel-path",
+				                        P_("Accel Path"),
+						        P_("An accel path used to conveniently construct accel paths of child items"),
+						        NULL,
+						        GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMenu:attach-widget:
+   *
+   * The widget the menu is attached to. Setting this property attaches
+   * the menu without a #GtkMenuDetachFunc. If you need to use a detacher,
+   * use gtk_menu_attach_to_widget() directly.
+   *
+   * Since: 2.14
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_ATTACH_WIDGET,
+                                   g_param_spec_object ("attach-widget",
+				                        P_("Attach Widget"),
+						        P_("The widget the menu is attached to"),
+						        GTK_TYPE_WIDGET,
+						        GTK_PARAM_READWRITE));
+
   g_object_class_install_property (gobject_class,
                                    PROP_TEAROFF_TITLE,
                                    g_param_spec_string ("tearoff-title",
                                                         P_("Tearoff Title"),
                                                         P_("A title that may be displayed by the window manager when this menu is torn-off"),
-                                                        "",
+                                                        NULL,
                                                         GTK_PARAM_READWRITE));
 
   /**
@@ -522,6 +591,21 @@ gtk_menu_class_init (GtkMenuClass *class)
 							 P_("A boolean that indicates whether the menu is torn-off"),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMenu:monitor:
+   *
+   * The monitor the menu will be popped up on.
+   *
+   * Since: 2.14
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_MONITOR,
+                                   g_param_spec_int ("monitor",
+				                     P_("Monitor"),
+						     P_("The monitor the menu will be popped up on"),
+						     -1, G_MAXINT, -1,
+						     GTK_PARAM_READWRITE));
 
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("vertical-padding",
@@ -624,82 +708,82 @@ gtk_menu_class_init (GtkMenuClass *class)
   binding_set = gtk_binding_set_by_class (class);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Up, 0,
-				I_("move_current"), 1,
+				I_("move-current"), 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_PREV);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Up, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_PREV);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Down, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_NEXT);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Down, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_NEXT);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Left, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_PARENT);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Left, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_PARENT);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Right, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_CHILD);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Right, 0,
-				"move_current", 1,
+				"move-current", 1,
 				GTK_TYPE_MENU_DIRECTION_TYPE,
 				GTK_MENU_DIR_CHILD);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Home, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_START);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Home, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_START);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_End, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_END);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_End, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_END);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Page_Up, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_PAGE_UP);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Page_Up, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_PAGE_UP);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Page_Down, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_PAGE_DOWN);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Page_Down, 0,
-				"move_scroll", 1,
+				"move-scroll", 1,
 				GTK_TYPE_SCROLL_TYPE,
 				GTK_SCROLL_PAGE_DOWN);
 
@@ -729,47 +813,83 @@ gtk_menu_class_init (GtkMenuClass *class)
 }
 
 
-static void 
+static void
 gtk_menu_set_property (GObject      *object,
 		       guint         prop_id,
 		       const GValue *value,
 		       GParamSpec   *pspec)
 {
-  GtkMenu *menu;
-  
-  menu = GTK_MENU (object);
-  
+  GtkMenu *menu = GTK_MENU (object);
+
   switch (prop_id)
     {
+    case PROP_ACTIVE:
+      gtk_menu_set_active (menu, g_value_get_int (value));
+      break;
+    case PROP_ACCEL_GROUP:
+      gtk_menu_set_accel_group (menu, g_value_get_object (value));
+      break;
+    case PROP_ACCEL_PATH:
+      gtk_menu_set_accel_path (menu, g_value_get_string (value));
+      break;
+    case PROP_ATTACH_WIDGET:
+      {
+        GtkWidget *widget;
+
+        widget = gtk_menu_get_attach_widget (menu);
+        if (widget)
+          gtk_menu_detach (menu);
+
+        widget = (GtkWidget*) g_value_get_object (value); 
+        if (widget)
+          gtk_menu_attach_to_widget (menu, widget, NULL);
+      }
+      break;
     case PROP_TEAROFF_STATE:
       gtk_menu_set_tearoff_state (menu, g_value_get_boolean (value));
       break;
     case PROP_TEAROFF_TITLE:
       gtk_menu_set_title (menu, g_value_get_string (value));
-      break;	  
+      break;
+    case PROP_MONITOR:
+      gtk_menu_set_monitor (menu, g_value_get_int (value));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
 }
 
-static void 
+static void
 gtk_menu_get_property (GObject     *object,
 		       guint        prop_id,
 		       GValue      *value,
 		       GParamSpec  *pspec)
 {
-  GtkMenu *menu;
-  
-  menu = GTK_MENU (object);
-  
+  GtkMenu *menu = GTK_MENU (object);
+
   switch (prop_id)
     {
+    case PROP_ACTIVE:
+      g_value_set_int (value, g_list_index (GTK_MENU_SHELL (menu)->children, gtk_menu_get_active (menu)));
+      break;
+    case PROP_ACCEL_GROUP:
+      g_value_set_object (value, gtk_menu_get_accel_group (menu));
+      break;
+    case PROP_ACCEL_PATH:
+      g_value_set_string (value, gtk_menu_get_accel_path (menu));
+      break;
+    case PROP_ATTACH_WIDGET:
+      g_value_set_object (value, gtk_menu_get_attach_widget (menu));
+      break;
     case PROP_TEAROFF_STATE:
       g_value_set_boolean (value, gtk_menu_get_tearoff_state (menu));
       break;
     case PROP_TEAROFF_TITLE:
       g_value_set_string (value, gtk_menu_get_title (menu));
+      break;
+    case PROP_MONITOR:
+      g_value_set_int (value, gtk_menu_get_monitor (menu));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -930,7 +1050,7 @@ gtk_menu_init (GtkMenu *menu)
 						   "child", menu,
 						   NULL),
 				     "signal::event", gtk_menu_window_event, menu,
-				     "signal::size_request", gtk_menu_window_size_request, menu,
+				     "signal::size-request", gtk_menu_window_size_request, menu,
 				     "signal::destroy", gtk_widget_destroyed, &menu->toplevel,
 				     NULL);
   gtk_window_set_resizable (GTK_WINDOW (menu->toplevel), FALSE);
@@ -978,18 +1098,15 @@ gtk_menu_init (GtkMenu *menu)
 #endif /* MAEMO_CHANGES */
 
   priv->have_layout = FALSE;
+  priv->monitor_num = -1;
 }
 
 static void
 gtk_menu_destroy (GtkObject *object)
 {
-  GtkMenu *menu;
+  GtkMenu *menu = GTK_MENU (object);
   GtkMenuAttachData *data;
   GtkMenuPrivate *priv; 
-
-  g_return_if_fail (GTK_IS_MENU (object));
-
-  menu = GTK_MENU (object);
 
   gtk_menu_remove_scroll_timeout (menu);
   
@@ -1039,16 +1156,6 @@ gtk_menu_destroy (GtkObject *object)
     }
 
   GTK_OBJECT_CLASS (gtk_menu_parent_class)->destroy (object);
-}
-
-static void
-gtk_menu_finalize (GObject *object)
-{
-  GtkMenu *menu = GTK_MENU (object);
-
-  g_free (menu->accel_path);
-  
-  G_OBJECT_CLASS (gtk_menu_parent_class)->finalize (object);
 }
 
 static void
@@ -1109,10 +1216,10 @@ gtk_menu_attach_to_widget (GtkMenu	       *menu,
   
   g_object_ref_sink (menu);
   
-  data = g_new (GtkMenuAttachData, 1);
+  data = g_slice_new (GtkMenuAttachData);
   data->attach_widget = attach_widget;
   
-  g_signal_connect (attach_widget, "screen_changed",
+  g_signal_connect (attach_widget, "screen-changed",
 		    G_CALLBACK (attach_widget_screen_changed), menu);
   attach_widget_screen_changed (attach_widget, NULL, menu);
   
@@ -1123,8 +1230,9 @@ gtk_menu_attach_to_widget (GtkMenu	       *menu,
     {
       list = g_list_prepend (list, menu);
     }
-  g_object_set_data_full (G_OBJECT (attach_widget), I_(ATTACHED_MENUS), list, (GtkDestroyNotify) g_list_free);
-  
+  g_object_set_data_full (G_OBJECT (attach_widget), I_(ATTACHED_MENUS), list,
+                          (GDestroyNotify) g_list_free);
+
   if (GTK_WIDGET_STATE (menu) != GTK_STATE_NORMAL)
     gtk_widget_set_state (GTK_WIDGET (menu), GTK_STATE_NORMAL);
   
@@ -1176,14 +1284,15 @@ gtk_menu_detach (GtkMenu *menu)
   list = g_object_steal_data (G_OBJECT (data->attach_widget), ATTACHED_MENUS);
   list = g_list_remove (list, menu);
   if (list)
-    g_object_set_data_full (G_OBJECT (data->attach_widget), I_(ATTACHED_MENUS), list, (GtkDestroyNotify) g_list_free);
+    g_object_set_data_full (G_OBJECT (data->attach_widget), I_(ATTACHED_MENUS), list,
+                            (GDestroyNotify) g_list_free);
   else
     g_object_set_data (G_OBJECT (data->attach_widget), I_(ATTACHED_MENUS), NULL);
   
   if (GTK_WIDGET_REALIZED (menu))
     gtk_widget_unrealize (GTK_WIDGET (menu));
   
-  g_free (data);
+  g_slice_free (GtkMenuAttachData, data);
   
   /* Fallback title for menu comes from attach widget */
   gtk_menu_update_title (menu);
@@ -1195,12 +1304,9 @@ static void
 gtk_menu_remove (GtkContainer *container,
 		 GtkWidget    *widget)
 {
-  GtkMenu *menu;
+  GtkMenu *menu = GTK_MENU (container);
 
-  g_return_if_fail (GTK_IS_MENU (container));
   g_return_if_fail (GTK_IS_MENU_ITEM (widget));
-
-  menu = GTK_MENU (container);
 
   /* Clear out old_active_menu_item if it matches the item we are removing
    */
@@ -1536,7 +1642,7 @@ gtk_menu_popup (GtkMenu		    *menu,
     }
 
   /* Set transient for to get the right window group and parent relationship */
-  if (parent_toplevel && GTK_IS_WINDOW (parent_toplevel))
+  if (GTK_IS_WINDOW (parent_toplevel))
     gtk_window_set_transient_for (GTK_WINDOW (menu->toplevel),
 				  GTK_WINDOW (parent_toplevel));
   
@@ -1804,6 +1910,10 @@ gtk_menu_real_can_activate_accel (GtkWidget *widget,
  * Assigning accel paths to menu items then enables the user to change
  * their accelerators at runtime. More details about accelerator paths
  * and their default setups can be found at gtk_accel_map_add_entry().
+ * 
+ * Note that @accel_path string will be stored in a #GQuark. Therefore, if you
+ * pass a static string, you can save some memory by interning it first with 
+ * g_intern_static_string().
  */
 void
 gtk_menu_set_accel_path (GtkMenu     *menu,
@@ -1813,10 +1923,28 @@ gtk_menu_set_accel_path (GtkMenu     *menu,
   if (accel_path)
     g_return_if_fail (accel_path[0] == '<' && strchr (accel_path, '/')); /* simplistic check */
 
-  g_free (menu->accel_path);
-  menu->accel_path = g_strdup (accel_path);
+  /* FIXME: accel_path should be defined as const gchar* */
+  menu->accel_path = (gchar*)g_intern_string (accel_path);
   if (menu->accel_path)
     _gtk_menu_refresh_accel_paths (menu, FALSE);
+}
+
+/**
+ * gtk_menu_get_accel_path
+ * @menu: a valid #GtkMenu
+ *
+ * Retrieves the accelerator path set on the menu.
+ *
+ * Returns: the accelerator path set on the menu.
+ *
+ * Since: 2.14
+ */
+const gchar*
+gtk_menu_get_accel_path (GtkMenu *menu)
+{
+  g_return_val_if_fail (GTK_IS_MENU (menu), NULL);
+
+  return menu->accel_path;
 }
 
 typedef struct {
@@ -1838,11 +1966,11 @@ refresh_accel_paths_foreach (GtkWidget *widget,
 }
 
 static void
-_gtk_menu_refresh_accel_paths (GtkMenu *menu,
-			       gboolean group_changed)
+_gtk_menu_refresh_accel_paths (GtkMenu  *menu,
+			       gboolean  group_changed)
 {
   g_return_if_fail (GTK_IS_MENU (menu));
-      
+
   if (menu->accel_path && menu->accel_group)
     {
       AccelPropagation prop;
@@ -1977,7 +2105,7 @@ gtk_menu_set_tearoff_state (GtkMenu  *menu,
 	    {
 	      GtkWidget *toplevel;
 
-	      menu->tearoff_window = gtk_widget_new (GTK_TYPE_WINDOW,
+	      menu->tearoff_window = g_object_new (GTK_TYPE_WINDOW,
 						     "type", GTK_WINDOW_TOPLEVEL,
 						     "screen", gtk_widget_get_screen (menu->toplevel),
 						     "app-paintable", TRUE,
@@ -2012,7 +2140,7 @@ gtk_menu_set_tearoff_state (GtkMenu  *menu,
 						    height/2,
 						    height));
 	      g_object_connect (menu->tearoff_adjustment,
-				"signal::value_changed", gtk_menu_scrollbar_changed, menu,
+				"signal::value-changed", gtk_menu_scrollbar_changed, menu,
 				NULL);
 	      menu->tearoff_scrollbar = gtk_vscrollbar_new (menu->tearoff_adjustment);
 
@@ -2167,7 +2295,8 @@ gtk_menu_style_set (GtkWidget *widget,
 }
 
 static void
-get_arrows_border (GtkMenu *menu, GtkBorder *border)
+get_arrows_border (GtkMenu   *menu,
+                   GtkBorder *border)
 {
   guint scroll_arrow_height;
 #ifdef MAEMO_CHANGES
@@ -2345,11 +2474,7 @@ menu_grab_transfer_window_destroy (GtkMenu *menu)
 static void
 gtk_menu_unrealize (GtkWidget *widget)
 {
-  GtkMenu *menu;
-
-  g_return_if_fail (GTK_IS_MENU (widget));
-
-  menu = GTK_MENU (widget);
+  GtkMenu *menu = GTK_MENU (widget);
 
   menu_grab_transfer_window_destroy (menu);
 
@@ -2361,7 +2486,7 @@ gtk_menu_unrealize (GtkWidget *widget)
   gdk_window_destroy (menu->bin_window);
   menu->bin_window = NULL;
 
-  (* GTK_WIDGET_CLASS (gtk_menu_parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (gtk_menu_parent_class)->unrealize (widget);
 }
 
 static void
@@ -2623,11 +2748,11 @@ gtk_menu_size_allocate (GtkWidget     *widget,
 }
 
 static void
-get_arrows_visible_area (GtkMenu *menu,
+get_arrows_visible_area (GtkMenu      *menu,
                          GdkRectangle *border,
                          GdkRectangle *upper,
                          GdkRectangle *lower,
-                         gint *arrow_space)
+                         gint         *arrow_space)
 {
   GtkWidget *widget = GTK_WIDGET (menu);
   guint vertical_padding;
@@ -2636,7 +2761,7 @@ get_arrows_visible_area (GtkMenu *menu,
 #ifdef MAEMO_CHANGES
   gboolean opposite_arrows;
 #endif
-  
+
   gtk_widget_style_get (widget,
                         "vertical-padding", &vertical_padding,
                         "horizontal-padding", &horizontal_padding,
@@ -2726,11 +2851,7 @@ gtk_menu_paint (GtkWidget      *widget,
 			 widget->window,
 			 priv->upper_arrow_state,
                          GTK_SHADOW_OUT,
-#ifdef MAEMO_CHANGES
-                         &event->area, widget, "menu_scroll_arrow_down",
-#else
-                         &event->area, widget, "menu",
-#endif
+			 &event->area, widget, "menu_scroll_arrow_up",
                          upper.x,
                          upper.y,
                          upper.width,
@@ -2754,11 +2875,7 @@ gtk_menu_paint (GtkWidget      *widget,
 			 widget->window,
 			 priv->lower_arrow_state,
                          GTK_SHADOW_OUT,
-#ifdef MAEMO_CHANGES
-                         &event->area, widget, "menu_scroll_arrow_down",
-#else
-                         &event->area, widget, "menu",
-#endif
+			 &event->area, widget, "menu_scroll_arrow_down",
                          lower.x,
                          lower.y,
                          lower.width,
@@ -2808,8 +2925,8 @@ gtk_menu_expose (GtkWidget	*widget,
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       gtk_menu_paint (widget, event);
-      
-      (* GTK_WIDGET_CLASS (gtk_menu_parent_class)->expose_event) (widget, event);
+
+      GTK_WIDGET_CLASS (gtk_menu_parent_class)->expose_event (widget, event);
     }
   
   return FALSE;
@@ -3205,8 +3322,10 @@ gtk_menu_key_press (GtkWidget	*widget,
 
 static gboolean
 check_threshold (GtkWidget *widget,
-		 int start_x, int start_y,
-		 int x, int y)
+                 gint       start_x,
+                 gint       start_y,
+                 gint       x,
+                 gint       y)
 {
 #define THRESHOLD 8
   
@@ -3216,9 +3335,9 @@ check_threshold (GtkWidget *widget,
 }
 
 static gboolean
-definitely_within_item (GtkWidget *widget, 
-			int x,
-			int y)
+definitely_within_item (GtkWidget *widget,
+                        gint       x,
+                        gint       y)
 {
   GdkWindow *window = GTK_MENU_ITEM (widget)->event_window;
   int w, h;
@@ -3233,8 +3352,8 @@ definitely_within_item (GtkWidget *widget,
 }
 
 static gboolean
-gtk_menu_motion_notify  (GtkWidget	   *widget,
-			 GdkEventMotion    *event)
+gtk_menu_motion_notify (GtkWidget      *widget,
+                        GdkEventMotion *event)
 {
   GtkWidget *menu_item;
   GtkMenu *menu;
@@ -3646,7 +3765,7 @@ gtk_menu_scroll (GtkWidget	*widget,
 }
 
 static void
-get_arrows_sensitive_area (GtkMenu *menu,
+get_arrows_sensitive_area (GtkMenu      *menu,
                            GdkRectangle *upper,
                            GdkRectangle *lower)
 {
@@ -3968,6 +4087,11 @@ gtk_menu_enter_notify (GtkWidget        *widget,
   GtkWidget *menu_item;
   gboolean   touchscreen_mode;
 
+  if (event->mode == GDK_CROSSING_GTK_GRAB ||
+      event->mode == GDK_CROSSING_GTK_UNGRAB ||
+      event->mode == GDK_CROSSING_STATE_CHANGED)
+    return TRUE;
+
   g_object_get (gtk_widget_get_settings (widget),
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
@@ -4038,6 +4162,11 @@ gtk_menu_leave_notify (GtkWidget        *widget,
   GtkMenu *menu;
   GtkMenuItem *menu_item;
   GtkWidget *event_widget;
+
+  if (event->mode == GDK_CROSSING_GTK_GRAB ||
+      event->mode == GDK_CROSSING_GTK_UNGRAB ||
+      event->mode == GDK_CROSSING_STATE_CHANGED)
+    return TRUE;
 
   menu = GTK_MENU (widget);
   menu_shell = GTK_MENU_SHELL (widget); 
@@ -4801,8 +4930,8 @@ compute_child_offset (GtkMenu   *menu,
 }
 
 static void
-gtk_menu_scroll_item_visible (GtkMenuShell    *menu_shell,
-			      GtkWidget       *menu_item)
+gtk_menu_scroll_item_visible (GtkMenuShell *menu_shell,
+			      GtkWidget    *menu_item)
 {
   GtkMenu *menu;
   gint child_offset, child_height;
@@ -4876,8 +5005,8 @@ gtk_menu_scroll_item_visible (GtkMenuShell    *menu_shell,
 }
 
 static void
-gtk_menu_select_item (GtkMenuShell  *menu_shell,
-		      GtkWidget     *menu_item)
+gtk_menu_select_item (GtkMenuShell *menu_shell,
+		      GtkWidget    *menu_item)
 {
   GtkMenu *menu = GTK_MENU (menu_shell);
 
@@ -4919,9 +5048,9 @@ gtk_menu_select_item (GtkMenuShell  *menu_shell,
  * (the image of the menu) is left in place.
  */
 static void 
-gtk_menu_reparent (GtkMenu      *menu, 
-		   GtkWidget    *new_parent, 
-		   gboolean      unrealize)
+gtk_menu_reparent (GtkMenu   *menu,
+                   GtkWidget *new_parent,
+                   gboolean   unrealize)
 {
   GtkObject *object = GTK_OBJECT (menu);
   GtkWidget *widget = GTK_WIDGET (menu);
@@ -5098,8 +5227,8 @@ find_child_containing (GtkMenuShell *menu_shell,
 }
 
 static void
-gtk_menu_move_current (GtkMenuShell *menu_shell,
-                       GtkMenuDirectionType direction)
+gtk_menu_move_current (GtkMenuShell         *menu_shell,
+                       GtkMenuDirectionType  direction)
 {
   GtkMenu *menu = GTK_MENU (menu_shell);
   gint i;
@@ -5404,6 +5533,28 @@ gtk_menu_set_monitor (GtkMenu *menu,
   priv = gtk_menu_get_private (menu);
   
   priv->monitor_num = monitor_num;
+}
+
+/**
+ * gtk_menu_get_monitor:
+ * @menu: a #GtkMenu
+ *
+ * Retrieves the number of the monitor on which to show the menu.
+ *
+ * Returns: the number of the monitor on which the menu should
+ *    be popped up or -1, if no monitor has been set
+ *
+ * Since: 2.14
+ **/
+gint
+gtk_menu_get_monitor (GtkMenu *menu)
+{
+  GtkMenuPrivate *priv;
+  g_return_val_if_fail (GTK_IS_MENU (menu), -1);
+
+  priv = gtk_menu_get_private (menu);
+  
+  return priv->monitor_num;
 }
 
 /**

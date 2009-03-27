@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
+
+  [ Michael Natterer ]
+  * Upgrade to GTK+ 2.14.3
+
+ -- Michael Natterer <mitch@imendio.com>  Fri, 31 Oct 2008 13:20:00 +0100
+
 gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
 
   * Add GdkPixbufSimpleAnim:loop property and its accessors. See

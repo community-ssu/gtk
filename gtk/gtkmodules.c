@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 
@@ -30,7 +30,6 @@
 #include "gtkalias.h"
 
 #include <gmodule.h>
-#include <pango/pango-utils.h>	/* For pango_split_file_list */
 
 typedef struct _GtkModuleInfo GtkModuleInfo;
 struct _GtkModuleInfo
@@ -255,6 +254,7 @@ load_module (GSList      *module_list,
 	     const gchar *name)
 {
   GtkModuleInitFunc modinit_func;
+  gpointer modinit_func_ptr;
   GtkModuleInfo *info = NULL;
   GModule *module = NULL;
   GSList *l;
@@ -280,8 +280,12 @@ load_module (GSList      *module_list,
 
 	  if (module)
 	    {
-	      if (!g_module_symbol (module, "gtk_module_init", (gpointer *) &modinit_func) ||
-		  !modinit_func)
+	      if (g_module_symbol (module, "gtk_module_init", &modinit_func_ptr))
+		modinit_func = modinit_func_ptr;
+	      else
+		modinit_func = NULL;
+
+	      if (!modinit_func)
 		g_module_close (module);
 	      else
 		{
@@ -507,11 +511,13 @@ _gtk_modules_init (gint        *argc,
 		    G_CALLBACK (display_opened_cb), 
 		    NULL);
 
-  /* Modules specified in the GTK_MODULES environment variable
-   * or on the command line are always loaded, so we'll just leak 
-   * the refcounts.
-   */
-  g_slist_free (load_modules (gtk_modules_args));
+  if (gtk_modules_args) {
+    /* Modules specified in the GTK_MODULES environment variable
+     * or on the command line are always loaded, so we'll just leak 
+     * the refcounts.
+     */
+    g_slist_free (load_modules (gtk_modules_args));
+  }
 }
 
 static void
@@ -542,3 +548,13 @@ _gtk_modules_settings_changed (GtkSettings *settings,
 			  new_modules,
 			  settings_destroy_notify);
 }
+
+#ifdef MAEMO_CHANGES
+/*  Don't you dare using this function if you are not hildon-fm :-)  */
+gchar *
+hildon_fm_private_find_module (const gchar *name,
+                               const gchar *type)
+{
+  return _gtk_find_module (name, type);
+}
+#endif

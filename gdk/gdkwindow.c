@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdkwindow.h"
 #include "gdkwindowimpl.h"
 #include "gdkinternals.h"
@@ -1037,8 +1037,8 @@ gdk_window_get_state (GdkWindow *window)
  * 
  **/
 void
-gdk_window_begin_paint_rect (GdkWindow    *window,
-			     GdkRectangle *rectangle)
+gdk_window_begin_paint_rect (GdkWindow          *window,
+                             const GdkRectangle *rectangle)
 {
   GdkRegion *region;
 
@@ -1100,8 +1100,8 @@ gdk_window_begin_paint_rect (GdkWindow    *window,
  * 
  **/
 void	      
-gdk_window_begin_paint_region (GdkWindow *window,
-			       GdkRegion *region)
+gdk_window_begin_paint_region (GdkWindow       *window,
+                               const GdkRegion *region)
 {
 #ifdef USE_BACKING_STORE
   GdkWindowObject *private = (GdkWindowObject *)window;
@@ -2739,9 +2739,9 @@ gdk_window_process_updates (GdkWindow *window,
  * gdk_window_invalidate_region() for details.
  **/
 void
-gdk_window_invalidate_rect   (GdkWindow    *window,
-			      GdkRectangle *rect,
-			      gboolean      invalidate_children)
+gdk_window_invalidate_rect (GdkWindow          *window,
+                            const GdkRectangle *rect,
+                            gboolean            invalidate_children)
 {
   GdkRectangle window_rect;
   GdkRegion *region;
@@ -2772,8 +2772,8 @@ gdk_window_invalidate_rect   (GdkWindow    *window,
 }
 
 static void
-draw_ugly_color (GdkWindow *window,
-                GdkRegion *region)
+draw_ugly_color (GdkWindow       *window,
+                 const GdkRegion *region)
 {
   /* Draw ugly color all over the newly-invalid region */
   GdkColor ugly_color = { 0, 50000, 10000, 10000 };
@@ -2821,9 +2821,10 @@ draw_ugly_color (GdkWindow *window,
  * invalidated.
  **/
 void
-gdk_window_invalidate_maybe_recurse (GdkWindow *window,
-				     GdkRegion *region,
-				     gboolean (*child_func) (GdkWindow *, gpointer),
+gdk_window_invalidate_maybe_recurse (GdkWindow       *window,
+                                     const GdkRegion *region,
+                                     gboolean       (*child_func) (GdkWindow *,
+                                                                   gpointer),
 				     gpointer   user_data)
 {
   GdkWindowObject *private = (GdkWindowObject *)window;
@@ -2887,14 +2888,16 @@ gdk_window_invalidate_maybe_recurse (GdkWindow *window,
 	  
 	  if (child_func && (*child_func) ((GdkWindow *)child, user_data))
 	    {
-	      gdk_region_offset (region, - child_rect.x, - child_rect.y);
+              GdkRegion *tmp = gdk_region_copy (region);
+
+	      gdk_region_offset (tmp, - child_rect.x, - child_rect.y);
 	      gdk_region_offset (child_region, - child_rect.x, - child_rect.y);
-	      gdk_region_intersect (child_region, region);
+	      gdk_region_intersect (child_region, tmp);
 	      
 	      gdk_window_invalidate_maybe_recurse ((GdkWindow *)child,
 						   child_region, child_func, user_data);
 	      
-	      gdk_region_offset (region, child_rect.x, child_rect.y);
+	      gdk_region_destroy (tmp);
 	    }
 
 	  gdk_region_destroy (child_region);
@@ -2956,9 +2959,9 @@ true_predicate (GdkWindow *window,
  * fine grained control over which children are invalidated.
  **/
 void
-gdk_window_invalidate_region (GdkWindow *window,
-			      GdkRegion *region,
-			      gboolean   invalidate_children)
+gdk_window_invalidate_region (GdkWindow       *window,
+			      const GdkRegion *region,
+			      gboolean         invalidate_children)
 {
   gdk_window_invalidate_maybe_recurse (window, region,
 				       invalidate_children ?
@@ -4211,7 +4214,7 @@ remove_redirect_from_children (GdkWindowObject   *private,
  * gdk_window_remove_redirection:
  * @window: a #GdkWindow
  *
- * Removes and active redirection started by
+ * Removes any active redirection started by
  * gdk_window_redirect_to_drawable().
  *
  * Since: 2.14
@@ -4258,14 +4261,14 @@ apply_redirect_to_children (GdkWindowObject   *private,
  * gdk_window_redirect_to_drawable:
  * @window: a #GdkWindow
  * @drawable: a #GdkDrawable
- * src_x: x position in @window
- * src_y: y position in @window
- * dest_x: x position in @drawable
- * dest_y: y position in @drawable
- * width: width of redirection
- * height: height of redirection
+ * @src_x: x position in @window
+ * @src_y: y position in @window
+ * @dest_x: x position in @drawable
+ * @dest_y: y position in @drawable
+ * @width: width of redirection
+ * @height: height of redirection
  *
- * Redirects drawing into @windows so that drawing to the
+ * Redirects drawing into @window so that drawing to the
  * window in the rectangle specified by @src_x, @src_y,
  * @width and @height is also drawn into @drawable at
  * @dest_x, @dest_y.
@@ -4277,11 +4280,7 @@ apply_redirect_to_children (GdkWindowObject   *private,
  * Redirection is active until gdk_window_remove_redirection()
  * is called.
  *
- * This function should not be used on windows created by
- * gdk_window_new_offscreen(), as that is implemented using
- * redirection.
- *
- * Since: 2.14.
+ * Since: 2.14
  **/
 void
 gdk_window_redirect_to_drawable (GdkWindow   *window,

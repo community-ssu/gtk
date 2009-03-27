@@ -20,8 +20,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_LABEL_H__
 #define __GTK_LABEL_H__
@@ -40,7 +44,7 @@ G_BEGIN_DECLS
 #define GTK_IS_LABEL(obj)	  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LABEL))
 #define GTK_IS_LABEL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LABEL))
 #define GTK_LABEL_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LABEL, GtkLabelClass))
-       
+
 
 typedef struct _GtkLabel       GtkLabel;
 typedef struct _GtkLabelClass  GtkLabelClass;
@@ -52,30 +56,30 @@ struct _GtkLabel
   GtkMisc misc;
 
   /*< private >*/
-  gchar  *label;
-  guint   jtype            : 2;
-  guint   wrap             : 1;
-  guint   use_underline    : 1;
-  guint   use_markup       : 1;
-  guint   ellipsize        : 3;
-  guint   single_line_mode : 1;
-  guint   have_transform   : 1;
-  guint   in_click         : 1;
-  guint   wrap_mode        : 3;
-  guint   pattern_set      : 1;
+  gchar  *GSEAL (label);
+  guint   GSEAL (jtype)            : 2;
+  guint   GSEAL (wrap)             : 1;
+  guint   GSEAL (use_underline)    : 1;
+  guint   GSEAL (use_markup)       : 1;
+  guint   GSEAL (ellipsize)        : 3;
+  guint   GSEAL (single_line_mode) : 1;
+  guint   GSEAL (have_transform)   : 1;
+  guint   GSEAL (in_click)         : 1;
+  guint   GSEAL (wrap_mode)        : 3;
+  guint   GSEAL (pattern_set)      : 1;
 
-  guint   mnemonic_keyval;
-  
-  gchar  *text; 
-  PangoAttrList *attrs;
-  PangoAttrList *effective_attrs;
-  
-  PangoLayout *layout;
+  guint   GSEAL (mnemonic_keyval);
 
-  GtkWidget *mnemonic_widget;
-  GtkWindow *mnemonic_window;
-  
-  GtkLabelSelectionInfo *select_info;
+  gchar  *GSEAL (text);
+  PangoAttrList *GSEAL (attrs);
+  PangoAttrList *GSEAL (effective_attrs);
+
+  PangoLayout *GSEAL (layout);
+
+  GtkWidget *GSEAL (mnemonic_widget);
+  GtkWindow *GSEAL (mnemonic_window);
+
+  GtkLabelSelectionInfo *GSEAL (select_info);
 };
 
 struct _GtkLabelClass
@@ -87,7 +91,7 @@ struct _GtkLabelClass
 			    gint            count,
 			    gboolean        extend_selection);
   void (* copy_clipboard)  (GtkLabel       *label);
-  
+
   /* Hook to customize right-click popup for selectable labels */
   void (* populate_popup)   (GtkLabel       *label,
                              GtkMenu        *menu);

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include <pango/pangocairo.h>
 #include "gdkcairo.h"
@@ -99,9 +99,9 @@ gdk_pango_renderer_constructor (GType                  type,
   GObject *object;
   GdkPangoRenderer *gdk_renderer;
 
-  object = (* G_OBJECT_CLASS (gdk_pango_renderer_parent_class)->constructor) (type,
-									      n_construct_properties,
-									      construct_params);
+  object = G_OBJECT_CLASS (gdk_pango_renderer_parent_class)->constructor (type,
+                                                                          n_construct_properties,
+                                                                          construct_params);
 
   gdk_renderer = GDK_PANGO_RENDERER (object);
   
@@ -1214,7 +1214,7 @@ static GdkRegion*
 layout_iter_get_line_clip_region (PangoLayoutIter *iter,
 				  gint             x_origin,
 				  gint             y_origin,
-				  gint            *index_ranges,
+				  const gint      *index_ranges,
 				  gint             n_ranges)
 {
   PangoLayoutLine *line;
@@ -1297,7 +1297,7 @@ GdkRegion*
 gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
                                        gint             x_origin,
                                        gint             y_origin,
-                                       gint            *index_ranges,
+                                       const gint      *index_ranges,
                                        gint             n_ranges)
 {
   GdkRegion *clip_region;
@@ -1341,7 +1341,7 @@ GdkRegion*
 gdk_pango_layout_get_clip_region (PangoLayout *layout,
                                   gint         x_origin,
                                   gint         y_origin,
-                                  gint        *index_ranges,
+                                  const gint  *index_ranges,
                                   gint         n_ranges)
 {
   PangoLayoutIter *iter;  

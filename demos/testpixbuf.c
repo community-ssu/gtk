@@ -17,13 +17,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixbuf-loader.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "test-inline-pixbufs.h"
 
@@ -383,7 +383,7 @@ new_testrgb_window (GdkPixbuf *pixbuf, gchar *title)
 	w = gdk_pixbuf_get_width (pixbuf);
 	h = gdk_pixbuf_get_height (pixbuf);
 
-	window = gtk_widget_new (gtk_window_get_type (),
+	window = g_object_new (gtk_window_get_type (),
 				 "GtkObject::user_data", NULL,
 				 "GtkWindow::type", GTK_WINDOW_TOPLEVEL,
 				 "GtkWindow::title", title ? title : "testrgb",

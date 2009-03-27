@@ -17,6 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_TREE_MODEL_H__
 #define __GTK_TREE_MODEL_H__
 
@@ -80,7 +84,7 @@ struct _GtkTreeModelIface
 					  gint         *new_order);
 
   /* Virtual Table */
-  GtkTreeModelFlags (* get_flags)  (GtkTreeModel *tree_model);   
+  GtkTreeModelFlags (* get_flags)  (GtkTreeModel *tree_model);
 
   gint         (* get_n_columns)   (GtkTreeModel *tree_model);
   GType        (* get_column_type) (GtkTreeModel *tree_model,
@@ -175,7 +179,7 @@ void                 gtk_tree_row_reference_reordered (GObject     *proxy,
 						       GtkTreePath *path,
 						       GtkTreeIter *iter,
 						       gint        *new_order);
-						       
+
 /* GtkTreeIter operations */
 GtkTreeIter *     gtk_tree_iter_copy             (GtkTreeIter  *iter);
 void              gtk_tree_iter_free             (GtkTreeIter  *iter);
@@ -258,9 +262,6 @@ void gtk_tree_model_rows_reordered        (GtkTreeModel *tree_model,
 					   GtkTreePath  *path,
 					   GtkTreeIter  *iter,
 					   gint         *new_order);
-
-
-
 
 G_END_DECLS
 

@@ -19,11 +19,14 @@
  * Authors: Mark McLoughlin <mark@skynet.ie>
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
+
 #ifndef __GDK_SPAWN_H__
 #define __GDK_SPAWN_H__
 
 #include <gdk/gdkscreen.h>
-#include <glib/gspawn.h>
 
 G_BEGIN_DECLS
 

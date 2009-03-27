@@ -41,7 +41,7 @@
 
 #include "gdkinternals.h"
 
-#include <config.h>
+#include "config.h"
 
 /* Make up for some minor w32api or MSVC6 header lossage */
 
@@ -268,9 +268,9 @@ COLORREF  _gdk_win32_colormap_color     (GdkColormap *colormap,
 
 HRGN	  _gdk_win32_bitmap_to_hrgn     (GdkPixmap   *bitmap);
 
-HRGN	  _gdk_win32_gdkregion_to_hrgn  (GdkRegion   *region,
-					 gint         x_origin,
-					 gint         y_origin);
+HRGN	  _gdk_win32_gdkregion_to_hrgn  (const GdkRegion *region,
+					 gint             x_origin,
+					 gint             y_origin);
 
 GdkRegion *_gdk_win32_hrgn_to_region    (HRGN hrgn);
 
@@ -366,7 +366,14 @@ extern GdkDisplay       *_gdk_display;
 extern GdkScreen        *_gdk_screen;
 
 extern gint		 _gdk_num_monitors;
-extern GdkRectangle     *_gdk_monitors;
+typedef struct _GdkWin32Monitor GdkWin32Monitor;
+struct _GdkWin32Monitor
+{
+  gchar *name;
+  gint width_mm, height_mm;
+  GdkRectangle rect;
+};
+extern GdkWin32Monitor  *_gdk_monitors;
 
 /* Offsets to add to Windows coordinates (which are relative to the
  * primary monitor's origin, and thus might be negative for monitors

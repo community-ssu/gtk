@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkimcontext.h"
 #include "gtkmain.h"		/* For _gtk_boolean_handled_accumulator */
@@ -112,7 +112,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 #endif /* MAEMO_CHANGES */
 
   im_context_signals[PREEDIT_START] =
-    g_signal_new (I_("preedit_start"),
+    g_signal_new (I_("preedit-start"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkIMContextClass, preedit_start),
@@ -121,7 +121,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 		  G_TYPE_NONE, 0);
   
   im_context_signals[PREEDIT_END] =
-    g_signal_new (I_("preedit_end"),
+    g_signal_new (I_("preedit-end"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkIMContextClass, preedit_end),
@@ -130,7 +130,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 		  G_TYPE_NONE, 0);
   
   im_context_signals[PREEDIT_CHANGED] =
-    g_signal_new (I_("preedit_changed"),
+    g_signal_new (I_("preedit-changed"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkIMContextClass, preedit_changed),
@@ -149,7 +149,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 		  G_TYPE_STRING);
 
   im_context_signals[RETRIEVE_SURROUNDING] =
-    g_signal_new (I_("retrieve_surrounding"),
+    g_signal_new (I_("retrieve-surrounding"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkIMContextClass, retrieve_surrounding),
@@ -157,7 +157,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
                   _gtk_marshal_BOOLEAN__VOID,
                   G_TYPE_BOOLEAN, 0);
   im_context_signals[DELETE_SURROUNDING] =
-    g_signal_new (I_("delete_surrounding"),
+    g_signal_new (I_("delete-surrounding"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkIMContextClass, delete_surrounding),
@@ -316,7 +316,8 @@ gtk_im_context_real_set_surrounding (GtkIMContext  *context,
 				     gint           len,
 				     gint           cursor_index)
 {
-  SurroundingInfo *info = g_object_get_data (G_OBJECT (context), "gtk-im-surrounding-info");
+  SurroundingInfo *info = g_object_get_data (G_OBJECT (context),
+                                             "gtk-im-surrounding-info");
 
   if (info)
     {
@@ -521,8 +522,8 @@ gtk_im_context_reset (GtkIMContext   *context)
  * window.
  **/
 void
-gtk_im_context_set_cursor_location (GtkIMContext *context,
-				    GdkRectangle *area)
+gtk_im_context_set_cursor_location (GtkIMContext       *context,
+				    const GdkRectangle *area)
 {
   GtkIMContextClass *klass;
   
@@ -530,7 +531,7 @@ gtk_im_context_set_cursor_location (GtkIMContext *context,
 
   klass = GTK_IM_CONTEXT_GET_CLASS (context);
   if (klass->set_cursor_location)
-    klass->set_cursor_location (context, area);
+    klass->set_cursor_location (context, (GdkRectangle *) area);
 }
 
 /**

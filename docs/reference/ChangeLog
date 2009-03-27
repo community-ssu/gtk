@@ -1,14 +1,310 @@
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-09-23  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.12 ===
+	* === Released 2.14.3 ===
 
-2008-07-01  Matthias Clasen  <mclasen@redhat.com>
+2008-09-17  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.11 ===
+	* === Released 2.14.2 ===
+
+2008-09-06  Sven Herzberg  <sven@imendio.com>
+
+	Bug 551063 â€“ deprecated marking without a link to what new code should
+	use
+
+	* gdk/tmpl/input.sgml: dropped tmpl documentation for gdk_input_add()
+	and gdk_input_add_full()
+
+2008-09-06  Stefan Kost  <ensonic@users.sf.net>
+
+	* gdk-pixbuf/gdk-pixbuf-csource.xml:
+	* gdk-pixbuf/gdk-pixbuf-from-drawables.sgml:
+	* gdk-pixbuf/gdk-pixbuf-query-loaders.xml:
+	* gdk-pixbuf/gdk-pixbuf-rendering.sgml:
+	* gdk-pixbuf/gdk-pixbuf.sgml:
+	* gdk-pixbuf/porting-from-imlib.sgml:
+	* gdk/gdk-docs.sgml:
+	* gdk/multihead.sgml:
+	* libgail-util/gail-libgail-util-docs.sgml:
+	  Use xi:include instead of entities to ease maintenance and speed up
+	  documentation build. Fixes #540967
+
+2008-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.1 ===
+
+2008-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.0 ===
+
+2008-09-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtk-sections.txt: Add some missing functions
+
+2008-09-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkprintunixdialog.sgml: Document n-up-layout capability
+
+2008-08-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add gtk_selection_data_get_length
+
+2008-08-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add some forgotten apis.
+
+2008-08-19  Torsten Schoenfeld  <kaffeetisch@gmx.de>
+
+	* gtk/gtk-sections.txt: Move gtk_menu_set_monitor next to
+	gtk_menu_get_monitor.  Move gtk_menu_set_title next to
+	gtk_menu_get_title.
+
+2008-08-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* ==== Released 2.13.7 ===
+
+2008-08-16  Torsten Schoenfeld  <kaffeetisch@gmx.de>
+
+	* gdk/gdk-sections.txt: Don't mention GdkWindowRedirect in the
+	docs; it's opaque and not used in any public API.
+
+2008-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/building.sgml: Add a note about shared-mime-info and 
+	XDG_DATA_DIRS.
+
+2008-08-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Remove useless getters
+
+2008-08-13  Torsten Schoenfeld  <kaffeetisch@gmx.de>
+
+	* gtk/gtk-sections.txt: Move
+	gtk_font_selection_dialog_get_apply_button,
+	gtk_font_selection_dialog_get_cancel_button, and
+	gtk_font_selection_dialog_get_ok_button to the
+	GtkFontSelectionDialog section.
+
+2008-08-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.6 ===
+
+2008-08-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add new functions
+
+2008-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add new functions
+
+2008-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 515596 â€“ GtkUIManager's embedded UI definition example is invalid
+
+	* gtk/tmpl/gtktreeview.sgml:
+	* gtk/tmpl/gtkuimanager.sgml: Fix GtkBuilder examples.
+
+2008-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 540834 â€“ Insensitive widgets cannot be grabbed
+
+	* gtk/tmpl/gtkmain.sgml: Explain that insensitive widgets
+	cannot be grabbed. Patch by BjÃ¶rn Lindqvist
+
+2008-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Update
+
+2008-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/tmpl/gdkapplaunchcontext.sgml: Add an introduction
+	with an example.
+
+2008-07-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-sections.txt: Add new api
+
+2008-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.5 ===
+
+2008-07-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add tons of new api
+
+2008-07-19  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 543590 â€“ documentation glitch in GtkBox description
+
+	* gtk/tmpl/gtkbox.sgml: Improve long description. Pointed
+	out by Claudio Saavedra
+
+2008-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/Makefile.am:
+	* gtk/tmpl/gtkstock.sgml: Add new icon.
+
+	* gtk/gtk-sections.txt: Add new GtkPrinter functions
+
+2008-07-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtklabel.sgml: Fix markup
+
+2008-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 537430 â€“ label pango attributes & i18n
+
+	* gtk/tmpl/gtklabel.sgml: Improve docs for Pango attributes in 
+	builder xml. Pointed out by Christian Persch
+
+2008-07-10  Stefan Kost  <ensonic@users.sf.net>
+
+        Bug 540967 â€“ docs build slowly because of entities
+
+	* gtk/building.sgml:
+	* gtk/changes-1.2.sgml:
+	* gtk/changes-2.0.sgml:
+	* gtk/compiling.sgml:
+	* gtk/directfb.sgml:
+	* gtk/glossary.xml:
+	* gtk/gtk-docs.sgml:
+	* gtk/gtk-query-immodules-2.0.xml:
+	* gtk/gtk-update-icon-cache.xml:
+	* gtk/migrating-GtkAboutDialog.sgml:
+	* gtk/migrating-GtkAction.sgml:
+	* gtk/migrating-GtkAssistant.sgml:
+	* gtk/migrating-GtkBuilder.sgml:
+	* gtk/migrating-GtkColorButton.sgml:
+	* gtk/migrating-GtkComboBox.sgml:
+	* gtk/migrating-GtkFileChooser.sgml:
+	* gtk/migrating-GtkIconView.sgml:
+	* gtk/migrating-GtkLinkButton.sgml:
+	* gtk/migrating-GtkRecentChooser.sgml:
+	* gtk/migrating-GtkTooltip.sgml:
+	* gtk/migrating-checklist.sgml:
+	* gtk/osx.sgml:
+	* gtk/other_software.sgml:
+	* gtk/question_index.sgml:
+	* gtk/resources.sgml:
+	* gtk/running.sgml:
+	* gtk/text_widget.sgml:
+	* gtk/tree_widget.sgml:
+	* gtk/visual_index.xml:
+	* gtk/windows.sgml:
+	* gtk/x11.sgml:
+	  Use xi:include to speed up doc-build. Remove some unused entities.
+
+2008-07-06  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 528822 - typo in GtkCombo docs
+
+	* gtk/tmpl/gtkcombo.sgml: Fix a typo. Pointed out by Kevin Ryde.
+
+2008-07-06  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 488019 - Mention bind_textdomain_codeset in gettext related FAQ
+
+	* gtk/question_index.sgml: Mention bind_textdomain_codeset()
+
+2008-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.4 ===
+
+2008-07-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkradiobutton.sgml: Update
+
+2008-07-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/tmpl/events.sgml:
+	* gdk/tmpl/gdktesting.sgml: Additions
+
+2008-07-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/images/iconview.png: Update
+
+2008-06-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.3 ===
 
 2008-06-03  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.10 ===
+	* === Released 2.13.2 ===
+
+2008-06-02  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/gtk.types: Add GtkPrintOperationPreview.
+
+2008-05-29  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.13.1 ===
+
+2008-05-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/building.sgml: Document added configure options
+
+2008-05-29  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/Makefile.am (CPPFLAGS): add -UGTK_DISABLE_SINGLE_INCLUDES so
+	the code generated by gtkdoc-scangobj builds.
+
+2008-05-29  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtk.types: include <gtk/gtkunixprint.h> instead of
+	individual files.
+
+2008-05-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/compiling.sgml: Explains single includes
+
+2008-05-28  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 535250 - GtkToolButton reference page says "label" where 
+	it should say "icon", uses underscores
+
+	* gtk/tmpl/gtktoolbutton.sgml: Improve introduction
+
+2008-05-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Additions
+
+2008-05-27  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 531887 - GtkTooltips is deprecated, but what should I use?
+
+	* gtk/tmpl/gtktooltips.sgml: Add a hint for what to use instead
+
+2008-05-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Additions
+
+2008-05-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: 
+	* gtk/gtk-docs.sgml: Add a section for GtkMountOperation
+	
+2008-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 465144 - gtkprintjob.h is not included with gtk.h
+
+	* gtk/gtk-sections.txt: Fix include for gtkprintjob.h, pointed
+	out by Ã‰tienne Bersac.
+
+2008-05-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add gtk_printer_get_default_page_size
+
+2008-05-20  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 533761 - gdk_accelerator_parse() does not exist, should be
+	gtk_accelerator_parse()
+
+	* gtk/migrating-GtkAction.sgml: Fix a typo. 
+	Pointed out by Matthias Warkus
+
+2008-05-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* docs/reference/gtk/Makefile.am:
+	* docs/reference/gtk/tmpl/gtkstock.sgml: Add new icons.
 
 2008-04-10  Cody Russell  <bratsche@gnome.org>
 
@@ -29,21 +325,36 @@
 	* gtk/tmpl/gtkenums.sgml: Recommend that GTK_WIN_POS_CENTER_ALWAYS
 	is not used.
 
-2008-03-12  Matthias Clasen  <mclasen@redhat.com>
+2008-03-11  Michael Natterer  <mitch@imendio.com>
 
-	* === Released 2.12.9 ===
+	* gdk/Makefile.am
+	* gtk/framebuffer.sgml: remove remaining linux-fb stuff.
 
-2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+2008-02-16  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.8 ===
+	* === Released 2.13.0 ===
 
-2008-01-29  Matthias Clasen  <mclasen@redhat.com>
+2008-02-18  Sven Neumann  <sven@gimp.org>
 
-	* === Released 2.12.7 ===
+	* gtk/tmpl/gtkstock.sgml: added GTK_STOCK_PAGE_SETUP.
 
-2008-01-28  Matthias Clasen  <mclasen@redhat.com>
-	
-	* === Released 2.12.6 ===
+2008-02-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-docs.sgml:
+	* gtk/gtk-sections.txt:
+	* gdk/gdk-docs.sgml:
+	* gdk/gdk-sections.txt: Updates
+
+2008-02-13  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/windows.sgml: Correct description of the Wintab and max
+	palette size options. Drop obsolete Win9x stuff.
+
+2008-02-11  Benjamin Otte  <otte@gnome.org>
+
+	* gdk/tmpl/windows.sgml:
+	remove SGML comment in example code - it was visible in the generated
+	HTML.
 
 2008-01-24  Johan Dahlin  <johan@gnome.org>
 
@@ -52,25 +363,80 @@
 
 2008-01-14  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.5 ===
+	* gtk/gtk-docs.sgml:
+	* gdk-pixbuf/gdk-pixbuf.sgml: Add indices for 2.16 
 
-2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+	* gdk-pixbuf/gdk-pixbuf-sections.txt: Add stream i/o functions.
 
-	* === Released 2.12.4 ===
+2008-01-10  Sven Neumann  <sven@gimp.org>
 
-2007-12-30  Johannes Schmid <jhs@gnome.org>
+	* gtk/tmpl/gtkeditable.sgml: corrected documentation for
+	GtkEditable::delete-text.
+
+2007-12-28  Mathias Hasselmann  <mathias@openismus.com>
+
+	* gtk/tmpl/gtkcalendar.sgml: Move documentation for
+	GtkCalendarDisplayOptions to gtk/gtkcalendar.c.
+
+2007-12-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	* gtk/tmpl/gtkcalendar.sgml: Move documentation for
+	GtkCalendarDisplayOptions to gtk/gtkcalendar.c.
+
+2007-12-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	* docs/reference/gtk/gtk-sections.txt: Add new GtkCalendar symbols.
+
+2007-12-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	* gtk/tmpl/gtkcalendar.sgml: Move documentation for
+	GtkCalendarDisplayOptions to gtk/gtkcalendar.c.
+
+2007-12-27  Mathias Hasselmann  <mathias@openismus.com>
+
+	* reference/gtk/gtk-sections.txt: Add new GtkCalendar symbols.
+
+2007-12-27  Xan Lopez  <xan@gnome.org>
+
+	* gtk/gtk-sections.txt: Add gtk_border_new
+
+2007-12-19 19:54:11  Tim Janik  <timj@imendio.com>
+
+	* libgail-util/Makefile.am: include Makefile.decl to unbreak test rules.
+
+2007-12-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/running.sgml: Mention the Gtk/IMModule XSetting.
+
+2007-12-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdk-docs.sgml:
+	* gdk/gdk-sections.txt: Add GdkAppLaunchContext
+
+2007-12-11  Mathias Hasselmann  <mathias@openismus.com>
+
+	* docs/reference/gtk/tmpl/gtkdnd.sgml:
+	Move documentation for gtk_drag_dest_set to gtkdnd.c.
+
+2007-11-30  Matthias Clasen <mclasen@redhat.com>
+
+	* gkt/question-index.sgml: Correct a typo. (#500686, 
+	David Lambert)
+
+2007-11-26  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkaboutdialog.sgml: Add note about hook setup 
+	to the introduction.
+
+2007-11-25  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkdialog.sgml: Move signal docs inline.
+
+2007-11-19  Matthias Clasen <mclasen@redhat.com>
 
 	* gtk/tmpl/gtknotebook.sgml:
-	Fix method names (gtk_notebook_popup_enable vs. 
-	gtk_notebook_enable_popup)
-
-2007-12-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.12.3 ===
-
-2007-11-26  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.12.2 ===
+	* gtk/tmpl/gtkradiobutton.sgml: Fix typos.  (#494905,
+	Olivier Delhomme)
 
 2007-11-19  Matthias Clasen <mclasen@redhat.com>
 
@@ -659,7 +1025,7 @@ Tue Oct 10 15:29:15 2006  Tim Janik  <timj@imendio.com>
 2006-08-14  Matthias Clasen  <mclasen@redhat.com>
 
 	* gtk/tmpl/gtkruler.sgml: Fix a swapped argument 
-	description.  (#351241, Étienne Bersac)
+	description.  (#351241, Ã‰tienne Bersac)
 
 2006-08-06  Matthias Clasen  <mclasen@redhat.com>
 
@@ -1089,7 +1455,7 @@ Tue Oct 10 15:29:15 2006  Tim Janik  <timj@imendio.com>
 2005-12-29  Matthias Clasen  <mclasen@redhat.com>
 
 	* gtk/tmpl/gtkmain.sgml: Add deprecation note to
-	gtk_exit()  (#325199, Ævar Arnfjörð Bjarmason)
+	gtk_exit()  (#325199, Ã†var ArnfjÃ¶rÃ° Bjarmason)
 
 2005-12-20  Matthias Clasen  <mclasen@redhat.com>
 
@@ -1384,7 +1750,7 @@ Tue Sep 13 14:16:27 2005  Tim Janik  <timj@imendio.com>
 2005-07-07  Matthias Clasen  <mclasen@redhat.com>
 
 	* gtk/migrating-GtkIconView.sgml: Corrections.  
-	(#309718, Tim-Philipp Müller)
+	(#309718, Tim-Philipp MÃ¼ller)
 	
 2005-07-06  Matthias Clasen  <mclasen@redhat.com>
 
@@ -1958,7 +2324,7 @@ Mon Nov  1 13:37:31 2004  Jonathan Blandford  <jrb@redhat.com>
 	* gtk/question_index.sgml: Move the "tail" question to the
 	text view section.
 	Add an entry for "why are my types not registered".  (#156809,
-	Q by Salvador Fandiño, A by Owen Taylor)
+	Q by Salvador FandiÃ±o, A by Owen Taylor)
 	
 2004-10-27  Matthias Clasen  <mclasen@redhat.com>
 
@@ -2480,7 +2846,7 @@ Tue May 11 00:29:53 2004  Matthias Clasen  <maclas@gmx.de>
 
 Fri May  7 01:21:14 2004  Matthias Clasen  <maclas@gmx.de>
 
-	* gtk/tmpl/gtkicontheme.sgml: Fix example.  (Steffen Röcker)
+	* gtk/tmpl/gtkicontheme.sgml: Fix example.  (Steffen RÃ¶cker)
 
 Thu May  6 00:22:38 2004  Matthias Clasen  <maclas@gmx.de>
 
@@ -2530,7 +2896,7 @@ Wed May  5 23:12:36 2004  Matthias Clasen  <maclas@gmx.de>
 	casts from examples.  (#139387, Olexiy Avramchenko)
 
 	* gtk/migrating-GtkAction.sgml: Fix an example.  
-	(#138966, Tim-Philipp Müller)
+	(#138966, Tim-Philipp MÃ¼ller)
 
 	* gdk/tmpl/properties.sgml: Document the only_if_exists argument
 	to gdk_atom_intern() as ignored.
@@ -3255,7 +3621,7 @@ Tue Jul 29 14:21:48 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
 2003-07-21  Matthias Clasen  <maclas@gmx.de>
 
 	* gtk/tmpl/gtkdnd.sgml: It is GTK_DEST_DEFAULT_DROP, not
-	GTK_DRAG_DEFAULT_DROP. (#117917, Tim-Philipp Müller)
+	GTK_DRAG_DEFAULT_DROP. (#117917, Tim-Philipp MÃ¼ller)
 
 2003-07-19  Matthias Clasen  <maclas@gmx.de>
 
@@ -5623,7 +5989,7 @@ Wed Jan  5 10:23:41 2000  Owen Taylor  <otaylor@redhat.com>
 	* gtk/tmpl/gtkclist.sgml: partially written documentation from
 	Paul Schifferer <isengard@geocities.com> who won't be able to finish it
 
-1999-09-22  Martin Norbäck  <d95mback@dtek.chalmers.se>
+1999-09-22  Martin NorbÃ¤ck  <d95mback@dtek.chalmers.se>
 	
 	* gtk/tmpl/gtkclist.sgml: Added information about the sorting functions
 

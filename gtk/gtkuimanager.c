@@ -25,10 +25,10 @@
  * Modified by the GTK+ Team and others 2003.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include "gtkbuildable.h"
@@ -36,19 +36,19 @@
 #include "gtkmarshalers.h"
 #include "gtkmenu.h"
 #include "gtkmenubar.h"
-#include "gtkmenushell.h"
 #include "gtkmenutoolbutton.h"
 #include "gtkseparatormenuitem.h"
 #include "gtkseparatortoolitem.h"
 #include "gtktearoffmenuitem.h"
 #include "gtktoolbar.h"
 #include "gtkuimanager.h"
+#include "gtkwindow.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
 #undef DEBUG_UI_MANAGER
 
-typedef enum 
+typedef enum
 {
   NODE_TYPE_UNDECIDED,
   NODE_TYPE_ROOT,
@@ -244,7 +244,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[ADD_WIDGET] =
-    g_signal_new (I_("add_widget"),
+    g_signal_new (I_("add-widget"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, add_widget),
@@ -263,7 +263,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[ACTIONS_CHANGED] =
-    g_signal_new (I_("actions_changed"),
+    g_signal_new (I_("actions-changed"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, actions_changed),  
@@ -287,7 +287,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[CONNECT_PROXY] =
-    g_signal_new (I_("connect_proxy"),
+    g_signal_new (I_("connect-proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, connect_proxy),
@@ -309,7 +309,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[DISCONNECT_PROXY] =
-    g_signal_new (I_("disconnect_proxy"),
+    g_signal_new (I_("disconnect-proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, disconnect_proxy),
@@ -333,7 +333,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[PRE_ACTIVATE] =
-    g_signal_new (I_("pre_activate"),
+    g_signal_new (I_("pre-activate"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, pre_activate),
@@ -356,7 +356,7 @@ gtk_ui_manager_class_init (GtkUIManagerClass *klass)
    * Since: 2.4
    */
   ui_manager_signals[POST_ACTIVATE] =
-    g_signal_new (I_("post_activate"),
+    g_signal_new (I_("post-activate"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkUIManagerClass, post_activate),
@@ -468,7 +468,7 @@ child_hierarchy_changed_cb (GtkWidget *widget,
     return;
   
   group = gtk_ui_manager_get_accel_group (uimgr);
-  groups = gtk_accel_groups_from_object (toplevel);
+  groups = gtk_accel_groups_from_object (G_OBJECT (toplevel));
   if (g_slist_find (groups, group) == NULL)
     gtk_window_add_accel_group (GTK_WINDOW (toplevel), group);
 
@@ -697,19 +697,40 @@ gtk_ui_manager_insert_action_group (GtkUIManager   *self,
 				    GtkActionGroup *action_group, 
 				    gint            pos)
 {
+#ifdef G_ENABLE_DEBUG
+  GList *l;
+  const char *group_name;
+#endif 
+
   g_return_if_fail (GTK_IS_UI_MANAGER (self));
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
   g_return_if_fail (g_list_find (self->private_data->action_groups, 
 				 action_group) == NULL);
 
+#ifdef G_ENABLE_DEBUG
+  group_name  = gtk_action_group_get_name (action_group);
+
+  for (l = self->private_data->action_groups; l; l = l->next) 
+    {
+      GtkActionGroup *group = l->data;
+
+      if (strcmp (gtk_action_group_get_name (group), group_name) == 0)
+        {
+          g_warning ("Inserting action group '%s' into UI manager which "
+		     "already has a group with this name\n", group_name);
+          break;
+        }
+    }
+#endif /* G_ENABLE_DEBUG */
+
   g_object_ref (action_group);
   self->private_data->action_groups = 
     g_list_insert (self->private_data->action_groups, action_group, pos);
   g_object_connect (action_group,
-		    "object_signal::connect_proxy", G_CALLBACK (cb_proxy_connect_proxy), self,
-		    "object_signal::disconnect_proxy", G_CALLBACK (cb_proxy_disconnect_proxy), self,
-		    "object_signal::pre_activate", G_CALLBACK (cb_proxy_pre_activate), self,
-		    "object_signal::post_activate", G_CALLBACK (cb_proxy_post_activate), self,
+		    "object-signal::connect-proxy", G_CALLBACK (cb_proxy_connect_proxy), self,
+		    "object-signal::disconnect-proxy", G_CALLBACK (cb_proxy_disconnect_proxy), self,
+		    "object-signal::pre-activate", G_CALLBACK (cb_proxy_pre_activate), self,
+		    "object-signal::post-activate", G_CALLBACK (cb_proxy_post_activate), self,
 		    NULL);
 
   /* dirty all nodes, as action bindings may change */
@@ -741,10 +762,10 @@ gtk_ui_manager_remove_action_group (GtkUIManager   *self,
     g_list_remove (self->private_data->action_groups, action_group);
 
   g_object_disconnect (action_group,
-                       "any_signal::connect_proxy", G_CALLBACK (cb_proxy_connect_proxy), self,
-                       "any_signal::disconnect_proxy", G_CALLBACK (cb_proxy_disconnect_proxy), self,
-                       "any_signal::pre_activate", G_CALLBACK (cb_proxy_pre_activate), self,
-                       "any_signal::post_activate", G_CALLBACK (cb_proxy_post_activate), self, 
+                       "any-signal::connect-proxy", G_CALLBACK (cb_proxy_connect_proxy), self,
+                       "any-signal::disconnect-proxy", G_CALLBACK (cb_proxy_disconnect_proxy), self,
+                       "any-signal::pre-activate", G_CALLBACK (cb_proxy_pre_activate), self,
+                       "any-signal::post-activate", G_CALLBACK (cb_proxy_post_activate), self, 
                        NULL);
   g_object_unref (action_group);
 
@@ -866,8 +887,8 @@ collect_toplevels (GNode   *node,
  * 
  * Obtains a list of all toplevel widgets of the requested types.
  * 
- * Return value: a newly-allocated of all toplevel widgets of the requested 
- * types. 
+ * Return value: a newly-allocated #GSList of all toplevel widgets of the
+ * requested types.  Free the returned list with g_slist_free().
  *
  * Since: 2.4
  **/
@@ -2791,17 +2812,15 @@ queue_update (GtkUIManager *self)
  * UI in an idle function. A typical example where this function is
  * useful is to enforce that the menubar and toolbar have been added to 
  * the main window before showing it:
- * <informalexample>
- * <programlisting>
+ * |[
  * gtk_container_add (GTK_CONTAINER (window), vbox); 
- * g_signal_connect (merge, "add_widget", 
+ * g_signal_connect (merge, "add-widget", 
  *                   G_CALLBACK (add_widget), vbox);
  * gtk_ui_manager_add_ui_from_file (merge, "my-menus");
  * gtk_ui_manager_add_ui_from_file (merge, "my-toolbars");
  * gtk_ui_manager_ensure_update (merge);  
  * gtk_widget_show (window);
- * </programlisting>
- * </informalexample>
+ * ]|
  *
  * Since: 2.4
  **/
@@ -2985,7 +3004,7 @@ gtk_ui_manager_get_ui (GtkUIManager *self)
   return g_string_free (buffer, FALSE);
 }
 
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
 
 #undef gtk_ui_manager_add_ui_from_file
 

@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <locale.h>
 #ifdef HAVE_UNISTD_H
@@ -1285,7 +1285,9 @@ _gtk_rc_style_unset_rc_property (GtkRcStyle *rc_style,
 
   g_return_if_fail (GTK_IS_RC_STYLE (rc_style));
 
-  node = _gtk_rc_style_lookup_rc_property (rc_style, type_name, property_name);
+  node = (GtkRcProperty *) _gtk_rc_style_lookup_rc_property (rc_style,
+                                                             type_name,
+                                                             property_name);
 
   if (node != NULL)
     {
@@ -1557,7 +1559,7 @@ gtk_rc_clear_hash_node (gpointer key,
 			gpointer data, 
 			gpointer user_data)
 {
-  gtk_rc_style_unref (data);
+  g_object_unref (data);
 }
 
 static void
@@ -2055,12 +2057,13 @@ gtk_rc_get_style (GtkWidget *widget)
  * would be items inside a GNOME canvas widget.
  *
  * The action of gtk_rc_get_style() is similar to:
- * <informalexample><programlisting>
- *  gtk_widget_path (widget, NULL, &amp;path, NULL);
- *  gtk_widget_class_path (widget, NULL, &amp;class_path, NULL);
- *  gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget), path, class_path,
+ * |[
+ *  gtk_widget_path (widget, NULL, &path, NULL);
+ *  gtk_widget_class_path (widget, NULL, &class_path, NULL);
+ *  gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget), 
+ *                             path, class_path,
  *                             G_OBJECT_TYPE (widget));
- * </programlisting></informalexample>
+ * ]|
  * 
  * Return value: A style created by matching with the supplied paths,
  *   or %NULL if nothing matching was specified and the default style should
@@ -2278,11 +2281,9 @@ gtk_rc_parse_any (GtkRcContext *context,
 
 	  if (expected_token != G_TOKEN_NONE)
 	    {
-	      gchar *symbol_name;
-	      gchar *msg;
-	      
-	      msg = NULL;
-	      symbol_name = NULL;
+	      const gchar *symbol_name = NULL;
+	      gchar *msg = NULL;
+
 	      if (scanner->scope_id == 0)
 		{
 		  /* if we are in scope 0, we know the symbol names
@@ -2293,12 +2294,16 @@ gtk_rc_parse_any (GtkRcContext *context,
 		  if (expected_token > GTK_RC_TOKEN_INVALID &&
 		      expected_token < GTK_RC_TOKEN_LAST)
 		    {
+                      const gchar *sym = NULL;
+
 		      for (i = 0; i < G_N_ELEMENTS (symbols); i++)
 			if (symbols[i].token == expected_token)
-			  msg = symbol_names + symbols[i].name_offset;
-		      if (msg)
-			msg = g_strconcat ("e.g. `", msg, "'", NULL);
+			  sym = symbol_names + symbols[i].name_offset;
+
+		      if (sym)
+			msg = g_strconcat ("e.g. `", sym, "'", NULL);
 		    }
+
 		  if (scanner->token > GTK_RC_TOKEN_INVALID &&
 		      scanner->token < GTK_RC_TOKEN_LAST)
 		    {
@@ -2308,6 +2313,7 @@ gtk_rc_parse_any (GtkRcContext *context,
 			  symbol_name = symbol_names + symbols[i].name_offset;
 		    }
 		}
+
 	      g_scanner_unexp_token (scanner,
 				     expected_token,
 				     NULL,
@@ -2473,7 +2479,7 @@ gtk_rc_init_style (GtkRcContext *context,
 	  }
 
       style = gtk_rc_style_to_style (context, proto_style);
-      gtk_rc_style_unref (proto_style);
+      g_object_unref (proto_style);
 
       g_hash_table_insert (realized_style_ht, rc_styles, style);
     }
@@ -3275,7 +3281,7 @@ gtk_rc_parse_style (GtkRcContext *context,
 
  err:
   if (rc_style != orig_style)
-    gtk_rc_style_unref (rc_style);
+    g_object_unref (rc_style);
 
   if (orig_style)
     g_object_unref (orig_style);
@@ -3879,7 +3885,7 @@ gtk_rc_parse_priority (GScanner	           *scanner,
 /**
  * gtk_rc_parse_color:
  * @scanner: a #GScanner
- * @color: a pointer to a #GtkColor structure in which to store the result
+ * @color: a pointer to a #GdkColor structure in which to store the result
  *
  * Parses a color in the <link linkend="color=format">format</link> expected
  * in a RC file. 
@@ -3901,7 +3907,7 @@ gtk_rc_parse_color (GScanner *scanner,
  * gtk_rc_parse_color_full:
  * @scanner: a #GScanner
  * @style: a #GtkRcStyle, or %NULL
- * @color: a pointer to a #GtkColor structure in which to store the result
+ * @color: a pointer to a #GdkColor structure in which to store the result
  *
  * Parses a color in the <link linkend="color=format">format</link> expected
  * in a RC file. If @style is not %NULL, it will be consulted to resolve
@@ -4899,7 +4905,7 @@ _gtk_rc_match_widget_class (GSList  *list,
   return match_widget_class_recursive (list, length, path, path_reversed);
 }
 
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
 
 /* DLL ABI stability backward compatibility versions */
 

@@ -16,17 +16,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
+#include <string.h>
+
+#include "gtk/gtk.h"
+#include "gdk/gdkkeysyms.h"
+
+#include "gtk/gtkimmodule.h"
 #include "gtkimcontextmultipress.h"
-#include <gtk/gtkimcontext.h>
-#include <gtk/gtkimmodule.h>
-#include <gtk/gtkimcontext.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkwindow.h>
-#include <gdk/gdkwindow.h>
-#include <gdk/gdkkeysyms.h> /* For GDK_A, etc. */
-#include <glib.h> /* For GKeyFile */
-#include <glib-object.h>
-#include <string.h> /* For memset() */
 
 #define AUTOMATIC_COMPOSE_TIMEOUT 1 /* seconds */
 
@@ -284,7 +282,7 @@ accept_character (GtkImContextMultipress *multipress_context, const gchar* chara
   /* We must also signal that the preedit has changed, or we will still see the old 
      preedit from the composing of the character that we just committed, hanging around after the cursor.
    */
-  g_signal_emit_by_name (multipress_context, "preedit_changed");
+  g_signal_emit_by_name (multipress_context, "preedit-changed");
 
   /* Provide a character to GTK+: */
   g_signal_emit_by_name (multipress_context, "commit", characters);
@@ -372,7 +370,7 @@ vfunc_filter_keypress (GtkIMContext *context, GdkEventKey *event)
        * This will cause our vfunc_get_preedit_string() vfunc to be called, 
        * which will provide the current possible character for the user to see.
        */
-      g_signal_emit_by_name (multipress_context, "preedit_changed");
+      g_signal_emit_by_name (multipress_context, "preedit-changed");
       
       /* Cancel any outstanding timeout, so we can start the timer again: */
       cancel_automatic_timeout_commit (multipress_context);
@@ -380,8 +378,7 @@ vfunc_filter_keypress (GtkIMContext *context, GdkEventKey *event)
       /* Create a timeout that will cause the currently chosen character to be committed,
        * if nothing happens for a certain amount of time:
        */
-      /* g_timeout_add_seconds is only available since glib 2.14: multipress_context->timeout_id = g_timeout_add_seconds(AUTOMATIC_COMPOSE_TIMEOUT, on_timeout, multipress_context); */
-      multipress_context->timeout_id = g_timeout_add (AUTOMATIC_COMPOSE_TIMEOUT * 1000, on_timeout, multipress_context);
+      multipress_context->timeout_id = g_timeout_add_seconds(AUTOMATIC_COMPOSE_TIMEOUT, on_timeout, multipress_context); 
 
       return TRUE; /* TRUE means that the event was handled. */
     }

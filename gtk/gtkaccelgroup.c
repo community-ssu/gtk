@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -39,22 +39,32 @@
 
 
 /* --- prototypes --- */
-static void gtk_accel_group_finalize	(GObject		*object);
-static void accel_closure_invalidate    (gpointer  data,
-                                         GClosure *closure);
+static void gtk_accel_group_finalize     (GObject    *object);
+static void gtk_accel_group_get_property (GObject    *object,
+                                          guint       param_id,
+                                          GValue     *value,
+                                          GParamSpec *pspec);
+static void accel_closure_invalidate     (gpointer    data,
+                                          GClosure   *closure);
 
 
 /* --- variables --- */
-static guint		 signal_accel_activate = 0;
-static guint		 signal_accel_changed = 0;
-static guint		 quark_acceleratable_groups = 0;
-static guint		 default_accel_mod_mask = (GDK_SHIFT_MASK |
-						   GDK_CONTROL_MASK |
-						   GDK_MOD1_MASK |
-						   GDK_SUPER_MASK |
-						   GDK_HYPER_MASK |
-						   GDK_META_MASK);
+static guint  signal_accel_activate      = 0;
+static guint  signal_accel_changed       = 0;
+static guint  quark_acceleratable_groups = 0;
+static guint  default_accel_mod_mask     = (GDK_SHIFT_MASK   |
+                                            GDK_CONTROL_MASK |
+                                            GDK_MOD1_MASK    |
+                                            GDK_SUPER_MASK   |
+                                            GDK_HYPER_MASK   |
+                                            GDK_META_MASK);
 
+
+enum {
+  PROP_0,
+  PROP_IS_LOCKED,
+  PROP_MODIFIER_MASK,
+};
 
 G_DEFINE_TYPE (GtkAccelGroup, gtk_accel_group, G_TYPE_OBJECT)
 
@@ -67,8 +77,26 @@ gtk_accel_group_class_init (GtkAccelGroupClass *class)
   quark_acceleratable_groups = g_quark_from_static_string ("gtk-acceleratable-accel-groups");
 
   object_class->finalize = gtk_accel_group_finalize;
+  object_class->get_property = gtk_accel_group_get_property;
 
   class->accel_changed = NULL;
+
+  g_object_class_install_property (object_class,
+                                   PROP_IS_LOCKED,
+                                   g_param_spec_boolean ("is-locked",
+                                                         "Is locked",
+                                                         "Is the accel group locked",
+                                                         FALSE,
+                                                         G_PARAM_READABLE));
+
+  g_object_class_install_property (object_class,
+                                   PROP_MODIFIER_MASK,
+                                   g_param_spec_flags ("modifier-mask",
+                                                       "Modifier Mask",
+                                                       "Modifier Mask",
+                                                       GDK_TYPE_MODIFIER_TYPE,
+                                                       default_accel_mod_mask,
+                                                       G_PARAM_READABLE));
 
   /**
    * GtkAccelGroup::accel-activate:
@@ -83,7 +111,7 @@ gtk_accel_group_class_init (GtkAccelGroupClass *class)
    * Returns: %TRUE if the accelerator was activated
    */
   signal_accel_activate =
-    g_signal_new (I_("accel_activate"),
+    g_signal_new (I_("accel-activate"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_DETAILED,
 		  0,
@@ -108,7 +136,7 @@ gtk_accel_group_class_init (GtkAccelGroupClass *class)
    * their visual representation if the @accel_closure is theirs.
    */
   signal_accel_changed =
-    g_signal_new (I_("accel_changed"),
+    g_signal_new (I_("accel-changed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_DETAILED,
 		  G_STRUCT_OFFSET (GtkAccelGroupClass, accel_changed),
@@ -145,6 +173,28 @@ gtk_accel_group_finalize (GObject *object)
 }
 
 static void
+gtk_accel_group_get_property (GObject    *object,
+                              guint       param_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+  GtkAccelGroup *accel_group = GTK_ACCEL_GROUP (object);
+
+  switch (param_id)
+    {
+    case PROP_IS_LOCKED:
+      g_value_set_boolean (value, accel_group->lock_count > 0);
+      break;
+    case PROP_MODIFIER_MASK:
+      g_value_set_flags (value, accel_group->modifier_mask);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
+}
+
+static void
 gtk_accel_group_init (GtkAccelGroup *accel_group)
 {
   accel_group->lock_count = 0;
@@ -164,6 +214,45 @@ GtkAccelGroup*
 gtk_accel_group_new (void)
 {
   return g_object_new (GTK_TYPE_ACCEL_GROUP, NULL);
+}
+
+/**
+ * gtk_accel_group_get_is_locked:
+ * @accel_group: a #GtkAccelGroup
+ *
+ * Locks are added and removed using gtk_accel_group_lock() and
+ * gtk_accel_group_unlock().
+ *
+ * Returns: %TRUE if there are 1 or more locks on the @accel_group,
+ * %FALSE otherwise.
+ *
+ * Since: 2.14
+ */
+gboolean
+gtk_accel_group_get_is_locked (GtkAccelGroup *accel_group)
+{
+  g_return_val_if_fail (GTK_IS_ACCEL_GROUP (accel_group), FALSE);
+
+  return accel_group->lock_count > 0;
+}
+
+/**
+ * gtk_accel_group_get_modifier_mask:
+ * @accel_group: a #GtkAccelGroup
+ *
+ * Gets a #GdkModifierType representing the mask for this
+ * @accel_group. For example, #GDK_CONTROL_MASK, #GDK_SHIFT_MASK, etc.
+ *
+ * Returns: the modifier mask for this accel group.
+ *
+ * Since: 2.14
+ */
+GdkModifierType
+gtk_accel_group_get_modifier_mask (GtkAccelGroup *accel_group)
+{
+  g_return_val_if_fail (GTK_IS_ACCEL_GROUP (accel_group), 0);
+
+  return accel_group->modifier_mask;
 }
 
 static void
@@ -304,6 +393,11 @@ gtk_accel_group_lock (GtkAccelGroup *accel_group)
   g_return_if_fail (GTK_IS_ACCEL_GROUP (accel_group));
   
   accel_group->lock_count += 1;
+
+  if (accel_group->lock_count == 1) {
+    /* State change from unlocked to locked */
+    g_object_notify (G_OBJECT (accel_group), "is-locked");
+  }
 }
 
 /**
@@ -319,6 +413,11 @@ gtk_accel_group_unlock (GtkAccelGroup *accel_group)
   g_return_if_fail (accel_group->lock_count > 0);
 
   accel_group->lock_count -= 1;
+
+  if (accel_group->lock_count < 1) {
+    /* State change from locked to unlocked */
+    g_object_notify (G_OBJECT (accel_group), "is-locked");
+  }
 }
 
 static void
@@ -397,10 +496,10 @@ quick_accel_add (GtkAccelGroup  *accel_group,
 
 static void
 quick_accel_remove (GtkAccelGroup      *accel_group,
-		    GtkAccelGroupEntry *entry)
+                    guint               pos)
 {
-  guint pos = entry - accel_group->priv_accels;
   GQuark accel_quark = 0;
+  GtkAccelGroupEntry *entry = accel_group->priv_accels + pos;
   guint accel_key = entry->key.accel_key;
   GdkModifierType accel_mods = entry->key.accel_mods;
   GClosure *closure = entry->closure;
@@ -525,6 +624,10 @@ gtk_accel_group_connect (GtkAccelGroup	*accel_group,
  * for the path.
  *
  * The signature used for the @closure is that of #GtkAccelGroupActivate.
+ * 
+ * Note that @accel_path string will be stored in a #GQuark. Therefore, if you
+ * pass a static string, you can save some memory by interning it first with 
+ * g_intern_static_string().
  */
 void
 gtk_accel_group_connect_by_path (GtkAccelGroup	*accel_group,
@@ -577,7 +680,7 @@ gtk_accel_group_disconnect (GtkAccelGroup *accel_group,
     if (accel_group->priv_accels[i].closure == closure)
       {
 	g_object_ref (accel_group);
-	quick_accel_remove (accel_group, accel_group->priv_accels + i);
+	quick_accel_remove (accel_group, i);
 	g_object_unref (accel_group);
 	return TRUE;
       }
@@ -723,6 +826,22 @@ gtk_accel_group_from_accel_closure (GClosure *closure)
   return NULL;
 }
 
+/**
+ * gtk_accel_group_activate:
+ * @accel_group:   a #GtkAccelGroup
+ * @accel_quark:   the quark for the accelerator name
+ * @acceleratable: the #GObject, usually a #GtkWindow, on which
+ *                 to activate the accelerator.
+ * @accel_key:     accelerator keyval from a key event
+ * @accel_mods:    keyboard state mask from a key event
+ * @returns:       %TRUE if the accelerator was handled, %FALSE otherwise
+ * 
+ * Finds the first accelerator in @accel_group 
+ * that matches @accel_key and @accel_mods, and
+ * activates it.
+ *
+ * Returns: %TRUE if an accelerator was activated and handled this keypress
+ */
 gboolean
 gtk_accel_group_activate (GtkAccelGroup   *accel_group,
                           GQuark	   accel_quark,
@@ -753,8 +872,8 @@ gtk_accel_group_activate (GtkAccelGroup   *accel_group,
  * Finds the first accelerator in any #GtkAccelGroup attached
  * to @object that matches @accel_key and @accel_mods, and
  * activates that accelerator.
- * If an accelerator was activated and handled this keypress, %TRUE
- * is returned.
+ *
+ * Returns: %TRUE if an accelerator was activated and handled this keypress
  */
 gboolean
 gtk_accel_groups_activate (GObject	  *object,

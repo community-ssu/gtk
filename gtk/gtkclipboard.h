@@ -16,8 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * Global clipboard abstraction. 
+ * Global clipboard abstraction.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_CLIPBOARD_H__
 #define __GTK_CLIPBOARD_H__
@@ -43,6 +47,9 @@ typedef void (* GtkClipboardRichTextReceivedFunc) (GtkClipboard     *clipboard,
 					           gpointer          data);
 typedef void (* GtkClipboardImageReceivedFunc)    (GtkClipboard     *clipboard,
 						   GdkPixbuf        *pixbuf,
+						   gpointer          data);
+typedef void (* GtkClipboardURIReceivedFunc)      (GtkClipboard     *clipboard,
+						   gchar           **uris,
 						   gpointer          data);
 typedef void (* GtkClipboardTargetsReceivedFunc)  (GtkClipboard     *clipboard,
 					           GdkAtom          *atoms,
@@ -105,6 +112,9 @@ void gtk_clipboard_request_rich_text (GtkClipboard                     *clipboar
 void gtk_clipboard_request_image     (GtkClipboard                     *clipboard,
                                       GtkClipboardImageReceivedFunc     callback,
                                       gpointer                          user_data);
+void gtk_clipboard_request_uris      (GtkClipboard                     *clipboard,
+                                      GtkClipboardURIReceivedFunc       callback,
+                                      gpointer                          user_data);
 void gtk_clipboard_request_targets   (GtkClipboard                     *clipboard,
                                       GtkClipboardTargetsReceivedFunc   callback,
                                       gpointer                          user_data);
@@ -117,6 +127,7 @@ guint8 *          gtk_clipboard_wait_for_rich_text (GtkClipboard  *clipboard,
                                                     GdkAtom       *format,
                                                     gsize         *length);
 GdkPixbuf *       gtk_clipboard_wait_for_image     (GtkClipboard  *clipboard);
+gchar **          gtk_clipboard_wait_for_uris      (GtkClipboard  *clipboard);
 gboolean          gtk_clipboard_wait_for_targets   (GtkClipboard  *clipboard,
                                                     GdkAtom      **targets,
                                                     gint          *n_targets);
@@ -125,6 +136,7 @@ gboolean gtk_clipboard_wait_is_text_available      (GtkClipboard  *clipboard);
 gboolean gtk_clipboard_wait_is_rich_text_available (GtkClipboard  *clipboard,
                                                     GtkTextBuffer *buffer);
 gboolean gtk_clipboard_wait_is_image_available     (GtkClipboard  *clipboard);
+gboolean gtk_clipboard_wait_is_uris_available      (GtkClipboard  *clipboard);
 gboolean gtk_clipboard_wait_is_target_available    (GtkClipboard  *clipboard,
                                                     GdkAtom        target);
 
@@ -134,12 +146,12 @@ void gtk_clipboard_set_can_store (GtkClipboard         *clipboard,
 				  gint                  n_targets);
 
 void gtk_clipboard_store         (GtkClipboard   *clipboard);
-  
+
 /* private */
 void     _gtk_clipboard_handle_event    (GdkEventOwnerChange *event);
 
 void     _gtk_clipboard_store_all       (void);
-  
+
 G_END_DECLS
 
 #endif /* __GTK_CLIPBOARD_H__ */

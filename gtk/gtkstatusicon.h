@@ -21,6 +21,10 @@
  *      Mark McLoughlin <mark@skynet.ie>
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_STATUS_ICON_H__
 #define __GTK_STATUS_ICON_H__
 
@@ -44,7 +48,7 @@ struct _GtkStatusIcon
 {
   GObject               parent_instance;
 
-  GtkStatusIconPrivate *priv;
+  GtkStatusIconPrivate *GSEAL (priv);
 };
 
 struct _GtkStatusIconClass
@@ -63,7 +67,7 @@ struct _GtkStatusIconClass
   void (*__gtk_reserved3);
   void (*__gtk_reserved4);
   void (*__gtk_reserved5);
-  void (*__gtk_reserved6);  
+  void (*__gtk_reserved6);
 };
 
 GType                 gtk_status_icon_get_type           (void) G_GNUC_CONST;
@@ -73,6 +77,7 @@ GtkStatusIcon        *gtk_status_icon_new_from_pixbuf    (GdkPixbuf          *pi
 GtkStatusIcon        *gtk_status_icon_new_from_file      (const gchar        *filename);
 GtkStatusIcon        *gtk_status_icon_new_from_stock     (const gchar        *stock_id);
 GtkStatusIcon        *gtk_status_icon_new_from_icon_name (const gchar        *icon_name);
+GtkStatusIcon        *gtk_status_icon_new_from_gicon     (GIcon              *icon);
 
 void                  gtk_status_icon_set_from_pixbuf    (GtkStatusIcon      *status_icon,
 							  GdkPixbuf          *pixbuf);
@@ -82,12 +87,15 @@ void                  gtk_status_icon_set_from_stock     (GtkStatusIcon      *st
 							  const gchar        *stock_id);
 void                  gtk_status_icon_set_from_icon_name (GtkStatusIcon      *status_icon,
 							  const gchar        *icon_name);
+void                  gtk_status_icon_set_from_gicon     (GtkStatusIcon      *status_icon,
+                                                          GIcon              *icon);
 
 GtkImageType          gtk_status_icon_get_storage_type   (GtkStatusIcon      *status_icon);
 
 GdkPixbuf            *gtk_status_icon_get_pixbuf         (GtkStatusIcon      *status_icon);
 G_CONST_RETURN gchar *gtk_status_icon_get_stock          (GtkStatusIcon      *status_icon);
 G_CONST_RETURN gchar *gtk_status_icon_get_icon_name      (GtkStatusIcon      *status_icon);
+GIcon                *gtk_status_icon_get_gicon          (GtkStatusIcon      *status_icon);
 
 gint                  gtk_status_icon_get_size           (GtkStatusIcon      *status_icon);
 
@@ -117,6 +125,8 @@ gboolean              gtk_status_icon_get_geometry       (GtkStatusIcon      *st
 							  GdkScreen         **screen,
 							  GdkRectangle       *area,
 							  GtkOrientation     *orientation);
+
+guint32               gtk_status_icon_get_x11_window_id  (GtkStatusIcon      *status_icon);
 
 G_END_DECLS
 

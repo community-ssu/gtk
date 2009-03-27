@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtktoolbutton.h"
 #include "gtkbutton.h"
 #include "gtkhbox.h"
@@ -100,7 +100,7 @@ struct _GtkToolButtonPrivate
 GType
 gtk_tool_button_get_type (void)
 {
-  static GtkType type = 0;
+  static GType type = 0;
 
   if (!type)
     type = g_type_register_static_simple (GTK_TYPE_TOOL_ITEM,
@@ -470,7 +470,7 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
       box = gtk_vbox_new (FALSE, icon_spacing);
       if (icon)
 	gtk_box_pack_start (GTK_BOX (box), icon, TRUE, TRUE, 0);
-      gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
+      gtk_box_pack_end (GTK_BOX (box), label, FALSE, TRUE, 0);
       gtk_container_add (GTK_CONTAINER (button->priv->button), box);
       break;
 
@@ -529,6 +529,7 @@ gtk_tool_button_set_property (GObject         *object,
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -576,6 +577,7 @@ gtk_tool_button_get_property (GObject         *object,
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -649,7 +651,7 @@ gtk_tool_button_create_menu_proxy (GtkToolItem *item)
   gboolean use_mnemonic = TRUE;
   const char *label;
 
-  if (button->priv->label_widget && GTK_IS_LABEL (button->priv->label_widget))
+  if (GTK_IS_LABEL (button->priv->label_widget))
     {
       label = gtk_label_get_label (GTK_LABEL (button->priv->label_widget));
       use_mnemonic = gtk_label_get_use_underline (GTK_LABEL (button->priv->label_widget));
@@ -673,7 +675,7 @@ gtk_tool_button_create_menu_proxy (GtkToolItem *item)
   else
     menu_item = gtk_image_menu_item_new_with_label (label);
 
-  if (button->priv->icon_widget && GTK_IS_IMAGE (button->priv->icon_widget))
+  if (GTK_IS_IMAGE (button->priv->icon_widget))
     {
       menu_image = clone_image_menu_size (GTK_IMAGE (button->priv->icon_widget),
 					  gtk_widget_get_settings (GTK_WIDGET (button)));

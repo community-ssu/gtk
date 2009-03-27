@@ -28,7 +28,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkintl.h"
 #include "gtktoggleaction.h"
@@ -280,14 +280,14 @@ connect_proxy (GtkAction *action,
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (proxy),
 				  toggle_action->private_data->active);
 
-  (* GTK_ACTION_CLASS (parent_class)->connect_proxy) (action, proxy);
+  GTK_ACTION_CLASS (parent_class)->connect_proxy (action, proxy);
 }
 
 static void
 disconnect_proxy (GtkAction *action, 
 		  GtkWidget *proxy)
 {
-  (* GTK_ACTION_CLASS (parent_class)->disconnect_proxy) (action, proxy);
+  GTK_ACTION_CLASS (parent_class)->disconnect_proxy (action, proxy);
 }
 
 /**

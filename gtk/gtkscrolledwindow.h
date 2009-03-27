@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_SCROLLED_WINDOW_H__
 #define __GTK_SCROLLED_WINDOW_H__
@@ -54,24 +58,24 @@ struct _GtkScrolledWindow
   GtkBin container;
 
   /*< public >*/
-  GtkWidget *hscrollbar;
-  GtkWidget *vscrollbar;
+  GtkWidget *GSEAL (hscrollbar);
+  GtkWidget *GSEAL (vscrollbar);
 
   /*< private >*/
-  guint hscrollbar_policy      : 2;
-  guint vscrollbar_policy      : 2;
-  guint hscrollbar_visible     : 1;
-  guint vscrollbar_visible     : 1;
-  guint window_placement       : 2;
-  guint focus_out              : 1;	/* Flag used by ::move-focus-out implementation */
+  guint GSEAL (hscrollbar_policy)      : 2;
+  guint GSEAL (vscrollbar_policy)      : 2;
+  guint GSEAL (hscrollbar_visible)     : 1;
+  guint GSEAL (vscrollbar_visible)     : 1;
+  guint GSEAL (window_placement)       : 2;
+  guint GSEAL (focus_out)              : 1;	/* Flag used by ::move-focus-out implementation */
 
-  guint16 shadow_type;
+  guint16 GSEAL (shadow_type);
 };
 
 struct _GtkScrolledWindowClass
 {
   GtkBinClass parent_class;
-  
+
   gint scrollbar_spacing;
 
   /* Action signals for keybindings. Do not connect to these signals

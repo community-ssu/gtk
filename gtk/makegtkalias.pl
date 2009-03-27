@@ -83,7 +83,21 @@ while (<>) {
       next;
   }
 
-  if ($_ =~ /^\#ifn?def\s+[GM]/)
+  if ($_ =~ /^\#ifn?def\s+G/)
+  {
+      print $_;
+      
+      next;
+  }
+ 
+  if ($_ =~ /^\#ifndef\s+_WIN64/)
+  {
+      print $_;
+      
+      next;
+  }
+ 
+  if ($_ =~ /^\#ifdef\s+MAEMO_CHANGES/)
   {
       print $_;
       
