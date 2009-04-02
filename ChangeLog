@@ -1,3 +1,15 @@
+2009-04-02  Michael Natterer  <mitch@imendio.com>
+
+	Fixes: NB#90356 - Do not show shortcuts in legacy application
+	menus at all
+
+	* gtk/gtksettings.c (gtk_settings_class_init): set the default
+	values for enable-accels and enable-mnemonics to FALSE. While this
+	is not the right fix (right would be to have gconf handle this,
+	also in obscure cases), it definitely works unless an application
+	explicitely overrides it. Should revisit this fix in the next
+	release cycle.
+
 2009-04-02  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#95718 - Set correct state for GtkCellView in

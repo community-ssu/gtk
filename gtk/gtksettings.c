@@ -765,7 +765,11 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                              g_param_spec_boolean ("gtk-enable-mnemonics",
                                                                    P_("Enable Mnemonics"),
                                                                    P_("Whether labels should have mnemonics"),
+#ifdef MAEMO_CHANGES
+                                                                   FALSE,
+#else
                                                                    TRUE,
+#endif /* MAEMO_CHANGES */
                                                                    GTK_PARAM_READWRITE),
                                              NULL);
   g_assert (result == PROP_ENABLE_MNEMONICS);
@@ -782,7 +786,11 @@ gtk_settings_class_init (GtkSettingsClass *class)
                                              g_param_spec_boolean ("gtk-enable-accels",
                                                                    P_("Enable Accelerators"),
                                                                    P_("Whether menu items should have accelerators"),
+#ifdef MAEMO_CHANGES
+                                                                   FALSE,
+#else
                                                                    TRUE,
+#endif /* MAEMO_CHANGES */
                                                                    GTK_PARAM_READWRITE),
                                              NULL);
   g_assert (result == PROP_ENABLE_ACCELS);
