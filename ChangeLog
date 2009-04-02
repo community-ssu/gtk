@@ -1,3 +1,12 @@
+2009-04-02  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#92963 - gtk_text_view_validate_onscreen: assertion failed:
+	(text_view->onscreen_validated).
+
+	* gtk/gtktextview.c (gtk_text_view_value_changed): also update the
+	IM spot location before running _validate_onscreen() since updating
+	the IM spot location might invalidate the layout.
+
 2009-03-27  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#106323 - Remove explicit 5px margin from GtkTreeView action
