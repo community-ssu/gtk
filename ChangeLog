@@ -1,5 +1,13 @@
 2009-04-02  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#95718 - Set correct state for GtkCellView in
+	HildonCheckButton
+
+	* gtk/gtkcellview.c (gtk_cell_view_expose): propagate insensitive
+	state to cell renderers if the cell view is insensitive.
+
+2009-04-02  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#92963 - gtk_text_view_validate_onscreen: assertion failed:
 	(text_view->onscreen_validated).
 
