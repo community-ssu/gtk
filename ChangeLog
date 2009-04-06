@@ -1,3 +1,11 @@
+2009-04-06  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB:95718 - Set correct state for GtkCellView in
+	HildonCheckButton
+
+	* gtk/gtkcellrenderertoggle.c (gtk_cell_renderer_toggle_render):
+	follow insensitive state of widget requesting rendering.
+
 2009-04-02  Michael Natterer  <mitch@imendio.com>
 
 	Fixes: NB#90356 - Do not show shortcuts in legacy application
