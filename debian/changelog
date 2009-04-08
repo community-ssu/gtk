@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.12.12-1maemo13) unstable; urgency=low
+
+  * Fixes: NB#106323 - Remove explicit 5px margin from GtkTreeView action
+    area
+  * Fixes: NB#92963 - gtk_text_view_validate_onscreen: assertion failed:
+    (text_view->onscreen_validated).
+  * Fixes: NB#95718 - Set correct state for GtkCellView in HildonCheckButton
+  * Fixes: NB#90356 - Do not show shortcuts in legacy application menus at
+    all
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 08 Apr 2009 10:44:39 +0300
+
 gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
 
   * Add GdkPixbufSimpleAnim:loop property and its accessors. See
