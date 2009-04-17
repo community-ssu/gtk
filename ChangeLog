@@ -1,3 +1,9 @@
+2009-04-17  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo13
+
+	* debian/changelog: updates
+
 2009-04-17  Michael Natterer  <mitch@imendio.com>
 
 	Fixes: NB#97380 - Email editor doesn't open correctly when

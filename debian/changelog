@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.12.12-1maemo14) unstable; urgency=low
+
+  * Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
+  * Fixes: NB#97380 - Email editor doesn't open correctly when launched
+    from other applications
+  * Fixes: NB#111246 - GtkTreeView action area height in portrait should
+    be n*90px
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 17 Apr 2009 17:07:31 +0300
+
 gtk+2.0 (2:2.12.12-1maemo13) unstable; urgency=low
 
   * Fixes: NB#106323 - Remove explicit 5px margin from GtkTreeView action
