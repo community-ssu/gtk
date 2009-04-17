@@ -3446,8 +3446,12 @@ gtk_text_view_validate_onscreen (GtkTextView *text_view)
   GtkWidget *widget = GTK_WIDGET (text_view);
   
   DV(g_print(">Validating onscreen ("G_STRLOC")\n"));
-  
+
+#ifdef MAEMO_CHANGES
+  if (SCREEN_HEIGHT (widget) > 1)
+#else
   if (SCREEN_HEIGHT (widget) > 0)
+#endif
     {
       GtkTextIter first_para;
 

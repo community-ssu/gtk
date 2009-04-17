@@ -1,3 +1,14 @@
+2009-04-17  Michael Natterer  <mitch@imendio.com>
+
+	Fixes: NB#97380 - Email editor doesn't open correctly when
+	launched from other applications
+
+	* gtk/gtktextview.c (gtk_text_view_validate_onscreen): don't
+	validate anything if the widget has a height of less than 2 pixels
+	so we don't run into the infinite validation loop described in the
+	bug that happens when the text view has the default minimum
+	allocation of 1x1 pixels.
+
 2009-04-17  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
