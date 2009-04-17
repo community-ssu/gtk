@@ -9832,6 +9832,15 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   /* Ensure we don't have a dangling pointer to a dead node */
   ensure_unprelighted (tree_view);
 
+#ifdef MAEMO_CHANGES
+  if (node == tree_view->priv->highlighted_node
+      && tree == tree_view->priv->highlighted_tree)
+    {
+      tree_view->priv->highlighted_node = NULL;
+      tree_view->priv->highlighted_tree = NULL;
+    }
+#endif /* MAEMO_CHANGES */
+
   /* Cancel editting if we've started */
   gtk_tree_view_stop_editing (tree_view, TRUE);
 
