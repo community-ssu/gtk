@@ -17653,12 +17653,12 @@ hildon_tree_view_set_action_area_height (GtkTreeView *tree_view)
     {
       GList *children;
 
-      /* The height in portrait mode is currently hardcoded to 93px per
+      /* The height in portrait mode is currently hardcoded to 90px per
        * button.
        */
       children = gtk_container_get_children (GTK_CONTAINER (tree_view->priv->action_area_box));
       hildon_tree_view_set_rows_offset (tree_view,
-                                        g_list_length (children) * 93);
+                                        g_list_length (children) * 90);
       g_list_free (children);
     }
 }

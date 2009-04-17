@@ -1,3 +1,11 @@
+2009-04-17  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#111246 - GtkTreeView action area height in portrait
+	should be n*90px
+
+	* gtk/gtktreeview.c (hildon_tree_view_set_action_area_height): use
+	90 instead of 93 px.
+
 2009-04-08  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo13
