@@ -503,6 +503,7 @@ static void     free_queued_activate_row         (GtkTreeView  *tree_view);
 static void     free_queued_actions              (GtkTreeView  *tree_view);
 
 static void     hildon_tree_view_set_action_area_height (GtkTreeView *tree_view);
+static void     hildon_tree_view_setup_row_header_layout (GtkTreeView *tree_view);
 #endif /* MAEMO_CHANGES */
 
 static guint tree_view_signals [LAST_SIGNAL] = { 0 };
@@ -9192,20 +9193,8 @@ gtk_tree_view_style_set (GtkWidget *widget,
   hildon_tree_view_set_hildon_ui_mode (tree_view, tree_view->priv->hildon_ui_mode);
 
   if (tree_view->priv->row_header_layout)
-    {
-      /* Update font of the row header */
-      GtkStyle *font_style;
-
-      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
-                                              "SmallSystemFont",
-                                              NULL, G_TYPE_NONE);
-      if (font_style)
-        {
-          pango_layout_set_font_description (tree_view->priv->row_header_layout,
-                                             font_style->font_desc);
-        }
-    }
-
+    hildon_tree_view_setup_row_header_layout (tree_view);
+      
   if (tree_view->priv->tickmark_icon)
     g_object_unref (tree_view->priv->tickmark_icon);
 
@@ -16761,6 +16750,42 @@ hildon_tree_view_get_row_header_func (GtkTreeView *tree_view)
   return tree_view->priv->row_header_func;
 }
 
+static void
+hildon_tree_view_setup_row_header_layout (GtkTreeView *tree_view)
+{
+  GdkColor font_color;
+  GtkStyle *font_style;
+  GtkWidget *widget = GTK_WIDGET (tree_view);
+
+  font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
+                                          "EmpSmallSystemFont",
+                                          NULL, G_TYPE_NONE);
+  if (font_style)
+    {
+      pango_layout_set_font_description (tree_view->priv->row_header_layout,
+                                         font_style->font_desc);
+    }
+
+  if (gtk_style_lookup_color (widget->style, "SecondaryTextColor", &font_color))
+    {
+      PangoAttrList *list;
+      PangoAttribute *attr;
+
+      list = pango_attr_list_new ();
+      attr = pango_attr_foreground_new (font_color.red,
+                                        font_color.green,
+                                        font_color.blue);
+      attr->start_index = 0;
+      attr->end_index = G_MAXINT;
+      pango_attr_list_insert (list, attr);
+
+      pango_layout_set_attributes (tree_view->priv->row_header_layout,
+                                   list);
+
+      pango_attr_list_unref (list);
+    }
+}
+
 void
 hildon_tree_view_set_row_header_func (GtkTreeView                 *tree_view,
                                       HildonTreeViewRowHeaderFunc  func,
@@ -16778,19 +16803,10 @@ hildon_tree_view_set_row_header_func (GtkTreeView                 *tree_view,
 
   if (func && !tree_view->priv->row_header_layout)
     {
-      GtkStyle *font_style;
-
       tree_view->priv->row_header_layout =
           gtk_widget_create_pango_layout (GTK_WIDGET (tree_view), "");
 
-      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
-                                              "SmallSystemFont",
-                                              NULL, G_TYPE_NONE);
-      if (font_style)
-        {
-          pango_layout_set_font_description (tree_view->priv->row_header_layout,
-                                             font_style->font_desc);
-        }
+      hildon_tree_view_setup_row_header_layout (tree_view);
     }
   else if (!func && tree_view->priv->row_header_layout)
     {

@@ -1,3 +1,18 @@
+2009-04-21  Kristian Rietveld  <kris@imendio.com>
+
+	Addresses: NB#108333 - Patch for GtkFrame to support new group title
+	design
+
+	* gtk/gtktreeview.c (gtk_tree_view_style_set),
+	(hildon_tree_view_set_row_header_func): split out row header layout
+	setup code into hildon_tree_view_setup_row_header_layout,
+	(hildon_tree_view_setup_row_header_layout): update according to
+	updated layout specification.
+
+	* gtk/gtkiconview.c (gtk_icon_view_style_set),
+	(hildon_icon_view_set_row_header_func): likewise,
+	(hildon_icon_view_setup_row_header_layout): likewise.
+
 2009-04-21  Michael Natterer  <mitch@imendio.com>
 
 	Addresses: NB#102653 - Bad performance of GtkViewport in
