@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.12.12-1maemo15) unstable; urgency=low
+
+  * Addresses: NB#108333 - Patch for GtkFrame to support new group title
+    design
+  * Addresses: NB#102653 - Bad performance of GtkViewport in
+    HildonPannable while animating
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 23 Apr 2009 13:33:21 +0300
+
 gtk+2.0 (2:2.12.12-1maemo14) unstable; urgency=low
 
   * Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
