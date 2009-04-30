@@ -1,3 +1,11 @@
+2009-04-30  Michael Natterer  <mitch@imendio.com>
+
+	Fixes the GTK+ part of: NB#103219 - Could not select Block speed
+	to 1 from the drop down box.
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_position): position the
+	combo popup inside the area defined by the _NET_WORKAREA property.
+
 2009-04-23  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo15
