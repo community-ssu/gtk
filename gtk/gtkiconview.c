@@ -489,6 +489,7 @@ static void     adjust_wrap_width                (GtkIconView     *icon_view,
 #ifdef MAEMO_CHANGES
 static void     free_queued_activate_item                (GtkIconView   *icon_view);
 static void     free_queued_select_item                  (GtkIconView   *icon_view);
+static void     hildon_icon_view_setup_row_header_layout (GtkIconView   *icon_view);
 #endif /* MAEMO_CHANGES */
 
 /* GtkBuildable */
@@ -1367,19 +1368,7 @@ gtk_icon_view_style_set (GtkWidget *widget,
   hildon_icon_view_set_hildon_ui_mode (icon_view, icon_view->priv->hildon_ui_mode);
 
   if (icon_view->priv->row_header_layout)
-    {
-      /* Update font of the row header */
-      GtkStyle *font_style;
-
-      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
-                                              "SmallSystemFont",
-                                              NULL, G_TYPE_NONE);
-      if (font_style)
-        {
-          pango_layout_set_font_description (icon_view->priv->row_header_layout,
-                                             font_style->font_desc);
-        }
-    }
+    hildon_icon_view_setup_row_header_layout (icon_view);
 
   if (icon_view->priv->tickmark_icon)
     g_object_unref (icon_view->priv->tickmark_icon);
@@ -8058,6 +8047,42 @@ hildon_icon_view_get_row_header_func (GtkIconView *icon_view)
   return icon_view->priv->row_header_func;
 }
 
+static void
+hildon_icon_view_setup_row_header_layout (GtkIconView *icon_view)
+{
+  GdkColor font_color;
+  GtkStyle *font_style;
+  GtkWidget *widget = GTK_WIDGET (icon_view);
+
+  font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
+                                          "EmpSmallSystemFont",
+                                          NULL, G_TYPE_NONE);
+  if (font_style)
+    {
+      pango_layout_set_font_description (icon_view->priv->row_header_layout,
+                                         font_style->font_desc);
+    }
+
+  if (gtk_style_lookup_color (widget->style, "SecondaryTextColor", &font_color))
+    {
+      PangoAttrList *list;
+      PangoAttribute *attr;
+
+      list = pango_attr_list_new ();
+      attr = pango_attr_foreground_new (font_color.red,
+                                        font_color.green,
+                                        font_color.blue);
+      attr->start_index = 0;
+      attr->end_index = G_MAXINT;
+      pango_attr_list_insert (list, attr);
+
+      pango_layout_set_attributes (icon_view->priv->row_header_layout,
+                                   list);
+
+      pango_attr_list_unref (list);
+    }
+}
+
 void
 hildon_icon_view_set_row_header_func (GtkIconView                 *icon_view,
                                       HildonIconViewRowHeaderFunc  func,
@@ -8075,19 +8100,10 @@ hildon_icon_view_set_row_header_func (GtkIconView                 *icon_view,
 
   if (func && !icon_view->priv->row_header_layout)
     {
-      GtkStyle *font_style;
-
       icon_view->priv->row_header_layout =
           gtk_widget_create_pango_layout (GTK_WIDGET (icon_view), "");
 
-      font_style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
-                                              "SmallSystemFont",
-                                              NULL, G_TYPE_NONE);
-      if (font_style)
-        {
-          pango_layout_set_font_description (icon_view->priv->row_header_layout,
-                                             font_style->font_desc);
-        }
+      hildon_icon_view_setup_row_header_layout (icon_view);
     }
   else if (!func && icon_view->priv->row_header_layout)
     {

@@ -3,7 +3,38 @@ gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
   [ Michael Natterer ]
   * Upgrade to GTK+ 2.14.3
 
- -- Michael Natterer <mitch@imendio.com>  Fri, 31 Oct 2008 13:20:00 +0100
+ -- Michael Natterer <mitch@imendio.com>  Fri, 24 Apr 2009 13:20:00 +0100
+
+gtk+2.0 (2:2.12.12-1maemo15) unstable; urgency=low
+
+  * Addresses: NB#108333 - Patch for GtkFrame to support new group title
+    design
+  * Addresses: NB#102653 - Bad performance of GtkViewport in
+    HildonPannable while animating
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 23 Apr 2009 13:33:21 +0300
+
+gtk+2.0 (2:2.12.12-1maemo14) unstable; urgency=low
+
+  * Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
+  * Fixes: NB#97380 - Email editor doesn't open correctly when launched
+    from other applications
+  * Fixes: NB#111246 - GtkTreeView action area height in portrait should
+    be n*90px
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 17 Apr 2009 17:07:31 +0300
+
+gtk+2.0 (2:2.12.12-1maemo13) unstable; urgency=low
+
+  * Fixes: NB#106323 - Remove explicit 5px margin from GtkTreeView action
+    area
+  * Fixes: NB#92963 - gtk_text_view_validate_onscreen: assertion failed:
+    (text_view->onscreen_validated).
+  * Fixes: NB#95718 - Set correct state for GtkCellView in HildonCheckButton
+  * Fixes: NB#90356 - Do not show shortcuts in legacy application menus at
+    all
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 08 Apr 2009 10:44:39 +0300
 
 gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
 
