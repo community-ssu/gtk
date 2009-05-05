@@ -1,3 +1,12 @@
+2009-05-05  Sven Herzberg  <herzi@lanedo.com>
+
+	Addresses: NB#98705 - When forwarding a mail with multiple attachments
+	a new editor opens with To field overlapped
+
+	* gtk/gtkcontainer.c (container_scroll_focus_adjustments): make sure
+	we only clamp the adjustments when the values we got are actually
+	valid
+
 2009-04-30  Michael Natterer  <mitch@imendio.com>
 
 	Fixes the GTK+ part of: NB#103219 - Could not select Block speed

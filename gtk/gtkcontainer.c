@@ -1767,6 +1767,9 @@ container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_upd
       vadj = g_object_get_qdata (G_OBJECT (container), vadjustment_key_id);
       if (hadj || vadj) 
 	{
+#ifdef MAEMO_CHANGES
+          gboolean valid_coordinates = FALSE;
+#endif
 
 	  focus_child = container->focus_child;
 	  while (GTK_IS_CONTAINER (focus_child) && 
@@ -1775,6 +1778,9 @@ container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_upd
 	      focus_child = GTK_CONTAINER (focus_child)->focus_child;
 	    }
 	  
+#ifdef MAEMO_CHANGES
+          valid_coordinates =
+#endif
 	  gtk_widget_translate_coordinates (focus_child, container->focus_child, 
 					    0, 0, &x, &y);
 
@@ -1790,7 +1796,7 @@ container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_upd
 	       * to oscillate between two values (possibly HildonScrollArea is
 	       * causing that.) That should be enough for vkb resized dialogs.
 	       */
-	      if (!resize_update || focus_child->allocation.height < vadj->page_size)
+	      if (valid_coordinates && !resize_update || focus_child->allocation.height < vadj->page_size)
 #endif /* MAEMO_CHANGES */
 		gtk_adjustment_clamp_page (vadj, y, y + focus_child->allocation.height);
 	    }
@@ -1798,7 +1804,7 @@ container_scroll_focus_adjustments (GtkContainer *container, gboolean resize_upd
 	  if (hadj)
 	    {
 #ifdef MAEMO_CHANGES
-	      if (!resize_update || focus_child->allocation.width < hadj->page_size)
+	      if (valid_coordinates && !resize_update || focus_child->allocation.width < hadj->page_size)
 #endif /* MAEMO_CHANGES */
 		gtk_adjustment_clamp_page (hadj, x, x + focus_child->allocation.width);
 	    }
