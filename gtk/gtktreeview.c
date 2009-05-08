@@ -5085,7 +5085,11 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
                           GTK_SHADOW_NONE,
                           &event->area,
                           widget,
+#ifdef MAEMO_CHANGES
+                          "cell_blank",
+#else /* !MAEMO_CHANGES */
                           "cell_even",
+#endif /* !MAEMO_CHANGES */
                           0, tree_view->priv->height,
                           bin_window_width,
                           bin_window_height - tree_view->priv->height);

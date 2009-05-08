@@ -1,3 +1,11 @@
+2009-05-08  Kristian Rietveld  <kris@imendio.com>
+
+	Addresses: NB#110837 - Double line is appearing in synchronization
+	dialog.
+
+	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): use "cell_blank"
+	detail when drawing the background for the empty space.
+
 2009-05-05  Sven Herzberg  <herzi@lanedo.com>
 
 	Addresses: NB#98705 - When forwarding a mail with multiple attachments
