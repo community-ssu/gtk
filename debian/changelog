@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.12.12-1maemo16) unstable; urgency=low
+
+  * Addresses: NB#103219 - Could not select Block speed to 1 from the drop down box
+  * Addresses: Addresses: NB#98705 - When forwarding a mail with multiple
+    attachments a new editor opens with To field overlapped
+  * Addresses: NB#110837 - Double line is appearing in synchronization dialog.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 11 May 2009 17:15:32 +0300
+
 gtk+2.0 (2:2.12.12-1maemo15) unstable; urgency=low
 
   * Addresses: NB#108333 - Patch for GtkFrame to support new group title
