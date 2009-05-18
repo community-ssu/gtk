@@ -1,5 +1,14 @@
 2009-05-18  Kristian Rietveld  <kris@imendio.com>
 
+	Addresses: NB#112906 - Short cut keys are not working in legacy
+	applications
+
+	* gtk/gtksettings.c: Revert change set 17997 committed on April 2nd
+	2009 (fix for NB#90356).  It disabled the menu accels also
+	functionally, which was not intended.
+
+2009-05-18  Kristian Rietveld  <kris@imendio.com>
+
 	Fixes: NB#116994 - clear private data item selection cannot be
 	toggled by tapping anywhere on the item
 
