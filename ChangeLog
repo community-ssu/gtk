@@ -1,5 +1,14 @@
 2009-05-18  Kristian Rietveld  <kris@imendio.com>
 
+	Fixes: NB#111809 - word completion candidate is seen though focus is
+	moved to other widget
+
+	* gtk/gtktextview.c (gtk_text_view_focus_out): Remove !MAEMO_CHANGES
+	markers.  We do want to send focus-out to the IM context here to
+	lose the suggested word completion.
+
+2009-05-18  Kristian Rietveld  <kris@imendio.com>
+
 	Addresses: NB#115510 - Kinetic scrolling too sensitive.
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_release): Actions are

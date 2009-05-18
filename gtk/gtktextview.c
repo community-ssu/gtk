@@ -4463,13 +4463,11 @@ gtk_text_view_focus_out_event (GtkWidget *widget, GdkEventFocus *event)
 					keymap_direction_changed,
 					text_view);
 
-#ifndef MAEMO_CHANGES
   if (text_view->editable)
     {
       text_view->need_im_reset = TRUE;
       gtk_im_context_focus_out (GTK_TEXT_VIEW (widget)->im_context);
     }
-#endif /* !MAEMO_CHANGES */
 
   return FALSE;
 }
