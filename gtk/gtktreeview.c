@@ -3524,6 +3524,9 @@ gtk_tree_view_button_release (GtkWidget      *widget,
   GtkTreeView *tree_view;
 #ifdef MAEMO_CHANGES
   HildonMode mode;
+  gint new_y;
+  GtkRBTree *tree;
+  GtkRBNode *node;
 #endif /* MAEMO_CHANGES */
 
   g_return_val_if_fail (GTK_IS_TREE_VIEW (widget), FALSE);
@@ -3548,26 +3551,39 @@ gtk_tree_view_button_release (GtkWidget      *widget,
                         "hildon-mode", &mode,
                         NULL);
 
+  /* Get the node where the mouse was released */
+  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->y);
+  if (new_y < 0)
+    new_y = 0;
+  _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
     {
       GtkTreePath *path;
+      GtkRBTree *select_tree;
+      GtkRBNode *select_node;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
+      _gtk_tree_view_find_node (tree_view, path,
+                                &select_tree, &select_node);
 
-      if (tree_view->priv->queued_ctrl_pressed)
+      if (tree == select_tree && node == select_node)
         {
-	  gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
-	  gtk_tree_view_real_toggle_cursor_row (tree_view);
-	  GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
-	}
-      else if (tree_view->priv->queued_shift_pressed)
-        {
-	  gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
-	  gtk_tree_view_real_select_cursor_row (tree_view, FALSE);
-	  GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
-	}
-      else
-	gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
+          if (tree_view->priv->queued_ctrl_pressed)
+            {
+              gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
+              gtk_tree_view_real_toggle_cursor_row (tree_view);
+              GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
+            }
+          else if (tree_view->priv->queued_shift_pressed)
+            {
+              gtk_tree_view_real_set_cursor (tree_view, path, FALSE, TRUE);
+              gtk_tree_view_real_select_cursor_row (tree_view, FALSE);
+              GTK_TREE_VIEW_UNSET_FLAG (tree_view, GTK_TREE_VIEW_DRAW_KEYFOCUS);
+            }
+          else
+            gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
+        }
 
       free_queued_select_row (tree_view);
       gtk_tree_path_free (path);
@@ -3578,12 +3594,11 @@ gtk_tree_view_button_release (GtkWidget      *widget,
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_activate_row))
     {
       GtkTreePath *path;
+      GtkRBTree *activate_tree;
+      GtkRBNode *activate_node;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_activate_row);
 
-      /* In normal-mode we will activate anyway, we do not care
-       * about the cursor.
-       */
       if (mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
         {
@@ -3597,32 +3612,19 @@ gtk_tree_view_button_release (GtkWidget      *widget,
               tree_view->priv->highlighted_tree = NULL;
               tree_view->priv->highlighted_node = NULL;
             }
+        }
 
+      _gtk_tree_view_find_node (tree_view, path,
+                                &activate_tree, &activate_node);
+
+      /* Only emit activated if the mouse was released from the
+       * same row where the mouse was pressed.
+       */
+      if (tree == activate_tree && node == activate_node)
+        {
           gtk_tree_view_row_activated (tree_view, path,
                                        tree_view->priv->focus_column);
         }
-      else if (mode == HILDON_DIABLO)
-        {
-          gint new_y;
-          GtkRBTree *tree, *activate_tree;
-          GtkRBNode *node, *activate_node;
-
-          /* Get the node that is currently under the cursor */
-          new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->y);
-          if (new_y < 0)
-            new_y = 0;
-          _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
-
-          _gtk_tree_view_find_node (tree_view, path,
-                                    &activate_tree, &activate_node);
-
-          /* Only emit activated if these match */
-          if (tree == activate_tree && node == activate_node)
-	    {
-	      gtk_tree_view_row_activated (tree_view, path,
-					   tree_view->priv->focus_column);
-	    }
-	}
 
       gtk_tree_path_free (path);
 
@@ -3633,15 +3635,21 @@ gtk_tree_view_button_release (GtkWidget      *widget,
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_expand_row))
     {
       GtkTreePath *path;
-      GtkRBTree *tree;
-      GtkRBNode *node = NULL;
+      GtkRBTree *expand_tree;
+      GtkRBNode *expand_node = NULL;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_expand_row);
 
       if (mode == HILDON_FREMANTLE)
         {
-          /* We should not take the cursor into accont. */
-          _gtk_tree_view_find_node (tree_view, path, &tree, &node);
+          /* We should not take the cursor into accont.  We do check
+           * with the node where the mouse was released.
+           */
+          _gtk_tree_view_find_node (tree_view, path,
+                                    &expand_tree, &expand_node);
+
+          if (tree != expand_tree || node != expand_node)
+            expand_node = NULL;
         }
       else
         {
@@ -3650,19 +3658,21 @@ gtk_tree_view_button_release (GtkWidget      *widget,
           cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
 
           if (!gtk_tree_path_compare (cursor_path, path))
-            _gtk_tree_view_find_node (tree_view, path, &tree, &node);
+            _gtk_tree_view_find_node (tree_view, path,
+                                      &expand_tree, &expand_node);
 
           gtk_tree_path_free (cursor_path);
         }
 
-      if (node)
+      if (expand_node)
         {
-          if (!node->children)
+          if (!expand_node->children)
             gtk_tree_view_real_expand_row (tree_view, path,
-                                           tree, node, FALSE, TRUE);
+                                           expand_tree, expand_node,
+                                           FALSE, TRUE);
           else
             gtk_tree_view_real_collapse_row (tree_view, path,
-                                             tree, node, TRUE);
+                                             expand_tree, expand_node, TRUE);
         }
 
       gtk_tree_path_free (path);
@@ -3678,10 +3688,16 @@ gtk_tree_view_button_release (GtkWidget      *widget,
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_tapped_row))
     {
       GtkTreePath *path;
+      GtkRBTree *tapped_tree;
+      GtkRBNode *tapped_node;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_tapped_row);
-      g_signal_emit (tree_view, tree_view_signals[HILDON_ROW_TAPPED],
-                     0, path);
+      _gtk_tree_view_find_node (tree_view, path,
+                                &tapped_tree, &tapped_node);
+
+      if (tree == tapped_tree && node == tapped_node)
+        g_signal_emit (tree_view, tree_view_signals[HILDON_ROW_TAPPED],
+                       0, path);
 
       gtk_tree_path_free (path);
 

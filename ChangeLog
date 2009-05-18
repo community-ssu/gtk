@@ -1,5 +1,13 @@
 2009-05-18  Kristian Rietveld  <kris@imendio.com>
 
+	Addresses: NB#115510 - Kinetic scrolling too sensitive.
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_release): Actions are
+	only executed if the mouse has been released on the same row where
+	the mouse went down.
+
+2009-05-18  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_button_release): When
 	expanding/collapsing a node in Fremantle mode, do not compare
 	the path with the cursor path.
