@@ -1,5 +1,11 @@
 2009-05-18  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_button_release): When
+	expanding/collapsing a node in Fremantle mode, do not compare
+	the path with the cursor path.
+
+2009-05-18  Kristian Rietveld  <kris@imendio.com>
+
 	Addresses: NB#112906 - Short cut keys are not working in legacy
 	applications
 

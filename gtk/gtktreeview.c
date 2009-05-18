@@ -3632,28 +3632,40 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_expand_row))
     {
-      GtkTreePath *path, *cursor_path;
+      GtkTreePath *path;
+      GtkRBTree *tree;
+      GtkRBNode *node = NULL;
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_expand_row);
-      cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
 
-      if (!gtk_tree_path_compare (cursor_path, path))
+      if (mode == HILDON_FREMANTLE)
         {
-	  GtkRBTree *tree;
-	  GtkRBNode *node;
+          /* We should not take the cursor into accont. */
+          _gtk_tree_view_find_node (tree_view, path, &tree, &node);
+        }
+      else
+        {
+          GtkTreePath *cursor_path;
 
-	  _gtk_tree_view_find_node (tree_view, path, &tree, &node);
+          cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
 
-	  if (!node->children)
-	    gtk_tree_view_real_expand_row (tree_view, path,
-					   tree, node, FALSE, TRUE);
-	  else
-	    gtk_tree_view_real_collapse_row (tree_view, path,
-					     tree, node, TRUE);
-	}
+          if (!gtk_tree_path_compare (cursor_path, path))
+            _gtk_tree_view_find_node (tree_view, path, &tree, &node);
+
+          gtk_tree_path_free (cursor_path);
+        }
+
+      if (node)
+        {
+          if (!node->children)
+            gtk_tree_view_real_expand_row (tree_view, path,
+                                           tree, node, FALSE, TRUE);
+          else
+            gtk_tree_view_real_collapse_row (tree_view, path,
+                                             tree, node, TRUE);
+        }
 
       gtk_tree_path_free (path);
-      gtk_tree_path_free (cursor_path);
 
       gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
       tree_view->priv->queued_expand_row = NULL;
