@@ -1,3 +1,12 @@
+2009-05-18  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#116994 - clear private data item selection cannot be
+	toggled by tapping anywhere on the item
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): treat clicks
+	on the tickmark in multiple selection mode as clicks on the last
+	column.
+
 2009-05-11  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo16

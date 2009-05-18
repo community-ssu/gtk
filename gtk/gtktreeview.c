@@ -2983,6 +2983,23 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	  break;
 	}
 
+#ifdef MAEMO_CHANGES
+      gtk_widget_style_get (widget,
+                            "hildon-mode", &mode,
+                            NULL);
+
+      if (mode == HILDON_FREMANTLE
+          && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
+          && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE
+          && (gint)event->x < background_area.x + HILDON_TICK_MARK_SIZE)
+        {
+          GList *list;
+
+          list = (rtl ? g_list_first (tree_view->priv->columns) : g_list_last (tree_view->priv->columns));
+          column = list->data;
+        }
+#endif /* MAEMO_CHANGES */
+
       if (column == NULL)
 	{
 	  gtk_tree_path_free (path);
@@ -3060,10 +3077,6 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	}
 
 #ifdef MAEMO_CHANGES
-      gtk_widget_style_get (widget,
-                            "hildon-mode", &mode,
-                            NULL);
-
       node_selected = GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED);
       node_is_selectable =
 	_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
