@@ -1,3 +1,9 @@
+2009-05-18  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo17
+
+	* debian/changelog: Updates.
+
 2009-05-18  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#111809 - word completion candidate is seen though focus is

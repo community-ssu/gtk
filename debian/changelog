@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.12.12-1maemo17) unstable; urgency=low
+
+  * Fixes: NB#111809 - word completion candidate is seen though focus is
+    moved to other widget
+  * Addresses: NB#115510 - Kinetic scrolling too sensitive.
+  * Addresses: NB#112906 - Short cut keys are not working in legacy
+    applications
+  * Fixes: NB#116994 - clear private data item selection cannot be toggled
+    by tapping anywhere on the item
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 18 May 2009 17:51:29 +0300
+
 gtk+2.0 (2:2.12.12-1maemo16) unstable; urgency=low
 
   * Addresses: NB#103219 - Could not select Block speed to 1 from the drop down box
