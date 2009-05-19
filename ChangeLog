@@ -1,3 +1,11 @@
+2009-05-19  Kristian Rietveld  <kris@imendio.com>
+
+	Addresses: NB#114356 - NP-Audio: Clip used to launch CMS remains
+	highlighted along with the currently playing clip in NP List view.
+
+	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): also free
+	a queued selection.
+
 2009-05-18  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Released 2:2.12.12-1maemo17

@@ -16893,6 +16893,7 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
 	  tree_view->priv->queued_tapped_row = NULL;
 	}
 
+      free_queued_select_row (tree_view);
       free_queued_activate_row (tree_view);
 #endif /* MAEMO_CHANGES */
     }
