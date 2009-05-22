@@ -1,3 +1,11 @@
+2009-05-22  Sven Herzberg  <herzi@lanedo.com>
+
+	Fixes: NB#105891 - Drawing lines support in text area widget
+
+	* gtk/gtktextview.c (gtk_text_view_class_init),
+	(gtk_text_view_paint): added a custom-background style property; see
+	the bugs for instructions how to use it
+
 2009-05-19  Kristian Rietveld  <kris@imendio.com>
 
 	Addresses: NB#115510 - Kinetic scrolling too sensitive.

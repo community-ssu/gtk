@@ -704,6 +704,14 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							       P_("Color with which to draw error-indication underlines"),
 							       GDK_TYPE_COLOR,
 							       GTK_PARAM_READABLE));
+#ifdef MAEMO_CHANGES
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_boolean ("custom-background",
+                                                                 P_("Render a custom background"),
+                                                                 P_("Provide a hook for theme engines to render a custom background"),
+                                                                 FALSE,
+                                                                 GTK_PARAM_READABLE));
+#endif
   
   /*
    * Signals
@@ -4523,6 +4531,9 @@ gtk_text_view_paint (GtkWidget      *widget,
   GList *child_exposes;
   GList *tmp_list;
   GdkRegion *updates;
+#ifdef MAEMO_CHANGES
+  gboolean custom_background = FALSE;
+#endif
   
   text_view = GTK_TEXT_VIEW (widget);
 
@@ -4560,6 +4571,27 @@ gtk_text_view_paint (GtkWidget      *widget,
   printf ("painting %d,%d  %d x %d\n",
           area->x, area->y,
           area->width, area->height);
+#endif
+
+#ifdef MAEMO_CHANGES
+  gtk_widget_style_get (widget,
+                        "custom-background", &custom_background,
+                        NULL);
+
+  if (custom_background)
+    {
+      gtk_paint_flat_box (widget->style,
+                          event->window,
+                          GTK_WIDGET_STATE (widget),
+                          GTK_SHADOW_NONE,
+                          area,
+                          widget,
+                          NULL,
+                          - text_view->xoffset,
+                          - text_view->yoffset,
+                          area->x + area->width + text_view->xoffset,
+                          area->y + area->height + text_view->yoffset);
+    }
 #endif
 
   child_exposes = NULL;
