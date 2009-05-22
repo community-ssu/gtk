@@ -1681,6 +1681,70 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
 						  GTK_WIDGET (combo_box)->window);
   gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
 
+#ifdef MAEMO_CHANGES
+  {
+    GdkAtom  prop_type;
+    gint     prop_format;
+    gint     prop_length;
+    gint32  *work_area;
+
+#if 0
+    g_message ("%s: monitor %d: %d, %d (%d x %d)",
+               G_STRFUNC, private->monitor_num,
+               monitor.x, monitor.y,
+               monitor.width, monitor.height);
+#endif
+
+    if (gdk_property_get (gdk_screen_get_root_window (screen),
+                          gdk_atom_intern_static_string ("_NET_WORKAREA"),
+                          GDK_NONE,
+                          0, 16, FALSE,
+                          &prop_type, &prop_format, &prop_length,
+                          (guchar **) &work_area))
+      {
+        if (prop_format == 32 && prop_length == 16)
+          {
+            GdkRectangle work_rectangle;
+
+#if 0
+            g_message ("%s: work area: %d, %d (%d x %d)",
+                       G_STRFUNC,
+                       work_area[0], work_area[1],
+                       work_area[2], work_area[3]);
+#endif
+
+            work_rectangle.x      = work_area[0];
+            work_rectangle.y      = work_area[1];
+            work_rectangle.width  = work_area[2];
+            work_rectangle.height = work_area[3];
+
+            gdk_rectangle_intersect (&monitor, &work_rectangle, &monitor);
+
+#if 0
+            g_message ("%s: new monitor %d: %d, %d (%d x %d)",
+                       G_STRFUNC, private->monitor_num,
+                       monitor.x, monitor.y,
+                       monitor.width, monitor.height);
+#endif
+          }
+        else
+          {
+            g_warning ("%s: _NET_WORKAREA property has the wrong format!",
+                       G_STRFUNC);
+
+          }
+
+        g_free (work_area);
+      }
+    else
+      {
+        g_warning ("%s: _NET_WORKAREA property not found!",
+                   G_STRFUNC);
+
+      }
+  }
+#endif /* MAEMO_CHANGES */
+
   if (*x < monitor.x)
     *x = monitor.x;
   else if (*x + *width > monitor.x + monitor.width)

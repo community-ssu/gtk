@@ -2350,6 +2350,7 @@ gtk_icon_view_button_release (GtkWidget      *widget,
   GtkIconView *icon_view;
 #ifdef MAEMO_CHANGES
   HildonMode mode;
+  GtkIconViewItem *item = NULL;
 #endif /* MAEMO_CHANGES */
 
   icon_view = GTK_ICON_VIEW (widget);
@@ -2362,6 +2363,12 @@ gtk_icon_view_button_release (GtkWidget      *widget,
                         "hildon-mode", &mode,
                         NULL);
 
+  if (mode == HILDON_FREMANTLE)
+    item = gtk_icon_view_get_item_at_coords (icon_view,
+                                             event->x, event->y,
+                                             FALSE,
+                                             NULL);
+
   if (icon_view->priv->queued_activate_item
       && mode == HILDON_FREMANTLE
       && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
@@ -2371,9 +2378,12 @@ gtk_icon_view_button_release (GtkWidget      *widget,
       gtk_icon_view_queue_draw_item (icon_view,
                                      icon_view->priv->queued_activate_item);
 
-      path = gtk_tree_path_new_from_indices (icon_view->priv->queued_activate_item->index, -1);
-      gtk_icon_view_item_activated (icon_view, path);
-      gtk_tree_path_free (path);
+      if (icon_view->priv->queued_activate_item == item)
+        {
+          path = gtk_tree_path_new_from_indices (icon_view->priv->queued_activate_item->index, -1);
+          gtk_icon_view_item_activated (icon_view, path);
+          gtk_tree_path_free (path);
+        }
 
       icon_view->priv->queued_activate_item = NULL;
     }
@@ -2382,31 +2392,36 @@ gtk_icon_view_button_release (GtkWidget      *widget,
       && mode == HILDON_FREMANTLE
       && icon_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
     {
-      GtkIconViewItem *item = icon_view->priv->queued_select_item;
+      GtkIconViewItem *select_item = icon_view->priv->queued_select_item;
 
       free_queued_select_item (icon_view);
 
-      if (icon_view->priv->selection_mode == GTK_SELECTION_SINGLE)
+      if (select_item == item)
         {
-          if (!item->selected)
+          if (icon_view->priv->selection_mode == GTK_SELECTION_SINGLE)
             {
-              gtk_icon_view_unselect_all_internal (icon_view);
+              if (!item->selected)
+                {
+                  gtk_icon_view_unselect_all_internal (icon_view);
 
-              item->selected = TRUE;
+                  item->selected = TRUE;
+                  gtk_icon_view_queue_draw_item (icon_view, item);
+
+                  g_signal_emit (icon_view,
+                                 icon_view_signals[SELECTION_CHANGED], 0);
+                }
+            }
+          else if (icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
+            {
+              item->selected = !item->selected;
               gtk_icon_view_queue_draw_item (icon_view, item);
 
-              g_signal_emit (icon_view, icon_view_signals[SELECTION_CHANGED], 0);
+              g_signal_emit (icon_view,
+                             icon_view_signals[SELECTION_CHANGED], 0);
             }
-        }
-      else if (icon_view->priv->selection_mode == GTK_SELECTION_MULTIPLE)
-        {
-          item->selected = !item->selected;
-          gtk_icon_view_queue_draw_item (icon_view, item);
 
-          g_signal_emit (icon_view, icon_view_signals[SELECTION_CHANGED], 0);
+          icon_view->priv->anchor_item = item;
         }
-
-      icon_view->priv->anchor_item = item;
     }
 #endif /* MAEMO_CHANGES */
 
