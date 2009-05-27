@@ -1,3 +1,9 @@
+2009-05-27  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Released 2:2.12.12-1maemo18
+
+	* debian/changelog: Updates.
+
 2009-05-22  Sven Herzberg  <herzi@lanedo.com>
 
 	Fixes: NB#105891 - Drawing lines support in text area widget
