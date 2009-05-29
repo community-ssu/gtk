@@ -3,7 +3,10 @@ gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
   [ Michael Natterer ]
   * Upgrade to GTK+ 2.14.3
 
- -- Michael Natterer <mitch@imendio.com>  Fri, 24 Apr 2009 13:20:00 +0100
+  [ Claudio Saavedra ]
+  * Releasing. Behold.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 29 May 2009 16:32:19 +0200
 
 gtk+2.0 (2:2.12.12-1maemo18) unstable; urgency=low
 

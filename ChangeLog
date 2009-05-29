@@ -1,3 +1,9 @@
+2009-05-29  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Releasing 2:2.14.3-1maemo1
+
+	* debian/changelog: Updates.
+
 2009-05-29  Michael Natterer  <mitch@imendio.com>
 
 	* === Start Maemo-GTK+ 2.14.3 ===
