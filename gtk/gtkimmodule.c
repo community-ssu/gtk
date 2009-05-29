@@ -647,10 +647,7 @@ match_locale (const gchar *locale,
  * 
  * Return value: the context ID (will never be %NULL)
  **/
-#ifndef MAEMO_CHANGES
-const
-#endif /* MAEMO_CHANGES */
-gchar *
+const gchar *
 _gtk_im_module_get_default_context_id (GdkWindow *client_window)
 {
   GSList *tmp_list;

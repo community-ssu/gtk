@@ -1,8 +1,18 @@
+2009-05-29  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkimmodule.[ch] (_gtk_im_module_get_default_context_id):
+	return a const string again, effectively reverting the files
+	to upstream.
+
+	* gtk/gtkimmulticontext.c (get_global_context_id): dup the string
+	returned by above function, so we always return an allocated
+	string that can be freed.
+
 2009-05-27  Claudio Saavedra  <csaavedra@igalia.com>
 
-        Released 2:2.12.12-1maemo18
+	Released 2:2.12.12-1maemo18
 
-        * debian/changelog: Updates.
+	* debian/changelog: Updates.
 
 2009-05-22  Sven Herzberg  <herzi@lanedo.com>
 

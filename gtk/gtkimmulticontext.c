@@ -137,7 +137,7 @@ get_global_context_id (void)
   if (!succeeded)
     {
       /* Fall back to default locale */
-      context_id = _gtk_im_module_get_default_context_id (NULL);
+      context_id = g_strdup (_gtk_im_module_get_default_context_id (NULL));
     }
 
   return context_id;
