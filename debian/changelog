@@ -5,6 +5,15 @@ gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
 
  -- Michael Natterer <mitch@imendio.com>  Fri, 24 Apr 2009 13:20:00 +0100
 
+gtk+2.0 (2:2.12.12-1maemo18) unstable; urgency=low
+
+  * Fixes: NB#105891 - Drawing lines support in text area widget
+  * Addresses: NB#115510 - Kinetic scrolling too sensitive.
+  * Addresses: NB#114356 - NP-Audio: Clip used to launch CMS remains
+    highlighted along with the currently playing clip in NP List view.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 27 May 2009 09:19:00 +0200
+
 gtk+2.0 (2:2.12.12-1maemo17) unstable; urgency=low
 
   * Fixes: NB#111809 - word completion candidate is seen though focus is
