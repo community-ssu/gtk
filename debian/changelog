@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.14.3-1maemo2) unstable; urgency=low
+
+  * Fixes: NB#118755 (Application manager crashes when uninstalling an
+    application)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 02 Jun 2009 12:57:30 +0300
+
 gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
 
   [ Michael Natterer ]

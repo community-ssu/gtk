@@ -1,3 +1,9 @@
+2009-06-02  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Releasing 2:2.14.3-1maemo2
+
+	* debian/changelog: Updates.
+
 2009-06-01  Kristian Rietveld  <kris@imendio.com>
 
 	Fixes: NB#118755 - Application manager crashes when uninstalling
