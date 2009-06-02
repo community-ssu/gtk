@@ -1,3 +1,16 @@
+2009-06-01  Kristian Rietveld  <kris@imendio.com>
+
+	Fixes: NB#118755 - Application manager crashes when uninstalling
+	an application
+
+	(and it's many duplicates).
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_release): Properly
+	handle a NULL ->priv->tree.  We need to run through the remaining
+	logic to properly unset row reference of the delayed actions.
+	Unfortunately this didn't get caught during my earlier testing due to
+	dep. problems ...
+
 2009-05-29  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Releasing 2:2.14.3-1maemo1

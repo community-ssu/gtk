@@ -3575,11 +3575,22 @@ gtk_tree_view_button_release (GtkWidget      *widget,
                         "hildon-mode", &mode,
                         NULL);
 
-  /* Get the node where the mouse was released */
-  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->y);
-  if (new_y < 0)
-    new_y = 0;
-  _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+  if (tree_view->priv->tree)
+    {
+      /* Get the node where the mouse was released */
+      new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, event->y);
+      if (new_y < 0)
+        new_y = 0;
+      _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+    }
+  else
+    {
+      /* We just set tree and node to NULL otherwise.  We still want
+       * to run through below's logic to free row references where needed.
+       */
+      tree = NULL;
+      node = NULL;
+    }
 
   if (gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
     {
