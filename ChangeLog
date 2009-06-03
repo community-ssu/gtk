@@ -1,5 +1,11 @@
 2009-06-03  Claudio Saavedra  <csaavedra@igalia.com>
 
+	Releasing 2:2.14.3-1maemo3
+
+	* debian/changelog: updates
+
+2009-06-03  Claudio Saavedra  <csaavedra@igalia.com>
+
 	Merge from upstream:
 
     2009-01-29  Claudio Saavedra  <csaavedra@igalia.com>
