@@ -1,3 +1,10 @@
+2009-06-03  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#120404 - LOcation widget in home view doesnt respond on
+	clicking
+
+	* gtk/updateiconcache.c: import missing Maemo patches.
+
 2009-06-02  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Releasing 2:2.14.3-1maemo2
