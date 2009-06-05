@@ -114,7 +114,12 @@ gdk_input_device_new (GdkDisplay  *display,
       (fixed in 3.2A) */
    gdkdev->info.name = g_strdup ("pointer");
 
-  gdkdev->info.mode = GDK_MODE_DISABLED;
+#if defined (MAEMO_CHANGES) && defined (XINPUT_2)
+  if (device->use == IsXPointer)
+    gdkdev->info.mode = GDK_MODE_SCREEN;
+  else
+#endif
+    gdkdev->info.mode = GDK_MODE_DISABLED;
 
   /* Try to figure out what kind of device this is by its name -
      could invite a very, very, long list... Lowercase name
@@ -122,7 +127,11 @@ gdk_input_device_new (GdkDisplay  *display,
 
   tmp_name = g_ascii_strdown (gdkdev->info.name, -1);
   
+#ifdef MAEMO_CHANGES
+  if (g_str_has_suffix (tmp_name, "pointer"))
+#else
   if (!strcmp (tmp_name, "pointer"))
+#endif
     gdkdev->info.source = GDK_SOURCE_MOUSE;
   else if (!strcmp (tmp_name, "wacom") ||
 	   !strcmp (tmp_name, "pen"))
@@ -222,8 +231,10 @@ gdk_input_device_new (GdkDisplay  *display,
       (!include_core && device->use == IsXPointer))
     goto error;
 
+#if !defined (MAEMO_CHANGES) || !defined (XINPUT_2)
   if (device->use != IsXPointer)
     {
+#endif
       gdk_error_trap_push ();
       gdkdev->xdevice = XOpenDevice (GDK_DISPLAY_XDISPLAY (display),
 				     gdkdev->deviceid);
@@ -231,7 +242,9 @@ gdk_input_device_new (GdkDisplay  *display,
       /* return NULL if device is not ready */
       if (gdk_error_trap_pop ())
 	goto error;
+#if !defined (MAEMO_CHANGES) || !defined (XINPUT_2)
     }
+#endif
 
   gdkdev->buttonpress_type = 0;
   gdkdev->buttonrelease_type = 0;
@@ -400,6 +413,10 @@ _gdk_input_common_init (GdkDisplay *display,
   if (XQueryExtension (display_x11->xdisplay, "XInputExtension",
 		       &ignore, &event_base, &ignore))
     {
+#if defined (MAEMO_CHANGES) && defined (XINPUT_2)
+      XQueryInputVersion(display_x11->xdisplay, XI_2_Major, XI_2_Minor);
+#endif
+
       gdk_x11_register_standard_event_type (display,
 					    event_base, 15 /* Number of events */);
 
@@ -594,11 +611,24 @@ _gdk_input_common_other_event (GdkEvent         *event,
       event->button.time = xdbe->time;
 
       event->button.axes = g_new (gdouble, gdkdev->info.num_axes);
-      gdk_input_translate_coordinates (gdkdev,input_window, xdbe->axis_data,
-				       event->button.axes, 
-				       &event->button.x,&event->button.y);
+
+#if !defined (MAEMO_CHANGES) || !defined (XINPUT_2)
+      gdk_input_translate_coordinates (gdkdev, input_window, xdbe->axis_data,
+                                       event->button.axes,
+                                       &event->button.x, &event->button.y);
       event->button.x_root = event->button.x + input_window->root_x;
       event->button.y_root = event->button.y + input_window->root_y;
+#else
+      gdk_input_translate_coordinates (gdkdev, input_window, xdbe->axis_data,
+                                       event->button.axes,
+                                       NULL, NULL);
+
+      event->button.x = (gdouble) xdbe->x;
+      event->button.y = (gdouble) xdbe->y;
+      event->button.x_root = (gdouble) xdbe->x_root;
+      event->button.y_root = (gdouble) xdbe->y_root;
+#endif
+
       event->button.state = gdk_input_translate_state(xdbe->state,xdbe->device_state);
       event->button.button = xdbe->button;
 
@@ -696,11 +726,23 @@ _gdk_input_common_other_event (GdkEvent         *event,
       event->motion.device = &gdkdev->info;
       
       event->motion.axes = g_new (gdouble, gdkdev->info.num_axes);
-      gdk_input_translate_coordinates(gdkdev,input_window,xdme->axis_data,
-				      event->motion.axes,
-				      &event->motion.x,&event->motion.y);
+
+#if !defined (MAEMO_CHANGES) || !defined (XINPUT_2)
+      gdk_input_translate_coordinates (gdkdev, input_window, xdme->axis_data,
+                                       event->motion.axes,
+                                       &event->motion.x, &event->motion.y);
       event->motion.x_root = event->motion.x + input_window->root_x;
       event->motion.y_root = event->motion.y + input_window->root_y;
+#else
+      gdk_input_translate_coordinates (gdkdev, input_window, xdme->axis_data,
+                                       event->motion.axes,
+                                       NULL, NULL);
+
+      event->motion.x = (gdouble) xdme->x;
+      event->motion.y = (gdouble) xdme->y;
+      event->motion.x_root = (gdouble) xdme->x_root;
+      event->motion.y_root = (gdouble) xdme->y_root;
+#endif
 
       event->motion.type = GDK_MOTION_NOTIFY;
       event->motion.window = input_window->window;

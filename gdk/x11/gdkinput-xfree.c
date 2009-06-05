@@ -38,7 +38,11 @@ _gdk_input_init(GdkDisplay *display)
 {
   _gdk_init_input_core (display);
   GDK_DISPLAY_X11 (display)->input_ignore_core = FALSE;
+#ifdef MAEMO_CHANGES
+  _gdk_input_common_init (display, TRUE);
+#else
   _gdk_input_common_init (display, FALSE);
+#endif
 }
 
 gboolean
