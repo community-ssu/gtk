@@ -1691,6 +1691,7 @@ gtk_menu_popup (GtkMenu		    *menu,
                              NULL);
 #endif /* MAEMO_CHANGES */
 
+#ifndef MAEMO_CHANGES
   /* if no item is selected, select the first one */
   if (!menu_shell->active_menu_item)
     {
@@ -1703,6 +1704,7 @@ gtk_menu_popup (GtkMenu		    *menu,
       if (touchscreen_mode)
         gtk_menu_shell_select_first (menu_shell, TRUE);
     }
+#endif /* !MAEMO_CHANGES */
 
   /* Once everything is set up correctly, map the toplevel window on
      the screen.

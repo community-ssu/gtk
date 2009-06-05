@@ -1,3 +1,11 @@
+2009-06-05  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#110433 - First menu item should not be automatically
+	selected
+
+	* gtk/gtkmenu.c (gtk_menu_popup): #ifdef away the code that
+	selects the first menu item in touchscreen-mode.
+
 2009-06-03  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Releasing 2:2.14.3-1maemo3
