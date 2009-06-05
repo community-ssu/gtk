@@ -77,14 +77,6 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 
 </para>
 
-@style: The style for the widget. The style contains the colors the widget should be 
- drawn in for each state along with graphics contexts used to draw with and the font 
- to use for text.
-@requisition: The widget's desired size.
-@allocation: The widget's allocated size.
-@window: The widget's window or its parent window if it does not have a window. (Which 
- will be indicated by the #GTK_NO_WINDOW flag being set).
-@parent: 
 
 <!-- ##### SIGNAL GtkWidget::accel-closures-changed ##### -->
 <para>
@@ -380,13 +372,6 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 @widget: 
 @widget2: 
 
-<!-- ##### SIGNAL GtkWidget::insensitive-press ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-
 <!-- ##### SIGNAL GtkWidget::key-press-event ##### -->
 <para>
 
@@ -647,32 +632,6 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 @widget: the object which received the signal.
 @previous_style: 
 
-<!-- ##### SIGNAL GtkWidget::tap-and-hold ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-
-<!-- ##### SIGNAL GtkWidget::tap-and-hold-query ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-@event: 
-@Returns: 
-
-<!-- ##### SIGNAL GtkWidget::tap-and-hold-setup ##### -->
-<para>
-
-</para>
-
-@widget: the object which received the signal.
-@arg1: 
-@arg2: 
-@arg3: 
-
 <!-- ##### SIGNAL GtkWidget::unmap ##### -->
 <para>
 
@@ -799,11 +758,6 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 
 </para>
 
-<!-- ##### ARG GtkWidget:tap-and-hold-state ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkWidget:tooltip-markup ##### -->
 <para>
 
@@ -820,6 +774,11 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 </para>
 
 <!-- ##### ARG GtkWidget:width-request ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:window ##### -->
 <para>
 
 </para>
@@ -854,22 +813,12 @@ internal child "accessible" of a <structname>GtkWidget</structname>.
 
 </para>
 
-<!-- ##### ARG GtkWidget:hildon-mode ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkWidget:interior-focus ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkWidget:link-color ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkWidget:maemo-position-theming ##### -->
 <para>
 
 </para>
@@ -1247,13 +1196,6 @@ widget by its parent. It is a subregion of its parents allocation. See
 
 </para>
 
-@selection: 
-@target: 
-@type: 
-@format: 
-@data: 
-@length: 
-@display: 
 
 <!-- ##### STRUCT GtkWidgetAuxInfo ##### -->
 <para>
@@ -2668,35 +2610,23 @@ This function is deprecated; it does nothing.
 @widget: 
 
 
-<!-- ##### FUNCTION gtk_widget_tap_and_hold_menu_position_top ##### -->
-<para>
-
-</para>
-
-@menu: 
-@x: 
-@y: 
-@push_in: 
-@widget: 
-
-
-<!-- ##### FUNCTION gtk_widget_tap_and_hold_setup ##### -->
+<!-- ##### FUNCTION gtk_widget_get_snapshot ##### -->
 <para>
 
 </para>
 
 @widget: 
-@menu: 
-@func: 
-@flags: 
+@clip_rect: 
+@Returns: 
 
 
-<!-- ##### FUNCTION gtk_widget_insensitive_press ##### -->
+<!-- ##### FUNCTION gtk_widget_get_window ##### -->
 <para>
 
 </para>
 
 @widget: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gtk_requisition_copy ##### -->

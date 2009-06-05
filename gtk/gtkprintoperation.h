@@ -18,18 +18,21 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_PRINT_OPERATION_H__
 #define __GTK_PRINT_OPERATION_H__
 
-#include <glib-object.h>
 #include <cairo.h>
-#include "gtkmain.h"
-#include "gtkenums.h"
-#include "gtkwindow.h"
-#include "gtkpagesetup.h"
-#include "gtkprintsettings.h"
-#include "gtkprintcontext.h"
-#include "gtkprintoperationpreview.h"
+#include <gtk/gtkmain.h>
+#include <gtk/gtkenums.h>
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkpagesetup.h>
+#include <gtk/gtkprintsettings.h>
+#include <gtk/gtkprintcontext.h>
+#include <gtk/gtkprintoperationpreview.h>
 
 G_BEGIN_DECLS
 
@@ -74,19 +77,19 @@ typedef enum {
 struct _GtkPrintOperation
 {
   GObject parent_instance;
-  
-  GtkPrintOperationPrivate *priv;
+
+  GtkPrintOperationPrivate *GSEAL (priv);
 };
 
 struct _GtkPrintOperationClass
 {
   GObjectClass parent_class;
-  
+
   void     (*done)               (GtkPrintOperation *operation,
 				  GtkPrintOperationResult result);
-  void     (*begin_print)        (GtkPrintOperation *operation, 
+  void     (*begin_print)        (GtkPrintOperation *operation,
 				  GtkPrintContext   *context);
-  gboolean (*paginate)           (GtkPrintOperation *operation, 
+  gboolean (*paginate)           (GtkPrintOperation *operation,
 				  GtkPrintContext   *context);
   void     (*request_page_setup) (GtkPrintOperation *operation,
 				  GtkPrintContext   *context,
@@ -103,11 +106,10 @@ struct _GtkPrintOperationClass
   void       (*custom_widget_apply)  (GtkPrintOperation *operation,
 				      GtkWidget *widget);
 
-  
   gboolean (*preview)	     (GtkPrintOperation        *operation,
-			      GtkPrintOperationPreview *preview, 
+			      GtkPrintOperationPreview *preview,
 			      GtkPrintContext          *context,
-			      GtkWindow                *parent);  
+			      GtkWindow                *parent);
 
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
@@ -174,7 +176,7 @@ GtkPageSetup           *gtk_print_run_page_setup_dialog            (GtkWindow   
 								    GtkPageSetup       *page_setup,
 								    GtkPrintSettings   *settings);
 
-typedef void  (* GtkPageSetupDoneFunc) (GtkPageSetup *page_setup, 
+typedef void  (* GtkPageSetupDoneFunc) (GtkPageSetup *page_setup,
 					gpointer      data);
 
 void                    gtk_print_run_page_setup_dialog_async      (GtkWindow            *parent,

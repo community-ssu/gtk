@@ -17,6 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_CELL_RENDERER_TOGGLE_H__
 #define __GTK_CELL_RENDERER_TOGGLE_H__
 
@@ -41,9 +45,9 @@ struct _GtkCellRendererToggle
   GtkCellRenderer parent;
 
   /*< private >*/
-  guint active : 1;
-  guint activatable : 1;
-  guint radio : 1;
+  guint GSEAL (active) : 1;
+  guint GSEAL (activatable) : 1;
+  guint GSEAL (radio) : 1;
 };
 
 struct _GtkCellRendererToggleClass
@@ -73,6 +77,5 @@ void            gtk_cell_renderer_toggle_set_active (GtkCellRendererToggle *togg
 
 
 G_END_DECLS
-
 
 #endif /* __GTK_CELL_RENDERER_TOGGLE_H__ */

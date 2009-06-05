@@ -19,9 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
-#include <config.h>
+#include "config.h"
 #include "gtkseparatormenuitem.h"
 #include "gtkseparatortoolitem.h"
 #include "gtkintl.h"
@@ -205,7 +203,7 @@ gtk_separator_tool_item_expose (GtkWidget      *widget,
 
   if (priv->draw)
     {
-      if (widget->parent && GTK_IS_TOOLBAR (widget->parent))
+      if (GTK_IS_TOOLBAR (widget->parent))
 	toolbar = GTK_TOOLBAR (widget->parent);
 
       _gtk_toolbar_paint_space_line (widget, toolbar,

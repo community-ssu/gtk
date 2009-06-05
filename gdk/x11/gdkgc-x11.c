@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdkgc.h"
 #include "gdkprivate-x11.h"
@@ -607,8 +607,8 @@ gdk_x11_gc_values_to_xvalues (GdkGCValues    *values,
 }
 
 void
-_gdk_windowing_gc_set_clip_region (GdkGC     *gc,
-				   GdkRegion *region)
+_gdk_windowing_gc_set_clip_region (GdkGC           *gc,
+				   const GdkRegion *region)
 {
   GdkGCX11 *x11_gc = GDK_GC_X11 (gc);
 

@@ -64,4 +64,3 @@ style "msw-combobox-thickness" = "msw-default"
 
 widget_class "*TreeView*ComboBox*" style "msw-combobox-thickness"
 widget_class "*ComboBox*GtkFrame*" style "msw-combobox-thickness"
-

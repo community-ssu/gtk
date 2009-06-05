@@ -1,7 +1,7 @@
 /* GTK - The GIMP Toolkit
  * gtkrecentchooserwidget.h: embeddable recently used resources chooser widget
  * Copyright (C) 2006 Emmanuele Bassi
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -18,10 +18,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_RECENT_CHOOSER_WIDGET_H__
 #define __GTK_RECENT_CHOOSER_WIDGET_H__
 
-#include "gtkrecentchooser.h"
+#include <gtk/gtkrecentchooser.h>
 #include <gtk/gtkvbox.h>
 
 G_BEGIN_DECLS
@@ -42,8 +46,8 @@ struct _GtkRecentChooserWidget
 {
   /*< private >*/
   GtkVBox parent_instance;
-  
-  GtkRecentChooserWidgetPrivate *priv;
+
+  GtkRecentChooserWidgetPrivate *GSEAL (priv);
 };
 
 struct _GtkRecentChooserWidgetClass

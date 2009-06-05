@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdkscreen.h"
 #include "gdkdisplay.h"
@@ -87,7 +87,7 @@ gdk_display_manager_class_init (GdkDisplayManagerClass *klass)
    * Since: 2.2
    */
   signals[DISPLAY_OPENED] =
-    g_signal_new (g_intern_static_string ("display_opened"),
+    g_signal_new (g_intern_static_string ("display-opened"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GdkDisplayManagerClass, display_opened),
@@ -188,10 +188,8 @@ gdk_display_manager_get_default_display (GdkDisplayManager *display_manager)
  * gdk_display_get_default:
  *
  * Gets the default #GdkDisplay. This is a convenience
- * function for:
- * <programlisting>
- *   gdk_display_manager_get_default_display (gdk_display_manager_get ())
- * </programlisting>
+ * function for
+ * <literal>gdk_display_manager_get_default_display (gdk_display_manager_get ())</literal>.
  * 
  * Returns: a #GdkDisplay, or %NULL if there is no default
  *   display.

@@ -18,13 +18,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_PRINT_OPERATION_PREVIEW_H__
 #define __GTK_PRINT_OPERATION_PREVIEW_H__
 
-#include <glib-object.h>
 #include <cairo.h>
-
-#include "gtkprintcontext.h" 
+#include <gtk/gtkprintcontext.h>
 
 G_BEGIN_DECLS
 
@@ -42,20 +44,18 @@ struct _GtkPrintOperationPreviewIface
   GTypeInterface g_iface;
 
   /* signals */
-  void              (*ready)          (GtkPrintOperationPreview *preview, 
+  void              (*ready)          (GtkPrintOperationPreview *preview,
 				       GtkPrintContext          *context);
-  void              (*got_page_size)  (GtkPrintOperationPreview *preview, 
+  void              (*got_page_size)  (GtkPrintOperationPreview *preview,
 				       GtkPrintContext          *context,
 				       GtkPageSetup             *page_setup);
-  
- 
+
   /* methods */
   void              (*render_page)    (GtkPrintOperationPreview *preview,
 				       gint                      page_nr);
   gboolean          (*is_selected)    (GtkPrintOperationPreview *preview,
 				       gint                      page_nr);
   void              (*end_preview)    (GtkPrintOperationPreview *preview);
-  
 
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);

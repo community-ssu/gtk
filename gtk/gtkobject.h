@@ -21,13 +21,18 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_OBJECT_H__
 #define __GTK_OBJECT_H__
 
 
+#include <gdkconfig.h>
 #include <gtk/gtkenums.h>
 #include <gtk/gtktypeutils.h>
 #include <gtk/gtkdebug.h>
@@ -38,12 +43,12 @@ G_BEGIN_DECLS
  * and to test whether `object' and `klass' are of type GTK_TYPE_OBJECT.
  * these are the standard macros for all GtkObject-derived classes.
  */
-#define	GTK_TYPE_OBJECT			(gtk_object_get_type ())
-#define GTK_OBJECT(object)		(GTK_CHECK_CAST ((object), GTK_TYPE_OBJECT, GtkObject))
-#define GTK_OBJECT_CLASS(klass)		(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_OBJECT, GtkObjectClass))
-#define GTK_IS_OBJECT(object)		(GTK_CHECK_TYPE ((object), GTK_TYPE_OBJECT))
-#define GTK_IS_OBJECT_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OBJECT))
-#define	GTK_OBJECT_GET_CLASS(object)	(GTK_CHECK_GET_CLASS ((object), GTK_TYPE_OBJECT, GtkObjectClass))
+#define GTK_TYPE_OBJECT              (gtk_object_get_type ())
+#define GTK_OBJECT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_OBJECT, GtkObject))
+#define GTK_OBJECT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_OBJECT, GtkObjectClass))
+#define GTK_IS_OBJECT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_OBJECT))
+#define GTK_IS_OBJECT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OBJECT))
+#define GTK_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GTK_TYPE_OBJECT, GtkObjectClass))
 
 /* Macros for extracting various fields from GtkObject and GtkObjectClass.
  */
@@ -83,19 +88,19 @@ typedef struct _GtkObjectClass	GtkObjectClass;
 struct _GtkObject
 {
   GInitiallyUnowned parent_instance;
-  
+
   /* 32 bits of flags. GtkObject only uses 4 of these bits and
    *  GtkWidget uses the rest. This is done because structs are
    *  aligned on 4 or 8 byte boundaries. If a new bitfield were
    *  used in GtkWidget much space would be wasted.
    */
-  guint32 flags;
+  guint32 GSEAL (flags);
 };
 
 struct _GtkObjectClass
 {
   GInitiallyUnownedClass parent_class;
-  
+
   /* Non overridable class methods to set and get per class arguments */
   void (*set_arg) (GtkObject *object,
 		   GtkArg    *arg,
@@ -103,7 +108,7 @@ struct _GtkObjectClass
   void (*get_arg) (GtkObject *object,
 		   GtkArg    *arg,
 		   guint      arg_id);
-  
+
   /* Default signal handler for the ::destroy signal, which is
    *  invoked to request that references to the widget be dropped.
    *  If an object class overrides destroy() in order to perform class
@@ -119,7 +124,7 @@ struct _GtkObjectClass
 
 /* Application-level methods */
 
-GtkType	gtk_object_get_type		(void) G_GNUC_CONST;
+GType gtk_object_get_type (void) G_GNUC_CONST;
 
 #ifndef GTK_DISABLE_DEPRECATED
 void gtk_object_sink	  (GtkObject *object);
@@ -128,7 +133,7 @@ void gtk_object_destroy	  (GtkObject *object);
 
 /****************************************************************/
 
-#ifndef GTK_DISABLE_DEPRECATED 
+#ifndef GTK_DISABLE_DEPRECATED
 
 GtkObject*	gtk_object_new		  (GtkType	       type,
 					   const gchar	      *first_property_name,
@@ -136,10 +141,10 @@ GtkObject*	gtk_object_new		  (GtkType	       type,
 GtkObject*	gtk_object_ref		  (GtkObject	      *object);
 void		gtk_object_unref	  (GtkObject	      *object);
 void gtk_object_weakref	  (GtkObject	    *object,
-			   GtkDestroyNotify  notify,
+			   GDestroyNotify    notify,
 			   gpointer	     data);
 void gtk_object_weakunref (GtkObject	    *object,
-			   GtkDestroyNotify  notify,
+			   GDestroyNotify    notify,
 			   gpointer	     data);
 
 /* Set 'data' to the "object_data" field of the object. The
@@ -160,7 +165,7 @@ void	 gtk_object_set_data	     (GtkObject	     *object,
 void	 gtk_object_set_data_full    (GtkObject	     *object,
 				      const gchar    *key,
 				      gpointer	      data,
-				      GtkDestroyNotify destroy);
+				      GDestroyNotify  destroy);
 void	 gtk_object_remove_data	     (GtkObject	     *object,
 				      const gchar    *key);
 gpointer gtk_object_get_data	     (GtkObject	     *object,
@@ -187,7 +192,7 @@ void gtk_object_set_data_by_id		(GtkObject	 *object,
 void gtk_object_set_data_by_id_full	(GtkObject	 *object,
 					 GQuark		  data_id,
 					 gpointer	  data,
-					 GtkDestroyNotify destroy);
+					 GDestroyNotify   destroy);
 gpointer gtk_object_get_data_by_id	(GtkObject	 *object,
 					 GQuark		  data_id);
 void  gtk_object_remove_data_by_id	(GtkObject	 *object,

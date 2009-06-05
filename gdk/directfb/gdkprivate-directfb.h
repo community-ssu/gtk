@@ -38,8 +38,12 @@
 #include "gdkinternals.h"
 #include "gdkcursor.h"
 #include "gdkdisplay-directfb.h"
+#include "gdkregion-generic.h"
 #include <cairo.h>
 
+#include <string.h>
+
+#include <directfb_util.h>
 
 
 #define GDK_TYPE_DRAWABLE_IMPL_DIRECTFB       (gdk_drawable_impl_directfb_get_type ())
@@ -68,12 +72,14 @@ struct _GdkDrawableImplDirectFB
 
   gboolean                buffered;
 
-  GdkRegion              *paint_region;
+  GdkRegion               paint_region;
   gint                    paint_depth;
   gint                    width;
   gint                    height;
   gint                    abs_x;
   gint                    abs_y;
+
+  GdkRegion               clip_region;
 
   GdkColormap            *colormap;
 
@@ -89,17 +95,6 @@ typedef struct
 } GdkDrawableImplDirectFBClass;
 
 GType      gdk_drawable_impl_directfb_get_type (void);
-
-void       _gdk_directfb_draw_rectangle (GdkDrawable *drawable,
-                                         GdkGC       *gc,
-                                         gint         filled,
-                                         gint         x,
-                                         gint         y,
-                                         gint         width,
-                                         gint         height);
-
-void       _gdk_directfb_update         (GdkDrawableImplDirectFB *impl,
-                                         DFBRegion               *region);
 
 GdkEvent *  gdk_directfb_event_make     (GdkWindow               *window,
                                          GdkEventType             type);
@@ -151,6 +146,9 @@ struct _GdkWindowImplDirectFB
   guint8                  opacity;
 
   GdkWindowTypeHint       type_hint;
+
+  DFBUpdates              flips;
+  DFBRegion               flip_regions[4];
 };
 
 typedef struct
@@ -204,7 +202,7 @@ typedef struct
 {
   GdkGC             parent_instance;
 
-  GdkRegion        *clip_region;
+  GdkRegion         clip_region;
 
   GdkGCValuesMask   values_mask;
   GdkGCValues       values;
@@ -234,6 +232,14 @@ void       gdk_directfb_event_windows_add (GdkWindow *window);
 #if (DIRECTFB_MAJOR_VERSION >= 1)
 void       gdk_directfb_event_windows_remove (GdkWindow *window);
 #endif
+
+GdkGrabStatus gdk_directfb_keyboard_grab  (GdkDisplay          *display,
+                                           GdkWindow           *window,
+                                           gint                 owner_events,
+                                           guint32              time);
+
+void          gdk_directfb_keyboard_ungrab(GdkDisplay          *display,
+                                           guint32              time);
 
 GdkGrabStatus gdk_directfb_pointer_grab   (GdkWindow           *window,
                                            gint                 owner_events,
@@ -316,6 +322,92 @@ void gdk_fb_window_set_child_handler (GdkWindow              *window,
                                       GdkWindowChildChanged  changed,
                                       GdkWindowChildGetPos   get_pos,
                                       gpointer               user_data);
+
+void gdk_directfb_clip_region (GdkDrawable  *drawable,
+                               GdkGC        *gc,
+                               GdkRectangle *draw_rect,
+                               GdkRegion    *ret_clip);
+
+
+/* Utilities for avoiding mallocs */
+
+static inline void
+temp_region_init_copy( GdkRegion       *region, 
+                       const GdkRegion *source)
+{
+  if (region != source) /*  don't want to copy to itself */
+    {  
+      if (region->size < source->numRects)
+        {
+          if (region->rects && region->rects != &region->extents)
+            g_free( region->rects );
+
+          region->rects = g_new (GdkRegionBox, source->numRects);
+          region->size  = source->numRects;
+        }
+
+      region->numRects = source->numRects;
+      region->extents  = source->extents;
+
+      memcpy( region->rects, source->rects, source->numRects * sizeof (GdkRegionBox) );
+    }
+}
+
+static inline void
+temp_region_init_rectangle( GdkRegion          *region,
+                            const GdkRectangle *rect )
+{
+     region->numRects = 1;
+     region->rects = &region->extents;
+     region->extents.x1 = rect->x;
+     region->extents.y1 = rect->y;
+     region->extents.x2 = rect->x + rect->width;
+     region->extents.y2 = rect->y + rect->height;
+     region->size = 1;
+}
+
+static inline void
+temp_region_init_rectangle_vals( GdkRegion *region,
+                                 int        x,
+                                 int        y,
+                                 int        w,
+                                 int        h )
+{
+     region->numRects = 1;
+     region->rects = &region->extents;
+     region->extents.x1 = x;
+     region->extents.y1 = y;
+     region->extents.x2 = x + w;
+     region->extents.y2 = y + h;
+     region->size = 1;
+}
+
+static inline void
+temp_region_reset( GdkRegion *region )
+{
+     if (region->size > 32 && region->rects && region->rects != &region->extents) {
+          g_free( region->rects );
+
+          region->size  = 1;
+          region->rects = &region->extents;
+     }
+
+     region->numRects = 0;
+}
+
+static inline void
+temp_region_deinit( GdkRegion *region )
+{
+     if (region->rects && region->rects != &region->extents) {
+          g_free( region->rects );
+          region->rects = NULL;
+     }
+
+     region->numRects = 0;
+}
+
+
+#define GDKDFB_RECTANGLE_VALS_FROM_BOX(s)   (s)->x1, (s)->y1, (s)->x2-(s)->x1, (s)->y2-(s)->y1
 
 
 #endif /* __GDK_PRIVATE_DIRECTFB_H__ */

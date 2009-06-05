@@ -20,17 +20,43 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
+
+#include <string.h>
+
+#undef GTK_DISABLE_DEPRECATED /* GtkTooltips */
+
 #include "gtktoolitem.h"
 #include "gtkmarshalers.h"
-#include "gtktoolbar.h"
+#include "gtktoolshell.h"
 #include "gtkseparatormenuitem.h"
 #include "gtkintl.h"
 #include "gtkmain.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
-#include <string.h>
+/**
+ * SECTION:gtktoolitem
+ * @short_description: The base class of widgets that can be added to #GtkToolShell
+ *
+ * #GtkToolItem<!-- -->s are widgets that can appear on a toolbar. To
+ * create a toolbar item that contain something else than a button, use
+ * gtk_tool_item_new(). Use gtk_container_add() to add a child
+ * widget to the tool item.
+ *
+ * For toolbar items that contain buttons, see the #GtkToolButton,
+ * #GtkToggleToolButton and #GtkRadioToolButton classes.
+ *
+ * See the #GtkToolbar class for a description of the toolbar widget, and
+ * #GtkToolShell for a description of the tool shell interface.
+ */
+
+/**
+ * GtkToolItem:
+ *
+ * The GtkToolItem struct contains only private data.
+ * It should only be accessed through the functions described below.
+ */
 
 enum {
   CREATE_MENU_PROXY,
@@ -176,7 +202,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * Return value: %TRUE if the signal was handled, %FALSE if not
  **/
   toolitem_signals[CREATE_MENU_PROXY] =
-    g_signal_new (I_("create_menu_proxy"),
+    g_signal_new (I_("create-menu-proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, create_menu_proxy),
@@ -192,16 +218,16 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * item is a child of changes. For custom subclasses of #GtkToolItem,
  * the default handler of this signal use the functions
  * <itemizedlist>
- * <listitem>gtk_toolbar_get_orientation()</listitem>
- * <listitem>gtk_toolbar_get_style()</listitem>
- * <listitem>gtk_toolbar_get_icon_size()</listitem>
- * <listitem>gtk_toolbar_get_relief_style()</listitem>
+ * <listitem>gtk_tool_shell_get_orientation()</listitem>
+ * <listitem>gtk_tool_shell_get_style()</listitem>
+ * <listitem>gtk_tool_shell_get_icon_size()</listitem>
+ * <listitem>gtk_tool_shell_get_relief_style()</listitem>
  * </itemizedlist>
  * to find out what the toolbar should look like and change
  * themselves accordingly.
  **/
   toolitem_signals[TOOLBAR_RECONFIGURED] =
-    g_signal_new (I_("toolbar_reconfigured"),
+    g_signal_new (I_("toolbar-reconfigured"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, toolbar_reconfigured),
@@ -225,7 +251,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  *   need to use this signal anymore.
  **/
   toolitem_signals[SET_TOOLTIP] =
-    g_signal_new (I_("set_tooltip"),
+    g_signal_new (I_("set-tooltip"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, set_tooltip),
@@ -258,12 +284,11 @@ gtk_tool_item_finalize (GObject *object)
   GtkToolItem *item = GTK_TOOL_ITEM (object);
 
   g_free (item->priv->menu_item_id);
-  
+
   if (item->priv->menu_item)
     g_object_unref (item->priv->menu_item);
-  
-  if (G_OBJECT_CLASS (gtk_tool_item_parent_class)->finalize)
-    G_OBJECT_CLASS (gtk_tool_item_parent_class)->finalize (object);
+
+  G_OBJECT_CLASS (gtk_tool_item_parent_class)->finalize (object);
 }
 
 static void
@@ -271,7 +296,7 @@ gtk_tool_item_parent_set (GtkWidget   *toolitem,
 			  GtkWidget   *prev_parent)
 {
   if (GTK_WIDGET (toolitem)->parent != NULL)
-    _gtk_tool_item_toolbar_reconfigured (GTK_TOOL_ITEM (toolitem));
+    gtk_tool_item_toolbar_reconfigured (GTK_TOOL_ITEM (toolitem));
 }
 
 static void
@@ -295,6 +320,7 @@ gtk_tool_item_set_property (GObject      *object,
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -319,6 +345,7 @@ gtk_tool_item_get_property (GObject    *object,
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -518,10 +545,10 @@ gtk_tool_item_get_icon_size (GtkToolItem *tool_item)
   g_return_val_if_fail (GTK_IS_TOOL_ITEM (tool_item), GTK_ICON_SIZE_LARGE_TOOLBAR);
 
   parent = GTK_WIDGET (tool_item)->parent;
-  if (!parent || !GTK_IS_TOOLBAR (parent))
+  if (!parent || !GTK_IS_TOOL_SHELL (parent))
     return GTK_ICON_SIZE_LARGE_TOOLBAR;
 
-  return gtk_toolbar_get_icon_size (GTK_TOOLBAR (parent));
+  return gtk_tool_shell_get_icon_size (GTK_TOOL_SHELL (parent));
 }
 
 /**
@@ -545,10 +572,10 @@ gtk_tool_item_get_orientation (GtkToolItem *tool_item)
   g_return_val_if_fail (GTK_IS_TOOL_ITEM (tool_item), GTK_ORIENTATION_HORIZONTAL);
 
   parent = GTK_WIDGET (tool_item)->parent;
-  if (!parent || !GTK_IS_TOOLBAR (parent))
+  if (!parent || !GTK_IS_TOOL_SHELL (parent))
     return GTK_ORIENTATION_HORIZONTAL;
 
-  return gtk_toolbar_get_orientation (GTK_TOOLBAR (parent));
+  return gtk_tool_shell_get_orientation (GTK_TOOL_SHELL (parent));
 }
 
 /**
@@ -588,10 +615,10 @@ gtk_tool_item_get_toolbar_style (GtkToolItem *tool_item)
   g_return_val_if_fail (GTK_IS_TOOL_ITEM (tool_item), GTK_TOOLBAR_ICONS);
 
   parent = GTK_WIDGET (tool_item)->parent;
-  if (!parent || !GTK_IS_TOOLBAR (parent))
+  if (!parent || !GTK_IS_TOOL_SHELL (parent))
     return GTK_TOOLBAR_ICONS;
 
-  return gtk_toolbar_get_style (GTK_TOOLBAR (parent));
+  return gtk_tool_shell_get_style (GTK_TOOL_SHELL (parent));
 }
 
 /**
@@ -616,10 +643,10 @@ gtk_tool_item_get_relief_style (GtkToolItem *tool_item)
   g_return_val_if_fail (GTK_IS_TOOL_ITEM (tool_item), GTK_RELIEF_NONE);
 
   parent = GTK_WIDGET (tool_item)->parent;
-  if (!parent || !GTK_IS_TOOLBAR (parent))
+  if (!parent || !GTK_IS_TOOL_SHELL (parent))
     return GTK_RELIEF_NONE;
 
-  return gtk_toolbar_get_relief_style (GTK_TOOLBAR (parent));
+  return gtk_tool_shell_get_relief_style (GTK_TOOL_SHELL (parent));
 }
 
 /**
@@ -1094,9 +1121,9 @@ gtk_tool_item_rebuild_menu (GtkToolItem *tool_item)
   g_return_if_fail (GTK_IS_TOOL_ITEM (tool_item));
 
   widget = GTK_WIDGET (tool_item);
-  
-  if (widget->parent && GTK_IS_TOOLBAR (widget->parent))
-    _gtk_toolbar_rebuild_menu (GTK_TOOLBAR (widget->parent));
+
+  if (GTK_IS_TOOL_SHELL (widget->parent))
+    gtk_tool_shell_rebuild_menu (GTK_TOOL_SHELL (widget->parent));
 }
 
 /**
@@ -1142,18 +1169,25 @@ gtk_tool_item_set_proxy_menu_item (GtkToolItem *tool_item,
 }
 
 /**
- * _gtk_tool_item_toolbar_reconfigured:
- * @tool_item: a #GtkToolItem: 
- * 
- * Emits the signal #GtkToolItem::toolbar_reconfigured on @tool_item. This
- * internal function is called by #GtkToolbar when some aspect of its
- * configuration changes.
- * 
- * Since: 2.4
+ * gtk_tool_item_toolbar_reconfigured:
+ * @tool_item: a #GtkToolItem
+ *
+ * Emits the signal #GtkToolItem::toolbar_reconfigured on @tool_item.
+ * #GtkToolbar and other #GtkToolShell implementations use this function
+ * to notify children, when some aspect of their configuration changes.
+ *
+ * Since: 2.14
  **/
 void
-_gtk_tool_item_toolbar_reconfigured (GtkToolItem *tool_item)
+gtk_tool_item_toolbar_reconfigured (GtkToolItem *tool_item)
 {
+  /* The slightely inaccurate name "gtk_tool_item_toolbar_reconfigured" was
+   * choosen over "gtk_tool_item_tool_shell_reconfigured", since the function
+   * emits the "toolbar-reconfigured" signal, not "tool-shell-reconfigured".
+   * Its not possible to rename the signal, and emitting another name than
+   * indicated by the function name would be quite confusing. That's the
+   * price of providing stable APIs.
+   */
   g_return_if_fail (GTK_IS_TOOL_ITEM (tool_item));
 
   g_signal_emit (tool_item, toolitem_signals[TOOLBAR_RECONFIGURED], 0);

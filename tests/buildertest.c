@@ -26,7 +26,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <gtk/gtkprintjob.h>
+#include <gtk/gtkunixprint.h>
 
 static GtkBuilder *
 builder_new_from_string (const gchar *buffer,

@@ -9,7 +9,9 @@ gdk-pixbuf/gdk-pixdata.c
 gdk-pixbuf/io-ani.c
 gdk-pixbuf/io-bmp.c
 gdk-pixbuf/io-gif.c
+gdk-pixbuf/io-icns.c
 gdk-pixbuf/io-ico.c
+gdk-pixbuf/io-jasper.c
 gdk-pixbuf/io-jpeg.c
 gdk-pixbuf/io-pcx.c
 gdk-pixbuf/io-png.c
@@ -27,6 +29,7 @@ gdk/gdkpango.c
 gdk/gdkscreen.c
 gdk/keyname-table.h
 gdk/win32/gdkmain-win32.c
+gdk/x11/gdkapplaunchcontext-x11.c
 gdk/x11/gdkmain-x11.c
 gtk/gtkaboutdialog.c
 gtk/gtkaccelgroup.c
@@ -95,8 +98,6 @@ gtk/gtkfilefilter.c
 gtk/gtkfilesel.c
 gtk/gtkfilesystem.c
 gtk/gtkfilesystemmodel.c
-gtk/gtkfilesystemunix.c
-gtk/gtkfilesystemwin32.c
 gtk/gtkfixed.c
 gtk/gtkfontbutton.c
 gtk/gtkfontsel.c
@@ -140,6 +141,7 @@ gtk/gtkmenutoolbutton.c
 gtk/gtkmessagedialog.c
 gtk/gtkmisc.c
 gtk/gtkmodules.c
+gtk/gtkmountoperation.c
 gtk/gtknotebook.c
 gtk/gtkobject.c
 gtk/gtkoldeditable.c
@@ -213,6 +215,7 @@ gtk/gtktoggletoolbutton.c
 gtk/gtktoolbar.c
 gtk/gtktoolbutton.c
 gtk/gtktoolitem.c
+gtk/gtktoolshell.c
 gtk/gtktooltips.c
 gtk/gtktrayicon-x11.c
 gtk/gtktree.c

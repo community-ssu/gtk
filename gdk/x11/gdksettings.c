@@ -66,11 +66,15 @@ static const char gdk_settings_names[] =
   "Xft/DPI\0"                 "gtk-xft-dpi\0"
   "Net/FallbackIconTheme\0"   "gtk-fallback-icon-theme\0"
   "Gtk/TouchscreenMode\0"     "gtk-touchscreen-mode\0"
-#ifdef MAEMO_CHANGES
   "Gtk/EnableAccels\0"        "gtk-enable-accels\0"
   "Gtk/EnableMnemonics\0"     "gtk-enable-mnemonics\0"
-#endif /* MAEMO_CHANGES */
-  ;
+  "Gtk/ScrolledWindowPlacement\0" "gtk-scrolled-window-placement\0"
+  "Gtk/IMModule\0"            "gtk-im-module\0"
+  "Fontconfig/Timestamp\0"    "gtk-fontconfig-timestamp\0"
+  "Net/SoundThemeName\0"      "gtk-sound-theme-name\0"
+  "Net/EnableInputFeedbackSounds\0" "gtk-enable-input-feedback-sounds\0"
+  "Net/EnableEventSounds\0"  "gtk-enable-event-sounds\0";
+
 
 static const struct
 {
@@ -112,10 +116,13 @@ static const struct
   { 1197, 1206 },
   { 1219, 1227 },
   { 1239, 1261 },
-  { 1285, 1305 }
-#ifdef MAEMO_CHANGES
-  ,
+  { 1285, 1305 },
   { 1326, 1343 },
-  { 1361, 1381 }
-#endif /* MAEMO_CHANGES */
+  { 1361, 1381 },
+  { 1402, 1430 },
+  { 1460, 1473 },
+  { 1487, 1508 },
+  { 1533, 1552 },
+  { 1573, 1603 },
+  { 1636, 1658 }
 };

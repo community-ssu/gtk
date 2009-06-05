@@ -53,7 +53,7 @@
  */
 
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
-#include <config.h>
+#include "config.h"
 #include "gtktextbtree.h"
 #include <string.h>
 #include <stdlib.h>
@@ -430,7 +430,7 @@ _gtk_text_btree_new (GtkTextTagTable *table,
   g_object_ref (tree->table);
 
   tree->tag_changed_handler = g_signal_connect (tree->table,
-						"tag_changed",
+						"tag-changed",
 						G_CALLBACK (tag_changed_cb),
 						tree);
 

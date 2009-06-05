@@ -2,7 +2,7 @@
  * gtkrecentchooser.h - Abstract interface for recent file selectors GUIs
  *
  * Copyright (C) 2006, Emmanuele Bassi
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -19,13 +19,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_RECENT_CHOOSER_H__
 #define __GTK_RECENT_CHOOSER_H__
 
 #include <gtk/gtkwidget.h>
-
-#include "gtkrecentmanager.h"
-#include "gtkrecentfilter.h"
+#include <gtk/gtkrecentmanager.h>
+#include <gtk/gtkrecentfilter.h>
 
 G_BEGIN_DECLS
 
@@ -78,7 +81,7 @@ GQuark  gtk_recent_chooser_error_quark (void);
 struct _GtkRecentChooserIface
 {
   GTypeInterface base_iface;
-  
+
   /*
    * Methods
    */
@@ -104,7 +107,7 @@ struct _GtkRecentChooserIface
   					    GtkRecentSortFunc  sort_func,
   					    gpointer           data,
   					    GDestroyNotify     destroy);
-  
+
   /*
    * Signals
    */

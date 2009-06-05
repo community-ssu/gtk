@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkaccellabel.h"
 #include "gtkmarshalers.h"
 #include "gtkradiomenuitem.h"
@@ -380,15 +380,11 @@ gtk_radio_menu_item_init (GtkRadioMenuItem *radio_menu_item)
 static void
 gtk_radio_menu_item_destroy (GtkObject *object)
 {
+  GtkRadioMenuItem *radio_menu_item = GTK_RADIO_MENU_ITEM (object);
   GtkWidget *old_group_singleton = NULL;
-  GtkRadioMenuItem *radio_menu_item;
   GtkRadioMenuItem *tmp_menu_item;
   GSList *tmp_list;
   gboolean was_in_group;
-
-  g_return_if_fail (GTK_IS_RADIO_MENU_ITEM (object));
-
-  radio_menu_item = GTK_RADIO_MENU_ITEM (object);
 
   was_in_group = radio_menu_item->group && radio_menu_item->group->next;
   
@@ -414,24 +410,19 @@ gtk_radio_menu_item_destroy (GtkObject *object)
     g_signal_emit (old_group_singleton, group_changed_signal, 0);
   if (was_in_group)
     g_signal_emit (radio_menu_item, group_changed_signal, 0);
-  
-  if (GTK_OBJECT_CLASS (gtk_radio_menu_item_parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (gtk_radio_menu_item_parent_class)->destroy) (object);
+
+  GTK_OBJECT_CLASS (gtk_radio_menu_item_parent_class)->destroy (object);
 }
 
 static void
 gtk_radio_menu_item_activate (GtkMenuItem *menu_item)
 {
-  GtkRadioMenuItem *radio_menu_item;
-  GtkCheckMenuItem *check_menu_item;
+  GtkRadioMenuItem *radio_menu_item = GTK_RADIO_MENU_ITEM (menu_item);
+  GtkCheckMenuItem *check_menu_item = GTK_CHECK_MENU_ITEM (menu_item);
   GtkCheckMenuItem *tmp_menu_item;
   GSList *tmp_list;
   gint toggled;
 
-  g_return_if_fail (GTK_IS_RADIO_MENU_ITEM (menu_item));
-
-  radio_menu_item = GTK_RADIO_MENU_ITEM (menu_item);
-  check_menu_item = GTK_CHECK_MENU_ITEM (menu_item);
   toggled = FALSE;
 
   if (check_menu_item->active)

@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdkproperty.h"
 #include "gdkdisplay.h"
 #include "gdkselection.h"
@@ -49,11 +49,11 @@ gdk_selection_owner_get (GdkAtom selection)
 }
 
 void
-gdk_selection_send_notify (guint32  requestor,
-			   GdkAtom  selection,
-			   GdkAtom  target,
-			   GdkAtom  property,
-			   guint32  time)
+gdk_selection_send_notify (GdkNativeWindow requestor,
+			   GdkAtom         selection,
+			   GdkAtom         target,
+			   GdkAtom         property,
+			   guint32         time)
 {
   gdk_selection_send_notify_for_display (gdk_display_get_default (), 
 					 requestor, selection, 

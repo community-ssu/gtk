@@ -21,8 +21,13 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
+
 #ifndef __GDK_DND_H__
 #define __GDK_DND_H__
 
@@ -125,9 +130,10 @@ GdkAtom          gdk_drag_get_selection (GdkDragContext   *context);
 GdkDragContext * gdk_drag_begin      (GdkWindow      *window,
 				      GList          *targets);
 
-guint32 gdk_drag_get_protocol_for_display (GdkDisplay       *display,
-					   guint32           xid,
-					   GdkDragProtocol  *protocol);
+GdkNativeWindow gdk_drag_get_protocol_for_display (GdkDisplay       *display,
+						   GdkNativeWindow   xid,
+						   GdkDragProtocol  *protocol);
+
 void    gdk_drag_find_window_for_screen   (GdkDragContext   *context,
 					   GdkWindow        *drag_window,
 					   GdkScreen        *screen,
@@ -137,8 +143,9 @@ void    gdk_drag_find_window_for_screen   (GdkDragContext   *context,
 					   GdkDragProtocol  *protocol);
 
 #ifndef GDK_MULTIHEAD_SAFE
-guint32 gdk_drag_get_protocol (guint32           xid,
-			       GdkDragProtocol  *protocol);
+GdkNativeWindow gdk_drag_get_protocol (GdkNativeWindow   xid,
+				       GdkDragProtocol  *protocol);
+
 void    gdk_drag_find_window  (GdkDragContext   *context,
 			       GdkWindow        *drag_window,
 			       gint              x_root,

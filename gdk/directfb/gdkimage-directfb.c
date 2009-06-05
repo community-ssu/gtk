@@ -30,7 +30,7 @@
  *            Sven Neumann <sven@convergence.de>
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk.h"
 
 
@@ -151,7 +151,7 @@ gdk_image_new_bitmap (GdkVisual *visual,
 
   GDK_NOTE (MISC, g_print ("gdk_image_new_bitmap: %dx%d\n", w, h));
 
-  g_message ("not fully implemented %s", G_STRLOC);
+  g_message ("not fully implemented %s", __FUNCTION__);
 
   image->bpl = (w + 7) / 8;
   image->mem = g_malloc (image->bpl * h);
@@ -209,7 +209,7 @@ _gdk_image_new_for_depth (GdkScreen    *screen,
       format = DSPF_ARGB;
       break;
     default:
-      g_message ("unimplemented %s for depth %d", G_STRLOC, depth);
+      g_message ("unimplemented %s for depth %d", __FUNCTION__, depth);
       return NULL;
     }
 
@@ -225,7 +225,13 @@ _gdk_image_new_for_depth (GdkScreen    *screen,
 
   private->surface = surface;
 
-  surface->Lock( surface, DSLF_WRITE, &image->mem, &pitch );
+  ret = surface->Lock( surface, DSLF_WRITE, &image->mem, &pitch );
+  if (ret)
+    {
+      DirectFBError( "IDirectFBSurface::Lock() for writing failed!\n", ret );
+      gdk_image_unref( image );
+      return NULL;
+    }
 
   image->type           = type;
   image->visual         = visual;
@@ -272,7 +278,7 @@ _gdk_directfb_copy_to_image (GdkDrawable *drawable,
     {
       DFBResult ret;
 
-      ret = layer->SetCooperativeLevel (layer, DLSCL_EXCLUSIVE);
+      ret = layer->SetCooperativeLevel (layer, DLSCL_ADMINISTRATIVE);
       if (ret)
         {
           DirectFBError ("_gdk_directfb_copy_to_image - SetCooperativeLevel",
@@ -294,7 +300,7 @@ _gdk_directfb_copy_to_image (GdkDrawable *drawable,
 
   if (!image)
     image =  gdk_image_new (GDK_IMAGE_NORMAL,
-                            gdk_visual_get_system (), width, height);
+                            gdk_drawable_get_visual (drawable), width, height);
 
   private = image->windowing_data;
 
@@ -303,7 +309,7 @@ _gdk_directfb_copy_to_image (GdkDrawable *drawable,
   private->surface->Blit( private->surface,
                           impl->surface, &rect, dest_x, dest_y );
 
-  private->surface->Lock( private->surface, DSLF_WRITE, &image->mem, &pitch );
+  private->surface->Lock( private->surface, DSLF_READ | DSLF_WRITE, &image->mem, &pitch );
   image->bpl = pitch;
 
   if (impl->wrapper == _gdk_parent_root)
@@ -403,8 +409,8 @@ gdk_directfb_image_destroy (GdkImage *image)
   if (!private)
     return;
 
-  GDK_NOTE (MISC, g_print ("gdk_directfb_image_destroy: %#x\n",
-                           (guint) private->surface));
+  GDK_NOTE (MISC, g_print ("gdk_directfb_image_destroy: %#lx\n",
+                           (gulong) private->surface));
 
   private->surface->Unlock( private->surface );
   private->surface->Release( private->surface );

@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -233,7 +233,10 @@ gdk_parse_args (int    *argc,
       g_error_free (error);
     }
   g_option_context_free (option_context);
-  
+
+  if (_gdk_debug_flags && GDK_DEBUG_GDKRGB)
+    gdk_rgb_set_verbose (TRUE);
+
   GDK_NOTE (MISC, g_message ("progname: \"%s\"", g_get_prgname ()));
 }
 
@@ -504,28 +507,28 @@ gdk_threads_dispatch_free (gpointer data)
  * running in thread A and accessing @self after it has been finalized
  * in thread B:
  *
- * <informalexample><programlisting>
+ * |[
  * static gboolean
  * idle_callback (gpointer data)
  * {
- *    // gdk_threads_enter(); would be needed for g_idle_add()
- *    
+ *    /&ast; gdk_threads_enter(); would be needed for g_idle_add() &ast;/
+ *
  *    SomeWidget *self = data;
- *    /<!-- -->* do stuff with self *<!-- -->/
- *    
+ *    /&ast; do stuff with self &ast;/
+ *
  *    self->idle_id = 0;
- *    
- *    // gdk_threads_leave(); would be needed for g_idle_add()
+ *
+ *    /&ast; gdk_threads_leave(); would be needed for g_idle_add() &ast;/
  *    return FALSE;
  * }
- *  
+ *
  * static void
  * some_widget_do_stuff_later (SomeWidget *self)
  * {
  *    self->idle_id = gdk_threads_add_idle (idle_callback, self)
- *    // using g_idle_add() here would require thread protection in the callback
+ *    /&ast; using g_idle_add() here would require thread protection in the callback &ast;/
  * }
- *  
+ *
  * static void
  * some_widget_finalize (GObject *object)
  * {
@@ -534,7 +537,7 @@ gdk_threads_dispatch_free (gpointer data)
  *      g_source_remove (self->idle_id);
  *    G_OBJECT_CLASS (parent_class)->finalize (object);
  * }
- * </programlisting></informalexample>
+ * ]|
  *
  * Return value: the ID (greater than 0) of the event source.
  *
@@ -610,12 +613,12 @@ gdk_threads_add_idle (GSourceFunc    function,
  * This variant of g_timeout_add_full() can be thought of a MT-safe version 
  * for GTK+ widgets for the following use case:
  *
- * <informalexample><programlisting>
+ * |[
  * static gboolean timeout_callback (gpointer data)
  * {
  *    SomeWidget *self = data;
  *    
- *    /<!-- -->* do stuff with self *<!-- -->/
+ *    /&ast; do stuff with self &ast;/
  *    
  *    self->timeout_id = 0;
  *    
@@ -629,14 +632,14 @@ gdk_threads_add_idle (GSourceFunc    function,
  *  
  * static void some_widget_finalize (GObject *object)
  * {
- *    SomeWidget *self = SOME_WIDGET(object);
+ *    SomeWidget *self = SOME_WIDGET (object);
  *    
  *    if (self->timeout_id)
  *      g_source_remove (self->timeout_id);
  *    
  *    G_OBJECT_CLASS (parent_class)->finalize (object);
  * }
- * </programlisting></informalexample>
+ * ]|
  *
  * Return value: the ID (greater than 0) of the event source.
  * 
@@ -688,6 +691,71 @@ gdk_threads_add_timeout (guint       interval,
 {
   return gdk_threads_add_timeout_full (G_PRIORITY_DEFAULT,
                                        interval, function, data, NULL);
+}
+
+
+/**
+ * gdk_threads_add_timeout_seconds_full:
+ * @priority: the priority of the timeout source. Typically this will be in the
+ *            range between #G_PRIORITY_DEFAULT_IDLE and #G_PRIORITY_HIGH_IDLE.
+ * @interval: the time between calls to the function, in seconds
+ * @function: function to call
+ * @data:     data to pass to @function
+ * @notify:   function to call when the timeout is removed, or %NULL
+ *
+ * A variant of gdk_threads_add_timout_full() with second-granularity.
+ * See g_timeout_add_seconds_full() for a discussion of why it is
+ * a good idea to use this function if you don't need finer granularity.
+ *
+ *  Return value: the ID (greater than 0) of the event source.
+ * 
+ * Since: 2.14
+ */
+guint
+gdk_threads_add_timeout_seconds_full (gint           priority,
+                                      guint          interval,
+                                      GSourceFunc    function,
+                                      gpointer       data,
+                                      GDestroyNotify notify)
+{
+  GdkThreadsDispatch *dispatch;
+
+  g_return_val_if_fail (function != NULL, 0);
+
+  dispatch = g_slice_new (GdkThreadsDispatch);
+  dispatch->func = function;
+  dispatch->data = data;
+  dispatch->destroy = notify;
+
+  return g_timeout_add_seconds_full (priority, 
+                                     interval,
+                                     gdk_threads_dispatch, 
+                                     dispatch, 
+                                     gdk_threads_dispatch_free);
+}
+
+/**
+ * gdk_threads_add_timeout_seconds:
+ * @interval: the time between calls to the function, in seconds
+ * @function: function to call
+ * @data:     data to pass to @function
+ *
+ * A wrapper for the common usage of gdk_threads_add_timeout_seconds_full() 
+ * assigning the default priority, #G_PRIORITY_DEFAULT.
+ *
+ * For details, see gdk_threads_add_timeout_full().
+ * 
+ * Return value: the ID (greater than 0) of the event source.
+ *
+ * Since: 2.14
+ */
+guint
+gdk_threads_add_timeout_seconds (guint       interval,
+                                 GSourceFunc function,
+                                 gpointer    data)
+{
+  return gdk_threads_add_timeout_seconds_full (G_PRIORITY_DEFAULT,
+                                               interval, function, data, NULL);
 }
 
 

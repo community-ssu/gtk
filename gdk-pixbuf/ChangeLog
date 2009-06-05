@@ -1,90 +1,210 @@
-2009-03-24  Claudio Saavedra  <csaavedra@igalia.com>
+2008-09-23  Matthias Clasen  <mclasen@redhat.com>
 
-	From bgo 561139 (GdkPixbufSimpleAnim can't be made to loop)
+	* === Released 2.14.3 ===
 
-	* gdk-pixbuf-simple-anim.c (gdk_pixbuf_simple_anim_class_init),
-	(advance), (gdk_pixbuf_simple_anim_get_property),
-	(gdk_pixbuf_simple_anim_set_property),
-	(gdk_pixbuf_simple_anim_set_loop),
-	(gdk_pixbuf_simple_anim_get_loop):
-	* gdk-pixbuf-simple-anim.h:
-	* gdk-pixbuf.symbols:
-
-	Add a GdkPixbufSimpleAnim:loop property and its accessors, to allow a
-	simple animation to loop forever. Based on a patch by Tim Evans.
-
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.12.12 ===
-
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-09-19  Matthias Clasen  <mclasen@redhat.com>
 
 	Merged from trunk:
 
-	* gdk-pixbuf-io.c: Plug a small memory leak
-
-	Bug 517233 - Calling gdk_pixbuf_loader_close causes "GError set over
-	the top of a previous GError" warning
-
-	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Don't overwrite
-	errors. Reported by Andrey Tsyvarev
+	* gdk-pixbuf-io.c: Don't call fill_info if we've already filled
+	the info from the module file, fixes a small memory leak.
 	
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-09-18  Dominic Lachowicz  <domlachowicz@gmail.com>
 
-	Merged from trunk:
+	* io-gdip-utils.c: Fix 2 cases where we leaked a GpImage (#552545)
 
-	Bug 517233 - Calling gdk_pixbuf_loader_close causes "GError set over
+2008-09-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.2 ===
+
+2008-09-13  Tor Lillqvist  <tml@novell.com>
+
+	* gdk-pixbuf-io.c: Don't use the deprectated
+	g_win32_get_package_installation_subdirectory(). Use
+	g_win32_get_package_installation_directory_of_module()
+	instead. Also, don't use the deprecated silly
+	G_WIN32_DLLMAIN_FOR_DLL_NAME() macro, but an explicit minimal
+	DllMain() that just saves the DLL handle.
+
+2008-09-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_io_init): Plug a small memory
+	leak in an error path.
+
+2008-09-06  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 517233 â€“ Calling gdk_pixbuf_loader_close causes "GError set over
 	the top of a previous GError" warning
 
 	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Don't overwrite
 	errors. Reported by Andrey Tsyvarev
 
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-09-05  Sebastien Bacher  <seb128@ubuntu.com>
 
-	Merged from trunk:
+	* gdk-pixbuf-io.c: (gdk_pixbuf_load_module_unlocked):
+	bug 550969 - fix a typo which breaks the static build
 
-	Bug 549711 - Race condition when loading gdk-pixbuf image modules
+2008-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.1 ===
+
+2008-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c: Fix a deadlock introduced in the previous
+	commit.
+
+	* gdk-pixbuf-loader.c: Fix the race condition here, too.
+
+2008-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.0 ===
+
+2008-09-03  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 549711 â€“ Race condition when loading gdk-pixbuf image modules
 
 	* gdk-pixbuf-io.c: Fix a race condition in module loading,
 	spotted by Chris Lord.
 
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-08-27  Matthias Clasen  <mclasen@redhat.com>
 
-	Merged from trunk:
+	Bug 549322 â€“ Typo in gdk_pixbuf_save_to_buffer docs
 
-	Bug 532644 - TIFF loader need to exclude CR2 files
+	* gdk-pixbuf-io.c (gdk_pixbuf_save_to_buffer): Fix the docs.
+	Spotted by Cosimo Cecchi.
+
+2008-08-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* ==== Released 2.13.7 ===
+
+2008-08-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 532644 â€“ TIFF loader need to exclude CR2 files
 
 	* io-tiff.c: Add a pattern to exclude CR2 files.
 	Noticed by Hubert Figuire
 
-2008-09-12  Matthias Clasen  <mclasen@redhat.com>
+2008-08-13  Michael Natterer  <mitch@imendio.com>
 
-	Merged from trunk:
+	* gdk-pixbuf-marshal.list: reorder marshalers for no reason apart
+	from forcing a rebuild of the header after yesterday's Makefile.am
+	change.
+
+2008-08-08  Sven Herzberg  <sven@imendio.com>
+
+	Bug 546549 : Better Type Checking
+	reviewed by: mitch
+
+	* gdk-pixbuf-animation.c: check if a vfunc is implemented before
+	trying to call into it
+
+2008-08-06  Sven Herzberg  <sven@imendio.com>
+
+	Bug 546549 : Better Type Checking
+	reviewed by mitch
+
+	* gdk-pixbuf.c (gdk_pixbuf_copy), (gdk_pixbuf_get_colorspace),
+	(gdk_pixbuf_get_n_channels), (gdk_pixbuf_get_has_alpha),
+	(gdk_pixbuf_get_bits_per_sample), (gdk_pixbuf_get_pixels),
+	(gdk_pixbuf_get_width), (gdk_pixbuf_get_height),
+	(gdk_pixbuf_get_rowstride): use GDK_IS_PIXBUF() and not pixbuf != NULL
+	in g_return_*() statements
+
+2008-08-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.6 ===
+
+2008-08-04  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Pass appropriate -machine flag to lib.exe.
+
+2008-07-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (_gdk_pixbuf_get_module): Compare two content
+	types, not content type and mime type.
+
+2008-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.5 ===
+
+2008-07-18  Federico Mena Quintero  <federico@novell.com>
+
+	* queryloaders.c (query_module): Don't do funny casts to avoid
+	compiler warnings.
+
+2008-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 543085 â€“ gdk_pixbuf_saturate_and_pixelate may corrupt memory
 
 	* gdk-pixbuf-utils.c (gdk_pixbuf_saturate_and_pixelate):
 	Use gdk_pixbuf_copy_area() to copy between pixbufs.
 	Reported by Andrey Tsyvarev
 
-2008-07-01  Matthias Clasen  <mclasen@redhat.com>
+2008-07-15  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.11 ===
+	* gdk-pixbuf-io.c: Move the check for wheter to use 
+	GIO for sniffing to configure.
+
+2008-07-14  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 401985 â€“ Documentation improvement for the
+	gdk_pixbuf_new_from_file_at_scale() function
+
+	* gdk-pixbuf-io.c: Improve docs for gdk_pixbuf_new_from_file_at_scale().
+	Proposed by Juan Manuel Palacios
+
+2008-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c: Use GIO for sniffing image types, except
+	on Win32, where GIO doesn't do any sniffing.
+
+2008-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.4 ===
 
 2008-06-18  Matthias Clasen  <mclasen@redhat.com>
-
-	Merged from trunk:
 
 	* io-ico.c: Add image/x-win-bitmap to the supported mimetypes,
 	since that is what shared-mime-info uses for .cur
 
+2008-06-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.13.3 ===
+
+2008-06-13  Hans Breuer  <hans@breuer.org>
+
+	* makefile.msc : updated to allow simple switch between gdiplus- and
+	former fileformat backends
+	* io-tiff.c : use g_snprintf
+
+2008-06-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 531960 â€“ crash in eog-image.c:1154: (priv->image != NULL)
+
+	* io-ico.c: Check headers more thorougly.
+	Patch by Felix Riemann
+
 2008-06-03  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.10 ===
+	* === Released 2.13.2 ===
 
-2008-06-02  Matthias Clasen <mclasen@redhat.com>
+2008-06-02  Behdad Esfahbod  <behdad@gnome.org>
 
-	Merge from trunk:
+	* Makefile.am: Add gdk-pixbuf-features.h to BUILT_SOURCES.
 
-	Bug 535453 - gdk_pixbuf_format_get_license returns NULL for
+2008-05-29  Matthias Clasen <mclasen@redhat.com>
+
+	* io-jasper.c:
+	* io-ico.c:
+	* io-icns.c: Use the correct INCLUDE_ macros.
+
+2008-05-29  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.13.1 ===
+
+2008-05-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 535453 - gdk_pixbuf_format_get_license returns NULL for 
 	any of the loaders
 
 	* queryloaders.c (write_loader_info): Add the license info
@@ -93,12 +213,56 @@
 	* gdk-pixbuf-io.c (gdk_pixbuf_io_init): Read the license info
 	from the module file. Reported by Andrey Tsyvarev.
 
-2008-06-02  Matthias Clasen <mclasen@redhat.com>
+2008-05-28  Michael Natterer  <mitch@imendio.com>
 
-	Merge from trunk:
+	* gdk-pixbuf.h: define GDK_PIXBUF_H_INSIDE around including all
+	other headers.
 
-	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_xpm_data): Guard
-	against NULL pointer. (#467051, Gian Mario Tagliaretti)
+	* gdk-pixbuf-animation.h
+	* gdk-pixbuf-core.h
+	* gdk-pixbuf-enum-types.h.template
+	* gdk-pixbuf-features.h.in
+	* gdk-pixbuf-io.h
+	* gdk-pixbuf-loader.h
+	* gdk-pixbuf-simple-anim.h
+	* gdk-pixbuf-transform.h: add single-include guards that #error
+	out if GDK_PIXBUF_DISABLE_SINGLE_INCLUDES is defined and any of
+	these files is included individually.
+
+	* gdk-pixbuf-private.h: don't incude "gdk-pixbuf-io.h".
+
+	* gdk-pixbuf-csource.c: #define __GTK_H_INSIDE__ around including
+	"../gtk/gtkversion.h". Ugly but needed in this special case.
+
+2008-05-27  Tor Lillqvist  <tml@novell.com>
+
+	* io-*.c: Use explicit G_MODULE_EXPORT decoration when building
+	the loader in question as a module.
+
+	* gdk-pixbuf-io.c: Enable included build of the icns and jasper
+	loaders.
+
+2008-05-27  Michael Natterer  <mitch@imendio.com>
+
+	* gdk-pixbuf.c: put back the #define, but call it
+	GDK_PIXBUF_C_COMPILATION.
+
+	* gdk-pixbuf-features.h.in: make variable export depend on that
+	define instead of GDK_PIXBUF_COMPILATION.
+
+2008-05-27  Michael Natterer  <mitch@imendio.com>
+
+	Fix and simplify definition of GDK_PIXBUF_VAR:
+
+	* Makefile.am: add -DGDK_PIXBUF_COMPILATION to INCLUDES.
+
+	* gdk-pixbuf.c: don't #define it here. Remove GDK_PIXBUF_VAR from
+	the definition of the version variables.
+
+	* gdk-pixbuf-features.h.in: in the !G_PLATFORM_WIN32 case, always
+	define GDK_PIXBUF_VAR to "extern". Remove redundant #ifndef
+	GDK_PIXBUF_VAR around the whole block, the header itself already
+	has include guards.
 
 2008-05-12  Tor Lillqvist  <tml@novell.com>
 
@@ -107,10 +271,251 @@
 	* Makefile.am: .def file belongs in $(srcdir). Patch by Marko
 	Lindqvist.
 
-2008-03-12  Matthias Clasen  <mclasen@redhat.com>
+2008-05-02  Michael Natterer  <mitch@imendio.com>
 
-	* === Released 2.12.9 ===
+	* Makefile.am (stamp-gdk-pixbuf-marshal.h): deprecate the entire
+	gdk-pixbuf-marshal.h since it's installed by accident only and
+	shouldn't be used by anybody.
 
+2008-03-21  Tor Lillqvist  <tml@novell.com>
+
+	Import the GDI+ gdk-pixbuf loaders for Windows by Dominic
+	Lachowicz and Alberto Ruiz into the GTK+ tree, from the
+	gdip-pixbuf-loader module.
+
+	* Makefile.am: Add the bits and pieces for the GDI+ loaders. When
+	building GDI+ loaders don't build the traditional ones for the
+	same formats. Always build the traditional PNG loader, though, as
+	it isn't possible to read and write PNG tEXt chunks through GDI+,
+	and GIMP at least needs that functionality in the gdk-pixbuf PNG
+	loader. 
+
+	Either build all the GDI+ loaders (except the PNG one) into
+	libgdk-pixbuf, or build them all as DLLs. I don't see any reason
+	to enable cherry-picking among them whether to build in or not.
+
+	* io-gdip-animation.c
+	* io-gdip-animation.h
+	* io-gdip-bmp.c
+	* io-gdip-emf.c
+	* io-gdip-gif.c
+	* io-gdip-ico.c
+	* io-gdip-jpeg.c
+	* io-gdip-native.h
+	* io-gdip-png.c
+	* io-gdip-propertytags.h
+	* io-gdip-tiff.c
+	* io-gdip-utils.c
+	* io-gdip-utils.h
+	* io-gdip-wmf.c: New files. Note that io-gdip-png.c is not
+	currently used.
+
+	* gdk-pixbuf-io.c: Add the bits and pieces for built-in GDI+
+	loaders.
+
+	== ChangeLog from gdip-pixbuf-loaders follows: ==
+
+2008-03-19  Tor Lillqvist  <tml@novell.com>
+
+	* src/io-gdip-utils.c: Drop misleading old comment.
+
+	* src/io-gdip-native.h: Fix typo: s/WINGDIAPI/WINGDIPAPI/.
+
+2008-03-17  Tor Lillqvist  <tml@novell.com>
+
+	* src/io-gdip-utils.h (MODULE_ENTRY): Use the more descriptive
+	INCLUDE_gdiplus instead of INCLUDE_gdi. (Will be used when this is
+	moved to GTK+ and the gdip loaders are built-in in libgdk-pixbuf.)
+	Use G_MODULE_EXPORT so that only fill_info and fill_vtable get
+	exported in the separate loader DLLs case.
+
+	* src/io-gdip-emf.c
+	* src/io-gdip-ico.c
+	* src/io-gdip-wmf.c: Use unique type parameters to MODULE_ENTRY so
+	that we won't get clashes when building all the gdip loaders in to
+	libgdk-pixbuf.
+
+2008-03-17  Tor Lillqvist  <tml@novell.com>
+
+	* src/Makefile.am: Remove libpixbufloader-gdip.la, and add missing
+	loaders to loader_LTLIBRARIES. Set loaderdir to use proper GTK+
+	binary version using pkg-config. Add final newline.
+
+2008-03-15  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* io-gdip.c: Remove
+	* io-gdip-ico.c:
+	* io-gdip-wmf.c:
+	* io-gdip-emf.c: Separate these into their own loaders, so that existing
+	code that calls "gdk_pixbuf_loader_for_type()" and friends continues
+	to work as expected.
+	* Makefile.test:
+	* Makefile.am: Reflect the above changes
+	* io-gdip-native.h:
+	* io-gdip-utils.c: Better error reporting; handle metafiles properly
+	(loading them as bitmaps doesn't work; you have to load them as a
+	generic image or metafile and then draw them onto a bitmap)
+	
+2008-03-06  Alberto Ruiz <aruiz@gnome.org>
+
+	* configure.ac: Use the .exe version of the gdk query loaders if the build
+	is for a windows target.
+
+2008-03-04  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-utils.c: More informative error codes, taken from the COM HRESULT
+	
+2008-03-03  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-native.h:
+	* src/io-gdip-jpeg.c: Support setting the JPEG's quality, just like GdkPixbuf's 
+	built-in JPEG encoder
+	* src/io-gdip-png.c: Support setting the PNG's compression level, just like
+	 GdkPixbuf's built-in PNG encoder
+	
+2008-02-25  Tor Lillqvist  <tml@novell.com>
+
+	* configure.ac: Move AC_DISABLE_STATIC before AC_PROG_LIBTOOL so
+	that it works better.
+
+2008-02-24  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-animation.[ch]: Animation class and interator
+	* src/io-gdip-utils.c: Use animation iter. GDI+ animations now work.
+	
+2008-02-24  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-utils.c: Simple animation working; need to use a more sophisticated
+	animation class
+	
+2008-02-24  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.c: Change to GTK+-style indentation; stub out some stuff
+	for animation support
+	
+2008-02-22  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/Makefile.am: Build those other libraries using automake too;
+	track dependencies properly
+	
+2008-02-22  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: Separate out formats that are writable into their
+	own plugins. The GDI+ loader can now save as BMP, GIF, JPEG, PNG,
+	or TIFF. Also, some tweaks so that the format plugins can be
+	statically compiled into GTK+ if we choose to do so.
+	
+2008-02-22  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-utils.c (GetEncoderClsid): Add support for BMP,
+	JPEG, GIF, and TIFF
+	
+2008-02-22  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: Saving images to PNG now works. Conditionally compiled
+	until I get GdkPixbuf's saving architecture straightened out.
+	
+2008-02-21  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-utils.c (io_gdip_init): Make this idempotent
+	* src/io-gdip.c: Function that fills the GdkPixbufIO vtable. To be used across
+	various GDI+-based plugins
+	
+2008-02-21  Dom Lachowicz <domlachowicz@gmail.com>
+	
+	* src/*.[ch]: If you #define GDIP_TEST_SAVING, you should be able
+	to save a pixbuf to a PNG via GDI+. WARNING: UNTESTED CODE
+	
+2008-02-21  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: Infrastructure for saving GdkPixbufs to GdkPixbufSaveFunc callbacks.
+	Should be trivial to write a PNG or JPEG saver now.
+	
+2008-02-20  Tor Lillqvist  <tml@novell.com>
+
+	* src/io-gdip-utils.c: Drop the wrapper functions that each call
+	GetProcAddress(). Instead just use a bunch of function pointers
+	and initialise them at the same time in io_gdip_init().
+
+2008-02-19  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: ARGB isn't pre-multiplied; first stab @ metadata
+	
+2008-02-19  Tor Lillqvist  <tml@novell.com>
+
+	* src/io-gdip.c
+	* src/io-gdip-utils.c
+	* src/test.c: Use spaces instead of tabs. Use 2-column indentation
+	offset which was the original intent. Remove trailing whitespace.
+
+2008-02-19  Tor Lillqvist  <tml@novell.com>
+
+	* configure.ac: Use AC_DISABLE_STATIC. It makes no sense to build
+	a static library of this.
+
+	* autogen.sh: Take ACLOCAL_FLAGS into consideration.
+
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: Fix image size (don't need to add + 1); framework
+	for supporting animations or multi- paged TIFFs
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.[ch]: If the source image doesn't have alpha, don't create
+	an opaque alpha channel in the pixbuf
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/*.c: Whitespace fixes
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>	
+
+	* src/io-gdip.c: Support pixbuf scaling
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip.c: Fill pixbuf properly; propegate errors. Plugin
+	now works for non-animations
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip.c: Move initialization to fill_vtable
+	* src/io-gdip-utils.c: GDI+ functions return Status, not HRESULT,
+	so we can't use SUCCEEDED() to test if they worked or not
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip.c (gdk_pixbuf__gdip_image_stop_load): Un-premultiply alpha
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+	
+	* src/io-gdip.c (gdk_pixbuf__gdip_image_stop_load): Destroy the
+	context
+	* src/io-gdip.c (fill_info): Add support for PNG, GIF, WMF, EMF, TIFF
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-utils.c (io_gdip_buffer_to_bitmap): Release the IStream
+	* src/io-gdip.c: Move the init() call to fill_vtable, so that it's
+	only called once
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>	
+
+	* src/io-gdip-utils.c: Make GDI+ function pointers static so that
+	we only load them once
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/test.c: Dispose of the bitmap
+	* src/io-gdip-utils.[ch]: Add bitmap dispose function
+	
+2008-02-18  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	* src/io-gdip-native.h: The GpImage and GpBitmap structs should be anonymous
+	
+	== End of ChangeLog from gdip-pixbuf-loaders ==
+	
 2008-03-11  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
 
 	* io-bmp.c: (gdk_pixbuf__bmp_image_stop_load): Set a
@@ -119,53 +524,94 @@
 
 2008-03-11  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
 
-	* io-bmp.c: (DecodeHeader): Check for the BMP header magic numbers
-	before decoding it.  (#505085)
+        * io-bmp.c: (DecodeHeader): Check for the BMP header magic numbers
+        before decoding it.  (#505085)
 
-2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+2008-02-16  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.8 ===
+	* === Released 2.13.0 ===
 
-2008-02-12  Matthias Clasen  <mclasne@redhat.com>
+2008-02-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-animation.h:
+	* gdk-pixbuf.symbols: Fix up export of gdk_pixbuf_non_anim_get_type.
+
+2008-02-12  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf-io.c (at_scale_size_prepared_cb): Don't let
 	the width or height go below 1.  (#516024, Christian Persch)
 
-2008-02-10  Matthias Clasen  <mclasne@redhat.com>
+2008-02-10  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf-scaled-anim.c: Try harder to return pixbufs
 	of the requested size.  (#494515, Mike Morrison)
 
-2008-01-29  Matthias Clasen  <mclasen@redhat.com>
+2008-01-15  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.12.7 ===
+	* gdk-pixbuf-io.c (save_to_stream): Handle partial writes.
 
-2008-01-28  Matthias Clasen  <mclasen@redhat.com>
-	
-	* === Released 2.12.6 ===
+2008-01-16  Michael Natterer  <mitch@imendio.com>
 
-2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+	* gdk-pixbuf-io.c (save_to_stream): fix signature of this function
+	and propagate errors from g_output_stream_write(). Return error
+	also on incomplete writes (which don't generate an error by
+	themselves).
 
-	* === Released 2.12.5 ===
+	Unrelated:
 
-2008-01-08  Matthias Clasen  <mclasen@redhat.com>
+	(gdk_pixbuf_io_init): initialize "builtin_module" on a separate
+	line to avoid compiler warning in the common case of no built-in
+	modules.
 
-	* === Released 2.12.4 ===
+2008-01-16  Michael Natterer  <mitch@imendio.com>
+
+	* Makefile.am (LDADDS): use $GDK_PIXBUF_DEP_LIBS instead of
+	$GLIB_LIBS so gio gets pulled in.
+
+2008-01-15  Matthias Clasen  <mclasne@redhat.com>
+
+	* gdk-pixbuf.symbols:
+	* gdk-pixbuf-core.h:
+	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_stream):
+	(gdk_pixbuf_new_from_stream_at_scale):
+	(gdk_pixbuf_save_to_stream): New stream i/o functions.
+
+2008-01-14  Michael Natterer  <mitch@imendio.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_prepare): cast the return
+	value of _gdk_pixbuf_scaled_anim_new() to fix incompatible pointer
+	warning.
 
 2007-12-09  Matthias Clasen  <mclasen@redhat.com>
 
-	Merge from trunk:
-
 	* io-jpeg.c: Fix the spinguard logic for big buffers.
 	(#494667, Ed Catmur)
+	
+2007-11-25  Tor Lillqvist  <tml@novell.com>
 
-2007-12-04  Matthias Clasen  <mclasen@redhat.com>
+	* Makefile.am: Fix static build of the icns loader.
 
-	* === Released 2.12.3 ===
+2007-11-25  Bastien Nocera  <hadess@hadess.net>
 
-2007-11-26  Matthias Clasen  <mclasen@redhat.com>
+	* Makefile.am:
+	* io-jasper.c: Add the libjasper JPEG2000 loader
+	(Closes: #469901)
 
-	* === Released 2.12.2 ===
+2007-11-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-animation.c: Use G_DEFINE_TYPE (#469341, 
+	BjÃ¶rn Lindqvist)
+
+2007-11-20  Bastien Nocera  <hadess@hadess.net>
+
+	* io-icns.c: (load_resources): Add support for 512x512 Leopard
+	icons, using the ic09 iconType
+
+2007-11-20  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am:
+	* io-icns.c: Add icns (MacOS X icons) loader, based on work by
+	Lyonel Vincent <lyonel@ezix.org> (Closes: #395738)
 
 2007-11-10  Matthias Clasen <mclasen@redhat.com>
 
@@ -316,7 +762,7 @@ Sat Jul  7 17:34:33 2007  Tim Janik  <timj@gtk.org>
 
 	* gdk-pixbuf-simple-anim.c (gdk_pixbuf_simple_anim_add_frame):
 	Don't double the delay time of the first frame.  (#431997,
-	Björn Lindqvist)
+	Bj?rn Lindqvist)
 
 2007-04-25  Matthias Clasen <mclasen@redhat.com>
 
@@ -1752,7 +2198,7 @@ Mon Aug 18 10:25:29 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pixops/pixops.c (correct_total): Split correction into multiple
 	pieces if no single weight is large enough to apply the unsplit
-	correction.  (#117431, problem reported by Tomas Ögren) 
+	correction.  (#117431, problem reported by Tomas ?gren) 
 
 2003-07-13  Matthias Clasen  <maclas@gmx.de>
 
@@ -2540,7 +2986,7 @@ Wed Feb 27 18:33:04 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* gdk-pixdata.c (gdk_pixdata_to_csource): Use {} not
 	() to group around string assigned to char[]. (#72767,
-	Tomas Ögren)
+	Tomas ?gren)
 
 2002-02-21  Havoc Pennington  <hp@pobox.com>
 
@@ -3763,7 +4209,7 @@ Wed Jun 21 16:02:48 2000  Owen Taylor  <otaylor@redhat.com>
 2000-06-05	Mathieu Lacage  <mathieu@gnome.org>
 
 	* configure.in: add some gtk parameters to the
-	GDK_PIXBUF_LIBÃï¿½²S and GDK_PIXBUG_INCLUDEDIR vars. One more
+	GDK_PIXBUF_LIB?ï¿½?S and GDK_PIXBUG_INCLUDEDIR vars. One more
 	fight in my crusade for strange prefix compile...
 
 2000-05-30  Not Zed  <NotZed@HelixCode.com>
@@ -3860,7 +4306,7 @@ Fri May  5 12:16:32 2000  Owen Taylor  <otaylor@redhat.com>
 	* gdk-pixbuf/Makefile.am (INCLUDES): Add $(GNOME_CFLAGS).
 	Reported by Jens Finke.
 
-2000-04-14 Tomasz KÃï¿½³opczko <kloczek@pld.org.pl>
+2000-04-14 Tomasz K?ï¿½?opczko <kloczek@pld.org.pl>
 
 	* gdk-pixbuf/pixops/makefile.am: $(LIBART_CFLAGS) replaced by 
 	$(GTK_CFLAGS) - now gdk-pixbuf compiles correctly.

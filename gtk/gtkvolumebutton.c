@@ -24,12 +24,10 @@
  * Modified by the GTK+ Team and others 2007.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include <config.h>
-
-#include <atk/atk.h>
+#include "config.h"
 
 #include "gtkvolumebutton.h"
 #include "gtkstock.h"
@@ -45,17 +43,15 @@ struct _GtkVolumeButton
   GtkScaleButton  parent;
 };
 
-static void	gtk_volume_button_class_init	(GtkVolumeButtonClass *klass);
-static void	gtk_volume_button_init		(GtkVolumeButton      *button);
-static gboolean	cb_query_tooltip                (GtkWidget            *button,
-						 gint                  x,
-						 gint                  y,
-						 gboolean              keyboard_mode,
-						 GtkTooltip           *tooltip,
-						 gpointer              user_data);
-static void	cb_value_changed		(GtkVolumeButton      *button,
-						 gdouble               value,
-						 gpointer              user_data);
+static gboolean	cb_query_tooltip (GtkWidget       *button,
+                                  gint             x,
+                                  gint             y,
+                                  gboolean         keyboard_mode,
+                                  GtkTooltip      *tooltip,
+                                  gpointer         user_data);
+static void	cb_value_changed (GtkVolumeButton *button,
+                                  gdouble          value,
+                                  gpointer         user_data);
 
 G_DEFINE_TYPE (GtkVolumeButton, gtk_volume_button, GTK_TYPE_SCALE_BUTTON)
 
@@ -79,10 +75,23 @@ gtk_volume_button_init (GtkVolumeButton *button)
 
   atk_object_set_name (gtk_widget_get_accessible (GTK_WIDGET (button)),
 		       _("Volume"));
+  atk_object_set_description (gtk_widget_get_accessible (GTK_WIDGET (button)),
+		       _("Turns volume down or up"));
+  atk_action_set_description (ATK_ACTION (gtk_widget_get_accessible (GTK_WIDGET (button))),
+			      1,
+			      _("Adjusts the volume"));
+
   atk_object_set_name (gtk_widget_get_accessible (sbutton->minus_button),
 		       _("Volume Down"));
+  atk_object_set_description (gtk_widget_get_accessible (sbutton->minus_button),
+		       _("Decreases the volume"));
+  gtk_widget_set_tooltip_text (sbutton->minus_button, _("Volume Down"));
+
   atk_object_set_name (gtk_widget_get_accessible (sbutton->plus_button),
 		       _("Volume Up"));
+  atk_object_set_description (gtk_widget_get_accessible (sbutton->plus_button),
+		       _("Increases the volume"));
+  gtk_widget_set_tooltip_text (sbutton->plus_button, _("Volume Up"));
 
   gtk_scale_button_set_icons (sbutton, icons);
 
@@ -130,6 +139,9 @@ cb_query_tooltip (GtkWidget  *button,
   GtkAdjustment *adj;
   gdouble val;
   char *str;
+  AtkImage *image;
+
+  image = ATK_IMAGE (gtk_widget_get_accessible (button));
 
   adj = gtk_scale_button_get_adjustment (scale_button);
   val = gtk_scale_button_get_value (scale_button);
@@ -159,6 +171,7 @@ cb_query_tooltip (GtkWidget  *button,
     }
 
   gtk_tooltip_set_text (tooltip, str);
+  atk_image_set_image_description (image, str);
   g_free (str);
 
   return TRUE;
@@ -169,7 +182,6 @@ cb_value_changed (GtkVolumeButton *button, gdouble value, gpointer user_data)
 {
   gtk_widget_trigger_tooltip_query (GTK_WIDGET (button));
 }
-
 
 #define __GTK_VOLUME_BUTTON_C__
 #include "gtkaliasdef.c"

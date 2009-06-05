@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_BOX_H__
 #define __GTK_BOX_H__
@@ -52,9 +56,9 @@ struct _GtkBox
   GtkContainer container;
 
   /*< public >*/
-  GList *children;
-  gint16 spacing;
-  guint homogeneous : 1;
+  GList *GSEAL (children);
+  gint16 GSEAL (spacing);
+  guint GSEAL (homogeneous) : 1;
 };
 
 struct _GtkBoxClass
@@ -84,10 +88,12 @@ void	   gtk_box_pack_end	       (GtkBox	     *box,
 					gboolean      expand,
 					gboolean      fill,
 					guint	      padding);
+#ifndef GTK_DISABLE_DEPRECATED
 void	   gtk_box_pack_start_defaults (GtkBox	     *box,
 					GtkWidget    *widget);
 void	   gtk_box_pack_end_defaults   (GtkBox	     *box,
 					GtkWidget    *widget);
+#endif
 void	   gtk_box_set_homogeneous     (GtkBox	     *box,
 					gboolean      homogeneous);
 gboolean   gtk_box_get_homogeneous     (GtkBox	     *box);

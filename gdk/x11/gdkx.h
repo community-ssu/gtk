@@ -28,7 +28,6 @@
 #define __GDK_X_H__
 
 #include <gdk/gdkprivate.h>
-#include <gdk/gdkcursor.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -155,6 +154,9 @@ void gdk_x11_display_broadcast_startup_message (GdkDisplay *display,
 /* returns TRUE if we support the given WM spec feature */
 gboolean gdk_x11_screen_supports_net_wm_hint (GdkScreen *screen,
 					      GdkAtom    property);
+
+XID      gdk_x11_screen_get_monitor_output   (GdkScreen *screen,
+                                              gint       monitor_num);
 
 #ifndef GDK_MULTIHEAD_SAFE
 gpointer      gdk_xid_table_lookup   (XID              xid);

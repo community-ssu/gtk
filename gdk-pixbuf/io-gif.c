@@ -53,7 +53,7 @@
 
 
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -490,10 +490,10 @@ gif_lzw_fill_buffer (GifContext *context)
 
 	if (context->code_done) {
 		if (context->code_curbit >= context->code_lastbit) {
-                        g_set_error (context->error,
-                                     GDK_PIXBUF_ERROR,
-                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                                     _("GIF file was missing some data (perhaps it was truncated somehow?)"));
+                        g_set_error_literal (context->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                             _("GIF file was missing some data (perhaps it was truncated somehow?)"));
 
 			return -2;
 		}
@@ -573,10 +573,10 @@ gif_lzw_clear_code (GifContext *context)
 #define CHECK_LZW_SP() G_STMT_START {                                           \
         if ((guchar *)context->lzw_sp >=                                        \
             (guchar *)context->lzw_stack + sizeof (context->lzw_stack)) {       \
-                 g_set_error (context->error,                                   \
-                             GDK_PIXBUF_ERROR,                                  \
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,                    \
-                             _("Stack overflow"));                              \
+                 g_set_error_literal (context->error,                           \
+                                      GDK_PIXBUF_ERROR,                         \
+                                      GDK_PIXBUF_ERROR_CORRUPT_IMAGE,           \
+                                      _("Stack overflow"));                     \
                 return -2;                                                      \
         }                                                                       \
 } G_STMT_END
@@ -633,10 +633,10 @@ lzw_read_byte (GifContext *context)
 			unsigned char buf[260];
 
                         /*  FIXME - we should handle this case */
-                        g_set_error (context->error,
-                                     GDK_PIXBUF_ERROR,
-                                     GDK_PIXBUF_ERROR_FAILED,
-                                     _("GIF image loader cannot understand this image."));
+                        g_set_error_literal (context->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_FAILED,
+                                             _("GIF image loader cannot understand this image."));
                         return -2;
                         
 			if (ZeroDataBlock) {
@@ -662,20 +662,20 @@ lzw_read_byte (GifContext *context)
 
 		while (code >= context->lzw_clear_code) {
                         if (code >= (1 << MAX_LZW_BITS)) {
-                                g_set_error (context->error,
-                                             GDK_PIXBUF_ERROR,
-                                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                                             _("Bad code encountered"));
+                                g_set_error_literal (context->error,
+                                                     GDK_PIXBUF_ERROR,
+                                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                                     _("Bad code encountered"));
 				return -2;
                         }
                         CHECK_LZW_SP ();
 			*(context->lzw_sp)++ = context->lzw_table[1][code];
 
 			if (code == context->lzw_table[0][code]) {
-                                g_set_error (context->error,
-                                             GDK_PIXBUF_ERROR,
-                                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                                             _("Circular table entry in GIF file"));
+                                g_set_error_literal (context->error,
+                                                     GDK_PIXBUF_ERROR,
+                                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                                     _("Circular table entry in GIF file"));
 				return -2;
 			}
 			code = context->lzw_table[0][code];
@@ -860,10 +860,10 @@ gif_get_lzw (GifContext *context)
                                                 context->frame_height);
                 if (!context->frame->pixbuf) {
                         g_free (context->frame);
-                        g_set_error (context->error,
-                                     GDK_PIXBUF_ERROR,
-                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                                     _("Not enough memory to load GIF file"));
+                        g_set_error_literal (context->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                             _("Not enough memory to load GIF file"));
                         return -2;
                 }
 
@@ -874,10 +874,14 @@ gif_get_lzw (GifContext *context)
                 /* GIF delay is in hundredths, we want thousandths */
                 context->frame->delay_time = context->gif89.delay_time * 10;
 
-                /* Some GIFs apparently have delay time of 0,
-                 * that crashes everything so set it to "fast".
-                 * Also, timeouts less than 20 or so just lock up
-                 * the app or make the animation choppy, so fix them.
+                /* GIFs with delay time 0 are mostly broken, but they
+                 * just want a default, "not that fast" delay.
+                 */
+                if (context->frame->delay_time == 0)
+                        context->frame->delay_time = 100;
+
+                /* No GIFs gets to play faster than 50 fps. They just
+                 * lock up poor gtk.
                  */
                 if (context->frame->delay_time < 20)
                         context->frame->delay_time = 20; /* 20 = "fast" */
@@ -950,10 +954,10 @@ gif_get_lzw (GifContext *context)
                                 g_list_free (context->animation->frames);
                                 context->animation->frames = NULL;
                                 
-                                g_set_error (context->error,
-                                             GDK_PIXBUF_ERROR,
-                                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                                             _("Not enough memory to composite a frame in GIF file"));
+                                g_set_error_literal (context->error,
+                                                     GDK_PIXBUF_ERROR,
+                                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                                     _("Not enough memory to composite a frame in GIF file"));
                                 return -2;
                         }
                     
@@ -1122,10 +1126,10 @@ gif_prepare_lzw (GifContext *context)
 	}
         
         if (context->lzw_set_code_size > MAX_LZW_BITS) {
-                g_set_error (context->error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("GIF image is corrupt (incorrect LZW compression)"));
+                g_set_error_literal (context->error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("GIF image is corrupt (incorrect LZW compression)"));
                 return -2;
         }
 
@@ -1172,10 +1176,10 @@ gif_init (GifContext *context)
 
 	if (strncmp ((char *) buf, "GIF", 3) != 0) {
 		/* Not a GIF file */
-                g_set_error (context->error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("File does not appear to be a GIF file"));
+                g_set_error_literal (context->error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("File does not appear to be a GIF file"));
 		return -2;
 	}
 
@@ -1293,10 +1297,10 @@ gif_get_frame_info (GifContext *context)
         if (!context->has_global_cmap) {
                 context->state = GIF_DONE;
                 
-                g_set_error (context->error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("GIF image has no global colormap, and a frame inside it has no local colormap."));
+                g_set_error_literal (context->error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("GIF image has no global colormap, and a frame inside it has no local colormap."));
                 
 		return -2;
         }
@@ -1458,10 +1462,10 @@ gdk_pixbuf__gif_image_load (FILE *file, GError **error)
 	context = new_context ();
 
         if (context == NULL) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Not enough memory to load GIF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Not enough memory to load GIF file"));
                 return NULL;
         }
         
@@ -1471,10 +1475,10 @@ gdk_pixbuf__gif_image_load (FILE *file, GError **error)
 
 	if (gif_main_loop (context) == -1 || context->animation->frames == NULL) {
                 if (context->error && *(context->error) == NULL)
-                        g_set_error (context->error,
-                                     GDK_PIXBUF_ERROR,
-                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                                     _("GIF file was missing some data (perhaps it was truncated somehow?)"));
+                        g_set_error_literal (context->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                             _("GIF file was missing some data (perhaps it was truncated somehow?)"));
         }
         
         pixbuf = gdk_pixbuf_animation_get_static_image (GDK_PIXBUF_ANIMATION (context->animation));
@@ -1505,10 +1509,10 @@ gdk_pixbuf__gif_image_begin_load (GdkPixbufModuleSizeFunc size_func,
 	context = new_context ();
 
         if (context == NULL) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Not enough memory to load GIF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Not enough memory to load GIF file"));
                 return NULL;
         }
         
@@ -1527,10 +1531,10 @@ gdk_pixbuf__gif_image_stop_load (gpointer data, GError **error)
         gboolean retval = TRUE;
         
         if (context->state != GIF_DONE || context->animation->frames == NULL) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("GIF image was truncated or incomplete."));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("GIF image was truncated or incomplete."));
 
                 retval = FALSE;
         }
@@ -1620,10 +1624,10 @@ gdk_pixbuf__gif_image_load_animation (FILE *file,
 	context = new_context ();
 
         if (context == NULL) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Not enough memory to load GIF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Not enough memory to load GIF file"));
                 return NULL;
         }
         
@@ -1632,10 +1636,10 @@ gdk_pixbuf__gif_image_load_animation (FILE *file,
 
 	if (gif_main_loop (context) == -1 || context->animation->frames == NULL) {
                 if (context->error && *(context->error) == NULL)
-                        g_set_error (context->error,
-                                     GDK_PIXBUF_ERROR,
-                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                                     _("GIF file was missing some data (perhaps it was truncated somehow?)"));
+                        g_set_error_literal (context->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                             _("GIF file was missing some data (perhaps it was truncated somehow?)"));
 
                 g_object_unref (context->animation);
                 context->animation = NULL;
@@ -1655,13 +1659,12 @@ gdk_pixbuf__gif_image_load_animation (FILE *file,
 }
 
 #ifndef INCLUDE_gif
-#define MODULE_ENTRY(type,function) function
+#define MODULE_ENTRY(function) G_MODULE_EXPORT void function
 #else
-#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#define MODULE_ENTRY(function) void _gdk_pixbuf__gif_ ## function
 #endif
 
-void
-MODULE_ENTRY (gif, fill_vtable) (GdkPixbufModule *module)
+MODULE_ENTRY (fill_vtable) (GdkPixbufModule *module)
 {
         module->load = gdk_pixbuf__gif_image_load;
         module->begin_load = gdk_pixbuf__gif_image_begin_load;
@@ -1670,8 +1673,7 @@ MODULE_ENTRY (gif, fill_vtable) (GdkPixbufModule *module)
         module->load_animation = gdk_pixbuf__gif_image_load_animation;
 }
 
-void
-MODULE_ENTRY (gif, fill_info) (GdkPixbufFormat *info)
+MODULE_ENTRY (fill_info) (GdkPixbufFormat *info)
 {
         static GdkPixbufModulePattern signature[] = {
                 { "GIF8", NULL, 100 },

@@ -22,16 +22,10 @@
 #include <string.h>
 
 #include "gtkrecentfilter.h"
-#include "gtkobject.h"
 #include "gtkintl.h"
 #include "gtkprivate.h"
 
 #include "gtkalias.h"
-
-#ifdef G_OS_UNIX
-#define XDG_PREFIX _gtk_xdg
-#include "xdgmime/xdgmime.h"
-#endif
 
 typedef struct _GtkRecentFilterClass GtkRecentFilterClass;
 typedef struct _FilterRule FilterRule;
@@ -168,11 +162,10 @@ gtk_recent_filter_init (GtkRecentFilter *filter)
  * gtk_recent_filter_add_pattern(), gtk_recent_filter_add_mime_type(),
  * gtk_recent_filter_add_application(), gtk_recent_filter_add_age().
  * To create a filter that accepts any recently used resource, use:
- *
- * <informalexample><programlisting>
- * GtkRecentFilter *filter = gtk_recent_filter_new (<!-- -->);
+ * |[
+ * GtkRecentFilter *filter = gtk_recent_filter_new ();
  * gtk_recent_filter_add_pattern (filter, "*");
- * </programlisting></informalexample>
+ * ]|
  *
  * Return value: a new #GtkRecentFilter
  *
@@ -492,12 +485,8 @@ gtk_recent_filter_filter (GtkRecentFilter           *filter,
       switch (rule->type)
         {
         case FILTER_RULE_MIME_TYPE:
-          if ((filter_info->mime_type != NULL)
-#ifdef G_OS_UNIX
-              && (xdg_mime_mime_type_subclass (filter_info->mime_type, rule->u.mime_type)))
-#else
-	      && (strcmp (filter_info->mime_type, rule->u.mime_type) == 0))
-#endif
+          if (filter_info->mime_type != NULL &&
+              g_content_type_is_a (filter_info->mime_type, rule->u.mime_type))
             return TRUE;
           break;
         case FILTER_RULE_APPLICATION:

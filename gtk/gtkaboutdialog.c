@@ -28,7 +28,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 
@@ -505,7 +505,8 @@ gtk_about_dialog_init (GtkAboutDialog *about)
   gtk_box_pack_end (GTK_BOX (GTK_DIALOG (about)->action_area), 
 		    button, FALSE, TRUE, 0); 
   gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (GTK_DIALOG (about)->action_area), button, TRUE);
-  g_signal_connect (button, "clicked", G_CALLBACK (display_credits_dialog), about);
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (display_credits_dialog), about);
   priv->credits_button = button;
   priv->credits_dialog = NULL;
 
@@ -516,7 +517,8 @@ gtk_about_dialog_init (GtkAboutDialog *about)
   gtk_box_pack_end (GTK_BOX (GTK_DIALOG (about)->action_area), 
 		    button, FALSE, TRUE, 0); 
   gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (GTK_DIALOG (about)->action_area), button, TRUE);
-  g_signal_connect (button, "clicked", G_CALLBACK (display_license_dialog), about);
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (display_license_dialog), about);
   priv->license_button = button;
   priv->license_dialog = NULL;
 
@@ -700,7 +702,7 @@ gtk_about_dialog_get_property (GObject    *object,
  *
  * Since: 2.6
  *
- * @Deprecated: 2.12: Use gtk_about_dialog_get_program_name() instead.
+ * Deprecated: 2.12: Use gtk_about_dialog_get_program_name() instead.
  **/
 G_CONST_RETURN gchar *
 gtk_about_dialog_get_name (GtkAboutDialog *about)
@@ -765,7 +767,7 @@ update_name_version (GtkAboutDialog *about)
  * 
  * Since: 2.6
  *
- * @Deprecated: 2.12: Use gtk_about_dialog_set_program_name() instead.
+ * Deprecated: 2.12: Use gtk_about_dialog_set_program_name() instead.
  **/
 void
 gtk_about_dialog_set_name (GtkAboutDialog *about, 
@@ -1125,6 +1127,9 @@ gtk_about_dialog_get_website (GtkAboutDialog *about)
  * 
  * Sets the URL to use for the website link.
  *
+ * Note that that the hook functions need to be set up
+ * before calling this function.
+ *
  * Since: 2.6
  **/
 void
@@ -1452,9 +1457,9 @@ gtk_about_dialog_get_translator_credits (GtkAboutDialog *about)
  * of the language which is currently used in the user interface.
  * Using gettext(), a simple way to achieve that is to mark the
  * string for translation:
- * <informalexample><programlisting>
+ * |[
  *  gtk_about_dialog_set_translator_credits (about, _("translator-credits"));
- * </programlisting></informalexample>
+ * ]|
  * It is a good idea to use the customary msgid "translator-credits" for this
  * purpose, since translators will already know the purpose of that msgid, and
  * since #GtkAboutDialog will detect if "translator-credits" is untranslated
@@ -1897,7 +1902,7 @@ add_credits_page (GtkAboutDialog *about,
     visited_link_color = default_visited_link_color;
 
   view = gtk_text_view_new ();
-  g_signal_connect_object (about, "style_set",
+  g_signal_connect_object (about, "style-set",
 			   G_CALLBACK (text_view_style_set), view, 0);
   
   buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
@@ -1907,13 +1912,13 @@ add_credits_page (GtkAboutDialog *about,
   gtk_text_view_set_left_margin (GTK_TEXT_VIEW (view), 8);
   gtk_text_view_set_right_margin (GTK_TEXT_VIEW (view), 8);
 
-  g_signal_connect (view, "key_press_event",
+  g_signal_connect (view, "key-press-event",
                     G_CALLBACK (credits_key_press_event), about);
-  g_signal_connect (view, "event_after",
+  g_signal_connect (view, "event-after",
                     G_CALLBACK (credits_event_after), about);
-  g_signal_connect (view, "motion_notify_event", 
+  g_signal_connect (view, "motion-notify-event", 
                     G_CALLBACK (credits_motion_notify_event), about);
-  g_signal_connect (view, "visibility_notify_event", 
+  g_signal_connect (view, "visibility-notify-event", 
                     G_CALLBACK (credits_visibility_notify_event), about);
 
   sw = gtk_scrolled_window_new (NULL, NULL);
@@ -1964,21 +1969,23 @@ add_credits_page (GtkAboutDialog *about,
 	      gchar *link;
 	      const gchar *link_type;
 	      GtkTextTag *tag;
-	      
-	      gtk_text_buffer_insert_at_cursor (buffer, q0, q1 - q0);
-	      gtk_text_buffer_get_end_iter (buffer, &end);
+
+	      if (*q1 == '<')
+		{
+		  gtk_text_buffer_insert_at_cursor (buffer, q0, (q1 - q0) + 1);
+		  gtk_text_buffer_get_end_iter (buffer, &end);
+		  q1++;
+		  link_type = I_("email");
+		}
+	      else
+		{
+		  gtk_text_buffer_insert_at_cursor (buffer, q0, q1 - q0);
+		  gtk_text_buffer_get_end_iter (buffer, &end);
+		  link_type = I_("url");
+		}
 
 	      q0 = q2;
 
-	      if (*q1 == '<') 
-		{
-		  q1++;
-		  q0++;
-		  link_type = I_("email");
-		}
-	      else 
-		link_type = I_("url");
-	      
 	      link = g_strndup (q1, q2 - q1);
 
 	      if (g_slist_find_custom (priv->visited_links, link, (GCompareFunc)strcmp))
@@ -2283,10 +2290,12 @@ gtk_show_about_dialog (GtkWindow   *parent,
 
       g_object_ref_sink (dialog);
 
-      g_signal_connect (dialog, "delete_event", G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+      g_signal_connect (dialog, "delete-event",
+                        G_CALLBACK (gtk_widget_hide_on_delete), NULL);
 
       /* Close dialog on user response */
-      g_signal_connect (dialog, "response", G_CALLBACK (close_cb), NULL);
+      g_signal_connect (dialog, "response",
+                        G_CALLBACK (close_cb), NULL);
 
       va_start (var_args, first_property_name);
       g_object_set_valist (G_OBJECT (dialog), first_property_name, var_args);

@@ -7,7 +7,7 @@
  * Authors: Mark Crichton <crichton@gimp.org>
  *          Federico Mena-Quintero <federico@gimp.org>
  *          Jonathan Blandford <jrb@redhat.com>
- *          Søren Sandmann <sandmann@daimi.au.dk>
+ *          Sï¿½ren Sandmann <sandmann@daimi.au.dk>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@
 
 /* Following code (almost) blatantly ripped from Imlib */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
@@ -128,9 +128,9 @@ tiff_set_error (GError    **error,
                 global_error = NULL;
         }
         else {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             error_code, msg);
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     error_code, msg);
         }
 }
 
@@ -169,28 +169,28 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
         }
 
         if (width <= 0 || height <= 0) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("Width or height of TIFF image is zero"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("Width or height of TIFF image is zero"));
                 return NULL;                
         }
         
         rowstride = width * 4;
         if (rowstride / 4 != width) { /* overflow */
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("Dimensions of TIFF image too large"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("Dimensions of TIFF image too large"));
                 return NULL;                
         }
         
         bytes = height * rowstride;
         if (bytes / rowstride != height) { /* overflow */
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-                             _("Dimensions of TIFF image too large"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                     _("Dimensions of TIFF image too large"));
                 return NULL;                
         }
 
@@ -211,10 +211,10 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
         pixels = g_try_malloc (bytes);
 
         if (!pixels) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Insufficient memory to open TIFF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Insufficient memory to open TIFF file"));
                 return NULL;
         }
 
@@ -223,10 +223,10 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
                                            free_buffer, NULL);
         if (!pixbuf) {
                 g_free (pixels);
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Insufficient memory to open TIFF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Insufficient memory to open TIFF file"));
                 return NULL;
         }
 
@@ -262,7 +262,7 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
 
 	if (transform > 0 ) {
 		gchar str[5];
-		snprintf (str, sizeof (str), "%d", transform);
+		g_snprintf (str, sizeof (str), "%d", transform);
 		gdk_pixbuf_set_option (pixbuf, "orientation", str);
 	}
 
@@ -535,10 +535,10 @@ gdk_pixbuf__tiff_image_load_increment (gpointer data, const guchar *buf,
 	g_return_val_if_fail (data != NULL, FALSE);
         
         if (!make_available_at_least (context, size)) {
-                g_set_error (error,
-                             GDK_PIXBUF_ERROR,
-                             GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-                             _("Insufficient memory to open TIFF file"));
+                g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                     _("Insufficient memory to open TIFF file"));
                 return FALSE;
         }
         
@@ -754,10 +754,10 @@ save_to_file_cb (const gchar *buf,
 	}
 
 	if (count) {
-		g_set_error (error,
-			     GDK_PIXBUF_ERROR,
-			     GDK_PIXBUF_ERROR_FAILED,
-			     _("Couldn't write to TIFF file"));
+		g_set_error_literal (error,
+                                     GDK_PIXBUF_ERROR,
+                                     GDK_PIXBUF_ERROR_FAILED,
+                                     _("Couldn't write to TIFF file"));
 		return FALSE;
 	}
 	
@@ -777,13 +777,12 @@ gdk_pixbuf__tiff_image_save (FILE          *f,
 }
 
 #ifndef INCLUDE_tiff
-#define MODULE_ENTRY(type,function) function
+#define MODULE_ENTRY(function) G_MODULE_EXPORT void function
 #else
-#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#define MODULE_ENTRY(function) void _gdk_pixbuf__tiff_ ## function
 #endif
 
-void
-MODULE_ENTRY (tiff, fill_vtable) (GdkPixbufModule *module)
+MODULE_ENTRY (fill_vtable) (GdkPixbufModule *module)
 {
         module->load = gdk_pixbuf__tiff_image_load;
         module->begin_load = gdk_pixbuf__tiff_image_begin_load;
@@ -793,8 +792,7 @@ MODULE_ENTRY (tiff, fill_vtable) (GdkPixbufModule *module)
         module->save_to_callback = gdk_pixbuf__tiff_image_save_to_callback;
 }
 
-void
-MODULE_ENTRY (tiff, fill_info) (GdkPixbufFormat *info)
+MODULE_ENTRY (fill_info) (GdkPixbufFormat *info)
 {
         static GdkPixbufModulePattern signature[] = {
                 { "MM \x2a", "  z ", 100 },

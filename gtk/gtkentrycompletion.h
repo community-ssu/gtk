@@ -17,10 +17,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_ENTRY_COMPLETION_H__
 #define __GTK_ENTRY_COMPLETION_H__
-
-#include <glib-object.h>
 
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtkliststore.h>
@@ -51,7 +53,7 @@ struct _GtkEntryCompletion
   GObject parent_instance;
 
   /*< private >*/
-  GtkEntryCompletionPrivate *priv;
+  GtkEntryCompletionPrivate *GSEAL (priv);
 };
 
 struct _GtkEntryCompletionClass
@@ -64,7 +66,7 @@ struct _GtkEntryCompletionClass
   void     (* action_activated) (GtkEntryCompletion *completion,
                                  gint                index_);
   gboolean (* insert_prefix)    (GtkEntryCompletion *completion,
-				 const gchar        *prefix); 
+				 const gchar        *prefix);
   gboolean (* cursor_on_match)  (GtkEntryCompletion *completion,
 				 GtkTreeModel       *model,
 				 GtkTreeIter        *iter);

@@ -16,6 +16,11 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_ICON_VIEW_H__
 #define __GTK_ICON_VIEW_H__
 
@@ -27,12 +32,12 @@
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_ICON_VIEW		(gtk_icon_view_get_type ())
-#define GTK_ICON_VIEW(obj)		(GTK_CHECK_CAST ((obj), GTK_TYPE_ICON_VIEW, GtkIconView))
-#define GTK_ICON_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
-#define GTK_IS_ICON_VIEW(obj)		(GTK_CHECK_TYPE ((obj), GTK_TYPE_ICON_VIEW))
-#define GTK_IS_ICON_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ICON_VIEW))
-#define GTK_ICON_VIEW_GET_CLASS(obj)    (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
+#define GTK_TYPE_ICON_VIEW            (gtk_icon_view_get_type ())
+#define GTK_ICON_VIEW(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ICON_VIEW, GtkIconView))
+#define GTK_ICON_VIEW_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
+#define GTK_IS_ICON_VIEW(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ICON_VIEW))
+#define GTK_IS_ICON_VIEW_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ICON_VIEW))
+#define GTK_ICON_VIEW_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
 
 typedef struct _GtkIconView           GtkIconView;
 typedef struct _GtkIconViewClass      GtkIconViewClass;
@@ -63,7 +68,7 @@ struct _GtkIconView
 {
   GtkContainer parent;
 
-  GtkIconViewPrivate *priv;
+  GtkIconViewPrivate *GSEAL (priv);
 };
 
 struct _GtkIconViewClass
@@ -234,10 +239,6 @@ void                        hildon_icon_view_set_row_header_func (GtkIconView   
                                                                   HildonIconViewRowHeaderFunc  func,
                                                                   gpointer                     data,
                                                                   GDestroyNotify               destroy);
-
-HildonUIMode                hildon_icon_view_get_hildon_ui_mode  (GtkIconView                  *icon_view);
-void                        hildon_icon_view_set_hildon_ui_mode  (GtkIconView                  *icon_view,
-                                                                  HildonUIMode                  mode);
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS

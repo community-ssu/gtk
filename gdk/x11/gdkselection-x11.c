@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <string.h>
@@ -387,12 +387,12 @@ gdk_selection_property_get (GdkWindow  *requestor,
  * Since: 2.2
  **/
 void
-gdk_selection_send_notify_for_display (GdkDisplay *display,
-				       guint32     requestor,
-				       GdkAtom     selection,
-				       GdkAtom     target,
-				       GdkAtom     property, 
-				       guint32     time)
+gdk_selection_send_notify_for_display (GdkDisplay       *display,
+				       GdkNativeWindow  requestor,
+				       GdkAtom          selection,
+				       GdkAtom          target,
+				       GdkAtom          property, 
+				       guint32          time)
 {
   XSelectionEvent xevent;
   

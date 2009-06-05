@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_WIDGET_H__
 #define __GTK_WIDGET_H__
@@ -33,7 +37,7 @@
 #include <gtk/gtkadjustment.h>
 #include <gtk/gtkstyle.h>
 #include <gtk/gtksettings.h>
-#include <atk/atkobject.h>
+#include <atk/atk.h>
 
 G_BEGIN_DECLS
 
@@ -184,12 +188,12 @@ struct _GtkWidget
    * state and saved_state go. we therefore don't waste any new
    * space on this.
    */
-  guint16 private_flags;
+  guint16 GSEAL (private_flags);
   
   /* The state of the widget. There are actually only
    *  5 widget states (defined in "gtkenums.h").
    */
-  guint8 state;
+  guint8 GSEAL (state);
   
   /* The saved state of the widget. When a widget's state
    *  is changed to GTK_STATE_INSENSITIVE via
@@ -197,7 +201,7 @@ struct _GtkWidget
    *  the old state is kept around in this field. The state
    *  will be restored once the widget gets sensitive again.
    */
-  guint8 saved_state;
+  guint8 GSEAL (saved_state);
   
   /* The widget's name. If the widget does not have a name
    *  (the name is NULL), then its name (as returned by
@@ -205,7 +209,7 @@ struct _GtkWidget
    * Among other things, the widget name is used to determine
    *  the style to use for a widget.
    */
-  gchar *name;
+  gchar *GSEAL (name);
   
   /*< public >*/
 
@@ -214,25 +218,25 @@ struct _GtkWidget
    *  along with graphics contexts used to draw with and
    *  the font to use for text.
    */
-  GtkStyle *style;
+  GtkStyle *GSEAL (style);
   
   /* The widget's desired size.
    */
-  GtkRequisition requisition;
+  GtkRequisition GSEAL (requisition);
   
   /* The widget's allocated size.
    */
-  GtkAllocation allocation;
+  GtkAllocation GSEAL (allocation);
   
   /* The widget's window or its parent window if it does
    *  not have a window. (Which will be indicated by the
    *  GTK_NO_WINDOW flag being set).
    */
-  GdkWindow *window;
+  GdkWindow *GSEAL (window);
   
   /* The widget's parent.
    */
-  GtkWidget *parent;
+  GtkWidget *GSEAL (parent);
 };
 
 struct _GtkWidgetClass
@@ -503,7 +507,7 @@ void	   gtk_widget_queue_resize	  (GtkWidget	       *widget);
 void	   gtk_widget_queue_resize_no_redraw (GtkWidget *widget);
 #ifndef GTK_DISABLE_DEPRECATED
 void	   gtk_widget_draw		  (GtkWidget	       *widget,
-					   GdkRectangle	       *area);
+					   const GdkRectangle  *area);
 #endif /* GTK_DISABLE_DEPRECATED */
 void	   gtk_widget_size_request	  (GtkWidget	       *widget,
 					   GtkRequisition      *requisition);
@@ -544,10 +548,10 @@ gboolean   gtk_widget_set_scroll_adjustments (GtkWidget        *widget,
 void	   gtk_widget_reparent		  (GtkWidget	       *widget,
 					   GtkWidget	       *new_parent);
 gboolean   gtk_widget_intersect		  (GtkWidget	       *widget,
-					   GdkRectangle	       *area,
+					   const GdkRectangle  *area,
 					   GdkRectangle	       *intersection);
 GdkRegion *gtk_widget_region_intersect	  (GtkWidget	       *widget,
-					   GdkRegion	       *region);
+					   const GdkRegion     *region);
 
 void	gtk_widget_freeze_child_notify	  (GtkWidget	       *widget);
 void	gtk_widget_child_notify		  (GtkWidget	       *widget,
@@ -573,14 +577,14 @@ void                  gtk_widget_set_redraw_on_allocate (GtkWidget    *widget,
 							 gboolean      redraw_on_allocate);
 void                  gtk_widget_set_parent             (GtkWidget    *widget,
 							 GtkWidget    *parent);
+GtkWidget           * gtk_widget_get_parent             (GtkWidget    *widget);
 void                  gtk_widget_set_parent_window      (GtkWidget    *widget,
 							 GdkWindow    *parent_window);
+GdkWindow           * gtk_widget_get_parent_window      (GtkWidget    *widget);
 void                  gtk_widget_set_child_visible      (GtkWidget    *widget,
 							 gboolean      is_visible);
 gboolean              gtk_widget_get_child_visible      (GtkWidget    *widget);
-
-GtkWidget *gtk_widget_get_parent          (GtkWidget           *widget);
-GdkWindow *gtk_widget_get_parent_window	  (GtkWidget	       *widget);
+GdkWindow*            gtk_widget_get_window             (GtkWidget    *widget);
 
 gboolean   gtk_widget_child_focus         (GtkWidget           *widget,
                                            GtkDirectionType     direction);
@@ -836,6 +840,14 @@ void              _gtk_widget_propagate_hierarchy_changed (GtkWidget    *widget,
 void              _gtk_widget_propagate_screen_changed    (GtkWidget    *widget,
 							   GdkScreen    *previous_screen);
 void		  _gtk_widget_propagate_composited_changed (GtkWidget    *widget);
+
+void	   _gtk_widget_set_pointer_window  (GtkWidget      *widget,
+					    GdkWindow      *pointer_window);
+GdkWindow *_gtk_widget_get_pointer_window  (GtkWidget      *widget);
+gboolean   _gtk_widget_is_pointer_widget   (GtkWidget      *widget);
+void       _gtk_widget_synthesize_crossing (GtkWidget      *from,
+					    GtkWidget      *to,
+					    GdkCrossingMode mode);
 
 GdkColormap* _gtk_widget_peek_colormap (void);
 

@@ -21,7 +21,7 @@
  *	Mark McLoughlin <mark@skynet.ie>
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkexpander.h"
 
@@ -1532,11 +1532,11 @@ gtk_expander_set_label (GtkExpander *expander,
  * gtk_expander_get_label:
  * @expander: a #GtkExpander
  *
- * Fetches the text from the label of the expander, as set by
- * gtk_expander_set_label(). If the label text has not
- * been set the return value will be %NULL. This will be the
- * case if you create an empty button with gtk_button_new() to
- * use as a container.
+ * Fetches the text from a label widget including any embedded
+ * underlines indicating mnemonics and Pango markup, as set by
+ * gtk_expander_set_label(). If the label text has not been set the
+ * return value will be %NULL. This will be the case if you create an
+ * empty button with gtk_button_new() to use as a container.
  *
  * Return value: The text of the label widget. This string is owned
  * by the widget and must not be modified or freed.
@@ -1552,8 +1552,8 @@ gtk_expander_get_label (GtkExpander *expander)
 
   priv = expander->priv;
 
-  if (priv->label_widget && GTK_IS_LABEL (priv->label_widget))
-    return gtk_label_get_text (GTK_LABEL (priv->label_widget));
+  if (GTK_IS_LABEL (priv->label_widget))
+    return gtk_label_get_label (GTK_LABEL (priv->label_widget));
   else
     return NULL;
 }
@@ -1584,7 +1584,7 @@ gtk_expander_set_use_underline (GtkExpander *expander,
     {
       priv->use_underline = use_underline;
 
-      if (priv->label_widget && GTK_IS_LABEL (priv->label_widget))
+      if (GTK_IS_LABEL (priv->label_widget))
 	gtk_label_set_use_underline (GTK_LABEL (priv->label_widget), use_underline);
 
       g_object_notify (G_OBJECT (expander), "use-underline");
@@ -1638,7 +1638,7 @@ gtk_expander_set_use_markup (GtkExpander *expander,
     {
       priv->use_markup = use_markup;
 
-      if (priv->label_widget && GTK_IS_LABEL (priv->label_widget))
+      if (GTK_IS_LABEL (priv->label_widget))
 	gtk_label_set_use_markup (GTK_LABEL (priv->label_widget), use_markup);
 
       g_object_notify (G_OBJECT (expander), "use-markup");

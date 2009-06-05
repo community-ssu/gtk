@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "gdk/gdkkeysyms.h"
@@ -506,7 +506,7 @@ _gtk_socket_windowing_filter_func (GdkXEvent *gdk_xevent,
 	    _gtk_socket_end_embedding (socket);
 
 	    g_object_ref (widget);
-	    g_signal_emit_by_name (widget, "plug_removed", &result);
+	    g_signal_emit_by_name (widget, "plug-removed", &result);
 	    if (!result)
 	      gtk_widget_destroy (widget);
 	    g_object_unref (widget);

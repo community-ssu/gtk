@@ -1,6 +1,6 @@
 /* GTK - The GIMP Toolkit
  * Copyright (C) 2000 Red Hat, Inc.
- *
+ *               2008 Johan Dahlin
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,11 +24,10 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <pango/pango-utils.h>	/* For pango_scan_* */
 #include "gtkiconfactory.h"
 #include "gtkiconcache.h"
 #include "gtkdebug.h"
@@ -37,6 +36,8 @@
 #include "gtkstock.h"
 #include "gtkwidget.h"
 #include "gtkintl.h"
+#include "gtkbuildable.h"
+#include "gtkbuilderprivate.h"
 #include "gtkalias.h"
 
 
@@ -74,7 +75,7 @@ struct _GtkIconSource
   guint any_state : 1;
   guint any_size : 1;
 
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
   /* System codepage version of filename, for DLL ABI backward
    * compatibility functions.
    */
@@ -83,6 +84,20 @@ struct _GtkIconSource
 };
 
 
+static void
+gtk_icon_factory_buildable_init  (GtkBuildableIface      *iface);
+
+static gboolean gtk_icon_factory_buildable_custom_tag_start (GtkBuildable     *buildable,
+							     GtkBuilder       *builder,
+							     GObject          *child,
+							     const gchar      *tagname,
+							     GMarkupParser    *parser,
+							     gpointer         *data);
+static void gtk_icon_factory_buildable_custom_tag_end (GtkBuildable *buildable,
+						       GtkBuilder   *builder,
+						       GObject      *child,
+						       const gchar  *tagname,
+						       gpointer     *user_data);
 static void gtk_icon_factory_finalize   (GObject             *object);
 static void get_default_icons           (GtkIconFactory      *icon_factory);
 static void icon_source_clear           (GtkIconSource       *source);
@@ -96,7 +111,9 @@ static GtkIconSize icon_size_register_intern (const gchar *name,
    0, 0, 0,								\
    any_direction, any_state, any_size }
 
-G_DEFINE_TYPE (GtkIconFactory, gtk_icon_factory, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (GtkIconFactory, gtk_icon_factory, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE,
+						gtk_icon_factory_buildable_init))
 
 static void
 gtk_icon_factory_init (GtkIconFactory *factory)
@@ -111,6 +128,13 @@ gtk_icon_factory_class_init (GtkIconFactoryClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
   object_class->finalize = gtk_icon_factory_finalize;
+}
+
+static void
+gtk_icon_factory_buildable_init (GtkBuildableIface *iface)
+{
+  iface->custom_tag_start = gtk_icon_factory_buildable_custom_tag_start;
+  iface->custom_tag_end = gtk_icon_factory_buildable_custom_tag_end;
 }
 
 static void
@@ -423,10 +447,15 @@ get_default_icons (GtkIconFactory *factory)
   register_stock_icon (factory, GTK_STOCK_ORIENTATION_LANDSCAPE);
   register_stock_icon (factory, GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT);
   register_stock_icon (factory, GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE);
+  register_stock_icon (factory, GTK_STOCK_PAGE_SETUP);
   register_stock_icon (factory, GTK_STOCK_PASTE);
   register_stock_icon (factory, GTK_STOCK_PREFERENCES);
   register_stock_icon (factory, GTK_STOCK_PRINT);
+  register_stock_icon (factory, GTK_STOCK_PRINT_ERROR);
+  register_stock_icon (factory, GTK_STOCK_PRINT_PAUSED);
   register_stock_icon (factory, GTK_STOCK_PRINT_PREVIEW);
+  register_stock_icon (factory, GTK_STOCK_PRINT_REPORT);
+  register_stock_icon (factory, GTK_STOCK_PRINT_WARNING);
   register_stock_icon (factory, GTK_STOCK_PROPERTIES);
   register_bidi_stock_icon (factory, 
 			    GTK_STOCK_REDO,
@@ -1570,13 +1599,15 @@ render_fallback_image (GtkStyle          *style,
 
   if (fallback_source.type == GTK_ICON_SOURCE_EMPTY)
     {
+      gint index;
       GdkPixbuf *pixbuf;
 
       _gtk_icon_theme_ensure_builtin_cache ();
 
+      index = _gtk_icon_cache_get_directory_index (_builtin_cache, "24");
       pixbuf = _gtk_icon_cache_get_icon (_builtin_cache,
 					 GTK_STOCK_MISSING_IMAGE,
-					 "24");
+					 index);
       gtk_icon_source_set_pixbuf (&fallback_source, pixbuf);
       g_object_unref (pixbuf);
     }
@@ -1894,7 +1925,7 @@ gtk_icon_source_copy (const GtkIconSource *source)
       break;
     case GTK_ICON_SOURCE_FILENAME:
       copy->source.filename = g_strdup (copy->source.filename);
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
       copy->cp_filename = g_strdup (copy->cp_filename);
 #endif
       if (copy->filename_pixbuf)
@@ -1955,7 +1986,7 @@ icon_source_clear (GtkIconSource *source)
     case GTK_ICON_SOURCE_FILENAME:
       g_free (source->source.filename);
       source->source.filename = NULL;
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
       g_free (source->cp_filename);
       source->cp_filename = NULL;
 #endif
@@ -1999,7 +2030,7 @@ gtk_icon_source_set_filename (GtkIconSource *source,
     {
       source->type = GTK_ICON_SOURCE_FILENAME;
       source->source.filename = g_strdup (filename);
-#ifdef G_OS_WIN32
+#if defined (G_OS_WIN32) && !defined (_WIN64)
       source->cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
 #endif
     }
@@ -2698,7 +2729,258 @@ _gtk_icon_factory_list_ids (void)
   return ids;
 }
 
-#ifdef G_OS_WIN32
+typedef struct {
+  GSList *sources;
+  gboolean in_source;
+  
+} IconFactoryParserData;
+
+typedef struct {
+  gchar            *stock_id;
+  gchar            *filename;
+  gchar            *icon_name;
+  GtkTextDirection  direction;
+  GtkIconSize       size;
+  GtkStateType      state;
+} IconSourceParserData;
+
+static void
+icon_source_start_element (GMarkupParseContext *context,
+			   const gchar         *element_name,
+			   const gchar        **names,
+			   const gchar        **values,
+			   gpointer             user_data,
+			   GError             **error)
+{
+  gint i;
+  gchar *stock_id = NULL;
+  gchar *filename = NULL;
+  gchar *icon_name = NULL;
+  gint size = -1;
+  gint direction = -1;
+  gint state = -1;
+  IconFactoryParserData *parser_data;
+  IconSourceParserData *source_data;
+  gchar *error_msg;
+  GQuark error_domain;
+  
+  parser_data = (IconFactoryParserData*)user_data;
+
+  if (!parser_data->in_source)
+    {
+      if (strcmp (element_name, "sources") != 0)
+	{
+	  error_msg = g_strdup_printf ("Unexpected element %s, expected <sources>", element_name);
+	  error_domain = GTK_BUILDER_ERROR_INVALID_TAG;
+	  goto error;
+	}
+      parser_data->in_source = TRUE;
+      return;
+    }
+  else
+    {
+      if (strcmp (element_name, "source") != 0)
+	{
+	  error_msg = g_strdup_printf ("Unexpected element %s, expected <source>", element_name);
+	  error_domain = GTK_BUILDER_ERROR_INVALID_TAG;
+	  goto error;
+	}
+    }
+  
+  for (i = 0; names[i]; i++)
+    {
+      if (strcmp (names[i], "stock-id") == 0)
+	stock_id = g_strdup (values[i]);
+      else if (strcmp (names[i], "filename") == 0)
+	filename = g_strdup (values[i]);
+      else if (strcmp (names[i], "icon-name") == 0)
+	icon_name = g_strdup (values[i]);
+      else if (strcmp (names[i], "size") == 0)
+	{
+          if (!_gtk_builder_enum_from_string (GTK_TYPE_ICON_SIZE,
+                                              values[i],
+                                              &size,
+                                              error))
+	      return;
+	}
+      else if (strcmp (names[i], "direction") == 0)
+	{
+          if (!_gtk_builder_enum_from_string (GTK_TYPE_TEXT_DIRECTION,
+                                              values[i],
+                                              &direction,
+                                              error))
+	      return;
+	}
+      else if (strcmp (names[i], "state") == 0)
+	{
+          if (!_gtk_builder_enum_from_string (GTK_TYPE_STATE_TYPE,
+                                              values[i],
+                                              &state,
+                                              error))
+	      return;
+	}
+      else
+	{
+	  error_msg = g_strdup_printf ("'%s' is not a valid attribute of <%s>",
+				       names[i], "source");
+	  error_domain = GTK_BUILDER_ERROR_INVALID_ATTRIBUTE;
+	  goto error;
+	}
+    }
+
+  if (!stock_id)
+    {
+      error_msg = g_strdup_printf ("<source> requires a stock_id");
+      error_domain = GTK_BUILDER_ERROR_MISSING_ATTRIBUTE;
+      goto error;
+    }
+
+  source_data = g_slice_new (IconSourceParserData);
+  source_data->stock_id = stock_id;
+  source_data->filename = filename;
+  source_data->icon_name = icon_name;
+  source_data->size = size;
+  source_data->direction = direction;
+  source_data->state = state;
+
+  parser_data->sources = g_slist_prepend (parser_data->sources, source_data);
+  return;
+
+ error:
+  {
+    gchar *tmp;
+    gint line_number, char_number;
+    
+    g_markup_parse_context_get_position (context,
+					 &line_number,
+					 &char_number);
+
+    tmp = g_strdup_printf ("%s:%d:%d %s", "input",
+			   line_number, char_number, error_msg);
+#if 0
+    g_set_error_literal (error,
+		 GTK_BUILDER_ERROR,
+		 error_domain,
+		 tmp);
+#else
+    g_warning (tmp);
+#endif    
+    g_free (tmp);
+    g_free (stock_id);
+    g_free (filename);
+    g_free (icon_name);
+    return;
+  }
+}
+
+static const GMarkupParser icon_source_parser =
+  {
+    icon_source_start_element,
+  };
+
+static gboolean
+gtk_icon_factory_buildable_custom_tag_start (GtkBuildable     *buildable,
+					     GtkBuilder       *builder,
+					     GObject          *child,
+					     const gchar      *tagname,
+					     GMarkupParser    *parser,
+					     gpointer         *data)
+{
+  g_assert (buildable);
+
+  if (strcmp (tagname, "sources") == 0)
+    {
+      IconFactoryParserData *parser_data;
+
+      parser_data = g_slice_new0 (IconFactoryParserData);
+      *parser = icon_source_parser;
+      *data = parser_data;
+      return TRUE;
+    }
+  return FALSE;
+}
+
+static void
+gtk_icon_factory_buildable_custom_tag_end (GtkBuildable *buildable,
+					   GtkBuilder   *builder,
+					   GObject      *child,
+					   const gchar  *tagname,
+					   gpointer     *user_data)
+{
+  GtkIconFactory *icon_factory;
+  
+  icon_factory = GTK_ICON_FACTORY (buildable);
+
+  if (strcmp (tagname, "sources") == 0)
+    {
+      IconFactoryParserData *parser_data;
+      GtkIconSource *icon_source;
+      GtkIconSet *icon_set;
+      GSList *l;
+
+      parser_data = (IconFactoryParserData*)user_data;
+
+      for (l = parser_data->sources; l; l = l->next)
+	{
+	  IconSourceParserData *source_data = l->data;
+
+	  icon_set = gtk_icon_factory_lookup (icon_factory, source_data->stock_id);
+	  if (!icon_set)
+	    {
+	      icon_set = gtk_icon_set_new ();
+	      gtk_icon_factory_add (icon_factory, source_data->stock_id, icon_set);
+              gtk_icon_set_unref (icon_set);
+	    }
+
+	  icon_source = gtk_icon_source_new ();
+
+	  if (source_data->filename)
+	    {
+	      gchar *filename;
+	      filename = _gtk_builder_get_absolute_filename (builder, source_data->filename);
+	      gtk_icon_source_set_filename (icon_source, filename);
+	      g_free (filename);
+	    }
+	  if (source_data->icon_name)
+	    gtk_icon_source_set_icon_name (icon_source, source_data->icon_name);
+	  if (source_data->size != -1)
+            {
+              gtk_icon_source_set_size (icon_source, source_data->size);
+              gtk_icon_source_set_size_wildcarded (icon_source, FALSE);
+            }
+	  if (source_data->direction != -1)
+            {
+              gtk_icon_source_set_direction (icon_source, source_data->direction);
+              gtk_icon_source_set_direction_wildcarded (icon_source, FALSE);
+            }
+	  if (source_data->state != -1)
+            {
+              gtk_icon_source_set_state (icon_source, source_data->state);
+              gtk_icon_source_set_state_wildcarded (icon_source, FALSE);
+            }
+
+	  /* Inline source_add() to avoid creating a copy */
+	  g_assert (icon_source->type != GTK_ICON_SOURCE_EMPTY);
+	  icon_set->sources = g_slist_insert_sorted (icon_set->sources,
+						     icon_source,
+						     icon_source_compare);
+
+	  g_free (source_data->stock_id);
+	  g_free (source_data->filename);
+	  g_free (source_data->icon_name);
+	  g_slice_free (IconSourceParserData, source_data);
+	}
+      g_slist_free (parser_data->sources);
+      g_slice_free (IconFactoryParserData, parser_data);
+
+      /* TODO: Add an attribute/tag to prevent this.
+       * Usually it's the right thing to do though.
+       */
+      gtk_icon_factory_add_default (icon_factory);
+    }
+}
+
+#if defined (G_OS_WIN32) && !defined (_WIN64)
 
 /* DLL ABI stability backward compatibility versions */
 

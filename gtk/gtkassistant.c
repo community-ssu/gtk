@@ -23,7 +23,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <atk/atk.h>
 
@@ -588,15 +588,16 @@ compute_next_step (GtkAssistant *assistant)
 }
 
 static void
-on_assistant_close (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_close (GtkWidget    *widget,
+                    GtkAssistant *assistant)
 {
   g_signal_emit (assistant, signals [CLOSE], 0, NULL);
 }
 
 static void
-on_assistant_apply (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_apply (GtkWidget    *widget,
+                    GtkAssistant *assistant)
 {
-  GtkAssistantPrivate *priv = assistant->priv;
   gboolean success;
 
   success = compute_next_step (assistant);
@@ -611,7 +612,8 @@ on_assistant_apply (GtkWidget *widget, GtkAssistant *assistant)
 }
 
 static void
-on_assistant_forward (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_forward (GtkWidget    *widget,
+                      GtkAssistant *assistant)
 {
   if (!compute_next_step (assistant))
     g_critical ("Page flow is broken, you may want to end it with a page of "
@@ -619,7 +621,8 @@ on_assistant_forward (GtkWidget *widget, GtkAssistant *assistant)
 }
 
 static void
-on_assistant_back (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_back (GtkWidget    *widget,
+                   GtkAssistant *assistant)
 {
   GtkAssistantPrivate *priv = assistant->priv;
   GtkAssistantPage *page_info;
@@ -643,13 +646,15 @@ on_assistant_back (GtkWidget *widget, GtkAssistant *assistant)
 }
 
 static void
-on_assistant_cancel (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_cancel (GtkWidget    *widget,
+                     GtkAssistant *assistant)
 {
   g_signal_emit (assistant, signals [CANCEL], 0, NULL);
 }
 
 static void
-on_assistant_last (GtkWidget *widget, GtkAssistant *assistant)
+on_assistant_last (GtkWidget    *widget,
+                   GtkAssistant *assistant)
 {
   GtkAssistantPrivate *priv = assistant->priv;
 
@@ -892,7 +897,7 @@ remove_page (GtkAssistant *assistant,
     g_object_unref (page_info->sidebar_image);
 
   gtk_widget_destroy (page_info->title);
-  g_free (page_info);
+  g_slice_free (GtkAssistantPage, page_info);
   g_list_free_1 (element);
 }
 
@@ -1380,8 +1385,6 @@ static void
 gtk_assistant_add (GtkContainer *container,
 		   GtkWidget    *page)
 {
-  g_return_if_fail (GTK_IS_WIDGET (page));
-
   gtk_assistant_append_page (GTK_ASSISTANT (container), page);
 }
 
@@ -1389,10 +1392,8 @@ static void
 gtk_assistant_remove (GtkContainer *container,
 		      GtkWidget    *page)
 {
-  GtkAssistant *assistant;
+  GtkAssistant *assistant = (GtkAssistant*) container;
   GList *element;
-
-  assistant = (GtkAssistant*) container;
 
   element = find_page (assistant, page);
 
@@ -1654,7 +1655,7 @@ gtk_assistant_insert_page (GtkAssistant *assistant,
 
   priv = assistant->priv;
 
-  page_info = g_new0 (GtkAssistantPage, 1);
+  page_info = g_slice_new0 (GtkAssistantPage);
   page_info->page  = page;
   page_info->title = gtk_label_new (NULL);
 

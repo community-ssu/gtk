@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <config.h>
+#include "config.h"
 
 #include "gdk-pixbuf-private.h"
 #include "gdk-pixdata.h"
@@ -143,18 +143,18 @@ gdk_pixdata_serialize (const GdkPixdata *pixdata,
 }
 
 #define	return_header_corrupt(error)	{ \
-  g_set_error (error, GDK_PIXBUF_ERROR, \
-	       GDK_PIXBUF_ERROR_CORRUPT_IMAGE, _("Image header corrupt")); \
+  g_set_error_literal (error, GDK_PIXBUF_ERROR, \
+                       GDK_PIXBUF_ERROR_CORRUPT_IMAGE, _("Image header corrupt")); \
   return FALSE; \
 }
 #define	return_invalid_format(error)	{ \
-  g_set_error (error, GDK_PIXBUF_ERROR, \
-	       GDK_PIXBUF_ERROR_UNKNOWN_TYPE, _("Image format unknown")); \
+  g_set_error_literal (error, GDK_PIXBUF_ERROR, \
+                       GDK_PIXBUF_ERROR_UNKNOWN_TYPE, _("Image format unknown")); \
   return FALSE; \
 }
 #define	return_pixel_corrupt(error)	{ \
-  g_set_error (error, GDK_PIXBUF_ERROR, \
-	       GDK_PIXBUF_ERROR_CORRUPT_IMAGE, _("Image pixel data corrupt")); \
+  g_set_error_literal (error, GDK_PIXBUF_ERROR, \
+                       GDK_PIXBUF_ERROR_CORRUPT_IMAGE, _("Image pixel data corrupt")); \
   return FALSE; \
 }
 
@@ -482,9 +482,9 @@ gdk_pixbuf_from_pixdata (const GdkPixdata *pixdata,
       if (check_overrun)
 	{
 	  g_free (data);
-	  g_set_error (error, GDK_PIXBUF_ERROR,
-		       GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-		       _("Image pixel data corrupt"));
+	  g_set_error_literal (error, GDK_PIXBUF_ERROR,
+                               GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                               _("Image pixel data corrupt"));
 	  return NULL;
 	}
     }

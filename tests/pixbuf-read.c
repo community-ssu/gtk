@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,7 +74,7 @@ main (int argc, char **argv)
 	{
 	  err = NULL;
 
-	  if (test_loader (contents, size, &err))
+	  if (test_loader ((guchar *) contents, size, &err))
 	    g_print ("success\n");
 	  else
 	    g_print ("error: %s\n", err->message);

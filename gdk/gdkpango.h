@@ -17,6 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
+
 #ifndef __GDK_PANGO_H__
 #define __GDK_PANGO_H__
 
@@ -119,12 +123,12 @@ void          gdk_pango_context_set_colormap   (PangoContext *context,
 GdkRegion    *gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
                                                      gint             x_origin,
                                                      gint             y_origin,
-                                                     gint            *index_ranges,
+                                                     const gint      *index_ranges,
                                                      gint             n_ranges);
 GdkRegion    *gdk_pango_layout_get_clip_region      (PangoLayout     *layout,
                                                      gint             x_origin,
                                                      gint             y_origin,
-                                                     gint            *index_ranges,
+                                                     const gint      *index_ranges,
                                                      gint             n_ranges);
 
 

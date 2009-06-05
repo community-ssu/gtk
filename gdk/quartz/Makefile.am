@@ -21,6 +21,7 @@ libgdk_quartz_la_SOURCES =    	\
 	GdkQuartzView.h		\
 	GdkQuartzWindow.c	\
 	GdkQuartzWindow.h	\
+	gdkapplaunchcontext-quartz.c \
 	gdkcolor-quartz.c	\
 	gdkcursor-quartz.c	\
 	gdkdisplay-quartz.c	\
@@ -52,3 +53,7 @@ libgdk_quartz_la_SOURCES =    	\
 	gdkwindow-quartz.c	\
 	gdkwindow-quartz.h	\
 	xcursors.h
+
+libgdkinclude_HEADERS = 	\
+	gdkquartz.h
+

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +28,7 @@
 #include "gtktreednd.h"
 #include "gtkintl.h"
 #include "gtkbuildable.h"
+#include "gtkbuilderprivate.h"
 #include "gtkalias.h"
 
 #define GTK_LIST_STORE_IS_SORTED(list) (((GtkListStore*)(list))->sort_column_id != GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID)
@@ -110,11 +111,11 @@ static void     gtk_list_store_set_sort_func         (GtkTreeSortable        *so
 						      gint                    sort_column_id,
 						      GtkTreeIterCompareFunc  func,
 						      gpointer                data,
-						      GtkDestroyNotify        destroy);
+						      GDestroyNotify          destroy);
 static void     gtk_list_store_set_default_sort_func (GtkTreeSortable        *sortable,
 						      GtkTreeIterCompareFunc  func,
 						      gpointer                data,
-						      GtkDestroyNotify        destroy);
+						      GDestroyNotify          destroy);
 static gboolean gtk_list_store_has_default_sort_func (GtkTreeSortable        *sortable);
 
 
@@ -391,15 +392,14 @@ gtk_list_store_finalize (GObject *object)
   
   if (list_store->default_sort_destroy)
     {
-      GtkDestroyNotify d = list_store->default_sort_destroy;
+      GDestroyNotify d = list_store->default_sort_destroy;
 
       list_store->default_sort_destroy = NULL;
       d (list_store->default_sort_data);
       list_store->default_sort_data = NULL;
     }
 
-  /* must chain up */
-  (* G_OBJECT_CLASS (gtk_list_store_parent_class)->finalize) (object);
+  G_OBJECT_CLASS (gtk_list_store_parent_class)->finalize (object);
 }
 
 /* Fulfill the GtkTreeModel requirements */
@@ -922,6 +922,7 @@ gtk_list_store_set_valist (GtkListStore *list_store,
  * The list is terminated by a -1. For example, to set column 0 with type
  * %G_TYPE_STRING to "Foo", you would write <literal>gtk_list_store_set (store, iter,
  * 0, "Foo", -1)</literal>.
+ * The value will be copied or referenced by the store if appropriate.
  **/
 void
 gtk_list_store_set (GtkListStore *list_store,
@@ -1830,7 +1831,7 @@ gtk_list_store_set_sort_func (GtkTreeSortable        *sortable,
 			      gint                    sort_column_id,
 			      GtkTreeIterCompareFunc  func,
 			      gpointer                data,
-			      GtkDestroyNotify        destroy)
+			      GDestroyNotify          destroy)
 {
   GtkListStore *list_store = (GtkListStore *) sortable;
 
@@ -1846,13 +1847,13 @@ static void
 gtk_list_store_set_default_sort_func (GtkTreeSortable        *sortable,
 				      GtkTreeIterCompareFunc  func,
 				      gpointer                data,
-				      GtkDestroyNotify        destroy)
+				      GDestroyNotify          destroy)
 {
   GtkListStore *list_store = (GtkListStore *) sortable;
 
   if (list_store->default_sort_destroy)
     {
-      GtkDestroyNotify d = list_store->default_sort_destroy;
+      GDestroyNotify d = list_store->default_sort_destroy;
 
       list_store->default_sort_destroy = NULL;
       d (list_store->default_sort_data);
@@ -1890,10 +1891,10 @@ gtk_list_store_has_default_sort_func (GtkTreeSortable *sortable)
  * Calling
  * <literal>gtk_list_store_insert_with_values(list_store, iter, position...)</literal> 
  * has the same effect as calling 
- * <informalexample><programlisting>
+ * |[
  * gtk_list_store_insert (list_store, iter, position);
  * gtk_list_store_set (list_store, iter, ...);
- * </programlisting></informalexample>
+ * ]|
  * with the difference that the former will only emit a row_inserted signal,
  * while the latter will emit row_inserted, row_changed and, if the list store
  * is sorted, rows_reordered. Since emitting the rows_reordered signal
@@ -2043,17 +2044,25 @@ gtk_list_store_insert_with_valuesv (GtkListStore *list_store,
  * </columns>
  */
 typedef struct {
+  gboolean translatable;
+  gchar *context;
+  int id;
+} ColInfo;
+
+typedef struct {
   GtkBuilder *builder;
   GObject *object;
   GSList *column_type_names;
   GType *column_types;
   GValue *values;
-  gint *columns;
+  gint *colids;
+  ColInfo **columns;
   gint last_row;
   gint n_columns;
   gint row_column;
   GQuark error_quark;
   gboolean is_data;
+  const gchar *domain;
 } SubParserData;
 
 static void
@@ -2070,6 +2079,9 @@ list_store_start_element (GMarkupParseContext *context,
   if (strcmp (element_name, "col") == 0)
     {
       int i, id = -1;
+      gchar *context = NULL;
+      gboolean translatable = FALSE;
+      ColInfo *info;
 
       if (data->row_column >= data->n_columns)
         {
@@ -2086,7 +2098,7 @@ list_store_start_element (GMarkupParseContext *context,
 	    if (errno)
               {
 	        g_set_error (error, data->error_quark, 0,
-			     "the id tag %s could not be converted to an integer",
+		  	     "the id tag %s could not be converted to an integer",
 			     values[i]);
                 return;
               }
@@ -2097,6 +2109,20 @@ list_store_start_element (GMarkupParseContext *context,
                 return;
               }
 	  }
+	else if (strcmp (names[i], "translatable") == 0)
+	  {
+	    if (!_gtk_builder_boolean_from_string (values[i], &translatable,
+						   error))
+	      return;
+	  }
+	else if (strcmp (names[i], "comments") == 0)
+	  {
+	    /* do nothing, comments are for translators */
+	  }
+	else if (strcmp (names[i], "context") == 0) 
+	  {
+	    context = g_strdup (values[i]);
+	  }
 
       if (id == -1)
         {
@@ -2104,8 +2130,14 @@ list_store_start_element (GMarkupParseContext *context,
 	  	       "<col> needs an id attribute");
           return;
         }
+      
+      info = g_slice_new0 (ColInfo);
+      info->translatable = translatable;
+      info->context = context;
+      info->id = id;
 
-      data->columns[data->row_column] = id;
+      data->colids[data->row_column] = id;
+      data->columns[data->row_column] = info;
       data->row_column++;
       data->is_data = TRUE;
     }
@@ -2143,11 +2175,17 @@ list_store_end_element (GMarkupParseContext *context,
       gtk_list_store_insert_with_valuesv (GTK_LIST_STORE (data->object),
 					  &iter,
 					  data->last_row,
-					  data->columns,
+					  data->colids,
 					  data->values,
 					  data->row_column);
       for (i = 0; i < data->row_column; i++)
-	g_value_unset (&data->values[i]);
+	{
+	  ColInfo *info = data->columns[i];
+	  g_free (info->context);
+	  g_slice_free (ColInfo, info);
+	  data->columns[i] = NULL;
+	  g_value_unset (&data->values[i]);
+	}
       g_free (data->values);
       data->values = g_new0 (GValue, data->n_columns);
       data->last_row++;
@@ -2205,15 +2243,32 @@ list_store_text (GMarkupParseContext *context,
   gint i;
   GError *tmp_error = NULL;
   gchar *string;
-
+  ColInfo *info;
+  
   if (!data->is_data)
     return;
 
   i = data->row_column - 1;
+  info = data->columns[i];
 
   string = g_strndup (text, text_len);
+  if (info->translatable && text_len)
+    {
+      gchar *translated;
+
+      /* FIXME: This will not use the domain set in the .ui file,
+       * since the parser is not telling the builder about the domain.
+       * However, it will work for gtk_builder_set_translation_domain() calls.
+       */
+      translated = _gtk_builder_parser_translate (data->domain,
+						  info->context,
+						  string);
+      g_free (string);
+      string = translated;
+    }
+
   if (!gtk_builder_value_from_string_type (data->builder,
-					   data->column_types[i],
+					   data->column_types[info->id],
 					   string,
 					   &data->values[i],
 					   &tmp_error))
@@ -2222,7 +2277,7 @@ list_store_text (GMarkupParseContext *context,
 		   tmp_error->domain,
 		   tmp_error->code,
 		   "Could not convert '%s' to type %s: %s\n",
-		   text, g_type_name (data->column_types[i]),
+		   text, g_type_name (data->column_types[info->id]),
 		   tmp_error->message);
       g_error_free (tmp_error);
     }
@@ -2271,11 +2326,13 @@ gtk_list_store_buildable_custom_tag_start (GtkBuildable  *buildable,
       parser_data->builder = builder;
       parser_data->object = G_OBJECT (buildable);
       parser_data->values = g_new0 (GValue, n_columns);
-      parser_data->columns = g_new0 (gint, n_columns);
+      parser_data->colids = g_new0 (gint, n_columns);
+      parser_data->columns = g_new0 (ColInfo*, n_columns);
       parser_data->column_types = GTK_LIST_STORE (buildable)->column_headers;
       parser_data->n_columns = n_columns;
       parser_data->last_row = 0;
       parser_data->error_quark = g_quark_from_static_string ("GtkListStore");
+      parser_data->domain = gtk_builder_get_translation_domain (builder);
       
       *parser = list_store_parser;
       *data = parser_data;
@@ -2303,6 +2360,17 @@ gtk_list_store_buildable_custom_tag_end (GtkBuildable *buildable,
     }
   else if (strcmp (tagname, "data") == 0)
     {
+      int i;
+      for (i = 0; i < sub->n_columns; i++)
+	{
+	  ColInfo *info = sub->columns[i];
+	  if (info)
+	    {
+	      g_free (info->context);
+	      g_slice_free (ColInfo, info);
+	    }
+	}
+      g_free (sub->colids);
       g_free (sub->columns);
       g_free (sub->values);
       g_slice_free (SubParserData, sub);

@@ -1,3 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+]>
 <refentry id="gtk-running" revision="10 Jan 2002">
 <refmeta>
 <refentrytitle>Running GTK+ Applications</refentrytitle>
@@ -242,7 +246,10 @@ additional environment variables.
 
   <para>
     Specifies an IM module to use in preference to the one determined
-    from the locale. 
+    from the locale.  If this isn't set and you are running on the system
+    that enables <literal>XSETTINGS</literal> and has a value in
+    <literal>Gtk/IMModule</literal>, that will be used for the default
+    IM module.
   </para>
 </formalpara>
 

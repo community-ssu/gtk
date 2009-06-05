@@ -1,8 +1,6 @@
 /* GTK - The GIMP Toolkit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
  *
- * Themes added by The Rasterman <raster@redhat.com>
- * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -25,7 +23,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -34,9 +32,10 @@
 
 #include <glib/gstdio.h>
 #include <gmodule.h>
-#include <pango/pango-utils.h>
 #include "gtkimmodule.h"
 #include "gtkimcontextsimple.h"
+#include "gtksettings.h"
+#include "gtkmain.h"
 #include "gtkrc.h"
 #include "gtkintl.h"
 #include "gtkalias.h"
@@ -63,6 +62,8 @@ struct _GtkIMModule
 {
   GTypeModule parent_instance;
   
+  gboolean builtin;
+
   GModule *library;
 
   void          (*list)   (const GtkIMContextInfo ***contexts,
@@ -95,30 +96,33 @@ gtk_im_module_load (GTypeModule *module)
 {
   GtkIMModule *im_module = GTK_IM_MODULE (module);
   
-  im_module->library = g_module_open (im_module->path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
-  if (!im_module->library)
+  if (!im_module->builtin)
     {
-      g_warning (g_module_error());
-      return FALSE;
-    }
+      im_module->library = g_module_open (im_module->path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
+      if (!im_module->library)
+	{
+	  g_warning ("%s", g_module_error());
+	  return FALSE;
+	}
   
-  /* extract symbols from the lib */
-  if (!g_module_symbol (im_module->library, "im_module_init",
-			(gpointer *)&im_module->init) ||
-      !g_module_symbol (im_module->library, "im_module_exit", 
-			(gpointer *)&im_module->exit) ||
-      !g_module_symbol (im_module->library, "im_module_list", 
-			(gpointer *)&im_module->list) ||
-      !g_module_symbol (im_module->library, "im_module_create", 
-			(gpointer *)&im_module->create))
-    {
-      g_warning (g_module_error());
-      g_module_close (im_module->library);
-      
-      return FALSE;
+      /* extract symbols from the lib */
+      if (!g_module_symbol (im_module->library, "im_module_init",
+			    (gpointer *)&im_module->init) ||
+	  !g_module_symbol (im_module->library, "im_module_exit", 
+			    (gpointer *)&im_module->exit) ||
+	  !g_module_symbol (im_module->library, "im_module_list", 
+			    (gpointer *)&im_module->list) ||
+	  !g_module_symbol (im_module->library, "im_module_create", 
+			    (gpointer *)&im_module->create))
+	{
+	  g_warning ("%s", g_module_error());
+	  g_module_close (im_module->library);
+	  
+	  return FALSE;
+	}
     }
 	    
-  /* call the theme's init (theme_init) function to let it */
+  /* call the module's init function to let it */
   /* setup anything it needs to set up. */
   im_module->init (module);
 
@@ -132,13 +136,16 @@ gtk_im_module_unload (GTypeModule *module)
   
   im_module->exit();
 
-  g_module_close (im_module->library);
-  im_module->library = NULL;
+  if (!im_module->builtin)
+    {
+      g_module_close (im_module->library);
+      im_module->library = NULL;
 
-  im_module->init = NULL;
-  im_module->exit = NULL;
-  im_module->list = NULL;
-  im_module->create = NULL;
+      im_module->init = NULL;
+      im_module->exit = NULL;
+      im_module->list = NULL;
+      im_module->create = NULL;
+    }
 }
 
 /* This only will ever be called if an error occurs during
@@ -260,6 +267,36 @@ correct_localedir_prefix (gchar **path)
 #endif
 
 
+static GtkIMModule *
+add_builtin_module (const gchar             *module_name,
+		    const GtkIMContextInfo **contexts,
+		    int                      n_contexts)
+{
+  GtkIMModule *module = g_object_new (GTK_TYPE_IM_MODULE, NULL);
+  GSList *infos = NULL;
+  int i;
+
+  for (i = 0; i < n_contexts; i++)
+    {
+      GtkIMContextInfo *info = g_new (GtkIMContextInfo, 1);
+      info->context_id = g_strdup (contexts[i]->context_id);
+      info->context_name = g_strdup (contexts[i]->context_name);
+      info->domain = g_strdup (contexts[i]->domain);
+      info->domain_dirname = g_strdup (contexts[i]->domain_dirname);
+#ifdef G_OS_WIN32
+      correct_localedir_prefix ((char **) &info->domain_dirname);
+#endif
+      info->default_locales = g_strdup (contexts[i]->default_locales);
+      infos = g_slist_prepend (infos, info);
+    }
+
+  module->builtin = TRUE;
+  g_type_module_set_name (G_TYPE_MODULE (module), module_name);
+  add_module (module, infos);
+
+  return module;
+}
+
 static void
 gtk_im_module_initialize (void)
 {
@@ -273,6 +310,63 @@ gtk_im_module_initialize (void)
   GSList *infos = NULL;
 
   contexts_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+#define do_builtin(m)							\
+  {									\
+    const GtkIMContextInfo **contexts;					\
+    int n_contexts;							\
+    extern void _gtk_immodule_ ## m ## _list (const GtkIMContextInfo ***contexts, \
+					      guint                    *n_contexts); \
+    extern void _gtk_immodule_ ## m ## _init (GTypeModule *module);	\
+    extern void _gtk_immodule_ ## m ## _exit (void);			\
+    extern GtkIMContext *_gtk_immodule_ ## m ## _create (const gchar *context_id); \
+									\
+    _gtk_immodule_ ## m ## _list (&contexts, &n_contexts);		\
+    module = add_builtin_module (#m, contexts, n_contexts);		\
+    module->init = _gtk_immodule_ ## m ## _init;			\
+    module->exit = _gtk_immodule_ ## m ## _exit;			\
+    module->create = _gtk_immodule_ ## m ## _create;			\
+    module = NULL;							\
+  }
+
+#ifdef INCLUDE_IM_am_et
+  do_builtin (am_et);
+#endif
+#ifdef INCLUDE_IM_cedilla
+  do_builtin (cedilla);
+#endif
+#ifdef INCLUDE_IM_cyrillic_translit
+  do_builtin (cyrillic_translit);
+#endif
+#ifdef INCLUDE_IM_ime
+  do_builtin (ime);
+#endif
+#ifdef INCLUDE_IM_inuktitut
+  do_builtin (inuktitut);
+#endif
+#ifdef INCLUDE_IM_ipa
+  do_builtin (ipa);
+#endif
+#ifdef INCLUDE_IM_multipress
+  do_builtin (multipress);
+#endif
+#ifdef INCLUDE_IM_thai
+  do_builtin (thai);
+#endif
+#ifdef INCLUDE_IM_ti_er
+  do_builtin (ti_er);
+#endif
+#ifdef INCLUDE_IM_ti_et
+  do_builtin (ti_et);
+#endif
+#ifdef INCLUDE_IM_viqr
+  do_builtin (viqr);
+#endif
+#ifdef INCLUDE_IM_xim
+  do_builtin (xim);
+#endif
+
+#undef do_builtin
 
   file = g_fopen (filename, "r");
   if (!file)
@@ -418,7 +512,7 @@ _gtk_im_module_list (const GtkIMContextInfo ***contexts,
 #endif
 		GtkIMContextInfo simple_context_info = {
     SIMPLE_ID,
-    N_("Default"),
+    N_("Simple"),
     GETTEXT_PACKAGE,
 #ifdef GTK_LOCALEDIR
     GTK_LOCALEDIR,
@@ -546,20 +640,15 @@ match_locale (const gchar *locale,
 
 /**
  * _gtk_im_module_get_default_context_id:
- * @locale: a locale id in the form 'en_US'
+ * @client_window: a window
  * 
- * Return the context_id of the best IM context type
- * for the given locale ID.
+ * Return the context_id of the best IM context type 
+ * for the given window.
  * 
  * Return value: the context ID (will never be %NULL)
- *    the value is newly allocated and must be freed
- *    with g_free().
  **/
-#ifndef MAEMO_CHANGES
-const
-#endif /* MAEMO_CHANGES */
-gchar *
-_gtk_im_module_get_default_context_id (const gchar *locale)
+const gchar *
+_gtk_im_module_get_default_context_id (GdkWindow *client_window)
 {
   GSList *tmp_list;
   const gchar *context_id = NULL;
@@ -567,6 +656,8 @@ _gtk_im_module_get_default_context_id (const gchar *locale)
   gint i;
   gchar *tmp_locale, *tmp;
   const gchar *envvar;
+  GdkScreen *screen;
+  GtkSettings *settings;
       
   if (!contexts_hash)
     gtk_im_module_initialize ();
@@ -574,12 +665,41 @@ _gtk_im_module_get_default_context_id (const gchar *locale)
   envvar = g_getenv ("GTK_IM_MODULE");
   if (envvar &&
       (strcmp (envvar, SIMPLE_ID) == 0 ||
-       g_hash_table_lookup (contexts_hash, envvar)))
-    return g_strdup (envvar);
+       g_hash_table_lookup (contexts_hash, envvar))) 
+    return envvar;
+
+  /* Check if the certain immodule is set in XSETTINGS.
+   */
+  if (client_window != NULL && GDK_IS_DRAWABLE (client_window))
+    {
+      screen = gdk_drawable_get_screen (GDK_DRAWABLE (client_window));
+      if (screen)
+        settings = gtk_settings_get_for_screen (screen);
+      else
+        settings = gtk_settings_get_default ();
+
+      g_object_get (G_OBJECT (settings), "gtk-im-module", &tmp, NULL);
+      if (tmp)
+        {
+          if (strcmp (tmp, SIMPLE_ID) == 0)
+            context_id = SIMPLE_ID;
+          else 
+            {
+              GtkIMModule *module;
+              module = g_hash_table_lookup (contexts_hash, tmp);
+              if (module)
+                context_id = module->contexts[0]->context_id;
+            }
+          g_free (tmp);
+
+       	  if (context_id) 
+            return context_id;
+        }
+    }
 
   /* Strip the locale code down to the essentials
    */
-  tmp_locale = g_strdup (locale);
+  tmp_locale = _gtk_get_lc_ctype ();
   tmp = strchr (tmp_locale, '.');
   if (tmp)
     *tmp = '\0';
@@ -592,7 +712,7 @@ _gtk_im_module_get_default_context_id (const gchar *locale)
     {
       GtkIMModule *module = tmp_list->data;
      
-      for (i=0; i<module->n_contexts; i++)
+      for (i = 0; i < module->n_contexts; i++)
 	{
 	  const gchar *p = module->contexts[i]->default_locales;
 	  while (p)
@@ -615,5 +735,5 @@ _gtk_im_module_get_default_context_id (const gchar *locale)
 
   g_free (tmp_locale);
   
-  return g_strdup (context_id ? context_id : SIMPLE_ID);
+  return context_id ? context_id : SIMPLE_ID;
 }

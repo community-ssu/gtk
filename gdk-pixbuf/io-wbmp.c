@@ -29,7 +29,7 @@ Known bugs:
         * Since this is based off the libgd implementation, no extended headers implemented (not required for a WAP client)
 */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -240,10 +240,10 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 		  context->need_width = FALSE;
 
                   if (context->width <= 0) {
-		    g_set_error (error,
-				 GDK_PIXBUF_ERROR,
-				 GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-				 _("Image has zero width"));
+		    g_set_error_literal (error,
+                                         GDK_PIXBUF_ERROR,
+                                         GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                         _("Image has zero width"));
 
 		    return FALSE;
 		  }
@@ -258,10 +258,10 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 		    context->need_height = FALSE;
 
 		    if (context->height <= 0) {
-		      g_set_error (error,
-				   GDK_PIXBUF_ERROR,
-				   GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-				   _("Image has zero height"));
+		      g_set_error_literal (error,
+                                           GDK_PIXBUF_ERROR,
+                                           GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                           _("Image has zero height"));
 		      
 		      return FALSE;
 		    }
@@ -269,10 +269,10 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 		    context->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, context->width, context->height);
 		    
 		    if (!context->pixbuf) {
-		      g_set_error (error,
-				   GDK_PIXBUF_ERROR,
-				   GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
-				   _("Not enough memory to load image"));
+		      g_set_error_literal (error,
+                                           GDK_PIXBUF_ERROR,
+                                           GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                           _("Not enough memory to load image"));
 		      return FALSE;
 		    }
 
@@ -328,10 +328,10 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 	if(size) {
 	  bv = save_rest(context, buf, size);
 	  if (!bv) {
-	      g_set_error (error,
-			   GDK_PIXBUF_ERROR,
-			   GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-			   _("Couldn't save the rest"));
+	      g_set_error_literal (error,
+                                   GDK_PIXBUF_ERROR,
+                                   GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+                                   _("Couldn't save the rest"));
 
 	      return FALSE;
 	  }
@@ -340,21 +340,19 @@ static gboolean gdk_pixbuf__wbmp_image_load_increment(gpointer data,
 }
 
 #ifndef INCLUDE_wbmp
-#define MODULE_ENTRY(type,function) function
+#define MODULE_ENTRY(function) G_MODULE_EXPORT void function
 #else
-#define MODULE_ENTRY(type,function) _gdk_pixbuf__ ## type ## _ ## function
+#define MODULE_ENTRY(function) void _gdk_pixbuf__wbmp_ ## function
 #endif
 
-void
-MODULE_ENTRY (wbmp, fill_vtable) (GdkPixbufModule *module)
+MODULE_ENTRY (fill_vtable) (GdkPixbufModule *module)
 {
 	module->begin_load = gdk_pixbuf__wbmp_image_begin_load;
 	module->stop_load = gdk_pixbuf__wbmp_image_stop_load;
 	module->load_increment = gdk_pixbuf__wbmp_image_load_increment;
 }
 
-void
-MODULE_ENTRY (wbmp, fill_info) (GdkPixbufFormat *info)
+MODULE_ENTRY (fill_info) (GdkPixbufFormat *info)
 {
 	static GdkPixbufModulePattern signature[] = {
 		{ "  ",    "zz", 1 }, 

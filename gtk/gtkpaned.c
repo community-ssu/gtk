@@ -24,11 +24,10 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkintl.h"
 #include "gtkpaned.h"
 #include "gtkbindings.h"
-#include "gtksignal.h"
 #include "gdk/gdkkeysyms.h"
 #include "gtkwindow.h"
 #include "gtkmain.h"
@@ -68,16 +67,16 @@ static void     gtk_paned_get_property          (GObject          *object,
 						 guint             prop_id,
 						 GValue           *value,
 						 GParamSpec       *pspec);
-static void gtk_paned_set_child_property        (GtkContainer      *container,
-						 GtkWidget         *child,
-						 guint              property_id,
-						 const GValue      *value,
-						 GParamSpec        *pspec);
-static void gtk_paned_get_child_property        (GtkContainer      *container,
-						 GtkWidget         *child,
-						 guint              property_id,
-						 GValue            *value,
-						 GParamSpec        *pspec);
+static void     gtk_paned_set_child_property    (GtkContainer     *container,
+                                                 GtkWidget        *child,
+                                                 guint             property_id,
+                                                 const GValue     *value,
+                                                 GParamSpec       *pspec);
+static void     gtk_paned_get_child_property    (GtkContainer     *container,
+                                                 GtkWidget        *child,
+                                                 guint             property_id,
+                                                 GValue           *value,
+                                                 GParamSpec       *pspec);
 static void     gtk_paned_finalize              (GObject          *object);
 static void     gtk_paned_realize               (GtkWidget        *widget);
 static void     gtk_paned_unrealize             (GtkWidget        *widget);
@@ -149,9 +148,9 @@ add_tab_bindings (GtkBindingSet    *binding_set,
 		  GdkModifierType   modifiers)
 {
   gtk_binding_entry_add_signal (binding_set, GDK_Tab, modifiers,
-                                "toggle_handle_focus", 0);
+                                "toggle-handle-focus", 0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Tab, modifiers,
-				"toggle_handle_focus", 0);
+				"toggle-handle-focus", 0);
 }
 
 static void
@@ -161,7 +160,7 @@ add_move_binding (GtkBindingSet   *binding_set,
 		  GtkScrollType    scroll)
 {
   gtk_binding_entry_add_signal (binding_set, keyval, mask,
-				"move_handle", 1,
+				"move-handle", 1,
 				GTK_TYPE_SCROLL_TYPE, scroll);
 }
 
@@ -229,7 +228,7 @@ gtk_paned_class_init (GtkPanedClass *class)
 							 P_("TRUE if the Position property should be used"),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
-				   
+
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("handle-size",
 							     P_("Handle Size"),
@@ -274,14 +273,14 @@ gtk_paned_class_init (GtkPanedClass *class)
 						     G_MAXINT,
 						     GTK_PARAM_READABLE));
 
-/**
- * GtkPaned:resize:
- *
- * The "resize" child property determines whether the child expands and 
- * shrinks along with the paned widget.
- * 
- * Since: 2.4 
- */
+  /**
+   * GtkPaned:resize:
+   *
+   * The "resize" child property determines whether the child expands and
+   * shrinks along with the paned widget.
+   *
+   * Since: 2.4
+   */
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_RESIZE,
 					      g_param_spec_boolean ("resize", 
@@ -290,14 +289,14 @@ gtk_paned_class_init (GtkPanedClass *class)
 								    TRUE,
 								    GTK_PARAM_READWRITE));
 
-/**
- * GtkPaned:shrink:
- *
- * The "shrink" child property determines whether the child can be made 
- * smaller than its requisition.
- * 
- * Since: 2.4 
- */
+  /**
+   * GtkPaned:shrink:
+   *
+   * The "shrink" child property determines whether the child can be made
+   * smaller than its requisition.
+   *
+   * Since: 2.4
+   */
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_SHRINK,
 					      g_param_spec_boolean ("shrink", 
@@ -320,7 +319,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals [CYCLE_CHILD_FOCUS] =
-    g_signal_new (I_("cycle_child_focus"),
+    g_signal_new (I_("cycle-child-focus"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkPanedClass, cycle_child_focus),
@@ -343,7 +342,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals [TOGGLE_HANDLE_FOCUS] =
-    g_signal_new (I_("toggle_handle_focus"),
+    g_signal_new (I_("toggle-handle-focus"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkPanedClass, toggle_handle_focus),
@@ -364,7 +363,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals[MOVE_HANDLE] =
-    g_signal_new (I_("move_handle"),
+    g_signal_new (I_("move-handle"),
 		  G_TYPE_FROM_CLASS (object_class),
                   G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
                   G_STRUCT_OFFSET (GtkPanedClass, move_handle),
@@ -388,7 +387,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals [CYCLE_HANDLE_FOCUS] =
-    g_signal_new (I_("cycle_handle_focus"),
+    g_signal_new (I_("cycle-handle-focus"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkPanedClass, cycle_handle_focus),
@@ -411,7 +410,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals [ACCEPT_POSITION] =
-    g_signal_new (I_("accept_position"),
+    g_signal_new (I_("accept-position"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkPanedClass, accept_position),
@@ -434,7 +433,7 @@ gtk_paned_class_init (GtkPanedClass *class)
    * Since: 2.0
    */
   signals [CANCEL_POSITION] =
-    g_signal_new (I_("cancel_position"),
+    g_signal_new (I_("cancel-position"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkPanedClass, cancel_position),
@@ -445,24 +444,24 @@ gtk_paned_class_init (GtkPanedClass *class)
   binding_set = gtk_binding_set_by_class (class);
 
   /* F6 and friends */
-  gtk_binding_entry_add_signal (binding_set,				
+  gtk_binding_entry_add_signal (binding_set,
                                 GDK_F6, 0,
-                                "cycle_child_focus", 1, 
+                                "cycle-child-focus", 1, 
                                 G_TYPE_BOOLEAN, FALSE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F6, GDK_SHIFT_MASK,
-				"cycle_child_focus", 1,
+				"cycle-child-focus", 1,
 				G_TYPE_BOOLEAN, TRUE);
 
   /* F8 and friends */
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F8, 0,
-				"cycle_handle_focus", 1,
+				"cycle-handle-focus", 1,
 				G_TYPE_BOOLEAN, FALSE);
  
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F8, GDK_SHIFT_MASK,
-				"cycle_handle_focus", 1,
+				"cycle-handle-focus", 1,
 				G_TYPE_BOOLEAN, TRUE);
  
   add_tab_bindings (binding_set, 0);
@@ -473,23 +472,23 @@ gtk_paned_class_init (GtkPanedClass *class)
   /* accept and cancel positions */
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Escape, 0,
-				"cancel_position", 0);
+				"cancel-position", 0);
 
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Return, 0,
-				"accept_position", 0);
+				"accept-position", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_ISO_Enter, 0,
-				"accept_position", 0);
+				"accept-position", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Enter, 0,
-				"accept_position", 0);
+				"accept-position", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_space, 0,
-				"accept_position", 0);
+				"accept-position", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Space, 0,
-				"accept_position", 0);
+				"accept-position", 0);
 
   /* move handle */
   add_move_binding (binding_set, GDK_Left, 0, GTK_SCROLL_STEP_LEFT);
@@ -537,7 +536,11 @@ static void
 gtk_paned_init (GtkPaned *paned)
 {
   GTK_WIDGET_SET_FLAGS (paned, GTK_NO_WINDOW | GTK_CAN_FOCUS);
-  
+
+  /* We only need to redraw when the handle position moves, which is
+   * independent of the overall allocation of the GtkPaned */
+  gtk_widget_set_redraw_on_allocate (GTK_WIDGET (paned), FALSE);
+
   paned->child1 = NULL;
   paned->child2 = NULL;
   paned->handle = NULL;
@@ -578,7 +581,7 @@ gtk_paned_set_property (GObject        *object,
       break;
     case PROP_POSITION_SET:
       paned->position_set = g_value_get_boolean (value);
-      gtk_widget_queue_resize (GTK_WIDGET (paned));
+      gtk_widget_queue_resize_no_redraw (GTK_WIDGET (paned));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -659,7 +662,7 @@ gtk_paned_set_child_property (GtkContainer    *container,
       break;
     }
   if (old_value != new_value)
-    gtk_widget_queue_resize (GTK_WIDGET (container));
+    gtk_widget_queue_resize_no_redraw (GTK_WIDGET (container));
 }
 
 static void
@@ -773,9 +776,8 @@ gtk_paned_unrealize (GtkWidget *widget)
   gtk_paned_set_last_child2_focus (paned, NULL);
   gtk_paned_set_saved_focus (paned, NULL);
   gtk_paned_set_first_paned (paned, NULL);
-  
-  if (GTK_WIDGET_CLASS (gtk_paned_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_paned_parent_class)->unrealize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_paned_parent_class)->unrealize (widget);
 }
 
 static void
@@ -932,7 +934,7 @@ gtk_paned_focus (GtkWidget        *widget,
    */
 
   GTK_WIDGET_UNSET_FLAGS (widget, GTK_CAN_FOCUS);
-  retval = (* GTK_WIDGET_CLASS (gtk_paned_parent_class)->focus) (widget, direction);
+  retval = GTK_WIDGET_CLASS (gtk_paned_parent_class)->focus (widget, direction);
   GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 
   return retval;
@@ -1147,7 +1149,7 @@ gtk_paned_remove (GtkContainer *container,
       paned->child1 = NULL;
 
       if (was_visible && GTK_WIDGET_VISIBLE (container))
-	gtk_widget_queue_resize (GTK_WIDGET (container));
+	gtk_widget_queue_resize_no_redraw (GTK_WIDGET (container));
     }
   else if (paned->child2 == widget)
     {
@@ -1156,7 +1158,7 @@ gtk_paned_remove (GtkContainer *container,
       paned->child2 = NULL;
 
       if (was_visible && GTK_WIDGET_VISIBLE (container))
-	gtk_widget_queue_resize (GTK_WIDGET (container));
+	gtk_widget_queue_resize_no_redraw (GTK_WIDGET (container));
     }
 }
 
@@ -1234,7 +1236,7 @@ gtk_paned_set_position (GtkPaned *paned,
   g_object_notify (object, "position-set");
   g_object_thaw_notify (object);
 
-  gtk_widget_queue_resize (GTK_WIDGET (paned));
+  gtk_widget_queue_resize_no_redraw (GTK_WIDGET (paned));
 
 #ifdef G_OS_WIN32
   /* Hacky work-around for bug #144269 */
@@ -1453,7 +1455,7 @@ gtk_paned_set_focus_child (GtkContainer *container,
     }
 
   if (GTK_CONTAINER_CLASS (gtk_paned_parent_class)->set_focus_child)
-    (* GTK_CONTAINER_CLASS (gtk_paned_parent_class)->set_focus_child) (container, focus_child);
+    GTK_CONTAINER_CLASS (gtk_paned_parent_class)->set_focus_child (container, focus_child);
 }
 
 static void

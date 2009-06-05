@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdkgc.h"
 #include "gdkprivate-quartz.h"
@@ -207,8 +207,8 @@ _gdk_quartz_gc_new (GdkDrawable      *drawable,
 }
 
 void
-_gdk_windowing_gc_set_clip_region (GdkGC     *gc,
-				   GdkRegion *region)
+_gdk_windowing_gc_set_clip_region (GdkGC           *gc,
+				   const GdkRegion *region)
 {
   GdkGCQuartz *private = GDK_GC_QUARTZ (gc);
 
@@ -289,12 +289,6 @@ gdk_quartz_draw_tiled_pattern (void         *info,
 
   width = CGImageGetWidth (pattern_image);
   height = CGImageGetHeight (pattern_image);
-
-  if (private->is_window)
-    {
-      CGContextTranslateCTM (context, 0, height);
-      CGContextScaleCTM (context, 1.0, -1.0);
-    }
 
   CGContextDrawImage (context, 
 		      CGRectMake (0, 0, width, height),

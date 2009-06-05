@@ -24,8 +24,12 @@
  * Modified by the GTK+ Team and others 1997-2001.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_ACCEL_LABEL_H__
 #define __GTK_ACCEL_LABEL_H__
@@ -51,13 +55,13 @@ struct _GtkAccelLabel
 {
   GtkLabel label;
 
-  guint	         gtk_reserved;
-  guint	         accel_padding;
-  GtkWidget     *accel_widget;
-  GClosure	*accel_closure;
-  GtkAccelGroup *accel_group;
-  gchar         *accel_string;
-  guint16        accel_string_width;
+  guint          GSEAL (gtk_reserved);
+  guint          GSEAL (accel_padding);      /* should be style property? */
+  GtkWidget     *GSEAL (accel_widget);       /* done*/
+  GClosure      *GSEAL (accel_closure);      /* has set function */
+  GtkAccelGroup *GSEAL (accel_group);        /* set by set_accel_closure() */
+  gchar         *GSEAL (accel_string);       /* has set function */
+  guint16        GSEAL (accel_string_width); /* seems to be private */
 };
 
 struct _GtkAccelLabelClass

@@ -51,6 +51,11 @@ manipulated using the functions below.
 
 </para>
 
+<!-- ##### ARG GtkLinkButton:visited ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_link_button_new ##### -->
 <para>
 
@@ -111,5 +116,23 @@ clicked.
 @data: 
 @destroy: 
 @Returns: 
+
+
+<!-- ##### FUNCTION gtk_link_button_get_visited ##### -->
+<para>
+
+</para>
+
+@link_button: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_link_button_set_visited ##### -->
+<para>
+
+</para>
+
+@link_button: 
+@visited: 
 
 

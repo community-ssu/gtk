@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdkcolor.h"
 #include "gdkprivate-quartz.h"
@@ -133,9 +133,9 @@ gdk_colors_free (GdkColormap *colormap,
 }
 
 void
-gdk_colormap_free_colors (GdkColormap *colormap,
-			  GdkColor    *colors,
-			  gint         ncolors)
+gdk_colormap_free_colors (GdkColormap    *colormap,
+                          const GdkColor *colors,
+                          gint            n_colors)
 {
   /* This function shouldn't do anything since colors are never allocated. */
 }

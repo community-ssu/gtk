@@ -20,8 +20,8 @@
  */
 
 #include "config.h"
+#include <gtk/gtk.h>
 #include "gtkcupsutils.h"
-#include "gtkdebug.h"
 
 #include <errno.h>
 #include <unistd.h>
@@ -29,6 +29,8 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <time.h>
+#include <fcntl.h>
+#include <sys/socket.h>
 
 typedef void (*GtkCupsRequestStateFunc) (GtkCupsRequest *request);
 
@@ -1195,3 +1197,138 @@ gtk_cups_result_get_error_string (GtkCupsResult *result)
   return result->error_msg; 
 }
 
+/* This function allocates new instance of GtkCupsConnectionTest() and creates
+ * a socket for communication with a CUPS server 'server'.
+ */
+GtkCupsConnectionTest *
+gtk_cups_connection_test_new (const char *server)
+{
+  GtkCupsConnectionTest *result = NULL;
+#ifdef HAVE_CUPS_API_1_2
+  gchar                 *port_str = NULL;
+
+  result = g_new (GtkCupsConnectionTest, 1);
+
+  port_str = g_strdup_printf ("%d", ippPort ());
+
+  if (server != NULL)
+    result->addrlist = httpAddrGetList (server, AF_UNSPEC, port_str);
+  else
+    result->addrlist = httpAddrGetList (cupsServer (), AF_UNSPEC, port_str);
+
+  g_free (port_str);
+
+  result->socket = -1;
+  result->current_addr = NULL;
+  result->at_init = GTK_CUPS_CONNECTION_NOT_AVAILABLE;
+
+  result->at_init = gtk_cups_connection_test_get_state (result);
+#else
+  result = g_new (GtkCupsConnectionTest, 1);
+#endif
+
+  return result;
+}
+
+
+/* A non-blocking test whether it is possible to connect to a CUPS server specified
+ * inside of GtkCupsConnectionTest structure.
+ *  - you need to check it more then once.
+ * The connection is closed after a successful connection.
+ */
+GtkCupsConnectionState 
+gtk_cups_connection_test_get_state (GtkCupsConnectionTest *test)
+{
+#ifdef HAVE_CUPS_API_1_2
+  GtkCupsConnectionState result = GTK_CUPS_CONNECTION_NOT_AVAILABLE;
+  http_addrlist_t       *iter;
+  gint                   error_code;
+  gint                   flags;
+  gint                   code;
+
+  if (test == NULL)
+    return GTK_CUPS_CONNECTION_NOT_AVAILABLE;
+
+  if (test->at_init == GTK_CUPS_CONNECTION_AVAILABLE)
+    {
+      test->at_init = GTK_CUPS_CONNECTION_NOT_AVAILABLE;
+      return GTK_CUPS_CONNECTION_AVAILABLE;
+    }
+  else
+    {
+      if (test->socket == -1)
+        {
+          iter = test->addrlist;
+          while (iter)
+            {
+              test->socket = socket (iter->addr.addr.sa_family,
+                                     SOCK_STREAM,
+                                     0);
+
+              if (test->socket >= 0)
+                {
+                  flags = fcntl (test->socket, F_GETFL);
+
+                  if (flags != -1)
+                    flags |= O_NONBLOCK;
+
+                  fcntl (test->socket, F_SETFL, flags);
+              
+                  test->current_addr = iter;
+              
+                  break;
+                }
+               iter = iter->next;
+            }
+        }
+
+      if (test->socket >= 0)
+        {
+          code = connect (test->socket,
+                          &test->current_addr->addr.addr,
+                          httpAddrLength (&test->current_addr->addr));
+
+          error_code = errno;
+
+          if (code == 0)
+            {
+              close (test->socket);
+              test->socket = -1;
+              test->current_addr = NULL;
+              result = GTK_CUPS_CONNECTION_AVAILABLE;
+            }
+          else
+            {
+              if (error_code == EALREADY || error_code == EINPROGRESS)
+                result = GTK_CUPS_CONNECTION_IN_PROGRESS;
+              else
+                result = GTK_CUPS_CONNECTION_NOT_AVAILABLE;
+            }
+         }
+
+      return result;
+    }
+#else
+  return GTK_CUPS_CONNECTION_AVAILABLE;
+#endif
+}
+
+/* This function frees memory used by the GtkCupsConnectionTest structure.
+ */
+void 
+gtk_cups_connection_test_free (GtkCupsConnectionTest *test)
+{
+  if (test == NULL)
+    return;
+
+#ifdef HAVE_CUPS_API_1_2
+  test->current_addr = NULL;
+  httpAddrFreeList (test->addrlist);
+  if (test->socket != -1)
+    {
+      close (test->socket);
+      test->socket = -1;
+    }
+#endif
+  g_free (test);
+}

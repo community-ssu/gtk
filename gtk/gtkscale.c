@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include "gtkintl.h"
 #include "gtkscale.h"
@@ -102,7 +102,7 @@ single_string_accumulator (GSignalInvocationHint *ihint,
 
 #define add_slider_binding(binding_set, keyval, mask, scroll)              \
   gtk_binding_entry_add_signal (binding_set, keyval, mask,                 \
-                                I_("move_slider"), 1, \
+                                I_("move-slider"), 1, \
                                 GTK_TYPE_SCROLL_TYPE, scroll)
 
 static void
@@ -127,7 +127,7 @@ gtk_scale_class_init (GtkScaleClass *class)
   range_class->get_range_border = gtk_scale_get_range_border;
   
   signals[FORMAT_VALUE] =
-    g_signal_new (I_("format_value"),
+    g_signal_new (I_("format-value"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkScaleClass, format_value),
@@ -580,7 +580,7 @@ gtk_scale_style_set (GtkWidget *widget,
   
   _gtk_scale_clear_layout (GTK_SCALE (widget));
 
-  (* GTK_WIDGET_CLASS (gtk_scale_parent_class)->style_set) (widget, previous);
+  GTK_WIDGET_CLASS (gtk_scale_parent_class)->style_set (widget, previous);
 }
 
 static void
@@ -622,11 +622,7 @@ _gtk_scale_format_value (GtkScale *scale,
 static void
 gtk_scale_finalize (GObject *object)
 {
-  GtkScale *scale;
-
-  g_return_if_fail (GTK_IS_SCALE (object));
-
-  scale = GTK_SCALE (object);
+  GtkScale *scale = GTK_SCALE (object);
 
   _gtk_scale_clear_layout (scale);
 
@@ -707,7 +703,8 @@ gtk_scale_get_layout_offsets (GtkScale *scale,
     *y = local_y;
 }
 
-void _gtk_scale_clear_layout (GtkScale *scale)
+void
+_gtk_scale_clear_layout (GtkScale *scale)
 {
   GtkScalePrivate *priv = GTK_SCALE_GET_PRIVATE (scale);
 

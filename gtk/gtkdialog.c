@@ -21,12 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 #include <stdlib.h>
 #include <string.h>
-#include <config.h>
+#include "config.h"
 #include "gtkbutton.h"
 #include "gtkdialog.h"
 #include "gtkhbbox.h"
@@ -58,45 +58,46 @@ struct _ResponseData
   gint response_id;
 };
 
-static void gtk_dialog_add_buttons_valist (GtkDialog   *dialog,
-                                           const gchar *first_button_text,
-                                           va_list      args);
+static void      gtk_dialog_add_buttons_valist   (GtkDialog    *dialog,
+                                                  const gchar  *first_button_text,
+                                                  va_list       args);
 
-static gint gtk_dialog_delete_event_handler (GtkWidget   *widget,
-                                             GdkEventAny *event,
-                                             gpointer     user_data);
+static gboolean  gtk_dialog_delete_event_handler (GtkWidget    *widget,
+                                                  GdkEventAny  *event,
+                                                  gpointer      user_data);
 
-static void gtk_dialog_set_property      (GObject          *object,
-                                          guint             prop_id,
-                                          const GValue     *value,
-                                          GParamSpec       *pspec);
-static void gtk_dialog_get_property      (GObject          *object,
-                                          guint             prop_id,
-                                          GValue           *value,
-                                          GParamSpec       *pspec);
-static void gtk_dialog_style_set         (GtkWidget        *widget,
-                                          GtkStyle         *prev_style);
-static void gtk_dialog_map               (GtkWidget        *widget);
+static void      gtk_dialog_set_property         (GObject      *object,
+                                                  guint         prop_id,
+                                                  const GValue *value,
+                                                  GParamSpec   *pspec);
+static void      gtk_dialog_get_property         (GObject      *object,
+                                                  guint         prop_id,
+                                                  GValue       *value,
+                                                  GParamSpec   *pspec);
+static void      gtk_dialog_style_set            (GtkWidget    *widget,
+                                                  GtkStyle     *prev_style);
+static void      gtk_dialog_map                  (GtkWidget    *widget);
 
-static void gtk_dialog_close             (GtkDialog        *dialog);
+static void      gtk_dialog_close                (GtkDialog    *dialog);
 
-static ResponseData* get_response_data   (GtkWidget        *widget,
-					  gboolean          create);
-static void gtk_dialog_buildable_interface_init     (GtkBuildableIface *iface);
-static GObject * gtk_dialog_buildable_get_internal_child (GtkBuildable *buildable,
-						     GtkBuilder   *builder,
-						     const gchar  *childname);
-static gboolean gtk_dialog_buildable_custom_tag_start (GtkBuildable  *buildable,
-						       GtkBuilder    *builder,
-						       GObject       *child,
-						       const gchar   *tagname,
-						       GMarkupParser *parser,
-						       gpointer      *data);
-static void gtk_dialog_buildable_custom_finished (GtkBuildable *buildable,
-						  GtkBuilder   *builder,
-						  GObject       *child,
-						  const gchar   *tagname,
-						  gpointer      user_data);
+static ResponseData * get_response_data          (GtkWidget    *widget,
+                                                  gboolean      create);
+
+static void      gtk_dialog_buildable_interface_init     (GtkBuildableIface *iface);
+static GObject * gtk_dialog_buildable_get_internal_child (GtkBuildable  *buildable,
+                                                          GtkBuilder    *builder,
+                                                          const gchar   *childname);
+static gboolean  gtk_dialog_buildable_custom_tag_start   (GtkBuildable  *buildable,
+                                                          GtkBuilder    *builder,
+                                                          GObject       *child,
+                                                          const gchar   *tagname,
+                                                          GMarkupParser *parser,
+                                                          gpointer      *data);
+static void      gtk_dialog_buildable_custom_finished    (GtkBuildable  *buildable,
+                                                          GtkBuilder    *builder,
+                                                          GObject       *child,
+                                                          const gchar   *tagname,
+                                                          gpointer       user_data);
 
 
 enum {
@@ -136,6 +137,11 @@ gtk_dialog_class_init (GtkDialogClass *class)
   
   g_type_class_add_private (gobject_class, sizeof (GtkDialogPrivate));
 
+  /**
+   * GtkDialog:has-separator:
+   *
+   * When %TRUE, the dialog has a separator bar above its buttons.
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_HAS_SEPARATOR,
                                    g_param_spec_boolean ("has-separator",
@@ -143,24 +149,44 @@ gtk_dialog_class_init (GtkDialogClass *class)
 							 P_("The dialog has a separator bar above its buttons"),
                                                          TRUE,
                                                          GTK_PARAM_READWRITE));
-  
+
+  /**
+   * GtkDialog::response:
+   * @dialog: the object on which the signal is emitted
+   * @response_id: the response ID
+   * 
+   * Emitted when an action widget is clicked, the dialog receives a 
+   * delete event, or the application programmer calls gtk_dialog_response(). 
+   * On a delete event, the response ID is #GTK_RESPONSE_DELETE_EVENT. 
+   * Otherwise, it depends on which action widget was clicked.
+   */
   dialog_signals[RESPONSE] =
     g_signal_new (I_("response"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkDialogClass, response),
 		  NULL, NULL,
-		  _gtk_marshal_NONE__INT,
+		  _gtk_marshal_VOID__INT,
 		  G_TYPE_NONE, 1,
 		  G_TYPE_INT);
 
+  /**
+   * GtkDialog::close:
+   *
+   * The ::close signal is a 
+   * <link linkend="keybinding-signals">keybinding signal</link>
+   * which getrs emitted when the user uses a keybinding to close
+   * the dialog.
+   *
+   * The default binding for this signal is the Escape key.
+   */ 
   dialog_signals[CLOSE] =
     g_signal_new (I_("close"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkDialogClass, close),
 		  NULL, NULL,
-		  _gtk_marshal_NONE__NONE,
+		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   
   gtk_widget_class_install_style_property (widget_class,
@@ -209,8 +235,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
 
   binding_set = gtk_binding_set_by_class (class);
   
-  gtk_binding_entry_add_signal (binding_set, GDK_Escape, 0,
-                                "close", 0);
+  gtk_binding_entry_add_signal (binding_set, GDK_Escape, 0, "close", 0);
 }
 
 static void
@@ -256,12 +281,12 @@ gtk_dialog_init (GtkDialog *dialog)
    * connection on the dialog.
    */
   g_signal_connect (dialog,
-                    "delete_event",
+                    "delete-event",
                     G_CALLBACK (gtk_dialog_delete_event_handler),
                     NULL);
-  
+
   dialog->vbox = gtk_vbox_new (FALSE, 0);
-  
+
 #ifdef MAEMO_CHANGES
   gtk_container_add (GTK_CONTAINER (dialog), hbox);
   gtk_widget_show (hbox);
@@ -276,7 +301,7 @@ gtk_dialog_init (GtkDialog *dialog)
 #endif /* MAEMO_CHANGES */
 
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog->action_area),
-                             GTK_BUTTONBOX_END);  
+                             GTK_BUTTONBOX_END);
 
 #ifdef MAEMO_CHANGES
   gtk_box_pack_end (GTK_BOX (hbox), dialog->action_area,
@@ -322,7 +347,9 @@ gtk_dialog_buildable_get_internal_child (GtkBuildable *buildable,
     else if (strcmp (childname, "action_area") == 0)
       return G_OBJECT (GTK_DIALOG (buildable)->action_area);
 
-    return NULL;
+    return parent_buildable_iface->get_internal_child (buildable,
+						       builder,
+						       childname);
 }
 
 static void 
@@ -369,7 +396,7 @@ gtk_dialog_get_property (GObject     *object,
     }
 }
 
-static gint
+static gboolean
 gtk_dialog_delete_event_handler (GtkWidget   *widget,
                                  GdkEventAny *event,
                                  gpointer     user_data)
@@ -551,7 +578,7 @@ gtk_dialog_new_empty (const gchar     *title,
  * so the first button in the list will be the leftmost button in the dialog.
  *
  * Here's a simple example:
- * <informalexample><programlisting>
+ * |[
  *  GtkWidget *dialog = gtk_dialog_new_with_buttons ("My dialog",
  *                                                   main_app_window,
  *                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -560,7 +587,7 @@ gtk_dialog_new_empty (const gchar     *title,
  *                                                   GTK_STOCK_CANCEL,
  *                                                   GTK_RESPONSE_REJECT,
  *                                                   NULL);
- * </programlisting></informalexample>
+ * ]|
  * 
  * Return value: a new #GtkDialog
  **/
@@ -1032,19 +1059,19 @@ run_destroy_handler (GtkDialog *dialog, gpointer data)
  * destroying the dialog if you wish to do so.
  *
  * Typical usage of this function might be:
- * <informalexample><programlisting>
+ * |[
  *   gint result = gtk_dialog_run (GTK_DIALOG (dialog));
  *   switch (result)
  *     {
  *       case GTK_RESPONSE_ACCEPT:
- *          do_application_specific_something (<!-- -->);
+ *          do_application_specific_something ();
  *          break;
  *       default:
- *          do_nothing_since_dialog_was_cancelled (<!-- -->);
+ *          do_nothing_since_dialog_was_cancelled ();
  *          break;
  *     }
  *   gtk_widget_destroy (dialog);
- * </programlisting></informalexample>
+ * ]|
  * 
  * Note that even though the recursive main loop gives the effect of a
  * modal dialog (it prevents the user from interacting with other 
@@ -1238,7 +1265,7 @@ gtk_dialog_set_alternative_button_order_valist (GtkDialog *dialog,
  *
  * Use this function after adding all the buttons to your dialog, as the 
  * following example shows:
- * <informalexample><programlisting>
+ * |[
  * cancel_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
  *                                        GTK_STOCK_CANCEL,
  *                                        GTK_RESPONSE_CANCEL);
@@ -1258,7 +1285,7 @@ gtk_dialog_set_alternative_button_order_valist (GtkDialog *dialog,
  *                                          GTK_RESPONSE_CANCEL,
  *                                          GTK_RESPONSE_HELP,
  *                                          -1);
- * </programlisting></informalexample>
+ * ]|
  * 
  * Since: 2.6
  */
@@ -1348,9 +1375,11 @@ attributes_start_element (GMarkupParseContext *context,
   guint i;
 
   if (strcmp (element_name, "action-widget") == 0)
-    for (i = 0; names[i]; i++)
-      if (strcmp (names[i], "response") == 0)
-	parser_data->response = g_strdup (values[i]);
+    {
+      for (i = 0; names[i]; i++)
+	if (strcmp (names[i], "response") == 0)
+	  parser_data->response = g_strdup (values[i]);
+    }
   else if (strcmp (element_name, "action-widgets") == 0)
     return;
   else
@@ -1481,6 +1510,42 @@ gtk_dialog_buildable_custom_finished (GtkBuildable *buildable,
     }
   g_slist_free (parser_data->items);
   g_slice_free (ActionWidgetsSubParserData, parser_data);
+}
+
+/**
+ * gtk_dialog_get_action_area:
+ * @dialog: a #GtkDialog
+ *
+ * Returns the action area of @dialog.
+ *
+ * Returns: the action area.
+ *
+ * Since: 2.14
+ **/
+GtkWidget *
+gtk_dialog_get_action_area (GtkDialog *dialog)
+{
+  g_return_val_if_fail (GTK_IS_DIALOG (dialog), NULL);
+
+  return dialog->action_area;
+}
+
+/**
+ * gtk_dialog_get_content_area:
+ * @dialog: a #GtkDialog
+ *
+ * Returns the content area of @dialog.
+ *
+ * Returns: the content area #GtkVBox.
+ *
+ * Since: 2.14
+ **/
+GtkWidget *
+gtk_dialog_get_content_area (GtkDialog *dialog)
+{
+  g_return_val_if_fail (GTK_IS_DIALOG (dialog), NULL);
+
+  return dialog->vbox;
 }
 
 #define __GTK_DIALOG_C__

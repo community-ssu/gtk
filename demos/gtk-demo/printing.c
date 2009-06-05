@@ -112,7 +112,7 @@ draw_page (GtkPrintOperation *operation,
   
   layout = gtk_print_context_create_pango_layout (context);
   
-  desc = pango_font_description_from_string ("mono");
+  desc = pango_font_description_from_string ("monospace");
   pango_font_description_set_size (desc, data->font_size * PANGO_SCALE);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
@@ -123,7 +123,7 @@ draw_page (GtkPrintOperation *operation,
     {
       pango_layout_set_text (layout, data->lines[line], -1);
       pango_cairo_show_layout (cr, layout);
-      cairo_rel_move_to (cr, 0, text_height);
+      cairo_rel_move_to (cr, 0, data->font_size);
       line++;
     }
 
@@ -161,6 +161,9 @@ do_printing (GtkWidget *do_widget)
 		    G_CALLBACK (draw_page), data);
   g_signal_connect (G_OBJECT (operation), "end-print", 
 		    G_CALLBACK (end_print), data);
+
+  gtk_print_operation_set_use_full_page (operation, FALSE);
+  gtk_print_operation_set_unit (operation, GTK_UNIT_POINTS);
 
   gtk_print_operation_run (operation, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, GTK_WINDOW (do_widget), &error);
 

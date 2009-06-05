@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkradiotoolbutton.h"
 #include "gtkradiobutton.h"
 #include "gtkintl.h"
@@ -62,8 +62,8 @@ gtk_radio_tool_button_class_init (GtkRadioToolButtonClass *klass)
   g_object_class_install_property (object_class,
 				   PROP_GROUP,
 				   g_param_spec_object ("group",
-							_("Group"),
-							_("The radio tool button whose group this button belongs to."),
+							P_("Group"),
+							P_("The radio tool button whose group this button belongs to."),
 							GTK_TYPE_RADIO_TOOL_BUTTON,
 							GTK_PARAM_WRITABLE));
 

@@ -26,11 +26,10 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkfontbutton.h"
 
-#include "gtksignal.h"
 #include "gtkmain.h"
 #include "gtkalignment.h"
 #include "gtkhbox.h"

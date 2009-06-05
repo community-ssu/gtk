@@ -1,5 +1,5 @@
 /* GTK - The GIMP Toolkit
- * gtksizegroup.h: 
+ * gtksizegroup.h:
  * Copyright (C) 2000 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
@@ -17,6 +17,10 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_SIZE_GROUP_H__
 #define __GTK_SIZE_GROUP_H__
@@ -41,15 +45,15 @@ struct _GtkSizeGroup
   GObject parent_instance;
 
   /* <private> */
-  GSList *widgets;
+  GSList *GSEAL (widgets);
 
-  guint8 mode;
-  
-  guint have_width : 1;
-  guint have_height : 1;
-  guint ignore_hidden : 1;
+  guint8 GSEAL (mode);
 
-  GtkRequisition requisition;
+  guint GSEAL (have_width) : 1;
+  guint GSEAL (have_height) : 1;
+  guint GSEAL (ignore_hidden) : 1;
+
+  GtkRequisition GSEAL (requisition);
 };
 
 struct _GtkSizeGroupClass
@@ -65,11 +69,11 @@ struct _GtkSizeGroupClass
 
 /**
  * GtkSizeGroupMode:
- * @GTK_SIZE_GROUP_NONE: group has no effect  
+ * @GTK_SIZE_GROUP_NONE: group has no effect
  * @GTK_SIZE_GROUP_HORIZONTAL: group affects horizontal requisition
  * @GTK_SIZE_GROUP_VERTICAL: group affects vertical requisition
  * @GTK_SIZE_GROUP_BOTH: group affects both horizontal and vertical requisition
- * 
+ *
  * The mode of the size group determines the directions in which the size
  * group affects the requested sizes of its component widgets.
  **/

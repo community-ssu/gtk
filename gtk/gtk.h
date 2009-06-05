@@ -21,12 +21,13 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 #ifndef __GTK_H__
 #define __GTK_H__
 
+#define __GTK_H_INSIDE__
 
 #include <gdk/gdk.h>
 #include <gtk/gtkaboutdialog.h>
@@ -49,6 +50,7 @@
 #include <gtk/gtkbuilder.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkcalendar.h>
+#include <gtk/gtkcelleditable.h>
 #include <gtk/gtkcelllayout.h>
 #include <gtk/gtkcellrenderer.h>
 #include <gtk/gtkcellrendereraccel.h>
@@ -62,16 +64,14 @@
 #include <gtk/gtkcheckbutton.h>
 #include <gtk/gtkcheckmenuitem.h>
 #include <gtk/gtkclipboard.h>
-#include <gtk/gtkclist.h>
 #include <gtk/gtkcolorbutton.h>
 #include <gtk/gtkcolorsel.h>
 #include <gtk/gtkcolorseldialog.h>
-#include <gtk/gtkcombo.h>
 #include <gtk/gtkcombobox.h>
 #include <gtk/gtkcomboboxentry.h>
 #include <gtk/gtkcontainer.h>
-#include <gtk/gtkctree.h>
 #include <gtk/gtkcurve.h>
+#include <gtk/gtkdebug.h>
 #include <gtk/gtkdialog.h>
 #include <gtk/gtkdnd.h>
 #include <gtk/gtkdrawingarea.h>
@@ -81,11 +81,12 @@
 #include <gtk/gtkenums.h>
 #include <gtk/gtkeventbox.h>
 #include <gtk/gtkexpander.h>
-#include <gtk/gtkfilesel.h>
 #include <gtk/gtkfixed.h>
+#include <gtk/gtkfilechooser.h>
 #include <gtk/gtkfilechooserbutton.h>
 #include <gtk/gtkfilechooserdialog.h>
 #include <gtk/gtkfilechooserwidget.h>
+#include <gtk/gtkfilefilter.h>
 #include <gtk/gtkfontbutton.h>
 #include <gtk/gtkfontsel.h>
 #include <gtk/gtkframe.h>
@@ -99,6 +100,7 @@
 #include <gtk/gtkhscale.h>
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkhseparator.h>
+#include <gtk/gtkhsv.h>
 #include <gtk/gtkiconfactory.h>
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkiconview.h>
@@ -110,12 +112,9 @@
 #include <gtk/gtkinputdialog.h>
 #include <gtk/gtkinvisible.h>
 #include <gtk/gtkitem.h>
-#include <gtk/gtkitemfactory.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtklayout.h>
 #include <gtk/gtklinkbutton.h>
-#include <gtk/gtklist.h>
-#include <gtk/gtklistitem.h>
 #include <gtk/gtkliststore.h>
 #include <gtk/gtkmain.h>
 #include <gtk/gtkmenu.h>
@@ -126,16 +125,17 @@
 #include <gtk/gtkmessagedialog.h>
 #include <gtk/gtkmisc.h>
 #include <gtk/gtkmodules.h>
+#include <gtk/gtkmountoperation.h>
 #include <gtk/gtknotebook.h>
 #include <gtk/gtkobject.h>
-#include <gtk/gtkoldeditable.h>
-#include <gtk/gtkoptionmenu.h>
+#include <gtk/gtkpagesetup.h>
+#include <gtk/gtkpapersize.h>
 #include <gtk/gtkpaned.h>
-#include <gtk/gtkpixmap.h>
 #include <gtk/gtkplug.h>
-#include <gtk/gtkpreview.h>
+#include <gtk/gtkprintcontext.h>
 #include <gtk/gtkprintoperation.h>
-#include <gtk/gtkprogress.h>
+#include <gtk/gtkprintoperationpreview.h>
+#include <gtk/gtkprintsettings.h>
 #include <gtk/gtkprogressbar.h>
 #include <gtk/gtkradioaction.h>
 #include <gtk/gtkradiobutton.h>
@@ -160,7 +160,7 @@
 #include <gtk/gtkseparatormenuitem.h>
 #include <gtk/gtkseparatortoolitem.h>
 #include <gtk/gtksettings.h>
-#include <gtk/gtksignal.h>
+#include <gtk/gtkshow.h>
 #include <gtk/gtksizegroup.h>
 #include <gtk/gtksocket.h>
 #include <gtk/gtkspinbutton.h>
@@ -170,27 +170,29 @@
 #include <gtk/gtkstyle.h>
 #include <gtk/gtktable.h>
 #include <gtk/gtktearoffmenuitem.h>
-#include <gtk/gtktext.h>
 #include <gtk/gtktextbuffer.h>
 #include <gtk/gtktextbufferrichtext.h>
+#include <gtk/gtktextchild.h>
+#include <gtk/gtktextiter.h>
+#include <gtk/gtktextmark.h>
+#include <gtk/gtktexttag.h>
+#include <gtk/gtktexttagtable.h>
 #include <gtk/gtktextview.h>
-#include <gtk/gtktipsquery.h>
 #include <gtk/gtktoggleaction.h>
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtktoggletoolbutton.h>
 #include <gtk/gtktoolbar.h>
 #include <gtk/gtktoolbutton.h>
 #include <gtk/gtktoolitem.h>
+#include <gtk/gtktoolshell.h>
 #include <gtk/gtktooltip.h>
-#include <gtk/gtktooltips.h>
 #include <gtk/gtktestutils.h>
-#include <gtk/gtktree.h>
 #include <gtk/gtktreednd.h>
-#include <gtk/gtktreeitem.h>
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtktreemodelfilter.h>
 #include <gtk/gtktreemodelsort.h>
 #include <gtk/gtktreeselection.h>
+#include <gtk/gtktreesortable.h>
 #include <gtk/gtktreestore.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreeviewcolumn.h>
@@ -209,5 +211,28 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 
+/* Broken */
+#include <gtk/gtktext.h>
+#include <gtk/gtktree.h>
+#include <gtk/gtktreeitem.h>
+
+/* Deprecated */
+#include <gtk/gtkclist.h>
+#include <gtk/gtkcombo.h>
+#include <gtk/gtkctree.h>
+#include <gtk/gtkfilesel.h>
+#include <gtk/gtkitemfactory.h>
+#include <gtk/gtklist.h>
+#include <gtk/gtklistitem.h>
+#include <gtk/gtkoldeditable.h>
+#include <gtk/gtkoptionmenu.h>
+#include <gtk/gtkpixmap.h>
+#include <gtk/gtkpreview.h>
+#include <gtk/gtkprogress.h>
+#include <gtk/gtksignal.h>
+#include <gtk/gtktipsquery.h>
+#include <gtk/gtktooltips.h>
+
+#undef __GTK_H_INSIDE__
 
 #endif /* __GTK_H__ */

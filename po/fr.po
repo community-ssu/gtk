@@ -1,5 +1,5 @@
 # French translation of GTK+ 2.x.
-# Copyright (C) 1998-2007 Free Software Foundation, Inc.
+# Copyright (C) 1998-2008 Free Software Foundation, Inc.
 # This file is distributed under the GNU Library General Public License Version 2.
 #
 # Vincent Renardias <vincent@debian.org>, 1998-1999.
@@ -8,17 +8,18 @@
 # David Bellot <david.bellot@inrialpes.fr>, 2003.
 # Benoît Dejean <benoit@placenet.org>, 2006.
 # Jonathan Ernst <jonathan@ernstfamily.ch>, 2006-2007.
-# Robert-André Mauchin <zebob.m@gmail.com>, 2006-2007.
+# Robert-André Mauchin <zebob.m@pengzone.org>, 2006-2008.
 # Stéphane Raimbault <stephane.raimbault@gmail.com>, 2007-2008.
-# Claude Paroz <claude@2xlibre.net>, 2007.
+# Claude Paroz <claude@2xlibre.net>, 2007-2008.
+# Yannick Tailliez <ytdispatch-libre@yahoo.com>, 2008.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gtk+ 2.12\n"
+"Project-Id-Version: gtk+ HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-12 21:20-0400\n"
-"PO-Revision-Date: 2008-06-05 23:17+0200\n"
-"Last-Translator: Stéphane Raimbault <stephane.raimbault@gmail.com>\n"
+"POT-Creation-Date: 2008-09-23 23:08-0400\n"
+"PO-Revision-Date: 2008-09-10 22:10+0200\n"
+"Last-Translator: Robert-André Mauchin <zebob.m@pengzone.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,7 +37,7 @@ msgstr "système"
 #. Description of --class=CLASS in --help output
 #: gdk/gdk.c:126
 msgid "Program class as used by the window manager"
-msgstr "Classe du programme tel qu'utilisée par le gestionnaire de fenêtres"
+msgstr "Classe du programme telle qu'utilisée par le gestionnaire de fenêtres"
 
 #. Placeholder in --class=CLASS in --help output
 #: gdk/gdk.c:127
@@ -82,7 +83,7 @@ msgstr "Drapeaux de débogage Gdk à définir"
 #. Placeholder in --gdk-no-debug=FLAGS in --help output
 #. Placeholder in --gtk-debug=FLAGS in --help output
 #. Placeholder in --gtk-no-debug=FLAGS in --help output
-#: gdk/gdk.c:140 gdk/gdk.c:143 gtk/gtkmain.c:434 gtk/gtkmain.c:437
+#: gdk/gdk.c:140 gdk/gdk.c:143 gtk/gtkmain.c:452 gtk/gtkmain.c:455
 msgid "FLAGS"
 msgstr "DRAPEAUX"
 
@@ -93,7 +94,7 @@ msgstr "Drapeaux de débogage Gdk à ne pas définir"
 
 #: gdk/keyname-table.h:3940
 msgid "keyboard label|BackSpace"
-msgstr "Effacement"
+msgstr "Retour arrière"
 
 #: gdk/keyname-table.h:3941
 msgid "keyboard label|Tab"
@@ -129,19 +130,19 @@ msgstr "Origine"
 
 #: gdk/keyname-table.h:3949
 msgid "keyboard label|Left"
-msgstr "Num_Gauche"
+msgstr "Gauche"
 
 #: gdk/keyname-table.h:3950
 msgid "keyboard label|Up"
-msgstr "Num_Haut"
+msgstr "Haut"
 
 #: gdk/keyname-table.h:3951
 msgid "keyboard label|Right"
-msgstr "Num_Droite"
+msgstr "Droite"
 
 #: gdk/keyname-table.h:3952
 msgid "keyboard label|Down"
-msgstr "Num_Bas"
+msgstr "Bas"
 
 #: gdk/keyname-table.h:3953
 msgid "keyboard label|Page_Up"
@@ -205,7 +206,7 @@ msgstr "Num_Bas"
 
 #: gdk/keyname-table.h:3968
 msgid "keyboard label|KP_Page_Up"
-msgstr "Num_Page Haut"
+msgstr "Num_Page_Haut"
 
 #: gdk/keyname-table.h:3969
 msgid "keyboard label|KP_Prior"
@@ -213,7 +214,7 @@ msgstr "Num_Préc"
 
 #: gdk/keyname-table.h:3970
 msgid "keyboard label|KP_Page_Down"
-msgstr "Num_Page Bas"
+msgstr "Num_Page_Bas"
 
 #: gdk/keyname-table.h:3971
 msgid "keyboard label|KP_Next"
@@ -225,7 +226,7 @@ msgstr "Num_Fin"
 
 #: gdk/keyname-table.h:3973
 msgid "keyboard label|KP_Begin"
-msgstr "Num_Début"
+msgstr "Num_Origine"
 
 #: gdk/keyname-table.h:3974
 msgid "keyboard label|KP_Insert"
@@ -239,19 +240,19 @@ msgstr "Num_Suppr"
 msgid "keyboard label|Delete"
 msgstr "Suppr"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:154 gdk-pixbuf/gdk-pixbuf-io.c:858
-#: gdk-pixbuf/gdk-pixbuf-io.c:1115 tests/testfilechooser.c:218
+#: gdk-pixbuf/gdk-pixbuf-animation.c:133 gdk-pixbuf/gdk-pixbuf-io.c:965
+#: gdk-pixbuf/gdk-pixbuf-io.c:1225 tests/testfilechooser.c:222
 #, c-format
 msgid "Failed to open file '%s': %s"
 msgstr "Impossible d'ouvrir le fichier « %s » : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:167 gdk-pixbuf/gdk-pixbuf-io.c:870
+#: gdk-pixbuf/gdk-pixbuf-animation.c:146 gdk-pixbuf/gdk-pixbuf-io.c:977
 #, c-format
 msgid "Image file '%s' contains no data"
 msgstr "Le fichier image « %s » ne contient pas de données"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:209 gdk-pixbuf/gdk-pixbuf-io.c:906
-#: gdk-pixbuf/gdk-pixbuf-io.c:1166 tests/testfilechooser.c:263
+#: gdk-pixbuf/gdk-pixbuf-animation.c:188 gdk-pixbuf/gdk-pixbuf-io.c:1013
+#: gdk-pixbuf/gdk-pixbuf-io.c:1277 tests/testfilechooser.c:267
 #, c-format
 msgid ""
 "Failed to load image '%s': reason not known, probably a corrupt image file"
@@ -259,7 +260,7 @@ msgstr ""
 "Impossible de charger l'image « %s » : raison inconnue, probablement un "
 "fichier d'image corrompu"
 
-#: gdk-pixbuf/gdk-pixbuf-animation.c:242
+#: gdk-pixbuf/gdk-pixbuf-animation.c:221
 #, c-format
 msgid ""
 "Failed to load animation '%s': reason not known, probably a corrupt "
@@ -268,12 +269,12 @@ msgstr ""
 "Impossible de charger l'animation « %s » : raison inconnue, probablement un "
 "fichier d'animation corrompu"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:624
+#: gdk-pixbuf/gdk-pixbuf-io.c:701
 #, c-format
 msgid "Unable to load image-loading module: %s: %s"
 msgstr "Impossible de charger le module de chargement d'images : %s : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:639
+#: gdk-pixbuf/gdk-pixbuf-io.c:716
 #, c-format
 msgid ""
 "Image-loading module %s does not export the proper interface; perhaps it's "
@@ -282,60 +283,56 @@ msgstr ""
 "Le module de chargement d'images %s n'exporte pas la bonne interface ; peut-"
 "être provient-il d'une version différente de GTK ?"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:648 gdk-pixbuf/gdk-pixbuf-io.c:699
+#: gdk-pixbuf/gdk-pixbuf-io.c:725 gdk-pixbuf/gdk-pixbuf-io.c:776
 #, c-format
 msgid "Image type '%s' is not supported"
 msgstr "Le type d'images « %s » n'est pas pris en charge"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:739
+#: gdk-pixbuf/gdk-pixbuf-io.c:846
 #, c-format
 msgid "Couldn't recognize the image file format for file '%s'"
 msgstr "Impossible de reconnaître le format d'image du fichier « %s »"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:747
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:854
 msgid "Unrecognized image file format"
 msgstr "Format d'image non reconnu"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:915
+#: gdk-pixbuf/gdk-pixbuf-io.c:1022
 #, c-format
 msgid "Failed to load image '%s': %s"
 msgstr "Impossible de charger l'image « %s » : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1394
+#: gdk-pixbuf/gdk-pixbuf-io.c:1656 gdk-pixbuf/io-gdip-utils.c:952
 #, c-format
 msgid "Error writing to image file: %s"
 msgstr "Erreur lors de l'écriture du fichier d'image : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1439 gdk-pixbuf/gdk-pixbuf-io.c:1569
+#: gdk-pixbuf/gdk-pixbuf-io.c:1701 gdk-pixbuf/gdk-pixbuf-io.c:1831
 #, c-format
 msgid "This build of gdk-pixbuf does not support saving the image format: %s"
 msgstr ""
 "Cette version de gdk-pixbuf ne prend pas en charge l'enregistrement au "
 "format d'image : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1473
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1735
 msgid "Insufficient memory to save image to callback"
 msgstr ""
 "Mémoire insuffisante pour enregistrer l'image dans la fonction de rappel"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1486
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1748
 msgid "Failed to open temporary file"
 msgstr "Impossible d'ouvrir le fichier temporaire"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1512
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:1774
 msgid "Failed to read from temporary file"
 msgstr "Impossible de lire le fichier temporaire"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1746
+#: gdk-pixbuf/gdk-pixbuf-io.c:2008
 #, c-format
 msgid "Failed to open '%s' for writing: %s"
 msgstr "Impossible d'ouvrir « %s » en écriture : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1771
+#: gdk-pixbuf/gdk-pixbuf-io.c:2033
 #, c-format
 msgid ""
 "Failed to close '%s' while writing image, all data may not have been saved: %"
@@ -344,10 +341,13 @@ msgstr ""
 "Impossible de fermer l'image « %s » lors de l'écriture, toutes les données "
 "n'ont peut-être pas été enregistrées : %s"
 
-#: gdk-pixbuf/gdk-pixbuf-io.c:1991 gdk-pixbuf/gdk-pixbuf-io.c:2041
-#, c-format
+#: gdk-pixbuf/gdk-pixbuf-io.c:2253 gdk-pixbuf/gdk-pixbuf-io.c:2304
 msgid "Insufficient memory to save image into a buffer"
 msgstr "Mémoire insuffisante pour enregistrer l'image dans un tampon"
+
+#: gdk-pixbuf/gdk-pixbuf-io.c:2350
+msgid "Error writing to image stream"
+msgstr "Erreur lors de l'écriture vers le flux image"
 
 #: gdk-pixbuf/gdk-pixbuf-loader.c:330
 #, c-format
@@ -365,17 +365,14 @@ msgstr ""
 "Le chargement progressif d'images de type « %s » n'est pas pris en charge"
 
 #: gdk-pixbuf/gdk-pixdata.c:147
-#, c-format
 msgid "Image header corrupt"
 msgstr "En-tête d'image corrompu"
 
 #: gdk-pixbuf/gdk-pixdata.c:152
-#, c-format
 msgid "Image format unknown"
 msgstr "Format d'image inconnu"
 
 #: gdk-pixbuf/gdk-pixdata.c:157 gdk-pixbuf/gdk-pixdata.c:487
-#, c-format
 msgid "Image pixel data corrupt"
 msgstr "Données des pixels de l'image corrompues"
 
@@ -387,74 +384,62 @@ msgstr[0] "Impossible d'allouer un tampon de %u octet pour l'image"
 msgstr[1] "Impossible d'allouer un tampon de %u octets pour l'image"
 
 #: gdk-pixbuf/io-ani.c:244
-#, c-format
 msgid "Unexpected icon chunk in animation"
 msgstr "Fragment d'icône non attendu dans l'animation"
 
 #: gdk-pixbuf/io-ani.c:337
-#, c-format
 msgid "Unsupported animation type"
 msgstr "Type d'animation non pris en charge"
 
 #: gdk-pixbuf/io-ani.c:348 gdk-pixbuf/io-ani.c:406 gdk-pixbuf/io-ani.c:432
 #: gdk-pixbuf/io-ani.c:455 gdk-pixbuf/io-ani.c:482 gdk-pixbuf/io-ani.c:569
-#, c-format
 msgid "Invalid header in animation"
 msgstr "En-tête non valide dans l'animation"
 
 #: gdk-pixbuf/io-ani.c:358 gdk-pixbuf/io-ani.c:380 gdk-pixbuf/io-ani.c:464
 #: gdk-pixbuf/io-ani.c:491 gdk-pixbuf/io-ani.c:542 gdk-pixbuf/io-ani.c:614
-#, c-format
 msgid "Not enough memory to load animation"
 msgstr "Mémoire insuffisante pour charger l'animation"
 
 #: gdk-pixbuf/io-ani.c:398 gdk-pixbuf/io-ani.c:424 gdk-pixbuf/io-ani.c:443
-#, c-format
 msgid "Malformed chunk in animation"
 msgstr "Fragment malformé dans l'animation"
 
-#: gdk-pixbuf/io-ani.c:713
+#: gdk-pixbuf/io-ani.c:711
 msgid "The ANI image format"
 msgstr "Le format d'image ANI"
 
 #: gdk-pixbuf/io-bmp.c:230 gdk-pixbuf/io-bmp.c:267 gdk-pixbuf/io-bmp.c:338
 #: gdk-pixbuf/io-bmp.c:370 gdk-pixbuf/io-bmp.c:393 gdk-pixbuf/io-bmp.c:496
-#, c-format
 msgid "BMP image has bogus header data"
 msgstr "L'image BMP a un en-tête erroné"
 
 #: gdk-pixbuf/io-bmp.c:241 gdk-pixbuf/io-bmp.c:433
-#, c-format
 msgid "Not enough memory to load bitmap image"
 msgstr "Mémoire insuffisante pour charger l'image bitmap"
 
 #: gdk-pixbuf/io-bmp.c:319
-#, c-format
 msgid "BMP image has unsupported header size"
 msgstr "L'image BMP a une taille d'en-tête non prise en charge"
 
 #: gdk-pixbuf/io-bmp.c:357
-#, c-format
 msgid "Topdown BMP images cannot be compressed"
 msgstr "Les images BMP Topdown ne peuvent être compressées"
 
 #: gdk-pixbuf/io-bmp.c:717 gdk-pixbuf/io-pnm.c:709
-#, c-format
 msgid "Premature end-of-file encountered"
 msgstr "Fin de fichier rencontrée prématurément"
 
 #: gdk-pixbuf/io-bmp.c:1329
-#, c-format
 msgid "Couldn't allocate memory for saving BMP file"
 msgstr ""
 "Impossible d'allouer de la mémoire pour l'enregistrement du fichier BMP"
 
 #: gdk-pixbuf/io-bmp.c:1370
-#, c-format
 msgid "Couldn't write to BMP file"
 msgstr "Impossible d'écrire le fichier BMP"
 
-#: gdk-pixbuf/io-bmp.c:1425
+#: gdk-pixbuf/io-bmp.c:1423 gdk-pixbuf/io-gdip-bmp.c:82
 msgid "The BMP image format"
 msgstr "Le format d'image BMP"
 
@@ -463,8 +448,7 @@ msgstr "Le format d'image BMP"
 msgid "Failure reading GIF: %s"
 msgstr "La lecture du fichier GIF a échoué : %s"
 
-#: gdk-pixbuf/io-gif.c:496 gdk-pixbuf/io-gif.c:1477 gdk-pixbuf/io-gif.c:1638
-#, c-format
+#: gdk-pixbuf/io-gif.c:496 gdk-pixbuf/io-gif.c:1481 gdk-pixbuf/io-gif.c:1642
 msgid "GIF file was missing some data (perhaps it was truncated somehow?)"
 msgstr ""
 "Il manque au fichier GIF quelques données (peut-être a-t-il été tronqué ?)"
@@ -475,53 +459,44 @@ msgid "Internal error in the GIF loader (%s)"
 msgstr "Erreur interne dans le chargeur GIF (%s)"
 
 #: gdk-pixbuf/io-gif.c:579
-#, c-format
 msgid "Stack overflow"
 msgstr "Débordement de la pile"
 
 #: gdk-pixbuf/io-gif.c:639
-#, c-format
 msgid "GIF image loader cannot understand this image."
 msgstr "Le chargeur d'image GIF ne peut pas comprendre cette image."
 
 #: gdk-pixbuf/io-gif.c:668
-#, c-format
 msgid "Bad code encountered"
 msgstr "Code non valide rencontré"
 
 #: gdk-pixbuf/io-gif.c:678
-#, c-format
 msgid "Circular table entry in GIF file"
 msgstr "Entrée de table circulaire dans le fichier GIF"
 
-#: gdk-pixbuf/io-gif.c:866 gdk-pixbuf/io-gif.c:1464 gdk-pixbuf/io-gif.c:1511
-#: gdk-pixbuf/io-gif.c:1626
-#, c-format
+#: gdk-pixbuf/io-gif.c:866 gdk-pixbuf/io-gif.c:1468 gdk-pixbuf/io-gif.c:1515
+#: gdk-pixbuf/io-gif.c:1630
 msgid "Not enough memory to load GIF file"
 msgstr "Mémoire insuffisante pour charger le fichier GIF"
 
-#: gdk-pixbuf/io-gif.c:956
-#, c-format
+#: gdk-pixbuf/io-gif.c:960
 msgid "Not enough memory to composite a frame in GIF file"
 msgstr "Mémoire insuffisante pour composer un cadre dans le fichier GIF"
 
-#: gdk-pixbuf/io-gif.c:1128
-#, c-format
+#: gdk-pixbuf/io-gif.c:1132
 msgid "GIF image is corrupt (incorrect LZW compression)"
 msgstr "L'image GIF est corrompue (compression LZW incorrecte)"
 
-#: gdk-pixbuf/io-gif.c:1178
-#, c-format
+#: gdk-pixbuf/io-gif.c:1182
 msgid "File does not appear to be a GIF file"
 msgstr "Le fichier ne semble pas être au format GIF"
 
-#: gdk-pixbuf/io-gif.c:1190
+#: gdk-pixbuf/io-gif.c:1194
 #, c-format
 msgid "Version %s of the GIF file format is not supported"
 msgstr "La version %s de ce format de fichier GIF n'est pas prise en charge."
 
-#: gdk-pixbuf/io-gif.c:1299
-#, c-format
+#: gdk-pixbuf/io-gif.c:1303
 msgid ""
 "GIF image has no global colormap, and a frame inside it has no local "
 "colormap."
@@ -529,69 +504,105 @@ msgstr ""
 "L'image GIF n'a pas de palette de couleurs globale, et une trame interne n'a "
 "pas de palette de couleurs locale."
 
-#: gdk-pixbuf/io-gif.c:1533
-#, c-format
+#: gdk-pixbuf/io-gif.c:1537
 msgid "GIF image was truncated or incomplete."
 msgstr "L'image GIF est tronquée ou incomplète."
 
-#: gdk-pixbuf/io-gif.c:1691
+#: gdk-pixbuf/io-gif.c:1693 gdk-pixbuf/io-gdip-gif.c:80
 msgid "The GIF image format"
 msgstr "Le format d'image GIF"
 
-#: gdk-pixbuf/io-ico.c:217 gdk-pixbuf/io-ico.c:277 gdk-pixbuf/io-ico.c:346
-#: gdk-pixbuf/io-ico.c:409 gdk-pixbuf/io-ico.c:439
-#, c-format
-msgid "Not enough memory to load icon"
-msgstr "Mémoire insuffisante pour charger l'icône"
-
-#: gdk-pixbuf/io-ico.c:254 gdk-pixbuf/io-ico.c:267 gdk-pixbuf/io-ico.c:336
-#, c-format
+#: gdk-pixbuf/io-ico.c:211 gdk-pixbuf/io-ico.c:225 gdk-pixbuf/io-ico.c:277
+#: gdk-pixbuf/io-ico.c:290 gdk-pixbuf/io-ico.c:359
 msgid "Invalid header in icon"
 msgstr "En-tête non valide pour l'icône"
 
-#: gdk-pixbuf/io-ico.c:299
-#, c-format
+#: gdk-pixbuf/io-ico.c:240 gdk-pixbuf/io-ico.c:300 gdk-pixbuf/io-ico.c:369
+#: gdk-pixbuf/io-ico.c:432 gdk-pixbuf/io-ico.c:462
+msgid "Not enough memory to load icon"
+msgstr "Mémoire insuffisante pour charger l'icône"
+
+#: gdk-pixbuf/io-ico.c:322
 msgid "Icon has zero width"
 msgstr "L'icône a une largeur nulle"
 
-#: gdk-pixbuf/io-ico.c:309
-#, c-format
+#: gdk-pixbuf/io-ico.c:332
 msgid "Icon has zero height"
 msgstr "L'icône a une hauteur nulle"
 
-#: gdk-pixbuf/io-ico.c:361
-#, c-format
+#: gdk-pixbuf/io-ico.c:384
 msgid "Compressed icons are not supported"
 msgstr "Les icônes compressées ne sont pas prises en charge"
 
-#: gdk-pixbuf/io-ico.c:394
-#, c-format
+#: gdk-pixbuf/io-ico.c:417
 msgid "Unsupported icon type"
 msgstr "Type d'icône non pris en charge"
 
-#: gdk-pixbuf/io-ico.c:488
-#, c-format
+#: gdk-pixbuf/io-ico.c:511
 msgid "Not enough memory to load ICO file"
 msgstr "Mémoire insuffisante pour charger le fichier ICO"
 
-#: gdk-pixbuf/io-ico.c:953
-#, c-format
+#: gdk-pixbuf/io-ico.c:976
 msgid "Image too large to be saved as ICO"
 msgstr "Image trop grande pour être enregistrée en tant qu'ICO"
 
-#: gdk-pixbuf/io-ico.c:964
-#, c-format
+#: gdk-pixbuf/io-ico.c:987
 msgid "Cursor hotspot outside image"
 msgstr "Point chaud du curseur en dehors de l'image"
 
-#: gdk-pixbuf/io-ico.c:987
+#: gdk-pixbuf/io-ico.c:1010
 #, c-format
 msgid "Unsupported depth for ICO file: %d"
 msgstr "Profondeur de couleur non prise en charge pour le fichier ICO : %d"
 
-#: gdk-pixbuf/io-ico.c:1224
+#: gdk-pixbuf/io-ico.c:1245 gdk-pixbuf/io-gdip-ico.c:59
 msgid "The ICO image format"
 msgstr "Le format d'image ICO"
+
+#: gdk-pixbuf/io-icns.c:345
+#, c-format
+msgid "Error reading ICNS image: %s"
+msgstr "Erreur de lecture de l'image ICNS : %s"
+
+#: gdk-pixbuf/io-icns.c:362
+msgid "Could not decode ICNS file"
+msgstr "Impossible de décoder l'image ICNS"
+
+#: gdk-pixbuf/io-icns.c:395
+msgid "The ICNS image format"
+msgstr "Le format d'image ICNS"
+
+#: gdk-pixbuf/io-jasper.c:75
+msgid "Couldn't allocate memory for stream"
+msgstr "Impossible d'allouer de la mémoire pour le flux"
+
+#: gdk-pixbuf/io-jasper.c:105
+msgid "Couldn't decode image"
+msgstr "Impossible de décoder l'image"
+
+#: gdk-pixbuf/io-jasper.c:123
+msgid "Transformed JPEG2000 has zero width or height"
+msgstr "Le JPEG2000 transformé a une largeur ou une hauteur nulle"
+
+#: gdk-pixbuf/io-jasper.c:137
+msgid "Image type currently not supported"
+msgstr "Ce type d'image n'est actuellement pas pris en charge"
+
+#: gdk-pixbuf/io-jasper.c:149 gdk-pixbuf/io-jasper.c:157
+msgid "Couldn't allocate memory for color profile"
+msgstr "Impossible d'allouer de la mémoire pour le profil de couleurs"
+
+#: gdk-pixbuf/io-jasper.c:182
+msgid "Insufficient memory to open JPEG 2000 file"
+msgstr "Mémoire insuffisante pour ouvrir le fichier JPEG 2000"
+
+#: gdk-pixbuf/io-jasper.c:264
+msgid "Couldn't allocate memory to buffer image data"
+msgstr "Impossible d'allouer de la mémoire pour le tampon de données d'image"
+
+#: gdk-pixbuf/io-jasper.c:308
+msgid "The JPEG 2000 image format"
+msgstr "Le format d'image JPEG 2000"
 
 #: gdk-pixbuf/io-jpeg.c:117
 #, c-format
@@ -599,7 +610,6 @@ msgid "Error interpreting JPEG image file (%s)"
 msgstr "Erreur d'interprétation du fichier d'image JPEG (%s)"
 
 #: gdk-pixbuf/io-jpeg.c:529
-#, c-format
 msgid ""
 "Insufficient memory to load image, try exiting some applications to free "
 "memory"
@@ -614,16 +624,14 @@ msgstr "Espace de couleur JPEG non pris en charge (%s)"
 
 #: gdk-pixbuf/io-jpeg.c:668 gdk-pixbuf/io-jpeg.c:944 gdk-pixbuf/io-jpeg.c:1177
 #: gdk-pixbuf/io-jpeg.c:1186
-#, c-format
 msgid "Couldn't allocate memory for loading JPEG file"
 msgstr "Impossible d'allouer de la mémoire pour le chargement du fichier JPEG"
 
 #: gdk-pixbuf/io-jpeg.c:920
-#, c-format
 msgid "Transformed JPEG has zero width or height."
 msgstr "Le PNG transformé a une largeur ou une hauteur nulle."
 
-#: gdk-pixbuf/io-jpeg.c:1133
+#: gdk-pixbuf/io-jpeg.c:1133 gdk-pixbuf/io-gdip-jpeg.c:53
 #, c-format
 msgid ""
 "JPEG quality must be a value between 0 and 100; value '%s' could not be "
@@ -632,7 +640,7 @@ msgstr ""
 "La qualité JPEG doit être une valeur entre 0 et 100 ; la valeur « %s » n'est "
 "pas interprétable."
 
-#: gdk-pixbuf/io-jpeg.c:1148
+#: gdk-pixbuf/io-jpeg.c:1148 gdk-pixbuf/io-gdip-jpeg.c:68
 #, c-format
 msgid ""
 "JPEG quality must be a value between 0 and 100; value '%d' is not allowed."
@@ -640,86 +648,72 @@ msgstr ""
 "La qualité JPEG doit être une valeur entre 0 et 100 ; la valeur « %d » n'est "
 "pas autorisée."
 
-#: gdk-pixbuf/io-jpeg.c:1311
+#: gdk-pixbuf/io-jpeg.c:1309 gdk-pixbuf/io-gdip-jpeg.c:136
 msgid "The JPEG image format"
 msgstr "Le format d'image JPEG"
 
 #: gdk-pixbuf/io-pcx.c:187
-#, c-format
 msgid "Couldn't allocate memory for header"
 msgstr "Impossible d'allouer de la mémoire pour l'en-tête"
 
 #: gdk-pixbuf/io-pcx.c:202 gdk-pixbuf/io-pcx.c:560
-#, c-format
 msgid "Couldn't allocate memory for context buffer"
 msgstr "Impossible d'allouer de la mémoire pour le tampon du contexte"
 
 #: gdk-pixbuf/io-pcx.c:601
-#, c-format
 msgid "Image has invalid width and/or height"
 msgstr "L'image a une largeur ou une hauteur non valide"
 
 #: gdk-pixbuf/io-pcx.c:613 gdk-pixbuf/io-pcx.c:674
-#, c-format
 msgid "Image has unsupported bpp"
 msgstr "L'image a une profondeur de couleurs non prise en charge"
 
 #: gdk-pixbuf/io-pcx.c:618 gdk-pixbuf/io-pcx.c:626
 #, c-format
 msgid "Image has unsupported number of %d-bit planes"
-msgstr "L'image a un nombre de plans %d-bit non pris en charge"
+msgstr "L'image a un nombre de plans de %d-bit non pris en charge"
 
 #: gdk-pixbuf/io-pcx.c:642
-#, c-format
 msgid "Couldn't create new pixbuf"
 msgstr "Impossible de créer un nouveau pixbuf"
 
 #: gdk-pixbuf/io-pcx.c:650
-#, c-format
 msgid "Couldn't allocate memory for line data"
 msgstr "Impossible d'allouer de la mémoire pour les données de lignes"
 
 #: gdk-pixbuf/io-pcx.c:657
-#, c-format
 msgid "Couldn't allocate memory for paletted data"
 msgstr "Impossible d'allouer de la mémoire pour les données de palettes"
 
 #: gdk-pixbuf/io-pcx.c:704
-#, c-format
 msgid "Didn't get all lines of PCX image"
 msgstr "Impossible d'obtenir toutes les lignes de l'image PCX"
 
 #: gdk-pixbuf/io-pcx.c:711
-#, c-format
 msgid "No palette found at end of PCX data"
 msgstr "Aucune palette trouvée à la fin des données PCX"
 
-#: gdk-pixbuf/io-pcx.c:758
+#: gdk-pixbuf/io-pcx.c:756
 msgid "The PCX image format"
 msgstr "Le format d'image PCX"
 
 #: gdk-pixbuf/io-png.c:55
-#, c-format
 msgid "Bits per channel of PNG image is invalid."
 msgstr "Le nombre de bits par canal de l'image PNG n'est pas valide."
 
 #: gdk-pixbuf/io-png.c:136 gdk-pixbuf/io-png.c:618
-#, c-format
 msgid "Transformed PNG has zero width or height."
 msgstr "Le PNG transformé a une largeur ou une hauteur nulle."
 
 #: gdk-pixbuf/io-png.c:144
-#, c-format
 msgid "Bits per channel of transformed PNG is not 8."
 msgstr "Le nombre de bits du PNG transformé n'est pas 8."
 
 #: gdk-pixbuf/io-png.c:153
-#, c-format
 msgid "Transformed PNG not RGB or RGBA."
 msgstr "Le PNG transformé n'est ni RGB, ni RGBA."
 
 #: gdk-pixbuf/io-png.c:162
-#, c-format
 msgid "Transformed PNG has unsupported number of channels, must be 3 or 4."
 msgstr ""
 "Le PNG transformé a un nombre de canaux non pris en charge, il devrait être "
@@ -731,7 +725,6 @@ msgid "Fatal error in PNG image file: %s"
 msgstr "Erreur fatale dans le fichier d'image PNG : %s"
 
 #: gdk-pixbuf/io-png.c:310
-#, c-format
 msgid "Insufficient memory to load PNG file"
 msgstr "Mémoire insuffisante pour charger le fichier PNG"
 
@@ -745,7 +738,6 @@ msgstr ""
 "quitter quelques applications pour réduire la mémoire occupée"
 
 #: gdk-pixbuf/io-png.c:684
-#, c-format
 msgid "Fatal error reading PNG image file"
 msgstr "Erreur fatale lors de la lecture d'une image PNG"
 
@@ -755,7 +747,6 @@ msgid "Fatal error reading PNG image file: %s"
 msgstr "Erreur fatale lors de la lecture du fichier d'image PNG : %s"
 
 #: gdk-pixbuf/io-png.c:825
-#, c-format
 msgid ""
 "Keys for PNG text chunks must have at least 1 and at most 79 characters."
 msgstr ""
@@ -763,12 +754,11 @@ msgstr ""
 "caractères."
 
 #: gdk-pixbuf/io-png.c:833
-#, c-format
 msgid "Keys for PNG text chunks must be ASCII characters."
 msgstr ""
 "Les clés pour les fragments texte PNG doivent être des caractères ASCII."
 
-#: gdk-pixbuf/io-png.c:846
+#: gdk-pixbuf/io-png.c:846 gdk-pixbuf/io-gdip-png.c:56
 #, c-format
 msgid ""
 "PNG compression level must be a value between 0 and 9; value '%s' could not "
@@ -777,7 +767,7 @@ msgstr ""
 "Le niveau de compression PNG doit être une valeur entre 0 et 9 ; la valeur « %"
 "s » n'est pas interprétable."
 
-#: gdk-pixbuf/io-png.c:858
+#: gdk-pixbuf/io-png.c:858 gdk-pixbuf/io-gdip-png.c:68
 #, c-format
 msgid ""
 "PNG compression level must be a value between 0 and 9; value '%d' is not "
@@ -793,178 +783,147 @@ msgstr ""
 "La valeur pour le fragment texte PNG %s ne peut pas être convertie dans le "
 "codage ISO-8859-1."
 
-#: gdk-pixbuf/io-png.c:1047
+#: gdk-pixbuf/io-png.c:1045 gdk-pixbuf/io-gdip-png.c:133
 msgid "The PNG image format"
 msgstr "Le format d'image PNG"
 
 #: gdk-pixbuf/io-pnm.c:250
-#, c-format
 msgid "PNM loader expected to find an integer, but didn't"
 msgstr ""
 "Le chargeur PNM s'attendait à recevoir un entier, mais ce n'était pas le cas"
 
 #: gdk-pixbuf/io-pnm.c:282
-#, c-format
 msgid "PNM file has an incorrect initial byte"
 msgstr "Le fichier PNM a un octet initial incorrect"
 
 #: gdk-pixbuf/io-pnm.c:312
-#, c-format
 msgid "PNM file is not in a recognized PNM subformat"
 msgstr "Le fichier PNM n'est pas un sous-format PNM reconnu"
 
 #: gdk-pixbuf/io-pnm.c:337
-#, c-format
 msgid "PNM file has an image width of 0"
 msgstr "Le fichier PNM a une largeur d'image de 0"
 
 #: gdk-pixbuf/io-pnm.c:358
-#, c-format
 msgid "PNM file has an image height of 0"
 msgstr "Le fichier PNM a une hauteur d'image de 0"
 
 #: gdk-pixbuf/io-pnm.c:381
-#, c-format
 msgid "Maximum color value in PNM file is 0"
 msgstr "La valeur maximale de couleur dans le fichier PNM est 0"
 
 #: gdk-pixbuf/io-pnm.c:389
-#, c-format
 msgid "Maximum color value in PNM file is too large"
 msgstr "La valeur maximale de couleur dans le fichier PNM est trop grande"
 
 #: gdk-pixbuf/io-pnm.c:429 gdk-pixbuf/io-pnm.c:459 gdk-pixbuf/io-pnm.c:504
-#, c-format
 msgid "Raw PNM image type is invalid"
 msgstr "Le type d'image PNM brut n'est pas valide"
 
 #: gdk-pixbuf/io-pnm.c:654
-#, c-format
 msgid "PNM image loader does not support this PNM subformat"
 msgstr "Le chargeur d'image PNM ne prend pas en charge ce sous-format PNM"
 
 #: gdk-pixbuf/io-pnm.c:741 gdk-pixbuf/io-pnm.c:968
-#, c-format
 msgid "Raw PNM formats require exactly one whitespace before sample data"
 msgstr ""
 "Les formats PNM bruts nécessitent exactement un espace avant les données"
 
 #: gdk-pixbuf/io-pnm.c:768
-#, c-format
 msgid "Cannot allocate memory for loading PNM image"
 msgstr "Impossible d'allouer de la mémoire pour charger l'image PNM"
 
 #: gdk-pixbuf/io-pnm.c:818
-#, c-format
 msgid "Insufficient memory to load PNM context struct"
 msgstr "Mémoire insuffisante pour charger la structure de contexte PNM"
 
 #: gdk-pixbuf/io-pnm.c:869
-#, c-format
 msgid "Unexpected end of PNM image data"
 msgstr "Fin inattendue des données de l'image PNM"
 
 #: gdk-pixbuf/io-pnm.c:997
-#, c-format
 msgid "Insufficient memory to load PNM file"
 msgstr "Mémoire insuffisante pour charger le fichier PNM"
 
-#: gdk-pixbuf/io-pnm.c:1083
+#: gdk-pixbuf/io-pnm.c:1081
 msgid "The PNM/PBM/PGM/PPM image format family"
 msgstr "La famille de format d'image PNM/PBM/PGM/PPM"
 
 #: gdk-pixbuf/io-ras.c:126
-#, c-format
 msgid "RAS image has bogus header data"
 msgstr "L'image RAS a un en-tête erroné"
 
 #: gdk-pixbuf/io-ras.c:148
-#, c-format
 msgid "RAS image has unknown type"
 msgstr "L'image RAS a un type inconnu"
 
 #: gdk-pixbuf/io-ras.c:156
-#, c-format
 msgid "unsupported RAS image variation"
 msgstr "Variante d'image RAS non prise en charge"
 
 #: gdk-pixbuf/io-ras.c:171 gdk-pixbuf/io-ras.c:200
-#, c-format
 msgid "Not enough memory to load RAS image"
 msgstr "Mémoire insuffisante pour charger l'image RAS"
 
-#: gdk-pixbuf/io-ras.c:547
+#: gdk-pixbuf/io-ras.c:545
 msgid "The Sun raster image format"
 msgstr "Le format d'image Sun raster"
 
 #: gdk-pixbuf/io-tga.c:154
-#, c-format
 msgid "Cannot allocate memory for IOBuffer struct"
 msgstr "Impossible d'allouer de la mémoire pour la structure IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:173
-#, c-format
 msgid "Cannot allocate memory for IOBuffer data"
 msgstr "Impossible d'allouer de la mémoire pour les données IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:184
-#, c-format
 msgid "Cannot realloc IOBuffer data"
 msgstr "Impossible de réallouer les données IOBuffer"
 
 #: gdk-pixbuf/io-tga.c:214
-#, c-format
 msgid "Cannot allocate temporary IOBuffer data"
 msgstr "Impossible d'allouer les données IOBuffer temporaires"
 
 #: gdk-pixbuf/io-tga.c:347
-#, c-format
 msgid "Cannot allocate new pixbuf"
 msgstr "Impossible d'allouer un nouveau pixbuf"
 
 #: gdk-pixbuf/io-tga.c:687
-#, c-format
 msgid "Cannot allocate colormap structure"
 msgstr "Impossible d'allouer de structure de palette de couleurs"
 
 #: gdk-pixbuf/io-tga.c:694
-#, c-format
 msgid "Cannot allocate colormap entries"
 msgstr "Impossible d'allouer des entrées de palette de couleurs"
 
 #: gdk-pixbuf/io-tga.c:716
-#, c-format
 msgid "Unexpected bitdepth for colormap entries"
 msgstr ""
 "Profondeur de couleur inattendue pour les entrées de la palette de couleurs"
 
 #: gdk-pixbuf/io-tga.c:734
-#, c-format
 msgid "Cannot allocate TGA header memory"
 msgstr "Impossible d'allouer la mémoire pour l'en-tête TGA"
 
 #: gdk-pixbuf/io-tga.c:767
-#, c-format
 msgid "TGA image has invalid dimensions"
 msgstr "Les dimensions de l'image TGA ne sont pas valides"
 
 #: gdk-pixbuf/io-tga.c:773 gdk-pixbuf/io-tga.c:782 gdk-pixbuf/io-tga.c:792
 #: gdk-pixbuf/io-tga.c:802 gdk-pixbuf/io-tga.c:809
-#, c-format
 msgid "TGA image type not supported"
 msgstr "Type d'image TGA non pris en charge"
 
 #: gdk-pixbuf/io-tga.c:856
-#, c-format
 msgid "Cannot allocate memory for TGA context struct"
 msgstr "Impossible d'allouer de la mémoire pour la structure de contexte TGA"
 
 #: gdk-pixbuf/io-tga.c:921
-#, c-format
 msgid "Excess data in file"
 msgstr "Trop de données dans le fichier"
 
-#: gdk-pixbuf/io-tga.c:1002
+#: gdk-pixbuf/io-tga.c:1000
 msgid "The Targa image format"
 msgstr "Le format d'image Targa"
 
@@ -977,17 +936,14 @@ msgid "Could not get image height (bad TIFF file)"
 msgstr "Impossible d'obtenir la hauteur de l'image (fichier TIFF corrompu)"
 
 #: gdk-pixbuf/io-tiff.c:175
-#, c-format
 msgid "Width or height of TIFF image is zero"
-msgstr "La largeur ou la hauteur du fichier TIFF est nulle"
+msgstr "La largeur ou la hauteur de l'image TIFF est nulle"
 
 #: gdk-pixbuf/io-tiff.c:184 gdk-pixbuf/io-tiff.c:193
-#, c-format
 msgid "Dimensions of TIFF image too large"
 msgstr "Dimensions de l'image TIFF trop grandes"
 
 #: gdk-pixbuf/io-tiff.c:217 gdk-pixbuf/io-tiff.c:229 gdk-pixbuf/io-tiff.c:541
-#, c-format
 msgid "Insufficient memory to open TIFF file"
 msgstr "Mémoire insuffisante pour ouvrir le fichier TIFF"
 
@@ -1016,109 +972,137 @@ msgid "Failed to write TIFF data"
 msgstr "Impossible d'enregistrer les données TIFF"
 
 #: gdk-pixbuf/io-tiff.c:760
-#, c-format
 msgid "Couldn't write to TIFF file"
 msgstr "Impossible d'écrire le fichier TIFF"
 
-#: gdk-pixbuf/io-tiff.c:817
+#: gdk-pixbuf/io-tiff.c:815
 msgid "The TIFF image format"
 msgstr "Le format d'image TIFF"
 
 #: gdk-pixbuf/io-wbmp.c:246
-#, c-format
 msgid "Image has zero width"
 msgstr "L'image a une largeur nulle"
 
 #: gdk-pixbuf/io-wbmp.c:264
-#, c-format
 msgid "Image has zero height"
 msgstr "L'image a une hauteur nulle"
 
 #: gdk-pixbuf/io-wbmp.c:275
-#, c-format
 msgid "Not enough memory to load image"
 msgstr "Mémoire insuffisante pour charger l'image"
 
 #: gdk-pixbuf/io-wbmp.c:334
-#, c-format
 msgid "Couldn't save the rest"
 msgstr "Impossible d'enregistrer le reste"
 
-#: gdk-pixbuf/io-wbmp.c:377
+#: gdk-pixbuf/io-wbmp.c:375
 msgid "The WBMP image format"
 msgstr "Le format d'image WBMP"
 
 #: gdk-pixbuf/io-xbm.c:295
-#, c-format
 msgid "Invalid XBM file"
 msgstr "Fichier XBM non valide"
 
 #: gdk-pixbuf/io-xbm.c:305
-#, c-format
 msgid "Insufficient memory to load XBM image file"
 msgstr "Mémoire insuffisante pour charger l'image XBM"
 
 #: gdk-pixbuf/io-xbm.c:453
-#, c-format
 msgid "Failed to write to temporary file when loading XBM image"
 msgstr ""
 "L'écriture dans un fichier temporaire lors du chargement de l'image XBM a "
 "échoué"
 
-#: gdk-pixbuf/io-xbm.c:494
+#: gdk-pixbuf/io-xbm.c:492
 msgid "The XBM image format"
 msgstr "Le format d'image XBM"
 
 #: gdk-pixbuf/io-xpm.c:468
-#, c-format
 msgid "No XPM header found"
 msgstr "Aucun en-tête XPM n'a été trouvé"
 
 #: gdk-pixbuf/io-xpm.c:477
-#, c-format
 msgid "Invalid XPM header"
 msgstr "Fichier XPM non valide"
 
 #: gdk-pixbuf/io-xpm.c:485
-#, c-format
 msgid "XPM file has image width <= 0"
-msgstr "Le fichier XPM à une taille d'image négative"
+msgstr "Le fichier XPM a une taille d'image négative ou nulle"
 
 #: gdk-pixbuf/io-xpm.c:493
-#, c-format
 msgid "XPM file has image height <= 0"
-msgstr "Le fichier XPM a une hauteur négative"
+msgstr "Le fichier XPM a une hauteur négative ou nulle"
 
 #: gdk-pixbuf/io-xpm.c:501
-#, c-format
 msgid "XPM has invalid number of chars per pixel"
 msgstr "Le nombre de caractères par pixel du fichier XPM n'est pas valide"
 
 #: gdk-pixbuf/io-xpm.c:510
-#, c-format
 msgid "XPM file has invalid number of colors"
 msgstr "Le fichier XPM n'a pas un nombre de couleurs valide"
 
 #: gdk-pixbuf/io-xpm.c:522 gdk-pixbuf/io-xpm.c:531 gdk-pixbuf/io-xpm.c:583
-#, c-format
 msgid "Cannot allocate memory for loading XPM image"
 msgstr "Impossible d'allouer de la mémoire pour charger l'image XPM"
 
 #: gdk-pixbuf/io-xpm.c:545
-#, c-format
 msgid "Cannot read XPM colormap"
 msgstr "Impossible de lire la palette de couleurs XPM"
 
 #: gdk-pixbuf/io-xpm.c:777
-#, c-format
 msgid "Failed to write to temporary file when loading XPM image"
 msgstr ""
 "L'écriture dans un fichier temporaire lors du chargement d'une image XPM a "
 "échoué"
 
-#: gdk-pixbuf/io-xpm.c:818
+#: gdk-pixbuf/io-xpm.c:816
 msgid "The XPM image format"
 msgstr "Le format d'image XPM"
+
+#: gdk-pixbuf/io-gdip-emf.c:59
+msgid "The EMF image format"
+msgstr "Le format d'image EMF"
+
+#: gdk-pixbuf/io-gdip-utils.c:220
+#, c-format
+msgid "Could not allocate memory: %s"
+msgstr "Impossible d'allouer de la mémoire : %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:245 gdk-pixbuf/io-gdip-utils.c:360
+#: gdk-pixbuf/io-gdip-utils.c:394
+#, c-format
+msgid "Could not create stream: %s"
+msgstr "Impossible de créer le flux : %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:259
+#, c-format
+msgid "Could not seek stream: %s"
+msgstr "Impossible de se positionner dans le flux : %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:271
+#, c-format
+msgid "Could not read from stream: %s"
+msgstr "Impossible de lire dans le flux : %s"
+
+#: gdk-pixbuf/io-gdip-utils.c:683 gdk-pixbuf/io-gdip-utils.c:815
+msgid "Couldn't load bitmap"
+msgstr "Impossible de charger l'image"
+
+#: gdk-pixbuf/io-gdip-utils.c:838
+msgid "Couldn't load metafile"
+msgstr "Impossible de charger le métafichier"
+
+#: gdk-pixbuf/io-gdip-utils.c:997
+msgid "Unsupported image format for GDI+"
+msgstr "Le format d'image n'est pas pris en charge par GDI+"
+
+#: gdk-pixbuf/io-gdip-utils.c:1004
+msgid "Couldn't save"
+msgstr "Impossible d'enregistrer"
+
+#: gdk-pixbuf/io-gdip-wmf.c:58
+msgid "The WMF image format"
+msgstr "Le format d'image WMF"
 
 #. Description of --sync in --help output
 #: gdk/win32/gdkmain-win32.c:54
@@ -1155,7 +1139,24 @@ msgstr "COULEURS"
 msgid "Make X calls synchronous"
 msgstr "Effectue des appels X synchrones"
 
-#: gtk/gtkaboutdialog.c:264 gtk/gtkaboutdialog.c:2101
+#: gdk/x11/gdkapplaunchcontext-x11.c:311
+#, c-format
+msgid "Starting %s"
+msgstr "Lancement de %s"
+
+#: gdk/x11/gdkapplaunchcontext-x11.c:313
+#, c-format
+msgid "Opening %s"
+msgstr "Ouverture de %s"
+
+#: gdk/x11/gdkapplaunchcontext-x11.c:316
+#, c-format
+msgid "Opening %d Item"
+msgid_plural "Opening %d Items"
+msgstr[0] "Ouverture de %d élément"
+msgstr[1] "Ouverture de %d éléments"
+
+#: gtk/gtkaboutdialog.c:264 gtk/gtkaboutdialog.c:2108
 msgid "License"
 msgstr "Licence"
 
@@ -1169,32 +1170,32 @@ msgid "C_redits"
 msgstr "_Crédits"
 
 #. Add the license button
-#: gtk/gtkaboutdialog.c:513
+#: gtk/gtkaboutdialog.c:514
 msgid "_License"
 msgstr "_Licence"
 
-#: gtk/gtkaboutdialog.c:742
+#: gtk/gtkaboutdialog.c:744
 #, c-format
 msgid "About %s"
 msgstr "À propos de %s"
 
-#: gtk/gtkaboutdialog.c:2025
+#: gtk/gtkaboutdialog.c:2032
 msgid "Credits"
 msgstr "Crédits"
 
-#: gtk/gtkaboutdialog.c:2054
+#: gtk/gtkaboutdialog.c:2061
 msgid "Written by"
 msgstr "Écrit par"
 
-#: gtk/gtkaboutdialog.c:2057
+#: gtk/gtkaboutdialog.c:2064
 msgid "Documented by"
 msgstr "Documenté par"
 
-#: gtk/gtkaboutdialog.c:2069
+#: gtk/gtkaboutdialog.c:2076
 msgid "Translated by"
 msgstr "Traduit par"
 
-#: gtk/gtkaboutdialog.c:2073
+#: gtk/gtkaboutdialog.c:2080
 msgid "Artwork by"
 msgstr "Graphisme par"
 
@@ -1205,7 +1206,7 @@ msgstr "Graphisme par"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:90
+#: gtk/gtkaccellabel.c:93
 msgid "keyboard label|Shift"
 msgstr "Maj"
 
@@ -1216,7 +1217,7 @@ msgstr "Maj"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:98
+#: gtk/gtkaccellabel.c:101
 msgid "keyboard label|Ctrl"
 msgstr "Ctrl"
 
@@ -1227,7 +1228,7 @@ msgstr "Ctrl"
 #. *
 #. * Don't include the prefix "keyboard label|" in the translation.
 #.
-#: gtk/gtkaccellabel.c:106
+#: gtk/gtkaccellabel.c:109
 msgid "keyboard label|Alt"
 msgstr "Alt"
 
@@ -1237,7 +1238,7 @@ msgstr "Alt"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:580
+#: gtk/gtkaccellabel.c:678
 msgid "keyboard label|Super"
 msgstr "Super"
 
@@ -1247,7 +1248,7 @@ msgstr "Super"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:594
+#: gtk/gtkaccellabel.c:692
 msgid "keyboard label|Hyper"
 msgstr "Hyper"
 
@@ -1257,31 +1258,31 @@ msgstr "Hyper"
 #. * this.
 #. * And do not translate the part before the |.
 #.
-#: gtk/gtkaccellabel.c:608
+#: gtk/gtkaccellabel.c:707
 msgid "keyboard label|Meta"
 msgstr "Méta"
 
 #. do not translate the part before the |
-#: gtk/gtkaccellabel.c:622
+#: gtk/gtkaccellabel.c:725
 msgid "keyboard label|Space"
 msgstr "Espace"
 
 #. do not translate the part before the |
-#: gtk/gtkaccellabel.c:626
+#: gtk/gtkaccellabel.c:729
 msgid "keyboard label|Backslash"
-msgstr "Antislash"
+msgstr "Barre_oblique_inverse"
 
-#: gtk/gtkbuilderparser.c:269
+#: gtk/gtkbuilderparser.c:340
 #, c-format
 msgid "Invalid type function: `%s'"
 msgstr "Fonction de type non valide : « %s »"
 
-#: gtk/gtkbuilderparser.c:723
+#: gtk/gtkbuilderparser.c:823
 #, c-format
 msgid "Invalid root element: '%s'"
 msgstr "Élément racine non valide : « %s »"
 
-#: gtk/gtkbuilderparser.c:755
+#: gtk/gtkbuilderparser.c:862
 #, c-format
 msgid "Unhandled tag: '%s'"
 msgstr "Balise non gérée : « %s »"
@@ -1295,7 +1296,7 @@ msgstr "Balise non gérée : « %s »"
 #. * so if you have a default text direction of RTL and YM, then
 #. * the year will appear on the right.
 #.
-#: gtk/gtkcalendar.c:670
+#: gtk/gtkcalendar.c:758
 msgid "calendar:MY"
 msgstr "calendar:MY"
 
@@ -1303,7 +1304,7 @@ msgstr "calendar:MY"
 #. * first day of the week to calendar:week_start:1 if you want Monday
 #. * to be the first day of the week, and so on.
 #.
-#: gtk/gtkcalendar.c:708
+#: gtk/gtkcalendar.c:796
 msgid "calendar:week_start:0"
 msgstr "calendar:week_start:1"
 
@@ -1315,7 +1316,7 @@ msgstr "calendar:week_start:1"
 #. *
 #. * If you don't understand this, leave it as "2000"
 #.
-#: gtk/gtkcalendar.c:1605
+#: gtk/gtkcalendar.c:1806
 msgid "year measurement template|2000"
 msgstr "2000"
 
@@ -1330,7 +1331,7 @@ msgstr "2000"
 #. * digits.  That needs support from your system and locale definition
 #. * too.
 #.
-#: gtk/gtkcalendar.c:1636 gtk/gtkcalendar.c:2214
+#: gtk/gtkcalendar.c:1837 gtk/gtkcalendar.c:2498
 #, c-format
 msgid "calendar:day:digits|%d"
 msgstr "%d"
@@ -1346,7 +1347,7 @@ msgstr "%d"
 #. * digits.  That needs support from your system and locale definition
 #. * too.
 #.
-#: gtk/gtkcalendar.c:1670 gtk/gtkcalendar.c:2088
+#: gtk/gtkcalendar.c:1869 gtk/gtkcalendar.c:2360
 #, c-format
 msgid "calendar:week:digits|%d"
 msgstr "%d"
@@ -1362,7 +1363,7 @@ msgstr "%d"
 #. * Don't include the prefix "calendar year format|" in the
 #. * translation. "%Y" is appropriate for most locales.
 #.
-#: gtk/gtkcalendar.c:1879
+#: gtk/gtkcalendar.c:2150
 msgid "calendar year format|%Y"
 msgstr "%Y"
 
@@ -1388,15 +1389,108 @@ msgstr "Nouveau raccourci..."
 msgid "progress bar label|%d %%"
 msgstr "%d %%"
 
-#: gtk/gtkcolorbutton.c:189 gtk/gtkcolorbutton.c:560
+#: gtk/gtkcolorbutton.c:188 gtk/gtkcolorbutton.c:559
 msgid "Pick a Color"
 msgstr "Choisissez une couleur"
 
-#: gtk/gtkcolorbutton.c:449
+#: gtk/gtkcolorbutton.c:448
 msgid "Received invalid color data\n"
 msgstr "Donnée de couleur non valide reçue\n"
 
-#: gtk/gtkcolorsel.c:550
+#: gtk/gtkcolorsel.c:354
+msgid ""
+"Select the color you want from the outer ring. Select the darkness or "
+"lightness of that color using the inner triangle."
+msgstr ""
+"Sélectionnez la couleur que vous désirez depuis l'anneau extérieur. "
+"Sélectionnez la luminosité de la couleur en utilisant le triangle intérieur."
+
+#: gtk/gtkcolorsel.c:378
+msgid ""
+"Click the eyedropper, then click a color anywhere on your screen to select "
+"that color."
+msgstr ""
+"Cliquez sur la pipette, puis cliquez sur une couleur n'importe où sur "
+"l'écran pour sélectionner cette couleur."
+
+#: gtk/gtkcolorsel.c:387
+msgid "_Hue:"
+msgstr "_Teinte :"
+
+#: gtk/gtkcolorsel.c:388
+msgid "Position on the color wheel."
+msgstr "Position sur le cercle des couleurs."
+
+#: gtk/gtkcolorsel.c:390
+msgid "_Saturation:"
+msgstr "_Saturation :"
+
+#: gtk/gtkcolorsel.c:391
+msgid "\"Deepness\" of the color."
+msgstr "« Profondeur » de la couleur."
+
+#: gtk/gtkcolorsel.c:392
+msgid "_Value:"
+msgstr "_Valeur :"
+
+#: gtk/gtkcolorsel.c:393
+msgid "Brightness of the color."
+msgstr "Luminosité de la couleur."
+
+#: gtk/gtkcolorsel.c:394
+msgid "_Red:"
+msgstr "_Rouge :"
+
+#: gtk/gtkcolorsel.c:395
+msgid "Amount of red light in the color."
+msgstr "Quantité de rouge dans la couleur."
+
+#: gtk/gtkcolorsel.c:396
+msgid "_Green:"
+msgstr "_Vert :"
+
+#: gtk/gtkcolorsel.c:397
+msgid "Amount of green light in the color."
+msgstr "Quantité de vert dans la couleur."
+
+#: gtk/gtkcolorsel.c:398
+msgid "_Blue:"
+msgstr "_Bleu :"
+
+#: gtk/gtkcolorsel.c:399
+msgid "Amount of blue light in the color."
+msgstr "Quantité de bleu dans la couleur."
+
+#: gtk/gtkcolorsel.c:402
+msgid "Op_acity:"
+msgstr "Op_acité :"
+
+#: gtk/gtkcolorsel.c:409 gtk/gtkcolorsel.c:419
+msgid "Transparency of the color."
+msgstr "Transparence de la couleur."
+
+#: gtk/gtkcolorsel.c:426
+msgid "Color _name:"
+msgstr "_Nom de la couleur :"
+
+#: gtk/gtkcolorsel.c:440
+msgid ""
+"You can enter an HTML-style hexadecimal color value, or simply a color name "
+"such as 'orange' in this entry."
+msgstr ""
+"Dans cette zone de texte, vous pouvez saisir un code de couleur hexadécimal "
+"(comme les codes de couleur HTML), ou bien un nom de couleur (comme "
+"« orange »)."
+
+#: gtk/gtkcolorsel.c:470
+msgid "_Palette:"
+msgstr "_Palette :"
+
+#: gtk/gtkcolorsel.c:499
+msgid "Color Wheel"
+msgstr "Cercle des couleurs"
+
+#: gtk/gtkcolorsel.c:976
 msgid ""
 "The previously-selected color, for comparison to the color you're selecting "
 "now. You can drag this color to a palette entry, or select this color as "
@@ -1407,7 +1501,7 @@ msgstr ""
 "sur une entrée de palette, ou sélectionner cette couleur comme actuelle en "
 "la glissant sur un autre échantillon de couleur à côté."
 
-#: gtk/gtkcolorsel.c:554
+#: gtk/gtkcolorsel.c:980
 msgid ""
 "The color you've chosen. You can drag this color to a palette entry to save "
 "it for use in the future."
@@ -1415,11 +1509,11 @@ msgstr ""
 "La couleur que vous avez choisie. Vous pouvez faire glisser cette couleur "
 "dans une entrée de la palette pour pouvoir la réutiliser ultérieurement."
 
-#: gtk/gtkcolorsel.c:942
+#: gtk/gtkcolorsel.c:1363
 msgid "_Save color here"
 msgstr "_Enregistrer la couleur ici"
 
-#: gtk/gtkcolorsel.c:1147
+#: gtk/gtkcolorsel.c:1568
 msgid ""
 "Click this palette entry to make it the current color. To change this entry, "
 "drag a color swatch here or right-click it and select \"Save color here.\""
@@ -1428,150 +1522,51 @@ msgstr ""
 "modifier cette entrée, glissez un échantillon de couleur ou faites un clic "
 "droit dessus et sélectionnez « Enregistrer la couleur ici »."
 
-#: gtk/gtkcolorsel.c:1922
-msgid ""
-"Select the color you want from the outer ring. Select the darkness or "
-"lightness of that color using the inner triangle."
-msgstr ""
-"Sélectionnez la couleur que vous désirez depuis l'anneau extérieur. "
-"Sélectionnez la luminosité de la couleur en utilisant le triangle intérieur."
-
-#: gtk/gtkcolorsel.c:1946
-msgid ""
-"Click the eyedropper, then click a color anywhere on your screen to select "
-"that color."
-msgstr ""
-"Cliquez sur la pipette, puis cliquez sur une couleur n'importe où sur "
-"l'écran pour sélectionner cette couleur."
-
-#: gtk/gtkcolorsel.c:1955
-msgid "_Hue:"
-msgstr "_Teinte :"
-
-#: gtk/gtkcolorsel.c:1956
-msgid "Position on the color wheel."
-msgstr "Position sur le cercle des couleurs."
-
-#: gtk/gtkcolorsel.c:1958
-msgid "_Saturation:"
-msgstr "_Saturation :"
-
-#: gtk/gtkcolorsel.c:1959
-msgid "\"Deepness\" of the color."
-msgstr "« Profondeur » de la couleur."
-
-#: gtk/gtkcolorsel.c:1960
-msgid "_Value:"
-msgstr "_Valeur :"
-
-#: gtk/gtkcolorsel.c:1961
-msgid "Brightness of the color."
-msgstr "Luminosité de la couleur."
-
-#: gtk/gtkcolorsel.c:1962
-msgid "_Red:"
-msgstr "_Rouge :"
-
-#: gtk/gtkcolorsel.c:1963
-msgid "Amount of red light in the color."
-msgstr "Quantité de rouge dans la couleur."
-
-#: gtk/gtkcolorsel.c:1964
-msgid "_Green:"
-msgstr "_Vert :"
-
-#: gtk/gtkcolorsel.c:1965
-msgid "Amount of green light in the color."
-msgstr "Quantité de vert dans la couleur."
-
-#: gtk/gtkcolorsel.c:1966
-msgid "_Blue:"
-msgstr "_Bleu :"
-
-#: gtk/gtkcolorsel.c:1967
-msgid "Amount of blue light in the color."
-msgstr "Quantité de bleu dans la couleur."
-
-#: gtk/gtkcolorsel.c:1970
-msgid "Op_acity:"
-msgstr "Op_acité :"
-
-#: gtk/gtkcolorsel.c:1977 gtk/gtkcolorsel.c:1987
-msgid "Transparency of the color."
-msgstr "Transparence de la couleur."
-
-#: gtk/gtkcolorsel.c:1994
-msgid "Color _name:"
-msgstr "_Nom de la couleur :"
-
-#: gtk/gtkcolorsel.c:2008
-msgid ""
-"You can enter an HTML-style hexadecimal color value, or simply a color name "
-"such as 'orange' in this entry."
-msgstr ""
-"Dans cette zone de texte, vous pouvez saisir un code de couleur hexadécimal "
-"(comme les codes de couleur HTML), ou bien un nom de couleur (comme "
-"« orange »)."
-
-#: gtk/gtkcolorsel.c:2038
-msgid "_Palette:"
-msgstr "_Palette :"
-
-#: gtk/gtkcolorsel.c:2067
-msgid "Color Wheel"
-msgstr "Cercle des couleurs"
-
-#: gtk/gtkcolorseldialog.c:101
+#: gtk/gtkcolorseldialog.c:170
 msgid "Color Selection"
 msgstr "Sélecteur de couleurs"
 
-#: gtk/gtkentry.c:5255 gtk/gtktextview.c:7669
+#: gtk/gtkentry.c:5380 gtk/gtktextview.c:7686
 msgid "Input _Methods"
 msgstr "_Méthodes de saisie"
 
-#: gtk/gtkentry.c:5269 gtk/gtktextview.c:7683
+#: gtk/gtkentry.c:5394 gtk/gtktextview.c:7700
 msgid "_Insert Unicode Control Character"
 msgstr "_Insérer un caractère de contrôle Unicode"
 
-#: gtk/gtkfilechooserbutton.c:68
+#: gtk/gtkfilechooserbutton.c:64
 msgid "Select A File"
 msgstr "Sélectionner un fichier"
 
-#: gtk/gtkfilechooserbutton.c:69 gtk/gtkfilechooserdefault.c:1979
+#: gtk/gtkfilechooserbutton.c:65 gtk/gtkfilechooserdefault.c:1925
 msgid "Desktop"
 msgstr "Bureau"
 
-#: gtk/gtkfilechooserbutton.c:70
+#: gtk/gtkfilechooserbutton.c:66
 msgid "(None)"
 msgstr "(Aucun)"
 
-#: gtk/gtkfilechooserbutton.c:2048
+#: gtk/gtkfilechooserbutton.c:2011
 msgid "Other..."
 msgstr "Autre..."
 
-#: gtk/gtkfilechooser.c:1697 gtk/gtkfilechooser.c:1741
-#: gtk/gtkfilechooser.c:1816 gtk/gtkfilechooser.c:1860
-#, c-format
-msgid "Invalid filename: %s"
-msgstr "Nom de fichier non valide : %s"
-
-#: gtk/gtkfilechooserdefault.c:1100
+#: gtk/gtkfilechooserdefault.c:1058
 msgid "Could not retrieve information about the file"
 msgstr "Impossible d'obtenir les informations concernant le fichier"
 
-#: gtk/gtkfilechooserdefault.c:1111
+#: gtk/gtkfilechooserdefault.c:1069
 msgid "Could not add a bookmark"
 msgstr "Impossible d'ajouter un signet"
 
-#: gtk/gtkfilechooserdefault.c:1122
+#: gtk/gtkfilechooserdefault.c:1080
 msgid "Could not remove bookmark"
 msgstr "Impossible de supprimer le signet"
 
-#: gtk/gtkfilechooserdefault.c:1133
+#: gtk/gtkfilechooserdefault.c:1091
 msgid "The folder could not be created"
 msgstr "Le dossier ne peut pas être créé"
 
-#: gtk/gtkfilechooserdefault.c:1146
+#: gtk/gtkfilechooserdefault.c:1104
 msgid ""
 "The folder could not be created, as a file with the same name already "
 "exists.  Try using a different name for the folder, or rename the file first."
@@ -1580,11 +1575,11 @@ msgstr ""
 "déjà. Essayez d'utiliser un nom différent pour le dossier ou de renommer le "
 "fichier en premier."
 
-#: gtk/gtkfilechooserdefault.c:1159
+#: gtk/gtkfilechooserdefault.c:1115
 msgid "Invalid file name"
 msgstr "Nom de fichier non valide"
 
-#: gtk/gtkfilechooserdefault.c:1169
+#: gtk/gtkfilechooserdefault.c:1125
 msgid "The folder contents could not be displayed"
 msgstr "Le contenu du dossier ne peut pas être affiché"
 
@@ -1592,269 +1587,279 @@ msgstr "Le contenu du dossier ne peut pas être affiché"
 #. * is a hostname. Nautilus and the panel contain the same string
 #. * to translate.
 #.
-#: gtk/gtkfilechooserdefault.c:1723
+#: gtk/gtkfilechooserdefault.c:1677
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s sur %2$s"
 
-#: gtk/gtkfilechooserdefault.c:1906
+#: gtk/gtkfilechooserdefault.c:1853
 msgid "Search"
 msgstr "Rechercher"
 
-#: gtk/gtkfilechooserdefault.c:1930
+#: gtk/gtkfilechooserdefault.c:1877
 msgid "Recently Used"
 msgstr "Récemment utilisés"
 
-#: gtk/gtkfilechooserdefault.c:2595
+#: gtk/gtkfilechooserdefault.c:2494
 msgid "Select which types of files are shown"
 msgstr "Sélectionne les types de fichiers à afficher"
 
-#: gtk/gtkfilechooserdefault.c:3023
+#: gtk/gtkfilechooserdefault.c:2923
 #, c-format
 msgid "Add the folder '%s' to the bookmarks"
 msgstr "Ajoute le dossier « %s » aux signets"
 
-#: gtk/gtkfilechooserdefault.c:3064
+#: gtk/gtkfilechooserdefault.c:2964
 #, c-format
 msgid "Add the current folder to the bookmarks"
 msgstr "Ajoute le dossier actuel aux signets"
 
-#: gtk/gtkfilechooserdefault.c:3066
+#: gtk/gtkfilechooserdefault.c:2966
 #, c-format
 msgid "Add the selected folders to the bookmarks"
 msgstr "Ajoute les dossiers sélectionnés aux signets"
 
-#: gtk/gtkfilechooserdefault.c:3106
+#: gtk/gtkfilechooserdefault.c:3006
 #, c-format
 msgid "Remove the bookmark '%s'"
 msgstr "Enlève le signet « %s »"
 
-#: gtk/gtkfilechooserdefault.c:3538
-#, c-format
-msgid "Could not add a bookmark for '%s' because it is an invalid path name."
-msgstr ""
-"Impossible d'ajouter un signet pour « %s » car ce n'est pas un chemin d'accès "
-"valide."
-
-#: gtk/gtkfilechooserdefault.c:3777
+#: gtk/gtkfilechooserdefault.c:3724
 msgid "Remove"
 msgstr "Enlever"
 
-#: gtk/gtkfilechooserdefault.c:3786
+#: gtk/gtkfilechooserdefault.c:3733
 msgid "Rename..."
 msgstr "Renommer..."
 
 #. Accessible object name for the file chooser's shortcuts pane
-#: gtk/gtkfilechooserdefault.c:3927
+#: gtk/gtkfilechooserdefault.c:3879
 msgid "Places"
 msgstr "Raccourcis"
 
 #. Column header for the file chooser's shortcuts pane
-#: gtk/gtkfilechooserdefault.c:3978
+#: gtk/gtkfilechooserdefault.c:3936
 msgid "_Places"
 msgstr "_Raccourcis"
 
-#: gtk/gtkfilechooserdefault.c:4033 gtk/gtkstock.c:297
+#: gtk/gtkfilechooserdefault.c:3991 gtk/gtkstock.c:297
 msgid "_Add"
 msgstr "A_jouter"
 
-#: gtk/gtkfilechooserdefault.c:4040
+#: gtk/gtkfilechooserdefault.c:3998
 msgid "Add the selected folder to the Bookmarks"
 msgstr "Ajoute le dossier sélectionné aux signets"
 
-#: gtk/gtkfilechooserdefault.c:4045 gtk/gtkstock.c:385
+#: gtk/gtkfilechooserdefault.c:4003 gtk/gtkstock.c:386
 msgid "_Remove"
 msgstr "_Enlever"
 
-#: gtk/gtkfilechooserdefault.c:4052
+#: gtk/gtkfilechooserdefault.c:4010
 msgid "Remove the selected bookmark"
 msgstr "Supprime le signet sélectionné"
 
-#: gtk/gtkfilechooserdefault.c:4149
+#: gtk/gtkfilechooserdefault.c:4107
 msgid "Could not select file"
 msgstr "Impossible de sélectionner le fichier"
 
-#: gtk/gtkfilechooserdefault.c:4286
-#, c-format
-msgid "Could not select file '%s' because it is an invalid path name."
-msgstr ""
-"Impossible de sélectionner le fichier « %s » car il n'a pas de chemin d'accès "
-"valide."
-
-#: gtk/gtkfilechooserdefault.c:4343
+#: gtk/gtkfilechooserdefault.c:4283
 msgid "_Add to Bookmarks"
 msgstr "A_jouter aux signets"
 
-#: gtk/gtkfilechooserdefault.c:4357
+#: gtk/gtkfilechooserdefault.c:4297
 msgid "Show _Hidden Files"
 msgstr "Afficher les fichiers _cachés"
 
-#: gtk/gtkfilechooserdefault.c:4601 gtk/gtkfilesel.c:729
+#: gtk/gtkfilechooserdefault.c:4540 gtk/gtkfilesel.c:730
 msgid "Files"
 msgstr "Fichiers"
 
-#: gtk/gtkfilechooserdefault.c:4650
+#: gtk/gtkfilechooserdefault.c:4589
 msgid "Name"
 msgstr "Nom"
 
-#: gtk/gtkfilechooserdefault.c:4675
+#: gtk/gtkfilechooserdefault.c:4614
 msgid "Size"
 msgstr "Taille"
 
-#: gtk/gtkfilechooserdefault.c:4689
+#: gtk/gtkfilechooserdefault.c:4628
 msgid "Modified"
 msgstr "Modifié"
 
 #. Label
-#: gtk/gtkfilechooserdefault.c:4909 gtk/gtkprinteroptionwidget.c:786
+#: gtk/gtkfilechooserdefault.c:4848 gtk/gtkprinteroptionwidget.c:786
 msgid "_Name:"
 msgstr "_Nom :"
 
-#: gtk/gtkfilechooserdefault.c:4951
+#: gtk/gtkfilechooserdefault.c:4890
 msgid "_Browse for other folders"
 msgstr "_Parcourir d'autres dossiers"
 
-#: gtk/gtkfilechooserdefault.c:5225
+#: gtk/gtkfilechooserdefault.c:5160
 msgid "Type a file name"
 msgstr "Saisissez un nom de fichier"
 
 #. Create Folder
-#: gtk/gtkfilechooserdefault.c:5262
+#: gtk/gtkfilechooserdefault.c:5197
 msgid "Create Fo_lder"
 msgstr "_Créer un dossier"
 
-#: gtk/gtkfilechooserdefault.c:5272
+#: gtk/gtkfilechooserdefault.c:5207
 msgid "_Location:"
 msgstr "_Emplacement :"
 
-#: gtk/gtkfilechooserdefault.c:5510
+#: gtk/gtkfilechooserdefault.c:5407
 msgid "Save in _folder:"
 msgstr "Enregistrer dans le _dossier :"
 
-#: gtk/gtkfilechooserdefault.c:5512
+#: gtk/gtkfilechooserdefault.c:5409
 msgid "Create in _folder:"
 msgstr "Créer dans le _dossier :"
 
-#: gtk/gtkfilechooserdefault.c:7128
-#, c-format
+#: gtk/gtkfilechooserdefault.c:6990
 msgid "Cannot change to folder because it is not local"
 msgstr "Impossible d'aller au dossier car il n'est pas local"
 
-#: gtk/gtkfilechooserdefault.c:7744 gtk/gtkfilechooserdefault.c:7765
+#: gtk/gtkfilechooserdefault.c:7615 gtk/gtkfilechooserdefault.c:7636
 #, c-format
 msgid "Shortcut %s already exists"
 msgstr "Le raccourci %s existe déjà"
 
-#: gtk/gtkfilechooserdefault.c:7855
+#: gtk/gtkfilechooserdefault.c:7726
 #, c-format
 msgid "Shortcut %s does not exist"
 msgstr "Le raccourci %s n'existe pas"
 
-#: gtk/gtkfilechooserdefault.c:8110 gtk/gtkprintunixdialog.c:356
+#: gtk/gtkfilechooserdefault.c:7974 gtk/gtkprintunixdialog.c:370
 #, c-format
 msgid "A file named \"%s\" already exists.  Do you want to replace it?"
 msgstr "Un fichier nommé « %s » existe déjà. Voulez-vous le remplacer ?"
 
-#: gtk/gtkfilechooserdefault.c:8113 gtk/gtkprintunixdialog.c:360
+#: gtk/gtkfilechooserdefault.c:7977 gtk/gtkprintunixdialog.c:374
 #, c-format
 msgid ""
 "The file already exists in \"%s\".  Replacing it will overwrite its contents."
 msgstr "Le fichier existe déjà dans « %s ». Le remplacer écrasera son contenu."
 
-#: gtk/gtkfilechooserdefault.c:8118 gtk/gtkprintunixdialog.c:367
+#: gtk/gtkfilechooserdefault.c:7982 gtk/gtkprintunixdialog.c:381
 msgid "_Replace"
 msgstr "_Remplacer"
 
-#: gtk/gtkfilechooserdefault.c:8921
+#: gtk/gtkfilechooserdefault.c:8743
 msgid "Could not start the search process"
 msgstr "Impossible de lancer le processus de recherche"
 
-#: gtk/gtkfilechooserdefault.c:8922
+#: gtk/gtkfilechooserdefault.c:8744
 msgid ""
 "The program was not able to create a connection to the indexer daemon.  "
 "Please make sure it is running."
 msgstr ""
-"Le programme n'a pas pu créer une connexion au démon d'indexation. Vérifiez "
-"que celui-ci fonctionne."
+"Le programme n'a pas pu créer une connexion au service d'indexation. "
+"Vérifiez que celui-ci fonctionne."
 
-#: gtk/gtkfilechooserdefault.c:8936
+#: gtk/gtkfilechooserdefault.c:8758
 msgid "Could not send the search request"
 msgstr "Impossible d'envoyer la requête de recherche"
 
 #. Label
-#: gtk/gtkfilechooserdefault.c:9364
+#: gtk/gtkfilechooserdefault.c:9198
 msgid "_Search:"
 msgstr "_Rechercher :"
 
-#: gtk/gtkfilechooserdefault.c:10317
+#: gtk/gtkfilechooserdefault.c:10145
 #, c-format
 msgid "Could not mount %s"
 msgstr "Impossible de monter %s"
 
-#: gtk/gtkfilechooserdefault.c:10923
+#: gtk/gtkfilechooserdefault.c:10799
 msgid "Type name of new folder"
 msgstr "Saisissez le nom du nouveau dossier"
 
-#: gtk/gtkfilechooserdefault.c:10971
-#, c-format
-msgid "%d byte"
-msgid_plural "%d bytes"
-msgstr[0] "%d octet"
-msgstr[1] "%d octets"
-
-#: gtk/gtkfilechooserdefault.c:10973
+#: gtk/gtkfilechooserdefault.c:10849
 #, c-format
 msgid "%.1f KB"
-msgstr "%.1f Kio"
+msgstr "%.1f Kio"
 
-#: gtk/gtkfilechooserdefault.c:10975
+#: gtk/gtkfilechooserdefault.c:10851
 #, c-format
 msgid "%.1f MB"
-msgstr "%.1f Mio"
+msgstr "%.1f Mio"
 
-#: gtk/gtkfilechooserdefault.c:10977
+#: gtk/gtkfilechooserdefault.c:10853
 #, c-format
 msgid "%.1f GB"
-msgstr "%.1f Gio"
+msgstr "%.1f Gio"
 
-#: gtk/gtkfilechooserdefault.c:11078 gtk/gtkfilechooserdefault.c:11100
-#: gtk/gtkfilechooserdefault.c:11171
+#: gtk/gtkfilechooserdefault.c:10956 gtk/gtkfilechooserdefault.c:10978
+#: gtk/gtkfilechooserdefault.c:11049
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: gtk/gtkfilechooserdefault.c:11118
-msgid "Today at %H:%M"
-msgstr "Aujourd'hui à %H:%M"
+#: gtk/gtkfilechooserdefault.c:10996
+msgid "%H:%M"
+msgstr "%H:%M"
 
-#: gtk/gtkfilechooserdefault.c:11120
+#: gtk/gtkfilechooserdefault.c:10998
 msgid "Yesterday at %H:%M"
 msgstr "Hier à %H:%M"
 
-#: gtk/gtkfilechoosersettings.c:262 gtk/gtkfilesel.c:1408
-#: gtk/gtkfilesel.c:1417 gtk/gtkfilesystemunix.c:1048
-#: gtk/gtkfilesystemwin32.c:1227
+#: gtk/gtkfilechooserentry.c:659 gtk/gtkfilechooserentry.c:1115
+msgid "Invalid path"
+msgstr "Chemin non valide"
+
+#. translators: this text is shown when there are no completions
+#. * for something the user typed in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1070
+msgid "No match"
+msgstr "Pas de correspondance"
+
+#. translators: this text is shown when there is exactly one completion
+#. * for something the user typed in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1081
+msgid "Sole completion"
+msgstr "Complétion unique"
+
+#. translators: this text is shown when the text in a file chooser
+#. * entry is a complete filename, but could be continued to find
+#. * a longer match
+#.
+#: gtk/gtkfilechooserentry.c:1097
+msgid "Complete, but not unique"
+msgstr "Plusieurs correspondances possibles"
+
+#. translators: this text is shown while the system is searching
+#. * for possible completions for text in a file chooser entry
+#.
+#: gtk/gtkfilechooserentry.c:1133
+msgid "Completing..."
+msgstr "Complétion en cours..."
+
+#: gtk/gtkfilechoosersettings.c:262 gtk/gtkfilesel.c:1349
+#: gtk/gtkfilesel.c:1358
 #, c-format
 msgid "Error creating folder '%s': %s"
 msgstr "Impossible de créer le dossier « %s » : %s"
 
-#: gtk/gtkfilesel.c:693
+#: gtk/gtkfilesel.c:694
 msgid "Folders"
 msgstr "Dossiers"
 
-#: gtk/gtkfilesel.c:697
+#: gtk/gtkfilesel.c:698
 msgid "Fol_ders"
 msgstr "_Dossiers"
 
-#: gtk/gtkfilesel.c:733
+#: gtk/gtkfilesel.c:734
 msgid "_Files"
 msgstr "_Fichiers"
 
-#: gtk/gtkfilesel.c:820 gtk/gtkfilesel.c:2207
+#: gtk/gtkfilesel.c:821 gtk/gtkfilesel.c:2148
 #, c-format
 msgid "Folder unreadable: %s"
 msgstr "Dossier non lisible : %s"
 
-#: gtk/gtkfilesel.c:949
+#: gtk/gtkfilesel.c:905
 #, c-format
 msgid ""
 "The file \"%s\" resides on another machine (called %s) and may not be "
@@ -1865,19 +1870,19 @@ msgstr ""
 "pas être utilisable par ce programme.\n"
 "Voulez-vous vraiment le sélectionner ?"
 
-#: gtk/gtkfilesel.c:1079
+#: gtk/gtkfilesel.c:1020
 msgid "_New Folder"
 msgstr "_Nouveau dossier"
 
-#: gtk/gtkfilesel.c:1090
+#: gtk/gtkfilesel.c:1031
 msgid "De_lete File"
 msgstr "_Supprimer le fichier"
 
-#: gtk/gtkfilesel.c:1101
+#: gtk/gtkfilesel.c:1042
 msgid "_Rename File"
 msgstr "_Renommer le fichier"
 
-#: gtk/gtkfilesel.c:1406
+#: gtk/gtkfilesel.c:1347
 #, c-format
 msgid ""
 "The folder name \"%s\" contains symbols that are not allowed in filenames"
@@ -1885,72 +1890,72 @@ msgstr ""
 "Le nom du dossier « %s » contient des symboles non autorisés dans des noms de "
 "fichiers."
 
-#: gtk/gtkfilesel.c:1451
+#: gtk/gtkfilesel.c:1392
 msgid "New Folder"
 msgstr "Nouveau dossier"
 
-#: gtk/gtkfilesel.c:1466
+#: gtk/gtkfilesel.c:1407
 msgid "_Folder name:"
 msgstr "_Nom du dossier :"
 
-#: gtk/gtkfilesel.c:1490
+#: gtk/gtkfilesel.c:1431
 msgid "C_reate"
 msgstr "C_réer"
 
-#: gtk/gtkfilesel.c:1533 gtk/gtkfilesel.c:1640 gtk/gtkfilesel.c:1653
+#: gtk/gtkfilesel.c:1474 gtk/gtkfilesel.c:1581 gtk/gtkfilesel.c:1594
 #, c-format
 msgid "The filename \"%s\" contains symbols that are not allowed in filenames"
 msgstr ""
 "Le nom du fichier « %s » contient des symboles non valides dans un nom de "
 "fichiers."
 
-#: gtk/gtkfilesel.c:1536 gtk/gtkfilesel.c:1546
+#: gtk/gtkfilesel.c:1477 gtk/gtkfilesel.c:1487
 #, c-format
 msgid "Error deleting file '%s': %s"
 msgstr "Erreur lors de la suppression du fichier « %s » : %s"
 
-#: gtk/gtkfilesel.c:1589
+#: gtk/gtkfilesel.c:1530
 #, c-format
 msgid "Really delete file \"%s\"?"
 msgstr "Voulez-vous vraiment supprimer le fichier « %s » ?"
 
-#: gtk/gtkfilesel.c:1594
+#: gtk/gtkfilesel.c:1535
 msgid "Delete File"
 msgstr "Supprimer le fichier"
 
-#: gtk/gtkfilesel.c:1642
+#: gtk/gtkfilesel.c:1583
 #, c-format
 msgid "Error renaming file to \"%s\": %s"
 msgstr "Erreur lors du renommage du fichier en « %s » : %s"
 
-#: gtk/gtkfilesel.c:1655
+#: gtk/gtkfilesel.c:1596
 #, c-format
 msgid "Error renaming file \"%s\": %s"
 msgstr "Erreur lors du renommage du fichier « %s » : %s"
 
-#: gtk/gtkfilesel.c:1664
+#: gtk/gtkfilesel.c:1605
 #, c-format
 msgid "Error renaming file \"%s\" to \"%s\": %s"
 msgstr "Erreur lors du renommage de « %s » en « %s » : %s"
 
-#: gtk/gtkfilesel.c:1711
+#: gtk/gtkfilesel.c:1652
 msgid "Rename File"
 msgstr "Renommer le fichier"
 
-#: gtk/gtkfilesel.c:1726
+#: gtk/gtkfilesel.c:1667
 #, c-format
 msgid "Rename file \"%s\" to:"
 msgstr "Renommer le fichier « %s » en :"
 
-#: gtk/gtkfilesel.c:1755
+#: gtk/gtkfilesel.c:1696
 msgid "_Rename"
 msgstr "_Renommer"
 
-#: gtk/gtkfilesel.c:2187
+#: gtk/gtkfilesel.c:2128
 msgid "_Selection: "
 msgstr "_Sélection : "
 
-#: gtk/gtkfilesel.c:3107
+#: gtk/gtkfilesel.c:3048
 #, c-format
 msgid ""
 "The filename \"%s\" couldn't be converted to UTF-8. (try setting the "
@@ -1959,97 +1964,45 @@ msgstr ""
 "Le nom du fichier « %s » n'a pas pu être converti en UTF-8. (essayez "
 "d'activer la variable d'environnement G_FILENAME_ENCODING) : %s"
 
-#: gtk/gtkfilesel.c:3110
+#: gtk/gtkfilesel.c:3051
 msgid "Invalid UTF-8"
 msgstr "UTF-8 non valide"
 
-#: gtk/gtkfilesel.c:3984
+#: gtk/gtkfilesel.c:3925
 msgid "Name too long"
 msgstr "Nom trop long"
 
-#: gtk/gtkfilesel.c:3986
+#: gtk/gtkfilesel.c:3927
 msgid "Couldn't convert filename"
 msgstr "Impossible de convertir le nom du fichier"
 
-#: gtk/gtkfilesystem.c:315
-#, c-format
-msgid "Could not get a stock icon for %s\n"
-msgstr "Impossible d'obtenir l'icône prédéfinie pour %s\n"
-
-#: gtk/gtkfilesystemmodel.c:743
-#, c-format
-msgid "Could not obtain root folder"
-msgstr "Impossible d'obtenir le dossier racine"
-
-#: gtk/gtkfilesystemmodel.c:1336
-msgid "(Empty)"
-msgstr "(Vide)"
-
-#: gtk/gtkfilesystemunix.c:961 gtk/gtkfilesystemunix.c:1209
-#: gtk/gtkfilesystemunix.c:2198 gtk/gtkfilesystemunix.c:2238
-#: gtk/gtkfilesystemwin32.c:2305 gtk/gtkfilesystemwin32.c:2355
-#, c-format
-msgid "Error getting information for '%s': %s"
-msgstr "Erreur lors de l'obtention des informations de « %s » : %s"
-
-#: gtk/gtkfilesystemunix.c:1154 gtk/gtkfilesystemwin32.c:1334
-#, c-format
-msgid "This file system does not support mounting"
-msgstr "Ce système de fichiers ne prend pas en charge le montage"
-
-#: gtk/gtkfilesystemunix.c:1166
+#. The pointers we return for a GtkFileSystemVolume are opaque tokens; they are
+#. * really pointers to GDrive, GVolume or GMount objects.  We need an extra
+#. * token for the fake "File System" volume.  So, we'll return a pointer to
+#. * this particular string.
+#.
+#: gtk/gtkfilesystem.c:52
 msgid "File System"
 msgstr "Système de fichiers"
 
-#: gtk/gtkfilesystemunix.c:1330 gtk/gtkfilesystemwin32.c:1644
-#, c-format
-msgid ""
-"The name \"%s\" is not valid because it contains the character \"%s\". "
-"Please use a different name."
-msgstr ""
-"Le nom « %s » n'est pas valide car il contient le caractère « %s ». Veuillez "
-"utiliser un nom différent."
+#: gtk/gtkfilesystemmodel.c:700
+msgid "Could not obtain root folder"
+msgstr "Impossible d'obtenir le dossier racine"
 
-#: gtk/gtkfilesystemunix.c:1880 gtk/gtkfilesystemwin32.c:1985
-#, c-format
-msgid "Bookmark saving failed: %s"
-msgstr "L'enregistrement du signet a échoué : %s"
+#: gtk/gtkfilesystemmodel.c:1299
+msgid "(Empty)"
+msgstr "(Vide)"
 
-#: gtk/gtkfilesystemunix.c:1935 gtk/gtkfilesystemwin32.c:2040
-#, c-format
-msgid "'%s' already exists in the bookmarks list"
-msgstr "« %s » existe déjà dans la liste des signets"
-
-#: gtk/gtkfilesystemunix.c:2007 gtk/gtkfilesystemwin32.c:2112
-#, c-format
-msgid "'%s' does not exist in the bookmarks list"
-msgstr "« %s » n'existe pas dans la liste des signets"
-
-#: gtk/gtkfilesystemwin32.c:1150
-#, c-format
-msgid "Path is not a folder: '%s'"
-msgstr "Le chemin n'est pas un dossier : « %s »"
-
-#: gtk/gtkfilesystemwin32.c:1352
-#, c-format
-msgid "Network Drive (%s)"
-msgstr "Lecteur réseau (%s)"
-
-#: gtk/gtkfilesystemwin32.c:1374
-#, c-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-#: gtk/gtkfontbutton.c:145 gtk/gtkfontbutton.c:267
+#: gtk/gtkfontbutton.c:144 gtk/gtkfontbutton.c:266
 msgid "Pick a Font"
 msgstr "Choisissez une police"
 
 #. Initialize fields
-#: gtk/gtkfontbutton.c:261
+#: gtk/gtkfontbutton.c:260
 msgid "Sans 12"
 msgstr "Sans 12"
 
-#: gtk/gtkfontbutton.c:781
+#: gtk/gtkfontbutton.c:780
 msgid "Font"
 msgstr "Police"
 
@@ -2061,24 +2014,24 @@ msgstr ""
 "Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne d’exquis rôtis "
 "de bœuf au kir à l’aÿ d’âge mûr & cætera ! 0123456789."
 
-#: gtk/gtkfontsel.c:326
+#: gtk/gtkfontsel.c:328
 msgid "_Family:"
 msgstr "_Famille :"
 
-#: gtk/gtkfontsel.c:332
+#: gtk/gtkfontsel.c:334
 msgid "_Style:"
 msgstr "_Style :"
 
-#: gtk/gtkfontsel.c:338
+#: gtk/gtkfontsel.c:340
 msgid "Si_ze:"
 msgstr "_Taille :"
 
 #. create the text entry widget
-#: gtk/gtkfontsel.c:515
+#: gtk/gtkfontsel.c:517
 msgid "_Preview:"
 msgstr "_Aperçu :"
 
-#: gtk/gtkfontsel.c:1359
+#: gtk/gtkfontsel.c:1542
 msgid "Font Selection"
 msgstr "Sélecteur de polices"
 
@@ -2093,12 +2046,12 @@ msgstr "Valeur _gamma"
 #. Remove this icon source so we don't keep trying to
 #. * load it.
 #.
-#: gtk/gtkiconfactory.c:1374
+#: gtk/gtkiconfactory.c:1403
 #, c-format
 msgid "Error loading icon: %s"
 msgstr "Erreur de chargement de l'icône : %s"
 
-#: gtk/gtkicontheme.c:1321
+#: gtk/gtkicontheme.c:1363
 #, c-format
 msgid ""
 "Could not find the icon '%s'. The '%s' theme\n"
@@ -2111,137 +2064,132 @@ msgstr ""
 "l'installer. Vous pouvez obtenir une copie à :\n"
 "\t%s"
 
-#: gtk/gtkicontheme.c:1501
+#: gtk/gtkicontheme.c:1543
 #, c-format
 msgid "Icon '%s' not present in theme"
 msgstr "L'icône « %s » n'est pas présente dans le thème"
 
-#: gtk/gtkicontheme.c:2915
-#, c-format
+#: gtk/gtkicontheme.c:3058
 msgid "Failed to load icon"
 msgstr "Impossible de charger l'icône"
 
-#: gtk/gtkimmodule.c:421
-msgid "Default"
-msgstr "Par défaut"
+#: gtk/gtkimmodule.c:515
+msgid "Simple"
+msgstr "Simple"
 
-#: gtk/gtkinputdialog.c:190
+#: gtk/gtkimmulticontext.c:543
+msgid "input method menu|System"
+msgstr "Système"
+
+#: gtk/gtkinputdialog.c:192
 msgid "Input"
 msgstr "Entrée"
 
-#: gtk/gtkinputdialog.c:205
+#: gtk/gtkinputdialog.c:207
 msgid "No extended input devices"
 msgstr "Aucun périphérique d'entrée étendue"
 
-#: gtk/gtkinputdialog.c:218
+#: gtk/gtkinputdialog.c:220
 msgid "_Device:"
 msgstr "_Périphérique :"
 
-#: gtk/gtkinputdialog.c:235
+#: gtk/gtkinputdialog.c:237
 msgid "Disabled"
 msgstr "Désactivé"
 
-#: gtk/gtkinputdialog.c:242
+#: gtk/gtkinputdialog.c:244
 msgid "Screen"
 msgstr "Écran"
 
-#: gtk/gtkinputdialog.c:249
+#: gtk/gtkinputdialog.c:251
 msgid "Window"
 msgstr "Fenêtre"
 
-#: gtk/gtkinputdialog.c:256
+#: gtk/gtkinputdialog.c:258
 msgid "_Mode:"
 msgstr "_Mode :"
 
 #. The axis listbox
-#: gtk/gtkinputdialog.c:277
+#: gtk/gtkinputdialog.c:279
 msgid "Axes"
 msgstr "Axes"
 
 #. Keys listbox
-#: gtk/gtkinputdialog.c:295
+#: gtk/gtkinputdialog.c:297
 msgid "Keys"
 msgstr "Clés"
 
-#: gtk/gtkinputdialog.c:522
+#: gtk/gtkinputdialog.c:524
 msgid "_X:"
 msgstr "_X :"
 
-#: gtk/gtkinputdialog.c:523
+#: gtk/gtkinputdialog.c:525
 msgid "_Y:"
 msgstr "_Y :"
 
-#: gtk/gtkinputdialog.c:524
+#: gtk/gtkinputdialog.c:526
 msgid "_Pressure:"
 msgstr "_Pression :"
 
-#: gtk/gtkinputdialog.c:525
+#: gtk/gtkinputdialog.c:527
 msgid "X _tilt:"
 msgstr "_Inclinaison X :"
 
-#: gtk/gtkinputdialog.c:526
+#: gtk/gtkinputdialog.c:528
 msgid "Y t_ilt:"
 msgstr "I_nclinaison Y :"
 
-#: gtk/gtkinputdialog.c:527
+#: gtk/gtkinputdialog.c:529
 msgid "_Wheel:"
 msgstr "_Roulette :"
 
-#: gtk/gtkinputdialog.c:579
+#: gtk/gtkinputdialog.c:581
 msgid "none"
 msgstr "aucun"
 
-#: gtk/gtkinputdialog.c:616 gtk/gtkinputdialog.c:652
+#: gtk/gtkinputdialog.c:618 gtk/gtkinputdialog.c:654
 msgid "(disabled)"
 msgstr "(désactivé)"
 
-#: gtk/gtkinputdialog.c:645
+#: gtk/gtkinputdialog.c:647
 msgid "(unknown)"
 msgstr "(inconnu)"
 
 #. and clear button
-#: gtk/gtkinputdialog.c:749
+#: gtk/gtkinputdialog.c:751
 msgid "Cl_ear"
 msgstr "_Effacer"
 
-#: gtk/gtklinkbutton.c:141
-msgid "URI"
-msgstr "URI"
-
-#: gtk/gtklinkbutton.c:142
-msgid "The URI bound to this button"
-msgstr "L'URI lié à ce bouton"
-
-#: gtk/gtklinkbutton.c:396
+#: gtk/gtklinkbutton.c:427
 msgid "Copy URL"
 msgstr "Copier l'URL"
 
-#: gtk/gtklinkbutton.c:536
+#: gtk/gtklinkbutton.c:565
 msgid "Invalid URI"
 msgstr "URI non valide"
 
 #. Description of --gtk-module=MODULES in --help output
-#: gtk/gtkmain.c:427
+#: gtk/gtkmain.c:445
 msgid "Load additional GTK+ modules"
 msgstr "Charge des modules GTK+ additionnels"
 
 #. Placeholder in --gtk-module=MODULES in --help output
-#: gtk/gtkmain.c:428
+#: gtk/gtkmain.c:446
 msgid "MODULES"
 msgstr "MODULES"
 
 #. Description of --g-fatal-warnings in --help output
-#: gtk/gtkmain.c:430
+#: gtk/gtkmain.c:448
 msgid "Make all warnings fatal"
 msgstr "Rend tous les avertissements fatals"
 
 #. Description of --gtk-debug=FLAGS in --help output
-#: gtk/gtkmain.c:433
+#: gtk/gtkmain.c:451
 msgid "GTK+ debugging flags to set"
 msgstr "Drapeaux de débogage GTK+ à définir"
 
 #. Description of --gtk-no-debug=FLAGS in --help output
-#: gtk/gtkmain.c:436
+#: gtk/gtkmain.c:454
 msgid "GTK+ debugging flags to unset"
 msgstr "Drapeaux de débogage GTK+ à ne pas définir"
 
@@ -2250,33 +2198,65 @@ msgstr "Drapeaux de débogage GTK+ à ne pas définir"
 #. * Do *not* translate it to "predefinito:LTR", if it
 #. * it isn't default:LTR or default:RTL it will not work
 #.
-#: gtk/gtkmain.c:672
+#: gtk/gtkmain.c:702
 msgid "default:LTR"
 msgstr "default:LTR"
 
 #: gtk/gtkmain.c:768
+#, c-format
+msgid "Cannot open display: %s"
+msgstr "Impossible d'ouvrir l'affichage : %s"
+
+#: gtk/gtkmain.c:805
 msgid "GTK+ Options"
 msgstr "Options GTK+"
 
-#: gtk/gtkmain.c:768
+#: gtk/gtkmain.c:805
 msgid "Show GTK+ Options"
 msgstr "Affiche les options GTK+"
 
-#: gtk/gtknotebook.c:828
-msgid "Arrow spacing"
-msgstr "Espacement autour de la flèche"
+#: gtk/gtkmountoperation.c:476
+msgid "Co_nnect"
+msgstr "Se co_nnecter"
 
-#: gtk/gtknotebook.c:829
-msgid "Scroll arrow spacing"
-msgstr "Espacement autour de la flèche de défilement"
+#: gtk/gtkmountoperation.c:520
+msgid "Connect _anonymously"
+msgstr "Se connecter _anonymement"
 
-#: gtk/gtknotebook.c:4404 gtk/gtknotebook.c:6910
+#: gtk/gtkmountoperation.c:529
+msgid "Connect as u_ser:"
+msgstr "_Se connecter en tant que :"
+
+#: gtk/gtkmountoperation.c:566
+msgid "_Username:"
+msgstr "Nom d'_utilisateur :"
+
+#: gtk/gtkmountoperation.c:570
+msgid "_Domain:"
+msgstr "_Domaine :"
+
+#: gtk/gtkmountoperation.c:575
+msgid "_Password:"
+msgstr "Mot de _passe :"
+
+#: gtk/gtkmountoperation.c:590
+msgid "Forget password _immediately"
+msgstr "Oublier _immédiatement le mot de passe"
+
+#: gtk/gtkmountoperation.c:598
+msgid "Remember password until you _logout"
+msgstr "Se souvenir du mot de passe jusqu'à la _fin de la session"
+
+#: gtk/gtkmountoperation.c:606
+msgid "Remember _forever"
+msgstr "Se souvenir pour _toujours"
+
+#: gtk/gtknotebook.c:4417 gtk/gtknotebook.c:6924
 #, c-format
 msgid "Page %u"
 msgstr "Page %u"
 
-#: gtk/gtkpagesetup.c:571 gtk/gtkpapersize.c:825 gtk/gtkpapersize.c:865
-#, c-format
+#: gtk/gtkpagesetup.c:597 gtk/gtkpapersize.c:825 gtk/gtkpapersize.c:865
 msgid "Not a valid page setup file"
 msgstr "Fichier de mise en page non valide"
 
@@ -2298,15 +2278,15 @@ msgstr ""
 "<b>N'importe quelle imprimante</b>\n"
 "Pour les documents portables"
 
-#: gtk/gtkpagesetupunixdialog.c:883 gtk/gtkpagesetupunixdialog.c:1395
+#: gtk/gtkpagesetupunixdialog.c:894 gtk/gtkpagesetupunixdialog.c:1403
 msgid "mm"
 msgstr "mm"
 
-#: gtk/gtkpagesetupunixdialog.c:885 gtk/gtkpagesetupunixdialog.c:1393
+#: gtk/gtkpagesetupunixdialog.c:896 gtk/gtkpagesetupunixdialog.c:1401
 msgid "inch"
 msgstr "pouce"
 
-#: gtk/gtkpagesetupunixdialog.c:904
+#: gtk/gtkpagesetupunixdialog.c:915
 #, c-format
 msgid ""
 "Margins:\n"
@@ -2321,68 +2301,68 @@ msgstr ""
 " Haut : %s %s\n"
 " Bas : %s %s"
 
-#: gtk/gtkpagesetupunixdialog.c:953
+#: gtk/gtkpagesetupunixdialog.c:964
 msgid "Manage Custom Sizes..."
 msgstr "Gérer les tailles personnalisées...."
 
-#: gtk/gtkpagesetupunixdialog.c:1001
+#: gtk/gtkpagesetupunixdialog.c:1012
 msgid "_Format for:"
 msgstr "_Formaté pour :"
 
-#: gtk/gtkpagesetupunixdialog.c:1022
+#: gtk/gtkpagesetupunixdialog.c:1034
 msgid "_Paper size:"
 msgstr "_Taille du papier :"
 
-#: gtk/gtkpagesetupunixdialog.c:1058
+#: gtk/gtkpagesetupunixdialog.c:1065
 msgid "_Orientation:"
 msgstr "_Orientation :"
 
-#: gtk/gtkpagesetupunixdialog.c:1121 gtk/gtkprintunixdialog.c:2315
+#: gtk/gtkpagesetupunixdialog.c:1129 gtk/gtkprintunixdialog.c:2662
 msgid "Page Setup"
 msgstr "Mise en page"
 
-#: gtk/gtkpagesetupunixdialog.c:1440
+#: gtk/gtkpagesetupunixdialog.c:1448
 msgid "Margins from Printer..."
 msgstr "Marges de l'imprimante..."
 
-#: gtk/gtkpagesetupunixdialog.c:1600
+#: gtk/gtkpagesetupunixdialog.c:1608
 #, c-format
 msgid "Custom Size %d"
 msgstr "Taille personnalisée %d"
 
-#: gtk/gtkpagesetupunixdialog.c:1829
+#: gtk/gtkpagesetupunixdialog.c:1837
 msgid "Manage Custom Sizes"
 msgstr "Gérer les tailles personnalisées"
 
-#: gtk/gtkpagesetupunixdialog.c:1925
+#: gtk/gtkpagesetupunixdialog.c:1933
 msgid "_Width:"
 msgstr "_Largeur :"
 
-#: gtk/gtkpagesetupunixdialog.c:1937
+#: gtk/gtkpagesetupunixdialog.c:1945
 msgid "_Height:"
 msgstr "_Hauteur :"
 
-#: gtk/gtkpagesetupunixdialog.c:1949
+#: gtk/gtkpagesetupunixdialog.c:1957
 msgid "Paper Size"
 msgstr "Taille du papier"
 
-#: gtk/gtkpagesetupunixdialog.c:1959
+#: gtk/gtkpagesetupunixdialog.c:1967
 msgid "_Top:"
 msgstr "_Haut :"
 
-#: gtk/gtkpagesetupunixdialog.c:1971
+#: gtk/gtkpagesetupunixdialog.c:1979
 msgid "_Bottom:"
 msgstr "_Bas :"
 
-#: gtk/gtkpagesetupunixdialog.c:1983
+#: gtk/gtkpagesetupunixdialog.c:1991
 msgid "_Left:"
 msgstr "_Gauche :"
 
-#: gtk/gtkpagesetupunixdialog.c:1995
+#: gtk/gtkpagesetupunixdialog.c:2003
 msgid "_Right:"
 msgstr "_Droite :"
 
-#: gtk/gtkpagesetupunixdialog.c:2036
+#: gtk/gtkpagesetupunixdialog.c:2044
 msgid "Paper Margins"
 msgstr "Marges du papier"
 
@@ -2394,7 +2374,7 @@ msgstr "Chemin en amont"
 msgid "Down Path"
 msgstr "Chemin en aval"
 
-#: gtk/gtkpathbar.c:1475
+#: gtk/gtkpathbar.c:1472
 msgid "File System Root"
 msgstr "Racine du système de fichiers"
 
@@ -2410,165 +2390,182 @@ msgstr "Enregistrer dans le _dossier :"
 #. * jobs. %s gets replaced by the application name, %d gets replaced
 #. * by the job number.
 #.
-#: gtk/gtkprintoperation.c:171
+#: gtk/gtkprintoperation.c:173
 #, c-format
 msgid "%s job #%d"
 msgstr "%s, tâche n°%d"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1497
+#: gtk/gtkprintoperation.c:1504
 msgid "print operation status|Initial state"
 msgstr "État initial"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1499
+#: gtk/gtkprintoperation.c:1506
 msgid "print operation status|Preparing to print"
 msgstr "Se prépare à imprimer"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1501
+#: gtk/gtkprintoperation.c:1508
 msgid "print operation status|Generating data"
 msgstr "Production des données"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1503
+#: gtk/gtkprintoperation.c:1510
 msgid "print operation status|Sending data"
 msgstr "Envoi des données"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1505
+#: gtk/gtkprintoperation.c:1512
 msgid "print operation status|Waiting"
 msgstr "Attente"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1507
+#: gtk/gtkprintoperation.c:1514
 msgid "print operation status|Blocking on issue"
 msgstr "Interruption à cause d'un problème"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1509
+#: gtk/gtkprintoperation.c:1516
 msgid "print operation status|Printing"
 msgstr "Impression"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1511
+#: gtk/gtkprintoperation.c:1518
 msgid "print operation status|Finished"
 msgstr "Terminé"
 
 #. translators, strip the prefix up to and including the first |
-#: gtk/gtkprintoperation.c:1513
+#: gtk/gtkprintoperation.c:1520
 msgid "print operation status|Finished with error"
 msgstr "Terminé avec une erreur"
 
-#: gtk/gtkprintoperation.c:2036
+#: gtk/gtkprintoperation.c:2043
 #, c-format
 msgid "Preparing %d"
 msgstr "Préparation de %d"
 
-#: gtk/gtkprintoperation.c:2038 gtk/gtkprintoperation.c:2294
+#: gtk/gtkprintoperation.c:2045 gtk/gtkprintoperation.c:2301
 #, c-format
 msgid "Preparing"
 msgstr "Préparation"
 
-#: gtk/gtkprintoperation.c:2041
+#: gtk/gtkprintoperation.c:2048
 #, c-format
 msgid "Printing %d"
 msgstr "Impression de %d"
 
-#: gtk/gtkprintoperation-unix.c:243
+#: gtk/gtkprintoperation.c:2331
+#, c-format
+msgid "Error creating print preview"
+msgstr "Erreur lors de la création de l'aperçu"
+
+#: gtk/gtkprintoperation.c:2334
+#, c-format
+msgid "The most probable reason is that a temporary file could not be created."
+msgstr ""
+"La raison la plus probable est qu'un fichier temporaire n'a pas pu être créé."
+
+#: gtk/gtkprintoperation-unix.c:242
 #, c-format
 msgid "Error launching preview"
 msgstr "Impossible de lancer l'aperçu"
 
-#: gtk/gtkprintoperation-unix.c:281
+#: gtk/gtkprintoperation-unix.c:280
 #, c-format
 msgid "Error printing"
 msgstr "Erreur lors de l'impression"
 
-#: gtk/gtkprintoperation-unix.c:388 gtk/gtkprintoperation-win32.c:1401
+#: gtk/gtkprintoperation-unix.c:381 gtk/gtkprintoperation-win32.c:1425
 msgid "Application"
 msgstr "Application"
 
-#: gtk/gtkprintoperation-win32.c:566
+#: gtk/gtkprintoperation-win32.c:590
 msgid "Printer offline"
 msgstr "Imprimante déconnectée"
 
-#: gtk/gtkprintoperation-win32.c:568
+#: gtk/gtkprintoperation-win32.c:592
 msgid "Out of paper"
-msgstr "Manque de papier"
+msgstr "Absence de papier"
 
-#: gtk/gtkprintoperation-win32.c:570
+#. Translators: this is a printer status.
+#: gtk/gtkprintoperation-win32.c:594
+#: modules/printbackends/cups/gtkprintbackendcups.c:1413
 msgid "Paused"
 msgstr "En pause"
 
-#: gtk/gtkprintoperation-win32.c:572
+#: gtk/gtkprintoperation-win32.c:596
 msgid "Need user intervention"
 msgstr "Nécessite l'intervention de l'utilisateur"
 
-#: gtk/gtkprintoperation-win32.c:672
+#: gtk/gtkprintoperation-win32.c:696
 msgid "Custom size"
 msgstr "Taille personnalisée"
 
-#: gtk/gtkprintoperation-win32.c:1491 gtk/gtkprintoperation-win32.c:1514
-#: gtk/gtkprintoperation-win32.c:1562
-#, c-format
-msgid "Not enough free memory"
-msgstr "Mémoire insuffisante"
+#: gtk/gtkprintoperation-win32.c:1517
+msgid "No printer found"
+msgstr "Aucune imprimante trouvée"
 
-#: gtk/gtkprintoperation-win32.c:1567
-#, c-format
-msgid "Invalid argument to PrintDlgEx"
-msgstr "Argument non valide pour PrintDlgEx"
+#: gtk/gtkprintoperation-win32.c:1544
+msgid "Invalid argument to CreateDC"
+msgstr "Paramètre non valide pour CreateDC"
 
-#: gtk/gtkprintoperation-win32.c:1572
-#, c-format
-msgid "Invalid pointer to PrintDlgEx"
-msgstr "Pointeur non valide pour PrintDlgEx"
-
-#: gtk/gtkprintoperation-win32.c:1577
-#, c-format
-msgid "Invalid handle to PrintDlgEx"
-msgstr "Identificateur non valide pour PrintDlgEx"
-
-#: gtk/gtkprintoperation-win32.c:1582
-#, c-format
-msgid "Unspecified error"
-msgstr "Erreur non précisée"
-
-#: gtk/gtkprintoperation-win32.c:1633
-#, c-format
+#: gtk/gtkprintoperation-win32.c:1578 gtk/gtkprintoperation-win32.c:1801
 msgid "Error from StartDoc"
 msgstr "Erreur de StartDoc"
 
-#: gtk/gtkprintunixdialog.c:1643
+#: gtk/gtkprintoperation-win32.c:1658 gtk/gtkprintoperation-win32.c:1681
+#: gtk/gtkprintoperation-win32.c:1729
+msgid "Not enough free memory"
+msgstr "Mémoire insuffisante"
+
+#: gtk/gtkprintoperation-win32.c:1734
+msgid "Invalid argument to PrintDlgEx"
+msgstr "Argument non valide pour PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1739
+msgid "Invalid pointer to PrintDlgEx"
+msgstr "Pointeur non valide pour PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1744
+msgid "Invalid handle to PrintDlgEx"
+msgstr "Identificateur non valide pour PrintDlgEx"
+
+#: gtk/gtkprintoperation-win32.c:1749
+msgid "Unspecified error"
+msgstr "Erreur non précisée"
+
+#: gtk/gtkprintunixdialog.c:1748
 msgid "Printer"
 msgstr "Imprimante"
 
-#: gtk/gtkprintunixdialog.c:1651
+#. Translators: this is the header for the location column in the print dialog
+#: gtk/gtkprintunixdialog.c:1758
 msgid "Location"
 msgstr "Emplacement"
 
-#: gtk/gtkprintunixdialog.c:1660
+#. Translators: this is the header for the printer status column in the print dialog
+#: gtk/gtkprintunixdialog.c:1769
 msgid "Status"
 msgstr "État"
 
-#: gtk/gtkprintunixdialog.c:1682
-msgid "Print Pages"
-msgstr "Impression des pages"
+#: gtk/gtkprintunixdialog.c:1792
+msgid "Range"
+msgstr "Plage"
 
-#: gtk/gtkprintunixdialog.c:1686
-msgid "_All"
-msgstr "_Toutes"
+#: gtk/gtkprintunixdialog.c:1796
+msgid "_All Pages"
+msgstr "_Toutes les pages"
 
-#: gtk/gtkprintunixdialog.c:1693
-msgid "C_urrent"
-msgstr "Act_uelle"
+#: gtk/gtkprintunixdialog.c:1803
+msgid "C_urrent Page"
+msgstr "Page act_uelle"
 
-#: gtk/gtkprintunixdialog.c:1702
-msgid "Ra_nge"
-msgstr "Pl_age : "
+#: gtk/gtkprintunixdialog.c:1812
+msgid "Pag_es:"
+msgstr "Pag_es :"
 
-#: gtk/gtkprintunixdialog.c:1703
+#: gtk/gtkprintunixdialog.c:1813
 msgid ""
 "Specify one or more page ranges,\n"
 " e.g. 1-3,7,11"
@@ -2576,204 +2573,228 @@ msgstr ""
 "Indiquez une ou plusieurs intervalles de pages,\n"
 "p. ex. 1-3, 7, 11"
 
-#: gtk/gtkprintunixdialog.c:1722
+#: gtk/gtkprintunixdialog.c:1832
 msgid "Copies"
 msgstr "Copies"
 
 #. FIXME chpe: too much space between Copies and spinbutton, put those 2 in a hbox and make it span 2 columns
-#: gtk/gtkprintunixdialog.c:1727
+#: gtk/gtkprintunixdialog.c:1837
 msgid "Copie_s:"
 msgstr "Copie_s :"
 
-#: gtk/gtkprintunixdialog.c:1745
+#: gtk/gtkprintunixdialog.c:1855
 msgid "C_ollate"
 msgstr "_Rassembler"
 
-#: gtk/gtkprintunixdialog.c:1753
+#: gtk/gtkprintunixdialog.c:1863
 msgid "_Reverse"
 msgstr "Inve_rser"
 
-#: gtk/gtkprintunixdialog.c:1770
+#: gtk/gtkprintunixdialog.c:1883
 msgid "General"
 msgstr "Général"
 
-#: gtk/gtkprintunixdialog.c:2171
+#. Translators, this string is used to label the option in the print
+#. * dialog that controls in what order multiple pages are arranged
+#.
+#: gtk/gtkprintunixdialog.c:2423
+#: modules/printbackends/cups/gtkprintbackendcups.c:2813
+msgid "Page Ordering"
+msgstr "Ordre des pages"
+
+#: gtk/gtkprintunixdialog.c:2429
+msgid "Left to right"
+msgstr "De gauche à droite"
+
+#: gtk/gtkprintunixdialog.c:2430
+msgid "Right to left"
+msgstr "De droite à gauche"
+
+#: gtk/gtkprintunixdialog.c:2499
 msgid "Layout"
 msgstr "Agencement"
 
-#: gtk/gtkprintunixdialog.c:2175
-msgid "Pages per _side:"
-msgstr "Pages par _côté :"
-
-#: gtk/gtkprintunixdialog.c:2191
+#: gtk/gtkprintunixdialog.c:2503
 msgid "T_wo-sided:"
 msgstr "_Recto verso :"
 
-#: gtk/gtkprintunixdialog.c:2206
+#: gtk/gtkprintunixdialog.c:2518
+msgid "Pages per _side:"
+msgstr "Pages par _côté :"
+
+#: gtk/gtkprintunixdialog.c:2536
+msgid "Page or_dering:"
+msgstr "Ordre des pages :"
+
+#: gtk/gtkprintunixdialog.c:2552
 msgid "_Only print:"
 msgstr "Imprimer _seulement :"
 
 #. In enum order
-#: gtk/gtkprintunixdialog.c:2221
+#: gtk/gtkprintunixdialog.c:2567
 msgid "All sheets"
 msgstr "Toutes les pages"
 
-#: gtk/gtkprintunixdialog.c:2222
+#: gtk/gtkprintunixdialog.c:2568
 msgid "Even sheets"
 msgstr "Pages paires"
 
-#: gtk/gtkprintunixdialog.c:2223
+#: gtk/gtkprintunixdialog.c:2569
 msgid "Odd sheets"
 msgstr "Pages impaires"
 
-#: gtk/gtkprintunixdialog.c:2226
+#: gtk/gtkprintunixdialog.c:2572
 msgid "Sc_ale:"
 msgstr "É_chelle :"
 
-#: gtk/gtkprintunixdialog.c:2253
+#: gtk/gtkprintunixdialog.c:2599
 msgid "Paper"
 msgstr "Papier"
 
-#: gtk/gtkprintunixdialog.c:2257
+#: gtk/gtkprintunixdialog.c:2603
 msgid "Paper _type:"
 msgstr "_Type de papier :"
 
-#: gtk/gtkprintunixdialog.c:2272
+#: gtk/gtkprintunixdialog.c:2618
 msgid "Paper _source:"
 msgstr "_Source du papier :"
 
-#: gtk/gtkprintunixdialog.c:2287
+#: gtk/gtkprintunixdialog.c:2633
 msgid "Output t_ray:"
 msgstr "_Bac de sortie :"
 
-#: gtk/gtkprintunixdialog.c:2338
+#: gtk/gtkprintunixdialog.c:2685
 msgid "Job Details"
 msgstr "Détails de la tâche"
 
-#: gtk/gtkprintunixdialog.c:2344
+#: gtk/gtkprintunixdialog.c:2691
 msgid "Pri_ority:"
 msgstr "_Priorité :"
 
-#: gtk/gtkprintunixdialog.c:2359
+#: gtk/gtkprintunixdialog.c:2706
 msgid "_Billing info:"
 msgstr "Informations de _facturation :"
 
-#: gtk/gtkprintunixdialog.c:2377
+#: gtk/gtkprintunixdialog.c:2724
 msgid "Print Document"
 msgstr "Impression du document"
 
-#: gtk/gtkprintunixdialog.c:2383
+#. Translators: this is one of the choices for the print at option
+#. * in the print dialog
+#.
+#: gtk/gtkprintunixdialog.c:2733
 msgid "_Now"
 msgstr "_Maintenant"
 
-#: gtk/gtkprintunixdialog.c:2390
+#: gtk/gtkprintunixdialog.c:2744
 msgid "A_t:"
 msgstr "_À :"
 
-#: gtk/gtkprintunixdialog.c:2405
+#: gtk/gtkprintunixdialog.c:2763
 msgid "On _hold"
 msgstr "En _attente"
 
-#: gtk/gtkprintunixdialog.c:2424
+#: gtk/gtkprintunixdialog.c:2782
 msgid "Add Cover Page"
 msgstr "Ajout d'une page de couverture"
 
-#: gtk/gtkprintunixdialog.c:2430
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the front cover page.
+#.
+#: gtk/gtkprintunixdialog.c:2791
 msgid "Be_fore:"
 msgstr "A_vant :"
 
-#: gtk/gtkprintunixdialog.c:2445
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the back cover page.
+#.
+#: gtk/gtkprintunixdialog.c:2809
 msgid "_After:"
 msgstr "A_près :"
 
-#: gtk/gtkprintunixdialog.c:2460
+#. Translators: this is the tab label for the notebook tab containing
+#. * job-specific options in the print dialog
+#.
+#: gtk/gtkprintunixdialog.c:2827
 msgid "Job"
 msgstr "Tâche"
 
-#: gtk/gtkprintunixdialog.c:2526
+#: gtk/gtkprintunixdialog.c:2893
 msgid "Advanced"
 msgstr "Avancé"
 
-#: gtk/gtkprintunixdialog.c:2561
+#: gtk/gtkprintunixdialog.c:2928
 msgid "Image Quality"
 msgstr "Qualité de l'image"
 
-#: gtk/gtkprintunixdialog.c:2564
+#: gtk/gtkprintunixdialog.c:2931
 msgid "Color"
 msgstr "Couleur"
 
-#: gtk/gtkprintunixdialog.c:2567
+#: gtk/gtkprintunixdialog.c:2934
 msgid "Finishing"
-msgstr "Se termine"
+msgstr "Finalisation"
 
-#: gtk/gtkprintunixdialog.c:2577
+#: gtk/gtkprintunixdialog.c:2944
 msgid "Some of the settings in the dialog conflict"
 msgstr "Certains paramètres dans la boîte de dialogue sont en conflit"
 
-#: gtk/gtkprintunixdialog.c:2600
+#: gtk/gtkprintunixdialog.c:2967
 msgid "Print"
 msgstr "Imprimer"
 
-#: gtk/gtkradiotoolbutton.c:65
-msgid "Group"
-msgstr "Groupe"
-
-#: gtk/gtkradiotoolbutton.c:66
-msgid "The radio tool button whose group this button belongs to."
-msgstr "Le groupe de boutons radio auquel appartient ce bouton."
-
-#: gtk/gtkrc.c:2866
+#: gtk/gtkrc.c:2872
 #, c-format
 msgid "Unable to find include file: \"%s\""
 msgstr "Impossible de trouver le fichier à inclure : « %s »"
 
-#: gtk/gtkrc.c:3494 gtk/gtkrc.c:3497
+#: gtk/gtkrc.c:3500 gtk/gtkrc.c:3503
 #, c-format
 msgid "Unable to locate image file in pixmap_path: \"%s\""
 msgstr ""
 "Incapable de localiser le fichier image dans le chemin des pixmaps : « %s »"
 
 #: gtk/gtkrecentaction.c:155 gtk/gtkrecentaction.c:163
-#: gtk/gtkrecentchoosermenu.c:554 gtk/gtkrecentchoosermenu.c:562
+#: gtk/gtkrecentchoosermenu.c:551 gtk/gtkrecentchoosermenu.c:559
 #, c-format
 msgid "This function is not implemented for widgets of class '%s'"
 msgstr ""
 "Cette fonction n'est pas implémentée pour les widgets de la classe « %s »"
 
-#: gtk/gtkrecentchooserdefault.c:465
+#: gtk/gtkrecentchooserdefault.c:454
 msgid "Select which type of documents are shown"
-msgstr "Sélectionnez les types de fichiers à afficher"
+msgstr "Sélectionnez les types de documents à afficher"
 
-#: gtk/gtkrecentchooserdefault.c:1107 gtk/gtkrecentchooserdefault.c:1144
+#: gtk/gtkrecentchooserdefault.c:1095 gtk/gtkrecentchooserdefault.c:1132
 #, c-format
 msgid "No item for URI '%s' found"
 msgstr "Aucun élément trouvé pour l'URI « %s »"
 
-#: gtk/gtkrecentchooserdefault.c:1271
+#: gtk/gtkrecentchooserdefault.c:1259
 msgid "Untitled filter"
 msgstr "Filtre sans titre"
 
-#: gtk/gtkrecentchooserdefault.c:1626
+#: gtk/gtkrecentchooserdefault.c:1612
 msgid "Could not remove item"
 msgstr "Impossible de supprimer l'élément"
 
-#: gtk/gtkrecentchooserdefault.c:1669
+#: gtk/gtkrecentchooserdefault.c:1655
 msgid "Could not clear list"
 msgstr "Impossible d'effacer la liste"
 
-#: gtk/gtkrecentchooserdefault.c:1753
+#: gtk/gtkrecentchooserdefault.c:1739
 msgid "Copy _Location"
 msgstr "_Copier l'emplacement"
 
-#: gtk/gtkrecentchooserdefault.c:1766
+#: gtk/gtkrecentchooserdefault.c:1752
 msgid "_Remove From List"
 msgstr "_Enlever de la liste"
 
-#: gtk/gtkrecentchooserdefault.c:1775
+#: gtk/gtkrecentchooserdefault.c:1761
 msgid "_Clear List"
 msgstr "_Effacer la liste"
 
-#: gtk/gtkrecentchooserdefault.c:1789
+#: gtk/gtkrecentchooserdefault.c:1775
 msgid "Show _Private Resources"
 msgstr "Afficher les ressources _privées"
 
@@ -2787,21 +2808,21 @@ msgstr "Afficher les ressources _privées"
 #. * user appended or prepended custom menu items to the
 #. * recent chooser menu widget.
 #.
-#: gtk/gtkrecentchoosermenu.c:320
+#: gtk/gtkrecentchoosermenu.c:317
 msgid "No items found"
 msgstr "Aucun élément trouvé"
 
-#: gtk/gtkrecentchoosermenu.c:474 gtk/gtkrecentchoosermenu.c:530
+#: gtk/gtkrecentchoosermenu.c:471 gtk/gtkrecentchoosermenu.c:527
 #, c-format
 msgid "No recently used resource found with URI `%s'"
 msgstr "Aucune ressource utilisée récemment n'a été trouvée avec l'URI « %s »"
 
-#: gtk/gtkrecentchoosermenu.c:741
+#: gtk/gtkrecentchoosermenu.c:738
 #, c-format
 msgid "Open '%s'"
 msgstr "Ouvrir « %s »"
 
-#: gtk/gtkrecentchoosermenu.c:771
+#: gtk/gtkrecentchoosermenu.c:768
 msgid "Unknown item"
 msgstr "Élément inconnu"
 
@@ -2812,7 +2833,7 @@ msgstr "Élément inconnu"
 #. *
 #. * Don't include the prefix "recent menu label|" in the translation.
 #.
-#: gtk/gtkrecentchoosermenu.c:784
+#: gtk/gtkrecentchoosermenu.c:781
 #, c-format
 msgid "recent menu label|_%d. %s"
 msgstr "_%d. %s"
@@ -2822,13 +2843,15 @@ msgstr "_%d. %s"
 #. *
 #. * Don't include the prefix "recent menu label|" in the translation.
 #.
-#: gtk/gtkrecentchoosermenu.c:791
+#: gtk/gtkrecentchoosermenu.c:788
 #, c-format
 msgid "recent menu label|%d. %s"
 msgstr "%d. %s"
 
-#: gtk/gtkrecentmanager.c:1041 gtk/gtkrecentmanager.c:1187
-#: gtk/gtkrecentmanager.c:1197 gtk/gtkrecentmanager.c:1250
+#: gtk/gtkrecentmanager.c:1020 gtk/gtkrecentmanager.c:1033
+#: gtk/gtkrecentmanager.c:1171 gtk/gtkrecentmanager.c:1181
+#: gtk/gtkrecentmanager.c:1234 gtk/gtkrecentmanager.c:1243
+#: gtk/gtkrecentmanager.c:1258
 #, c-format
 msgid "Unable to find an item with URI '%s'"
 msgstr "Impossible de trouver un élément dont l'URI est « %s »"
@@ -3021,7 +3044,7 @@ msgstr "_Centrer"
 #. translators, strip the prefix up to and including the first |
 #: gtk/gtkstock.c:346
 msgid "Justify|_Fill"
-msgstr "_Remplir"
+msgstr "_Justifié"
 
 #. translators, strip the prefix up to and including the first |
 #: gtk/gtkstock.c:348
@@ -3110,110 +3133,114 @@ msgid "Reverse portrait"
 msgstr "Portrait inversé"
 
 #: gtk/gtkstock.c:377
+msgid "Page Set_up"
+msgstr "_Mise en page"
+
+#: gtk/gtkstock.c:378
 msgid "_Paste"
 msgstr "C_oller"
 
-#: gtk/gtkstock.c:378
+#: gtk/gtkstock.c:379
 msgid "_Preferences"
 msgstr "_Préférences"
 
-#: gtk/gtkstock.c:379
+#: gtk/gtkstock.c:380
 msgid "_Print"
 msgstr "_Imprimer"
 
-#: gtk/gtkstock.c:380
+#: gtk/gtkstock.c:381
 msgid "Print Pre_view"
 msgstr "_Aperçu avant impression"
 
-#: gtk/gtkstock.c:381
+#: gtk/gtkstock.c:382
 msgid "_Properties"
 msgstr "_Propriétés"
 
-#: gtk/gtkstock.c:382
+#: gtk/gtkstock.c:383
 msgid "_Quit"
 msgstr "_Quitter"
 
-#: gtk/gtkstock.c:383
+#: gtk/gtkstock.c:384
 msgid "_Redo"
 msgstr "_Rétablir"
 
-#: gtk/gtkstock.c:384
+#: gtk/gtkstock.c:385
 msgid "_Refresh"
 msgstr "A_ctualiser"
 
-#: gtk/gtkstock.c:386
+#: gtk/gtkstock.c:387
 msgid "_Revert"
 msgstr "_Rétablir"
 
-#: gtk/gtkstock.c:387
+#: gtk/gtkstock.c:388
 msgid "_Save"
 msgstr "_Enregistrer"
 
-#: gtk/gtkstock.c:388
+#: gtk/gtkstock.c:389
 msgid "Save _As"
 msgstr "Enregistrer _sous"
 
-#: gtk/gtkstock.c:389
+#: gtk/gtkstock.c:390
 msgid "Select _All"
 msgstr "_Tout sélectionner"
 
-#: gtk/gtkstock.c:390
+#: gtk/gtkstock.c:391
 msgid "_Color"
 msgstr "_Couleur"
 
-#: gtk/gtkstock.c:391
+#: gtk/gtkstock.c:392
 msgid "_Font"
 msgstr "_Police"
 
-#: gtk/gtkstock.c:392
+#: gtk/gtkstock.c:393
 msgid "_Ascending"
 msgstr "_Croissant"
 
-#: gtk/gtkstock.c:393
+#: gtk/gtkstock.c:394
 msgid "_Descending"
 msgstr "_Décroissant"
 
-#: gtk/gtkstock.c:394
+#: gtk/gtkstock.c:395
 msgid "_Spell Check"
 msgstr "Vérification _orthographique"
 
-#: gtk/gtkstock.c:395
+#: gtk/gtkstock.c:396
 msgid "_Stop"
 msgstr "_Arrêter"
 
-#: gtk/gtkstock.c:396
+#: gtk/gtkstock.c:397
 msgid "_Strikethrough"
 msgstr "_Barré"
 
-#: gtk/gtkstock.c:397
+#: gtk/gtkstock.c:398
 msgid "_Undelete"
 msgstr "_Récupérer"
 
-#: gtk/gtkstock.c:398
+#: gtk/gtkstock.c:399
 msgid "_Underline"
 msgstr "_Souligné"
 
-#: gtk/gtkstock.c:399
+#: gtk/gtkstock.c:400
 msgid "_Undo"
 msgstr "A_nnuler"
 
-#: gtk/gtkstock.c:400
+#: gtk/gtkstock.c:401
 msgid "_Yes"
 msgstr "_Oui"
 
-#: gtk/gtkstock.c:401
+#: gtk/gtkstock.c:402
 msgid "_Normal Size"
 msgstr "Taille _normale"
 
-#: gtk/gtkstock.c:402
+#: gtk/gtkstock.c:403
 msgid "Best _Fit"
 msgstr "A_juster au mieux"
 
-#: gtk/gtkstock.c:403
+#: gtk/gtkstock.c:404
 msgid "Zoom _In"
 msgstr "Zoom a_vant"
 
-#: gtk/gtkstock.c:404
+#: gtk/gtkstock.c:405
 msgid "Zoom _Out"
 msgstr "Zoom a_rrière"
 
@@ -3331,55 +3358,53 @@ msgid "A <text> element can't occur before a <tags> element"
 msgstr "Un élément <text> ne peut pas être présent avant un élément <tags>"
 
 #: gtk/gtktextbufferserialize.c:1779
-#, c-format
 msgid "Serialized data is malformed"
 msgstr "Les données linéarisées ne sont pas conformes"
 
 #: gtk/gtktextbufferserialize.c:1857
-#, c-format
 msgid ""
 "Serialized data is malformed. First section isn't GTKTEXTBUFFERCONTENTS-0001"
 msgstr ""
 "Les données linéarisées ne sont pas conformes. La première section n'est pas "
 "GTKTEXTBUFFERCONTENTS-0001"
 
-#: gtk/gtktextutil.c:60
+#: gtk/gtktextutil.c:61
 msgid "LRM _Left-to-right mark"
 msgstr "LRM Marque _gauche-à-droite"
 
-#: gtk/gtktextutil.c:61
+#: gtk/gtktextutil.c:62
 msgid "RLM _Right-to-left mark"
 msgstr "RLM Marque _droite-à-gauche"
 
-#: gtk/gtktextutil.c:62
+#: gtk/gtktextutil.c:63
 msgid "LRE Left-to-right _embedding"
 msgstr "LRE _Enchâssement gauche-à-droite "
 
-#: gtk/gtktextutil.c:63
+#: gtk/gtktextutil.c:64
 msgid "RLE Right-to-left e_mbedding"
 msgstr "RLE E_nchâssement droite-à-gauche"
 
-#: gtk/gtktextutil.c:64
+#: gtk/gtktextutil.c:65
 msgid "LRO Left-to-right _override"
 msgstr "LRO _Forçage gauche-à-droite"
 
-#: gtk/gtktextutil.c:65
+#: gtk/gtktextutil.c:66
 msgid "RLO Right-to-left o_verride"
 msgstr "RLO F_orçage droite-à-gauche"
 
-#: gtk/gtktextutil.c:66
+#: gtk/gtktextutil.c:67
 msgid "PDF _Pop directional formatting"
 msgstr "PDF _Dépilement de formatage directionnel"
 
-#: gtk/gtktextutil.c:67
+#: gtk/gtktextutil.c:68
 msgid "ZWS _Zero width space"
 msgstr "ZWS E_space sans chasse"
 
-#: gtk/gtktextutil.c:68
+#: gtk/gtktextutil.c:69
 msgid "ZWJ Zero width _joiner"
 msgstr "ZWJ _Liant sans chasse"
 
-#: gtk/gtktextutil.c:69
+#: gtk/gtktextutil.c:70
 msgid "ZWNJ Zero width _non-joiner"
 msgstr "ZWNJ _Anti-liant sans chasse"
 
@@ -3388,46 +3413,57 @@ msgstr "ZWNJ _Anti-liant sans chasse"
 msgid "Unable to locate theme engine in module_path: \"%s\","
 msgstr "Impossible de trouver le moteur de thème dans module_path : « %s »"
 
-#: gtk/gtktipsquery.c:187
+#: gtk/gtktipsquery.c:188
 msgid "--- No Tip ---"
 msgstr "--- Pas de conseil du jour ---"
 
-#: gtk/gtkuimanager.c:1226
-#, c-format
-msgid "Unknown attribute '%s' on line %d char %d"
-msgstr "Attribut « %s » inconnu à la ligne %d caractère %d"
-
-#: gtk/gtkuimanager.c:1443
+#: gtk/gtkuimanager.c:1453
 #, c-format
 msgid "Unexpected start tag '%s' on line %d char %d"
 msgstr "Balise de début inattendue « %s » à la ligne %d caractère %d"
 
-#: gtk/gtkuimanager.c:1533
+#: gtk/gtkuimanager.c:1543
 #, c-format
 msgid "Unexpected character data on line %d char %d"
 msgstr "Donnée caractère inattendue à la ligne %d caractère %d"
 
-#: gtk/gtkuimanager.c:2356
+#: gtk/gtkuimanager.c:2366
 msgid "Empty"
 msgstr "Vide"
 
-#: gtk/gtkvolumebutton.c:81
+#: gtk/gtkvolumebutton.c:77
 msgid "Volume"
 msgstr "Volume"
 
-#: gtk/gtkvolumebutton.c:83
+#: gtk/gtkvolumebutton.c:79
+msgid "Turns volume down or up"
+msgstr "Augmente ou diminue le volume"
+
+#: gtk/gtkvolumebutton.c:82
+msgid "Adjusts the volume"
+msgstr "Règle le volume"
+
+#: gtk/gtkvolumebutton.c:85 gtk/gtkvolumebutton.c:88
 msgid "Volume Down"
 msgstr "Baisser le volume"
 
-#: gtk/gtkvolumebutton.c:85
+#: gtk/gtkvolumebutton.c:87
+msgid "Decreases the volume"
+msgstr "Diminue le volume"
+
+#: gtk/gtkvolumebutton.c:91 gtk/gtkvolumebutton.c:94
 msgid "Volume Up"
 msgstr "Augmenter le volume"
 
-#: gtk/gtkvolumebutton.c:139
+#: gtk/gtkvolumebutton.c:93
+msgid "Increases the volume"
+msgstr "Augmente le volume"
+
+#: gtk/gtkvolumebutton.c:151
 msgid "Muted"
 msgstr "Sourdine"
 
-#: gtk/gtkvolumebutton.c:143
+#: gtk/gtkvolumebutton.c:155
 msgid "Full Volume"
 msgstr "Volume maximum"
 
@@ -3438,7 +3474,7 @@ msgstr "Volume maximum"
 #. * Do not translate and do not include the "volume percentage|"
 #. * part in the translation!
 #.
-#: gtk/gtkvolumebutton.c:158
+#: gtk/gtkvolumebutton.c:170
 #, c-format
 msgid "volume percentage|%d %%"
 msgstr "%d %%"
@@ -3876,7 +3912,7 @@ msgstr "Enveloppe kahu2"
 #. translators, strip everything up to the first |
 #: gtk/paper_names_offsets.c:177
 msgid "paper size|oufuku (reply postcard)"
-msgstr "oufuku (réponse par carte postale)"
+msgstr "oufuku (carte postale de réponse)"
 
 #. translators, strip everything up to the first |
 #: gtk/paper_names_offsets.c:179
@@ -4283,17 +4319,17 @@ msgstr "Impossible d'écrire l'index du dossier\n"
 msgid "Failed to rewrite header\n"
 msgstr "Impossible de réécrire l'en-tête\n"
 
-#: gtk/updateiconcache.c:1454
+#: gtk/updateiconcache.c:1455
 #, c-format
 msgid "Failed to open file %s : %s\n"
 msgstr "Impossible d'ouvrir le fichier « %s » : %s\n"
 
-#: gtk/updateiconcache.c:1462
+#: gtk/updateiconcache.c:1463
 #, c-format
 msgid "Failed to write cache file: %s\n"
 msgstr "Impossible d'écrire dans le fichier de cache : %s\n"
 
-#: gtk/updateiconcache.c:1497
+#: gtk/updateiconcache.c:1499
 #, c-format
 msgid "The generated cache was invalid.\n"
 msgstr "Le cache généré n'était pas valide.\n"
@@ -4373,7 +4409,7 @@ msgid "Amharic (EZ+)"
 msgstr "Amharique (EZ+)"
 
 #. ID
-#: modules/input/imcedilla.c:91
+#: modules/input/imcedilla.c:92
 msgid "Cedilla"
 msgstr "Cédille"
 
@@ -4422,128 +4458,307 @@ msgstr "Vietnamien (VIQR)"
 msgid "X Input Method"
 msgstr "Méthode de saisie X"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1728
+#: modules/printbackends/cups/gtkprintbackendcups.c:1115
+#, c-format
+msgid "Printer '%s' is low on toner."
+msgstr "Le toner de l'imprimante « %s » est presque vide."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1116
+#, c-format
+msgid "Printer '%s' has no toner left."
+msgstr "Le toner de l'imprimante « %s » est vide."
+
+#. Translators: "Developer" like on photo development context
+#: modules/printbackends/cups/gtkprintbackendcups.c:1118
+#, c-format
+msgid "Printer '%s' is low on developer."
+msgstr "La quantité de développeur dans l'imprimante « %s » est faible."
+
+#. Translators: "Developer" like on photo development context
+#: modules/printbackends/cups/gtkprintbackendcups.c:1120
+#, c-format
+msgid "Printer '%s' is out of developer."
+msgstr "Il n'y a plus de développeur dans l'imprimante « %s »."
+
+#. Translators: "marker" is one color bin of the printer
+#: modules/printbackends/cups/gtkprintbackendcups.c:1122
+#, c-format
+msgid "Printer '%s' is low on at least one marker supply."
+msgstr ""
+"Au moins un des consommables est presque épuisé dans l'imprimante « %s »."
+
+#. Translators: "marker" is one color bin of the printer
+#: modules/printbackends/cups/gtkprintbackendcups.c:1124
+#, c-format
+msgid "Printer '%s' is out of at least one marker supply."
+msgstr "Au moins un des consommables est épuisé dans l'imprimante « %s »."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1125
+#, c-format
+msgid "The cover is open on printer '%s'."
+msgstr "Le capot de l'imprimante « %s » est ouvert."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1126
+#, c-format
+msgid "The door is open on printer '%s'."
+msgstr "La porte de l'imprimante « %s » est ouverte."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1127
+#, c-format
+msgid "Printer '%s' is low on paper."
+msgstr "Il n'y a presque plus de papier dans l'imprimante « %s »."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1128
+#, c-format
+msgid "Printer '%s' is out of paper."
+msgstr "Il n'y a plus de papier dans l'imprimante « %s »."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1129
+#, c-format
+msgid "Printer '%s' is currently off-line."
+msgstr "L'imprimante « %s » est actuellement déconnectée."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1130
+#, c-format
+msgid "Printer '%s' may not be connected."
+msgstr "L'imprimante « %s » ne semble pas être connectée."
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:1131
+#, c-format
+msgid "There is a problem on printer '%s'."
+msgstr "Il y a un problème avec l'imprimante « %s »."
+
+#. Translators: this is a printer status.
+#: modules/printbackends/cups/gtkprintbackendcups.c:1410
+msgid "Paused ; Rejecting Jobs"
+msgstr "En pause ; les tâches sont rejetées"
+
+#. Translators: this is a printer status.
+#: modules/printbackends/cups/gtkprintbackendcups.c:1416
+msgid "Rejecting Jobs"
+msgstr "Tâches non acceptées"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2084
 msgid "Two Sided"
 msgstr "Recto verso"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1729
+#: modules/printbackends/cups/gtkprintbackendcups.c:2085
 msgid "Paper Type"
 msgstr "Type de papier"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1730
+#: modules/printbackends/cups/gtkprintbackendcups.c:2086
 msgid "Paper Source"
 msgstr "Source du papier"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1731
+#: modules/printbackends/cups/gtkprintbackendcups.c:2087
 msgid "Output Tray"
 msgstr "Bac de sortie"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1740
+#: modules/printbackends/cups/gtkprintbackendcups.c:2096
 msgid "One Sided"
 msgstr "Recto"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1741
-#: modules/printbackends/cups/gtkprintbackendcups.c:1742
-#: modules/printbackends/cups/gtkprintbackendcups.c:1746
+#. Translators: this is an option of "Paper Source"
+#: modules/printbackends/cups/gtkprintbackendcups.c:2098
+#: modules/printbackends/cups/gtkprintbackendcups.c:2100
+#: modules/printbackends/cups/gtkprintbackendcups.c:2108
 msgid "Auto Select"
 msgstr "Sélection automatique"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:1743
-#: modules/printbackends/cups/gtkprintbackendcups.c:1744
-#: modules/printbackends/cups/gtkprintbackendcups.c:1745
-#: modules/printbackends/cups/gtkprintbackendcups.c:2215
+#. Translators: this is an option of "Paper Source"
+#: modules/printbackends/cups/gtkprintbackendcups.c:2102
+#: modules/printbackends/cups/gtkprintbackendcups.c:2104
+#: modules/printbackends/cups/gtkprintbackendcups.c:2106
+#: modules/printbackends/cups/gtkprintbackendcups.c:2577
 msgid "Printer Default"
-msgstr "Défaut"
+msgstr "Selon l'imprimante"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#. Translators: These strings name the possible values of the
+#. * job priority option in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Urgent"
 msgstr "Urgent"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "High"
 msgstr "Haute"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Medium"
 msgstr "Moyenne"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2409
+#: modules/printbackends/cups/gtkprintbackendcups.c:2774
 msgid "Low"
 msgstr "Basse"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+# Ce qui suit concerne le sens de lecture de la langue
+#. Translators: These strings name the possible arrangements of
+#. * multiple pages on a sheet when printing
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2779
+msgid "Left to right, top to bottom"
+msgstr "De gauche à droite, du haut vers le bas"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2779
+msgid "Left to right, bottom to top"
+msgstr "De gauche à droite, du bas vers le haut"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2780
+msgid "Right to left, top to bottom"
+msgstr "De droite à gauche, du haut vers le bas"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2780
+msgid "Right to left, bottom to top"
+msgstr "De droite à gauche, du bas vers le haut"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2781
+msgid "Top to bottom, left to right"
+msgstr "Du haut vers le bas, de gauche à droite"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2781
+msgid "Top to bottom, right to left"
+msgstr "Du haut vers le bas, de droite à gauche"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2782
+msgid "Bottom to top, left to right"
+msgstr "Du bas vers le haut, de gauche à droite"
+
+#: modules/printbackends/cups/gtkprintbackendcups.c:2782
+msgid "Bottom to top, right to left"
+msgstr "Du bas vers le haut, de droite à gauche"
+
+#. Cups specific, non-ppd related settings
+#. Translators, this string is used to label the pages-per-sheet option
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2797
+msgid "Pages per Sheet"
+msgstr "Pages par feuille"
+
+#. Translators, this string is used to label the job priority option
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2834
+msgid "Job Priority"
+msgstr "Priorité de la tâche"
+
+#. Translators, this string is used to label the billing info entry
+#. * in the print dialog
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2845
+msgid "Billing Info"
+msgstr "Informations de facturation"
+
+#. Translators, these strings are names for various 'standard' cover
+#. * pages that the printing system may support.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "None"
 msgstr "Aucune"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Classified"
 msgstr "Classifié"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Confidential"
 msgstr "Confidentiel"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Secret"
 msgstr "Secret"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Standard"
 msgstr "Standard"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Top Secret"
 msgstr "Top secret"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2411
+#: modules/printbackends/cups/gtkprintbackendcups.c:2859
 msgid "Unclassified"
 msgstr "Non classifié"
 
-#: modules/printbackends/cups/gtkprintbackendcups.c:2504
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the front cover page.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2894
+msgid "Before"
+msgstr "Avant"
+
+#. Translators, this is the label used for the option in the print
+#. * dialog that controls the back cover page.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2909
+msgid "After"
+msgstr "Après"
+
+#. Translators: this is the name of the option that controls when
+#. * a print job is printed. Possible values are 'now', a specified time,
+#. * or 'on hold'
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2929
+msgid "Print at"
+msgstr "Imprimer à"
+
+#. Translators: this is the name of the option that allows the user
+#. * to specify a time when a print job will be printed.
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2940
+msgid "Print at time"
+msgstr "Imprimer à l'heure"
+
+#. Translators: this format is used to display a custom paper
+#. * size. The two placeholders are replaced with the width and height
+#. * in points. E.g: "Custom 230.4x142.9"
+#.
+#: modules/printbackends/cups/gtkprintbackendcups.c:2975
 #, c-format
 msgid "Custom %sx%s"
 msgstr "Personnalisé %sx%s"
 
 #. default filename used for print-to-file
-#: modules/printbackends/file/gtkprintbackendfile.c:236
+#: modules/printbackends/file/gtkprintbackendfile.c:235
 #, c-format
 msgid "output.%s"
 msgstr "sortie.%s"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:467
+#: modules/printbackends/file/gtkprintbackendfile.c:466
 msgid "Print to File"
 msgstr "Imprimer dans un fichier"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:544
+#: modules/printbackends/file/gtkprintbackendfile.c:543
 msgid "PDF"
 msgstr "PDF"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:544
+#: modules/printbackends/file/gtkprintbackendfile.c:543
 msgid "Postscript"
 msgstr "Postscript"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:556
+#: modules/printbackends/file/gtkprintbackendfile.c:555
 #: modules/printbackends/test/gtkprintbackendtest.c:503
 msgid "Pages per _sheet:"
 msgstr "Pages par _feuille :"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:602
+#: modules/printbackends/file/gtkprintbackendfile.c:601
 msgid "File"
 msgstr "Fichier"
 
-#: modules/printbackends/file/gtkprintbackendfile.c:611
+#: modules/printbackends/file/gtkprintbackendfile.c:610
 msgid "_Output format"
 msgstr "Format de _sortie"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:399
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:398
 msgid "Print to LPR"
 msgstr "Imprimer vers LPR"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:425
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:424
 msgid "Pages Per Sheet"
 msgstr "Pages par feuille"
 
-#: modules/printbackends/lpr/gtkprintbackendlpr.c:432
+#: modules/printbackends/lpr/gtkprintbackendlpr.c:431
 msgid "Command Line"
 msgstr "Ligne de commande"
 
@@ -4557,7 +4772,10 @@ msgstr "sortie-test.%s"
 msgid "Print to Test Printer"
 msgstr "Imprimer vers une imprimante test"
 
-#: tests/testfilechooser.c:205
+#: tests/testfilechooser.c:207
 #, c-format
 msgid "Could not get information for file '%s': %s"
 msgstr "Impossible d'obtenir les informations du fichier « %s » : %s"
+
+#~ msgid "Couldn't create pixbuf"
+#~ msgstr "Impossible de créer un pixbuf"

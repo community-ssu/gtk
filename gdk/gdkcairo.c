@@ -29,6 +29,12 @@
  * 
  * Creates a Cairo context for drawing to @drawable.
  *
+ * <note><para>
+ * Note that due to double-buffering, Cairo contexts created 
+ * in a GTK+ expose event handler cannot be cached and reused 
+ * between different expose events. 
+ * </para></note>
+ *
  * Return value: A newly created Cairo context. Free with
  *  cairo_destroy() when you are done drawing.
  * 
@@ -59,8 +65,8 @@ gdk_cairo_create (GdkDrawable *drawable)
  * Since: 2.8
  **/
 void
-gdk_cairo_set_source_color (cairo_t  *cr,
-			    GdkColor *color)
+gdk_cairo_set_source_color (cairo_t        *cr,
+			    const GdkColor *color)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (color != NULL);
@@ -81,8 +87,8 @@ gdk_cairo_set_source_color (cairo_t  *cr,
  * Since: 2.8
  **/
 void
-gdk_cairo_rectangle (cairo_t      *cr,
-		     GdkRectangle *rectangle)
+gdk_cairo_rectangle (cairo_t            *cr,
+		     const GdkRectangle *rectangle)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail (rectangle != NULL);
@@ -102,8 +108,8 @@ gdk_cairo_rectangle (cairo_t      *cr,
  * Since: 2.8
  **/
 void
-gdk_cairo_region (cairo_t   *cr,
-		  GdkRegion *region)
+gdk_cairo_region (cairo_t         *cr,
+		  const GdkRegion *region)
 {
   GdkRegionBox *boxes;
   gint n_boxes, i;
@@ -136,16 +142,17 @@ gdk_cairo_region (cairo_t   *cr,
  * Since: 2.8
  **/
 void
-gdk_cairo_set_source_pixbuf (cairo_t   *cr,
-			     GdkPixbuf *pixbuf,
-			     double     pixbuf_x,
-			     double     pixbuf_y)
+gdk_cairo_set_source_pixbuf (cairo_t         *cr,
+			     const GdkPixbuf *pixbuf,
+			     double           pixbuf_x,
+			     double           pixbuf_y)
 {
   gint width = gdk_pixbuf_get_width (pixbuf);
   gint height = gdk_pixbuf_get_height (pixbuf);
   guchar *gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
   int gdk_rowstride = gdk_pixbuf_get_rowstride (pixbuf);
   int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
+  int cairo_stride;
   guchar *cairo_pixels;
   cairo_format_t format;
   cairo_surface_t *surface;
@@ -157,10 +164,12 @@ gdk_cairo_set_source_pixbuf (cairo_t   *cr,
   else
     format = CAIRO_FORMAT_ARGB32;
 
-  cairo_pixels = g_malloc (4 * width * height);
+  cairo_stride = cairo_format_stride_for_width (format, width);
+  cairo_pixels = g_malloc (height * cairo_stride);
   surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
-						 format,
-						 width, height, 4 * width);
+                                                 format,
+                                                 width, height, cairo_stride);
+
   cairo_surface_set_user_data (surface, &key,
 			       cairo_pixels, (cairo_destroy_func_t)g_free);
 
@@ -217,7 +226,7 @@ gdk_cairo_set_source_pixbuf (cairo_t   *cr,
 	}
 
       gdk_pixels += gdk_rowstride;
-      cairo_pixels += 4 * width;
+      cairo_pixels += cairo_stride;
     }
 
   cairo_set_source_surface (cr, surface, pixbuf_x, pixbuf_y);

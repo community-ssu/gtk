@@ -40,8 +40,9 @@ all :	\
 # Test programs:
 #
 TESTAPPS = \
-	autotestfilechooser autotestfilesystem \
-	buildertest floatingtest \
+#	autotestfilechooser autotestfilesystem \
+#	buildertest floatingtest \
+	objecttests \
 	testaccel testactions testassistant \
 	testbbox \
 	testcairo testcalendar testcellrenderertext testcombo testcombochange \
@@ -50,17 +51,17 @@ TESTAPPS = \
 	testfilechooser testfilechooserbutton testframe \
 	testgrouping testgtk \
 	testicontheme testiconview testimage testinput \
-	testmenus testmenubars testmerge testmultidisplay testmultiscreen \
+	testmenus testmountoperation testmenubars testmerge testmultidisplay testmultiscreen \
 	testnouiprint testnotebookdnd \
 	testprint \
 	testrecentchooser testrecentchoosermenu testrgb testrichtext \
 	testselection testspinbutton \
-	testtext textbuffertest testtoolbar testtooltips \
-	testtreecolumns testtreeedit testtreeflow testtreefocus \
+	testtext testtoolbar testtooltips \
+	testtreecolumns testtreecolumnsizing testtreeedit testtreeflow testtreefocus \
 	testtreemodel testtreesort testtreeview treestoretest \
 	testsocket testsocket_child teststatusicon \
 	testthreads testvolumebutton testxinerama \
-	simple 
+	simple
 
 # syntax error : illegal character '-' in macro
 #stresstest-toolbar

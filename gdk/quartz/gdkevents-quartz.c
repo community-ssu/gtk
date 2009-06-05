@@ -2,7 +2,7 @@
  *
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
  * Copyright (C) 1998-2002 Tor Lillqvist
- * Copyright (C) 2005-2007 Imendio AB
+ * Copyright (C) 2005-2008 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include <pthread.h>
@@ -105,17 +105,12 @@ which_window_is_this (GdkWindow *window)
   return buf;
 }
 
-/* A category that exposes the protected carbon event for an NSEvent. */
-@interface NSEvent (GdkQuartzNSEvent)
-- (void *)gdk_quartz_event_ref;
-@end 
-
-@implementation NSEvent (GdkQuartzNSEvent)
-- (void *)gdk_quartz_event_ref
+NSEvent *
+gdk_quartz_event_get_nsevent (GdkEvent *event)
 {
-  return _eventRef;
+  /* FIXME: If the event here is unallocated, we crash. */
+  return ((GdkEventPrivate *) event)->windowing_data;
 }
-@end
 
 void 
 _gdk_events_init (void)
@@ -480,6 +475,8 @@ get_keyboard_modifiers_from_ns_event (NSEvent *nsevent)
   if (nsflags & NSControlKeyMask)
     modifiers |= GDK_CONTROL_MASK;
   if (nsflags & NSCommandKeyMask)
+    modifiers |= GDK_META_MASK;
+  if (nsflags & NSAlternateKeyMask)
     modifiers |= GDK_MOD1_MASK;
 
   return modifiers;
@@ -650,6 +647,7 @@ create_crossing_event (GdkWindow      *window,
     point = [nsevent locationInWindow];
 
     toplevel = [(GdkQuartzView *)[nswindow contentView] gdkWindow];
+
     impl = GDK_WINDOW_IMPL_QUARTZ (GDK_WINDOW_OBJECT (toplevel)->impl);
 
     x_tmp = point.x;
@@ -884,6 +882,11 @@ _gdk_quartz_events_update_mouse_window (GdkWindow *window)
 {
   if (window == current_mouse_window)
     return;
+
+#ifdef G_ENABLE_DEBUG
+  if (_gdk_debug_flags & GDK_DEBUG_EVENTS)
+    _gdk_quartz_window_debug_highlight (window, 0);
+#endif /* G_ENABLE_DEBUG */  
 
   if (window)
     g_object_ref (window);
@@ -1161,6 +1164,10 @@ _gdk_quartz_events_trigger_crossing_events (gboolean defer_to_mainloop)
                                 subtype:GDK_QUARTZ_EVENT_SUBTYPE_FAKE_CROSSING
                                   data1:0
                                   data2:0];
+
+#ifdef G_ENABLE_DEBUG
+  /*_gdk_quartz_window_debug_highlight (mouse_window, 0);*/
+#endif
 
   synthesize_crossing_events (mouse_window, GDK_CROSSING_NORMAL, nsevent, x, y);
 }
@@ -1542,10 +1549,15 @@ create_key_event (GdkWindow    *window,
                   GdkEventType  type)
 {
   GdkEvent *event;
+  GdkEventPrivate *priv;
   gchar buf[7];
   gunichar c = 0;
 
   event = gdk_event_new (type);
+
+  priv = (GdkEventPrivate *) event;
+  priv->windowing_data = [nsevent retain];
+
   event->key.window = window;
   event->key.time = get_time_from_ns_event (nsevent);
   event->key.state = get_keyboard_modifiers_from_ns_event (nsevent);
@@ -1575,7 +1587,7 @@ create_key_event (GdkWindow    *window,
         {
         case GDK_Meta_R:
         case GDK_Meta_L:
-          mask = GDK_MOD1_MASK;
+          mask = GDK_META_MASK;
           break;
         case GDK_Shift_R:
         case GDK_Shift_L:
@@ -1586,7 +1598,7 @@ create_key_event (GdkWindow    *window,
           break;
         case GDK_Alt_R:
         case GDK_Alt_L:
-          mask = GDK_MOD5_MASK;
+          mask = GDK_MOD1_MASK;
           break;
         case GDK_Control_R:
         case GDK_Control_L:
@@ -1680,46 +1692,6 @@ gdk_event_translate (NSEvent *nsevent)
        */
     }
 
-  /* Special-case menu shortcut events. We create command events for
-   * those and forward to the corresponding menu.
-   */
-  if ((!_gdk_quartz_keyboard_grab_window ||
-       (_gdk_quartz_keyboard_grab_window && keyboard_grab_owner_events)) &&
-      [nsevent type] == NSKeyDown)
-    {
-      EventRef event_ref;
-      MenuRef menu_ref;
-      MenuItemIndex index;
-
-      event_ref = [nsevent gdk_quartz_event_ref];
-      if (IsMenuKeyEvent (NULL, event_ref,
-                          kMenuEventQueryOnly, 
-                          &menu_ref, &index))
-        {
-          MenuCommand menu_command;
-          HICommand hi_command;
-
-          if (GetMenuItemCommandID (menu_ref, index, &menu_command) != noErr)
-            return FALSE;
-   
-          hi_command.commandID = menu_command;
-          hi_command.menu.menuRef = menu_ref;
-          hi_command.menu.menuItemIndex = index;
-
-          CreateEvent (NULL, kEventClassCommand, kEventCommandProcess, 
-                       0, kEventAttributeUserEvent, &event_ref);
-          SetEventParameter (event_ref, kEventParamDirectObject, 
-                             typeHICommand, 
-                             sizeof (HICommand), &hi_command);
-
-          SendEventToEventTarget (event_ref, GetMenuEventTarget (menu_ref));
-
-          ReleaseEvent (event_ref);
-
-          return TRUE;
-        }
-    }
-
   /* Handle our generated "fake" crossing events. */
   if ([nsevent type] == NSApplicationDefined && 
       [nsevent subtype] == GDK_QUARTZ_EVENT_SUBTYPE_FAKE_CROSSING)
@@ -1749,6 +1721,19 @@ gdk_event_translate (NSEvent *nsevent)
 
   nswindow = [nsevent window];
 
+  /* Apply any global filters. */
+  if (_gdk_default_filters)
+    {
+      result = apply_filters (NULL, nsevent, _gdk_default_filters);
+
+      /* If result is GDK_FILTER_CONTINUE, we continue as if nothing
+       * happened. If it is GDK_FILTER_REMOVE,
+       * we return TRUE and won't send the message to Quartz.
+       */
+      if (result == GDK_FILTER_REMOVE)
+	return TRUE;
+    }
+
   /* Ignore events for no window or ones not created by GDK. */
   if (!nswindow || ![[nswindow contentView] isKindOfClass:[GdkQuartzView class]])
     return FALSE;
@@ -1761,19 +1746,6 @@ gdk_event_translate (NSEvent *nsevent)
     {
       break_all_grabs ();
       return FALSE;
-    }
-
-  /* Apply any global filters. */
-  if (_gdk_default_filters)
-    {
-      result = apply_filters (NULL, nsevent, _gdk_default_filters);
-
-      /* If result is GDK_FILTER_CONTINUE, we continue as if nothing
-       * happened. If it is GDK_FILTER_REMOVE,
-       * we return TRUE and won't send the message to Quartz.
-       */
-      if (result == GDK_FILTER_REMOVE)
-	return TRUE;
     }
 
   /* Take care of NSMouseEntered/Exited events and mouse movements
@@ -2004,10 +1976,12 @@ gdk_screen_get_setting (GdkScreen   *screen,
 {
   if (strcmp (name, "gtk-double-click-time") == 0)
     {
-      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      NSUserDefaults *defaults;
       float t;
 
       GDK_QUARTZ_ALLOC_POOL;
+
+      defaults = [NSUserDefaults standardUserDefaults];
             
       t = [defaults floatForKey:@"com.apple.mouse.doubleClickThreshold"];
       if (t == 0.0)
@@ -2019,6 +1993,33 @@ gdk_screen_get_setting (GdkScreen   *screen,
       GDK_QUARTZ_RELEASE_POOL;
 
       g_value_set_int (value, t * 1000);
+
+      return TRUE;
+    }
+  else if (strcmp (name, "gtk-font-name") == 0)
+    {
+      NSString *name;
+      char *str;
+
+      GDK_QUARTZ_ALLOC_POOL;
+
+      name = [[NSFont systemFontOfSize:0] familyName];
+
+      /* Let's try to use the "views" font size (12pt) by default. This is
+       * used for lists/text/other "content" which is the largest parts of
+       * apps, using the "regular control" size (13pt) looks a bit out of
+       * place. We might have to tweak this.
+       */
+
+      /* The size has to be hardcoded as there doesn't seem to be a way to
+       * get the views font size programmatically.
+       */
+      str = g_strdup_printf ("%s 12", [name UTF8String]);
+      g_value_set_string (value, str);
+      g_free (str);
+
+      GDK_QUARTZ_RELEASE_POOL;
+
       return TRUE;
     }
   
@@ -2027,3 +2028,28 @@ gdk_screen_get_setting (GdkScreen   *screen,
   return FALSE;
 }
 
+void
+_gdk_windowing_event_data_copy (const GdkEvent *src,
+                                GdkEvent       *dst)
+{
+  GdkEventPrivate *priv_src = (GdkEventPrivate *) src;
+  GdkEventPrivate *priv_dst = (GdkEventPrivate *) dst;
+
+  if (priv_src->windowing_data)
+    {
+      priv_dst->windowing_data = priv_src->windowing_data;
+      [(NSEvent *)priv_dst->windowing_data retain];
+    }
+}
+
+void
+_gdk_windowing_event_data_free (GdkEvent *event)
+{
+  GdkEventPrivate *priv = (GdkEventPrivate *) event;
+
+  if (priv->windowing_data)
+    {
+      [(NSEvent *)priv->windowing_data release];
+      priv->windowing_data = NULL;
+    }
+}

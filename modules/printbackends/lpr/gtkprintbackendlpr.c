@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,11 +33,10 @@
 
 #include <glib/gi18n-lib.h>
 
-#include "gtkdebug.h"
-#include "gtkprintoperation.h"
-#include "gtkprintbackendlpr.h"
-#include "gtkprinter.h"
+#include <gtk/gtk.h>
 #include "gtkprinter-private.h"
+
+#include "gtkprintbackendlpr.h"
 
 typedef struct _GtkPrintBackendLprClass GtkPrintBackendLprClass;
 

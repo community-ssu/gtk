@@ -18,7 +18,7 @@
  */
 
 
-#include <config.h>
+#include "config.h"
 #include "gtktreesortable.h"
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
@@ -63,7 +63,7 @@ gtk_tree_sortable_base_init (gpointer g_class)
 
   if (! initialized)
     {
-      g_signal_new (I_("sort_column_changed"),
+      g_signal_new (I_("sort-column-changed"),
                     GTK_TYPE_TREE_SORTABLE,
                     G_SIGNAL_RUN_LAST,
                     G_STRUCT_OFFSET (GtkTreeSortableIface, sort_column_changed),
@@ -85,7 +85,7 @@ gtk_tree_sortable_sort_column_changed (GtkTreeSortable *sortable)
 {
   g_return_if_fail (GTK_IS_TREE_SORTABLE (sortable));
 
-  g_signal_emit_by_name (sortable, "sort_column_changed");
+  g_signal_emit_by_name (sortable, "sort-column-changed");
 }
 
 /**
@@ -165,7 +165,7 @@ gtk_tree_sortable_set_sort_func (GtkTreeSortable        *sortable,
 				 gint                    sort_column_id,
 				 GtkTreeIterCompareFunc  sort_func,
 				 gpointer                user_data,
-				 GtkDestroyNotify        destroy)
+				 GDestroyNotify          destroy)
 {
   GtkTreeSortableIface *iface;
 
@@ -202,7 +202,7 @@ void
 gtk_tree_sortable_set_default_sort_func (GtkTreeSortable        *sortable,
 					 GtkTreeIterCompareFunc  sort_func,
 					 gpointer                user_data,
-					 GtkDestroyNotify        destroy)
+					 GDestroyNotify          destroy)
 {
   GtkTreeSortableIface *iface;
 

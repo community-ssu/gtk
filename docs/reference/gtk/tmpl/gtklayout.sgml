@@ -35,7 +35,6 @@ area.
 
 </para>
 
-@bin_window: 
 
 <!-- ##### SIGNAL GtkLayout::set-scroll-adjustments ##### -->
 <para>
@@ -178,5 +177,14 @@ area.
 
 @layout: 
 @adjustment: 
+
+
+<!-- ##### FUNCTION gtk_layout_get_bin_window ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
 
 

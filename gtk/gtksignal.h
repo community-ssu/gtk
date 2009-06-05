@@ -21,20 +21,18 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#ifndef GTK_DISABLE_DEPRECATED
 
 #ifndef __GTK_SIGNAL_H__
 #define __GTK_SIGNAL_H__
 
-
-#include <gtk/gtkenums.h>
-#include <gtk/gtkobject.h>
+#include <gtk/gtk.h>
 #include <gtk/gtkmarshal.h>
 
 G_BEGIN_DECLS
-  
-#ifndef GTK_DISABLE_DEPRECATED
 
 #define	gtk_signal_default_marshaller	g_cclosure_marshal_VOID__VOID
 
@@ -123,7 +121,7 @@ gulong	gtk_signal_connect_full			(GtkObject	    *object,
 						 GtkSignalFunc	     func,
 						 GtkCallbackMarshal  unsupported,
 						 gpointer	     data,
-						 GtkDestroyNotify    destroy_func,
+						 GDestroyNotify      destroy_func,
 						 gint		     object_signal,
 						 gint		     after);
 void	gtk_signal_emitv			(GtkObject	    *object,
@@ -144,8 +142,8 @@ void	gtk_signal_compat_matched		(GtkObject	    *object,
 						 GSignalMatchType    match,
 						 guint               action);
 
-#endif /* GTK_DISABLE_DEPRECATED */
-
 G_END_DECLS
 
 #endif /* __GTK_SIGNAL_H__ */
+
+#endif /* GTK_DISABLE_DEPRECATED */

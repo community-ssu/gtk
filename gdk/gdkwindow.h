@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
 
 #ifndef __GDK_WINDOW_H__
 #define __GDK_WINDOW_H__
@@ -368,9 +372,9 @@ void          gdk_window_add_filter            (GdkWindow     *window,
 void          gdk_window_remove_filter         (GdkWindow     *window,
                                                 GdkFilterFunc  function,
                                                 gpointer       data);
-void          gdk_window_scroll                (GdkWindow *window,
-                                                gint       dx,
-                                                gint       dy);
+void          gdk_window_scroll                (GdkWindow     *window,
+                                                gint           dx,
+                                                gint           dy);
 void	      gdk_window_move_region           (GdkWindow       *window,
 						const GdkRegion *region,
 						gint             dx,
@@ -383,7 +387,7 @@ void	      gdk_window_move_region           (GdkWindow       *window,
  *  from gdk_pixmap_create_from_xpm.   Stefan Wille
  */
 void gdk_window_shape_combine_mask  (GdkWindow	      *window,
-                                     GdkBitmap        *mask,
+                                     GdkBitmap	      *mask,
                                      gint	       x,
                                      gint	       y);
 void gdk_window_shape_combine_region (GdkWindow	      *window,
@@ -401,7 +405,7 @@ void gdk_window_shape_combine_region (GdkWindow	      *window,
 void gdk_window_set_child_shapes (GdkWindow *window);
 
 void gdk_window_set_composited   (GdkWindow *window,
-                                  gboolean composited);
+                                  gboolean   composited);
 
 /*
  * This routine allows you to merge (ie ADD) child shapes to your
@@ -410,18 +414,18 @@ void gdk_window_set_composited   (GdkWindow *window,
  * 
  * - Raster
  */
-void gdk_window_merge_child_shapes (GdkWindow *window);
+void gdk_window_merge_child_shapes         (GdkWindow       *window);
 
-void gdk_window_input_shape_combine_mask   (GdkWindow *window,
-					    GdkBitmap *mask,
-					    gint       x,
-					    gint       y);
-void gdk_window_input_shape_combine_region (GdkWindow *window,
-                                            GdkRegion *shape_region,
-                                            gint       offset_x,
-                                            gint       offset_y);
-void gdk_window_set_child_input_shapes     (GdkWindow *window);
-void gdk_window_merge_child_input_shapes   (GdkWindow *window);
+void gdk_window_input_shape_combine_mask   (GdkWindow       *window,
+					    GdkBitmap       *mask,
+					    gint             x,
+					    gint             y);
+void gdk_window_input_shape_combine_region (GdkWindow       *window,
+                                            const GdkRegion *shape_region,
+                                            gint             offset_x,
+                                            gint             offset_y);
+void gdk_window_set_child_input_shapes     (GdkWindow       *window);
+void gdk_window_merge_child_input_shapes   (GdkWindow       *window);
 
 
 /*
@@ -478,16 +482,16 @@ void gdk_window_set_skip_pager_hint   (GdkWindow *window,
 void gdk_window_set_urgency_hint      (GdkWindow *window,
 				       gboolean   urgent);
 
-void          gdk_window_set_geometry_hints (GdkWindow        *window,
-					     GdkGeometry      *geometry,
-					     GdkWindowHints    geom_mask);
-void          gdk_set_sm_client_id         (const gchar *sm_client_id);
+void          gdk_window_set_geometry_hints (GdkWindow          *window,
+					     const GdkGeometry  *geometry,
+					     GdkWindowHints      geom_mask);
+void          gdk_set_sm_client_id          (const gchar        *sm_client_id);
 
-void	      gdk_window_begin_paint_rect   (GdkWindow    *window,
-					     GdkRectangle *rectangle);
-void	      gdk_window_begin_paint_region (GdkWindow    *window,
-					     GdkRegion    *region);
-void	      gdk_window_end_paint          (GdkWindow    *window);
+void	      gdk_window_begin_paint_rect   (GdkWindow          *window,
+					     const GdkRectangle *rectangle);
+void	      gdk_window_begin_paint_region (GdkWindow          *window,
+					     const GdkRegion    *region);
+void	      gdk_window_end_paint          (GdkWindow          *window);
 
 void	      gdk_window_set_title	   (GdkWindow	  *window,
 					    const gchar	  *title);
@@ -595,14 +599,14 @@ void gdk_window_begin_move_drag   (GdkWindow     *window,
                                    guint32        timestamp);
 
 /* Interface for dirty-region queueing */
-void       gdk_window_invalidate_rect           (GdkWindow    *window,
-					         GdkRectangle *rect,
-					         gboolean      invalidate_children);
-void       gdk_window_invalidate_region         (GdkWindow    *window,
-					         GdkRegion    *region,
-					         gboolean      invalidate_children);
-void       gdk_window_invalidate_maybe_recurse  (GdkWindow *window,
-						 GdkRegion *region,
+void       gdk_window_invalidate_rect           (GdkWindow          *window,
+					         const GdkRectangle *rect,
+					         gboolean            invalidate_children);
+void       gdk_window_invalidate_region         (GdkWindow          *window,
+					         const GdkRegion    *region,
+					         gboolean            invalidate_children);
+void       gdk_window_invalidate_maybe_recurse  (GdkWindow          *window,
+						 const GdkRegion    *region,
 						 gboolean (*child_func) (GdkWindow *, gpointer),
 						 gpointer   user_data);
 GdkRegion *gdk_window_get_update_area     (GdkWindow    *window);

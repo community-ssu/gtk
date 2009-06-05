@@ -1,11 +1,11 @@
 /* This file lists all exported symbols. It is used to generate
  * the gdk_pixbuf.def file used to control exports on Windows and the
- * gdk-pixbuf-alias.h/gdk-pixbuf-aliasdef.c files used to avoid PLT 
+ * gdk-pixbuf-alias.h/gdk-pixbuf-aliasdef.c files used to avoid PLT
  * entries for internal uses of exported functions (see makegdkpixbufalias.pl).
- * 
+ *
  * Every symbol must be included in the right
  * #ifdef IN_HEADER(sym) #endif and
- * #ifdef IN_FILE(sym) #endif sections. 
+ * #ifdef IN_FILE(sym) #endif sections.
  */
 #ifdef ALL_FILES
 #define IN_FILE(x) 1
@@ -56,6 +56,8 @@ gdk_pixbuf_new_from_file_at_scale PRIVATE
 gdk_pixbuf_new_from_file_at_scale_utf8
 #endif
 gdk_pixbuf_new_from_xpm_data
+gdk_pixbuf_new_from_stream
+gdk_pixbuf_new_from_stream_at_scale
 gdk_pixbuf_save PRIVATE G_GNUC_NULL_TERMINATED
 #ifdef G_OS_WIN32
 gdk_pixbuf_save_utf8
@@ -68,6 +70,7 @@ gdk_pixbuf_savev PRIVATE
 #ifdef G_OS_WIN32
 gdk_pixbuf_savev_utf8
 #endif
+gdk_pixbuf_save_to_stream
 #endif
 #endif
 
@@ -120,6 +123,7 @@ gdk_pixbuf_animation_ref
 gdk_pixbuf_animation_unref
 #endif
 gdk_pixbuf_non_anim_new
+gdk_pixbuf_non_anim_get_type G_GNUC_CONST
 #endif
 #endif
 
@@ -184,7 +188,7 @@ gdk_colorspace_get_type G_GNUC_CONST
 gdk_interp_type_get_type G_GNUC_CONST
 gdk_pixbuf_alpha_mode_get_type G_GNUC_CONST
 gdk_pixbuf_rotation_get_type G_GNUC_CONST
-gdk_pixbuf_error_get_type 
+gdk_pixbuf_error_get_type
 #endif
 #endif
 

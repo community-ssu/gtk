@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +26,7 @@
 #include <string.h>
 
 static void
-assault (const gchar *header, gsize header_size, int n_images)
+assault (const guchar *header, gsize header_size, int n_images)
 {
   FILE *f;
   enum { N_CHARACTERS = 10000 };

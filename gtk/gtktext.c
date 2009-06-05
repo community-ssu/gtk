@@ -24,26 +24,30 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
+#include "config.h"
 
-#include <config.h>
 #include <ctype.h>
 #include <string.h>
+
+#undef GDK_DISABLE_DEPRECATED
+
 #include "gdk/gdkkeysyms.h"
 #include "gdk/gdki18n.h"
+
+#undef GTK_DISABLE_DEPRECATED
+
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkselection.h"
 #include "gtksignal.h"
 #include "gtkstyle.h"
-#include "gtkobject.h"
 #define GTK_ENABLE_BROKEN
 #include "gtktext.h"
 #include "line-wrap.xbm"
 #include "line-arrow.xbm"
 #include "gtkprivate.h"
 #include "gtkintl.h"
+
 #include "gtkalias.h"
 
 
@@ -568,7 +572,7 @@ gtk_text_class_init (GtkTextClass *class)
 							 GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
-    gtk_signal_new (I_("set_scroll_adjustments"),
+    gtk_signal_new (I_("set-scroll-adjustments"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTextClass, set_scroll_adjustments),
@@ -705,7 +709,7 @@ gtk_text_new (GtkAdjustment *hadj,
   if (vadj)
     g_return_val_if_fail (GTK_IS_ADJUSTMENT (vadj), NULL);
 
-  text = gtk_widget_new (GTK_TYPE_TEXT,
+  text = g_object_new (GTK_TYPE_TEXT,
 			 "hadjustment", hadj,
 			 "vadjustment", vadj,
 			 NULL);
@@ -792,13 +796,13 @@ gtk_text_set_adjustments (GtkText       *text,
   if (text->hadj && (text->hadj != hadj))
     {
       gtk_signal_disconnect_by_data (GTK_OBJECT (text->hadj), text);
-      gtk_object_unref (GTK_OBJECT (text->hadj));
+      g_object_unref (text->hadj);
     }
   
   if (text->vadj && (text->vadj != vadj))
     {
       gtk_signal_disconnect_by_data (GTK_OBJECT (text->vadj), text);
-      gtk_object_unref (GTK_OBJECT (text->vadj));
+      g_object_unref (text->vadj);
     }
   
   g_object_freeze_notify (G_OBJECT (text));
@@ -810,7 +814,7 @@ gtk_text_set_adjustments (GtkText       *text,
       gtk_signal_connect (GTK_OBJECT (text->hadj), "changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
 			  text);
-      gtk_signal_connect (GTK_OBJECT (text->hadj), "value_changed",
+      gtk_signal_connect (GTK_OBJECT (text->hadj), "value-changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
 			  text);
       gtk_signal_connect (GTK_OBJECT (text->hadj), "destroy",
@@ -829,7 +833,7 @@ gtk_text_set_adjustments (GtkText       *text,
       gtk_signal_connect (GTK_OBJECT (text->vadj), "changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
 			  text);
-      gtk_signal_connect (GTK_OBJECT (text->vadj), "value_changed",
+      gtk_signal_connect (GTK_OBJECT (text->vadj), "value-changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
 			  text);
       gtk_signal_connect (GTK_OBJECT (text->vadj), "destroy",
@@ -1165,22 +1169,18 @@ gtk_text_get_chars (GtkOldEditable *old_editable,
 static void
 gtk_text_destroy (GtkObject *object)
 {
-  GtkText *text;
-  
-  g_return_if_fail (GTK_IS_TEXT (object));
-  
-  text = GTK_TEXT (object);
+  GtkText *text = GTK_TEXT (object);
 
   if (text->hadj)
     {
       gtk_signal_disconnect_by_data (GTK_OBJECT (text->hadj), text);
-      gtk_object_unref (GTK_OBJECT (text->hadj));
+      g_object_unref (text->hadj);
       text->hadj = NULL;
     }
   if (text->vadj)
     {
       gtk_signal_disconnect_by_data (GTK_OBJECT (text->vadj), text);
-      gtk_object_unref (GTK_OBJECT (text->vadj));
+      g_object_unref (text->vadj);
       text->vadj = NULL;
     }
 
@@ -1196,12 +1196,8 @@ gtk_text_destroy (GtkObject *object)
 static void
 gtk_text_finalize (GObject *object)
 {
-  GtkText *text;
+  GtkText *text = GTK_TEXT (object);
   GList *tmp_list;
-  
-  g_return_if_fail (GTK_IS_TEXT (object));
-  
-  text = GTK_TEXT (object);
 
   /* Clean up the internal structures */
   if (text->use_wchar)
@@ -1238,15 +1234,11 @@ gtk_text_finalize (GObject *object)
 static void
 gtk_text_realize (GtkWidget *widget)
 {
-  GtkText *text;
-  GtkOldEditable *old_editable;
+  GtkText *text = GTK_TEXT (widget);
+  GtkOldEditable *old_editable = GTK_OLD_EDITABLE (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
-  
-  g_return_if_fail (GTK_IS_TEXT (widget));
-  
-  text = GTK_TEXT (widget);
-  old_editable = GTK_OLD_EDITABLE (widget);
+
   GTK_WIDGET_SET_FLAGS (text, GTK_REALIZED);
   
   attributes.window_type = GDK_WINDOW_CHILD;
@@ -1281,7 +1273,7 @@ gtk_text_realize (GtkWidget *widget)
   text->text_area = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (text->text_area, text);
 
-  gdk_cursor_destroy (attributes.cursor); /* The X server will keep it around as long as necessary */
+  gdk_cursor_unref (attributes.cursor); /* The X server will keep it around as long as necessary */
   
   widget->style = gtk_style_attach (widget->style, widget->window);
   
@@ -1329,7 +1321,7 @@ gtk_text_style_set (GtkWidget *widget,
       
       if (text->bg_gc)
 	{
-	  gdk_gc_destroy (text->bg_gc);
+	  g_object_unref (text->bg_gc);
 	  text->bg_gc = NULL;
 	}
 
@@ -1360,34 +1352,29 @@ gtk_text_state_changed (GtkWidget   *widget,
 static void
 gtk_text_unrealize (GtkWidget *widget)
 {
-  GtkText *text;
-  
-  g_return_if_fail (GTK_IS_TEXT (widget));
-  
-  text = GTK_TEXT (widget);
+  GtkText *text = GTK_TEXT (widget);
 
   gdk_window_set_user_data (text->text_area, NULL);
   gdk_window_destroy (text->text_area);
   text->text_area = NULL;
   
-  gdk_gc_destroy (text->gc);
+  g_object_unref (text->gc);
   text->gc = NULL;
 
   if (text->bg_gc)
     {
-      gdk_gc_destroy (text->bg_gc);
+      g_object_unref (text->bg_gc);
       text->bg_gc = NULL;
     }
   
-  gdk_pixmap_unref (text->line_wrap_bitmap);
-  gdk_pixmap_unref (text->line_arrow_bitmap);
+  g_object_unref (text->line_wrap_bitmap);
+  g_object_unref (text->line_arrow_bitmap);
 
   unrealize_properties (text);
 
   free_cache (text);
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
 }
 
 static void
@@ -1406,7 +1393,7 @@ clear_focus_area (GtkText *text, gint area_x, gint area_y, gint area_width, gint
     
   if (widget->style->bg_pixmap[GTK_STATE_NORMAL])
     {
-      gdk_window_get_size (widget->style->bg_pixmap[GTK_STATE_NORMAL], &width, &height);
+      gdk_drawable_get_size (widget->style->bg_pixmap[GTK_STATE_NORMAL], &width, &height);
   
       gdk_gc_set_ts_origin (text->bg_gc,
 			    (- text->first_onscreen_hor_pixel + xthick) % width,
@@ -1498,10 +1485,7 @@ gtk_text_size_request (GtkWidget      *widget,
   gint ythickness;
   gint char_height;
   gint char_width;
-  
-  g_return_if_fail (GTK_IS_TEXT (widget));
-  g_return_if_fail (requisition != NULL);
-  
+
   xthickness = widget->style->xthickness + TEXT_BORDER_ROOM;
   ythickness = widget->style->ythickness + TEXT_BORDER_ROOM;
 
@@ -1523,13 +1507,8 @@ static void
 gtk_text_size_allocate (GtkWidget     *widget,
 			GtkAllocation *allocation)
 {
-  GtkText *text;
-  
-  g_return_if_fail (GTK_IS_TEXT (widget));
-  g_return_if_fail (allocation != NULL);
-  
-  text = GTK_TEXT (widget);
-  
+  GtkText *text = GTK_TEXT (widget);
+
   widget->allocation = *allocation;
   if (GTK_WIDGET_REALIZED (widget))
     {
@@ -1553,9 +1532,6 @@ static gint
 gtk_text_expose (GtkWidget      *widget,
 		 GdkEventExpose *event)
 {
-  g_return_val_if_fail (GTK_IS_TEXT (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
   if (event->window == GTK_TEXT (widget)->text_area)
     {
       TDEBUG (("in gtk_text_expose (expose)\n"));
@@ -1603,14 +1579,8 @@ static gint
 gtk_text_button_press (GtkWidget      *widget,
 		       GdkEventButton *event)
 {
-  GtkText *text;
-  GtkOldEditable *old_editable;
-  
-  g_return_val_if_fail (GTK_IS_TEXT (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  text = GTK_TEXT (widget);
-  old_editable = GTK_OLD_EDITABLE (widget);
+  GtkText *text = GTK_TEXT (widget);
+  GtkOldEditable *old_editable = GTK_OLD_EDITABLE (widget);
   
   if (text->button && (event->button != text->button))
     return FALSE;
@@ -1700,15 +1670,10 @@ static gint
 gtk_text_button_release (GtkWidget      *widget,
 			 GdkEventButton *event)
 {
-  GtkText *text;
+  GtkText *text = GTK_TEXT (widget);
   GtkOldEditable *old_editable;
   GdkDisplay *display;
 
-  g_return_val_if_fail (GTK_IS_TEXT (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  text = GTK_TEXT (widget);
-  
   gtk_grab_remove (widget);
   
   if (text->button != event->button)
@@ -1768,16 +1733,11 @@ static gint
 gtk_text_motion_notify (GtkWidget      *widget,
 			GdkEventMotion *event)
 {
-  GtkText *text;
+  GtkText *text = GTK_TEXT (widget);
   gint x, y;
   gint height;
   GdkModifierType mask;
-  
-  g_return_val_if_fail (GTK_IS_TEXT (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  text = GTK_TEXT (widget);
-  
+
   x = event->x;
   y = event->y;
   mask = event->state;
@@ -1790,7 +1750,7 @@ gtk_text_motion_notify (GtkWidget      *widget,
       !(mask & (GDK_BUTTON1_MASK | GDK_BUTTON3_MASK)))
     return FALSE;
   
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   
   if ((y < 0) || (y > height))
     {
@@ -1849,12 +1809,10 @@ gtk_text_delete_text    (GtkEditable       *editable,
 			 gint               start_pos,
 			 gint               end_pos)
 {
-  GtkText *text;
+  GtkText *text = GTK_TEXT (editable);
   
   g_return_if_fail (start_pos >= 0);
-  
-  text = GTK_TEXT (editable);
-  
+
   gtk_text_set_point (text, start_pos);
   if (end_pos < 0)
     end_pos = TEXT_LENGTH (text);
@@ -1867,18 +1825,12 @@ static gint
 gtk_text_key_press (GtkWidget   *widget,
 		    GdkEventKey *event)
 {
-  GtkText *text;
-  GtkOldEditable *old_editable;
+  GtkText *text = GTK_TEXT (widget);
+  GtkOldEditable *old_editable = GTK_OLD_EDITABLE (widget);
   gchar key;
   gint return_val;
   gint position;
-  
-  g_return_val_if_fail (GTK_IS_TEXT (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  text = GTK_TEXT (widget);
-  old_editable = GTK_OLD_EDITABLE (widget);
-  
+
   key = event->keyval;
   return_val = TRUE;
   
@@ -2238,7 +2190,7 @@ init_tab_cont (GtkText* text, PrevTabCont* tab_cont)
 {
   tab_cont->pixel_offset          = 0;
   tab_cont->tab_start.tab_stops   = text->tab_stops;
-  tab_cont->tab_start.to_next_tab = (gulong) text->tab_stops->data;
+  tab_cont->tab_start.to_next_tab = (gintptr) text->tab_stops->data;
   
   if (!tab_cont->tab_start.to_next_tab)
     tab_cont->tab_start.to_next_tab = text->default_tab_width;
@@ -2557,21 +2509,21 @@ delete_expose (GtkText* text, guint nchars, guint old_lines, guint old_pixels)
   
   new_pixels = total_line_height (text, new_line, 1);
   
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
   
   if (old_pixels != new_pixels)
     {
       if (!widget->style->bg_pixmap[GTK_STATE_NORMAL])
 	{
-	  gdk_draw_pixmap (text->text_area,
-			   text->gc,
-			   text->text_area,
-			   0,
-			   pixel_height + old_pixels,
-			   0,
-			   pixel_height + new_pixels,
-			   width,
-			   height);
+	  gdk_draw_drawable (text->text_area,
+                             text->gc,
+                             text->text_area,
+                             0,
+                             pixel_height + old_pixels,
+                             0,
+                             pixel_height + new_pixels,
+                             width,
+                             height);
 	}
       text->vadj->upper += new_pixels;
       text->vadj->upper -= old_pixels;
@@ -2744,21 +2696,21 @@ insert_expose (GtkText* text, guint old_pixels, gint nchars,
   
   new_pixels = total_line_height (text, new_lines, new_line_count);
   
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
   
   if (old_pixels != new_pixels)
     {
       if (!widget->style->bg_pixmap[GTK_STATE_NORMAL])
 	{
-	  gdk_draw_pixmap (text->text_area,
-			   text->gc,
-			   text->text_area,
-			   0,
-			   pixel_height + old_pixels,
-			   0,
-			   pixel_height + new_pixels,
-			   width,
-			   height + (old_pixels - new_pixels) - pixel_height);
+	  gdk_draw_drawable (text->text_area,
+                             text->gc,
+                             text->text_area,
+                             0,
+                             pixel_height + old_pixels,
+                             0,
+                             pixel_height + new_pixels,
+                             width,
+                             height + (old_pixels - new_pixels) - pixel_height);
 	  
 	}
       text->vadj->upper += new_pixels;
@@ -3497,7 +3449,7 @@ find_line_containing_point (GtkText* text, guint point,
 	scroll_int (text, - LINE_HEIGHT(CACHE_DATA(text->line_start_cache->next)));
     }
 
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   
   for (cache = text->line_start_cache; cache; cache = cache->next)
     {
@@ -3592,7 +3544,7 @@ advance_tab_mark (GtkText* text, TabStopMark* tab_mark, GdkWChar ch)
       if (tab_mark->tab_stops->next)
 	{
 	  tab_mark->tab_stops = tab_mark->tab_stops->next;
-	  tab_mark->to_next_tab = (gulong) tab_mark->tab_stops->data;
+	  tab_mark->to_next_tab = (gintptr) tab_mark->tab_stops->data;
 	}
       else
 	{
@@ -4224,7 +4176,7 @@ adjust_adj (GtkText* text, GtkAdjustment* adj)
 {
   gint height;
   
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   
   adj->step_increment = MIN (adj->upper, SCROLL_PIXELS);
   adj->page_increment = MIN (adj->upper, height - KEY_SCROLL_PIXELS);
@@ -4304,7 +4256,7 @@ set_vertical_scroll (GtkText* text)
   text->vadj->upper = data.pixel_height;
   orig_value = (gint) text->vadj->value;
   
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   
   text->vadj->step_increment = MIN (text->vadj->upper, SCROLL_PIXELS);
   text->vadj->page_increment = MIN (text->vadj->upper, height - KEY_SCROLL_PIXELS);
@@ -4341,7 +4293,7 @@ scroll_int (GtkText* text, gint diff)
   text->vadj->value = MIN (text->vadj->value, upper);
   text->vadj->value = MAX (text->vadj->value, 0.0);
   
-  gtk_signal_emit_by_name (GTK_OBJECT (text->vadj), "value_changed");
+  gtk_signal_emit_by_name (GTK_OBJECT (text->vadj), "value-changed");
 }
 
 static void 
@@ -4369,7 +4321,7 @@ static gint last_visible_line_height (GtkText* text)
   GList *cache = text->line_start_cache;
   gint height;
   
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   
   for (; cache->next; cache = cache->next)
     if (pixel_height_of(text, cache->next) > height)
@@ -4422,17 +4374,17 @@ scroll_down (GtkText* text, gint diff0)
       real_diff += 1;
     }
   
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
   if (height > real_diff)
-    gdk_draw_pixmap (text->text_area,
-		     text->gc,
-		     text->text_area,
-		     0,
-		     real_diff,
-		     0,
-		     0,
-		     width,
-		     height - real_diff);
+    gdk_draw_drawable (text->text_area,
+                       text->gc,
+                       text->text_area,
+                       0,
+                       real_diff,
+                       0,
+                       0,
+                       width,
+                       height - real_diff);
   
   rect.x      = 0;
   rect.y      = MAX (0, height - real_diff);
@@ -4491,17 +4443,17 @@ scroll_up (GtkText* text, gint diff0)
       real_diff += 1;
     }
   
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
   if (height > real_diff)
-    gdk_draw_pixmap (text->text_area,
-		     text->gc,
-		     text->text_area,
-		     0,
-		     0,
-		     0,
-		     real_diff,
-		     width,
-		     height - real_diff);
+    gdk_draw_drawable (text->text_area,
+                       text->gc,
+                       text->text_area,
+                       0,
+                       0,
+                       0,
+                       real_diff,
+                       width,
+                       height - real_diff);
   
   rect.x      = 0;
   rect.y      = 0;
@@ -4518,7 +4470,7 @@ scroll_up (GtkText* text, gint diff0)
       
       text->cursor_pos_y += real_diff;
       cursor_max = drawn_cursor_max(text);
-      gdk_window_get_size (text->text_area, NULL, &height);
+      gdk_drawable_get_size (text->text_area, NULL, &height);
       
       if (cursor_max >= height)
 	find_mouse_cursor (text, text->cursor_pos_x,
@@ -4550,7 +4502,7 @@ find_line_params (GtkText* text,
   gint ch_width;
   GdkFont *font;
   
-  gdk_window_get_size (text->text_area, (gint*) &max_display_pixels, NULL);
+  gdk_drawable_get_size (text->text_area, (gint*) &max_display_pixels, NULL);
   max_display_pixels -= LINE_WRAP_ROOM;
   
   lp.wraps             = 0;
@@ -4939,7 +4891,7 @@ draw_line (GtkText* text,
 	      
 	  len = 1;
 	  
-	  gdk_window_get_size (text->text_area, &pixels_remaining, NULL);
+	  gdk_drawable_get_size (text->text_area, &pixels_remaining, NULL);
 	  pixels_remaining -= (LINE_WRAP_ROOM + running_offset);
 	  
 	  space_width = MARK_CURRENT_TEXT_FONT(text, &mark)->char_widths[' '];
@@ -4986,7 +4938,7 @@ draw_line_wrap (GtkText* text, guint height /* baseline height */)
       bitmap_height = line_arrow_height;
     }
   
-  gdk_window_get_size (text->text_area, &width, NULL);
+  gdk_drawable_get_size (text->text_area, &width, NULL);
   width -= LINE_WRAP_ROOM;
   
   gdk_gc_set_stipple (text->gc,
@@ -5126,7 +5078,7 @@ clear_area (GtkText *text, GdkRectangle *area)
     {
       gint width, height;
       
-      gdk_window_get_size (widget->style->bg_pixmap[GTK_STATE_NORMAL], &width, &height);
+      gdk_drawable_get_size (widget->style->bg_pixmap[GTK_STATE_NORMAL], &width, &height);
       
       gdk_gc_set_ts_origin (text->bg_gc,
 			    (- text->first_onscreen_hor_pixel) % width,
@@ -5148,7 +5100,7 @@ expose_text (GtkText* text, GdkRectangle *area, gboolean cursor)
   gint max_y = MAX (0, area->y + area->height);
   gint height;
   
-  gdk_window_get_size (text->text_area, NULL, &height);
+  gdk_drawable_get_size (text->text_area, NULL, &height);
   max_y = MIN (max_y, height);
   
   TDEBUG (("in expose x=%d y=%d w=%d h=%d\n", area->x, area->y, area->width, area->height));
@@ -5210,7 +5162,7 @@ gtk_text_update_text (GtkOldEditable    *old_editable,
   if (end_pos < start_pos)
     return;
   
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
   area.x = 0;
   area.y = -1;
   area.width = width;
@@ -5266,7 +5218,7 @@ recompute_geometry (GtkText* text)
 	 GTK_TEXT_INDEX (text, mark.index - 1) != LINE_DELIM)
     decrement_mark (&mark);
 
-  gdk_window_get_size (text->text_area, &width, &height);
+  gdk_drawable_get_size (text->text_area, &width, &height);
 
   /* Fetch an entire line, to make sure that we get all the text
    * we backed over above, in addition to enough text to fill up

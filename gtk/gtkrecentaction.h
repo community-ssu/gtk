@@ -2,7 +2,7 @@
  * Recent chooser action for GtkUIManager
  *
  * Copyright (C) 2007, Emmanuele Bassi
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -18,6 +18,10 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_RECENT_ACTION_H__
 #define __GTK_RECENT_ACTION_H__
@@ -41,9 +45,9 @@ typedef struct _GtkRecentActionClass    GtkRecentActionClass;
 struct _GtkRecentAction
 {
   GtkAction parent_instance;
-  
+
   /*< private >*/
-  GtkRecentActionPrivate *priv;
+  GtkRecentActionPrivate *GSEAL (priv);
 };
 
 struct _GtkRecentActionClass

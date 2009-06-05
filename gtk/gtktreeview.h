@@ -16,16 +16,19 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_TREE_VIEW_H__
 #define __GTK_TREE_VIEW_H__
 
-#include <gtk/gtkwidget.h>
 #include <gtk/gtkcontainer.h>
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtktreeviewcolumn.h>
 #include <gtk/gtkdnd.h>
 #include <gtk/gtkentry.h>
-
 
 G_BEGIN_DECLS
 
@@ -59,7 +62,7 @@ struct _GtkTreeView
 {
   GtkContainer parent;
 
-  GtkTreeViewPrivate *priv;
+  GtkTreeViewPrivate *GSEAL (priv);
 };
 
 struct _GtkTreeViewClass
@@ -205,7 +208,7 @@ GtkTreeViewColumn     *gtk_tree_view_get_expander_column           (GtkTreeView 
 void                   gtk_tree_view_set_column_drag_function      (GtkTreeView               *tree_view,
 								    GtkTreeViewColumnDropFunc  func,
 								    gpointer                   user_data,
-								    GtkDestroyNotify           destroy);
+								    GDestroyNotify             destroy);
 
 /* Actions */
 void                   gtk_tree_view_scroll_to_point               (GtkTreeView               *tree_view,
@@ -327,7 +330,7 @@ GtkTreeViewSearchEqualFunc gtk_tree_view_get_search_equal_func (GtkTreeView     
 void                       gtk_tree_view_set_search_equal_func (GtkTreeView                *tree_view,
 								GtkTreeViewSearchEqualFunc  search_equal_func,
 								gpointer                    search_user_data,
-								GtkDestroyNotify            search_destroy);
+								GDestroyNotify              search_destroy);
 
 GtkEntry                     *gtk_tree_view_get_search_entry         (GtkTreeView                   *tree_view);
 void                          gtk_tree_view_set_search_entry         (GtkTreeView                   *tree_view,
@@ -379,7 +382,7 @@ typedef void (* GtkTreeDestroyCountFunc)  (GtkTreeView             *tree_view,
 void gtk_tree_view_set_destroy_count_func (GtkTreeView             *tree_view,
 					   GtkTreeDestroyCountFunc  func,
 					   gpointer                 data,
-					   GtkDestroyNotify         destroy);
+					   GDestroyNotify           destroy);
 
 void     gtk_tree_view_set_fixed_height_mode (GtkTreeView          *tree_view,
 					      gboolean              enable);
@@ -400,7 +403,7 @@ GtkTreeViewRowSeparatorFunc gtk_tree_view_get_row_separator_func (GtkTreeView   
 void                        gtk_tree_view_set_row_separator_func (GtkTreeView                *tree_view,
 								  GtkTreeViewRowSeparatorFunc func,
 								  gpointer                    data,
-								  GtkDestroyNotify            destroy);
+								  GDestroyNotify              destroy);
 
 #ifdef MAEMO_CHANGES
 HildonTreeViewRowHeaderFunc hildon_tree_view_get_row_header_func (GtkTreeView                 *tree_view);
@@ -462,4 +465,3 @@ G_END_DECLS
 
 
 #endif /* __GTK_TREE_VIEW_H__ */
-

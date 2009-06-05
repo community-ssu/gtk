@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_SCALE_H__
 #define __GTK_SCALE_H__
@@ -49,9 +53,9 @@ struct _GtkScale
 {
   GtkRange range;
 
-  gint digits;
-  guint draw_value : 1;
-  guint value_pos : 2;
+  gint  GSEAL (digits);
+  guint GSEAL (draw_value) : 1;
+  guint GSEAL (value_pos) : 2;
 };
 
 struct _GtkScaleClass
@@ -59,8 +63,8 @@ struct _GtkScaleClass
   GtkRangeClass parent_class;
 
   gchar* (* format_value) (GtkScale *scale,
-                           gdouble   value);  
-  
+                           gdouble   value);
+
   void (* draw_value) (GtkScale *scale);
 
   void (* get_layout_offsets) (GtkScale *scale,

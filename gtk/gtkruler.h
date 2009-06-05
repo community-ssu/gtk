@@ -21,7 +21,7 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 /*
@@ -33,6 +33,10 @@
  * the widget, and it will eventually move out of the GTK+
  * distribution.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_RULER_H__
 #define __GTK_RULER_H__
@@ -63,20 +67,21 @@ struct _GtkRuler
 {
   GtkWidget widget;
 
-  GdkPixmap *backing_store;
-  GdkGC *non_gr_exp_gc;		/* unused */
-  GtkRulerMetric *metric;
-  gint xsrc, ysrc;
-  gint slider_size;
+  GdkPixmap *GSEAL (backing_store);
+  GdkGC *GSEAL (non_gr_exp_gc);		/* unused */
+  GtkRulerMetric *GSEAL (metric);
+  gint GSEAL (xsrc);
+  gint GSEAL (ysrc);
+  gint GSEAL (slider_size);
 
   /* The upper limit of the ruler (in points) */
-  gdouble lower;
+  gdouble GSEAL (lower);
   /* The lower limit of the ruler */
-  gdouble upper;
+  gdouble GSEAL (upper);
   /* The position of the mark on the ruler */
-  gdouble position;
+  gdouble GSEAL (position);
   /* The maximum size of the ruler */
-  gdouble max_size;
+  gdouble GSEAL (max_size);
 };
 
 struct _GtkRulerClass

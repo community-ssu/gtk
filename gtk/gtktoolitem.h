@@ -20,6 +20,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_TOOL_ITEM_H__
 #define __GTK_TOOL_ITEM_H__
 
@@ -45,7 +49,7 @@ struct _GtkToolItem
   GtkBin parent;
 
   /*< private >*/
-  GtkToolItemPrivate *priv;
+  GtkToolItemPrivate *GSEAL (priv);
 };
 
 struct _GtkToolItemClass
@@ -122,8 +126,7 @@ void            gtk_tool_item_set_proxy_menu_item      (GtkToolItem *tool_item,
 							GtkWidget   *menu_item);
 void		gtk_tool_item_rebuild_menu	       (GtkToolItem *tool_item);
 
-/* internal function */
-void       _gtk_tool_item_toolbar_reconfigured (GtkToolItem *tool_item);
+void            gtk_tool_item_toolbar_reconfigured     (GtkToolItem *tool_item);
 
 G_END_DECLS
 

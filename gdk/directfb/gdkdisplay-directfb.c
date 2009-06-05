@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib.h>
 #include "gdk.h"
@@ -195,6 +195,9 @@ IDirectFBSurface * gdk_display_dfb_create_surface (GdkDisplayDFB *display,int fo
 }
 
 
+/*************************************************************************************************
+ * Displays and Screens
+ */
 
 void
 _gdk_windowing_set_default_display (GdkDisplay *display)
@@ -228,6 +231,30 @@ gdk_display_get_default_screen (GdkDisplay *display)
 }
 
 gboolean
+gdk_display_supports_shapes (GdkDisplay *display)
+{
+       return FALSE;
+}
+
+gboolean
+gdk_display_supports_input_shapes (GdkDisplay *display)
+{
+       return FALSE;
+}
+
+
+GdkWindow *gdk_display_get_default_group (GdkDisplay *display)
+{
+  g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
+  return  _gdk_parent_root;
+}
+
+
+/*************************************************************************************************
+ * Selection and Clipboard
+ */
+
+gboolean
 gdk_display_supports_selection_notification (GdkDisplay *display)
 {
 	return FALSE;
@@ -250,11 +277,11 @@ gdk_display_supports_clipboard_persistence (GdkDisplay *display)
 }
 
 void
-gdk_display_store_clipboard (GdkDisplay *display,
-                             GdkWindow  *clipboard_window,
-                             guint32     time_,
-                             GdkAtom    *targets,
-                             gint        n_targets)
+gdk_display_store_clipboard (GdkDisplay    *display,
+                             GdkWindow     *clipboard_window,
+                             guint32        time_,
+                             const GdkAtom *targets,
+                             gint           n_targets)
 {
 
 	g_warning("gdk_display_store_clipboard Unimplemented function \n");
@@ -262,28 +289,9 @@ gdk_display_store_clipboard (GdkDisplay *display,
 }
 
 
-gboolean
-gdk_display_supports_shapes (GdkDisplay *display)
-{
-       return FALSE;
-}
-
-
-gboolean
-gdk_display_supports_input_shapes (GdkDisplay *display)
-{
-       return FALSE;
-}
-
-
-GdkWindow *gdk_display_get_default_group (GdkDisplay *display)
-{
-  g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
-  return  _gdk_parent_root;
-}
-
-
-
+/*************************************************************************************************
+ * Pointer
+ */
 
 static gboolean _gdk_directfb_pointer_implicit_grab = FALSE;
 
@@ -338,9 +346,6 @@ gdk_directfb_pointer_grab (GdkWindow    *window,
   return GDK_GRAB_SUCCESS;
 }
 
-
-
-
 void
 gdk_directfb_pointer_ungrab (guint32  time,
                              gboolean implicit_grab)
@@ -387,33 +392,28 @@ gdk_directfb_pointer_ungrab (guint32  time,
   g_object_unref (old_grab_window);
 }
 
+gint
+gdk_display_pointer_is_grabbed (GdkDisplay *display)
+{
+  return _gdk_directfb_pointer_grab_window != NULL;
+}
+
+void
+gdk_display_pointer_ungrab (GdkDisplay *display,guint32 time)
+{
+  gdk_directfb_pointer_ungrab (time, _gdk_directfb_pointer_implicit_grab);
+}
 
 
-
-/*
- *--------------------------------------------------------------
- * gdk_keyboard_grab
- *
- *   Grabs the keyboard to a specific window
- *
- * Arguments:
- *   "window" is the window which will receive the grab
- *   "owner_events" specifies whether events will be reported as is,
- *     or relative to "window"
- *   "time" specifies the time
- *
- * Results:
- *
- * Side effects:
- *   requires a corresponding call to gdk_keyboard_ungrab
- *
- *--------------------------------------------------------------
+/*************************************************************************************************
+ * Keyboard
  */
 
 GdkGrabStatus
-gdk_display_keyboard_grab (GdkDisplay *display,GdkWindow *window,
-                   gint       owner_events,
-                   guint32    time)
+gdk_directfb_keyboard_grab (GdkDisplay *display,
+                            GdkWindow  *window,
+                            gint        owner_events,
+                            guint32     time)
 {
   GdkWindow             *toplevel;
   GdkWindowImplDirectFB *impl;
@@ -438,7 +438,8 @@ gdk_display_keyboard_grab (GdkDisplay *display,GdkWindow *window,
 }
 
 void
-gdk_display_keyboard_ungrab (GdkDisplay *display,guint32 time)
+gdk_directfb_keyboard_ungrab (GdkDisplay *display,
+                              guint32     time)
 {
   GdkWindow             *toplevel;
   GdkWindowImplDirectFB *impl;
@@ -446,8 +447,7 @@ gdk_display_keyboard_ungrab (GdkDisplay *display,guint32 time)
   if (!_gdk_directfb_keyboard_grab_window)
     return;
 
-  toplevel =
-    gdk_directfb_window_find_toplevel (_gdk_directfb_keyboard_grab_window);
+  toplevel = gdk_directfb_window_find_toplevel (_gdk_directfb_keyboard_grab_window);
   impl = GDK_WINDOW_IMPL_DIRECTFB (GDK_WINDOW_OBJECT (toplevel)->impl);
 
   if (impl->window)
@@ -457,17 +457,46 @@ gdk_display_keyboard_ungrab (GdkDisplay *display,guint32 time)
   _gdk_directfb_keyboard_grab_window = NULL;
 }
 
-gint
-gdk_display_pointer_is_grabbed (GdkDisplay *display)
+/*
+ *--------------------------------------------------------------
+ * gdk_keyboard_grab
+ *
+ *   Grabs the keyboard to a specific window
+ *
+ * Arguments:
+ *   "window" is the window which will receive the grab
+ *   "owner_events" specifies whether events will be reported as is,
+ *     or relative to "window"
+ *   "time" specifies the time
+ *
+ * Results:
+ *
+ * Side effects:
+ *   requires a corresponding call to gdk_keyboard_ungrab
+ *
+ *--------------------------------------------------------------
+ */
+
+GdkGrabStatus
+gdk_display_keyboard_grab (GdkDisplay *display,
+                           GdkWindow  *window,
+                           gint        owner_events,
+                           guint32     time)
 {
-  return _gdk_directfb_pointer_grab_window != NULL;
+  return gdk_directfb_keyboard_grab (display, window, owner_events, time);
 }
 
 void
-gdk_display_pointer_ungrab (GdkDisplay *display,guint32 time)
+gdk_display_keyboard_ungrab (GdkDisplay *display,
+                             guint32     time)
 {
-  gdk_directfb_pointer_ungrab (time, _gdk_directfb_pointer_implicit_grab);
+  return gdk_directfb_keyboard_ungrab (display, time);
 }
+
+
+/*************************************************************************************************
+ * Misc Stuff
+ */
 
 void
 gdk_display_beep (GdkDisplay *display)
@@ -485,6 +514,10 @@ gdk_display_flush (GdkDisplay *display)
 }
 
 
+
+/*************************************************************************************************
+ * Notifications
+ */
 
 void
 gdk_notify_startup_complete (void)
@@ -512,11 +545,16 @@ gdk_notify_startup_complete_with_id (const gchar* startup_id)
 }
 
 
+/*************************************************************************************************
+ * Compositing
+ */
+
 gboolean
 gdk_display_supports_composite (GdkDisplay *display)
 {
     return FALSE;
 }
+
 
 #define __GDK_DISPLAY_X11_C__
 #include "gdkaliasdef.c"

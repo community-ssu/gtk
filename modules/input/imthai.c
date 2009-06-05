@@ -19,7 +19,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -33,8 +33,8 @@ GType type_thai = 0;
 static const GtkIMContextInfo thai_info = { 
   "thai",	   /* ID */
   N_("Thai-Lao"),  /* Human readable name */
-  "gtk20",	   /* Translation domain */
-   GTK_LOCALEDIR,  /* Dir for bindtextdomain (not strictly needed for "gtk+") */
+  GETTEXT_PACKAGE, /* Translation domain */
+  GTK_LOCALEDIR,   /* Dir for bindtextdomain (not strictly needed for "gtk+") */
   "lo:th"	   /* Languages for which this module is the default */
 };
 
@@ -42,27 +42,29 @@ static const GtkIMContextInfo *info_list[] = {
   &thai_info
 };
 
-void
-im_module_init (GTypeModule *module)
+#ifndef INCLUDE_IM_thai
+#define MODULE_ENTRY(type, function) G_MODULE_EXPORT type im_module_ ## function
+#else
+#define MODULE_ENTRY(type, function) type _gtk_immodule_thai_ ## function
+#endif
+
+MODULE_ENTRY (void, init) (GTypeModule *module)
 {
   gtk_im_context_thai_register_type (module);
 }
 
-void 
-im_module_exit (void)
+MODULE_ENTRY (void, exit) (void)
 {
 }
 
-void 
-im_module_list (const GtkIMContextInfo ***contexts,
-		int                      *n_contexts)
+MODULE_ENTRY (void, list) (const GtkIMContextInfo ***contexts,
+			   int                      *n_contexts)
 {
   *contexts = info_list;
   *n_contexts = G_N_ELEMENTS (info_list);
 }
 
-GtkIMContext *
-im_module_create (const gchar *context_id)
+MODULE_ENTRY (GtkIMContext *, create) (const gchar *context_id)
 {
   if (strcmp (context_id, "thai") == 0)
     return gtk_im_context_thai_new ();

@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkquartz.h"
 #include "gtkalias.h"
@@ -156,7 +156,7 @@ _gtk_quartz_get_selection_data_from_pasteboard (NSPasteboard *pasteboard,
 {
   GtkSelectionData *selection_data = NULL;
 
-  selection_data = g_new0 (GtkSelectionData, 1);
+  selection_data = g_slice_new0 (GtkSelectionData);
   selection_data->selection = selection;
   selection_data->target = target;
 
@@ -166,12 +166,11 @@ _gtk_quartz_get_selection_data_from_pasteboard (NSPasteboard *pasteboard,
 
       if (s)
 	{
-          int len = [s length];
+          const char *utf8_string = [s UTF8String];
 
-          selection_data->type = target;
-	  selection_data->format = 8;
-	  selection_data->length = len;
-	  selection_data->data = g_memdup ([s UTF8String], len + 1);
+          gtk_selection_data_set (selection_data,
+                                  target, 8,
+                                  (guchar *)utf8_string, strlen (utf8_string));
 	}
     }
   else if (target == gdk_atom_intern_static_string ("application/x-color"))
@@ -222,6 +221,7 @@ _gtk_quartz_get_selection_data_from_pasteboard (NSPasteboard *pasteboard,
           selection_data->target = gdk_atom_intern_static_string ("text/uri-list");
 
           uris[0] = (gchar *) [[url description] UTF8String];
+
           uris[1] = NULL;
           gtk_selection_data_set_uris (selection_data, uris);
         }
@@ -242,12 +242,9 @@ _gtk_quartz_get_selection_data_from_pasteboard (NSPasteboard *pasteboard,
 
       if (data)
 	{
-	  selection_data->type = target;
-	  selection_data->format = 8;
-	  selection_data->length = [data length];
-	  selection_data->data = g_malloc (selection_data->length + 1);
-	  selection_data->data[selection_data->length] = '\0';
-	  memcpy(selection_data->data, [data bytes], selection_data->length);
+	  gtk_selection_data_set (selection_data,
+                                  target, 8,
+                                  [data bytes], [data length]);
 	}
     }
 
@@ -255,47 +252,59 @@ _gtk_quartz_get_selection_data_from_pasteboard (NSPasteboard *pasteboard,
 }
 
 void
-_gtk_quartz_set_selection_data_for_pasteboard (NSPasteboard *pasteboard,
+_gtk_quartz_set_selection_data_for_pasteboard (NSPasteboard     *pasteboard,
 					       GtkSelectionData *selection_data)
 {
   NSString *type;
-  gchar *target = gdk_atom_name (selection_data->target);
+  gchar *target;
+  GdkDisplay *display;
+  gint format;
+  const guchar *data;
+  gint length;
+
+  target = gdk_atom_name (gtk_selection_data_get_target (selection_data));
+  display = gtk_selection_data_get_display (selection_data);
+  format = gtk_selection_data_get_format (selection_data);
+  data = gtk_selection_data_get_data (selection_data);
+  length = gtk_selection_data_get_length (selection_data);
 
   type = target_to_pasteboard_type (target);
   g_free (target);
-  
+
   if ([type isEqualTo:NSStringPboardType]) 
-    [pasteboard setString:[NSString stringWithUTF8String:(const char *)selection_data->data]
+    [pasteboard setString:[NSString stringWithUTF8String:(const char *)data]
                   forType:type];
   else if ([type isEqualTo:NSColorPboardType])
     {
-      guint16 *color = (guint16 *)selection_data->data;
+      guint16 *color = (guint16 *)data;
       float red, green, blue, alpha;
+      NSColor *nscolor;
 
       red   = (float)color[0] / 0xffff;
       green = (float)color[1] / 0xffff;
       blue  = (float)color[2] / 0xffff;
       alpha = (float)color[3] / 0xffff;
-      
-      NSColor *nscolor = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:alpha];
 
+      nscolor = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:alpha];
       [nscolor writeToPasteboard:pasteboard];
     }
   else if ([type isEqualTo:NSURLPboardType])
     {
       gchar **list = NULL;
-      gchar **result = NULL;
-      NSURL *url;
+      int count;
 
-      int count = gdk_text_property_to_utf8_list_for_display (selection_data->display,
-							      gdk_atom_intern_static_string ("UTF8_STRING"),
-							      selection_data->format,
-							      selection_data->data,
-							      selection_data->length,
-							      &list);
+      count = gdk_text_property_to_utf8_list_for_display (display,
+                                                          gdk_atom_intern_static_string ("UTF8_STRING"),
+                                                          format,
+                                                          data,
+                                                          length,
+                                                          &list);
 
       if (count > 0)
         {
+          gchar **result;
+          NSURL *url;
+
           result = g_uri_list_extract_uris (list[0]);
 
           url = [NSURL URLWithString:[NSString stringWithUTF8String:result[0]]];
@@ -307,10 +316,8 @@ _gtk_quartz_set_selection_data_for_pasteboard (NSPasteboard *pasteboard,
       g_strfreev (list);
     }
   else
-    [pasteboard setData:[NSData dataWithBytesNoCopy:selection_data->data
-	    	                             length:selection_data->length
+    [pasteboard setData:[NSData dataWithBytesNoCopy:data
+	    	                             length:length
 			               freeWhenDone:NO]
                 forType:type];
 }
-
-

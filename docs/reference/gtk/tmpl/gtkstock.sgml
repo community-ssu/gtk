@@ -720,6 +720,15 @@ The "Reverse Portrait Orientation" item.
 @Since: 2.10
 
 
+<!-- ##### MACRO GTK_STOCK_PAGE_SETUP ##### -->
+<para>
+The "Page Setup" item.
+<inlinegraphic fileref="gtk-page-setup.png" format="PNG"></inlinegraphic>
+</para>
+
+@Since: 2.14
+
+
 <!-- ##### MACRO GTK_STOCK_PASTE ##### -->
 <para>
 The "Paste" item.
@@ -744,12 +753,48 @@ The "Print" item.
 
 
 
+<!-- ##### MACRO GTK_STOCK_PRINT_ERROR ##### -->
+<para>
+The "Print Error" icon.
+<inlinegraphic fileref="gtk-print-error.png" format="PNG"></inlinegraphic>
+</para>
+
+@Since: 2.14
+
+
+<!-- ##### MACRO GTK_STOCK_PRINT_PAUSED ##### -->
+<para>
+The "Print Paused" icon.
+<inlinegraphic fileref="gtk-print-paused.png" format="PNG"></inlinegraphic>
+</para>
+
+@Since: 2.14
+
+
 <!-- ##### MACRO GTK_STOCK_PRINT_PREVIEW ##### -->
 <para>
 The "Print Preview" item.
 <inlinegraphic fileref="gtk-print-preview.png" format="PNG"></inlinegraphic>
 </para>
 
+
+
+<!-- ##### MACRO GTK_STOCK_PRINT_REPORT ##### -->
+<para>
+The "Print Report" icon.
+<inlinegraphic fileref="gtk-print-report.png" format="PNG"></inlinegraphic>
+</para>
+
+@Since: 2.14
+
+
+<!-- ##### MACRO GTK_STOCK_PRINT_WARNING ##### -->
+<para>
+The "Print Warning" icon.
+<inlinegraphic fileref="gtk-print-warning.png" format="PNG"></inlinegraphic>
+</para>
+
+@Since: 2.14
 
 
 <!-- ##### MACRO GTK_STOCK_PROPERTIES ##### -->

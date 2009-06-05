@@ -22,8 +22,6 @@
 
 #include <string.h>
 
-#include <gdk/gdkscreen.h>
-
 #include "gtkrecentmanager.h"
 #include "gtkrecentfilter.h"
 #include "gtkrecentchooser.h"
@@ -43,7 +41,6 @@
 #include "gtkmenu.h"
 #include "gtkimage.h"
 #include "gtklabel.h"
-#include "gtkobject.h"
 #include "gtktooltip.h"
 #include "gtktypebuiltins.h"
 #include "gtkprivate.h"
@@ -977,6 +974,7 @@ check_and_return:
     {
       g_list_foreach (pdata->items, (GFunc) gtk_recent_info_unref, NULL);
       g_list_free (pdata->items);
+
       priv->populate_id = 0;
 
       retval = FALSE;
@@ -999,7 +997,6 @@ idle_populate_clean_up (gpointer data)
        */
       if (!pdata->displayed_items)
         gtk_widget_show (pdata->placeholder);
-
       g_object_unref (pdata->placeholder);
 
       g_slice_free (MenuPopulateData, data);

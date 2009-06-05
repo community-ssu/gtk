@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -159,7 +159,7 @@ _gdk_x11_window_get_toplevel (GdkWindow *window)
   
   g_return_val_if_fail (GDK_IS_WINDOW (window), NULL);
 
-  if (GDK_WINDOW_TYPE (window) == GDK_WINDOW_CHILD)
+  if (!WINDOW_IS_TOPLEVEL (window))
     return NULL;
 
   private = (GdkWindowObject *)window;
@@ -507,6 +507,8 @@ get_default_title (void)
   title = g_get_application_name ();
   if (!title)
     title = g_get_prgname ();
+  if (!title)
+    title = "";
 
   return title;
 }
@@ -1828,7 +1830,7 @@ gdk_window_x11_reparent (GdkWindow *window,
   parent_private->children = g_list_prepend (parent_private->children, window);
   _gdk_window_init_position (GDK_WINDOW (window_private));
 
-  return TRUE;
+  return FALSE;
 }
 
 static void
@@ -2416,9 +2418,9 @@ gdk_window_set_urgency_hint (GdkWindow *window,
  *
  **/
 void 
-gdk_window_set_geometry_hints (GdkWindow      *window,
-			       GdkGeometry    *geometry,
-			       GdkWindowHints  geom_mask)
+gdk_window_set_geometry_hints (GdkWindow         *window,
+			       const GdkGeometry *geometry,
+			       GdkWindowHints     geom_mask)
 {
   XSizeHints size_hints;
   
@@ -3822,10 +3824,10 @@ gdk_window_x11_shape_combine_region (GdkWindow       *window,
  * Since: 2.10
  */
 void 
-gdk_window_input_shape_combine_region (GdkWindow *window,
-				       GdkRegion *shape_region,
-				       gint       offset_x,
-				       gint       offset_y)
+gdk_window_input_shape_combine_region (GdkWindow       *window,
+				       const GdkRegion *shape_region,
+				       gint             offset_x,
+				       gint             offset_y)
 {
 #ifdef ShapeInput
   do_shape_combine_region (window, shape_region, offset_x, offset_y, ShapeInput);

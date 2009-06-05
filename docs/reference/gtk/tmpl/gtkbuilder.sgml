@@ -50,10 +50,11 @@ which are more limited in scope.
 </para>
 <para>
 <programlisting><![CDATA[
-<!ELEMENT interface object* >
+<!ELEMENT interface (requires|object)* >
 <!ELEMENT object    (property|signal|child|ANY)* >
 <!ELEMENT property  PCDATA >
 <!ELEMENT signal    EMPTY >
+<!ELEMENT requires  EMPTY >
 <!ELEMENT child     (object|ANY*) >
 
 <!ATTLIST interface  domain         	    #IMPLIED >
@@ -61,6 +62,8 @@ which are more limited in scope.
                      class          	    #REQUIRED
                      type-func      	    #IMPLIED
                      constructor    	    #IMPLIED >
+<!ATTLIST requires   lib             	    #REQUIRED
+                     version          	    #REQUIRED >
 <!ATTLIST property   name           	    #REQUIRED
                      translatable   	    #IMPLIED 
                      comments               #IMPLIED
@@ -88,6 +91,11 @@ elements, which describe child objects (most often widgets
 inside a container, but also e.g. actions in an action group,
 or columns in a tree model). A &lt;child&gt; element contains
 an &lt;object&gt; element which describes the child object.
+The target toolkit version(s) are described by &lt;requires&gt;
+elements, the "lib" attribute specifies the widget library in
+question (currently the only supported value is "gtk+") and the "version" 
+attribute specifies the target version in the form "&lt;major&gt;.&lt;minor&gt;".
+The builder will error out if the version requirements are not met.
 </para>
 <para>
 Typically, the specific kind of object represented by an
@@ -203,6 +211,7 @@ gets parsed by the custom tag handler of the object.
 These XML fragments are explained in the documentation of the
 respective objects, see 
 <link linkend="GtkWidget-BUILDER-UI">GtkWidget</link>,
+<link linkend="GtkLabel-BUILDER-UI">GtkLabel</link>,
 <link linkend="GtkContainer-BUILDER-UI">GtkContainer</link>,
 <link linkend="GtkDialog-BUILDER-UI">GtkDialog</link>,
 <link linkend="GtkCellLayout-BUILDER-UI">GtkCellLayout</link>,
@@ -264,6 +273,7 @@ respective objects, see
 @GTK_BUILDER_ERROR_INVALID_TAG: 
 @GTK_BUILDER_ERROR_MISSING_PROPERTY_VALUE: 
 @GTK_BUILDER_ERROR_INVALID_VALUE: 
+@GTK_BUILDER_ERROR_VERSION_MISMATCH: 
 
 <!-- ##### FUNCTION gtk_builder_new ##### -->
 <para>
@@ -292,6 +302,31 @@ respective objects, see
 @builder: 
 @buffer: 
 @length: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_builder_add_objects_from_file ##### -->
+<para>
+
+</para>
+
+@builder: 
+@filename: 
+@object_ids: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_builder_add_objects_from_string ##### -->
+<para>
+
+</para>
+
+@builder: 
+@buffer: 
+@length: 
+@object_ids: 
 @error: 
 @Returns: 
 

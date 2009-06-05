@@ -51,13 +51,13 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 <example>
 <title>A UI definition fragment with GtkTreeView</title>
 <programlisting><![CDATA[
-<object class="GtkTreeView">
+<object class="GtkTreeView" id="treeview">
   <property name="model">liststore1</property>
   <child>
-    <object class="GtkTreeViewColumn">
+    <object class="GtkTreeViewColumn" id="test-column">
       <property name="title">Test</property>
       <child>
-        <object class="GtkCellRendererText"/>
+        <object class="GtkCellRendererText" id="test-renderer"/>
         <attributes>
           <attribute name="text">1</attribute>
         </attributes>
@@ -144,14 +144,6 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 @tree_view: the object which received the signal.
 @arg1: 
 @arg2: 
-
-<!-- ##### SIGNAL GtkTreeView::row-insensitive ##### -->
-<para>
-
-</para>
-
-@treeview: the object which received the signal.
-@arg1: 
 
 <!-- ##### SIGNAL GtkTreeView::select-all ##### -->
 <para>
@@ -271,11 +263,6 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 
 </para>
 
-<!-- ##### ARG GtkTreeView:hildon-ui-mode ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkTreeView:hover-expand ##### -->
 <para>
 
@@ -372,11 +359,6 @@ GtkTreeViewColumn objects as &lt;child&gt; elements in UI definitions.
 </para>
 
 <!-- ##### ARG GtkTreeView:row-ending-details ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkTreeView:separator-height ##### -->
 <para>
 
 </para>

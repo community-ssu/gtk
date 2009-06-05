@@ -22,9 +22,8 @@
  * http://www.freedesktop.org/wiki/Standards/systemtray-spec
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
-#include <libintl.h>
 
 #include "gtkintl.h"
 #include "gtkprivate.h"
@@ -152,8 +151,13 @@ gtk_tray_icon_expose (GtkWidget      *widget,
   focus_child = GTK_CONTAINER (widget)->focus_child;
   if (focus_child && GTK_WIDGET_HAS_FOCUS (focus_child))
     {
-      width  = widget->allocation.width;
-      height = widget->allocation.height;
+      border_width = GTK_CONTAINER (widget)->border_width;
+
+      x = widget->allocation.x + border_width;
+      y = widget->allocation.y + border_width;
+
+      width  = widget->allocation.width  - 2 * border_width;
+      height = widget->allocation.height - 2 * border_width;
 
       gtk_paint_focus (widget->style, widget->window,
                        GTK_WIDGET_STATE (widget),

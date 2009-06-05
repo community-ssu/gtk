@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gtkrecentchooserdialog.h"
 #include "gtkrecentchooserwidget.h"
@@ -163,7 +163,7 @@ gtk_recent_chooser_dialog_constructor (GType                  type,
   else
     priv->chooser = g_object_new (GTK_TYPE_RECENT_CHOOSER_WIDGET, NULL);
   
-  g_signal_connect (priv->chooser, "item_activated",
+  g_signal_connect (priv->chooser, "item-activated",
   		    G_CALLBACK (gtk_recent_chooser_item_activated_cb),
   		    object);
 

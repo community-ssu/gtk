@@ -21,7 +21,7 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 /*
@@ -33,6 +33,10 @@
  * the widget, and it will eventually move out of the GTK+
  * distribution.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_GAMMA_CURVE_H__
 #define __GTK_GAMMA_CURVE_H__
@@ -59,13 +63,13 @@ struct _GtkGammaCurve
 {
   GtkVBox vbox;
 
-  GtkWidget *table;
-  GtkWidget *curve;
-  GtkWidget *button[5];	/* spline, linear, free, gamma, reset */
+  GtkWidget *GSEAL (table);
+  GtkWidget *GSEAL (curve);
+  GtkWidget *GSEAL (button[5]);	/* spline, linear, free, gamma, reset */
 
-  gfloat gamma;
-  GtkWidget *gamma_dialog;
-  GtkWidget *gamma_text;
+  gfloat GSEAL (gamma);
+  GtkWidget *GSEAL (gamma_dialog);
+  GtkWidget *GSEAL (gamma_text);
 };
 
 struct _GtkGammaCurveClass

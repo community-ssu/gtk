@@ -18,12 +18,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_PAGE_SETUP_H__
 #define __GTK_PAGE_SETUP_H__
 
-#include <glib-object.h>
-#include "gtkenums.h"
-#include "gtkpapersize.h"
+#include <gtk/gtkenums.h>
+#include <gtk/gtkpapersize.h>
 
 G_BEGIN_DECLS
 
@@ -82,12 +85,19 @@ gdouble            gtk_page_setup_get_page_height   (GtkPageSetup       *setup,
 /* Saving and restoring page setup */
 GtkPageSetup	  *gtk_page_setup_new_from_file	    (const gchar         *file_name,
 						     GError              **error);
+gboolean	   gtk_page_setup_load_file	    (GtkPageSetup        *setup,
+						     const char          *file_name,
+						     GError             **error);
 gboolean	   gtk_page_setup_to_file	    (GtkPageSetup        *setup,
 						     const char          *file_name,
 						     GError             **error);
 GtkPageSetup	  *gtk_page_setup_new_from_key_file (GKeyFile            *key_file,
 						     const gchar         *group_name,
 						     GError             **error);
+gboolean           gtk_page_setup_load_key_file     (GtkPageSetup        *setup,
+				                     GKeyFile            *key_file,
+				                     const gchar         *group_name,
+				                     GError             **error);
 void		   gtk_page_setup_to_key_file	    (GtkPageSetup        *setup,
 						     GKeyFile            *key_file,
 						     const gchar         *group_name);

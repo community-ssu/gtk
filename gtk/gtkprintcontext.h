@@ -18,13 +18,16 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_PRINT_CONTEXT_H__
 #define __GTK_PRINT_CONTEXT_H__
 
-#include <glib-object.h>
-#include <pango/pango-layout.h>
-#include "gtkenums.h"
-#include "gtkpagesetup.h"
+#include <pango/pango.h>
+#include <gtk/gtkenums.h>
+#include <gtk/gtkpagesetup.h>
 
 G_BEGIN_DECLS
 

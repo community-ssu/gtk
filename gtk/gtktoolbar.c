@@ -31,9 +31,10 @@
 
 #undef GTK_DISABLE_DEPRECATED
 
-#include <config.h>
+#include "config.h"
 #include "gtkarrow.h"
 #include "gtktoolbar.h"
+#include "gtktoolshell.h"
 #include "gtkradiotoolbutton.h"
 #include "gtkseparatortoolitem.h"
 #include "gtkmenu.h"
@@ -299,12 +300,20 @@ static void            toolbar_content_hide_all             (ToolbarContent     
 static void	       toolbar_content_set_expand	    (ToolbarContent      *content,
 							     gboolean		  expand);
 
+static void            toolbar_tool_shell_iface_init        (GtkToolShellIface   *iface);
+static GtkIconSize     toolbar_get_icon_size                (GtkToolShell        *shell);
+static GtkOrientation  toolbar_get_orientation              (GtkToolShell        *shell);
+static GtkToolbarStyle toolbar_get_style                    (GtkToolShell        *shell);
+static GtkReliefStyle  toolbar_get_relief_style             (GtkToolShell        *shell);
+static void            toolbar_rebuild_menu                 (GtkToolShell        *shell);
+
 #define GTK_TOOLBAR_GET_PRIVATE(o)  \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_TOOLBAR, GtkToolbarPrivate))
 
 static guint			toolbar_signals [LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (GtkToolbar, gtk_toolbar, GTK_TYPE_CONTAINER)
+G_DEFINE_TYPE_WITH_CODE (GtkToolbar, gtk_toolbar, GTK_TYPE_CONTAINER,
+                         G_IMPLEMENT_INTERFACE (GTK_TYPE_TOOL_SHELL, toolbar_tool_shell_iface_init))
 
 static void
 add_arrow_bindings (GtkBindingSet   *binding_set,
@@ -314,10 +323,10 @@ add_arrow_bindings (GtkBindingSet   *binding_set,
   guint keypad_keysym = keysym - GDK_Left + GDK_KP_Left;
   
   gtk_binding_entry_add_signal (binding_set, keysym, 0,
-                                "move_focus", 1,
+                                "move-focus", 1,
                                 GTK_TYPE_DIRECTION_TYPE, dir);
   gtk_binding_entry_add_signal (binding_set, keypad_keysym, 0,
-                                "move_focus", 1,
+                                "move-focus", 1,
                                 GTK_TYPE_DIRECTION_TYPE, dir);
 }
 
@@ -328,12 +337,22 @@ add_ctrl_tab_bindings (GtkBindingSet    *binding_set,
 {
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Tab, GDK_CONTROL_MASK | modifiers,
-				"move_focus", 1,
+				"move-focus", 1,
 				GTK_TYPE_DIRECTION_TYPE, direction);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Tab, GDK_CONTROL_MASK | modifiers,
-				"move_focus", 1,
+				"move-focus", 1,
 				GTK_TYPE_DIRECTION_TYPE, direction);
+}
+
+static void
+toolbar_tool_shell_iface_init (GtkToolShellIface *iface)
+{
+  iface->get_icon_size    = toolbar_get_icon_size;
+  iface->get_orientation  = toolbar_get_orientation;
+  iface->get_style        = toolbar_get_style;
+  iface->get_relief_style = toolbar_get_relief_style;
+  iface->rebuild_menu     = toolbar_rebuild_menu;
 }
 
 static void
@@ -359,14 +378,12 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
   widget_class->style_set = gtk_toolbar_style_set;
   widget_class->focus = gtk_toolbar_focus;
 
-  /* need to override the base class function via override_class_closure,
+  /* need to override the base class function via override_class_handler,
    * because the signal slot is not available in GtkWidgetClass
    */
-  g_signal_override_class_closure (g_signal_lookup ("move_focus",
-                                                    GTK_TYPE_WIDGET),
+  g_signal_override_class_handler ("move-focus",
                                    GTK_TYPE_TOOLBAR,
-                                   g_cclosure_new (G_CALLBACK (gtk_toolbar_move_focus),
-                                                   NULL, NULL));
+                                   G_CALLBACK (gtk_toolbar_move_focus));
 
   widget_class->screen_changed = gtk_toolbar_screen_changed;
   widget_class->realize = gtk_toolbar_realize;
@@ -438,7 +455,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Return value: return %TRUE if the signal was handled, %FALSE if not
    */
   toolbar_signals[POPUP_CONTEXT_MENU] =
-    g_signal_new (I_("popup_context_menu"),
+    g_signal_new (I_("popup-context-menu"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolbarClass, popup_context_menu),
@@ -459,15 +476,15 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Return value: %TRUE if the signal was handled, %FALSE if not
    */
   toolbar_signals[FOCUS_HOME_OR_END] =
-    _gtk_binding_signal_new (I_("focus_home_or_end"),
-			     G_OBJECT_CLASS_TYPE (klass),
-			     G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-			     G_CALLBACK (gtk_toolbar_focus_home_or_end),
-			     NULL, NULL,
-			     _gtk_marshal_BOOLEAN__BOOLEAN,
-			     G_TYPE_BOOLEAN, 1,
-			     G_TYPE_BOOLEAN);
-  
+    g_signal_new_class_handler (I_("focus-home-or-end"),
+                                G_OBJECT_CLASS_TYPE (klass),
+                                G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                                G_CALLBACK (gtk_toolbar_focus_home_or_end),
+                                NULL, NULL,
+                                _gtk_marshal_BOOLEAN__BOOLEAN,
+                                G_TYPE_BOOLEAN, 1,
+                                G_TYPE_BOOLEAN);
+
   /* properties */
   g_object_class_install_property (gobject_class,
 				   PROP_ORIENTATION,
@@ -554,7 +571,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
 					      g_param_spec_boolean ("expand", 
 								    P_("Expand"), 
 								    P_("Whether the item should receive extra space when the toolbar grows"),
-								    TRUE,
+								    FALSE,
 								    GTK_PARAM_READWRITE));
   
   gtk_container_class_install_child_property (container_class,
@@ -562,7 +579,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
 					      g_param_spec_boolean ("homogeneous", 
 								    P_("Homogeneous"), 
 								    P_("Whether the item should be the same size as other homogeneous items"),
-								    TRUE,
+								    FALSE,
 								    GTK_PARAM_READWRITE));
   
   /* style properties */
@@ -638,16 +655,16 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
   add_arrow_bindings (binding_set, GDK_Down, GTK_DIR_DOWN);
   
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Home, 0,
-                                "focus_home_or_end", 1,
+                                "focus-home-or-end", 1,
 				G_TYPE_BOOLEAN, TRUE);
   gtk_binding_entry_add_signal (binding_set, GDK_Home, 0,
-                                "focus_home_or_end", 1,
+                                "focus-home-or-end", 1,
 				G_TYPE_BOOLEAN, TRUE);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_End, 0,
-                                "focus_home_or_end", 1,
+                                "focus-home-or-end", 1,
 				G_TYPE_BOOLEAN, FALSE);
   gtk_binding_entry_add_signal (binding_set, GDK_End, 0,
-                                "focus_home_or_end", 1,
+                                "focus-home-or-end", 1,
 				G_TYPE_BOOLEAN, FALSE);
   
   add_ctrl_tab_bindings (binding_set, 0, GTK_DIR_TAB_FORWARD);
@@ -674,7 +691,7 @@ gtk_toolbar_init (GtkToolbar *toolbar)
   g_object_ref_sink (toolbar->tooltips);
   
   priv->arrow_button = gtk_toggle_button_new ();
-  g_signal_connect (priv->arrow_button, "button_press_event",
+  g_signal_connect (priv->arrow_button, "button-press-event",
 		    G_CALLBACK (gtk_toolbar_arrow_button_press), toolbar);
   g_signal_connect (priv->arrow_button, "clicked",
 		    G_CALLBACK (gtk_toolbar_arrow_button_clicked), toolbar);
@@ -844,9 +861,8 @@ gtk_toolbar_unrealize (GtkWidget *widget)
       gdk_window_destroy (priv->event_window);
       priv->event_window = NULL;
     }
-  
-  if (GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unrealize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unrealize (widget);
 }
 
 static gint
@@ -1368,7 +1384,8 @@ rebuild_menu (GtkToolbar *toolbar)
 				 GTK_WIDGET (toolbar),
 				 menu_detached);
 
-      g_signal_connect (priv->menu, "deactivate", G_CALLBACK (menu_deactivated), toolbar);
+      g_signal_connect (priv->menu, "deactivate",
+                        G_CALLBACK (menu_deactivated), toolbar);
     }
 
   gtk_container_foreach (GTK_CONTAINER (priv->menu), remove_item, NULL);
@@ -2455,13 +2472,8 @@ static void
 gtk_toolbar_add (GtkContainer *container,
 		 GtkWidget    *widget)
 {
-  GtkToolbar *toolbar;
-  
-  g_return_if_fail (GTK_IS_TOOLBAR (container));
-  g_return_if_fail (widget != NULL);
-  
-  toolbar = GTK_TOOLBAR (container);
-  
+  GtkToolbar *toolbar = GTK_TOOLBAR (container);
+
   if (GTK_IS_TOOL_ITEM (widget))
     gtk_toolbar_insert (toolbar, GTK_TOOL_ITEM (widget), -1);
   else
@@ -2472,17 +2484,11 @@ static void
 gtk_toolbar_remove (GtkContainer *container,
 		    GtkWidget    *widget)
 {
-  GtkToolbar *toolbar;
-  GtkToolbarPrivate *priv;
+  GtkToolbar *toolbar = GTK_TOOLBAR (container);
+  GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
   ToolbarContent *content_to_remove;
   GList *list;
-  
-  g_return_if_fail (GTK_IS_TOOLBAR (container));
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  toolbar = GTK_TOOLBAR (container);
-  priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
-  
+
   content_to_remove = NULL;
   for (list = priv->content; list != NULL; list = list->next)
     {
@@ -2526,14 +2532,14 @@ gtk_toolbar_forall (GtkContainer *container,
 	  GtkWidget *child = toolbar_content_get_widget (content);
 	  
 	  if (child)
-	    (*callback) (child, callback_data);
+	    callback (child, callback_data);
 	}
       
       list = next;
     }
   
   if (include_internals)
-    (* callback) (priv->arrow_button, callback_data);
+    callback (priv->arrow_button, callback_data);
 }
 
 static GType
@@ -2925,6 +2931,9 @@ gtk_toolbar_unset_style (GtkToolbar *toolbar)
  * @enable: set to %FALSE to disable the tooltips, or %TRUE to enable them.
  * 
  * Sets if the tooltips of a toolbar should be active or not.
+ *
+ * Deprecated: 2.14: The toolkit-wide #GtkSettings:gtk-enable-tooltips property
+ * is now used instead.
  **/
 void
 gtk_toolbar_set_tooltips (GtkToolbar *toolbar,
@@ -2948,6 +2957,9 @@ gtk_toolbar_set_tooltips (GtkToolbar *toolbar,
  * gtk_toolbar_set_tooltips().
  *
  * Return value: %TRUE if tooltips are enabled
+ *
+ * Deprecated: 2.14: The toolkit-wide #GtkSettings:gtk-enable-tooltips property
+ * is now used instead.
  **/
 gboolean
 gtk_toolbar_get_tooltips (GtkToolbar *toolbar)
@@ -4574,7 +4586,7 @@ toolbar_content_toolbar_reconfigured (ToolbarContent *content,
   switch (content->type)
     {
     case TOOL_ITEM:
-      _gtk_tool_item_toolbar_reconfigured (content->u.tool_item.item);
+      gtk_tool_item_toolbar_reconfigured (content->u.tool_item.item);
       break;
       
     case COMPATIBILITY:
@@ -4820,10 +4832,10 @@ _gtk_toolbar_get_default_space_size (void)
 }
 
 void
-_gtk_toolbar_paint_space_line (GtkWidget       *widget,
-			       GtkToolbar      *toolbar,
-			       GdkRectangle    *area,
-			       GtkAllocation   *allocation)
+_gtk_toolbar_paint_space_line (GtkWidget           *widget,
+			       GtkToolbar          *toolbar,
+			       const GdkRectangle  *area,
+			       const GtkAllocation *allocation)
 {
   const double start_fraction = (SPACE_LINE_START / SPACE_LINE_DIVISION);
   const double end_fraction = (SPACE_LINE_END / SPACE_LINE_DIVISION);
@@ -4931,10 +4943,34 @@ _gtk_toolbar_elide_underscores (const gchar *original)
   return result;
 }
 
-void
-_gtk_toolbar_rebuild_menu (GtkToolbar *toolbar)
+static GtkIconSize
+toolbar_get_icon_size (GtkToolShell *shell)
 {
-  GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
+  return GTK_TOOLBAR (shell)->icon_size;
+}
+
+static GtkOrientation
+toolbar_get_orientation (GtkToolShell *shell)
+{
+  return GTK_TOOLBAR (shell)->orientation;
+}
+
+static GtkToolbarStyle
+toolbar_get_style (GtkToolShell *shell)
+{
+  return GTK_TOOLBAR (shell)->style;
+}
+
+static GtkReliefStyle
+toolbar_get_relief_style (GtkToolShell *shell)
+{
+  return get_button_relief (GTK_TOOLBAR (shell));
+}
+
+static void
+toolbar_rebuild_menu (GtkToolShell *shell)
+{
+  GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (shell);
   GList *list;
 
   priv->need_rebuild = TRUE;
@@ -4946,7 +4982,7 @@ _gtk_toolbar_rebuild_menu (GtkToolbar *toolbar)
       toolbar_content_set_unknown_menu_status (content);
     }
   
-  gtk_widget_queue_resize (GTK_WIDGET (toolbar));
+  gtk_widget_queue_resize (GTK_WIDGET (shell));
 }
 
 #define __GTK_TOOLBAR_C__

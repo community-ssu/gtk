@@ -107,6 +107,9 @@ INCLUDES = \
 	$(GTK_DEBUG_FLAGS)	\
 	$(GTK_DEP_CFLAGS)
 
+CPPFLAGS += \
+	-UGTK_DISABLE_SINGLE_INCLUDES
+
 GTKDOC_LIBS = \
 	$(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la	\
 	$(top_builddir)/gdk/$(gdktargetlib)        			\
@@ -238,7 +241,11 @@ HTML_IMAGES = \
 	$(top_srcdir)/gtk/stock-icons/24/gtk-paste.png			\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-preferences.png		\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-print.png			\
+	$(top_srcdir)/gtk/stock-icons/24/gtk-print-error.png		\
+	$(top_srcdir)/gtk/stock-icons/24/gtk-print-paused.png		\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-print-preview.png		\
+	$(top_srcdir)/gtk/stock-icons/24/gtk-print-report.png		\
+	$(top_srcdir)/gtk/stock-icons/24/gtk-print-warning.png		\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-properties.png		\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-quit.png			\
 	$(top_srcdir)/gtk/stock-icons/24/gtk-redo-ltr.png		\

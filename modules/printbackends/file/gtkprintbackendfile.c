@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -35,13 +35,10 @@
 
 #include <glib/gi18n-lib.h>
 
-#include "gtkprintoperation.h"
+#include "gtk/gtk.h"
+#include "gtk/gtkprinter-private.h"
 
-#include "gtkprintbackend.h"
 #include "gtkprintbackendfile.h"
-
-#include "gtkprinter.h"
-#include "gtkprinter-private.h"
 
 typedef struct _GtkPrintBackendFileClass GtkPrintBackendFileClass;
 
@@ -104,6 +101,7 @@ static cairo_surface_t *    file_printer_create_cairo_surface      (GtkPrinter  
 								    GIOChannel              *cache_io);
 
 static GList *              file_printer_list_papers               (GtkPrinter              *printer);
+static GtkPageSetup *       file_printer_get_default_page_size     (GtkPrinter              *printer);
 
 static void
 gtk_print_backend_file_register_type (GTypeModule *module)
@@ -182,6 +180,7 @@ gtk_print_backend_file_class_init (GtkPrintBackendFileClass *class)
   backend_class->printer_get_settings_from_options = file_printer_get_settings_from_options;
   backend_class->printer_prepare_for_print = file_printer_prepare_for_print;
   backend_class->printer_list_papers = file_printer_list_papers;
+  backend_class->printer_get_default_page_size = file_printer_get_default_page_size;
 }
 
 /* return N_FORMATS if no explicit format in the settings */
@@ -239,13 +238,13 @@ output_file_from_settings (GtkPrintSettings *settings,
 
       if (locale_name != NULL)
         {
-          gchar *current_dir = g_get_current_dir ();
+	  gchar *current_dir = g_get_current_dir ();
           path = g_build_filename (current_dir, locale_name, NULL);
           g_free (locale_name);
 
           uri = g_filename_to_uri (path, NULL, NULL);
           g_free (path);
-          g_free (current_dir);
+	  g_free (current_dir);
 	}
     }
 
@@ -698,4 +697,12 @@ file_printer_list_papers (GtkPrinter *printer)
   g_list_free (papers);
 
   return g_list_reverse (result);
+}
+
+static GtkPageSetup *
+file_printer_get_default_page_size (GtkPrinter *printer)
+{
+  GtkPageSetup *result = NULL;
+
+  return result;
 }

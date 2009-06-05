@@ -24,17 +24,18 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
-#include "gtkintl.h"
-#include "gtkmenu.h"
-#include "gtkmenuitem.h"
-#include "gtkmarshalers.h"
+#include "config.h"
+
 #include "gdk/gdkkeysyms.h"
 
 #undef GTK_DISABLE_DEPRECATED
-#include "gtkoptionmenu.h"
 
+#include "gtkmenu.h"
+#include "gtkmenuitem.h"
+#include "gtkmarshalers.h"
+#include "gtkoptionmenu.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define CHILD_LEFT_SPACING        4
@@ -109,8 +110,7 @@ enum
 enum
 {
   PROP_0,
-  PROP_MENU,
-  LAST_PROP
+  PROP_MENU
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -253,7 +253,7 @@ gtk_option_menu_set_menu (GtkOptionMenu *option_menu,
       g_signal_connect_after (option_menu->menu, "selection-done",
 			      G_CALLBACK (gtk_option_menu_selection_done),
 			      option_menu);
-      g_signal_connect_swapped (option_menu->menu, "size_request",
+      g_signal_connect_swapped (option_menu->menu, "size-request",
 				G_CALLBACK (gtk_option_menu_calc_size),
 				option_menu);
 
@@ -372,17 +372,12 @@ gtk_option_menu_get_property (GObject            *object,
 static void
 gtk_option_menu_destroy (GtkObject *object)
 {
-  GtkOptionMenu *option_menu;
-
-  g_return_if_fail (GTK_IS_OPTION_MENU (object));
-
-  option_menu = GTK_OPTION_MENU (object);
+  GtkOptionMenu *option_menu = GTK_OPTION_MENU (object);
 
   if (option_menu->menu)
     gtk_widget_destroy (option_menu->menu);
 
-  if (GTK_OBJECT_CLASS (gtk_option_menu_parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (gtk_option_menu_parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (gtk_option_menu_parent_class)->destroy (object);
 }
 
 static void
@@ -781,7 +776,7 @@ gtk_option_menu_update_contents (GtkOptionMenu *option_menu)
 	      gtk_widget_reparent (child, GTK_WIDGET (option_menu));
 	    }
 
-	  g_signal_connect (option_menu->menu_item, "state_changed",
+	  g_signal_connect (option_menu->menu_item, "state-changed",
 			    G_CALLBACK (gtk_option_menu_item_state_changed_cb), option_menu);
 	  g_signal_connect (option_menu->menu_item, "destroy",
 			    G_CALLBACK (gtk_option_menu_item_destroy_cb), option_menu);
@@ -898,6 +893,10 @@ gtk_option_menu_position (GtkMenu  *menu,
 
   active = gtk_menu_get_active (GTK_MENU (option_menu->menu));
   gdk_window_get_origin (widget->window, &menu_xpos, &menu_ypos);
+
+  /* set combo box type hint for menu popup */
+  gtk_window_set_type_hint (GTK_WINDOW (GTK_MENU (option_menu->menu)->toplevel),
+			    GDK_WINDOW_TYPE_HINT_COMBO);
 
   menu_xpos += widget->allocation.x;
   menu_ypos += widget->allocation.y + widget->allocation.height / 2 - 2;

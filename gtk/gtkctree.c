@@ -28,11 +28,12 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
+
+#undef GTK_DISABLE_DEPRECATED
+#define __GTK_CTREE_C__
+
 #include "gtkctree.h"
 #include "gtkbindings.h"
 #include "gtkmain.h"
@@ -40,6 +41,7 @@
 #include "gtkdnd.h"
 #include "gtkintl.h"
 #include <gdk/gdkkeysyms.h>
+
 #include "gtkalias.h"
 
 #define PM_SIZE                    8
@@ -436,7 +438,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 			   ARG_EXPANDER_STYLE);
 
   ctree_signals[TREE_SELECT_ROW] =
-    gtk_signal_new (I_("tree_select_row"),
+    gtk_signal_new (I_("tree-select-row"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass, tree_select_row),
@@ -445,7 +447,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 		    GTK_TYPE_CTREE_NODE,
 		    GTK_TYPE_INT);
   ctree_signals[TREE_UNSELECT_ROW] =
-    gtk_signal_new (I_("tree_unselect_row"),
+    gtk_signal_new (I_("tree-unselect-row"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass, tree_unselect_row),
@@ -454,7 +456,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 		    GTK_TYPE_CTREE_NODE,
 		    GTK_TYPE_INT);
   ctree_signals[TREE_EXPAND] =
-    gtk_signal_new (I_("tree_expand"),
+    gtk_signal_new (I_("tree-expand"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass, tree_expand),
@@ -462,7 +464,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 		    GTK_TYPE_NONE, 1,
 		    GTK_TYPE_CTREE_NODE);
   ctree_signals[TREE_COLLAPSE] =
-    gtk_signal_new (I_("tree_collapse"),
+    gtk_signal_new (I_("tree-collapse"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass, tree_collapse),
@@ -470,7 +472,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 		    GTK_TYPE_NONE, 1,
 		    GTK_TYPE_CTREE_NODE);
   ctree_signals[TREE_MOVE] =
-    gtk_signal_new (I_("tree_move"),
+    gtk_signal_new (I_("tree-move"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass, tree_move),
@@ -480,7 +482,7 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
 		    GTK_TYPE_CTREE_NODE,
 		    GTK_TYPE_CTREE_NODE);
   ctree_signals[CHANGE_FOCUS_ROW_EXPANSION] =
-    gtk_signal_new (I_("change_focus_row_expansion"),
+    gtk_signal_new (I_("change-focus-row-expansion"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCTreeClass,
@@ -491,64 +493,64 @@ gtk_ctree_class_init (GtkCTreeClass *klass)
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_plus, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_EXPAND);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_plus, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_EXPAND_RECURSIVE);
 
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Add, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_EXPAND);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Add, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_EXPAND_RECURSIVE);
   
   gtk_binding_entry_add_signal (binding_set,
 				GDK_minus, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_COLLAPSE);
   gtk_binding_entry_add_signal (binding_set,
                                 GDK_minus, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM,
 				GTK_CTREE_EXPANSION_COLLAPSE_RECURSIVE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Subtract, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_COLLAPSE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Subtract, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM,
 				GTK_CTREE_EXPANSION_COLLAPSE_RECURSIVE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_equal, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_TOGGLE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Equal, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_TOGGLE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Multiply, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_TOGGLE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_asterisk, 0,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM, GTK_CTREE_EXPANSION_TOGGLE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_KP_Multiply, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM,
 				GTK_CTREE_EXPANSION_TOGGLE_RECURSIVE);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_asterisk, GDK_CONTROL_MASK,
-				"change_focus_row_expansion", 1,
+				"change-focus-row-expansion", 1,
 				GTK_TYPE_ENUM,
 				GTK_CTREE_EXPANSION_TOGGLE_RECURSIVE);  
 }
@@ -673,9 +675,13 @@ ctree_attach_styles (GtkCTree     *ctree,
 
       colormap = gtk_widget_get_colormap (GTK_WIDGET (ctree));
       if (GTK_CTREE_ROW (node)->row.fg_set)
-	gdk_color_alloc (colormap, &(GTK_CTREE_ROW (node)->row.foreground));
+	gdk_colormap_alloc_color (colormap,
+                                  &(GTK_CTREE_ROW (node)->row.foreground),
+                                  FALSE, TRUE);
       if (GTK_CTREE_ROW (node)->row.bg_set)
-	gdk_color_alloc (colormap, &(GTK_CTREE_ROW (node)->row.background));
+	gdk_colormap_alloc_color (colormap,
+                                  &(GTK_CTREE_ROW (node)->row.background),
+                                  FALSE, TRUE);
     }
 
   for (i = 0; i < clist->columns; i++)
@@ -779,7 +785,7 @@ gtk_ctree_unrealize (GtkWidget *widget)
 	}
     }
 
-  gdk_gc_destroy (ctree->lines_gc);
+  g_object_unref (ctree->lines_gc);
 }
 
 static gint
@@ -1024,7 +1030,7 @@ draw_cell_pixmap (GdkWindow    *window,
     height = clip_rectangle->y + clip_rectangle->height - y;
 
   if (width > 0 && height > 0)
-    gdk_draw_pixmap (window, fg_gc, pixmap, xsrc, ysrc, x, y, width, height);
+    gdk_draw_drawable (window, fg_gc, pixmap, xsrc, ysrc, x, y, width, height);
 
   if (mask)
     {
@@ -1832,7 +1838,7 @@ draw_row (GtkCList     *clist,
 	  switch (clist_row->cell[i].type)
 	    {
 	    case GTK_CELL_PIXMAP:
-	      gdk_window_get_size
+	      gdk_drawable_get_size
 		(GTK_CELL_PIXMAP (clist_row->cell[i])->pixmap, &pixmap_width,
 		 &height);
 	      width += pixmap_width;
@@ -1840,7 +1846,7 @@ draw_row (GtkCList     *clist,
 	    case GTK_CELL_PIXTEXT:
 	      if (GTK_CELL_PIXTEXT (clist_row->cell[i])->pixmap)
 		{
-		  gdk_window_get_size 
+		  gdk_drawable_get_size
 		    (GTK_CELL_PIXTEXT (clist_row->cell[i])->pixmap,
 		     &pixmap_width, &height);
 		  width += pixmap_width;
@@ -2535,7 +2541,7 @@ real_tree_expand (GtkCTree     *ctree,
   if (GTK_CELL_PIXTEXT 
       (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap)
     {
-      gdk_pixmap_unref
+      g_object_unref
 	(GTK_CELL_PIXTEXT
 	 (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap);
       
@@ -2545,7 +2551,7 @@ real_tree_expand (GtkCTree     *ctree,
       if (GTK_CELL_PIXTEXT 
 	  (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask)
 	{
-	  gdk_pixmap_unref
+	  g_object_unref
 	    (GTK_CELL_PIXTEXT 
 	     (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask);
 	  GTK_CELL_PIXTEXT 
@@ -2558,12 +2564,12 @@ real_tree_expand (GtkCTree     *ctree,
     {
       GTK_CELL_PIXTEXT 
 	(GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap = 
-	gdk_pixmap_ref (GTK_CTREE_ROW (node)->pixmap_opened);
+	g_object_ref (GTK_CTREE_ROW (node)->pixmap_opened);
 
       if (GTK_CTREE_ROW (node)->mask_opened) 
 	GTK_CELL_PIXTEXT 
 	  (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask = 
-	  gdk_pixmap_ref (GTK_CTREE_ROW (node)->mask_opened);
+	  g_object_ref (GTK_CTREE_ROW (node)->mask_opened);
     }
 
 
@@ -2679,7 +2685,7 @@ real_tree_collapse (GtkCTree     *ctree,
   if (GTK_CELL_PIXTEXT 
       (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap)
     {
-      gdk_pixmap_unref
+      g_object_unref
 	(GTK_CELL_PIXTEXT
 	 (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap);
       
@@ -2689,7 +2695,7 @@ real_tree_collapse (GtkCTree     *ctree,
       if (GTK_CELL_PIXTEXT 
 	  (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask)
 	{
-	  gdk_pixmap_unref
+	  g_object_unref
 	    (GTK_CELL_PIXTEXT 
 	     (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask);
 	  GTK_CELL_PIXTEXT 
@@ -2702,12 +2708,12 @@ real_tree_collapse (GtkCTree     *ctree,
     {
       GTK_CELL_PIXTEXT 
 	(GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->pixmap = 
-	gdk_pixmap_ref (GTK_CTREE_ROW (node)->pixmap_closed);
+	g_object_ref (GTK_CTREE_ROW (node)->pixmap_closed);
 
       if (GTK_CTREE_ROW (node)->mask_closed) 
 	GTK_CELL_PIXTEXT 
 	  (GTK_CTREE_ROW (node)->row.cell[ctree->tree_column])->mask = 
-	  gdk_pixmap_ref (GTK_CTREE_ROW (node)->mask_closed);
+	  g_object_ref (GTK_CTREE_ROW (node)->mask_closed);
     }
 
   work = GTK_CTREE_ROW (node)->children;
@@ -2857,9 +2863,9 @@ cell_size_request (GtkCList       *clist,
     case GTK_CELL_PIXTEXT:
       if (GTK_CELL_PIXTEXT (clist_row->cell[column])->pixmap)
 	{
-	  gdk_window_get_size (GTK_CELL_PIXTEXT
-			       (clist_row->cell[column])->pixmap,
-			       &width, &height);
+	  gdk_drawable_get_size (GTK_CELL_PIXTEXT
+                                 (clist_row->cell[column])->pixmap,
+                                 &width, &height);
 	  width += GTK_CELL_PIXTEXT (clist_row->cell[column])->spacing;
 	}
       else
@@ -2889,8 +2895,8 @@ cell_size_request (GtkCList       *clist,
 	}
       break;
     case GTK_CELL_PIXMAP:
-      gdk_window_get_size (GTK_CELL_PIXMAP (clist_row->cell[column])->pixmap,
-			   &width, &height);
+      gdk_drawable_get_size (GTK_CELL_PIXMAP (clist_row->cell[column])->pixmap,
+                             &width, &height);
       requisition->width += width;
       requisition->height = MAX (requisition->height, height);
       break;
@@ -3026,9 +3032,9 @@ set_cell_contents (GtkCList    *clist,
 
   g_free (old_text);
   if (old_pixmap)
-    gdk_pixmap_unref (old_pixmap);
+    g_object_unref (old_pixmap);
   if (old_mask)
-    gdk_pixmap_unref (old_mask);
+    g_object_unref (old_mask);
 }
 
 static void 
@@ -3045,15 +3051,15 @@ set_node_info (GtkCTree     *ctree,
 {
   if (GTK_CTREE_ROW (node)->pixmap_opened)
     {
-      gdk_pixmap_unref (GTK_CTREE_ROW (node)->pixmap_opened);
+      g_object_unref (GTK_CTREE_ROW (node)->pixmap_opened);
       if (GTK_CTREE_ROW (node)->mask_opened) 
-	gdk_bitmap_unref (GTK_CTREE_ROW (node)->mask_opened);
+	g_object_unref (GTK_CTREE_ROW (node)->mask_opened);
     }
   if (GTK_CTREE_ROW (node)->pixmap_closed)
     {
-      gdk_pixmap_unref (GTK_CTREE_ROW (node)->pixmap_closed);
+      g_object_unref (GTK_CTREE_ROW (node)->pixmap_closed);
       if (GTK_CTREE_ROW (node)->mask_closed) 
-	gdk_bitmap_unref (GTK_CTREE_ROW (node)->mask_closed);
+	g_object_unref (GTK_CTREE_ROW (node)->mask_closed);
     }
 
   GTK_CTREE_ROW (node)->pixmap_opened = NULL;
@@ -3063,15 +3069,15 @@ set_node_info (GtkCTree     *ctree,
 
   if (pixmap_closed)
     {
-      GTK_CTREE_ROW (node)->pixmap_closed = gdk_pixmap_ref (pixmap_closed);
+      GTK_CTREE_ROW (node)->pixmap_closed = g_object_ref (pixmap_closed);
       if (mask_closed) 
-	GTK_CTREE_ROW (node)->mask_closed = gdk_bitmap_ref (mask_closed);
+	GTK_CTREE_ROW (node)->mask_closed = g_object_ref (mask_closed);
     }
   if (pixmap_opened)
     {
-      GTK_CTREE_ROW (node)->pixmap_opened = gdk_pixmap_ref (pixmap_opened);
+      GTK_CTREE_ROW (node)->pixmap_opened = g_object_ref (pixmap_opened);
       if (mask_opened) 
-	GTK_CTREE_ROW (node)->mask_opened = gdk_bitmap_ref (mask_opened);
+	GTK_CTREE_ROW (node)->mask_opened = g_object_ref (mask_opened);
     }
 
   GTK_CTREE_ROW (node)->is_leaf  = is_leaf;
@@ -3253,21 +3259,21 @@ row_delete (GtkCTree    *ctree,
 
   if (ctree_row->pixmap_closed)
     {
-      gdk_pixmap_unref (ctree_row->pixmap_closed);
+      g_object_unref (ctree_row->pixmap_closed);
       if (ctree_row->mask_closed)
-	gdk_bitmap_unref (ctree_row->mask_closed);
+	g_object_unref (ctree_row->mask_closed);
     }
 
   if (ctree_row->pixmap_opened)
     {
-      gdk_pixmap_unref (ctree_row->pixmap_opened);
+      g_object_unref (ctree_row->pixmap_opened);
       if (ctree_row->mask_opened)
-	gdk_bitmap_unref (ctree_row->mask_opened);
+	g_object_unref (ctree_row->mask_opened);
     }
 
   if (ctree_row->row.destroy)
     {
-      GtkDestroyNotify dnotify = ctree_row->row.destroy;
+      GDestroyNotify dnotify = ctree_row->row.destroy;
       gpointer ddata = ctree_row->row.data;
 
       ctree_row->row.destroy = NULL;
@@ -3570,7 +3576,7 @@ gtk_ctree_new_with_titles (gint         columns,
   g_return_val_if_fail (columns > 0, NULL);
   g_return_val_if_fail (tree_column >= 0 && tree_column < columns, NULL);
 
-  widget = gtk_widget_new (GTK_TYPE_CTREE,
+  widget = g_object_new (GTK_TYPE_CTREE,
 			   "n_columns", columns,
 			   "tree_column", tree_column,
 			   NULL);
@@ -4607,9 +4613,9 @@ gtk_ctree_node_set_pixmap (GtkCTree     *ctree,
   if (column < 0 || column >= GTK_CLIST (ctree)->columns)
     return;
 
-  gdk_pixmap_ref (pixmap);
+  g_object_ref (pixmap);
   if (mask) 
-    gdk_pixmap_ref (mask);
+    g_object_ref (mask);
 
   clist = GTK_CLIST (ctree);
 
@@ -4642,9 +4648,9 @@ gtk_ctree_node_set_pixtext (GtkCTree     *ctree,
 
   if (pixmap)
     {
-      gdk_pixmap_ref (pixmap);
+      g_object_ref (pixmap);
       if (mask) 
-	gdk_pixmap_ref (mask);
+	g_object_ref (mask);
     }
 
   GTK_CLIST_GET_CLASS (clist)->set_cell_contents
@@ -5091,8 +5097,9 @@ gtk_ctree_node_set_foreground (GtkCTree       *ctree,
       GTK_CTREE_ROW (node)->row.foreground = *color;
       GTK_CTREE_ROW (node)->row.fg_set = TRUE;
       if (GTK_WIDGET_REALIZED (ctree))
-	gdk_color_alloc (gtk_widget_get_colormap (GTK_WIDGET (ctree)),
-			 &GTK_CTREE_ROW (node)->row.foreground);
+	gdk_colormap_alloc_color (gtk_widget_get_colormap (GTK_WIDGET (ctree)),
+                                  &GTK_CTREE_ROW (node)->row.foreground,
+                                  FALSE, TRUE);
     }
   else
     GTK_CTREE_ROW (node)->row.fg_set = FALSE;
@@ -5113,8 +5120,9 @@ gtk_ctree_node_set_background (GtkCTree       *ctree,
       GTK_CTREE_ROW (node)->row.background = *color;
       GTK_CTREE_ROW (node)->row.bg_set = TRUE;
       if (GTK_WIDGET_REALIZED (ctree))
-	gdk_color_alloc (gtk_widget_get_colormap (GTK_WIDGET (ctree)),
-			 &GTK_CTREE_ROW (node)->row.background);
+	gdk_colormap_alloc_color (gtk_widget_get_colormap (GTK_WIDGET (ctree)),
+                                  &GTK_CTREE_ROW (node)->row.background,
+                                  FALSE, TRUE);
     }
   else
     GTK_CTREE_ROW (node)->row.bg_set = FALSE;
@@ -5131,12 +5139,12 @@ gtk_ctree_node_set_row_data (GtkCTree     *ctree,
 }
 
 void
-gtk_ctree_node_set_row_data_full (GtkCTree         *ctree,
-				  GtkCTreeNode     *node,
-				  gpointer          data,
-				  GtkDestroyNotify  destroy)
+gtk_ctree_node_set_row_data_full (GtkCTree       *ctree,
+				  GtkCTreeNode   *node,
+				  gpointer        data,
+				  GDestroyNotify  destroy)
 {
-  GtkDestroyNotify dnotify;
+  GDestroyNotify dnotify;
   gpointer ddata;
   
   g_return_if_fail (GTK_IS_CTREE (ctree));
@@ -6098,5 +6106,4 @@ gtk_ctree_node_get_type (void)
   return our_type;
 }
 
-#define __GTK_CTREE_C__
 #include "gtkaliasdef.c"

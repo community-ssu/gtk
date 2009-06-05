@@ -21,14 +21,16 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_SELECTION_H__
 #define __GTK_SELECTION_H__
 
-
-#include <gdk/gdk.h>
 #include <gtk/gtkenums.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtktextiter.h>
@@ -54,13 +56,13 @@ typedef struct _GtkTargetEntry   GtkTargetEntry;
 
 struct _GtkSelectionData
 {
-  GdkAtom	selection;
-  GdkAtom	target;
-  GdkAtom	type;
-  gint		format;
-  guchar       *data;  
-  gint		length;
-  GdkDisplay   *display;
+  GdkAtom       GSEAL (selection);
+  GdkAtom       GSEAL (target);
+  GdkAtom       GSEAL (type);
+  gint          GSEAL (format);
+  guchar       *GSEAL (data);
+  gint          GSEAL (length);
+  GdkDisplay   *GSEAL (display);
 };
 
 struct _GtkTargetEntry {
@@ -70,7 +72,7 @@ struct _GtkTargetEntry {
 };
 
 /* These structures not public, and are here only for the convenience of
- * gtkdnd.c 
+ * gtkdnd.c
  */
 
 typedef struct _GtkTargetPair GtkTargetPair;
@@ -144,6 +146,14 @@ gboolean gtk_selection_convert       (GtkWidget            *widget,
 				      GdkAtom               selection,
 				      GdkAtom               target,
 				      guint32               time_);
+
+GdkAtom       gtk_selection_data_get_target    (GtkSelectionData *selection_data);
+GdkAtom       gtk_selection_data_get_data_type (GtkSelectionData *selection_data);
+gint          gtk_selection_data_get_format    (GtkSelectionData *selection_data);
+const guchar *gtk_selection_data_get_data      (GtkSelectionData *selection_data);
+gint          gtk_selection_data_get_length    (GtkSelectionData *selection_data);
+GdkDisplay   *gtk_selection_data_get_display   (GtkSelectionData *selection_data);
+
 void     gtk_selection_data_set      (GtkSelectionData     *selection_data,
 				      GdkAtom               type,
 				      gint                  format,

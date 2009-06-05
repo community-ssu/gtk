@@ -29,10 +29,10 @@
  * - Do we want lockdown?
  */
 
-#include <config.h>
+#include "config.h"
 #include <errno.h>
 #include <string.h>
-#include <glib/gkeyfile.h>
+#include <glib.h>
 #include <glib/gi18n-lib.h>
 #include "gtkfilechoosersettings.h"
 #include "gtkalias.h"

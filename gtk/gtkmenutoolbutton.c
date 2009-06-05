@@ -19,9 +19,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
+
+#undef GTK_DISABLE_DEPRECATED /* GtkTooltips */
+
 #include "gtkmenutoolbutton.h"
-#include "gtkintl.h"
 #include "gtktogglebutton.h"
 #include "gtkarrow.h"
 #include "gtkhbox.h"
@@ -29,6 +31,7 @@
 #include "gtkmenu.h"
 #include "gtkmain.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
@@ -57,8 +60,7 @@ enum
 enum
 {
   PROP_0,
-  PROP_MENU,
-  LAST_PROP
+  PROP_MENU
 };
 
 static gint signals[LAST_SIGNAL];
@@ -405,7 +407,7 @@ gtk_menu_tool_button_init (GtkMenuToolButton *button)
 
   g_signal_connect (arrow_button, "toggled",
 		    G_CALLBACK (arrow_button_toggled_cb), button);
-  g_signal_connect (arrow_button, "button_press_event",
+  g_signal_connect (arrow_button, "button-press-event",
 		    G_CALLBACK (arrow_button_button_press_event_cb), button);
 #ifdef MAEMO_CHANGES
   g_signal_connect (arrow_button, "insensitive_press",
@@ -434,9 +436,8 @@ gtk_menu_tool_button_destroy (GtkObject *object)
 					    arrow_button_button_press_event_cb, 
 					    button);
     }
-  
-  if (GTK_OBJECT_CLASS (gtk_menu_tool_button_parent_class)->destroy)
-    (*GTK_OBJECT_CLASS (gtk_menu_tool_button_parent_class)->destroy) (object);
+
+  GTK_OBJECT_CLASS (gtk_menu_tool_button_parent_class)->destroy (object);
 }
 
 /**

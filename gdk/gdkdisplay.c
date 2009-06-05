@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <glib.h>
 #include "gdk.h"		/* gdk_event_send_client_message() */
 #include "gdkdisplay.h"
@@ -251,13 +251,15 @@ gdk_display_peek_event (GdkDisplay *display)
  * Since: 2.2
  **/
 void
-gdk_display_put_event (GdkDisplay *display,
-		       GdkEvent   *event)
+gdk_display_put_event (GdkDisplay     *display,
+		       const GdkEvent *event)
 {
   g_return_if_fail (GDK_IS_DISPLAY (display));
   g_return_if_fail (event != NULL);
 
   _gdk_event_queue_append (display, gdk_event_copy (event));
+  /* If the main loop is blocking in a different thread, wake it up */
+  g_main_context_wakeup (NULL); 
 }
 
 /**

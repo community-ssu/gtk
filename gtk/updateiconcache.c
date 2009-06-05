@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <locale.h>
 #include <stdlib.h>
@@ -1208,7 +1208,7 @@ write_bucket (FILE *cache, HashNode *node, int *offset)
 	    }
 	  else
 	    {
-	      if (!write_card32 (cache, (guint32) image->image_data ? image->image_data->offset : 0))
+	      if (!write_card32 (cache, (guint32) (image->image_data ? image->image_data->offset : 0)))
 		return FALSE;
 	    }
 
@@ -1455,8 +1455,9 @@ build_cache (const gchar *path)
 #endif
 
   tmp_cache_path = g_build_filename (path, "."CACHE_NAME, NULL);
+  cache_path = g_build_filename (path, CACHE_NAME, NULL);
 
-  if ((fd = open (tmp_cache_path, O_WRONLY | O_CREAT | O_EXCL | O_TRUNC | _O_BINARY, mode)) == -1)
+  if ((fd = g_open (tmp_cache_path, O_WRONLY | O_CREAT | O_EXCL | O_TRUNC | _O_BINARY, mode)) == -1)
     {
       g_printerr (_("Failed to open file %s : %s\n"), tmp_cache_path, g_strerror (errno));
       exit (1);
@@ -1483,6 +1484,7 @@ build_cache (const gchar *path)
 
       fclose (cache);
       g_unlink (tmp_cache_path);
+      g_unlink (cache_path);
       exit (0);
     }
     
@@ -1505,8 +1507,6 @@ build_cache (const gchar *path)
       //g_unlink (tmp_cache_path);
       exit (1);
     }
-
-  cache_path = g_build_filename (path, CACHE_NAME, NULL);
 
 #ifdef G_OS_WIN32
   if (g_file_test (cache_path, G_FILE_TEST_EXISTS))

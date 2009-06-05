@@ -22,10 +22,10 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#ifndef GTK_DISABLE_DEPRECATED
+#if !defined (GTK_DISABLE_DEPRECATED) || defined (__GTK_CLIST_C__) || defined (__GTK_CTREE_C__)
 
 #ifndef __GTK_CLIST_H__
 #define __GTK_CLIST_H__
@@ -38,7 +38,6 @@
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkvscrollbar.h>
 #include <gtk/gtkenums.h>
-
 
 G_BEGIN_DECLS
 
@@ -56,7 +55,7 @@ enum {
   GTK_CLIST_USE_DRAG_ICONS      = 1 <<  8,
   GTK_CLIST_DRAW_DRAG_LINE      = 1 <<  9,
   GTK_CLIST_DRAW_DRAG_RECT      = 1 << 10
-}; 
+};
 
 /* cell types */
 typedef enum
@@ -156,7 +155,7 @@ struct _GtkCList
 
   guint freeze_count;
   
-  /* allocation rectangle after the conatiner_border_width
+  /* allocation rectangle after the container_border_width
    * and the width of the shadow border */
   GdkRectangle internal_allocation;
   
@@ -353,7 +352,7 @@ struct _GtkCListRow
   GtkStyle *style;
 
   gpointer data;
-  GtkDestroyNotify destroy;
+  GDestroyNotify destroy;
   
   guint fg_set     : 1;
   guint bg_set     : 1;
@@ -700,10 +699,10 @@ void gtk_clist_set_row_data (GtkCList *clist,
 			     gpointer  data);
 
 /* sets a data pointer for a given row with destroy notification */
-void gtk_clist_set_row_data_full (GtkCList         *clist,
-			          gint              row,
-			          gpointer          data,
-				  GtkDestroyNotify  destroy);
+void gtk_clist_set_row_data_full (GtkCList       *clist,
+			          gint            row,
+			          gpointer        data,
+				  GDestroyNotify  destroy);
 
 /* returns the data set for a row */
 gpointer gtk_clist_get_row_data (GtkCList *clist,

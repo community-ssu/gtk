@@ -18,18 +18,17 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
-
 #include <gmodule.h>
-#include <gdk/gdkenumtypes.h>
-#include <gdk/gdkkeys.h>
+
 #include "gtktypeutils.h"
 #include "gtkbuilderprivate.h"
 #include "gtkbuilder.h"
 #include "gtkbuildable.h"
 #include "gtkdebug.h"
+#include "gtkversion.h"
 #include "gtktypeutils.h"
 #include "gtkintl.h"
 #include "gtkalias.h"
@@ -227,6 +226,78 @@ _get_type_by_symbol (const gchar* symbol)
 }
 
 static void
+parse_requires (ParserData   *data,
+		const gchar  *element_name,
+		const gchar **names,
+		const gchar **values,
+		GError      **error)
+{
+  RequiresInfo *req_info;
+  const gchar  *library = NULL;
+  const gchar  *version = NULL;
+  gchar       **split;
+  gint          i, version_major = 0, version_minor = 0;
+  gint          line_number, char_number;
+
+  g_markup_parse_context_get_position (data->ctx,
+                                       &line_number,
+                                       &char_number);
+
+  for (i = 0; names[i] != NULL; i++)
+    {
+      if (strcmp (names[i], "lib") == 0)
+        library = values[i];
+      else if (strcmp (names[i], "version") == 0)
+	version = values[i];
+      else
+	error_invalid_attribute (data, element_name, names[i], error);
+    }
+
+  if (!library || !version)
+    {
+      error_missing_attribute (data, element_name, 
+			       version ? "lib" : "version", error);
+      return;
+    }
+
+  if (!(split = g_strsplit (version, ".", 2)) || !split[0] || !split[1])
+    {
+      g_set_error (error,
+		   GTK_BUILDER_ERROR,
+		   GTK_BUILDER_ERROR_INVALID_VALUE,
+		   "%s:%d:%d <%s> attribute has malformed value \"%s\"",
+		   data->filename,
+		   line_number, char_number, "version", version);
+      return;
+    }
+  version_major = g_ascii_strtoll (split[0], NULL, 10);
+  version_minor = g_ascii_strtoll (split[1], NULL, 10);
+  g_strfreev (split);
+
+  req_info = g_slice_new0 (RequiresInfo);
+  req_info->library = g_strdup (library);
+  req_info->major   = version_major;
+  req_info->minor   = version_minor;
+  state_push (data, req_info);
+  req_info->tag.name = element_name;
+}
+
+static gboolean
+is_requested_object (const gchar *object,
+                     ParserData  *data)
+{
+  GSList *l;
+
+  for (l = data->requested_objects; l; l = l->next)
+    {
+      if (strcmp (l->data, object) == 0)
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static void
 parse_object (ParserData   *data,
               const gchar  *element_name,
               const gchar **names,
@@ -288,6 +359,25 @@ parse_object (ParserData   *data,
     {
       error_missing_attribute (data, element_name, "id", error);
       return;
+    }
+
+  ++data->cur_object_level;
+
+  /* check if we reached a requested object (if it is specified) */
+  if (data->requested_objects && !data->inside_requested_object)
+    {
+      if (is_requested_object (object_id, data))
+        {
+          data->requested_object_level = data->cur_object_level;
+
+          GTK_NOTE (BUILDER, g_print ("requested object \"%s\" found at level %d\n",
+                                      object_id,
+                                      data->requested_object_level));
+
+          data->inside_requested_object = TRUE;
+        }
+      else
+        return;
     }
 
   object_info = g_slice_new0 (ObjectInfo);
@@ -523,6 +613,14 @@ _free_signal_info (SignalInfo *info,
   g_slice_free (SignalInfo, info);
 }
 
+void
+_free_requires_info (RequiresInfo *info,
+		     gpointer user_data)
+{
+  g_free (info->library);
+  g_slice_free (RequiresInfo, info);
+}
+
 static void
 parse_interface (ParserData   *data,
 		 const gchar  *element_name,
@@ -534,8 +632,9 @@ parse_interface (ParserData   *data,
 
   for (i = 0; names[i] != NULL; i++)
     {
-      if (strcmp (names[i], "domain") == 0 && !data->domain)
+      if (strcmp (names[i], "domain") == 0)
 	{
+	  g_free (data->domain);
 	  data->domain = g_strdup (values[i]);
 	  break;
 	}
@@ -635,7 +734,7 @@ parse_custom (GMarkupParseContext *context,
 {
   CommonInfo* parent_info;
   GMarkupParser parser;
-  gpointer *subparser_data;
+  gpointer subparser_data;
   GObject *object;
   GObject *child;
 
@@ -648,6 +747,7 @@ parse_custom (GMarkupParseContext *context,
       ObjectInfo* object_info = (ObjectInfo*)parent_info;
       if (!object_info->object)
 	{
+	  object_info->properties = g_slist_reverse (object_info->properties);
 	  object_info->object = _gtk_builder_construct (data->builder,
 							object_info,
 							error);
@@ -675,7 +775,7 @@ parse_custom (GMarkupParseContext *context,
 				       child,
 				       element_name,
 				       &parser,
-				       (gpointer*)&subparser_data))
+				       &subparser_data))
     return FALSE;
       
   data->subparser = create_subparser (object, child, element_name,
@@ -730,9 +830,16 @@ start_element (GMarkupParseContext *context,
     if (!subparser_start (context, element_name, names, values,
 			  data, error))
       return;
-  
-  if (strcmp (element_name, "object") == 0)
+
+  if (strcmp (element_name, "requires") == 0)
+    parse_requires (data, element_name, names, values, error);
+  else if (strcmp (element_name, "object") == 0)
     parse_object (data, element_name, names, values, error);
+  else if (data->requested_objects && !data->inside_requested_object)
+    {
+      /* If outside a requested object, simply ignore this tag */
+      return;
+    }
   else if (strcmp (element_name, "child") == 0)
     parse_child (data, element_name, names, values, error);
   else if (strcmp (element_name, "property") == 0)
@@ -760,9 +867,9 @@ start_element (GMarkupParseContext *context,
  * GNU gettext uses '\004' to separate context and msgid in .mo files.
  */
 static const char *
-dpgettext (const char *domain,
-           const char *msgctxt,
-           const char *msgid)
+_dpgettext (const char *domain,
+            const char *msgctxt,
+            const char *msgid)
 {
   size_t msgctxt_len = strlen (msgctxt) + 1;
   size_t msgid_len = strlen (msgid) + 1;
@@ -775,19 +882,34 @@ dpgettext (const char *domain,
   msg_ctxt_id[msgctxt_len - 1] = '\004';
   memcpy (msg_ctxt_id + msgctxt_len, msgid, msgid_len);
 
-  translation = dgettext (domain, msg_ctxt_id);
+  translation = g_dgettext (domain, msg_ctxt_id);
 
   if (translation == msg_ctxt_id) 
     {
       /* try the old way of doing message contexts, too */
       msg_ctxt_id[msgctxt_len - 1] = '|';
-      translation = dgettext (domain, msg_ctxt_id);
+      translation = g_dgettext (domain, msg_ctxt_id);
   
       if (translation == msg_ctxt_id)
         return msgid;
     }
  
   return translation;
+}
+
+gchar *
+_gtk_builder_parser_translate (const gchar *domain,
+			       const gchar *context,
+			       const gchar *text)
+{
+  const char *s;
+
+  if (context)
+    s = _dpgettext (domain, context, text);
+  else
+    s = g_dgettext (domain, text);
+
+  return g_strdup (s);
 }
 
 /* Called for close tags </foo> */
@@ -807,10 +929,51 @@ end_element (GMarkupParseContext *context,
       return;
     }
 
-  if (strcmp (element_name, "object") == 0)
+  if (strcmp (element_name, "requires") == 0)
+    {
+      RequiresInfo *req_info = state_pop_info (data, RequiresInfo);
+
+      /* TODO: Allow third party widget developers to check thier
+       * required versions, possibly throw a signal allowing them
+       * to check thier library versions here.
+       */
+      if (!strcmp (req_info->library, "gtk+"))
+	{
+	  if (!GTK_CHECK_VERSION (req_info->major, req_info->minor, 0))
+	    g_set_error (error,
+			 GTK_BUILDER_ERROR,
+			 GTK_BUILDER_ERROR_VERSION_MISMATCH,
+			 "%s: required %s version %d.%d, current version is %d.%d",
+			 data->filename, req_info->library, 
+			 req_info->major, req_info->minor,
+			 GTK_MAJOR_VERSION, GTK_MINOR_VERSION);
+	}
+    }
+  else if (strcmp (element_name, "interface") == 0)
+    {
+    }
+  else if (data->requested_objects && !data->inside_requested_object)
+    {
+      /* If outside a requested object, simply ignore this tag */
+      return;
+    }
+  else if (strcmp (element_name, "object") == 0)
     {
       ObjectInfo *object_info = state_pop_info (data, ObjectInfo);
       ChildInfo* child_info = state_peek_info (data, ChildInfo);
+
+      if (data->requested_objects && data->inside_requested_object &&
+          (data->cur_object_level == data->requested_object_level))
+        {
+          GTK_NOTE (BUILDER, g_print ("requested object end found at level %d\n",
+                                      data->requested_object_level));
+
+          data->inside_requested_object = FALSE;
+        }
+
+      --data->cur_object_level;
+
+      g_assert (data->cur_object_level >= 0);
 
       object_info->object = builder_construct (data, object_info, error);
       if (!object_info->object)
@@ -840,22 +1003,15 @@ end_element (GMarkupParseContext *context,
 
           if (prop_info->translatable && prop_info->text->len)
             {
-              const char *text;
-
-              if (prop_info->context)
-                text = dpgettext (data->domain,
-                                  prop_info->context,
-                                  prop_info->text->str);
-              else
-                text = dgettext (data->domain, prop_info->text->str);
-
-              prop_info->data = g_strdup (text);
+	      prop_info->data = _gtk_builder_parser_translate (data->domain,
+							       prop_info->context,
+							       prop_info->text->str);
               g_string_free (prop_info->text, TRUE);
             }
           else
             {
-              prop_info->data = prop_info->text->str;
-              g_string_free (prop_info->text, FALSE);
+              prop_info->data = g_string_free (prop_info->text, FALSE);
+              
             }
 
           object_info->properties =
@@ -880,9 +1036,6 @@ end_element (GMarkupParseContext *context,
       object_info->signals =
         g_slist_prepend (object_info->signals, signal_info);
     }
-  else if (strcmp (element_name, "interface") == 0)
-    {
-    }
   else if (strcmp (element_name, "placeholder") == 0)
     {
     }
@@ -906,9 +1059,13 @@ text (GMarkupParseContext *context,
 
   if (data->subparser && data->subparser->start)
     {
+      GError *tmp_error = NULL;
+      
       if (data->subparser->parser->text)
         data->subparser->parser->text (context, text, text_len,
-                                       data->subparser->data, error);
+                                       data->subparser->data, &tmp_error);
+      if (tmp_error)
+	g_propagate_error (error, tmp_error);
       return;
     }
 
@@ -937,6 +1094,8 @@ free_info (CommonInfo *info)
     free_property_info ((PropertyInfo *)info);
   else if (strcmp (info->tag.name, "signal") == 0) 
     _free_signal_info ((SignalInfo *)info, NULL);
+  else if (strcmp (info->tag.name, "requires") == 0) 
+    _free_requires_info ((RequiresInfo *)info, NULL);
   else 
     g_assert_not_reached ();
 }
@@ -954,6 +1113,7 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
                                   const gchar  *filename,
                                   const gchar  *buffer,
                                   gsize         length,
+                                  gchar       **requested_objs,
                                   GError      **error)
 {
   ParserData *data;
@@ -964,14 +1124,31 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
   data->filename = filename;
   data->domain = g_strdup (gtk_builder_get_translation_domain (builder));
 
+  data->requested_objects = NULL;
+  if (requested_objs)
+    {
+      gint i;
+
+      data->inside_requested_object = FALSE;
+      for (i = 0; requested_objs[i]; ++i)
+        {
+          data->requested_objects = g_slist_prepend (data->requested_objects,
+                                                     g_strdup (requested_objs[i]));	
+        }
+    }
+  else
+    {
+      /* get all the objects */
+      data->inside_requested_object = TRUE;
+    }
+
   data->ctx = g_markup_parse_context_new (&parser, 
                                           G_MARKUP_TREAT_CDATA_AS_TEXT, 
                                           data, NULL);
 
   if (!g_markup_parse_context_parse (data->ctx, buffer, length, error))
     goto out;
-  
-  gtk_builder_set_translation_domain (data->builder, data->domain);
+
   _gtk_builder_finish (builder);
 
   /* Custom parser_finished */
@@ -1002,6 +1179,8 @@ _gtk_builder_parser_parse_buffer (GtkBuilder   *builder,
   g_slist_foreach (data->custom_finalizers, (GFunc)free_subparser, NULL);
   g_slist_free (data->custom_finalizers);
   g_slist_free (data->finalizers);
+  g_slist_foreach (data->requested_objects, (GFunc) g_free, NULL);
+  g_slist_free (data->requested_objects);
   g_free (data->domain);
   g_markup_parse_context_free (data->ctx);
   g_free (data);

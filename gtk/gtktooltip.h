@@ -19,11 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_TOOLTIP_H__
 #define __GTK_TOOLTIP_H__
 
-#include "gtkwidget.h"
-#include "gtkwindow.h"
+#include <gtk/gtkwindow.h>
 
 G_BEGIN_DECLS
 
@@ -33,29 +36,32 @@ G_BEGIN_DECLS
 
 GType gtk_tooltip_get_type (void);
 
-void gtk_tooltip_set_markup            (GtkTooltip  *tooltip,
-			                const gchar *markup);
-void gtk_tooltip_set_text              (GtkTooltip  *tooltip,
-                                        const gchar *text);
-void gtk_tooltip_set_icon              (GtkTooltip  *tooltip,
-				        GdkPixbuf   *pixbuf);
-void gtk_tooltip_set_icon_from_stock   (GtkTooltip  *tooltip,
-				        const gchar *stock_id,
-				        GtkIconSize  size);
-void gtk_tooltip_set_custom	       (GtkTooltip  *tooltip,
-				        GtkWidget   *custom_widget);
+void gtk_tooltip_set_markup              (GtkTooltip         *tooltip,
+                                          const gchar        *markup);
+void gtk_tooltip_set_text                (GtkTooltip         *tooltip,
+                                          const gchar        *text);
+void gtk_tooltip_set_icon                (GtkTooltip         *tooltip,
+                                          GdkPixbuf          *pixbuf);
+void gtk_tooltip_set_icon_from_stock     (GtkTooltip         *tooltip,
+                                          const gchar        *stock_id,
+                                          GtkIconSize         size);
+void gtk_tooltip_set_icon_from_icon_name (GtkTooltip         *tooltip,
+				          const gchar        *icon_name,
+				          GtkIconSize         size);
+void gtk_tooltip_set_custom	         (GtkTooltip         *tooltip,
+                                          GtkWidget          *custom_widget);
 
-void gtk_tooltip_set_tip_area          (GtkTooltip   *tooltip,
-					GdkRectangle *rect);
+void gtk_tooltip_set_tip_area            (GtkTooltip         *tooltip,
+                                          const GdkRectangle *rect);
 
-void gtk_tooltip_trigger_tooltip_query (GdkDisplay  *display);
+void gtk_tooltip_trigger_tooltip_query   (GdkDisplay         *display);
 
 
-void _gtk_tooltip_focus_in             (GtkWidget   *widget);
-void _gtk_tooltip_focus_out            (GtkWidget   *widget);
-void _gtk_tooltip_toggle_keyboard_mode (GtkWidget   *widget);
-void _gtk_tooltip_handle_event         (GdkEvent    *event);
-void _gtk_tooltip_hide                 (GtkWidget   *widget);
+void _gtk_tooltip_focus_in               (GtkWidget          *widget);
+void _gtk_tooltip_focus_out              (GtkWidget          *widget);
+void _gtk_tooltip_toggle_keyboard_mode   (GtkWidget          *widget);
+void _gtk_tooltip_handle_event           (GdkEvent           *event);
+void _gtk_tooltip_hide                   (GtkWidget          *widget);
 
 G_END_DECLS
 

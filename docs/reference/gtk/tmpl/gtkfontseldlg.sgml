@@ -51,10 +51,6 @@ fonts.</para></listitem>
 <!-- ##### STRUCT GtkFontSelectionDialog ##### -->
 
 
-@ok_button: The OK button of the dialog
-@apply_button: The Apply button of the dialog. This button is hidden
-by default but you can show/hide it
-@cancel_button: The Cancel button of the dialog
 
 <!-- ##### FUNCTION gtk_font_selection_dialog_new ##### -->
 <para>
@@ -109,5 +105,32 @@ Sets the text displayed in the preview area.
 
 @fsd: a #GtkFontSelectionDialog.
 @text: the text to display in the preview area.
+
+
+<!-- ##### FUNCTION gtk_font_selection_dialog_get_apply_button ##### -->
+<para>
+
+</para>
+
+@fsd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_font_selection_dialog_get_cancel_button ##### -->
+<para>
+
+</para>
+
+@fsd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_font_selection_dialog_get_ok_button ##### -->
+<para>
+
+</para>
+
+@fsd: 
+@Returns: 
 
 

@@ -18,6 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_FILE_FILTER_H__
 #define __GTK_FILE_FILTER_H__
 
@@ -45,7 +49,7 @@ typedef gboolean (*GtkFileFilterFunc) (const GtkFileFilterInfo *filter_info,
 struct _GtkFileFilterInfo
 {
   GtkFileFilterFlags contains;
-  
+
   const gchar *filename;
   const gchar *uri;
   const gchar *display_name;

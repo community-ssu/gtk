@@ -94,6 +94,31 @@ should be accessed using the functions below.
 @menu: the object which received the signal.
 @arg1: 
 
+<!-- ##### ARG GtkMenu:accel-group ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:accel-path ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:active ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:attach-widget ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:monitor ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkMenu:tearoff-state ##### -->
 <para>
 
@@ -135,16 +160,6 @@ should be accessed using the functions below.
 </para>
 
 <!-- ##### ARG GtkMenu:horizontal-padding ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkMenu:maemo-arrow-scaling ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkMenu:opposite-arrows ##### -->
 <para>
 
 </para>
@@ -276,15 +291,7 @@ See gtk_menu_set_accel_group().
 @accel_path: 
 
 
-<!-- ##### FUNCTION gtk_menu_set_title ##### -->
-<para>
-</para>
-
-@menu: 
-@title: 
-
-
-<!-- ##### FUNCTION gtk_menu_get_tearoff_state ##### -->
+<!-- ##### FUNCTION gtk_menu_get_accel_path ##### -->
 <para>
 
 </para>
@@ -293,7 +300,42 @@ See gtk_menu_set_accel_group().
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_menu_set_title ##### -->
+<para>
+</para>
+
+@menu: 
+@title: 
+
+
 <!-- ##### FUNCTION gtk_menu_get_title ##### -->
+<para>
+
+</para>
+
+@menu: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_menu_set_monitor ##### -->
+<para>
+
+</para>
+
+@menu: 
+@monitor_num: 
+
+
+<!-- ##### FUNCTION gtk_menu_get_monitor ##### -->
+<para>
+
+</para>
+
+@menu: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_menu_get_tearoff_state ##### -->
 <para>
 
 </para>
@@ -429,14 +471,5 @@ will be called when the menu is later detached from the widget.
 
 @attach_widget: the #GtkWidget that the menu is being detached from.
 @menu: the #GtkMenu being detached.
-
-
-<!-- ##### FUNCTION gtk_menu_set_monitor ##### -->
-<para>
-
-</para>
-
-@menu: 
-@monitor_num: 
 
 

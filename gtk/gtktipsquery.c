@@ -29,13 +29,14 @@
 
 #undef GTK_DISABLE_DEPRECATED
 
-#include	<config.h>
-#include	"gtktipsquery.h"
-#include	"gtksignal.h"
-#include	"gtktooltips.h"
-#include	"gtkmain.h"
-#include        "gtkmarshalers.h"
-#include	"gtkintl.h"
+#include "config.h"
+#include "gtktipsquery.h"
+#include "gtksignal.h"
+#include "gtktooltips.h"
+#include "gtkmain.h"
+#include "gtkmarshalers.h"
+#include "gtkintl.h"
+
 #include "gtkalias.h"
 
 
@@ -141,21 +142,21 @@ gtk_tips_query_class_init (GtkTipsQueryClass *class)
   gtk_object_add_arg_type ("GtkTipsQuery::label-no-tip", GTK_TYPE_STRING, GTK_ARG_READWRITE | G_PARAM_STATIC_NAME, ARG_LABEL_NO_TIP);
 
   tips_query_signals[SIGNAL_START_QUERY] =
-    gtk_signal_new (I_("start_query"),
+    gtk_signal_new (I_("start-query"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTipsQueryClass, start_query),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   tips_query_signals[SIGNAL_STOP_QUERY] =
-    gtk_signal_new (I_("stop_query"),
+    gtk_signal_new (I_("stop-query"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTipsQueryClass, stop_query),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   tips_query_signals[SIGNAL_WIDGET_ENTERED] =
-    gtk_signal_new (I_("widget_entered"),
+    gtk_signal_new (I_("widget-entered"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTipsQueryClass, widget_entered),
@@ -165,7 +166,7 @@ gtk_tips_query_class_init (GtkTipsQueryClass *class)
 		    GTK_TYPE_STRING,
 		    GTK_TYPE_STRING);
   tips_query_signals[SIGNAL_WIDGET_SELECTED] =
-    g_signal_new (I_("widget_selected"),
+    g_signal_new (I_("widget-selected"),
                   G_TYPE_FROM_CLASS(object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET(GtkTipsQueryClass, widget_selected),
@@ -252,11 +253,7 @@ gtk_tips_query_get_arg (GtkObject             *object,
 static void
 gtk_tips_query_destroy (GtkObject	*object)
 {
-  GtkTipsQuery *tips_query;
-
-  g_return_if_fail (GTK_IS_TIPS_QUERY (object));
-
-  tips_query = GTK_TIPS_QUERY (object);
+  GtkTipsQuery *tips_query = GTK_TIPS_QUERY (object);
 
   if (tips_query->in_query)
     gtk_tips_query_stop_query (tips_query);
@@ -268,8 +265,7 @@ gtk_tips_query_destroy (GtkObject	*object)
   g_free (tips_query->label_no_tip);
   tips_query->label_no_tip = NULL;
 
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 GtkWidget*
@@ -311,10 +307,10 @@ gtk_tips_query_set_caller (GtkTipsQuery   *tips_query,
     g_return_if_fail (GTK_IS_WIDGET (caller));
 
   if (caller)
-    gtk_widget_ref (caller);
+    g_object_ref (caller);
 
   if (tips_query->caller)
-    gtk_widget_unref (tips_query->caller);
+    g_object_unref (tips_query->caller);
 
   tips_query->caller = caller;
 }
@@ -379,7 +375,7 @@ gtk_tips_query_real_stop_query (GtkTipsQuery *tips_query)
     }
   if (tips_query->last_crossed)
     {
-      gtk_widget_unref (tips_query->last_crossed);
+      g_object_unref (tips_query->last_crossed);
       tips_query->last_crossed = NULL;
     }
   
@@ -422,12 +418,12 @@ gtk_tips_query_emit_widget_entered (GtkTipsQuery *tips_query,
 		       NULL,
 		       NULL,
 		       NULL);
-      gtk_widget_unref (tips_query->last_crossed);
+      g_object_unref (tips_query->last_crossed);
       tips_query->last_crossed = NULL;
     }
   else if (widget && widget != tips_query->last_crossed)
     {
-      gtk_widget_ref (widget);
+      g_object_ref (widget);
       if (tdata || tips_query->emit_always)
 	  gtk_signal_emit (GTK_OBJECT (tips_query),
 			   tips_query_signals[SIGNAL_WIDGET_ENTERED],
@@ -435,7 +431,7 @@ gtk_tips_query_emit_widget_entered (GtkTipsQuery *tips_query,
 			   tdata ? tdata->tip_text : NULL,
 			   tdata ? tdata->tip_private : NULL);
       if (tips_query->last_crossed)
-	gtk_widget_unref (tips_query->last_crossed);
+	g_object_unref (tips_query->last_crossed);
       tips_query->last_crossed = widget;
     }
 }
@@ -473,7 +469,11 @@ gtk_tips_query_event (GtkWidget	       *widget,
 	pointer_window = NULL;
       event_widget = NULL;
       if (pointer_window)
-	gdk_window_get_user_data (pointer_window, (gpointer*) &event_widget);
+	{
+	  gpointer event_widget_ptr;
+	  gdk_window_get_user_data (pointer_window, &event_widget_ptr);
+	  event_widget = event_widget_ptr;
+	}
       gtk_tips_query_emit_widget_entered (tips_query, event_widget);
       event_handled = TRUE;
       break;

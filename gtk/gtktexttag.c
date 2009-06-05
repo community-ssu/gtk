@@ -47,7 +47,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 #include "gtkmain.h"
 #include "gtktexttag.h"
 #include "gtktexttypes.h"
@@ -744,7 +744,7 @@ gtk_text_tag_finalize (GObject *object)
   g_free (text_tag->name);
   text_tag->name = NULL;
 
-  (* G_OBJECT_CLASS (gtk_text_tag_parent_class)->finalize) (object);
+  G_OBJECT_CLASS (gtk_text_tag_parent_class)->finalize (object);
 }
 
 static void

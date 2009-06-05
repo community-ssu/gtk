@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include "gtkcomboboxentry.h"
 #include "gtkcelllayout.h"
@@ -170,6 +170,7 @@ gtk_combo_box_entry_set_property (GObject      *object,
         break;
 
       default:
+	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
     }
 }

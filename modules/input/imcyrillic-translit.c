@@ -20,14 +20,14 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
-#include <gdk/gdkkeysyms.h>
+#include "gtk/gtk.h"
+#include "gdk/gdkkeysyms.h"
 
-#include "gtk/gtkintl.h"
-#include "gtk/gtkimcontextsimple.h"
 #include "gtk/gtkimmodule.h"
+#include "gtk/gtkintl.h"
 
 GType type_cyrillic_translit = 0;
 
@@ -224,27 +224,29 @@ static const GtkIMContextInfo *info_list[] = {
   &cyrillic_translit_info
 };
 
-void
-im_module_init (GTypeModule *module)
+#ifndef INCLUDE_IM_cyrillic_translit
+#define MODULE_ENTRY(type, function) G_MODULE_EXPORT type im_module_ ## function
+#else
+#define MODULE_ENTRY(type, function) type _gtk_immodule_cyrillic_translit_ ## function
+#endif
+
+MODULE_ENTRY (void, init) (GTypeModule *module)
 {
   cyrillic_translit_register_type (module);
 }
 
-void 
-im_module_exit (void)
+MODULE_ENTRY (void, exit) (void)
 {
 }
 
-void 
-im_module_list (const GtkIMContextInfo ***contexts,
-		int                      *n_contexts)
+MODULE_ENTRY (void, list) (const GtkIMContextInfo ***contexts,
+			   int                      *n_contexts)
 {
   *contexts = info_list;
   *n_contexts = G_N_ELEMENTS (info_list);
 }
 
-GtkIMContext *
-im_module_create (const gchar *context_id)
+MODULE_ENTRY (GtkIMContext *, create) (const gchar *context_id)
 {
   if (strcmp (context_id, "cyrillic_translit") == 0)
     return g_object_new (type_cyrillic_translit, NULL);

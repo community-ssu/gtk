@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -143,19 +143,21 @@ struct _GtkDragFindData
 
   selection_data.selection = GDK_NONE;
   selection_data.data = NULL;
+  selection_data.length = -1;
   selection_data.target = _gtk_quartz_pasteboard_type_to_atom (type);
 
   if (gtk_target_list_find (info->target_list, 
 			    selection_data.target, 
 			    &target_info)) 
     {
-      g_signal_emit_by_name (info->widget, "drag_data_get",
+      g_signal_emit_by_name (info->widget, "drag-data-get",
 			     info->context,
 			     &selection_data,
 			     target_info,
 			     time);
 
-      _gtk_quartz_set_selection_data_for_pasteboard (sender, &selection_data);
+      if (selection_data.length >= 0)
+        _gtk_quartz_set_selection_data_for_pasteboard (sender, &selection_data);
       
       g_free (selection_data.data);
     }
@@ -207,7 +209,7 @@ gtk_drag_get_data (GtkWidget      *widget,
 	  if (!(site->flags & GTK_DEST_DEFAULT_DROP) ||
 	      selection_data->length >= 0)
 	    g_signal_emit_by_name (widget,
-				   "drag_data_received",
+				   "drag-data-received",
 				   context, info->drop_x, info->drop_y,
 				   selection_data,
 				   target_info, time);
@@ -216,7 +218,7 @@ gtk_drag_get_data (GtkWidget      *widget,
   else
     {
       g_signal_emit_by_name (widget,
-			     "drag_data_received",
+			     "drag-data-received",
 			     context, info->drop_x, info->drop_y,
 			     selection_data,
 			     0, time);
@@ -371,7 +373,7 @@ gtk_drag_highlight (GtkWidget  *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  g_signal_connect_after (widget, "expose_event",
+  g_signal_connect_after (widget, "expose-event",
 			  G_CALLBACK (gtk_drag_highlight_expose),
 			  NULL);
 
@@ -493,7 +495,7 @@ gtk_drag_dest_set (GtkWidget            *widget,
 
   g_signal_connect (widget, "realize",
 		    G_CALLBACK (gtk_drag_dest_realized), site);
-  g_signal_connect (widget, "hierarchy_changed",
+  g_signal_connect (widget, "hierarchy-changed",
 		    G_CALLBACK (gtk_drag_dest_hierarchy_changed), site);
 
   g_object_set_data_full (G_OBJECT (widget), I_("gtk-drag-dest"),
@@ -719,7 +721,7 @@ gtk_drag_find_widget (GtkWidget       *widget,
 	  new_data.toplevel = FALSE;
 	  
 	  /* need to reference children temporarily in case the
-	   * ::drag_motion/::drag_drop callbacks change the widget heirarchy.
+	   * ::drag-motion/::drag-drop callbacks change the widget hierarchy.
 	   */
 	  gtk_container_forall (GTK_CONTAINER (widget), prepend_and_ref_widget, &children);
 	  for (tmp_list = children; tmp_list; tmp_list = tmp_list->next)
@@ -734,7 +736,7 @@ gtk_drag_find_widget (GtkWidget       *widget,
 	}
 
       /* If not, and this widget is registered as a drop site, check to
-       * emit "drag_motion" to check if we are actually in
+       * emit "drag-motion" to check if we are actually in
        * a drop site.
        */
       if (!data->found &&
@@ -745,7 +747,7 @@ gtk_drag_find_widget (GtkWidget       *widget,
 					data->x - x_offset - allocation_to_window_x,
 					data->y - y_offset - allocation_to_window_y,
 					data->time);
-	  /* If so, send a "drag_leave" to the last widget */
+	  /* If so, send a "drag-leave" to the last widget */
 	  if (data->found)
 	    {
 	      if (data->info->widget && data->info->widget != widget)
@@ -773,7 +775,7 @@ gtk_drag_dest_leave (GtkWidget      *widget,
   
   if (!(site->flags & GTK_DEST_DEFAULT_MOTION) || site->have_drag ||
       site->track_motion)
-    g_signal_emit_by_name (widget, "drag_leave", context, time);
+    g_signal_emit_by_name (widget, "drag-leave", context, time);
   
   site->have_drag = FALSE;
 }
@@ -816,7 +818,7 @@ gtk_drag_dest_motion (GtkWidget	     *widget,
 	}
     }
 
-  g_signal_emit_by_name (widget, "drag_motion",
+  g_signal_emit_by_name (widget, "drag-motion",
 			 context, x, y, time, &retval);
 
   return (site->flags & GTK_DEST_DEFAULT_MOTION) ? TRUE : retval;
@@ -855,7 +857,7 @@ gtk_drag_dest_drop (GtkWidget	     *widget,
 	gtk_drag_get_data (widget, context, target, time);
     }
   
-  g_signal_emit_by_name (widget, "drag_drop",
+  g_signal_emit_by_name (widget, "drag-drop",
 			 context, x, y, time, &retval);
 
   return (site->flags & GTK_DEST_DEFAULT_DROP) ? TRUE : retval;
@@ -1050,13 +1052,13 @@ gtk_drag_begin_internal (GtkWidget         *widget,
 
   info = gtk_drag_get_source_info (context, TRUE);
   
-  info->widget = gtk_widget_ref (widget);
+  info->widget = g_object_ref (widget);
   info->target_list = target_list;
   gtk_target_list_ref (target_list);
 
   info->possible_actions = actions;
   
-  g_signal_emit_by_name (widget, "drag_begin", info->context);
+  g_signal_emit_by_name (widget, "drag-begin", info->context);
 
   /* Ensure that we have an icon before we start the drag; the
    * application may have set one in ::drag_begin, or it may
@@ -1246,13 +1248,13 @@ gtk_drag_source_set (GtkWidget            *widget,
 
       site->icon_type = GTK_IMAGE_EMPTY;
       
-      g_signal_connect (widget, "button_press_event",
+      g_signal_connect (widget, "button-press-event",
 			G_CALLBACK (gtk_drag_source_event_cb),
 			site);
-      g_signal_connect (widget, "button_release_event",
+      g_signal_connect (widget, "button-release-event",
 			G_CALLBACK (gtk_drag_source_event_cb),
 			site);
-      g_signal_connect (widget, "motion_notify_event",
+      g_signal_connect (widget, "motion-notify-event",
 			G_CALLBACK (gtk_drag_source_event_cb),
 			site);
       
@@ -1548,7 +1550,7 @@ gtk_drag_source_set_icon_name (GtkWidget   *widget,
  * 
  * Changes the icon for a widget to a given widget. GTK+
  * will not destroy the icon, so if you don't want
- * it to persist, you should connect to the "drag_end" 
+ * it to persist, you should connect to the "drag-end" 
  * signal and destroy it yourself.
  **/
 void 
@@ -1755,7 +1757,7 @@ gtk_drag_source_info_destroy (GtkDragSourceInfo *info)
   if (info->icon_pixbuf)
     g_object_unref (info->icon_pixbuf);
 
-  g_signal_emit_by_name (info->widget, "drag_end", 
+  g_signal_emit_by_name (info->widget, "drag-end", 
 			 info->context);
 
   if (info->widget)
@@ -1769,10 +1771,21 @@ gtk_drag_source_info_destroy (GtkDragSourceInfo *info)
   g_free (info);
 }
 
+static gboolean
+drag_drop_finished_idle_cb (gpointer data)
+{
+  gtk_drag_source_info_destroy (data);
+  return FALSE;
+}
+
 static void
 gtk_drag_drop_finished (GtkDragSourceInfo *info)
 {
-  gtk_drag_source_info_destroy (info);
+  /* Workaround for the fact that the NS API blocks until the drag is
+   * over. This way the context is still valid when returning from
+   * drag_begin, even if it will still be quite useless. See bug #501588.
+  */
+  g_idle_add (drag_drop_finished_idle_cb, info);
 }
 
 /*************************************************************

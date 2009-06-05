@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #include <math.h>
 #include <gdk/gdkkeysyms.h>
@@ -265,16 +265,16 @@ gtk_range_class_init (GtkRangeClass *class)
    * Emitted when the range value changes.
    */
   signals[VALUE_CHANGED] =
-    g_signal_new (I_("value_changed"),
+    g_signal_new (I_("value-changed"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkRangeClass, value_changed),
                   NULL, NULL,
-                  _gtk_marshal_NONE__NONE,
+                  _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE, 0);
   
   signals[ADJUST_BOUNDS] =
-    g_signal_new (I_("adjust_bounds"),
+    g_signal_new (I_("adjust-bounds"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkRangeClass, adjust_bounds),
@@ -291,7 +291,7 @@ gtk_range_class_init (GtkRangeClass *class)
    * Virtual function that moves the slider. Used for keybindings.
    */
   signals[MOVE_SLIDER] =
-    g_signal_new (I_("move_slider"),
+    g_signal_new (I_("move-slider"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
                   G_STRUCT_OFFSET (GtkRangeClass, move_slider),
@@ -327,7 +327,7 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: 2.6
    */
   signals[CHANGE_VALUE] =
-    g_signal_new (I_("change_value"),
+    g_signal_new (I_("change-value"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkRangeClass, change_value),
@@ -336,7 +336,7 @@ gtk_range_class_init (GtkRangeClass *class)
                   G_TYPE_BOOLEAN, 2,
                   GTK_TYPE_SCROLL_TYPE,
                   G_TYPE_DOUBLE);
-  
+
   g_object_class_install_property (gobject_class,
                                    PROP_UPDATE_POLICY,
                                    g_param_spec_enum ("update-policy",
@@ -547,20 +547,19 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  TRUE,
                                                                  GTK_PARAM_READABLE));
 
-#ifdef MAEMO_CHANGES
   /**
    * GtkRange:arrow-scaling:
    *
-   * Since: maemo 4.0
-   * Stability: Unstable
+   * The arrow size proportion relative to the scroll button size.
+   *
+   * Since: 2.14
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_float ("arrow-scaling",
-                                                              P_("Arrow Scaling"),
-                                                              P_("Amount of space used by the scroll arrows"),
-                                                              0.0, 1.0, 0.5,
-                                                              GTK_PARAM_READABLE));
-#endif /* MAEMO_CHANGES */
+							       P_("Arrow scaling"),
+							       P_("Arrow scaling with regard to scroll button size"),
+							       0.0, 1.0, 0.5,
+							       GTK_PARAM_READABLE));
 
   g_type_class_add_private (class, sizeof (GtkRangeLayout));
 }
@@ -799,7 +798,7 @@ gtk_range_set_adjustment (GtkRange      *range,
       g_signal_connect (adjustment, "changed",
 			G_CALLBACK (gtk_range_adjustment_changed),
 			range);
-      g_signal_connect (adjustment, "value_changed",
+      g_signal_connect (adjustment, "value-changed",
 			G_CALLBACK (gtk_range_adjustment_value_changed),
 			range);
       
@@ -1283,7 +1282,7 @@ gtk_range_destroy (GtkObject *object)
       range->adjustment = NULL;
     }
 
-  (* GTK_OBJECT_CLASS (gtk_range_parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (gtk_range_parent_class)->destroy (object);
 }
 
 static void
@@ -1383,9 +1382,8 @@ gtk_range_unrealize (GtkWidget *widget)
   gdk_window_set_user_data (range->event_window, NULL);
   gdk_window_destroy (range->event_window);
   range->event_window = NULL;
-  
-  if (GTK_WIDGET_CLASS (gtk_range_parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (gtk_range_parent_class)->unrealize) (widget);
+
+  GTK_WIDGET_CLASS (gtk_range_parent_class)->unrealize (widget);
 }
 
 static void
@@ -1422,6 +1420,7 @@ draw_stepper (GtkRange     *range,
   GtkShadowType shadow_type;
   GdkRectangle intersection;
   GtkWidget *widget = GTK_WIDGET (range);
+  gfloat arrow_scaling;
 
   gint arrow_x;
   gint arrow_y;
@@ -1429,9 +1428,6 @@ draw_stepper (GtkRange     *range,
   gint arrow_height;
 
   gboolean arrow_sensitive = TRUE;
-#ifdef MAEMO_CHANGES
-  gfloat arrow_scaling;
-#endif /* MAEMO_CHANGES */
 
   /* More to get the right clip region than for efficiency */
   if (!gdk_rectangle_intersect (area, rect, &intersection))
@@ -1476,18 +1472,13 @@ draw_stepper (GtkRange     *range,
 		 rect->width,
 		 rect->height);
 
-#ifdef MAEMO_CHANGES
   gtk_widget_style_get (widget, "arrow-scaling", &arrow_scaling, NULL);
 
   arrow_width = rect->width * arrow_scaling;
   arrow_height = rect->height * arrow_scaling;
-#else /* MAEMO_CHANGES */
-  arrow_width = rect->width / 2;
-  arrow_height = rect->height / 2;
-#endif /* MAEMO_CHANGES */
   arrow_x = widget->allocation.x + rect->x + (rect->width - arrow_width) / 2;
   arrow_y = widget->allocation.y + rect->y + (rect->height - arrow_height) / 2;
-  
+
   if (clicked && arrow_sensitive)
     {
       gint arrow_displacement_x;
@@ -2440,7 +2431,7 @@ gtk_range_style_set (GtkWidget *widget,
 
   range->need_recalc = TRUE;
 
-  (* GTK_WIDGET_CLASS (gtk_range_parent_class)->style_set) (widget, previous_style);
+  GTK_WIDGET_CLASS (gtk_range_parent_class)->style_set (widget, previous_style);
 }
 
 static void
@@ -2892,7 +2883,7 @@ gtk_range_calc_request (GtkRange      *range,
   border->bottom = 0;
 
   if (GTK_RANGE_GET_CLASS (range)->get_range_border)
-    (* GTK_RANGE_GET_CLASS (range)->get_range_border) (range, border);
+    GTK_RANGE_GET_CLASS (range)->get_range_border (range, border);
 
   n_steppers_ab = 0;
   n_steppers_cd = 0;

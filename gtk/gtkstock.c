@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "gtkstock.h"
@@ -47,7 +47,7 @@ struct _GtkStockTranslateFunc
 {
   GtkTranslateFunc func;
   gpointer data;
-  GtkDestroyNotify notify;
+  GDestroyNotify notify;
 };
 
 static void
@@ -176,7 +176,7 @@ gtk_stock_lookup (const gchar  *stock_id,
 	  if (translate != NULL && translate->func != NULL)
 	    item->label = (* translate->func) (item->label, translate->data);
 	  else
-	    item->label = dgettext (item->translation_domain, item->label);
+	    item->label = (gchar *) g_dgettext (item->translation_domain, item->label);
 	}
     }
 
@@ -374,6 +374,7 @@ static const GtkStockItem builtin_items [] =
   { GTK_STOCK_ORIENTATION_PORTRAIT, N_("Portrait"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE, N_("Reverse landscape"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT, N_("Reverse portrait"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_PAGE_SETUP, N_("Page Set_up"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_PASTE, N_("_Paste"), GDK_CONTROL_MASK, 'v', GETTEXT_PACKAGE },
   { GTK_STOCK_PREFERENCES, N_("_Preferences"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_PRINT, N_("_Print"), 0, 0, GETTEXT_PACKAGE },
@@ -409,14 +410,14 @@ static const GtkStockItem builtin_items [] =
  * @domain: the translation domain for which @func shall be used
  * @func: a #GtkTranslateFunc 
  * @data: data to pass to @func
- * @notify: a #GtkDestroyNotify that is called when @data is 
+ * @notify: a #GDestroyNotify that is called when @data is
  *   no longer needed
  *
  * Sets a function to be used for translating the @label of 
  * a stock item.
  *
  * If no function is registered for a translation domain,
- * dgettext() is used.
+ * g_dgettext() is used.
  *
  * Since: 2.8
  * 
@@ -425,7 +426,7 @@ void
 gtk_stock_set_translate_func (const gchar      *domain,
 			      GtkTranslateFunc  func,
 			      gpointer          data,
-			      GtkDestroyNotify  notify)
+			      GDestroyNotify    notify)
 {
   GtkStockTranslateFunc *translate;
   gchar *domainname;
@@ -456,7 +457,7 @@ sgettext_swapped (const gchar *msgid,
 {
   gchar *domainname = data;
 
-  return (gchar *)g_strip_context (msgid, dgettext (domainname, msgid));
+  return (gchar *)g_strip_context (msgid, g_dgettext (domainname, msgid));
 }
 
 

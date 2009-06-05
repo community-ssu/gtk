@@ -25,7 +25,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "gtkmessagedialog.h"
@@ -158,7 +158,7 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
                                    g_param_spec_string ("text",
                                                         P_("Text"),
                                                         P_("The primary text of the message dialog"),
-                                                        NULL,
+                                                        "",
                                                         GTK_PARAM_READWRITE));
 
   /**
@@ -572,8 +572,7 @@ gtk_message_dialog_new (GtkWindow     *parent,
  * instead, since you can't pass the markup string either
  * as the format (it might contain '%' characters) or as a string
  * argument.
- *
- * <informalexample><programlisting>
+ * |[
  *  GtkWidget *dialog;
  *  dialog = gtk_message_dialog_new (main_application_window,
  *                                   GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -582,7 +581,7 @@ gtk_message_dialog_new (GtkWindow     *parent,
  *                                   NULL);
  *  gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog),
  *                                 markup);
- * </programlisting></informalexample>
+ * ]|
  * 
  * Return value: a new #GtkMessageDialog
  *
@@ -648,6 +647,24 @@ gtk_message_dialog_set_image (GtkMessageDialog *dialog,
   dialog->image = image;
 
   g_object_notify (G_OBJECT (dialog), "image");
+}
+
+/**
+ * gtk_message_dialog_get_image:
+ * @dialog: a #GtkMessageDialog
+ *
+ * Gets the dialog's image.
+ *
+ * Return value: the dialog's image
+ *
+ * Since: 2.14
+ **/
+GtkWidget *
+gtk_message_dialog_get_image (GtkMessageDialog *dialog)
+{
+  g_return_val_if_fail (GTK_IS_MESSAGE_DIALOG (dialog), NULL);
+
+  return dialog->image;
 }
 
 /**
@@ -881,8 +898,7 @@ gtk_message_dialog_style_set (GtkWidget *widget,
 
   setup_primary_label_font (dialog);
 
-  if (GTK_WIDGET_CLASS (gtk_message_dialog_parent_class)->style_set)
-    (GTK_WIDGET_CLASS (gtk_message_dialog_parent_class)->style_set) (widget, prev_style);
+  GTK_WIDGET_CLASS (gtk_message_dialog_parent_class)->style_set (widget, prev_style);
 }
 
 #ifdef MAEMO_CHANGES

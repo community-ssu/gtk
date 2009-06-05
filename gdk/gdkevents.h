@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
 
 #ifndef __GDK_EVENTS_H__
 #define __GDK_EVENTS_H__
@@ -221,7 +225,10 @@ typedef enum
 {
   GDK_CROSSING_NORMAL,
   GDK_CROSSING_GRAB,
-  GDK_CROSSING_UNGRAB
+  GDK_CROSSING_UNGRAB,
+  GDK_CROSSING_GTK_GRAB,
+  GDK_CROSSING_GTK_UNGRAB,
+  GDK_CROSSING_STATE_CHANGED
 } GdkCrossingMode;
 
 typedef enum
@@ -512,32 +519,32 @@ GdkEvent* gdk_event_get			(void);
 
 GdkEvent* gdk_event_peek                (void);
 GdkEvent* gdk_event_get_graphics_expose (GdkWindow 	*window);
-void      gdk_event_put	 		(GdkEvent  	*event);
+void      gdk_event_put	 		(const GdkEvent *event);
 
 GdkEvent* gdk_event_new                 (GdkEventType    type);
-GdkEvent* gdk_event_copy     		(GdkEvent 	*event);
+GdkEvent* gdk_event_copy     		(const GdkEvent *event);
 void	  gdk_event_free     		(GdkEvent 	*event);
 
-guint32   gdk_event_get_time            (GdkEvent        *event);
-gboolean  gdk_event_get_state           (GdkEvent        *event,
+guint32   gdk_event_get_time            (const GdkEvent  *event);
+gboolean  gdk_event_get_state           (const GdkEvent  *event,
                                          GdkModifierType *state);
-gboolean  gdk_event_get_coords		(GdkEvent	 *event,
+gboolean  gdk_event_get_coords		(const GdkEvent  *event,
 					 gdouble	 *x_win,
 					 gdouble	 *y_win);
-gboolean  gdk_event_get_root_coords	(GdkEvent	 *event,
+gboolean  gdk_event_get_root_coords	(const GdkEvent  *event,
 					 gdouble	 *x_root,
 					 gdouble	 *y_root);
-gboolean  gdk_event_get_axis            (GdkEvent        *event,
+gboolean  gdk_event_get_axis            (const GdkEvent  *event,
                                          GdkAxisUse       axis_use,
                                          gdouble         *value);
-void      gdk_event_request_motions     (GdkEventMotion  *event);
+void      gdk_event_request_motions     (const GdkEventMotion *event);
 void	  gdk_event_handler_set 	(GdkEventFunc    func,
 					 gpointer        data,
 					 GDestroyNotify  notify);
 
-void       gdk_event_set_screen (GdkEvent  *event,
-				 GdkScreen *screen);
-GdkScreen *gdk_event_get_screen (GdkEvent  *event);
+void       gdk_event_set_screen         (GdkEvent        *event,
+                                         GdkScreen       *screen);
+GdkScreen *gdk_event_get_screen         (const GdkEvent  *event);
 
 void	  gdk_set_show_events		(gboolean	 show_events);
 gboolean  gdk_get_show_events		(void);

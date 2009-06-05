@@ -24,10 +24,13 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#undef GTK_DISABLE_DEPRECATED
 
 #include "gtklabel.h"
 #include "gtkmain.h"

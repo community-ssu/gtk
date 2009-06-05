@@ -24,7 +24,7 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -124,7 +124,7 @@ gtk_curve_class_init (GtkCurveClass *class)
 						      P_("Curve type"),
 						      P_("Is this curve linear, spline interpolated, or free-form"),
 						      GTK_TYPE_CURVE_TYPE,
-						      GTK_CURVE_TYPE_LINEAR,
+						      GTK_CURVE_TYPE_SPLINE,
 						      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_MIN_X,
@@ -164,7 +164,7 @@ gtk_curve_class_init (GtkCurveClass *class)
 						       GTK_PARAM_READWRITE));
 
   curve_type_changed_signal =
-    g_signal_new (I_("curve_type_changed"),
+    g_signal_new (I_("curve-type-changed"),
 		   G_OBJECT_CLASS_TYPE (gobject_class),
 		   G_SIGNAL_RUN_FIRST,
 		   G_STRUCT_OFFSET (GtkCurveClass, curve_type_changed),

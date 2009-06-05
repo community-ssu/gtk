@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 
 #include "gdkprivate-quartz.h"
 
@@ -36,7 +36,9 @@ _gdk_quartz_window_scroll (GdkWindow *window,
   GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (private->impl);
   GList *list;
 
-  g_return_if_fail (GDK_IS_WINDOW (window));
+  /* Move the current invalid region */
+  if (private->update_area)
+    gdk_region_offset (private->update_area, dx, dy);
 
   visible_nsrect = [impl->view visibleRect];
 

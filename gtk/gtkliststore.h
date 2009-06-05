@@ -17,9 +17,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_LIST_STORE_H__
 #define __GTK_LIST_STORE_H__
 
+#include <gdkconfig.h>
 #include <gtk/gtktreemodel.h>
 #include <gtk/gtktreesortable.h>
 
@@ -42,19 +47,19 @@ struct _GtkListStore
   GObject parent;
 
   /*< private >*/
-  gint stamp;
-  gpointer seq;		/* head of the list */
-  gpointer _gtk_reserved1;
-  GList *sort_list;	
-  gint n_columns;
-  gint sort_column_id;
-  GtkSortType order;
-  GType *column_headers;
-  gint length;
-  GtkTreeIterCompareFunc default_sort_func;
-  gpointer default_sort_data;
-  GtkDestroyNotify default_sort_destroy;
-  guint columns_dirty : 1;
+  gint GSEAL (stamp);
+  gpointer GSEAL (seq);		/* head of the list */
+  gpointer GSEAL (_gtk_reserved1);
+  GList *GSEAL (sort_list);
+  gint GSEAL (n_columns);
+  gint GSEAL (sort_column_id);
+  GtkSortType GSEAL (order);
+  GType *GSEAL (column_headers);
+  gint GSEAL (length);
+  GtkTreeIterCompareFunc GSEAL (default_sort_func);
+  gpointer GSEAL (default_sort_data);
+  GDestroyNotify GSEAL (default_sort_destroy);
+  guint GSEAL (columns_dirty) : 1;
 };
 
 struct _GtkListStoreClass
@@ -89,7 +94,7 @@ void          gtk_list_store_set              (GtkListStore *list_store,
 					       ...);
 void          gtk_list_store_set_valuesv      (GtkListStore *list_store,
 					       GtkTreeIter  *iter,
-					       gint         *columns, 
+					       gint         *columns,
 					       GValue       *values,
 					       gint          n_values);
 void          gtk_list_store_set_valist       (GtkListStore *list_store,
@@ -113,7 +118,7 @@ void          gtk_list_store_insert_with_values  (GtkListStore *list_store,
 void          gtk_list_store_insert_with_valuesv (GtkListStore *list_store,
 						  GtkTreeIter  *iter,
 						  gint          position,
-						  gint         *columns, 
+						  gint         *columns,
 						  GValue       *values,
 						  gint          n_values);
 void          gtk_list_store_prepend          (GtkListStore *list_store,

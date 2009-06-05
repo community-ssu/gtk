@@ -23,11 +23,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#define GDK_PIXBUF_COMPILATION
+#define GDK_PIXBUF_C_COMPILATION
 #include "gdk-pixbuf.h"
 #include "gdk-pixbuf-private.h"
 /* Include the marshallers */
@@ -291,7 +291,7 @@ gdk_pixbuf_copy (const GdkPixbuf *pixbuf)
 	guchar *buf;
 	int size;
 
-	g_return_val_if_fail (pixbuf != NULL, NULL);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
 
 	/* Calculate a semi-exact size.  Here we copy with full rowstrides;
 	 * maybe we should copy each row individually with the minimum
@@ -385,7 +385,7 @@ gdk_pixbuf_new_subpixbuf (GdkPixbuf *src_pixbuf,
 GdkColorspace
 gdk_pixbuf_get_colorspace (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, GDK_COLORSPACE_RGB);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), GDK_COLORSPACE_RGB);
 
 	return pixbuf->colorspace;
 }
@@ -401,7 +401,7 @@ gdk_pixbuf_get_colorspace (const GdkPixbuf *pixbuf)
 int
 gdk_pixbuf_get_n_channels (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, -1);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), -1);
 
 	return pixbuf->n_channels;
 }
@@ -417,7 +417,7 @@ gdk_pixbuf_get_n_channels (const GdkPixbuf *pixbuf)
 gboolean
 gdk_pixbuf_get_has_alpha (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, FALSE);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), FALSE);
 
 	return pixbuf->has_alpha ? TRUE : FALSE;
 }
@@ -433,7 +433,7 @@ gdk_pixbuf_get_has_alpha (const GdkPixbuf *pixbuf)
 int
 gdk_pixbuf_get_bits_per_sample (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, -1);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), -1);
 
 	return pixbuf->bits_per_sample;
 }
@@ -451,7 +451,7 @@ gdk_pixbuf_get_bits_per_sample (const GdkPixbuf *pixbuf)
 guchar *
 gdk_pixbuf_get_pixels (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, NULL);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
 
 	return pixbuf->pixels;
 }
@@ -467,7 +467,7 @@ gdk_pixbuf_get_pixels (const GdkPixbuf *pixbuf)
 int
 gdk_pixbuf_get_width (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, -1);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), -1);
 
 	return pixbuf->width;
 }
@@ -483,7 +483,7 @@ gdk_pixbuf_get_width (const GdkPixbuf *pixbuf)
 int
 gdk_pixbuf_get_height (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, -1);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), -1);
 
 	return pixbuf->height;
 }
@@ -500,7 +500,7 @@ gdk_pixbuf_get_height (const GdkPixbuf *pixbuf)
 int
 gdk_pixbuf_get_rowstride (const GdkPixbuf *pixbuf)
 {
-	g_return_val_if_fail (pixbuf != NULL, -1);
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), -1);
 
 	return pixbuf->rowstride;
 }
@@ -508,11 +508,11 @@ gdk_pixbuf_get_rowstride (const GdkPixbuf *pixbuf)
 
 
 /* General initialization hooks */
-GDK_PIXBUF_VAR const guint gdk_pixbuf_major_version = GDK_PIXBUF_MAJOR;
-GDK_PIXBUF_VAR const guint gdk_pixbuf_minor_version = GDK_PIXBUF_MINOR;
-GDK_PIXBUF_VAR const guint gdk_pixbuf_micro_version = GDK_PIXBUF_MICRO;
+const guint gdk_pixbuf_major_version = GDK_PIXBUF_MAJOR;
+const guint gdk_pixbuf_minor_version = GDK_PIXBUF_MINOR;
+const guint gdk_pixbuf_micro_version = GDK_PIXBUF_MICRO;
 
-GDK_PIXBUF_VAR const char *gdk_pixbuf_version = GDK_PIXBUF_VERSION;
+const char *gdk_pixbuf_version = GDK_PIXBUF_VERSION;
 
 /* Error quark */
 GQuark

@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GDK_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdk.h> can be included directly."
+#endif
 
 #ifndef __GDK_RGB_H__
 #define __GDK_RGB_H__
@@ -69,7 +73,7 @@ void        gdk_draw_rgb_image              (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *rgb_buf,
+					     const guchar *rgb_buf,
 					     gint          rowstride);
 void        gdk_draw_rgb_image_dithalign    (GdkDrawable  *drawable,
 					     GdkGC        *gc,
@@ -78,7 +82,7 @@ void        gdk_draw_rgb_image_dithalign    (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *rgb_buf,
+					     const guchar *rgb_buf,
 					     gint          rowstride,
 					     gint          xdith,
 					     gint          ydith);
@@ -89,7 +93,7 @@ void        gdk_draw_rgb_32_image           (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *buf,
+					     const guchar *buf,
 					     gint          rowstride);
 void        gdk_draw_rgb_32_image_dithalign (GdkDrawable  *drawable,
 					     GdkGC        *gc,
@@ -98,7 +102,7 @@ void        gdk_draw_rgb_32_image_dithalign (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *buf,
+					     const guchar *buf,
 					     gint          rowstride,
 					     gint          xdith,
 					     gint          ydith);
@@ -109,7 +113,7 @@ void        gdk_draw_gray_image             (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *buf,
+					     const guchar *buf,
 					     gint          rowstride);
 void        gdk_draw_indexed_image          (GdkDrawable  *drawable,
 					     GdkGC        *gc,
@@ -118,7 +122,7 @@ void        gdk_draw_indexed_image          (GdkDrawable  *drawable,
 					     gint          width,
 					     gint          height,
 					     GdkRgbDither  dith,
-					     guchar       *buf,
+					     const guchar *buf,
 					     gint          rowstride,
 					     GdkRgbCmap   *cmap);
 GdkRgbCmap *gdk_rgb_cmap_new                (guint32      *colors,

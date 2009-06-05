@@ -30,8 +30,12 @@
  * Modified by the GTK+ Team and others 2007.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_SCALE_BUTTON_H__
 #define __GTK_SCALE_BUTTON_H__
@@ -51,12 +55,24 @@ typedef struct _GtkScaleButton        GtkScaleButton;
 typedef struct _GtkScaleButtonClass   GtkScaleButtonClass;
 typedef struct _GtkScaleButtonPrivate GtkScaleButtonPrivate;
 
+struct _GtkScaleButton
+{
+  GtkButton parent;
+
+  GtkWidget *GSEAL (plus_button);
+  GtkWidget *GSEAL (minus_button);
+
+  /*< private >*/
+  GtkScaleButtonPrivate *GSEAL (priv);
+};
+
 struct _GtkScaleButtonClass
 {
   GtkButtonClass parent_class;
 
   /* signals */
-  void	(* value_changed) (GtkScaleButton *button, gdouble value);
+  void	(* value_changed) (GtkScaleButton *button,
+                           gdouble         value);
 
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
@@ -65,33 +81,27 @@ struct _GtkScaleButtonClass
   void (*_gtk_reserved4) (void);
 };
 
-struct _GtkScaleButton
-{
-  GtkButton parent;
-  
-  GtkWidget *plus_button;
-  GtkWidget *minus_button;
-  
-  /*< private >*/
-  GtkScaleButtonPrivate *priv;
-};
-
-GType		gtk_scale_button_get_type	(void) G_GNUC_CONST;
-GtkWidget*	gtk_scale_button_new		(GtkIconSize     size,
-						 gdouble         min,
-						 gdouble         max,
-						 gdouble         step,
-						 const gchar   **icons);
-void		gtk_scale_button_set_icons	(GtkScaleButton *button,
-						 const gchar   **icons);
-gdouble		gtk_scale_button_get_value	(GtkScaleButton *button);
-void		gtk_scale_button_set_value	(GtkScaleButton *button,
-						 gdouble         value);
-GtkAdjustment*	gtk_scale_button_get_adjustment	(GtkScaleButton *button);
-void		gtk_scale_button_set_adjustment	(GtkScaleButton *button,
-						 GtkAdjustment  *adjustment);
+GType            gtk_scale_button_get_type         (void) G_GNUC_CONST;
+GtkWidget *      gtk_scale_button_new              (GtkIconSize      size,
+                                                    gdouble          min,
+                                                    gdouble          max,
+                                                    gdouble          step,
+                                                    const gchar    **icons);
+void             gtk_scale_button_set_icons        (GtkScaleButton  *button,
+                                                    const gchar    **icons);
+gdouble          gtk_scale_button_get_value        (GtkScaleButton  *button);
+void             gtk_scale_button_set_value        (GtkScaleButton  *button,
+                                                    gdouble          value);
+GtkAdjustment *  gtk_scale_button_get_adjustment   (GtkScaleButton  *button);
+void             gtk_scale_button_set_adjustment   (GtkScaleButton  *button,
+                                                    GtkAdjustment   *adjustment);
+GtkOrientation   gtk_scale_button_get_orientation  (GtkScaleButton  *button);
+void             gtk_scale_button_set_orientation  (GtkScaleButton  *button,
+                                                    GtkOrientation   orientation);
+GtkWidget *      gtk_scale_button_get_plus_button  (GtkScaleButton  *button);
+GtkWidget *      gtk_scale_button_get_minus_button (GtkScaleButton  *button);
+GtkWidget *      gtk_scale_button_get_popup        (GtkScaleButton  *button);
 
 G_END_DECLS
 
 #endif /* __GTK_SCALE_BUTTON_H__ */
-

@@ -24,16 +24,12 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <glib.h>
 #include "gdkconfig.h"
 
 #include <locale.h>
-
-#ifdef HAVE_BIND_TEXTDOMAIN_CODESET
-#include <libintl.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,8 +44,6 @@
 #include <windows.h>
 #undef STRICT
 #endif
-
-#include <pango/pango-types.h>	/* For pango_language_from_string */
 
 #include "gtkintl.h"
 
@@ -74,7 +68,22 @@
 
 #ifdef G_OS_WIN32
 
-G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+static HMODULE gtk_dll;
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+	 DWORD     fdwReason,
+	 LPVOID    lpvReserved)
+{
+  switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+      gtk_dll = (HMODULE) hinstDLL;
+      break;
+    }
+
+  return TRUE;
+}
 
 /* This here before inclusion of gtkprivate.h so that it sees the
  * original GTK_LOCALEDIR definition. Yeah, this is a bit sucky.
@@ -86,7 +95,7 @@ _gtk_get_localedir (void)
   if (gtk_localedir == NULL)
     {
       const gchar *p;
-      gchar *temp;
+      gchar *root, *temp;
       
       /* GTK_LOCALEDIR ends in either /lib/locale or
        * /share/locale. Scan for that slash.
@@ -97,8 +106,9 @@ _gtk_get_localedir (void)
       while (*--p != '/')
 	;
 
-      temp = g_win32_get_package_installation_subdirectory
-        (GETTEXT_PACKAGE, dll_name, p);
+      root = g_win32_get_package_installation_directory_of_module (gtk_dll);
+      temp = g_build_filename (root, p, NULL);
+      g_free (root);
 
       /* gtk_localedir is passed to bindtextdomain() which isn't
        * UTF-8-aware.
@@ -133,14 +143,14 @@ struct _GtkQuitFunction
   GtkCallbackMarshal marshal;
   GtkFunction function;
   gpointer data;
-  GtkDestroyNotify destroy;
+  GDestroyNotify destroy;
 };
 
 struct _GtkClosure
 {
   GtkCallbackMarshal marshal;
   gpointer data;
-  GtkDestroyNotify destroy;
+  GDestroyNotify destroy;
 };
 
 struct _GtkKeySnooperData
@@ -313,8 +323,11 @@ _gtk_get_datadir (void)
 {
   static char *gtk_datadir = NULL;
   if (gtk_datadir == NULL)
-    gtk_datadir = g_win32_get_package_installation_subdirectory
-      (GETTEXT_PACKAGE, dll_name, "share");
+    {
+      gchar *root = g_win32_get_package_installation_directory_of_module (gtk_dll);
+      gtk_datadir = g_build_filename (root, "share", NULL);
+      g_free (root);
+    }
 
   return gtk_datadir;
 }
@@ -324,8 +337,11 @@ _gtk_get_libdir (void)
 {
   static char *gtk_libdir = NULL;
   if (gtk_libdir == NULL)
-    gtk_libdir = g_win32_get_package_installation_subdirectory
-      (GETTEXT_PACKAGE, dll_name, "lib");
+    {
+      gchar *root = g_win32_get_package_installation_directory_of_module (gtk_dll);
+      gtk_libdir = g_build_filename (root, "lib", NULL);
+      g_free (root);
+    }
 
   return gtk_libdir;
 }
@@ -335,8 +351,11 @@ _gtk_get_sysconfdir (void)
 {
   static char *gtk_sysconfdir = NULL;
   if (gtk_sysconfdir == NULL)
-    gtk_sysconfdir = g_win32_get_package_installation_subdirectory
-      (GETTEXT_PACKAGE, dll_name, "etc");
+    {
+      gchar *root = g_win32_get_package_installation_directory_of_module (gtk_dll);
+      gtk_sysconfdir = g_build_filename (root, "etc", NULL);
+      g_free (root);
+    }
 
   return gtk_sysconfdir;
 }
@@ -346,8 +365,7 @@ _gtk_get_data_prefix (void)
 {
   static char *gtk_data_prefix = NULL;
   if (gtk_data_prefix == NULL)
-    gtk_data_prefix = g_win32_get_package_installation_directory
-      (GETTEXT_PACKAGE, dll_name);
+    gtk_data_prefix = g_win32_get_package_installation_directory_of_module (gtk_dll);
 
   return gtk_data_prefix;
 }
@@ -529,22 +547,13 @@ enum_locale_proc (LPTSTR locale)
 #endif
 
 static void
-do_pre_parse_initialization (int    *argc,
-			     char ***argv)
+setlocale_initialization (void)
 {
-  const gchar *env_string;
-  
-#if	0
-  g_set_error_handler (gtk_error);
-  g_set_warning_handler (gtk_warning);
-  g_set_message_handler (gtk_message);
-  g_set_print_handler (gtk_print);
-#endif
+  static gboolean initialized = FALSE;
 
-  if (pre_initialized)
+  if (initialized)
     return;
-
-  pre_initialized = TRUE;
+  initialized = TRUE;
 
   if (do_setlocale)
     {
@@ -609,6 +618,25 @@ do_pre_parse_initialization (int    *argc,
 	g_warning ("Locale not supported by C library.\n\tUsing the fallback 'C' locale.");
 #endif
     }
+}
+
+static void
+do_pre_parse_initialization (int    *argc,
+			     char ***argv)
+{
+  const gchar *env_string;
+  
+#if	0
+  g_set_error_handler (gtk_error);
+  g_set_warning_handler (gtk_warning);
+  g_set_message_handler (gtk_message);
+  g_set_print_handler (gtk_print);
+#endif
+
+  if (pre_initialized)
+    return;
+
+  pre_initialized = TRUE;
 
   gdk_pre_parse_libgtk_only ();
   gdk_event_handler_set ((GdkEventFunc)gtk_main_do_event, NULL, NULL);
@@ -632,6 +660,8 @@ do_pre_parse_initialization (int    *argc,
 static void
 gettext_initialization (void)
 {
+  setlocale_initialization ();
+
 #ifdef ENABLE_NLS
   bindtextdomain (GETTEXT_PACKAGE, GTK_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE "-properties", GTK_LOCALEDIR);
@@ -676,8 +706,11 @@ do_post_parse_initialization (int    *argc,
       g_warning ("Whoever translated default:LTR did so wrongly.\n");
   }
 
-  gtk_type_init (0);
- _gtk_accel_map_init ();  
+  /* do what the call to gtk_type_init() used to do */
+  g_type_init ();
+  gtk_object_get_type ();
+
+  _gtk_accel_map_init ();
   _gtk_rc_init ();
 
   /* Set the 'initialized' flag.
@@ -689,6 +722,10 @@ do_post_parse_initialization (int    *argc,
     {
       _gtk_modules_init (argc, argv, gtk_modules_string->str);
       g_string_free (gtk_modules_string, TRUE);
+    }
+  else
+    {
+      _gtk_modules_init (argc, argv, NULL);
     }
 }
 
@@ -728,7 +765,7 @@ post_parse_hook (GOptionContext *context,
 	  g_set_error (error, 
 		       G_OPTION_ERROR, 
 		       G_OPTION_ERROR_FAILED,
-		       "cannot open display: %s",
+		       _("Cannot open display: %s"),
 		       display_name ? display_name : "" );
 	  
 	  return FALSE;
@@ -1349,6 +1386,7 @@ rewrite_event_for_grabs (GdkEvent *event)
 {
   GdkWindow *grab_window;
   GtkWidget *event_widget, *grab_widget;
+  gpointer grab_widget_ptr;
   gboolean owner_events;
   GdkDisplay *display;
 
@@ -1381,7 +1419,8 @@ rewrite_event_for_grabs (GdkEvent *event)
     }
 
   event_widget = gtk_get_event_widget (event);
-  gdk_window_get_user_data (grab_window, (void**) &grab_widget);
+  gdk_window_get_user_data (grab_window, &grab_widget_ptr);
+  grab_widget = grab_widget_ptr;
 
   if (grab_widget &&
       gtk_main_get_window_group (grab_widget) != gtk_main_get_window_group (event_widget))
@@ -1569,25 +1608,15 @@ gtk_main_do_event (GdkEvent *event)
       break;
       
     case GDK_ENTER_NOTIFY:
+      GTK_PRIVATE_SET_FLAG (event_widget, GTK_HAS_POINTER);
+      _gtk_widget_set_pointer_window (event_widget, event->any.window);
       if (GTK_WIDGET_IS_SENSITIVE (grab_widget))
-	{
-	  g_object_ref (event_widget);
-	  
-	  gtk_widget_event (grab_widget, event);
-	  if (event_widget == grab_widget)
-	    GTK_PRIVATE_SET_FLAG (event_widget, GTK_LEAVE_PENDING);
-	  
-	  g_object_unref (event_widget);
-	}
+	gtk_widget_event (grab_widget, event);
       break;
       
     case GDK_LEAVE_NOTIFY:
-      if (GTK_WIDGET_LEAVE_PENDING (event_widget))
-	{
-	  GTK_PRIVATE_UNSET_FLAG (event_widget, GTK_LEAVE_PENDING);
-	  gtk_widget_event (event_widget, event);
-	}
-      else if (GTK_WIDGET_IS_SENSITIVE (grab_widget))
+      GTK_PRIVATE_UNSET_FLAG (event_widget, GTK_HAS_POINTER);
+      if (GTK_WIDGET_IS_SENSITIVE (grab_widget))
 	gtk_widget_event (grab_widget, event);
       break;
       
@@ -1648,7 +1677,7 @@ gtk_main_get_window_group (GtkWidget   *widget)
   if (widget)
     toplevel = gtk_widget_get_toplevel (widget);
 
-  if (toplevel && GTK_IS_WINDOW (toplevel))
+  if (GTK_IS_WINDOW (toplevel))
     return gtk_window_get_group (GTK_WINDOW (toplevel));
   else
     return gtk_window_get_group (NULL);
@@ -1660,6 +1689,7 @@ typedef struct
   GtkWidget *new_grab_widget;
   gboolean   was_grabbed;
   gboolean   is_grabbed;
+  gboolean   from_grab;
 } GrabNotifyInfo;
 
 static void
@@ -1681,13 +1711,31 @@ gtk_grab_notify_foreach (GtkWidget *child,
   is_shadowed = info->new_grab_widget && !info->is_grabbed;
 
   g_object_ref (child);
+
+  if ((was_shadowed || is_shadowed) && GTK_IS_CONTAINER (child))
+    gtk_container_forall (GTK_CONTAINER (child), gtk_grab_notify_foreach, info);
   
+  if (is_shadowed)
+    {
+      GTK_PRIVATE_SET_FLAG (child, GTK_SHADOWED);
+      if (!was_shadowed && GTK_WIDGET_HAS_POINTER (child)
+	  && GTK_WIDGET_IS_SENSITIVE (child))
+	_gtk_widget_synthesize_crossing (child, info->new_grab_widget,
+					 GDK_CROSSING_GTK_GRAB);
+    }
+  else
+    {
+      GTK_PRIVATE_UNSET_FLAG (child, GTK_SHADOWED);
+      if (was_shadowed && GTK_WIDGET_HAS_POINTER (child)
+	  && GTK_WIDGET_IS_SENSITIVE (child))
+	_gtk_widget_synthesize_crossing (info->old_grab_widget, child,
+					 info->from_grab ? GDK_CROSSING_GTK_GRAB
+					 : GDK_CROSSING_GTK_UNGRAB);
+    }
+
   if (was_shadowed != is_shadowed)
     _gtk_widget_grab_notify (child, was_shadowed);
   
-  if ((was_shadowed || is_shadowed) && GTK_IS_CONTAINER (child))
-    gtk_container_forall (GTK_CONTAINER (child), gtk_grab_notify_foreach, info);
-      
   g_object_unref (child);
   
   info->was_grabbed = was_grabbed;
@@ -1697,7 +1745,8 @@ gtk_grab_notify_foreach (GtkWidget *child,
 static void
 gtk_grab_notify (GtkWindowGroup *group,
 		 GtkWidget      *old_grab_widget,
-		 GtkWidget      *new_grab_widget)
+		 GtkWidget      *new_grab_widget,
+		 gboolean        from_grab)
 {
   GList *toplevels;
   GrabNotifyInfo info;
@@ -1707,6 +1756,7 @@ gtk_grab_notify (GtkWindowGroup *group,
 
   info.old_grab_widget = old_grab_widget;
   info.new_grab_widget = new_grab_widget;
+  info.from_grab = from_grab;
 
   g_object_ref (group);
 
@@ -1751,7 +1801,7 @@ gtk_grab_add (GtkWidget *widget)
       g_object_ref (widget);
       group->grabs = g_slist_prepend (group->grabs, widget);
 
-      gtk_grab_notify (group, old_grab_widget, widget);
+      gtk_grab_notify (group, old_grab_widget, widget, TRUE);
     }
 }
 
@@ -1787,7 +1837,7 @@ gtk_grab_remove (GtkWidget *widget)
       else
 	new_grab_widget = NULL;
 
-      gtk_grab_notify (group, widget, new_grab_widget);
+      gtk_grab_notify (group, widget, new_grab_widget, FALSE);
       
       g_object_unref (widget);
     }
@@ -1872,7 +1922,7 @@ gtk_quit_add_full (guint		main_level,
 		   GtkFunction		function,
 		   GtkCallbackMarshal	marshal,
 		   gpointer		data,
-		   GtkDestroyNotify	destroy)
+		   GDestroyNotify	destroy)
 {
   static guint quit_id = 1;
   GtkQuitFunction *quitf;
@@ -1990,7 +2040,7 @@ gtk_timeout_add_full (guint32		 interval,
 		      GtkFunction	 function,
 		      GtkCallbackMarshal marshal,
 		      gpointer		 data,
-		      GtkDestroyNotify	 destroy)
+		      GDestroyNotify	 destroy)
 {
   if (marshal)
     {
@@ -2029,7 +2079,7 @@ gtk_idle_add_full (gint			priority,
 		   GtkFunction		function,
 		   GtkCallbackMarshal	marshal,
 		   gpointer		data,
-		   GtkDestroyNotify	destroy)
+		   GDestroyNotify	destroy)
 {
   if (marshal)
     {
@@ -2083,7 +2133,7 @@ gtk_input_add_full (gint		source,
 		    GdkInputFunction	function,
 		    GtkCallbackMarshal	marshal,
 		    gpointer		data,
-		    GtkDestroyNotify	destroy)
+		    GDestroyNotify	destroy)
 {
   if (marshal)
     {
@@ -2098,7 +2148,7 @@ gtk_input_add_full (gint		source,
 				 condition,
 				 (GdkInputFunction) gtk_invoke_input,
 				 closure,
-				 (GdkDestroyNotify) gtk_destroy_closure);
+				 (GDestroyNotify) gtk_destroy_closure);
     }
   else
     return gdk_input_add_full (source, condition, function, data, destroy);
@@ -2229,11 +2279,15 @@ GtkWidget*
 gtk_get_event_widget (GdkEvent *event)
 {
   GtkWidget *widget;
+  gpointer widget_ptr;
 
   widget = NULL;
   if (event && event->any.window && 
       (event->type == GDK_DESTROY || !GDK_WINDOW_DESTROYED (event->any.window)))
-    gdk_window_get_user_data (event->any.window, (void**) &widget);
+    {
+      gdk_window_get_user_data (event->any.window, &widget_ptr);
+      widget = widget_ptr;
+    }
   
   return widget;
 }
@@ -2305,7 +2359,7 @@ gtk_propagate_event (GtkWidget *widget,
       GtkWidget *window;
 
       window = gtk_widget_get_toplevel (widget);
-      if (window && GTK_IS_WINDOW (window))
+      if (GTK_IS_WINDOW (window))
 	{
 	  /* If there is a grab within the window, give the grab widget
 	   * a first crack at the key event
@@ -2316,7 +2370,7 @@ gtk_propagate_event (GtkWidget *widget,
 	  if (!handled_event)
 	    {
 	      window = gtk_widget_get_toplevel (widget);
-	      if (window && GTK_IS_WINDOW (window))
+	      if (GTK_IS_WINDOW (window))
 		{
 		  if (GTK_WIDGET_IS_SENSITIVE (window))
 		    gtk_widget_event (window, event);

@@ -29,8 +29,6 @@
 #include <unistd.h>
 #endif
 
-#include <gdk/gdkscreen.h>
-
 #include "gtkstock.h"
 #include "gtkicontheme.h"
 #include "gtkiconfactory.h"
@@ -151,15 +149,6 @@ enum {
   LOAD_PRELOAD,  /* the model is loading and not inserted in the tree yet */
   LOAD_LOADING,  /* the model is fully loaded but not inserted */
   LOAD_FINISHED  /* the model is fully loaded and inserted */
-};
-
-enum {
-  TEXT_URI_LIST
-};
-
-/* Target types for DnD from the file list */
-static const GtkTargetEntry recent_list_source_targets[] = {
-  { "text/uri-list", 0, TEXT_URI_LIST }
 };
 
 /* Icon size for if we can't get it from the theme */
@@ -398,9 +387,9 @@ gtk_recent_chooser_default_constructor (GType                  type,
   		    G_CALLBACK (recent_view_popup_menu_cb), impl);
   g_signal_connect (impl->recent_view, "button-press-event",
   		    G_CALLBACK (recent_view_button_press_cb), impl);
-  g_signal_connect (impl->recent_view, "drag_begin",
+  g_signal_connect (impl->recent_view, "drag-begin",
 		    G_CALLBACK (recent_view_drag_begin_cb), impl);
-  g_signal_connect (impl->recent_view, "drag_data_get",
+  g_signal_connect (impl->recent_view, "drag-data-get",
 		    G_CALLBACK (recent_view_drag_data_get_cb), impl);
 
   g_object_set (impl->recent_view, "has-tooltip", TRUE, NULL);
@@ -451,9 +440,9 @@ gtk_recent_chooser_default_constructor (GType                  type,
   /* drag and drop */
   gtk_drag_source_set (impl->recent_view,
 		       GDK_BUTTON1_MASK,
-		       recent_list_source_targets,
-		       G_N_ELEMENTS (recent_list_source_targets),
+		       NULL, 0,
 		       GDK_ACTION_COPY);
+  gtk_drag_source_add_uri_targets (impl->recent_view);
 
   impl->filter_combo_hbox = gtk_hbox_new (FALSE, 12);
   
@@ -936,9 +925,8 @@ static void
 gtk_recent_chooser_default_map (GtkWidget *widget)
 {
   GtkRecentChooserDefault *impl = GTK_RECENT_CHOOSER_DEFAULT (widget);
-  
-  if (GTK_WIDGET_CLASS (_gtk_recent_chooser_default_parent_class)->map)
-    GTK_WIDGET_CLASS (_gtk_recent_chooser_default_parent_class)->map (widget);
+
+  GTK_WIDGET_CLASS (_gtk_recent_chooser_default_parent_class)->map (widget);
 
   /* reloads everything */
   reload_recent_items (impl);
@@ -1535,25 +1523,23 @@ recent_view_drag_data_get_cb (GtkWidget        *widget,
 			      gpointer          data)
 {
   GtkRecentChooserDefault *impl = GTK_RECENT_CHOOSER_DEFAULT (data);
-  DragData *drag_data;
+  DragData drag_data;
   gsize n_uris;
   
   n_uris = gtk_tree_selection_count_selected_rows (impl->selection);
   if (n_uris == 0)
-	  return;
+    return;
 
-  drag_data = g_new (DragData, 1);
-  drag_data->uri_list = g_new0 (gchar *, n_uris + 1);
-  drag_data->next_pos = 0;
+  drag_data.uri_list = g_new0 (gchar *, n_uris + 1);
+  drag_data.next_pos = 0;
   
   gtk_tree_selection_selected_foreach (impl->selection,
       				       append_uri_to_urilist,
-      				       drag_data);
+      				       &drag_data);
   
-  gtk_selection_data_set_uris (selection_data, drag_data->uri_list);
+  gtk_selection_data_set_uris (selection_data, drag_data.uri_list);
 
-  g_strfreev (drag_data->uri_list);
-  g_free (drag_data);
+  g_strfreev (drag_data.uri_list);
 }
 
 static gboolean

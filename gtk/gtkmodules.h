@@ -18,6 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
+
 #ifndef __GTK_MODULES_H__
 #define __GTK_MODULES_H__
 
@@ -36,12 +40,18 @@ gchar **_gtk_get_module_path    (const gchar *type);
 void    _gtk_modules_init             (gint         *argc,
 				       gchar      ***argv,
 				       const gchar  *gtk_modules_args);
-void    _gtk_modules_settings_changed (GtkSettings  *settings, 
+void    _gtk_modules_settings_changed (GtkSettings  *settings,
 				       const gchar  *modules);
 
 typedef void	 (*GtkModuleInitFunc)        (gint	  *argc,
 					      gchar      ***argv);
 typedef void	 (*GtkModuleDisplayInitFunc) (GdkDisplay   *display);
+
+#ifdef MAEMO_CHANGES
+/*  Don't you dare using this function if you are not hildon-fm :-)  */
+gchar * hildon_fm_private_find_module (const gchar *name,
+                                       const gchar *type);
+#endif
 
 
 G_END_DECLS

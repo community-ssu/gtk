@@ -21,8 +21,12 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
+
+#if defined(GTK_DISABLE_SINGLE_INCLUDES) && !defined (__GTK_H_INSIDE__) && !defined (GTK_COMPILATION)
+#error "Only <gtk/gtk.h> can be included directly."
+#endif
 
 #ifndef __GTK_MENU_ITEM_H__
 #define __GTK_MENU_ITEM_H__
@@ -48,21 +52,21 @@ typedef struct _GtkMenuItemClass  GtkMenuItemClass;
 struct _GtkMenuItem
 {
   GtkItem item;
-  
-  GtkWidget *submenu;
-  GdkWindow *event_window;
-  
-  guint16 toggle_size;
-  guint16 accelerator_width;
-  gchar  *accel_path;
-  
-  guint show_submenu_indicator : 1;
-  guint submenu_placement : 1;
-  guint submenu_direction : 1;
-  guint right_justify: 1;
-  guint timer_from_keypress : 1;
-  guint from_menubar : 1;
-  guint timer;
+
+  GtkWidget *GSEAL (submenu);
+  GdkWindow *GSEAL (event_window);
+
+  guint16 GSEAL (toggle_size);
+  guint16 GSEAL (accelerator_width);
+  gchar  *GSEAL (accel_path);
+
+  guint GSEAL (show_submenu_indicator) : 1;
+  guint GSEAL (submenu_placement) : 1;
+  guint GSEAL (submenu_direction) : 1;
+  guint GSEAL (right_justify): 1;
+  guint GSEAL (timer_from_keypress) : 1;
+  guint GSEAL (from_menubar) : 1;
+  guint GSEAL (timer);
 };
 
 struct _GtkMenuItemClass
@@ -111,6 +115,7 @@ void       gtk_menu_item_set_right_justified  (GtkMenuItem         *menu_item,
 gboolean   gtk_menu_item_get_right_justified  (GtkMenuItem         *menu_item);
 void	   gtk_menu_item_set_accel_path	      (GtkMenuItem	   *menu_item,
 					       const gchar	   *accel_path);
+G_CONST_RETURN gchar* gtk_menu_item_get_accel_path (GtkMenuItem    *menu_item);
 
 /* private */
 void	  _gtk_menu_item_refresh_accel_path   (GtkMenuItem	   *menu_item,
