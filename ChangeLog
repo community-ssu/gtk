@@ -1,3 +1,17 @@
+2009-06-05  Kristian Rietveld  <kris@lanedo.com>
+
+	Addresses: NB#106177 - No API to enable alphanumeric input mode
+	with numeric mode as default
+
+	* gtk/gtkimcontext.c: add new hildon-input-default property.
+
+	* gtk/gtktextview.[ch]: add hildon-input-default propery, plus
+	accessor functions.
+
+	* gtk/gtkentry.[ch]: likewise.
+
+	* gtk/gtk.symbols: add new symbols.
+
 2009-06-05  Michael Natterer  <mitch@lanedo.com>
 
 	Fixes: NB#110433 - First menu item should not be automatically

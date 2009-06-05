@@ -33,7 +33,8 @@ typedef struct _GtkIMContextPrivate GtkIMContextPrivate;
    GTK_TYPE_IM_CONTEXT, GtkIMContextPrivate))
 
 enum {
-  PROP_HILDON_INPUT_MODE = 1
+  PROP_HILDON_INPUT_MODE = 1,
+  PROP_HILDON_INPUT_DEFAULT
 };
 #endif /* MAEMO_CHANGES */
 
@@ -54,6 +55,7 @@ enum {
 #ifdef MAEMO_CHANGES
 struct _GtkIMContextPrivate {
   HildonGtkInputMode mode;
+  HildonGtkInputMode default_mode;
 };
 #endif /* MAEMO_CHANGES */
 
@@ -226,6 +228,25 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 						       HILDON_GTK_INPUT_MODE_AUTOCAP |
 						       HILDON_GTK_INPUT_MODE_DICTIONARY,
 						       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+  /**
+   * GtkIMContext:hildon-input-default:
+   *
+   * Default input mode for this IM context.  See #HildonGtkInputMode.
+   * The default setting for this property is %HILDON_GTK_INPUT_MODE_FULL,
+   * which means that the default input mode to be used is up to the
+   * implementation of the IM context.
+   *
+   * Since: maemo 5
+   **/
+  g_object_class_install_property (gobject_class,
+				   PROP_HILDON_INPUT_DEFAULT,
+				   g_param_spec_flags ("hildon-input-default",
+						       "Hildon input default",
+						       "Default input mode",
+						       HILDON_TYPE_GTK_INPUT_MODE,
+						       HILDON_GTK_INPUT_MODE_FULL,
+						       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 #endif /* MAEMO_CHANGES */
 }
 
@@ -248,6 +269,9 @@ gtk_im_context_set_property (GObject      *object,
       case PROP_HILDON_INPUT_MODE:
         priv->mode = g_value_get_flags (value);
         break;
+      case PROP_HILDON_INPUT_DEFAULT:
+        priv->default_mode = g_value_get_flags (value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -266,6 +290,9 @@ gtk_im_context_get_property (GObject    *object,
     {
       case PROP_HILDON_INPUT_MODE:
         g_value_set_flags (value, priv->mode);
+        break;
+      case PROP_HILDON_INPUT_DEFAULT:
+        g_value_set_flags (value, priv->default_mode);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);

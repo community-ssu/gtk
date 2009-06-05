@@ -159,6 +159,7 @@ enum
   PROP_ACCEPTS_TAB
 #ifdef MAEMO_CHANGES
   , PROP_HILDON_INPUT_MODE
+  , PROP_HILDON_INPUT_DEFAULT
 #endif /* MAEMO_CHANGES */
 };
 
@@ -689,6 +690,25 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                        HILDON_GTK_INPUT_MODE_MULTILINE |
                                                        HILDON_GTK_INPUT_MODE_AUTOCAP |
                                                        HILDON_GTK_INPUT_MODE_DICTIONARY,
+                                                       GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+  /**
+   * GtkTextView:hildon-input-default:
+   *
+   * Default input mode for this IM context.  See #HildonGtkInputMode.
+   * The default setting for this property is %HILDON_GTK_INPUT_MODE_FULL,
+   * which means that the default input mode to be used is up to the
+   * implementation of the IM context.
+   *
+   * Since: maemo 5
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_HILDON_INPUT_DEFAULT,
+                                   g_param_spec_flags ("hildon-input-default",
+                                                       P_("Hildon input default"),
+                                                       P_("Define widget's default input mode"),
+                                                       HILDON_TYPE_GTK_INPUT_MODE,
+                                                       HILDON_GTK_INPUT_MODE_FULL,
                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 #endif /* MAEMO_CHANGES */
 
@@ -2961,6 +2981,10 @@ gtk_text_view_set_property (GObject         *object,
     case PROP_HILDON_INPUT_MODE:
       hildon_gtk_text_view_set_input_mode (text_view, g_value_get_flags (value));
       break;
+
+    case PROP_HILDON_INPUT_DEFAULT:
+      hildon_gtk_text_view_set_input_default (text_view, g_value_get_flags (value));
+      break;
 #endif /* MAEMO_CHANGES */
 
     default:
@@ -3040,6 +3064,10 @@ gtk_text_view_get_property (GObject         *object,
 #ifdef MAEMO_CHANGES
     case PROP_HILDON_INPUT_MODE:
       g_value_set_flags (value, hildon_gtk_text_view_get_input_mode (text_view));
+      break;
+
+    case PROP_HILDON_INPUT_DEFAULT:
+      g_value_set_flags (value, hildon_gtk_text_view_get_input_default (text_view));
       break;
 #endif /* MAEMO_CHANGES */
 
@@ -9264,6 +9292,52 @@ hildon_gtk_text_view_get_input_mode (GtkTextView *text_view)
 
   g_object_get (G_OBJECT (text_view->im_context),
                 "hildon-input-mode", &mode, NULL);
+
+  return mode;
+}
+
+/**
+ * hildon_gtk_text_view_set_input_default:
+ * @text_view: a #GtkTextView
+ * @mode: a #HildonGtkInputMode
+ *
+ * Sets the default input mode of the widget.
+ *
+ * Since: maemo 5
+ */
+void
+hildon_gtk_text_view_set_input_default (GtkTextView       *text_view,
+                                        HildonGtkInputMode mode)
+{
+  g_return_if_fail (GTK_IS_TEXT_VIEW (text_view));
+
+  if (hildon_gtk_text_view_get_input_default (text_view) != mode)
+    {
+      g_object_set (G_OBJECT (text_view->im_context),
+                    "hildon-input-default", mode, NULL);
+      g_object_notify (G_OBJECT (text_view), "hildon-input-default");
+    }
+}
+
+/**
+ * hildon_gtk_text_view_get_input_default:
+ * @text_view: a #GtkTextView
+ *
+ * Gets the default input mode of the widget.
+ *
+ * Return value: the default input mode of the widget.
+ *
+ * Since: maemo 5
+ */
+HildonGtkInputMode
+hildon_gtk_text_view_get_input_default (GtkTextView *text_view)
+{
+  HildonGtkInputMode mode;
+
+  g_return_val_if_fail (GTK_IS_TEXT_VIEW (text_view), FALSE);
+
+  g_object_get (G_OBJECT (text_view->im_context),
+                "hildon-input-default", &mode, NULL);
 
   return mode;
 }
