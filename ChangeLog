@@ -1,5 +1,21 @@
 2009-06-05  Kristian Rietveld  <kris@lanedo.com>
 
+	Fixes: NB#114454 - Not possible to set hildon icon size to toolbar
+	resulting in different sizes of thumbnails.
+
+	Merge from upstream, excluding the later reverted change in
+	GtkSettings:
+
+    2008-10-11  Matthias Clasen  <mclasen@redhat.com>
+
+        Bug 555186 – Setting gtk-toolbar-icon-size with custom icon_size
+
+        * gtk/gtktoolbar.c: Turn GtkToolbar::icon-size and
+        GtkSettings::gtk-toolbar-icon-size into int properties, to
+        allow the use of app-registered icon sizes.
+
+2009-06-05  Kristian Rietveld  <kris@lanedo.com>
+
 	Addresses: NB#106177 - No API to enable alphanumeric input mode
 	with numeric mode as default
 
