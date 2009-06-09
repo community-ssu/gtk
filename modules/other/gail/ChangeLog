@@ -1,5 +1,15 @@
 2009-06-09 Alejandro Pinheiro <apinheiro@igalia.com>
 
+	* gail/gailtreeview.c
+	Exposed the new action area added to the treeview. This feature is
+	only on MAEMO environments (using MAEMO_CHANGES macro, defined on
+	gtk+-2.0.pc)
+
+	Applying the patch related to bug NB#105306 (Embedded widgets on the
+	gtktreeview are are not exposed) on the gtk trunk
+
+2009-06-09 Alejandro Pinheiro <apinheiro@igalia.com>
+
 	* gail/gailwidget.c:
 	(gail_widget_all_parents_visible): auxiliar function that checks
 	if all parent hierarchy is visible
