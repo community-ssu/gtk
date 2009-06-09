@@ -1,3 +1,10 @@
+2009-06-09 Alejandro Pinheiro <apinheiro@igalia.com>
+
+	* modules/other/gail/Makefile.am: make public gailrenderercell.h,
+	gailcell.h and gailcellparent.h if MAEMO-CHANGES is available
+
+	Related to upstream bug 490174
+
 2008-09-20  Matthias Clasen <mclasen@redhat.com>
 
 	Merged from trunk:
