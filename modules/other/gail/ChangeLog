@@ -1,5 +1,18 @@
 2009-06-09 Alejandro Pinheiro <apinheiro@igalia.com>
 
+	* gail/gailwidget.c:
+	(gail_widget_all_parents_visible): auxiliar function that checks
+	if all parent hierarchy is visible
+	(gail_widget_ref_state_set): checks parent visibility in order
+	to add the state ATK_STATE_SHOWING to the current state set
+
+	Applying the patch related to bug NB#76325 (SPI_STATE_SHOWING flag
+	is used for element of Bookmark menu incorrectly) on the gtk trunk
+
+	Maemo solution while upstream bug #509650 is not solved
+
+2009-06-09 Alejandro Pinheiro <apinheiro@igalia.com>
+
 	* modules/other/gail/Makefile.am: make public gailrenderercell.h,
 	gailcell.h and gailcellparent.h if MAEMO-CHANGES is available
 
