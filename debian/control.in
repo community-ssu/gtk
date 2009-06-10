@@ -157,7 +157,7 @@ Description: GNOME Accessibility Implementation Library -- development files
  .
  This package contains the development files for Gail.
 
-Package: libgail18-dbg
+Package: libgail-dbg
 Architecture: any
 Section: debug
 Priority: extra

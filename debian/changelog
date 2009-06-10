@@ -11,8 +11,15 @@ gtk+2.0 (2:2.14.3-1maemo4) unstable; urgency=low
     libgtk2.0-0)
   * Update debian dependencies after the upgrade to 2.14.3.
   * Increase compat level to 5.
+  * Fixes: NB#95806 - Pressure data not received from motion events.
+  * Fixes: NB#114454 - Not possible to set hildon icon size to toolbar
+    resulting in different sizes of thumbnails.
+  * Addresses: NB#106177 - No API to enable alphanumeric input mode
+    with numeric mode as default
+  * Fixes: NB#110433 - First menu item should not be automatically
+    selected
 
- -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 10 Jun 2009 18:00:43 +0300
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 10 Jun 2009 18:03:54 +0300
 
 gtk+2.0 (2:2.14.3-1maemo3) unstable; urgency=low
 
