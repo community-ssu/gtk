@@ -273,11 +273,16 @@ binary-arch: build install
 	dh_installman -a
 	dh_installinfo -a
 	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
-	dh_strip -a --dbg-package=libgtk2.0-$(soname)
+	dh_strip -plibgtk2.0-0 --dbg-package=libgtk2.0-$(soname)-dbg
+	dh_strip -plibgail18 -plibgail-common --dbg-package=libgail18-dbg
 	dh_compress -a -Xindex.sgml
 	dh_fixperms -a
 	dh_makeshlibs -a -Nlibgtk$(apiver)-$(soname)-dbg
 	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:2.12.9-0osso1)"
+	dh_makeshlibs -plibgail18 \
+		-X$(MODULES_BASE_PATH) \
+		-V"libgail18 (>= $(SHVER)), libgail-common (>= $(SHVER))" \
+		-- -c4
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local

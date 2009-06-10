@@ -1,3 +1,19 @@
+gtk+2.0 (2:2.14.3-1maemo4) unstable; urgency=low
+
+  * Split gail into its own packages:
+    - libgail18
+    - libgail-dev
+    - libgail-common
+    - libgail-dbg.
+    Fixes: NB#120834 (building arm-at fails,
+    libgail18_1.18.0-osso15+0m5_armel trying to overwrite
+    `/usr/lib/libgailutil.so.18.0.1', which is also in package
+    libgtk2.0-0)
+  * Update debian dependencies after the upgrade to 2.14.3.
+  * Increase compat level to 5.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 10 Jun 2009 18:00:43 +0300
+
 gtk+2.0 (2:2.14.3-1maemo3) unstable; urgency=low
 
   * Fixes: NB#120404 (LOcation widget in home view doesnt respond on clicking)
