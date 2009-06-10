@@ -274,7 +274,7 @@ binary-arch: build install
 	dh_installinfo -a
 	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
 	dh_strip -plibgtk2.0-0 --dbg-package=libgtk2.0-$(soname)-dbg
-	dh_strip -plibgail18 -plibgail-common --dbg-package=libgail18-dbg
+	dh_strip -plibgail18 -plibgail-common --dbg-package=libgail-dbg
 	dh_compress -a -Xindex.sgml
 	dh_fixperms -a
 	dh_makeshlibs -a -Nlibgtk$(apiver)-$(soname)-dbg
