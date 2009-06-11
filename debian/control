@@ -157,13 +157,15 @@ Description: GNOME Accessibility Implementation Library -- development files
  .
  This package contains the development files for Gail.
 
-Package: libgail-dbg
+Package: libgail18-dbg
 Architecture: any
 Section: debug
 Priority: extra
 Depends: ${misc:Depends}, libgail18 (= ${binary:Version})
 Recommends: libgtk2.0-0-dbg
-Replaces: libgtk2.0-0-dbg (<< 2.14.3-1maemo4)
+Replaces: libgtk2.0-0-dbg (<< 2.14.3-1maemo4), libgail-dbg
+Provides: libgail-dbg
+Conflicts: libgail-dbg
 Description: Gail libraries and debugging symbols
  Gail is the "GNOME Accessibility Implementation Library".
  .
