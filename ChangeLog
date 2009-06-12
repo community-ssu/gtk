@@ -1,3 +1,17 @@
+2009-06-12  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#98617 - Make dialogs use proper border margins
+
+	* gtk/gtkdialog.c (gtk_dialog_class_init), (update_spacings),
+	(gtk_dialog_init), (gtk_dialog_set_property),
+	(gtk_dialog_get_property), (gtk_dialog_set_has_separator),
+	(gtk_dialog_set_padding), (gtk_dialog_get_padding),
+	(gtk_dialog_set_inner_spacing), (gtk_dialog_get_inner_spacing):
+	* gtk/gtkdialog.h: Implement properties top-padding, left-padding,
+	right-padding, bottom-padding and inner-spacing with appropriate
+	default values as well as a function gtk_dialog_set_padding and
+	gtk_dialog_get_padding. Patch by Danel Borgmann.
+
 2009-06-10  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Releasing 2:2.14.3-1maemo4
