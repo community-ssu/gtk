@@ -1,3 +1,9 @@
+2009-06-10  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Releasing 2:2.14.3-1maemo4
+
+	* debian/changelog: Updates.
+
 2009-06-05  Carlos Garnacho  <carlos@lanedo.com>
 
 	Fixes: NB#95806 - Pressure data not received from motion events.

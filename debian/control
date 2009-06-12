@@ -52,7 +52,7 @@ Description: The programs for the GTK+ graphical user interface library
 Package: libgtk2.0-dev
 Section: libdevel
 Architecture: any
-Depends: libgtk2.0-0 (= ${Source-Version}), libglib2.0-dev (>= 2.12.0), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, pkg-config
+Depends: ${shlibs:Depends}, libgtk2.0-0 (= ${Source-Version}), libglib2.0-dev (>= 2.12.0), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, pkg-config
 Suggests: libgtk2.0-doc
 Replaces: libgtk1.3-dev
 Conflicts: libgtk1.3-dev
@@ -157,13 +157,15 @@ Description: GNOME Accessibility Implementation Library -- development files
  .
  This package contains the development files for Gail.
 
-Package: libgail-dbg
+Package: libgail18-dbg
 Architecture: any
 Section: debug
 Priority: extra
 Depends: ${misc:Depends}, libgail18 (= ${binary:Version})
 Recommends: libgtk2.0-0-dbg
-Replaces: libgtk2.0-0-dbg (<< 2.14.3-1maemo4)
+Replaces: libgtk2.0-0-dbg (<< 2.14.3-1maemo4), libgail-dbg
+Provides: libgail-dbg
+Conflicts: libgail-dbg
 Description: Gail libraries and debugging symbols
  Gail is the "GNOME Accessibility Implementation Library".
  .
