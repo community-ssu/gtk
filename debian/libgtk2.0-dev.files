@@ -1,6 +1,6 @@
 usr/bin/gdk-pixbuf-csource
 usr/include/gtk*
-usr/lib/libg?k*.{so,a,la}
+usr/lib/libg?k*.{so,a}
 usr/lib/pkgconfig/g?k*.pc
 usr/lib/gtk-2.0/2.10.0/*/*.a
 usr/lib/*/include/*.h
