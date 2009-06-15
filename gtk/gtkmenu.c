@@ -992,9 +992,7 @@ gtk_menu_window_event (GtkWidget *window,
 	}
       break;
     case GDK_DELETE:
-      /* Do nothing for the delete event that will come from _GTK_DELETE_TEMPORARIES
-         if we are not mapped */
-      handled = TRUE;
+      handled = gtk_widget_event (menu, event);
       break;
 #endif /* MAEMO_CHANGES */
     default:
