@@ -1,3 +1,8 @@
+2009-06-15  Christian Dywan  <christian@lanedo.com>
+
+	* gtk/gtkdialog.c (gtk_dialog_set_property): Add a missing "break"
+	that was forgotten in the previous patch.
+
 2009-06-12  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#98617 - Make dialogs use proper border margins

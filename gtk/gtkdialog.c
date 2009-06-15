@@ -503,6 +503,7 @@ gtk_dialog_set_property (GObject      *object,
       break;
     case PROP_INNER_SPACING:
       gtk_dialog_set_inner_spacing (dialog, g_value_get_int (value));
+      break;
 #endif /* MAEMO_CHANGES */
 
     default:
