@@ -164,6 +164,16 @@ should be accessed using the functions below.
 
 </para>
 
+<!-- ##### ARG GtkMenu:maemo-arrow-scaling ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:opposite-arrows ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkMenu:vertical-offset ##### -->
 <para>
 
