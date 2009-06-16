@@ -382,6 +382,10 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
 
       g_free (multicontext->context_id);
       multicontext->context_id = g_strdup (global_context_id);
+
+#ifdef MAEMO_CHANGES
+      g_free (global_context_id);
+#endif /* MAEMO_CHANGES */
     }
 
   return multicontext->slave;

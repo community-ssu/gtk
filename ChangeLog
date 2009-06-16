@@ -1,3 +1,10 @@
+2009-06-16  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#121544 - Memory leaks found when trying to delete contact(s)
+
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_get_slave): free
+	global_context_id.
+
 2009-06-15  Christian Dywan  <christian@lanedo.com>
 
 	* gtk/gtkmenu.c (gtk_menu_window_event):
