@@ -1,3 +1,10 @@
+2009-06-17  Christian Dywan  <christian@lanedo.com>
+
+	* gdk/x11/gdkinput-x11.c (gdk_input_device_new): Move back to core
+	events and do not enable the touchscreen slave device by default.
+	Patch by Carlos Garnacho.
+	Fixes: NB#122714 Unable to select a particular word or character
+
 2009-06-16  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#121544 - Memory leaks found when trying to delete contact(s)

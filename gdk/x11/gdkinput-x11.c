@@ -114,12 +114,7 @@ gdk_input_device_new (GdkDisplay  *display,
       (fixed in 3.2A) */
    gdkdev->info.name = g_strdup ("pointer");
 
-#if defined (MAEMO_CHANGES) && defined (XINPUT_2)
-  if (device->use == IsXPointer)
-    gdkdev->info.mode = GDK_MODE_SCREEN;
-  else
-#endif
-    gdkdev->info.mode = GDK_MODE_DISABLED;
+  gdkdev->info.mode = GDK_MODE_DISABLED;
 
   /* Try to figure out what kind of device this is by its name -
      could invite a very, very, long list... Lowercase name
@@ -254,15 +249,6 @@ gdk_input_device_new (GdkDisplay  *display,
   gdkdev->proximityin_type = 0;
   gdkdev->proximityout_type = 0;
   gdkdev->changenotify_type = 0;
-
-#ifdef MAEMO_CHANGES
-  /* always enable extension events to get touchscreen pressure */
-  if (gdkdev->info.source == GDK_SOURCE_PEN)
-    {
-      if (!gdk_device_set_mode (&gdkdev->info, GDK_MODE_SCREEN))
-        g_warning ("Failed to enable pressure on `%s'", gdkdev->info.name);
-    }
-#endif /* MAEMO_CHANGES */
 
   return gdkdev;
 
