@@ -2820,7 +2820,7 @@ static gboolean
 hildon_gtk_input_mode_is_valid_char (HildonGtkInputMode mode,
                                      gunichar           chr)
 {
-  static const char *tele_chars_ascii = "pwPW/().-+*#?, ";
+  static const char *tele_chars_ascii = "pwPWa/().-+*#?, ";
 
   if (g_unichar_isalpha (chr) || chr == ' ')
     {
