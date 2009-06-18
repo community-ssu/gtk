@@ -1,6 +1,5 @@
 gtk+2.0 (2:2.14.3-1maemo5) unstable; urgency=low
 
-  * Fixes: NB#122714 - Unable to select a particular word or character
   * Fixes: NB#98617  - Make dialogs use proper border margins
   * Fixes: NB#121544 - Memory leaks found when trying to delete contact(s)
   * Fixes: NB#116326 - gtk_window_new() is slow due to
@@ -23,7 +22,6 @@ gtk+2.0 (2:2.14.3-1maemo4) unstable; urgency=low
   * Update debian dependencies after the upgrade to 2.14.3.
   * Increase compat level to 5.
   * libgail18-dbg replaces, conflicts, and provides libgail-dbg.
-  * Fixes: NB#95806 - Pressure data not received from motion events.
   * Fixes: NB#114454 - Not possible to set hildon icon size to toolbar
     resulting in different sizes of thumbnails.
   * Addresses: NB#106177 - No API to enable alphanumeric input mode

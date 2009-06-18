@@ -4,13 +4,6 @@
 
 	* debian/changelog: Updates.
 
-2009-06-17  Christian Dywan  <christian@lanedo.com>
-
-	* gdk/x11/gdkinput-x11.c (gdk_input_device_new): Move back to core
-	events and do not enable the touchscreen slave device by default.
-	Patch by Carlos Garnacho.
-	Fixes: NB#122714 Unable to select a particular word or character
-
 2009-06-16  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#121544 - Memory leaks found when trying to delete contact(s)
@@ -51,18 +44,6 @@
 	Releasing 2:2.14.3-1maemo4
 
 	* debian/changelog: Updates.
-
-2009-06-05  Carlos Garnacho  <carlos@lanedo.com>
-
-	Fixes: NB#95806 - Pressure data not received from motion events.
-
-	* configure.in: Detect XInput >= 1.1.99.
-	* gdk/x11/gdkinput-xfree.c (gdk_input_init):
-	* gdk/x11/gdkinput-x11.c (_gdk_input_common_init)
-	(gdk_input_translate_coordinates) (gdk_input_device_new)
-	(_gdk_input_common_other_event): Use XInput 2 features if available,
-	initialize correctly all devices in this case, and also translate
-	axis/coordinates from the extended events.
 
 2009-06-05  Kristian Rietveld  <kris@lanedo.com>
 
