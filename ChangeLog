@@ -1,3 +1,8 @@
+2009-06-18  Christian Dywan  <christian@lanedo.com>
+
+	* gtk/gtkdnd.c (gtk_drag_begin_internal): Globally disable DND in Gtk.
+	Fixes: NB#117759 [freetest] Black box is shown over URL field after gesture
+
 2009-06-17  Christian Dywan  <christian@lanedo.com>
 
 	* gtk/gtkentry.c (hildon_gtk_input_mode_is_valid_char): Add 'a' to the
