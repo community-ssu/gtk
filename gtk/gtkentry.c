@@ -7131,7 +7131,7 @@ hildon_gtk_entry_get_input_mode (GtkEntry *entry)
  *
  * Sets the default input mode of the widget.
  *
- * Since: maemo 5
+ * Since: maemo 5.0
  */
 void
 hildon_gtk_entry_set_input_default (GtkEntry           *entry,
@@ -7155,7 +7155,7 @@ hildon_gtk_entry_set_input_default (GtkEntry           *entry,
  *
  * Return value: the default input mode of the widget.
  *
- * Since: maemo 5
+ * Since: maemo 5.0
  */
 HildonGtkInputMode
 hildon_gtk_entry_get_input_default (GtkEntry *entry)

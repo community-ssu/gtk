@@ -700,7 +700,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
    * which means that the default input mode to be used is up to the
    * implementation of the IM context.
    *
-   * Since: maemo 5
+   * Since: maemo 5.0
    **/
   g_object_class_install_property (gobject_class,
                                    PROP_HILDON_INPUT_DEFAULT,
@@ -9303,7 +9303,7 @@ hildon_gtk_text_view_get_input_mode (GtkTextView *text_view)
  *
  * Sets the default input mode of the widget.
  *
- * Since: maemo 5
+ * Since: maemo 5.0
  */
 void
 hildon_gtk_text_view_set_input_default (GtkTextView       *text_view,

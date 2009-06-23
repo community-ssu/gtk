@@ -1,5 +1,13 @@
 2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
 
+	* gtk/gtkentry.c:
+	* gtk/gtkimcontext.c: (gtk_im_context_class_init):
+	* gtk/gtktextview.c: (gtk_text_view_class_init):
+
+	Use "maemo 5.0" instead of plain "maemo 5" in "since" marks.
+
+2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
+
 	* gtk/gtkdialog.c: Add "since" marks to new methods.
 
 2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>

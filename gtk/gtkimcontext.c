@@ -237,7 +237,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
    * which means that the default input mode to be used is up to the
    * implementation of the IM context.
    *
-   * Since: maemo 5
+   * Since: maemo 5.0
    **/
   g_object_class_install_property (gobject_class,
 				   PROP_HILDON_INPUT_DEFAULT,
