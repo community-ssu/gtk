@@ -5,6 +5,8 @@ gtk+2.0 (2:2.14.7-1maemo1) unstable; urgency=low
 
   [ Claudio Saavedra ]
   * debian/changelog updates.
+  * Fixes: NB#117759 [freetest] Black box is shown over URL field after gesture
+  * Fixes: NB#120033 FT_DE: settings is not showing call forwarding number
 
  -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 23 Jun 2009 14:28:08 +0300
 
