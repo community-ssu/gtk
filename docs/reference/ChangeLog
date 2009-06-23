@@ -1,3 +1,25 @@
+2009-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.7 ===
+
+2008-12-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.6 ===
+
+2008-12-10  Matthias Clasen <mclasen@redhat.com>
+
+	Bug 563876 – [Regression] GTK_MODULES env var is no longer relevant
+
+	* gtk/running.sgml: Improve GTK_MODULES docs.
+
+2008-11-24  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.14.5 ===
+
+2008-10-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.4 ====
+
 2008-09-23  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.14.3 ===

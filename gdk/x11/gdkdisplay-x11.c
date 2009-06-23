@@ -86,9 +86,16 @@ static const char *const precache_atoms[] = {
   "UTF8_STRING",
   "WM_CLIENT_LEADER",
   "WM_DELETE_WINDOW",
+  "WM_ICON_NAME",
   "WM_LOCALE_NAME",
+  "WM_NAME",
   "WM_PROTOCOLS",
   "WM_TAKE_FOCUS",
+  "WM_WINDOW_ROLE",
+  "_NET_ACTIVE_WINDOW",
+  "_NET_CURRENT_DESKTOP",
+  "_NET_FRAME_EXTENTS",
+  "_NET_STARTUP_ID",
   "_NET_WM_CM_S0",
   "_NET_WM_DESKTOP",
   "_NET_WM_ICON",
@@ -97,10 +104,15 @@ static const char *const precache_atoms[] = {
   "_NET_WM_PID",
   "_NET_WM_PING",
   "_NET_WM_STATE",
-  "_NET_WM_STATE_STICKY",
+  "_NET_WM_STATE_ABOVE",
+  "_NET_WM_STATE_BELOW",
+  "_NET_WM_STATE_FULLSCREEN",
+  "_NET_WM_STATE_MODAL",
   "_NET_WM_STATE_MAXIMIZED_VERT",
   "_NET_WM_STATE_MAXIMIZED_HORZ",
-  "_NET_WM_STATE_FULLSCREEN",
+  "_NET_WM_STATE_SKIP_TASKBAR",
+  "_NET_WM_STATE_SKIP_PAGER",
+  "_NET_WM_STATE_STICKY",
   "_NET_WM_SYNC_REQUEST",
   "_NET_WM_SYNC_REQUEST_COUNTER",
   "_NET_WM_WINDOW_TYPE",
@@ -173,6 +185,8 @@ gdk_display_open (const gchar *display_name)
   XAddConnectionWatch (xdisplay, gdk_internal_connection_watch, NULL);
 #endif /* HAVE_X11R6 */
   
+  _gdk_x11_precache_atoms (display, precache_atoms, G_N_ELEMENTS (precache_atoms));
+
   /* RandR must be initialized before we initialize the screens */
   display_x11->have_randr12 = FALSE;
 #ifdef HAVE_RANDR
@@ -210,8 +224,6 @@ gdk_display_open (const gchar *display_name)
   attr.height = 10;
   attr.event_mask = 0;
 
-  _gdk_x11_precache_atoms (display, precache_atoms, G_N_ELEMENTS (precache_atoms));
-
   display_x11->leader_gdk_window = gdk_window_new (GDK_SCREEN_X11 (display_x11->default_screen)->root_window, 
 						   &attr, GDK_WA_X | GDK_WA_Y);
   (_gdk_x11_window_get_toplevel (display_x11->leader_gdk_window))->is_leader = TRUE;
@@ -240,7 +252,17 @@ gdk_display_open (const gchar *display_name)
 #ifdef HAVE_XCOMPOSITE
   if (XCompositeQueryExtension (display_x11->xdisplay,
 				&ignore, &ignore))
-      display_x11->have_xcomposite = TRUE;
+    {
+      int major, minor;
+              
+      XCompositeQueryVersion (display_x11->xdisplay, &major, &minor);
+
+      /* Prior to Composite version 0.4, composited windows clipped their
+       * parents, so you had to use IncludeInferiors to draw to the parent
+       * This isn't useful for our purposes, so require 0.4
+       */
+      display_x11->have_xcomposite = major > 0 || (major == 0 && minor >= 4);
+    }
   else
 #endif
     display_x11->have_xcomposite = FALSE;

@@ -1,3 +1,110 @@
+Overview of Changes from GTK+ 2.14.6 to 2.14.7
+==============================================
+
+* Bugs fixed:
+ 565203 RTL: icons are misplaced when horizontal gtkiconview is ...
+ 549251 GTK icon view accessible issue
+ 565846 va_end(args) should be added into gtk_tree_store_new
+ 558694 Paned window splitter keynav broken
+
+* Updated translations:
+ Belarusian Latin (be@latin)
+ Brazilian Portugese (pt_BR)
+
+
+Overview of Changes from GTK+ 2.14.5 to 2.14.6
+==============================================
+
+* Bugs fixed:
+ 561539 Fix warnings when size allocations fall short of border width...
+ 557420 Some compose sequences don't work anymore
+ 555334 connected server feature
+ 563547 Update gdkx11 atom precache table
+ 563991 gtk_file_chooser_button_new_with_backend is deprecated
+ 560135 Print when the user double clicks a printer
+ 564066 Crash in gtk_rc_parse_default_files
+ 564212 gtk_icon_view_accessible_model_rows_reordered explain new_order...
+ 563751 xatom cache is prefilled too late
+ 556839 Crash when opening a link
+ 549251 GTK icon view accessible issue
+ 558306 Cannot build gdk (gtk+ 2.14.4) on Solaris 8
+ 555560 gtk_combo_box_set_active fails with no model
+ 563158 CellRendererProgress pulsing and progressing rows can not...
+ 556233 local-only causes G_IS_FILE warning
+ 562579 Remove error dialog when directory does not exist
+ 561494 FileChooser network browsing and authentication support
+ 563876 GTK_MODULES env var is no longer relevant
+
+
+Overview of Changes from GTK+ 2.14.4 to 2.14.5
+==============================================
+
+* Bugs fixed:
+ 556578 GIMP windows stay on top of other windows
+ 557059 crash when compositing emblems with icon
+ 557266 Window Management Problem
+ 528320 Incorrect icons displayed for files with custom mimetype icons
+ 557894 Wrong return value for gdk_pointer_grab_info_libgtk_only
+ 557316 GtkLinkButton should consider user-defined tooltip
+ 558323 glitches when popping up combos in treeviews
+ 558278 Crash when calling a callback set by gdk_add_client_message_filter
+ 557212 Problem with which window gains focus and is visible
+ 541391 Unfocussable Treeview swallows focus
+ 552956 Should check composite extension version
+ 554567 warning fixes (missing format specifiers and NULL vs 0)
+
+* Updated translations:
+ Asturian (ast)
+ Catalan (ca)
+ Czech (cs)
+ Galician (gl)
+ Hebrew (he)
+ Italian (it)
+ Japanese (ja)
+ Lithuanian (lt)
+ Norwegian bokmål (nb)
+ Thai (th)
+
+Overview of Changes from GTK+ 2.14.3 to 2.14.4
+==============================================
+
+* Bugs fixed:
+ 553135 eog crash: assertion failed...
+ 553241 double freed pointer in lpr_write cause firefox3 crash
+ 553133 GtkFileChooser won't ask to mount a volume
+ 553578 tabs are not drawn correctly
+ 553211 GtkFileChooserButton unsets filter after first use
+ 554141 uninitialized data use/free in gtkclipboard-quartz.c
+ 554690 mem leak in filechooser
+ 554691 mem leak in filechooser
+ 554696 invalid free function used
+ 554698 mem leak in filechooser
+ 554701 filechooser spams console with useless warnings
+ 554704 gtkfilesystemmodel does too much work
+ 554506 combining diacritics broken, became deadkeys
+ 530575 GtkEntry with invisible chars has a confused cursor...
+ 371908 Password Entry broken
+ 132501 Make utility window translate to tool window in win32
+ 554702 gtkfilesystem leaks GError
+ 554192 double press on the "circumflex" dead key...
+ 550342 Splash screens have a caption
+ 555000 Wrong treatment on non-spacing marks dead keys...
+ 552318 menubar mnemonics consumed even when gtk-enable-mnemonics=false
+ 555779 GtkCellRendererPixbuf crashed on failed GIcon lookup
+ 555791 Nautilus Crashes when opening USB MP3 Player Contents
+
+* Updated translations:
+ Catalan (ca)
+ German (de)
+ Spanish (es)
+ French (fr)
+ Italian (it)
+ Japanese (ja)
+ Macedonian (mk)
+ Brazilian Portugese (pt_BR)
+ Slovak (sk)
+ Swedish (sv)
+ 
 Overview of Changes from GTK+ 2.14.2 to 2.14.3
 ==============================================
 

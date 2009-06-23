@@ -934,8 +934,6 @@ gtk_file_chooser_default_finalize (GObject *object)
 
   shortcuts_free (impl);
 
-  g_object_unref (impl->file_system);
-
   g_free (impl->browse_files_last_selected_name);
 
   for (l = impl->filters; l; l = l->next)
@@ -2076,10 +2074,17 @@ shortcuts_add_volumes (GtkFileChooserDefault *impl)
 	  if (_gtk_file_system_volume_is_mounted (volume))
 	    {
 	      GFile *base_file;
+              gboolean base_is_native = TRUE;
 
 	      base_file = _gtk_file_system_volume_get_root (volume);
-	      if (base_file != NULL && !g_file_is_native (base_file))
-		continue;
+              if (base_file != NULL)
+                {
+                  base_is_native = g_file_is_native (base_file);
+                  g_object_unref (base_file);
+                }
+
+              if (!base_is_native)
+                continue;
 	    }
 	}
 
@@ -2181,6 +2186,7 @@ shortcuts_add_bookmarks (GtkFileChooserDefault *impl)
 
   bookmarks = _gtk_file_system_list_bookmarks (impl->file_system);
   shortcuts_append_bookmarks (impl, bookmarks);
+  g_slist_foreach (bookmarks, (GFunc) g_object_unref, NULL);
   g_slist_free (bookmarks);
 
   if (impl->num_bookmarks == 0)
@@ -2765,7 +2771,7 @@ selection_check_foreach_cb (GtkTreeModel *model,
     case OPERATION_MODE_BROWSE:
       gtk_tree_model_sort_convert_iter_to_child_iter (closure->impl->sort_model, &child_iter, iter);
       info = _gtk_file_system_model_get_info (closure->impl->browse_files_model, &child_iter);
-      is_folder = info ? (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY) : FALSE;
+      is_folder = info ? (_gtk_file_info_consider_as_directory (info)) : FALSE;
       break;
 
     case OPERATION_MODE_SEARCH:
@@ -4159,8 +4165,7 @@ file_list_drag_data_received_get_info_cb (GCancellable *cancellable,
 
   if ((data->impl->action == GTK_FILE_CHOOSER_ACTION_OPEN ||
        data->impl->action == GTK_FILE_CHOOSER_ACTION_SAVE) &&
-      data->uris[1] == 0 && !error &&
-      g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY)
+      data->uris[1] == NULL && !error && _gtk_file_info_consider_as_directory (info))
     change_folder_and_display_error (data->impl, data->file, FALSE);
   else
     {
@@ -5303,7 +5308,8 @@ set_local_only (GtkFileChooserDefault *impl,
 	  shortcuts_add_bookmarks (impl);
 	}
 
-      if (local_only && !g_file_is_native (impl->current_folder))
+      if (local_only && impl->current_folder &&
+          !g_file_is_native (impl->current_folder))
 	{
 	  /* If we are pointing to a non-local folder, make an effort to change
 	   * back to a local folder, but it's really up to the app to not cause
@@ -6080,7 +6086,7 @@ list_model_filter_func (GtkFileSystemModel *model,
   if (!impl->current_filter)
     return TRUE;
 
-  if (g_file_info_get_file_type (file_info) == G_FILE_TYPE_DIRECTORY)
+  if (_gtk_file_info_consider_as_directory (file_info))
     return TRUE;
 
   return !get_is_file_filtered (impl, file, file_info);
@@ -6117,12 +6123,12 @@ install_list_model_filter (GtkFileChooserDefault *impl)
   gboolean dir_a, dir_b;										       \
 													       \
   if (info_a)												       \
-    dir_a = (g_file_info_get_file_type (info_a) == G_FILE_TYPE_DIRECTORY);				       \
+    dir_a = _gtk_file_info_consider_as_directory (info_a);						       \
   else													       \
     return impl->list_sort_ascending ? -1 : 1;								       \
 													       \
   if (info_b)												       \
-    dir_b = (g_file_info_get_file_type (info_b) == G_FILE_TYPE_DIRECTORY);				       \
+    dir_b = _gtk_file_info_consider_as_directory (info_b);						       \
   else													       \
     return impl->list_sort_ascending ? 1 : -1;  							       \
 													       \
@@ -6404,9 +6410,9 @@ show_and_select_files_finished_loading (GtkFolder *folder,
 	    have_hidden = g_file_info_get_is_hidden (info);
 
 	  if (!have_filtered)
-	    have_filtered = (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY) &&
+	    have_filtered = (! _gtk_file_info_consider_as_directory (info)) &&
 			     get_is_file_filtered (data->impl, file, info);
-
+	
 	  g_object_unref (info);
 
 	  if (have_hidden && have_filtered)
@@ -6504,7 +6510,7 @@ show_and_select_files (GtkFileChooserDefault *impl,
 
   impl->show_and_select_files_cancellable =
     _gtk_file_system_get_folder (impl->file_system, parent_file,
- 				 "standard::is-hidden,standard::type,standard::name",
+ 				 "standard::is-hidden,standard::type,standard::name,standard::content-type",
 			         show_and_select_files_get_folder_cb, info);
 
   profile_end ("end", NULL);
@@ -6739,7 +6745,7 @@ update_chooser_entry (GtkFileChooserDefault *impl)
 	      impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
 	    {
 	      /* We don't want the name to change when clicking on a folder... */
-	      change_entry = (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY);
+	      change_entry = (! _gtk_file_info_consider_as_directory (info));
 	    }
           else
 	    change_entry = TRUE; /* ... unless we are in SELECT_FOLDER mode */
@@ -6824,6 +6830,42 @@ struct UpdateCurrentFolderData
 };
 
 static void
+update_current_folder_mount_enclosing_volume_cb (GCancellable        *cancellable,
+                                                 GtkFileSystemVolume *volume,
+                                                 const GError        *error,
+                                                 gpointer             user_data)
+{
+  gboolean cancelled = g_cancellable_is_cancelled (cancellable);
+  struct UpdateCurrentFolderData *data = user_data;
+  GtkFileChooserDefault *impl = data->impl;
+
+
+  if (cancellable != impl->update_current_folder_cancellable)
+    goto out;
+
+  impl->update_current_folder_cancellable = NULL;
+  set_busy_cursor (impl, FALSE);
+
+  if (cancelled)
+    goto out;
+
+  if (error)
+    {
+      error_changing_folder_dialog (data->impl, data->file, g_error_copy (error));
+      impl->reload_state = RELOAD_EMPTY;
+      goto out;
+    }
+
+  change_folder_and_display_error (impl, data->file, data->clear_entry);
+
+out:
+  g_object_unref (data->file);
+  g_free (data);
+
+  g_object_unref (cancellable);
+}
+
+static void
 update_current_folder_get_info_cb (GCancellable *cancellable,
 				   GFileInfo    *info,
 				   const GError *error,
@@ -6847,6 +6889,26 @@ update_current_folder_get_info_cb (GCancellable *cancellable,
   if (error)
     {
       GFile *parent_file;
+
+      if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_MOUNTED))
+        {
+          GMountOperation *mount_operation;
+          GtkWidget *toplevel;
+
+          g_object_unref (cancellable);
+          toplevel = gtk_widget_get_toplevel (GTK_WIDGET (impl));
+
+          mount_operation = gtk_mount_operation_new (GTK_WINDOW (toplevel));
+
+          impl->update_current_folder_cancellable =
+            _gtk_file_system_mount_enclosing_volume (impl->file_system, data->file,
+                                                     mount_operation,
+                                                     update_current_folder_mount_enclosing_volume_cb,
+                                                     data);
+          set_busy_cursor (impl, TRUE);
+
+          return;
+        }
 
       if (!data->original_file)
         {
@@ -6879,8 +6941,13 @@ update_current_folder_get_info_cb (GCancellable *cancellable,
 	}
       else
         {
-	  /* error and bail out */
-	  error_changing_folder_dialog (impl, data->original_file, data->original_error);
+	  /* Error and bail out, ignoring "not found" errors since they're useless:
+           * they only happen when a program defaults to a folder that has been (re)moved.
+           */
+          if (!g_error_matches (data->original_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+	    error_changing_folder_dialog (impl, data->original_file, data->original_error);
+          else
+            g_error_free (data->original_error);
 	  g_object_unref (data->original_file);
 
 	  goto out;
@@ -6894,7 +6961,7 @@ update_current_folder_get_info_cb (GCancellable *cancellable,
       g_object_unref (data->original_file);
     }
 
-  if (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY)
+  if (! _gtk_file_info_consider_as_directory (info))
     goto out;
 
   if (!_gtk_path_bar_set_file (GTK_PATH_BAR (impl->browse_path_bar), data->file, data->keep_trail, NULL))
@@ -6906,9 +6973,9 @@ update_current_folder_get_info_cb (GCancellable *cancellable,
 	g_object_unref (impl->current_folder);
 
       impl->current_folder = g_object_ref (data->file);
-
-      impl->reload_state = RELOAD_HAS_FOLDER;
     }
+
+  impl->reload_state = RELOAD_HAS_FOLDER;
 
   /* Update the widgets that may trigger a folder change themselves.  */
 
@@ -7177,7 +7244,7 @@ maybe_select (GtkTreeModel *model,
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (impl->browse_files_tree_view));
   
   info = get_list_file_info (impl, iter);
-  is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+  is_folder = _gtk_file_info_consider_as_directory (info);
 
   if ((is_folder && impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) ||
       (!is_folder && impl->action == GTK_FILE_CHOOSER_ACTION_OPEN))
@@ -7575,7 +7642,7 @@ add_shortcut_get_info_cb (GCancellable *cancellable,
 
   data->impl->loading_shortcuts = g_slist_remove (data->impl->loading_shortcuts, cancellable);
 
-  if (cancelled || error || g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY)
+  if (cancelled || error || (! _gtk_file_info_consider_as_directory (info)))
     goto out;
 
   pos = shortcuts_get_pos_for_shortcut_folder (data->impl, data->impl->num_shortcuts);
@@ -8123,7 +8190,7 @@ save_entry_get_info_cb (GCancellable *cancellable,
   if (!info)
     parent_is_folder = FALSE;
   else
-    parent_is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+    parent_is_folder = _gtk_file_info_consider_as_directory (info);
 
   if (parent_is_folder)
     {
@@ -8193,7 +8260,7 @@ file_exists_get_info_cb (GCancellable *cancellable,
   if (cancelled)
     goto out;
 
-  file_exists_and_is_not_folder = info && (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY);
+  file_exists_and_is_not_folder = info && (! _gtk_file_info_consider_as_directory (info));
 
   if (data->impl->action == GTK_FILE_CHOOSER_ACTION_OPEN)
     /* user typed a filename; we are done */
@@ -8607,7 +8674,7 @@ search_hit_get_info_cb (GCancellable *cancellable,
 
   display_name = g_strdup (g_file_info_get_display_name (info));
   mime_type = g_content_type_get_mime_type (g_file_info_get_content_type (info));
-  is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+  is_folder = _gtk_file_info_consider_as_directory (info);
   pixbuf = _gtk_file_info_render_icon (info, GTK_WIDGET (request->impl),
 				       request->impl->icon_size);
 
@@ -9678,7 +9745,7 @@ recent_item_get_info_cb (GCancellable *cancellable,
       goto out;
     }
 
-  is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+  is_folder = _gtk_file_info_consider_as_directory (info);
 
   gtk_list_store_set (request->impl->recent_model, &iter,
                       RECENT_MODEL_COL_IS_FOLDER, is_folder,
@@ -10194,12 +10261,16 @@ shortcuts_activate_volume (GtkFileChooserDefault *impl,
 
   if (!_gtk_file_system_volume_is_mounted (volume))
     {
+      GtkMountOperation *mount_op;
+
       set_busy_cursor (impl, TRUE);
 
+      mount_op = gtk_mount_operation_new (get_toplevel (GTK_WIDGET (impl)));
       impl->shortcuts_activate_iter_cancellable =
-        _gtk_file_system_mount_volume (impl->file_system, volume, NULL,
+        _gtk_file_system_mount_volume (impl->file_system, volume, mount_op,
 				       shortcuts_activate_volume_mount_cb,
 				       g_object_ref (impl));
+      g_object_unref (mount_op);
     }
   else
     {
@@ -10238,7 +10309,7 @@ shortcuts_activate_get_info_cb (GCancellable *cancellable,
   if (cancelled)
     goto out;
 
-  if (!error && g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY)
+  if (!error && _gtk_file_info_consider_as_directory (info))
     change_folder_and_display_error (data->impl, data->file, FALSE);
   else
     gtk_file_chooser_default_select_file (GTK_FILE_CHOOSER (data->impl),
@@ -10460,7 +10531,7 @@ list_select_func  (GtkTreeSelection  *selection,
 
             gtk_tree_model_sort_convert_iter_to_child_iter (impl->sort_model, &child_iter, &iter);
             info = _gtk_file_system_model_get_info (impl->browse_files_model, &child_iter);
-            if (info && g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY)
+            if (info && (! _gtk_file_info_consider_as_directory (info)))
               return FALSE;
           }
           break;
@@ -10572,11 +10643,28 @@ list_row_activated (GtkTreeView           *tree_view,
         info = _gtk_file_system_model_get_info (impl->browse_files_model,
                                                 &child_iter);
 
-        if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY)
+        if (_gtk_file_info_consider_as_directory (info))
           {
-	    GFile *file;
+	    GFile *file, *target_file;
+	    const gchar *target_uri;
 
             file = _gtk_file_system_model_get_file (impl->browse_files_model, &child_iter);
+            if (g_file_info_get_file_type (info) == G_FILE_TYPE_MOUNTABLE ||
+                g_file_info_get_file_type (info) == G_FILE_TYPE_SHORTCUT) 
+              {
+                target_uri = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_TARGET_URI);
+                if (target_uri)
+                  {
+                    target_file = g_file_new_for_uri (target_uri);
+                    if (target_file)
+                      {
+                        g_object_unref (file);
+                        file = target_file;
+                      }
+                  }  
+              }
+            
+            
             change_folder_and_display_error (impl, file, FALSE);
             return;
           }
@@ -10704,7 +10792,7 @@ list_icon_data_func (GtkTreeViewColumn *tree_column,
         if (info &&
             (impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER ||
              impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER))
-          sensitive = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+          sensitive = _gtk_file_info_consider_as_directory (info);
       }
       break;
     }
@@ -10808,7 +10896,7 @@ list_name_data_func (GtkTreeViewColumn *tree_column,
   if (impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER ||
       impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
     {
-      sensitive = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+      sensitive = _gtk_file_info_consider_as_directory (info);
     }
 
   g_object_set (cell,
@@ -10832,7 +10920,7 @@ list_size_data_func (GtkTreeViewColumn *tree_column,
   gchar *str;
   gboolean sensitive = TRUE;
 
-  if (!info || g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY)
+  if (!info || _gtk_file_info_consider_as_directory (info))
     {
       g_object_set (cell,
 		    "text", NULL,
@@ -10949,7 +11037,7 @@ list_mtime_data_func (GtkTreeViewColumn *tree_column,
 
       if (impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER ||
 	  impl->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
-	sensitive = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+	sensitive = _gtk_file_info_consider_as_directory (info);
     }
 
   if (G_UNLIKELY (time_mtime == 0))

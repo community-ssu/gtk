@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtk+-properties.HEAD.ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-23 23:09-0400\n"
+"POT-Creation-Date: 2009-01-07 12:13-0500\n"
 "PO-Revision-Date: 2007-09-06 18:05+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam\n"
@@ -119,11 +119,11 @@ msgstr "ലിപിയുടെ സാന്ദ്രത"
 msgid "The resolution for fonts on the screen"
 msgstr "സ്ക്രീനില്‍ ലിപികളുടെ സാന്ദ്രത"
 
-#: gtk/gtkaboutdialog.c:197
+#: gtk/gtkaboutdialog.c:200
 msgid "Program name"
 msgstr "പ്രോഗ്രാമിന്‍റെ പേര്"
 
-#: gtk/gtkaboutdialog.c:198
+#: gtk/gtkaboutdialog.c:201
 msgid ""
 "The name of the program. If this is not set, it defaults to "
 "g_get_application_name()"
@@ -131,43 +131,43 @@ msgstr ""
 "പ്രോഗ്രാമിന്‍റെ പേര്. ഇത് സെറ്റ് ചെയ്തിട്ടില്ലായെങ്കില്‍, ഡീഫോള്‍ട്ടായി g_get_application_name"
 "() എന്ന പേരാകും"
 
-#: gtk/gtkaboutdialog.c:212
+#: gtk/gtkaboutdialog.c:215
 msgid "Program version"
 msgstr "പ്രോഗ്രാമിന്‍റെ വേര്‍ഷന്‍"
 
-#: gtk/gtkaboutdialog.c:213
+#: gtk/gtkaboutdialog.c:216
 msgid "The version of the program"
 msgstr "പ്രോഗ്രാമിന്‍റെ വേര്‍ഷന്‍"
 
-#: gtk/gtkaboutdialog.c:227
+#: gtk/gtkaboutdialog.c:230
 msgid "Copyright string"
 msgstr "Copyright സ്ട്രിങ്"
 
-#: gtk/gtkaboutdialog.c:228
+#: gtk/gtkaboutdialog.c:231
 msgid "Copyright information for the program"
 msgstr "പ്രോഗ്രാമിനുളള Copyright വിവരങ്ങള്‍"
 
-#: gtk/gtkaboutdialog.c:245
+#: gtk/gtkaboutdialog.c:248
 msgid "Comments string"
 msgstr "Comments സ്ട്രിങ്"
 
-#: gtk/gtkaboutdialog.c:246
+#: gtk/gtkaboutdialog.c:249
 msgid "Comments about the program"
 msgstr "പ്രോഗ്രാമിനെ സംബന്ധിച്ചുളള അഭിപ്രായങ്ങള്‍"
 
-#: gtk/gtkaboutdialog.c:280
+#: gtk/gtkaboutdialog.c:283
 msgid "Website URL"
 msgstr "Website URL"
 
-#: gtk/gtkaboutdialog.c:281
+#: gtk/gtkaboutdialog.c:284
 msgid "The URL for the link to the website of the program"
 msgstr "പ്രോഗ്രാമിന്‍റെ വെബ്സൈറ്റിനുളള URL"
 
-#: gtk/gtkaboutdialog.c:297
+#: gtk/gtkaboutdialog.c:300
 msgid "Website label"
 msgstr "Website ലേബല്‍"
 
-#: gtk/gtkaboutdialog.c:298
+#: gtk/gtkaboutdialog.c:301
 msgid ""
 "The label for the link to the website of the program. If this is not set, it "
 "defaults to the URL"
@@ -175,44 +175,44 @@ msgstr ""
 "പ്രോഗ്രാമിന്‍റെ വെബ്സൈറ്റിനുളള ലിങ്കിന്‍റെ ലേബല്‍. ഇത് സെറ്റ് ചെയ്തിട്ടില്ലായെങ്കില്‍, അത് "
 "ഡീഫോള്‍ട്ടായി URL ആകുന്നതാണ്"
 
-#: gtk/gtkaboutdialog.c:314
+#: gtk/gtkaboutdialog.c:317
 msgid "Authors"
 msgstr "രചയിതാക്കള്‍"
 
-#: gtk/gtkaboutdialog.c:315
+#: gtk/gtkaboutdialog.c:318
 msgid "List of authors of the program"
 msgstr "പ്രോഗ്രാമിന്‍റെ രചയിതാക്കളുടെ പട്ടിക"
 
-#: gtk/gtkaboutdialog.c:331
+#: gtk/gtkaboutdialog.c:334
 msgid "Documenters"
 msgstr "എഴുത്തുകാര്‍"
 
-#: gtk/gtkaboutdialog.c:332
+#: gtk/gtkaboutdialog.c:335
 msgid "List of people documenting the program"
 msgstr "പ്രോഗ്രാമിന്‍റെ എഴുത്തുകാരുടെ പട്ടിക"
 
-#: gtk/gtkaboutdialog.c:348
+#: gtk/gtkaboutdialog.c:351
 msgid "Artists"
 msgstr "കലാകാരന്‍മാര്‍"
 
-#: gtk/gtkaboutdialog.c:349
+#: gtk/gtkaboutdialog.c:352
 msgid "List of people who have contributed artwork to the program"
 msgstr "പ്രോഗ്രാമിന് കലാസംഭാവന ചെയ്ത ആളുകളുടെ പട്ടിക"
 
-#: gtk/gtkaboutdialog.c:366
+#: gtk/gtkaboutdialog.c:369
 msgid "Translator credits"
 msgstr "അനി പീറ്റര്‍ <peter.ani@gmail.com>"
 
-#: gtk/gtkaboutdialog.c:367
+#: gtk/gtkaboutdialog.c:370
 msgid ""
 "Credits to the translators. This string should be marked as translatable"
 msgstr "തര്‍ജ്ജിമ ചെയ്യുന്നവര്‍ക്കുളള അംഗീകാരം. ഈ സ്ട്രിങ് തര്‍ജിമ ചെയ്യണം എന്നടയാളപ്പെടുത്തുക"
 
-#: gtk/gtkaboutdialog.c:382
+#: gtk/gtkaboutdialog.c:385
 msgid "Logo"
 msgstr "ലോഗോ"
 
-#: gtk/gtkaboutdialog.c:383
+#: gtk/gtkaboutdialog.c:386
 msgid ""
 "A logo for the about box. If this is not set, it defaults to "
 "gtk_window_get_default_icon_list()"
@@ -220,19 +220,19 @@ msgstr ""
 "വിശദീകരണങ്ങള്‍ എഴുതുന്ന പെട്ടിയ്ക്കുളള ലോഗോ. ഇത് സെറ്റ് ചെയ്തിട്ടില്ലായെങ്കില്‍, ഡീഫോള്‍ട്ടായി "
 "gtk_window_get_default_icon_list() എന്നത് ആകും."
 
-#: gtk/gtkaboutdialog.c:398
+#: gtk/gtkaboutdialog.c:401
 msgid "Logo Icon Name"
 msgstr "ലോഗോ ഐക്കണ്‍ന്‍റെ നാമം"
 
-#: gtk/gtkaboutdialog.c:399
+#: gtk/gtkaboutdialog.c:402
 msgid "A named icon to use as the logo for the about box."
 msgstr "വിശദീകരണങ്ങള്‍ എഴുതുന്ന പെട്ടിയ്ക്കുളള ലോഗോ ആയി ഉപയോഗിക്കുന്നതിനുളള ഐക്കണ്‍."
 
-#: gtk/gtkaboutdialog.c:412
+#: gtk/gtkaboutdialog.c:415
 msgid "Wrap license"
 msgstr "ലൈസന്‍സ് ആവരണം ചെയ്യുക"
 
-#: gtk/gtkaboutdialog.c:413
+#: gtk/gtkaboutdialog.c:416
 msgid "Whether to wrap the license text."
 msgstr "ലൈസന്‍സ് വാചകങ്ങള്‍ ആവരണം ചെയ്യുമോ എന്ന്."
 
@@ -397,7 +397,7 @@ msgid "Whether the action group is visible."
 msgstr "ആക്ഷന്‍ ഗ്രൂപ്പ് പ്രവര്‍ത്തന ദൃശ്യമോ എന്ന്."
 
 #: gtk/gtkadjustment.c:93 gtk/gtkcellrendererprogress.c:128
-#: gtk/gtkscalebutton.c:200 gtk/gtkspinbutton.c:269
+#: gtk/gtkscalebutton.c:202 gtk/gtkspinbutton.c:269
 msgid "Value"
 msgstr "മൂല്യം"
 
@@ -698,7 +698,7 @@ msgstr "സ്പെയിസിങ്"
 msgid "The amount of space between children"
 msgstr "ചൈള്‍ഡുകളുടെ ഇടയ്ക്കുളള സ്പെയ്സ്"
 
-#: gtk/gtkbox.c:108 gtk/gtknotebook.c:644 gtk/gtktable.c:165
+#: gtk/gtkbox.c:108 gtk/gtknotebook.c:649 gtk/gtktable.c:165
 #: gtk/gtktoolbar.c:580
 msgid "Homogeneous"
 msgstr "അവിഭാജ്യമായ ഘടകം"
@@ -739,7 +739,7 @@ msgstr "ചൈള്‍ഡിന്‍റെയും അടുത്തുള�
 msgid "Pack type"
 msgstr "ഏത് തരം പാക്ക്"
 
-#: gtk/gtkbox.c:138 gtk/gtknotebook.c:711
+#: gtk/gtkbox.c:138 gtk/gtknotebook.c:716
 msgid ""
 "A GtkPackType indicating whether the child is packed with reference to the "
 "start or end of the parent"
@@ -747,12 +747,12 @@ msgstr ""
 "ഒരു ചൈള്‍ഡ് പാക്ക് ചെയ്തിരിക്കുന്നത് പേരന്‍റിന്‍റെ ആരംഭത്തിലോ അവസാനത്തിലോ എന്ന് സൂചിപ്പിക്കുന്നതിനുളള "
 "ഒരു GtkPackType"
 
-#: gtk/gtkbox.c:144 gtk/gtknotebook.c:689 gtk/gtkpaned.c:218
+#: gtk/gtkbox.c:144 gtk/gtknotebook.c:694 gtk/gtkpaned.c:218
 #: gtk/gtkruler.c:110
 msgid "Position"
 msgstr "സ്ഥാനം"
 
-#: gtk/gtkbox.c:145 gtk/gtknotebook.c:690
+#: gtk/gtkbox.c:145 gtk/gtknotebook.c:695
 msgid "The index of the child in the parent"
 msgstr "പേരന്‍റില്‍ ചൈള്‍ഡിന്‍റെ സൂചികാ"
 
@@ -794,7 +794,7 @@ msgstr ""
 "സെറ്റ് ചെയ്തു എങ്കില്‍, ശേഖരത്തിലുളള വസ്തു പ്രദര്‍ശിപ്പിക്കുന്നതിന് പകരം ലേബല്‍ അത് ഉപയോഗിക്കുക "
 "എന്നതാണ്"
 
-#: gtk/gtkbutton.c:223 gtk/gtkcombobox.c:788 gtk/gtkfilechooserbutton.c:393
+#: gtk/gtkbutton.c:223 gtk/gtkcombobox.c:789 gtk/gtkfilechooserbutton.c:393
 msgid "Focus on click"
 msgstr "ക്ളിക്ക് ചെയ്യുന്പോള്‍ കൂടുതല്‍ വ്യക്തമായി കാണുക"
 
@@ -1279,7 +1279,7 @@ msgid "The vertical text alignment, from 0 (top) to 1 (bottom)."
 msgstr "0-ല്‍ (മുകള്‍ ഭാഗം) നിന്നും 1-ലേക്കുളള (താഴ് ഭാഗം) ക്രമീകരണം (വെറ്‍ട്ടിക്കല്‍)."
 
 #: gtk/gtkcellrendererprogress.c:221 gtk/gtkiconview.c:731
-#: gtk/gtkprogressbar.c:126 gtk/gtkscalebutton.c:191 gtk/gtkstatusicon.c:301
+#: gtk/gtkprogressbar.c:126 gtk/gtkscalebutton.c:193 gtk/gtkstatusicon.c:301
 #: gtk/gtktoolbar.c:492 gtk/gtktrayicon-x11.c:95
 msgid "Orientation"
 msgstr "സംവേദനം"
@@ -1289,7 +1289,7 @@ msgid "Orientation and growth direction of the progress bar"
 msgstr "പ്രോഗ്രസ്സ് ബാറിന്‍റെ സംവേദനവും വളര്‍ച്ചയും"
 
 #: gtk/gtkcellrendererspin.c:93 gtk/gtkprogressbar.c:118 gtk/gtkrange.c:346
-#: gtk/gtkscalebutton.c:219 gtk/gtkspinbutton.c:208
+#: gtk/gtkscalebutton.c:221 gtk/gtkspinbutton.c:208
 msgid "Adjustment"
 msgstr "ക്രമീകരണം"
 
@@ -1517,7 +1517,7 @@ msgstr ""
 "സെല്‍ ചിട്ടപ്പെടുത്തല്‍ സംവിധാനത്തിന് മുഴുവന്‍ സ്ട്രിങ് പ്രദര്‍ശിപ്പിക്കുന്നതിനുളള സ്ഥലം ഇല്ലായെങ്കില്‍, "
 "എങ്ങനെ സ്ട്രിങ് അനവധി വരികളിലായി പിരിക്കണം"
 
-#: gtk/gtkcellrenderertext.c:470 gtk/gtkcombobox.c:677
+#: gtk/gtkcellrenderertext.c:470 gtk/gtkcombobox.c:678
 msgid "Wrap width"
 msgstr "നിരത്തല്‍ വീതി"
 
@@ -1891,112 +1891,112 @@ msgstr "പട്ടികയിലെ മൂല്യം "
 msgid "Whether entered values must already be present in the list"
 msgstr "നല്‍കിയ മൂല്ല്യങ്ങള്‍ ലിസ്റ്റില്‍ നിലവില്‍ ഉണ്ടാകണമോ എന്ന്"
 
-#: gtk/gtkcombobox.c:660
+#: gtk/gtkcombobox.c:661
 msgid "ComboBox model"
 msgstr "ComboBox രീതി"
 
-#: gtk/gtkcombobox.c:661
+#: gtk/gtkcombobox.c:662
 msgid "The model for the combo box"
 msgstr "കോംപോ ബോക്സിന്‍റെ രീതി"
 
-#: gtk/gtkcombobox.c:678
+#: gtk/gtkcombobox.c:679
 msgid "Wrap width for laying out the items in a grid"
 msgstr "ഒരു ഗ്രിഡില്‍ സ്ഥാപിക്കുന്നതിന് വസ്തുക്കള്‍ റാപ്പ് ചെയ്യുന്നതിന് ആവശ്യമുളള വീതി"
 
-#: gtk/gtkcombobox.c:700
+#: gtk/gtkcombobox.c:701
 msgid "Row span column"
 msgstr "ഒരു വലിയ സെല്‍ രൂപപ്പെടുത്തുന്നതിന് ഒരു നിരയ്ക്ക് ആവശ്യമുളള വരികളുടെ എണ്ണം"
 
-#: gtk/gtkcombobox.c:701
+#: gtk/gtkcombobox.c:702
 msgid "TreeModel column containing the row span values"
 msgstr "ഒരു സെല്ലിന് ആവശ്യമുളള വരികളുടെ എണ്ണം ഉളള ട്രീമോഡല്‍ വരി"
 
-#: gtk/gtkcombobox.c:722
+#: gtk/gtkcombobox.c:723
 msgid "Column span column"
 msgstr "ഒരു വലിയ സെല്‍ രൂപപ്പെടുത്തുന്നതിന് ഒരു വരിയ്ക്ക് ആവശ്യമുളള നിരകളുടെ എണ്ണം"
 
-#: gtk/gtkcombobox.c:723
+#: gtk/gtkcombobox.c:724
 msgid "TreeModel column containing the column span values"
 msgstr "ഒരു സെല്ലിന് ആവശ്യമുളള നിരകളുടെ എണ്ണം ഉളള ട്രീമോഡല്‍ നിര"
 
-#: gtk/gtkcombobox.c:744
+#: gtk/gtkcombobox.c:745
 msgid "Active item"
 msgstr "സജീവമായ ഇനം"
 
-#: gtk/gtkcombobox.c:745
+#: gtk/gtkcombobox.c:746
 msgid "The item which is currently active"
 msgstr "നിലവില്‍ സജീവമായ വസ്തു"
 
-#: gtk/gtkcombobox.c:764 gtk/gtkuimanager.c:220
+#: gtk/gtkcombobox.c:765 gtk/gtkuimanager.c:220
 msgid "Add tearoffs to menus"
 msgstr "മെനുവിന് ടിയര്‍ ഓഫ്സ് ചേര്‍ക്കുക"
 
-#: gtk/gtkcombobox.c:765
+#: gtk/gtkcombobox.c:766
 msgid "Whether dropdowns should have a tearoff menu item"
 msgstr "ഡ്രോപ്പ് ഡൌണുകള്‍ക്ക് ടിയര്‍ ഓഫ് മെനു ഐറ്റം ഉണ്ടാവണമോ എന്ന്"
 
-#: gtk/gtkcombobox.c:780 gtk/gtkentry.c:531
+#: gtk/gtkcombobox.c:781 gtk/gtkentry.c:531
 msgid "Has Frame"
 msgstr "ഫ്രെയിം ഉണ്ട്"
 
-#: gtk/gtkcombobox.c:781
+#: gtk/gtkcombobox.c:782
 msgid "Whether the combo box draws a frame around the child"
 msgstr "ഒരു ചൈള്‍ഡിന് ചുറ്റും കോംപോ ബോക്സ് ഒരു ഫ്രെയിം വരയ്ക്കണമോ എന്ന്"
 
-#: gtk/gtkcombobox.c:789
+#: gtk/gtkcombobox.c:790
 msgid "Whether the combo box grabs focus when it is clicked with the mouse"
 msgstr ""
 
-#: gtk/gtkcombobox.c:804 gtk/gtkmenu.c:553
+#: gtk/gtkcombobox.c:805 gtk/gtkmenu.c:553
 msgid "Tearoff Title"
 msgstr "ടിയര്‍ ഓഫ് തലക്കെട്ട്"
 
-#: gtk/gtkcombobox.c:805
+#: gtk/gtkcombobox.c:806
 msgid ""
 "A title that may be displayed by the window manager when the popup is torn-"
 "off"
 msgstr ""
 
-#: gtk/gtkcombobox.c:822
+#: gtk/gtkcombobox.c:823
 msgid "Popup shown"
 msgstr "പോപ്പപ്പ് കാണിച്ചിരിക്കുന്നു"
 
-#: gtk/gtkcombobox.c:823
+#: gtk/gtkcombobox.c:824
 msgid "Whether the combo's dropdown is shown"
 msgstr "കോംപോയുടെ ഡ്രോപ്പ് ഡൌണ്‍ കാണിച്ചിട്ടുണ്ടോ എന്ന്"
 
-#: gtk/gtkcombobox.c:839
+#: gtk/gtkcombobox.c:840
 msgid "Button Sensitivity"
 msgstr ""
 
-#: gtk/gtkcombobox.c:840
+#: gtk/gtkcombobox.c:841
 #, fuzzy
 msgid "Whether the dropdown button is sensitive when the model is empty"
 msgstr "മൌസ് ഉപയോഗിച്ച് ക്ളിക്ക് ചെയ്യുമ്പോള്‍ പോയിന്ററ്‍ ബട്ടണ് ലഭ്യമാകുന്നോ എന്ന്"
 
-#: gtk/gtkcombobox.c:847
+#: gtk/gtkcombobox.c:848
 msgid "Appears as list"
 msgstr "ഒരു ലിസ്റ്റായി പ്രത്യക്ഷപ്പെടുന്നു"
 
-#: gtk/gtkcombobox.c:848
+#: gtk/gtkcombobox.c:849
 msgid "Whether dropdowns should look like lists rather than menus"
 msgstr "ഡ്രോപ്പ് ഡൌണുകള്‍ മെനുവിന് പകരം ലിസ്റ്റുകളായി കാണപ്പെടണമോ എന്ന്"
 
-#: gtk/gtkcombobox.c:864
+#: gtk/gtkcombobox.c:865
 msgid "Arrow Size"
 msgstr "സൂചികയുടെ വ്യാപ്തി"
 
-#: gtk/gtkcombobox.c:865
+#: gtk/gtkcombobox.c:866
 msgid "The minimum size of the arrow in the combo box"
 msgstr "കോംപോ ബോക്സിന്‍റെ സൂചികയുടെ ഏറ്റവും കുറഞ്ഞ വ്യാപ്തി"
 
-#: gtk/gtkcombobox.c:880 gtk/gtkentry.c:631 gtk/gtkhandlebox.c:174
+#: gtk/gtkcombobox.c:881 gtk/gtkentry.c:631 gtk/gtkhandlebox.c:174
 #: gtk/gtkmenubar.c:194 gtk/gtkstatusbar.c:186 gtk/gtktoolbar.c:630
 #: gtk/gtkviewport.c:122
 msgid "Shadow type"
 msgstr "ഏത് തരം ഷാഡോ"
 
-#: gtk/gtkcombobox.c:881
+#: gtk/gtkcombobox.c:882
 msgid "Which kind of shadow to draw around the combo box"
 msgstr "കോംപോ ബോക്സിന് ചുറ്റും ഏത് തരത്തിലുള്ള ഷാഡോ ആണ് ആവശ്യം"
 
@@ -2825,7 +2825,7 @@ msgstr "പ്രതിരൂപങ്ങളുടെ ശേഖരം"
 msgid "Icon set to display"
 msgstr "പ്രദര്‍ശിപ്പിക്കുന്നതിനുളള പ്രതിരൂപങ്ങളുടെ ശേഖരം"
 
-#: gtk/gtkimage.c:188 gtk/gtkscalebutton.c:210 gtk/gtktoolbar.c:547
+#: gtk/gtkimage.c:188 gtk/gtkscalebutton.c:212 gtk/gtktoolbar.c:547
 msgid "Icon size"
 msgstr "പ്രതിരൂപത്തിന്‍റെ വലിപ്പം"
 
@@ -3382,209 +3382,209 @@ msgstr ""
 msgid "The screen where this window will be displayed."
 msgstr "ഈ ജാലകം പ്രദര്‍ശിപ്പിക്കുന്നതിനുളള ജാലകം"
 
-#: gtk/gtknotebook.c:572
+#: gtk/gtknotebook.c:577
 msgid "Page"
 msgstr "പേജ്"
 
-#: gtk/gtknotebook.c:573
+#: gtk/gtknotebook.c:578
 msgid "The index of the current page"
 msgstr "നിലവിലുള്ള താളിന്‍റെ സൂചിക"
 
-#: gtk/gtknotebook.c:581
+#: gtk/gtknotebook.c:586
 msgid "Tab Position"
 msgstr "ടാബ് സ്ഥാനം"
 
-#: gtk/gtknotebook.c:582
+#: gtk/gtknotebook.c:587
 msgid "Which side of the notebook holds the tabs"
 msgstr "നോട്ട് ബുക്കിന്‍റെ ഏത് ഭാഗത്താണ് ടാബുളളത്"
 
-#: gtk/gtknotebook.c:589
+#: gtk/gtknotebook.c:594
 msgid "Tab Border"
 msgstr "ടാബ് അതിര്"
 
-#: gtk/gtknotebook.c:590
+#: gtk/gtknotebook.c:595
 msgid "Width of the border around the tab labels"
 msgstr "ടാബ് ലേബലുകളുടെ ചുറ്റുമുളള അതിരിന്‍റെ വീതി"
 
-#: gtk/gtknotebook.c:598
+#: gtk/gtknotebook.c:603
 msgid "Horizontal Tab Border"
 msgstr "ഇടത്ത് നിന്നും വലത്തേക്കുളള ടാബ് അതിര്"
 
-#: gtk/gtknotebook.c:599
+#: gtk/gtknotebook.c:604
 msgid "Width of the horizontal border of tab labels"
 msgstr "ഇടത്ത് നിന്നും വലത്തേക്കുളള ടാബ് ലേബലുകളുടെ അതിരിന്‍റെ വീതി"
 
-#: gtk/gtknotebook.c:607
+#: gtk/gtknotebook.c:612
 msgid "Vertical Tab Border"
 msgstr "മുകളില്‍ നിന്നും താഴേക്കുളള ടാബ് അതിര്"
 
-#: gtk/gtknotebook.c:608
+#: gtk/gtknotebook.c:613
 msgid "Width of the vertical border of tab labels"
 msgstr "മുകളില്‍ നിന്നും താഴേക്കുളള ടാബ് ലേബലുകളുടെ അതിരിന്‍റെ വീതി"
 
-#: gtk/gtknotebook.c:616
+#: gtk/gtknotebook.c:621
 msgid "Show Tabs"
 msgstr "ടാബുകള്‍ പ്രദര്‍ശിപ്പിക്കുക"
 
-#: gtk/gtknotebook.c:617
+#: gtk/gtknotebook.c:622
 msgid "Whether tabs should be shown or not"
 msgstr "ടാബുകള്‍ കാണിക്കണമോ വേണ്ടയോ എന്ന്"
 
-#: gtk/gtknotebook.c:623
+#: gtk/gtknotebook.c:628
 msgid "Show Border"
 msgstr "അതിരുകള്‍ പ്രദര്‍ശിപ്പിക്കുക"
 
-#: gtk/gtknotebook.c:624
+#: gtk/gtknotebook.c:629
 msgid "Whether the border should be shown or not"
 msgstr "അതിരുകള്‍ കാണിക്കണമോ വേണ്ടയോ എന്ന്"
 
-#: gtk/gtknotebook.c:630
+#: gtk/gtknotebook.c:635
 msgid "Scrollable"
 msgstr "നിരക്കിനീക്കാവുന്ന"
 
-#: gtk/gtknotebook.c:631
+#: gtk/gtknotebook.c:636
 msgid "If TRUE, scroll arrows are added if there are too many tabs to fit"
 msgstr ""
 
-#: gtk/gtknotebook.c:637
+#: gtk/gtknotebook.c:642
 msgid "Enable Popup"
 msgstr "പോപ്പ് അപ്പ് സജ്ജമാക്കുക"
 
-#: gtk/gtknotebook.c:638
+#: gtk/gtknotebook.c:643
 msgid ""
 "If TRUE, pressing the right mouse button on the notebook pops up a menu that "
 "you can use to go to a page"
 msgstr ""
 
-#: gtk/gtknotebook.c:645
+#: gtk/gtknotebook.c:650
 msgid "Whether tabs should have homogeneous sizes"
 msgstr ""
 
-#: gtk/gtknotebook.c:651
+#: gtk/gtknotebook.c:656
 msgid "Group ID"
 msgstr "ഗ്രൂപ്പിന്‍റെ ID"
 
-#: gtk/gtknotebook.c:652
+#: gtk/gtknotebook.c:657
 msgid "Group ID for tabs drag and drop"
 msgstr ""
 
-#: gtk/gtknotebook.c:668 gtk/gtkradioaction.c:128 gtk/gtkradiobutton.c:82
+#: gtk/gtknotebook.c:673 gtk/gtkradioaction.c:128 gtk/gtkradiobutton.c:82
 #: gtk/gtkradiomenuitem.c:342 gtk/gtkradiotoolbutton.c:65
 msgid "Group"
 msgstr "ഗ്രൂപ്പ്"
 
-#: gtk/gtknotebook.c:669
+#: gtk/gtknotebook.c:674
 msgid "Group for tabs drag and drop"
 msgstr ""
 
-#: gtk/gtknotebook.c:675
+#: gtk/gtknotebook.c:680
 msgid "Tab label"
 msgstr "ടാബ് ലേബല്‍"
 
-#: gtk/gtknotebook.c:676
+#: gtk/gtknotebook.c:681
 msgid "The string displayed on the child's tab label"
 msgstr "ചൈള്‍ഡിന്‍റെ ടാബ് ലേബലില്‍ പ്രദര്‍ശിപ്പിക്കുന്ന സ്ട്രിങ്"
 
-#: gtk/gtknotebook.c:682
+#: gtk/gtknotebook.c:687
 msgid "Menu label"
 msgstr "മെനു ലേബല്‍"
 
-#: gtk/gtknotebook.c:683
+#: gtk/gtknotebook.c:688
 msgid "The string displayed in the child's menu entry"
 msgstr "ചൈള്‍ഡിന്‍റെ മെനു എന്‍ട്രിയില്‍ പ്രദര്‍ശിപ്പിക്കുന്ന സ്ട്രിങ്"
 
-#: gtk/gtknotebook.c:696
+#: gtk/gtknotebook.c:701
 msgid "Tab expand"
 msgstr "വികസിത ടാബ്"
 
-#: gtk/gtknotebook.c:697
+#: gtk/gtknotebook.c:702
 msgid "Whether to expand the child's tab or not"
 msgstr "ചൈള്‍ഡിന്‍റെ ടാബ് വികസിപ്പിക്കണമോ വേണ്ടയോ എന്ന്"
 
-#: gtk/gtknotebook.c:703
+#: gtk/gtknotebook.c:708
 msgid "Tab fill"
 msgstr "ടാബ് നിറയ്ക്കുക"
 
-#: gtk/gtknotebook.c:704
+#: gtk/gtknotebook.c:709
 msgid "Whether the child's tab should fill the allocated area or not"
 msgstr ""
 
-#: gtk/gtknotebook.c:710
+#: gtk/gtknotebook.c:715
 msgid "Tab pack type"
 msgstr "ടാബ് പാക് തരം"
 
-#: gtk/gtknotebook.c:717
+#: gtk/gtknotebook.c:722
 msgid "Tab reorderable"
 msgstr "പുനഃസ്ഥാപിക്കുവാന്‍ സാധ്യമായ ടാബ്"
 
-#: gtk/gtknotebook.c:718
+#: gtk/gtknotebook.c:723
 msgid "Whether the tab is reorderable by user action or not"
 msgstr ""
 
-#: gtk/gtknotebook.c:724
+#: gtk/gtknotebook.c:729
 msgid "Tab detachable"
 msgstr "ടാബ് വേര്‍പ്പെടുത്തുവാന്‍ സാധ്യമാകുന്നത്"
 
-#: gtk/gtknotebook.c:725
+#: gtk/gtknotebook.c:730
 msgid "Whether the tab is detachable"
 msgstr "ടാബ് വേര്‍പ്പെടുത്തുവാന്‍ സാധ്യമോ എന്ന്"
 
-#: gtk/gtknotebook.c:740 gtk/gtkscrollbar.c:83
+#: gtk/gtknotebook.c:745 gtk/gtkscrollbar.c:83
 msgid "Secondary backward stepper"
 msgstr ""
 
-#: gtk/gtknotebook.c:741
+#: gtk/gtknotebook.c:746
 msgid ""
 "Display a second backward arrow button on the opposite end of the tab area"
 msgstr ""
 
-#: gtk/gtknotebook.c:756 gtk/gtkscrollbar.c:91
+#: gtk/gtknotebook.c:761 gtk/gtkscrollbar.c:91
 msgid "Secondary forward stepper"
 msgstr ""
 
-#: gtk/gtknotebook.c:757
+#: gtk/gtknotebook.c:762
 msgid ""
 "Display a second forward arrow button on the opposite end of the tab area"
 msgstr ""
 
-#: gtk/gtknotebook.c:771 gtk/gtkscrollbar.c:67
+#: gtk/gtknotebook.c:776 gtk/gtkscrollbar.c:67
 msgid "Backward stepper"
 msgstr "പുറകോട്ടുളള സ്റ്റെപ്പര്‍"
 
-#: gtk/gtknotebook.c:772 gtk/gtkscrollbar.c:68
+#: gtk/gtknotebook.c:777 gtk/gtkscrollbar.c:68
 msgid "Display the standard backward arrow button"
 msgstr "സാധാരണയായ പുറകോട്ടുളള ആരോ ബട്ടണ്‍ കാണിക്കണമോ എന്ന്"
 
-#: gtk/gtknotebook.c:786 gtk/gtkscrollbar.c:75
+#: gtk/gtknotebook.c:791 gtk/gtkscrollbar.c:75
 msgid "Forward stepper"
 msgstr "മുന്പോട്ടുളള സ്റ്റെപ്പര്‍"
 
-#: gtk/gtknotebook.c:787 gtk/gtkscrollbar.c:76
+#: gtk/gtknotebook.c:792 gtk/gtkscrollbar.c:76
 msgid "Display the standard forward arrow button"
 msgstr "സാധാരണയായ മുന്പോട്ടുളള ആരോ ബട്ടണ്‍ കാണിക്കണമോ എന്ന്"
 
-#: gtk/gtknotebook.c:801
+#: gtk/gtknotebook.c:806
 msgid "Tab overlap"
 msgstr ""
 
-#: gtk/gtknotebook.c:802
+#: gtk/gtknotebook.c:807
 msgid "Size of tab overlap area"
 msgstr ""
 
-#: gtk/gtknotebook.c:817
+#: gtk/gtknotebook.c:822
 msgid "Tab curvature"
 msgstr ""
 
-#: gtk/gtknotebook.c:818
+#: gtk/gtknotebook.c:823
 msgid "Size of tab curvature"
 msgstr ""
 
-#: gtk/gtknotebook.c:834
+#: gtk/gtknotebook.c:839
 #, fuzzy
 msgid "Arrow spacing"
 msgstr "ആരോ സ്കേലിങ്"
 
-#: gtk/gtknotebook.c:835
+#: gtk/gtknotebook.c:840
 #, fuzzy
 msgid "Scroll arrow spacing"
 msgstr "നിരക്കുപട്ട വിടവ്"
@@ -4429,29 +4429,29 @@ msgstr "വിടവ് മൂല്യം"
 msgid "Space between value text and the slider/trough area"
 msgstr ""
 
-#: gtk/gtkscalebutton.c:192
+#: gtk/gtkscalebutton.c:194
 #, fuzzy
 msgid "The orientation of the scale"
 msgstr "ആയുധപ്പട്ടയുടെ അഭിവിന്യാസം"
 
-#: gtk/gtkscalebutton.c:201
+#: gtk/gtkscalebutton.c:203
 msgid "The value of the scale"
 msgstr "സ്കെയിലിന്റെ മൂല്ല്യം"
 
-#: gtk/gtkscalebutton.c:211
+#: gtk/gtkscalebutton.c:213
 msgid "The icon size"
 msgstr "ഐക്കണിന്റെ വലിപ്പം"
 
-#: gtk/gtkscalebutton.c:220
+#: gtk/gtkscalebutton.c:222
 msgid ""
 "The GtkAdjustment that contains the current value of this scale button object"
 msgstr "ഈ സ്കെയില്‍ ബട്ടണ്‍ വസ്തുവിന്റെ മൂല്ല്യം അടങ്ങുന്ന GtkAdjustment"
 
-#: gtk/gtkscalebutton.c:248
+#: gtk/gtkscalebutton.c:250
 msgid "Icons"
 msgstr "പ്രതിരൂപങ്ങള്‍"
 
-#: gtk/gtkscalebutton.c:249
+#: gtk/gtkscalebutton.c:251
 msgid "List of icon names"
 msgstr "പ്റതിരൂപങ്ങളുടെ പേരിന്റെ പട്ടിക"
 

@@ -444,7 +444,7 @@ gtk_file_system_model_iter_has_child (GtkTreeModel *tree_model,
   else
     {
       GFileInfo *info = file_model_node_get_info (model, node);
-      return (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+      return _gtk_file_info_consider_as_directory (info);
     }
 }
 
@@ -994,7 +994,7 @@ ref_path_cb (GCancellable *cancellable,
 
   if (folder)
     info->cleanups = g_slist_prepend (info->cleanups, folder);
-  else if (g_slist_length (info->files) == 1
+  else if ((info->files != NULL && info->files->next == NULL) /* g_slist_length == 1 */
            && g_file_equal (info->node->file, info->files->data))
     {
       /* Done, now call the function */
@@ -1022,10 +1022,10 @@ ref_path_cb (GCancellable *cancellable,
       goto out;
     }
 
-  g_object_unref (info->files);
+  g_object_unref (info->files->data);
   info->files = g_slist_remove (info->files, info->files->data);
 
-  if (g_slist_length (info->files) < 1)
+  if (info->files == NULL)
     {
       /* Done, now call the function */
       if (info->node)
@@ -1070,7 +1070,8 @@ ref_path_cb (GCancellable *cancellable,
 out:
   if (info->node)
     unref_node_and_parents (info->model, info->node);
-  g_object_unref (info->files);
+  g_slist_foreach (info->files, (GFunc)g_object_unref, NULL);
+  g_slist_free (info->files);
   g_slist_foreach (info->cleanups, (GFunc)g_object_unref, NULL);
   g_slist_free (info->cleanups);
   g_object_unref (info->model);
@@ -1133,8 +1134,9 @@ _gtk_file_system_model_path_do (GtkFileSystemModel        *model,
 	  return;
 	}
     }
+  g_object_unref (parent_file);
 
-  if (g_slist_length (files) < 1)
+  if (files == NULL)
     return;
 
   /* Now we have all paths, except the root path */
@@ -1151,7 +1153,7 @@ _gtk_file_system_model_path_do (GtkFileSystemModel        *model,
   g_object_unref (files->data);
   files = g_slist_remove (files, files->data);
 
-  if (g_slist_length (files) < 1)
+  if (files == NULL)
     {
       /* Done, now call the function */
       if (node)
@@ -1328,7 +1330,7 @@ file_model_node_is_visible (GtkFileSystemModel *model,
 	  return FALSE;
 	}
 
-      is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+      is_folder = _gtk_file_info_consider_as_directory (info);
 
       if (model->show_folders != model->show_files &&
 	  model->show_folders != is_folder)
@@ -1551,7 +1553,7 @@ file_model_node_get_children (GtkFileSystemModel *model,
     {
       GFileInfo *info = file_model_node_get_info (model, node);
       gboolean has_children = FALSE;
-      gboolean is_folder = (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY);
+      gboolean is_folder = _gtk_file_info_consider_as_directory (info);
 
       file_model_node_idle_clear_cancel (node);
 

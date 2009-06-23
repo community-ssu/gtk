@@ -323,7 +323,7 @@ save_bookmarks (GFile  *bookmarks_file,
 				NULL, FALSE, 0, NULL,
 				NULL, &error))
     {
-      g_critical (error->message);
+      g_critical ("%s", error->message);
       g_error_free (error);
     }
 
@@ -360,6 +360,39 @@ bookmarks_file_changed (GFileMonitor      *monitor,
       /* ignore at the moment */
       break;
     }
+}
+
+static gboolean
+mount_referenced_by_volume_activation_root (GList *volumes, GMount *mount)
+{
+  GList *l;
+  GFile *mount_root;
+  gboolean ret;
+
+  ret = FALSE;
+
+  mount_root = g_mount_get_root (mount);
+
+  for (l = volumes; l != NULL; l = l->next)
+    {
+      GVolume *volume = G_VOLUME (l->data);
+      GFile *volume_activation_root;
+
+      volume_activation_root = g_volume_get_activation_root (volume);
+      if (volume_activation_root != NULL)
+        {
+          if (g_file_has_prefix (volume_activation_root, mount_root))
+            {
+              ret = TRUE;
+              g_object_unref (volume_activation_root);
+              break;
+            }
+          g_object_unref (volume_activation_root);
+        }
+    }
+
+  g_object_unref (mount_root);
+  return ret;
 }
 
 static void
@@ -468,8 +501,6 @@ get_volumes_list (GtkFileSystem *file_system)
         }
     }
 
-  g_list_free (volumes);
-
   /* add mounts that has no volume (/etc/mtab mounts, ftp, sftp,...) */
   mounts = g_volume_monitor_get_mounts (priv->volume_monitor);
 
@@ -484,9 +515,19 @@ get_volumes_list (GtkFileSystem *file_system)
           continue;
         }
 
+      /* if there's exists one or more volumes with an activation root inside the mount,
+       * don't display the mount
+       */
+      if (mount_referenced_by_volume_activation_root (volumes, mount))
+        {
+          continue;
+        }
+
       /* show this mount */
       priv->volumes = g_slist_prepend (priv->volumes, g_object_ref (mount));
     }
+
+  g_list_free (volumes);
 
   g_list_free (mounts);
 }
@@ -531,7 +572,10 @@ _gtk_file_system_init (GtkFileSystem *file_system)
 						 G_FILE_MONITOR_NONE,
 						 NULL, &error);
   if (error)
-    g_warning (error->message);
+    {
+      g_warning ("%s", error->message);
+      g_error_free (error);
+    }
   else
     g_signal_connect (priv->bookmarks_monitor, "changed",
 		      G_CALLBACK (bookmarks_file_changed), file_system);
@@ -914,6 +958,11 @@ enclosing_volume_mount_cb (GObject      *source_object,
   async_data = (AsyncFuncData *) user_data;
   g_file_mount_enclosing_volume_finish (G_FILE (source_object), result, &error);
   volume = _gtk_file_system_get_volume_for_file (async_data->file_system, G_FILE (source_object));
+
+  /* Silently drop G_IO_ERROR_ALREADY_MOUNTED error for gvfs backends without visible mounts. */
+  /* Better than doing query_info with additional I/O every time. */
+  if (error && g_error_matches (error, G_IO_ERROR, G_IO_ERROR_ALREADY_MOUNTED))
+    g_clear_error (&error);
 
   gdk_threads_enter ();
   ((GtkFileSystemVolumeMountCallback) async_data->callback) (async_data->cancellable, volume,
@@ -1304,7 +1353,9 @@ enumerator_files_callback (GObject      *source_object,
 
   if (error)
     {
-      g_warning (error->message);
+      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+        g_warning ("%s", error->message);
+
       g_error_free (error);
       return;
     }
@@ -1360,7 +1411,10 @@ gtk_folder_constructed (GObject *object)
   priv->directory_monitor = g_file_monitor_directory (priv->folder_file, G_FILE_MONITOR_NONE, NULL, &error);
 
   if (error)
-    g_warning (error->message);
+    {
+      g_warning ("%s", error->message);
+      g_error_free (error);
+    }
   else
     g_signal_connect (priv->directory_monitor, "changed",
 		      G_CALLBACK (directory_monitor_changed), object);
@@ -1730,7 +1784,26 @@ _gtk_file_info_render_icon (GFileInfo *info,
 
       if (icon)
 	pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+
+      if (!pixbuf)
+	{
+	   /* Use general fallback for all files without icon */
+	  icon = g_themed_icon_new ("text-x-generic");
+	  pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+	  g_object_unref (icon);
+	}
     }
 
   return pixbuf;
 }
+
+gboolean
+_gtk_file_info_consider_as_directory (GFileInfo *info)
+{
+  GFileType type = g_file_info_get_file_type (info);
+  
+  return (type == G_FILE_TYPE_DIRECTORY ||
+          type == G_FILE_TYPE_MOUNTABLE ||
+          type == G_FILE_TYPE_SHORTCUT);
+}
+

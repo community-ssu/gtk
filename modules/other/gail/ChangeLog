@@ -28,6 +28,55 @@
 
 	Related to upstream bug 490174
 
+2009-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.7 ===
+
+2009-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+        Bug #565110 – Add an env variable to disable Gail.
+
+        * gail.c (gtk_module_init): Bail out if NO_GAIL env var is set
+
+2008-12-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.14.6 ===
+
+2008-11-27  Matthias Clasen  <mclasen@redhat.com>
+
+	Bug 353088 – gtk_expander_get_label should return the full label text
+
+	* gailexpander.c: Don't rely on gtk_expander_get_label.
+	Patch by Peter Johanson.
+
+2008-11-24  Matthias Clasen <mclasen@redhat.com>
+
+	* === Released 2.14.5 ===
+
+2008-11-08  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gailtextview.c: (gail_streamable_content_get_stream):
+	Missing format specifier. Bug #554567.
+
+2008-10-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	Bug 555953 – libferret missing link against libgtk-x11
+
+	* test/Makefile.am: Link libferret against gtk.
+
+2008-10-07 Matthias Clasen <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	Bug 554950 – gail must make itself resident
+
+	* gail.c: Make the module resident, since it can't handle
+	being unloaded.
+
 2008-09-20  Matthias Clasen <mclasen@redhat.com>
 
 	Merged from trunk:

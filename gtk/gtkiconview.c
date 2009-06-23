@@ -2968,7 +2968,7 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
       current_width += icon_view->priv->column_spacing + 2 * focus_width;
 
       item->y = *y + focus_width;
-      item->x = rtl ? GTK_WIDGET (icon_view)->allocation.width - item->width - x : x;
+      item->x = x;
 
       x = current_width - (icon_view->priv->margin + focus_width); 
 
@@ -2997,14 +2997,17 @@ gtk_icon_view_layout_single_row (GtkIconView *icon_view,
         continue;
 #endif /* MAEMO_CHANGES */
 
+      if (rtl)
+	{
+	  item->x = *maximum_width - item->width - item->x;
+	  item->col = col - 1 - item->col;
+	}
+
       gtk_icon_view_calculate_item_size2 (icon_view, item, max_height);
 
       /* We may want to readjust the new y coordinate. */
       if (item->y + item->height + focus_width + icon_view->priv->row_spacing > *y)
 	*y = item->y + item->height + focus_width + icon_view->priv->row_spacing;
-
-      if (rtl)
-	item->col = col - 1 - item->col;
     }
 
 #ifdef MAEMO_CHANGES
@@ -9806,8 +9809,39 @@ gtk_icon_view_accessible_model_row_changed (GtkTreeModel *tree_model,
                                             gpointer     user_data)
 {
   AtkObject *atk_obj;
+  gint index;
+  GtkWidget *widget;
+  GtkIconView *icon_view;
+  GtkIconViewItem *item;
+  GtkIconViewAccessible *a11y_view;
+  GtkIconViewItemAccessible *a11y_item;
+  gchar *name, *text;
 
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (user_data));
+  a11y_view = GTK_ICON_VIEW_ACCESSIBLE (atk_obj);
+  index = gtk_tree_path_get_indices(path)[0];
+  a11y_item = gtk_icon_view_accessible_find_child (atk_obj, index);
+
+  if (a11y_item)
+    {
+      widget = GTK_ACCESSIBLE (atk_obj)->widget;
+      icon_view = GTK_ICON_VIEW (widget);
+      item = a11y_item->item;
+
+      name = gtk_icon_view_item_accessible_get_name (ATK_OBJECT (a11y_item));
+
+      if (!name || strcmp (name, "") == 0)
+        {
+          gtk_icon_view_set_cell_data (icon_view, item);
+          text = get_text (icon_view, item);
+          if (text)
+            {
+              gtk_text_buffer_set_text (a11y_item->text_buffer, text, -1);
+              g_free (text);
+            }
+        }
+    }
+
   g_signal_emit_by_name (atk_obj, "visible-data-changed");
 
   return;
@@ -9934,20 +9968,29 @@ gtk_icon_view_accessible_model_rows_reordered (GtkTreeModel *tree_model,
   GtkIconViewItemAccessible *item;
   GList *items;
   AtkObject *atk_obj;
+  gint *order;
+  gint length, i;
 
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (user_data));
   icon_view = GTK_ICON_VIEW (user_data);
   priv = gtk_icon_view_accessible_get_priv (atk_obj);
+
+  length = gtk_tree_model_iter_n_children (tree_model, NULL);
+
+  order = g_new (gint, length);
+  for (i = 0; i < length; i++)
+    order [new_order[i]] = i;
 
   items = priv->items;
   while (items)
     {
       info = items->data;
       item = GTK_ICON_VIEW_ITEM_ACCESSIBLE (info->item);
-      info->index = new_order[info->index];
+      info->index = order[info->index];
       item->item = g_list_nth_data (icon_view->priv->items, info->index);
       items = items->next;
     }
+  g_free (order);
   priv->items = g_list_sort (priv->items, 
                              (GCompareFunc)gtk_icon_view_accessible_item_compare);
 
