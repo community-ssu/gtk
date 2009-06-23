@@ -1,3 +1,9 @@
+2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Releasing 2:2.14.7-1maemo1
+
+	* debian/changelog: Updates.
+
 2009-06-23  Michael Natterer  <mitch@lanedo.com>
 
 	Revert Xinput-related commits, they can't work with the
