@@ -44,8 +44,7 @@
 
 	* gtk/gtkentry.c (hildon_gtk_input_mode_is_valid_char): Add 'a' to the
 	special "tele" characters.
-	Fixes: NB#120033 FT_DE: Phone settings is not showing call forwarding
-	number (T-Mobile & E-plus)
+	Fixes: NB#120033 FT_DE: settings is not showing call forwarding number
 
 2009-06-17  Claudio Saavedra  <csaavedra@igalia.com>
 
