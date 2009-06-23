@@ -2,7 +2,7 @@ gtk+2.0 (2:2.14.7-1maemo1) unstable; urgency=low
 
   * Upgrade to GTK+ 2.14.7.
 
- -- Michael Natterer <mitch@lanedo.com>  Fri, 19 Jun 2009 12:00:00 +0200
+ -- Michael Natterer <mitch@lanedo.com>  Fri, 23 Jun 2009 12:00:00 +0200
 
 gtk+2.0 (2:2.14.3-1maemo5) unstable; urgency=low
 
