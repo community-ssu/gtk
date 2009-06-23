@@ -1137,6 +1137,8 @@ gtk_dialog_get_has_separator (GtkDialog *dialog)
  * @right_padding: Padding to add at the right of the dialog.
  *
  * Sets additional padding around the dialog.
+ *
+ * Since: maemo 5.0
  **/
 void
 gtk_dialog_set_padding (GtkDialog *dialog,
@@ -1163,6 +1165,8 @@ gtk_dialog_set_padding (GtkDialog *dialog,
  * @padding_right: location to store the padding for the right of the dialog, or %NULL
  *
  * Gets the padding on the different sides of the dialog.
+ *
+ * Since: maemo 5.0
  **/
 void
 gtk_dialog_get_padding (GtkDialog *dialog,

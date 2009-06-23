@@ -1,5 +1,9 @@
 2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
 
+	* gtk/gtkdialog.c: Add "since" marks to new methods.
+
+2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
+
 	Releasing 2:2.14.7-1maemo1
 
 	* debian/changelog: Updates.
