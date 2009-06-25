@@ -1,3 +1,10 @@
+2009-06-25  Michael Natterer  <mitch@lanedo.com>
+
+	Fixed: NB#108333 - Patch for GtkFrame to support new group title design
+
+	* gtk/gtkframe.c: apply (slightly modified) patch from Daniel
+	Borgmann which changes the frame title style to look as it should.
+
 2009-06-23  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* gtk/gtkentry.c:
