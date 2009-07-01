@@ -547,6 +547,7 @@ gtk_button_init (GtkButton *button)
 #ifdef MAEMO_CHANGES
   g_object_set (G_OBJECT (button),
 		"tap-and-hold-state", GTK_STATE_ACTIVE,
+                "can-focus", FALSE,
 		NULL);
 #endif /* MAEMO_CHANGES */
 }
