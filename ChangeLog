@@ -1,3 +1,13 @@
+2006-07-01  Kristian Rietveld  <kris@lanedo.com>
+
+	Addresses: NB#106177 - No API to enable alphanumeric input mode
+	with numeric mode as default
+
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_set_slave),
+	(gtk_im_multicontext_notify),
+	(gtk_im_multicontext_slave_input_mode_changed_cb): also sync
+	hildon-input-default property between slave and real contexts.
+
 2009-06-25  Michael Natterer  <mitch@lanedo.com>
 
 	Fixed: NB#108333 - Patch for GtkFrame to support new group title design

@@ -103,6 +103,9 @@ static void     gtk_im_multicontext_clipboard_operation_cb      (GtkIMContext   
 static void     gtk_im_multicontext_slave_input_mode_changed_cb (GtkIMContext                   *slave,
                                                                  GParamSpec                     *pspec,
                                                                  GtkIMMulticontext              *multicontext);
+static void     gtk_im_multicontext_slave_input_default_changed_cb (GtkIMContext                   *slave,
+                                                                    GParamSpec                     *pspec,
+                                                                    GtkIMMulticontext              *multicontext);
 
 static GtkIMContext *gtk_im_multicontext_get_slave              (GtkIMMulticontext              *multicontext);
 #endif /* MAEMO_CHANGES */
@@ -253,6 +256,7 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
   gboolean need_preedit_changed = FALSE;
 #ifdef MAEMO_CHANGES
   HildonGtkInputMode input_mode;
+  HildonGtkInputMode input_default;
 #endif /* MAEMO_CHANGES */
   
   if (multicontext->slave)
@@ -338,9 +342,17 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
       g_signal_connect (multicontext->slave, "notify::hildon-input-mode",
                         G_CALLBACK (gtk_im_multicontext_slave_input_mode_changed_cb),
                         multicontext);
+      g_signal_connect (multicontext->slave, "notify::hildon-input-default",
+                        G_CALLBACK (gtk_im_multicontext_slave_input_default_changed_cb),
+                        multicontext);
 
       g_object_get(multicontext, "hildon-input-mode", &input_mode, NULL);
       g_object_set(multicontext->slave, "hildon-input-mode", input_mode, NULL);
+
+      g_object_get(multicontext, "hildon-input-default",
+                   &input_default, NULL);
+      g_object_set(multicontext->slave, "hildon-input-default",
+                   input_default, NULL);
 #endif /* MAEMO_CHANGES */
       
       if (!priv->use_preedit)	/* Default is TRUE */
@@ -628,6 +640,20 @@ gtk_im_multicontext_notify (GObject      *object,
         g_object_set (multicontext->slave,
 		      "hildon-input-mode", input_mode_multi,
 		      NULL);
+
+      /* and the same for hildon-input-default: */
+      g_object_get (multicontext->slave,
+		    "hildon-input-default", &input_mode_slave,
+		    NULL);
+      g_object_get (multicontext,
+		    "hildon-input-default", &input_mode_multi,
+		    NULL);
+
+      /* don't change without comparing, or we'll get to infinite loop */
+      if (input_mode_slave != input_mode_multi)
+        g_object_set (multicontext->slave,
+		      "hildon-input-default", input_mode_multi,
+		      NULL);
     }
 }
 #endif /* MAEMO_CHANGES */
@@ -720,6 +746,23 @@ gtk_im_multicontext_slave_input_mode_changed_cb (GtkIMContext      *slave,
   /* don't change without comparing, or we'll get to infinite loop */
   if (input_mode_slave != input_mode_multi)
     g_object_set (multicontext, "hildon-input-mode", input_mode_slave, NULL);
+}
+
+void
+gtk_im_multicontext_slave_input_default_changed_cb (GtkIMContext      *slave,
+                                                    GParamSpec        *pspec,
+                                                    GtkIMMulticontext *multicontext)
+{
+  HildonGtkInputMode input_default_slave, input_default_multi;
+
+  g_object_get (slave, "hildon-input-default", &input_default_slave, NULL);
+  g_object_get (multicontext, "hildon-input-default",
+                &input_default_multi, NULL);
+
+  /* don't change without comparing, or we'll get to infinite loop */
+  if (input_default_slave != input_default_multi)
+    g_object_set (multicontext, "hildon-input-default",
+                  input_default_slave, NULL);
 }
 #endif /* MAEMO_CHANGES */
 
