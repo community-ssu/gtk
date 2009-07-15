@@ -354,6 +354,7 @@ gtk_private_h_sources =		\
 	gtkfilechooserutils.h	\
 	gtkfilesystem.h		\
 	gtkfilesystemmodel.h	\
+	gtkimcontextsimpleseqs.h \
 	gtkiconcache.h		\
 	gtkintl.h		\
 	gtkkeyhash.h		\
@@ -740,8 +741,7 @@ gtk_built_public_sources =			\
 gtk_built_private_headers =			\
 	gtkalias.h				\
 	gtkmarshalers.h				\
-	gtkbuiltincache.h			\
-	gtkimcontextsimpleseqs.h
+	gtkbuiltincache.h
 
 gtk_built_sources =				\
 	gtkaliasdef.c				\

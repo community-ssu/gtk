@@ -1,3 +1,8 @@
+2009-07-15  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gtk/Makefile.am: Do not remove a non-generated header file
+	during make clean.
+
 2009-07-01  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#121248 - Focus missing while HW keys interaction
