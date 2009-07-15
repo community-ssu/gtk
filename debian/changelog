@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.14.7-1maemo2) unstable; urgency=low
+
+  * Fixed: NB#108333 - Patch for GtkFrame to support new group title design
+  * Addresses: NB#106177 - No API to enable alphanumeric input mode
+    with numeric mode as default
+  * Fixes: NB#121248 - Focus missing while HW keys interaction
+    with Check boxes.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 15 Jul 2009 17:48:21 +0200
+
 gtk+2.0 (2:2.14.7-1maemo1) unstable; urgency=low
 
   [ Michael Natterer ]

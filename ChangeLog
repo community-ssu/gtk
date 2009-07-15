@@ -1,5 +1,11 @@
 2009-07-15  Claudio Saavedra  <csaavedra@igalia.com>
 
+	Release 2:2.14.7-1maemo2
+
+	* debian/changelog: Updates.
+
+2009-07-15  Claudio Saavedra  <csaavedra@igalia.com>
+
 	* gtk/Makefile.am: Do not remove a non-generated header file
 	during make clean.
 
