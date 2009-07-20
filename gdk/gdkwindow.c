@@ -1274,6 +1274,8 @@ gdk_window_end_paint (GdkWindow *window)
     }
 
 #ifdef MAEMO_CHANGES
+#if 1
+  /* this is the code that works */
   cr = gdk_cairo_create (window);
   for (subwindow = gdk_window_peek_children (window);
        subwindow;
@@ -1295,6 +1297,21 @@ gdk_window_end_paint (GdkWindow *window)
       cairo_restore (cr);
     }
   cairo_destroy (cr);
+#else
+  /* and this is the code that should be working according to timj */
+  if (gdk_window_get_auto_composite (window))
+    {
+      int x, y, w, h;
+
+      cr = gdk_cairo_create (gdk_window_get_parent (window));
+      gdk_window_get_position (window, &x, &y);
+      gdk_window_get_size     (window, &w, &h);
+      gdk_cairo_set_source_pixmap (cr, window, x, y);
+      cairo_rectangle (cr, x, y, w, h);
+      cairo_fill (cr);
+      cairo_destroy (cr);
+    }
+#endif
 #endif
 
   /* Reset clip region of the cached GdkGC */
