@@ -384,7 +384,9 @@ gdk_window_new (GdkWindow     *parent,
 
 #ifdef MAEMO_CHANGES
   /* auto-enable compositing for these widgets */
-  if (attributes->window_type == GDK_WINDOW_CHILD && gdk_drawable_get_depth (window) == 32)
+  if (attributes->window_type == GDK_WINDOW_CHILD &&
+      attributes->wclass != GDK_INPUT_ONLY &&
+      gdk_drawable_get_depth (window) == 32)
     {
       gdk_window_set_composited (window, TRUE);
       gdk_window_set_auto_composite (window, TRUE);
@@ -1264,12 +1266,25 @@ gdk_window_end_paint (GdkWindow *window)
       GdkWindowClipData data;
       
       setup_redirect_clip (window, tmp_gc, &data);
+#ifndef MAEMO_CHANGES
       gdk_draw_drawable (private->redirect->pixmap, tmp_gc, paint->pixmap,
 			 clip_box.x - paint->x_offset,
 			 clip_box.y - paint->y_offset,
 			 clip_box.x + data.x_offset,
 			 clip_box.y + data.y_offset,
 			 clip_box.width, clip_box.height);
+#else
+      cairo_t* cr = gdk_cairo_create (private->redirect->pixmap);
+      cairo_rectangle (cr,
+                       clip_box.x + data.x_offset,
+                       clip_box.y + data.y_offset,
+                       clip_box.width, clip_box.height);
+      gdk_cairo_set_source_pixmap (cr, paint->pixmap,
+                                   clip_box.x - paint->x_offset,
+                                   clip_box.y - paint->y_offset);
+      cairo_fill (cr);
+      cairo_destroy (cr);
+#endif
       reset_redirect_clip (window, tmp_gc, &data);
     }
 
@@ -1322,6 +1337,7 @@ gdk_window_end_paint (GdkWindow *window)
   gdk_region_destroy (paint->region);
   g_free (paint);
 
+#ifndef MAEMO_CHANGES
   /* find a composited window in our hierarchy to signal its
    * parent to redraw, calculating the clip box as we go...
    *
@@ -1349,6 +1365,7 @@ gdk_window_end_paint (GdkWindow *window)
 	  break;
 	}
     }
+#endif
 #endif /* USE_BACKING_STORE */
 }
 

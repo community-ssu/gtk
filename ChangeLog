@@ -1,3 +1,10 @@
+2009-07-20  Sven Herzberg  <herzi@lanedo.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_new), (gdk_window_end_paint): only
+	compose output child windows
+
 2009-04-02  Sven Herzberg  <herzi@lanedo.com>
 
 	Fixes: NB#89864 - RGBA support
