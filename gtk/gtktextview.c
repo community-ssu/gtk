@@ -8055,6 +8055,10 @@ text_window_realize (GtkTextWindow *win,
 
   attributes.x = 0;
   attributes.y = 0;
+#ifdef MAEMO_CHANGES
+  attributes.colormap = gdk_screen_get_rgb_colormap (gtk_widget_get_screen (win->widget));
+  attributes.visual = gdk_colormap_get_visual (attributes.colormap);
+#endif
   attributes.width = win->allocation.width;
   attributes.height = win->allocation.height;
   attributes.event_mask = (GDK_EXPOSURE_MASK            |

@@ -1,3 +1,10 @@
+2009-04-02  Sven Herzberg  <herzi@lanedo.com>
+
+	Fixes: NB#89864 - RGBA support
+
+	* gtk/gtktextview.c (text_window_realize): this patch lets parts of
+	the tree view always render using an RGB colormap
+
 2009-03-24  Sven Herzberg  <herzi@lanedo.com>
 
 	Added Tim's rendering approach, too
