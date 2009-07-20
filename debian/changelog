@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.14.7-1maemo3) unstable; urgency=low
+
+  * Merged RGBA branch (Sven Herzberg)
+  * Fixes: NB#89864 - RGBA support
+  * Add build dependency on xcomposite.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 20 Jul 2009 16:00:47 +0200
+
 gtk+2.0 (2:2.14.7-1maemo2) unstable; urgency=low
 
   * Fixed: NB#108333 - Patch for GtkFrame to support new group title design
