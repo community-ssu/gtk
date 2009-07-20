@@ -301,7 +301,10 @@ struct _GdkWindowObject
   guint accept_focus : 1;
   guint focus_on_map : 1;
   guint shaped : 1;
-  
+#ifdef MAEMO_CHANGES
+  guint auto_composite : 1;
+#endif
+
   GdkEventMask event_mask;
 
   guint update_and_descendants_freeze_count;
@@ -404,6 +407,11 @@ void gdk_window_shape_combine_region (GdkWindow	      *window,
  */
 void gdk_window_set_child_shapes (GdkWindow *window);
 
+#ifdef MAEMO_CHANGES
+void     gdk_window_set_auto_composite (GdkWindow *window,
+                                        gboolean   auto_composite);
+gboolean gdk_window_get_auto_composite (GdkWindow *window);
+#endif
 void gdk_window_set_composited   (GdkWindow *window,
                                   gboolean   composited);
 

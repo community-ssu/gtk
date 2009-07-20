@@ -1178,6 +1178,10 @@ gdk_window_end_paint (GdkWindow *window)
   GdkWindowObject *composited;
   GdkWindowPaint *paint;
   GdkGC *tmp_gc;
+#ifdef MAEMO_CHANGES
+  cairo_t *cr;
+  GList *subwindow;
+#endif
   GdkRectangle clip_box;
   gint x_offset, y_offset;
 
@@ -1234,7 +1238,31 @@ gdk_window_end_paint (GdkWindow *window)
 			 clip_box.width, clip_box.height);
       reset_redirect_clip (window, tmp_gc, &data);
     }
-  
+
+#ifdef MAEMO_CHANGES
+  cr = gdk_cairo_create (window);
+  for (subwindow = gdk_window_peek_children (window);
+       subwindow;
+       subwindow = subwindow->next)
+    {
+      int x, y, w, h;
+
+      if (!gdk_window_get_auto_composite (subwindow->data))
+        continue;
+
+      gdk_window_get_position (subwindow->data,
+                               &x, &y);
+      gdk_window_get_size (subwindow->data, &w, &h);
+
+      cairo_save (cr);
+      gdk_cairo_set_source_pixmap (cr, subwindow->data, x, y);
+      cairo_rectangle (cr, x, y, w, h);
+      cairo_fill (cr);
+      cairo_restore (cr);
+    }
+  cairo_destroy (cr);
+#endif
+
   /* Reset clip region of the cached GdkGC */
   gdk_gc_set_clip_region (tmp_gc, NULL);
 
@@ -4128,6 +4156,41 @@ gdk_window_set_static_gravities (GdkWindow *window,
 
   return GDK_WINDOW_IMPL_GET_IFACE (private->impl)->set_static_gravities (window, use_static);
 }
+
+#ifdef MAEMO_CHANGES
+gboolean
+gdk_window_get_auto_composite (GdkWindow *window)
+{
+  GdkWindowObject *private = (GdkWindowObject *)window;
+
+  g_return_val_if_fail (GDK_IS_WINDOW (window), FALSE);
+
+  return private->auto_composite;
+}
+
+void
+gdk_window_set_auto_composite (GdkWindow *window,
+                               gboolean   auto_composite)
+{
+  GdkWindowObject *private = (GdkWindowObject *)window;
+
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  auto_composite = auto_composite != FALSE;
+
+  if (private->auto_composite == auto_composite)
+    return;
+
+  if (!private->composited && auto_composite)
+    {
+      g_warning ("gdk_window_set_auto_composite called but "
+                 "window is not composited");
+      return;
+    }
+
+  private->auto_composite = auto_composite;
+}
+#endif
 
 /**
  * gdk_window_set_composited:
