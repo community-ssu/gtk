@@ -1,3 +1,12 @@
+2009-07-20  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#126846 - Media player crashing at
+	gtk_widget_real_tap_and_hold if user open and close camera from CSM
+
+	* gtk/gtkmenu.c (gtk_menu_window_event): Don't pass through the DELETE
+	event sent by the WM to the menu.  Instead, call
+	gtk_menu_shell_cancel() that will probably hide/unmap the menu.
+
 2009-07-15  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Release 2:2.14.7-1maemo2

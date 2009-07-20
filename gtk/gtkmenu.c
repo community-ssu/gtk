@@ -992,7 +992,12 @@ gtk_menu_window_event (GtkWidget *window,
 	}
       break;
     case GDK_DELETE:
-      handled = gtk_widget_event (menu, event);
+      if (window == GTK_MENU (menu)->toplevel &&
+          GTK_WIDGET_MAPPED (GTK_MENU (menu)->toplevel))
+        {
+          gtk_menu_shell_cancel (GTK_MENU_SHELL (menu));
+          handled = TRUE;
+        }
       break;
 #endif /* MAEMO_CHANGES */
     default:
