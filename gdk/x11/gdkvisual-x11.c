@@ -259,6 +259,10 @@ _gdk_visual_init (GdkScreen *screen)
 	   visuals[i]->visual.blue_mask  == 0x0000ff))
 	{
 	  screen_x11->rgba_visual = GDK_VISUAL (visuals[i]);
+#ifdef MAEMO_CHANGES
+          screen_x11->system_visual = screen_x11->rgba_visual;
+          break;
+#endif
 	}
     }
 
