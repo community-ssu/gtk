@@ -2556,6 +2556,102 @@ static GSList *update_windows = NULL;
 static guint update_idle = 0;
 static gboolean debug_updates = FALSE;
 
+static inline gboolean
+gdk_window_is_ancestor (GdkWindow *window,
+                        GdkWindow *ancestor)
+{
+  while (window)
+    {
+      GdkWindow *parent = (GdkWindow*) ((GdkWindowObject*) window)->parent;
+
+      if (parent == ancestor)
+        return TRUE;
+
+      window = parent;
+    }
+
+  return FALSE;
+}
+
+static void
+gdk_window_add_update_window (GdkWindow *window)
+{
+  GSList *tmp;
+  GSList *prev = NULL;
+  gboolean has_ancestor_in_list = FALSE;
+
+  for (tmp = update_windows; tmp; tmp = tmp->next)
+    {
+      GdkWindowObject *parent = GDK_WINDOW_OBJECT (window)->parent;
+
+      /*  check if tmp is an ancestor of "window"; if it is, set a
+       *  flag indicating that all following windows are either
+       *  children of "window" or from a differen hierarchy
+       */
+      if (!has_ancestor_in_list && gdk_window_is_ancestor (window, tmp->data))
+        has_ancestor_in_list = TRUE;
+
+      /* insert in reverse stacking order when adding around siblings,
+       * so processing updates properly paints over lower stacked windows
+       */
+      if (parent == GDK_WINDOW_OBJECT (tmp->data)->parent)
+        {
+          gint index = g_list_index (parent->children, window);
+          for (; tmp && parent == GDK_WINDOW_OBJECT (tmp->data)->parent; tmp = tmp->next)
+            {
+              gint sibling_index = g_list_index (parent->children, tmp->data);
+              if (index > sibling_index)
+                break;
+              prev = tmp;
+            }
+          /* here, tmp got advanced past all lower stacked siblings */
+          tmp = g_slist_prepend (tmp, window);
+          if (prev)
+            prev->next = tmp;
+          else
+            update_windows = tmp;
+          return;
+        }
+
+      /*  if "window" has an ancestor in the list and tmp is one of
+       *  "window's" children, insert "window" before tmp
+       */
+      if (has_ancestor_in_list && gdk_window_is_ancestor (tmp->data, window))
+        {
+          tmp = g_slist_prepend (tmp, window);
+
+          if (prev)
+            prev->next = tmp;
+          else
+            update_windows = tmp;
+          return;
+        }
+
+      /*  if we're at the end of the list and had an ancestor it it,
+       *  append to the list
+       */
+      if (! tmp->next && has_ancestor_in_list)
+        {
+          tmp = g_slist_append (tmp, window);
+          return;
+        }
+
+      prev = tmp;
+    }
+
+  /*  if all above checks failed ("window" is from a different
+   *  hierarchy than what is already in the list) or the list is
+   *  empty, prepend
+   */
+  update_windows = g_slist_prepend (update_windows, window);
+}
+
+static void
+gdk_window_remove_update_window (GdkWindow *window)
+{
+  update_windows = g_slist_remove (update_windows, window);
+}
+
 static gboolean
 gdk_window_update_idle (gpointer data)
 {
@@ -2713,7 +2809,7 @@ gdk_window_process_all_updates (void)
         {
 	  if (private->update_freeze_count ||
 	      gdk_window_is_toplevel_frozen (tmp_list->data))
-	    update_windows = g_slist_prepend (update_windows, private);
+            gdk_window_add_update_window (GDK_WINDOW (private));
 	  else
 	    gdk_window_process_updates_internal (tmp_list->data);
 	}
@@ -2766,7 +2862,7 @@ gdk_window_process_updates (GdkWindow *window,
       !gdk_window_is_toplevel_frozen (window))
     {      
       gdk_window_process_updates_internal (window);
-      update_windows = g_slist_remove (update_windows, window);
+      gdk_window_remove_update_window (window);
     }
 
   if (update_children)
@@ -2970,7 +3066,7 @@ gdk_window_invalidate_maybe_recurse (GdkWindow       *window,
 	}
       else
 	{
-	  update_windows = g_slist_prepend (update_windows, window);
+          gdk_window_add_update_window (window);
 	  private->update_area = gdk_region_copy (visible_region);
 	  
 	  gdk_window_schedule_update (window);
@@ -3049,8 +3145,8 @@ gdk_window_get_update_area (GdkWindow *window)
       tmp_region = private->update_area;
       private->update_area = NULL;
 
-      update_windows = g_slist_remove (update_windows, window);
-      
+      gdk_window_remove_update_window (window);
+
       return tmp_region;
     }
   else
@@ -3074,7 +3170,7 @@ _gdk_window_clear_update_area (GdkWindow *window)
 
   if (private->update_area)
     {
-      update_windows = g_slist_remove (update_windows, window);
+      gdk_window_remove_update_window (window);
       
       gdk_region_destroy (private->update_area);
       private->update_area = NULL;
