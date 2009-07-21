@@ -2,7 +2,7 @@ Source: gtk+2.0
 Section: libs
 Priority: optional
 Maintainer: Claudio Saavedra <csaavedra@igalia.com>
-Build-Depends: debhelper (>> 4.0.0), gettext, pkg-config, libglib2.0-dev (>= 2.12.12-1osso9), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, libxi-dev, libxrandr-dev, libxt-dev, libxrender-dev, libxft-dev, libxcursor-dev,  libjpeg62-dev, libpng12-dev, gtk-doc-tools, libtiff4-dev, libexpat1-dev, libxfixes-dev, libtool (>= 1.5.12), libxtst-dev, libxcomposite-dev
+Build-Depends: debhelper (>> 4.0.0), gettext, pkg-config, libglib2.0-dev (>= 2.12.12-1osso9), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, libxi-dev, libxrandr-dev, libxt-dev, libxrender-dev, libxft-dev, libxcursor-dev,  libjpeg62-dev, libpng12-dev, gtk-doc-tools, libtiff4-dev, libexpat1-dev, libxfixes-dev, libtool (>= 1.5.12), libxtst-dev, libxcomposite-dev, xdamage-dev, libxfixes-dev
 Build-Depends-Indep: gtk-doc-tools, libglib2.0-doc, libpango1.0-doc, libatk1.0-doc, libcairo2-doc
 Standards-Version: 3.6.1.0
 
