@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo4) unstable; urgency=low
+
+  * Process updates after scrolling GtkTreeView windows.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 24 Jul 2009 12:09:34 +0200
+
 gtk+2.0 (2:2.14.7-1maemo3) unstable; urgency=low
 
   * Fixes: NB#126846 - Media player crashing at
