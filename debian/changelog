@@ -1,6 +1,7 @@
 gtk+2.0 (2:2.14.7-1maemo4) unstable; urgency=low
 
-  * Process updates after scrolling GtkTreeView windows.
+  * Fixes: NB#129863 (Treeview is not doing proper updates during
+    scrolling)
 
  -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 24 Jul 2009 12:09:34 +0200
 

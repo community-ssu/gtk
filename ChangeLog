@@ -3,6 +3,9 @@
 	* gtk/gtktreeview.c (gtk_tree_view_adjustment_changed): process
 	updates after scrolling windows.
 
+	Fixes: NB#129863 (Treeview is not doing proper updates during
+	scrolling)
+
 2009-07-20  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#126846 - Media player crashing at
