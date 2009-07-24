@@ -1,3 +1,8 @@
+2009-07-24  Kristian Rietveld  <kris@lanedo.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_adjustment_changed): process
+	updates after scrolling windows.
+
 2009-07-20  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#126846 - Media player crashing at
