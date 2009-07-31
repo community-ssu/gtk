@@ -1,3 +1,14 @@
+2009-07-31  Michael Natterer  <mitch@lando.com>
+
+	Addresses: NB#122395 - hildon_entry_set_placeholder() should be in
+	GtkEntry
+
+	* gtk/gtkentry.[ch]
+	* gtk/gtk.symbols: applied a slightly modified patch from Kristian
+	Rietveld (fixed up by Garcia Gonzalez Alberto) which adds API to
+	set a placeholder text that is shown when the entry is empty and
+	has no focus,
+
 2009-07-24  Kristian Rietveld  <kris@lanedo.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_adjustment_changed): process

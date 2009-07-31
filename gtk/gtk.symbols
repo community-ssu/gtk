@@ -1312,6 +1312,8 @@ hildon_gtk_entry_get_input_default
 hildon_gtk_entry_get_input_mode
 hildon_gtk_entry_set_input_default
 hildon_gtk_entry_set_input_mode
+hildon_gtk_entry_get_placeholder_text
+hildon_gtk_entry_set_placeholder_text
 #endif
 #endif
 #endif
