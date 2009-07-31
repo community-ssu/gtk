@@ -108,6 +108,11 @@ struct _GtkTextViewPrivate
 {
   guint blink_time;  /* time in msec the cursor has blinked since last user event */
   guint im_spot_idle;
+
+#ifdef MAEMO_CHANGES
+  GtkTextBuffer *placeholder_buffer;
+  GtkTextLayout *placeholder_layout;
+#endif /* MAEMO_CHANGES */
 };
 
 
@@ -160,6 +165,7 @@ enum
 #ifdef MAEMO_CHANGES
   , PROP_HILDON_INPUT_MODE
   , PROP_HILDON_INPUT_DEFAULT
+  , PROP_HILDON_PLACEHOLDER_TEXT
 #endif /* MAEMO_CHANGES */
 };
 
@@ -710,6 +716,22 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                        HILDON_TYPE_GTK_INPUT_MODE,
                                                        HILDON_GTK_INPUT_MODE_FULL,
                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+  /**
+   * GtkTextView:hildon-placeholder-text:
+   *
+   * Text to be displayed in the #GtkTextView when it is empty and
+   * unfocused.
+   *
+   * Since: maemo 5
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_HILDON_PLACEHOLDER_TEXT,
+                                   g_param_spec_string ("hildon-placeholder-text",
+                                                        P_("Hildon Placeholder text"),
+                                                        P_("Text to be displayed when the text view is empty and unfocused"),
+                                                        "",
+                                                        G_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
 
   /*
@@ -1256,6 +1278,9 @@ gtk_text_view_init (GtkTextView *text_view)
 {
   GtkWidget *widget = GTK_WIDGET (text_view);
   GtkTargetList *target_list;
+#ifdef MAEMO_CHANGES
+  GtkTextViewPrivate *priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+#endif
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 
@@ -1312,6 +1337,11 @@ gtk_text_view_init (GtkTextView *text_view)
   text_view->drag_start_y = -1;
 
   text_view->pending_place_cursor_button = 0;
+
+#ifdef MAEMO_CHANGES
+  priv->placeholder_buffer = NULL;
+  priv->placeholder_layout = NULL;
+#endif /* MAEMO_CHANGES */
 
   /* We handle all our own redrawing */
   gtk_widget_set_redraw_on_allocate (widget, FALSE);
@@ -2872,6 +2902,9 @@ static void
 gtk_text_view_finalize (GObject *object)
 {
   GtkTextView *text_view;
+#ifdef MAEMO_CHANGES
+  GtkTextViewPrivate *priv;
+#endif /* MAEMO_CHANGES */
 
   text_view = GTK_TEXT_VIEW (object);
 
@@ -2879,6 +2912,22 @@ gtk_text_view_finalize (GObject *object)
 
   gtk_text_view_destroy_layout (text_view);
   gtk_text_view_set_buffer (text_view, NULL);
+
+#ifdef MAEMO_CHANGES
+  priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+
+  if (priv->placeholder_layout)
+    {
+      g_object_unref (priv->placeholder_layout);
+      priv->placeholder_layout = NULL;
+    }
+
+  if (priv->placeholder_buffer)
+    {
+      g_object_unref (priv->placeholder_buffer);
+      priv->placeholder_buffer = NULL;
+    }
+#endif /* MAEMO_CHANGES */
   
   cancel_pending_scroll (text_view);
 
@@ -2985,6 +3034,10 @@ gtk_text_view_set_property (GObject         *object,
     case PROP_HILDON_INPUT_DEFAULT:
       hildon_gtk_text_view_set_input_default (text_view, g_value_get_flags (value));
       break;
+
+    case PROP_HILDON_PLACEHOLDER_TEXT:
+      hildon_gtk_text_view_set_placeholder_text (text_view, g_value_get_string (value));
+      break;
 #endif /* MAEMO_CHANGES */
 
     default:
@@ -3068,6 +3121,10 @@ gtk_text_view_get_property (GObject         *object,
 
     case PROP_HILDON_INPUT_DEFAULT:
       g_value_set_flags (value, hildon_gtk_text_view_get_input_default (text_view));
+      break;
+
+    case PROP_HILDON_PLACEHOLDER_TEXT:
+      g_value_take_string (value, hildon_gtk_text_view_get_placeholder_text (text_view));
       break;
 #endif /* MAEMO_CHANGES */
 
@@ -3922,6 +3979,9 @@ gtk_text_view_style_set (GtkWidget *widget,
                          GtkStyle  *previous_style)
 {
   GtkTextView *text_view = GTK_TEXT_VIEW (widget);
+#ifdef MAEMO_CHANGES
+  GtkTextViewPrivate *priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+#endif /* MAEMO_CHANGES */
   PangoContext *ltr_context, *rtl_context;
 
   if (GTK_WIDGET_REALIZED (widget))
@@ -3946,6 +4006,40 @@ gtk_text_view_style_set (GtkWidget *widget,
       g_object_unref (ltr_context);
       g_object_unref (rtl_context);
     }
+
+#ifdef MAEMO_CHANGES
+  /* FIXME: Of course, when coded properly this and the above would be
+   * factored out in a function and shared.
+   */
+  if (priv->placeholder_layout && previous_style)
+    {
+      GdkColor font_color;
+
+      gtk_text_view_set_attributes_from_style (text_view,
+                                               priv->placeholder_layout->default_style,
+                                               widget->style);
+
+
+      /* Override the color setting */
+      if (gtk_style_lookup_color (widget->style, "ReversedSecondaryTextColor",
+                                  &font_color))
+        {
+          priv->placeholder_layout->default_style->appearance.fg_color = font_color;
+        }
+      
+      
+      ltr_context = gtk_widget_create_pango_context (widget);
+      pango_context_set_base_dir (ltr_context, PANGO_DIRECTION_LTR);
+      rtl_context = gtk_widget_create_pango_context (widget);
+      pango_context_set_base_dir (rtl_context, PANGO_DIRECTION_RTL);
+
+      gtk_text_layout_set_contexts (priv->placeholder_layout,
+                                    ltr_context, rtl_context);
+
+      g_object_unref (ltr_context);
+      g_object_unref (rtl_context);
+    }
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -4574,6 +4668,7 @@ gtk_text_view_paint (GtkWidget      *widget,
   GdkRegion *updates;
 #ifdef MAEMO_CHANGES
   gboolean custom_background = FALSE;
+  GtkTextViewPrivate *priv = GTK_TEXT_VIEW_GET_PRIVATE (widget);
 #endif
   
   text_view = GTK_TEXT_VIEW (widget);
@@ -4636,6 +4731,30 @@ gtk_text_view_paint (GtkWidget      *widget,
 #endif
 
   child_exposes = NULL;
+#ifdef MAEMO_CHANGES
+  if (!GTK_WIDGET_HAS_FOCUS (text_view)
+      && priv->placeholder_layout
+      && gtk_text_buffer_get_char_count (get_buffer (text_view)) == 0)
+    gtk_text_layout_draw (priv->placeholder_layout,
+                          widget,
+                          text_view->text_window->bin_window,
+                          NULL,
+                          text_view->xoffset,
+                          text_view->yoffset,
+                          area->x, area->y,
+                          area->width, area->height,
+                          &child_exposes);
+  else
+    gtk_text_layout_draw (text_view->layout,
+                          widget,
+                          text_view->text_window->bin_window,
+                          NULL,
+                          text_view->xoffset,
+                          text_view->yoffset,
+                          area->x, area->y,
+                          area->width, area->height,
+                          &child_exposes);
+#else /* !MAEMO_CHANGES */
   gtk_text_layout_draw (text_view->layout,
                         widget,
                         text_view->text_window->bin_window,
@@ -4645,6 +4764,7 @@ gtk_text_view_paint (GtkWidget      *widget,
                         area->x, area->y,
                         area->width, area->height,
                         &child_exposes);
+#endif /* !MAEMO_CHANGES */
 
   tmp_list = child_exposes;
   while (tmp_list != NULL)
@@ -9344,6 +9464,156 @@ hildon_gtk_text_view_get_input_default (GtkTextView *text_view)
                 "hildon-input-default", &mode, NULL);
 
   return mode;
+}
+
+
+/* This is more or less a stripped down version of
+ * gtk_text_view_ensure_layout().
+ */
+static void
+gtk_text_view_ensure_placeholder_layout (GtkTextView *text_view)
+{
+  GtkTextViewPrivate *priv;
+
+  priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+
+  if (priv->placeholder_layout == NULL)
+    {
+      GdkColor font_color;
+      GtkTextAttributes *style;
+      PangoContext *ltr_context, *rtl_context;
+      GtkWidget *widget = GTK_WIDGET (text_view);
+
+      priv->placeholder_layout = gtk_text_layout_new ();
+      gtk_text_layout_set_buffer (priv->placeholder_layout,
+                                  priv->placeholder_buffer);
+
+      gtk_text_layout_set_cursor_visible (priv->placeholder_layout,
+                                          FALSE);
+
+      ltr_context = gtk_widget_create_pango_context (GTK_WIDGET (text_view));
+      pango_context_set_base_dir (ltr_context, PANGO_DIRECTION_LTR);
+      rtl_context = gtk_widget_create_pango_context (GTK_WIDGET (text_view));
+      pango_context_set_base_dir (rtl_context, PANGO_DIRECTION_RTL);
+
+      gtk_text_layout_set_contexts (priv->placeholder_layout,
+                                    ltr_context, rtl_context);
+
+      g_object_unref (ltr_context);
+      g_object_unref (rtl_context);
+
+
+      style = gtk_text_attributes_new ();
+
+      gtk_widget_ensure_style (widget);
+      gtk_text_view_set_attributes_from_style (text_view,
+                                               style, widget->style);
+
+      /* Override the color setting */
+      if (gtk_style_lookup_color (widget->style, "ReversedSecondaryTextColor",
+                                  &font_color))
+        {
+          style->appearance.fg_color = font_color;
+        }
+
+      style->pixels_above_lines = text_view->pixels_above_lines;
+      style->pixels_below_lines = text_view->pixels_below_lines;
+      style->pixels_inside_wrap = text_view->pixels_inside_wrap;
+      style->left_margin = text_view->left_margin;
+      style->right_margin = text_view->right_margin;
+      style->indent = text_view->indent;
+      style->tabs = text_view->tabs ? pango_tab_array_copy (text_view->tabs) : NULL;
+
+      style->wrap_mode = text_view->wrap_mode;
+      style->justification = text_view->justify;
+      style->direction = gtk_widget_get_direction (GTK_WIDGET (text_view));
+
+      gtk_text_layout_set_default_style (priv->placeholder_layout, style);
+
+      gtk_text_attributes_unref (style);
+    }
+
+  /* Now make sure the layout is validated.  Since we expect the
+   * placeholder to only be a single line, this should be quick.
+   */
+  gtk_text_layout_validate (priv->placeholder_layout, 100);
+}
+
+/**
+ * hildon_gtk_text_view_set_placeholder_text:
+ * @text_view: a #GtkTextView.
+ * @placeholder_text: a string to be displayed when @text_view is empty
+ * and unfocused or %NULL to remove current placeholder text.
+ *
+ * Sets a text string to be displayed when @entry is empty and unfocused.
+ * This can be provided to give a visual hint of the expected contents
+ * of the #GtkEntry.
+ *
+ * Since: maemo 5.
+ */
+void
+hildon_gtk_text_view_set_placeholder_text (GtkTextView *text_view,
+                                           const gchar *placeholder_text)
+{
+  GtkTextViewPrivate *priv;
+
+  g_return_if_fail (GTK_IS_TEXT_VIEW (text_view));
+
+  priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+
+  if (!priv->placeholder_buffer)
+    priv->placeholder_buffer = gtk_text_buffer_new (NULL);
+
+  if (placeholder_text)
+    {
+      gtk_text_buffer_set_text (priv->placeholder_buffer, placeholder_text, -1);
+      gtk_text_view_ensure_placeholder_layout (text_view);
+    }
+  else
+    {
+      g_object_unref (priv->placeholder_layout);
+      priv->placeholder_layout = NULL;
+
+      g_object_unref (priv->placeholder_buffer);
+      priv->placeholder_buffer = NULL;
+    }
+
+  if (gtk_text_buffer_get_char_count (get_buffer (text_view)) == 0
+      && !GTK_WIDGET_HAS_FOCUS (text_view))
+    gtk_widget_queue_draw (GTK_WIDGET (text_view));
+
+  g_object_notify (G_OBJECT (text_view), "hildon-placeholder-text");
+}
+
+/**
+ * hildon_gtk_text_view_get_placeholder_text:
+ * @text_view: a #GtkTextView
+ *
+ * Gets the text to be displayed if @text_view is empty and unfocused.
+ * The returned string must be freed using g_free().
+ *
+ * Returns: an allocated string or %NULL if no placeholder text is set.
+ *
+ * Since: maemo 5.
+ */
+gchar *
+hildon_gtk_text_view_get_placeholder_text (GtkTextView *text_view)
+{
+  GtkTextViewPrivate *priv;
+  GtkTextIter start, end;
+  gchar *text;
+
+  g_return_val_if_fail (GTK_IS_TEXT_VIEW (text_view), NULL);
+
+  priv = GTK_TEXT_VIEW_GET_PRIVATE (text_view);
+
+  gtk_text_buffer_get_start_iter (priv->placeholder_buffer, &start);
+  gtk_text_buffer_get_end_iter (priv->placeholder_buffer, &end);
+
+  text = gtk_text_buffer_get_text (priv->placeholder_buffer,
+                                   &start, &end, FALSE);
+
+  return text;
 }
 
 #endif /* MAEMO_CHANGES */

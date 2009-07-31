@@ -1,3 +1,12 @@
+2009-07-31  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#122395 - hildon_entry_set_placeholder() should be in
+	GtkEntry
+
+	* gtk/gtktextview.[ch]
+	* gtk/gtk.symbols: applied patch from Kristian Rietveld which adds
+	the same placeholder API as for GtkEntry in the patch below.
+
 2009-07-31  Michael Natterer  <mitch@lando.com>
 
 	Addresses: NB#122395 - hildon_entry_set_placeholder() should be in
