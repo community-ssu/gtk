@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo5) unstable; urgency=low
+
+  * Addresses: NB#124303 (Truncation in dialogs)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 03 Aug 2009 14:57:05 +0200
+
 gtk+2.0 (2:2.14.7-1maemo4) unstable; urgency=low
 
   * Fixes: NB#129863 (Treeview is not doing proper updates during
