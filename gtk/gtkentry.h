@@ -249,6 +249,11 @@ void       gtk_entry_set_editable   		(GtkEntry      *entry,
 #endif /* GTK_DISABLE_DEPRECATED */
 
 #ifdef MAEMO_CHANGES
+const gchar *      hildon_gtk_entry_get_placeholder_text (GtkEntry *entry);
+
+void               hildon_gtk_entry_set_placeholder_text (GtkEntry    *entry,
+                                                          const gchar *placeholder_text);
+
 void               hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
                                                     HildonGtkInputMode input_mode);
 HildonGtkInputMode hildon_gtk_entry_get_input_mode (GtkEntry          *entry);

@@ -1312,6 +1312,8 @@ hildon_gtk_entry_get_input_default
 hildon_gtk_entry_get_input_mode
 hildon_gtk_entry_set_input_default
 hildon_gtk_entry_set_input_mode
+hildon_gtk_entry_get_placeholder_text
+hildon_gtk_entry_set_placeholder_text
 #endif
 #endif
 #endif
@@ -4080,8 +4082,10 @@ gtk_text_view_window_to_buffer_coords
 #ifdef MAEMO_CHANGES
 hildon_gtk_text_view_get_input_default
 hildon_gtk_text_view_get_input_mode
+hildon_gtk_text_view_get_placeholder_text
 hildon_gtk_text_view_set_input_default
 hildon_gtk_text_view_set_input_mode
+hildon_gtk_text_view_set_placeholder_text
 #endif
 #endif
 #endif

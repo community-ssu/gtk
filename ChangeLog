@@ -1,17 +1,115 @@
-2009-08-03  Claudio Saavedra  <csaavedra@igalia.com>
+2009-08-04  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* gtk/gtklabel.c: (gtk_label_ensure_layout): Decrease width magic
 	number (Kristian Rietveld).
 
-	Addresses: NB#124303 (Truncation in dialogs)
+	Fixes: NB#124303 (Truncation in dialogs)
+
+2009-08-04  Sven Herzberg  <sven@lanedo.com>
+
+	Reverted Patch to permit integration
+
+	2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+		About: NB#89864 - RGBA support
+		Patch by Christian Dywan
+
+		* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): return the
+		colormap for the system visual now...
+		* gdk/x11/gdkvisual-x11.c (_gdk_visual_init): set the RGBA visual as
+		the system visual
+
+2009-07-31  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#122395 - hildon_entry_set_placeholder() should be in
+	GtkEntry
+
+	* gtk/gtktextview.[ch]
+	* gtk/gtk.symbols: applied patch from Kristian Rietveld which adds
+	the same placeholder API as for GtkEntry in the patch below.
+
+2009-07-31  Michael Natterer  <mitch@lanedo.com>
+
+	Addresses: NB#122395 - hildon_entry_set_placeholder() should be in
+	GtkEntry
+
+	* gtk/gtkentry.[ch]
+	* gtk/gtk.symbols: applied a slightly modified patch from Kristian
+	Rietveld (fixed up by Garcia Gonzalez Alberto) which adds API to
+	set a placeholder text that is shown when the entry is empty and
+	has no focus,
 
 2009-07-24  Kristian Rietveld  <kris@lanedo.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_adjustment_changed): process
 	updates after scrolling windows.
 
-	Fixes: NB#129863 (Treeview is not doing proper updates during
-	scrolling)
+2009-07-20  Sven Herzberg  <herzi@lanedo.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_new), (gdk_window_end_paint): only
+	compose output child windows
+
+2009-04-02  Sven Herzberg  <herzi@lanedo.com>
+
+	Fixes: NB#89864 - RGBA support
+
+	* gtk/gtktextview.c (text_window_realize): this patch lets parts of
+	the tree view always render using an RGB colormap
+
+2009-03-24  Sven Herzberg  <herzi@lanedo.com>
+
+	Added Tim's rendering approach, too
+
+	* gdk/gdkwindow.c (gdk_window_end_paint): also added the rendering
+	approach that Tim wants to have
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+	Fixes: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_new): auto-enable compositing and
+	auto-composite for 32bit child windows
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_is_ancestor),
+	(gdk_window_add_update_window), (gdk_window_remove_update_window),
+	(gdk_window_process_all_updates), (gdk_window_process_updates),
+	(gdk_window_invalidate_maybe_recurse),
+	(gdk_window_get_update_area), (_gdk_window_clear_update_area): copied
+	the window update ordering code from the offscreen branch
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c (gdk_window_begin_paint_region): clear the window's
+	background for each 32bit window
+
+2009-01-09  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+
+	* gdk/gdkwindow.c,
+	* gdk/gdkwindow.h: added auto_composite property to GdkWindow; if
+	enabled a new code path in gdk_window_end_paint() will be triggered
+	that automatically renders compoited windows. Application developers
+	will only have to set_composited(TRUE) and set_auto_composite(TRUE) to
+	get nice RGBA subwindows
+
+2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+	About: NB#89864 - RGBA support
+	Patch by Christian Dywan
+
+	* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): return the
+	colormap for the system visual now...
+	* gdk/x11/gdkvisual-x11.c (_gdk_visual_init): set the RGBA visual as
+	the system visual
 
 2009-07-20  Kristian Rietveld  <kris@lanedo.com>
 

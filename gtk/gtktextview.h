@@ -372,6 +372,10 @@ HildonGtkInputMode hildon_gtk_text_view_get_input_mode (GtkTextView       *text_
 void               hildon_gtk_text_view_set_input_default (GtkTextView       *text_view,
                                                            HildonGtkInputMode mode);
 HildonGtkInputMode hildon_gtk_text_view_get_input_default (GtkTextView       *text_view);
+
+void               hildon_gtk_text_view_set_placeholder_text (GtkTextView *text_view,
+                                                              const gchar *text);
+gchar             *hildon_gtk_text_view_get_placeholder_text (GtkTextView *text_view);
 #endif /* MAEMO_CHANGES */
 
 G_END_DECLS
