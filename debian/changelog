@@ -1,3 +1,18 @@
+gtk+2.0 (2:2.14.7-1maemo5) unstable; urgency=low
+
+  * Fixes: NB#124303 (Truncation in dialogs)
+  * Fixes: NB#122395 - hildon_entry_set_placeholder() should be in
+    GtkEntry
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 04 Aug 2009 19:59:19 +0200
+
+gtk+2.0 (2:2.14.7-1maemo4) unstable; urgency=low
+
+  * Fixes: NB#129863 (Treeview is not doing proper updates during
+    scrolling)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 24 Jul 2009 12:09:34 +0200
+
 gtk+2.0 (2:2.14.7-1maemo3) unstable; urgency=low
 
   * Fixes: NB#126846 - Media player crashing at
