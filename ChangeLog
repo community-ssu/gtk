@@ -1,3 +1,10 @@
+2009-08-04  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gtk/gtklabel.c: (gtk_label_ensure_layout): Decrease width magic
+	number (Kristian Rietveld).
+
+	Fixes: NB#124303 (Truncation in dialogs)
+
 2009-08-04  Sven Herzberg  <sven@lanedo.com>
 
 	Reverted Patch to permit integration

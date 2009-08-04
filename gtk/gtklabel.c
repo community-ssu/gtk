@@ -2423,7 +2423,7 @@ gtk_label_ensure_layout (GtkLabel *label)
 	      width = MIN (width,
 			   PANGO_SCALE * (gdk_screen_get_width (screen) + 1) / 2);
 #else
-	      width = MIN (width, PANGO_SCALE * (gdk_screen_get_width (screen) + 1) * 0.75);
+	      width = MIN (width, PANGO_SCALE * (gdk_screen_get_width (screen) + 1) * 0.70);
 #endif
               
 	      pango_layout_set_width (label->layout, width);
