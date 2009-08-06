@@ -1,3 +1,19 @@
+2009-08-06  Sven Herzberg  <sven@lanedo.com>
+
+	About: NB#89864 - RGBA support
+
+	Re-apply the patch; fix some compile warnings caused by it.
+
+	2009-01-14  Sven Herzberg  <sven@imendio.com>
+
+		About: NB#89864 - RGBA support
+		Patch by Christian Dywan
+
+		* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): return the
+		colormap for the system visual now...
+		* gdk/x11/gdkvisual-x11.c (_gdk_visual_init): set the RGBA visual as
+		the system visual
+
 2009-08-04  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* gtk/gtklabel.c: (gtk_label_ensure_layout): Decrease width magic
