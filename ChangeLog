@@ -1,5 +1,13 @@
 2009-08-06  Sven Herzberg  <herzi@lanedo.com>
 
+	Fixes: NB#129361 - [AF checked] compositing issues with rgba
+	sapwood/gtk+
+
+	* gdk/gdkwindow.c (gdk_window_new), (gdk_window_end_paint): provide
+	the information that the compositor needs
+
+2009-08-06  Sven Herzberg  <herzi@lanedo.com>
+
 	Fixes: NB#89864 - [AF Checked] RGBA support
 
 	* gtk/gtktreeview.c (gtk_tree_view_realize),
