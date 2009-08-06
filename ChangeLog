@@ -1,3 +1,13 @@
+2009-08-06  Sven Herzberg  <herzi@lanedo.com>
+
+	Fixes: NB#89864 - [AF Checked] RGBA support
+
+	* gtk/gtktreeview.c (gtk_tree_view_realize),
+	(gtk_tree_view_bin_expose): make sure the window between the widget's
+	parent window and the bin_window (and header_window) also gets
+	expose-events (to trigger the composition magic from
+	gdk_window_end_paint)
+
 2009-08-06  Sven Herzberg  <sven@lanedo.com>
 
 	About: NB#89864 - RGBA support

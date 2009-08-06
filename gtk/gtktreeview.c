@@ -2071,6 +2071,9 @@ gtk_tree_view_realize (GtkWidget *widget)
   attributes.visual = gtk_widget_get_visual (widget);
   attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = GDK_VISIBILITY_NOTIFY_MASK;
+#ifdef MAEMO_CHANGES
+  attributes.event_mask |= GDK_EXPOSURE_MASK;
+#endif
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
@@ -5091,6 +5094,12 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
   gint expose_start;
   gboolean render_checkboxes = FALSE;
   HildonMode mode;
+
+  if (event->window == widget->window)
+    {
+      /* don't actually expose the window; we just added exposure for the composition to work */
+      return FALSE;
+    }
 #endif /* MAEMO_CHANGES */
 
   rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
