@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.14.7-1maemo6) unstable; urgency=low
+
+  * Fixes: NB#129361 - [AF checked] compositing issues with rgba
+    sapwood/gtk+
+  * Fixes: NB#89864 - [AF Checked] RGBA support
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 06 Aug 2009 15:48:12 +0200
+
 gtk+2.0 (2:2.14.7-1maemo5) unstable; urgency=low
 
   * Fixes: NB#124303 (Truncation in dialogs)
