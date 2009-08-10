@@ -1803,6 +1803,10 @@ gtk_tree_view_free_rbtree (GtkTreeView *tree_view)
   tree_view->priv->prelight_node = NULL;
   tree_view->priv->expanded_collapsed_node = NULL;
   tree_view->priv->expanded_collapsed_tree = NULL;
+#ifdef MAEMO_CHANGES
+  tree_view->priv->highlighted_node = NULL;
+  tree_view->priv->highlighted_tree = NULL;
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -17563,7 +17567,7 @@ free_queued_select_row (GtkTreeView *tree_view)
    * was previously *not* selected.
    */
   if (mode == HILDON_FREMANTLE
-      && tree_view->priv->queued_select_row)
+      && gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
     {
       if (tree_view->priv->highlighted_node)
         {
@@ -17592,7 +17596,7 @@ free_queued_activate_row (GtkTreeView *tree_view)
 
   if (mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
-      && tree_view->priv->queued_activate_row)
+      && gtk_tree_row_reference_valid (tree_view->priv->queued_activate_row))
     {
       if (tree_view->priv->highlighted_node)
         {

@@ -1,3 +1,14 @@
+2009-08-10  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#130014 - Crash when long tabbing on a contact which was
+	deleted in outlook and Active Sync is in progress
+
+	* gtk/gtktreeview.c (gtk_tree_view_free_rbtree): clear state of
+	highlighted node,
+	(free_queued_select_row): do not only check if the row reference
+	pointer is non-NULL, but check for validity,
+	(free_queued_activate_row): likewise.
+
 2009-08-06  Sven Herzberg  <herzi@lanedo.com>
 
 	Fixes: NB#129361 - [AF checked] compositing issues with rgba
