@@ -35,11 +35,6 @@
 #include "gdkscreen.h"
 #include "gdkalias.h"
 
-#ifdef MAEMO_CHANGES
-#include <X11/Xatom.h>
-#include "x11/gdkx.h"
-#endif
-
 #define USE_BACKING_STORE	/* Appears to work on Win32, too, now. */
 
 typedef struct _GdkWindowPaint GdkWindowPaint;
@@ -395,25 +390,6 @@ gdk_window_new (GdkWindow     *parent,
     {
       gdk_window_set_composited (window, TRUE);
       gdk_window_set_auto_composite (window, TRUE);
-    }
-
-  /* set a flag to tell the window manager that we don't intend to use the
-   * alpha value; we use RGBA windows because we want to avoid BadMatch errors
-   * but as XFillRectangle() (called by the GtkWindow's expose handler) doesn't
-   * set the alpha value to 1.0 (instead it keeps it on 0.0), we have to tell
-   * the window manager, that we are not really invisible */
-  if (attributes->window_type == GDK_WINDOW_TOPLEVEL)
-    {
-      Atom  property = XInternAtom (GDK_WINDOW_XDISPLAY (window), "_MAEMO_IGNORE_ALPHA", True);
-      guint32 data = 1;
-      XChangeProperty (GDK_WINDOW_XDISPLAY (window),
-                       GDK_WINDOW_XID (window),
-                       property,
-                       XA_CARDINAL,
-                       32,
-                       PropModeReplace,
-                       (guchar*) &data,
-                       1);
     }
 #endif
 
@@ -1235,9 +1211,7 @@ gdk_window_end_paint (GdkWindow *window)
 {
 #ifdef USE_BACKING_STORE
   GdkWindowObject *private = (GdkWindowObject *)window;
-#ifndef MAEMO_CHANGES
   GdkWindowObject *composited;
-#endif
   GdkWindowPaint *paint;
   GdkGC *tmp_gc;
 #ifdef MAEMO_CHANGES

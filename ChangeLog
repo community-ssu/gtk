@@ -1,5 +1,12 @@
 2009-08-11  Sven Herzberg  <herzi@lanedo.com>
 
+	About: NB#129361 - [AF checked] compositing issues with rgba
+
+	* gdk/gdkwindow.c (gdk_window_new), (gdk_window_end_paint): revert the
+	changes, this is going to be solved in a different way
+
+2009-08-11  Sven Herzberg  <herzi@lanedo.com>
+
 	About: NB#89864 - [AF Checked] RGBA support
 
 	* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): some more
