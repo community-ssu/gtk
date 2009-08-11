@@ -1,3 +1,10 @@
+2009-08-11  Sven Herzberg  <herzi@lanedo.com>
+
+	About: NB#89864 - [AF Checked] RGBA support
+
+	* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): some more
+	cleanup (to let the code work like upstream's #if branch
+
 2009-08-10  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#130014 - Crash when long tabbing on a contact which was
@@ -37,7 +44,6 @@
 
 		About: NB#89864 - RGBA support
 		Patch by Christian Dywan
-
 		* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap): return the
 		colormap for the system visual now...
 		* gdk/x11/gdkvisual-x11.c (_gdk_visual_init): set the RGBA visual as

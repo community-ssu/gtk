@@ -369,12 +369,12 @@ gdk_screen_get_system_colormap (GdkScreen *screen)
   g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
   screen_x11 = GDK_SCREEN_X11 (screen);
 
+  if (screen_x11->system_colormap)
+    return screen_x11->system_colormap;
+
 #ifdef MAEMO_CHANGES
-  if (!screen_x11->system_colormap)
-    {
-      visual = GDK_VISUAL (screen_x11->system_visual);
-      screen_x11->system_colormap = gdk_colormap_new (visual, FALSE);
-    }
+  visual = GDK_VISUAL (screen_x11->system_visual);
+  screen_x11->system_colormap = gdk_colormap_new (visual, FALSE);
 
   return screen_x11->system_colormap;
 #else
