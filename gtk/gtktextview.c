@@ -89,6 +89,11 @@
 #define DEBUG_VALIDATION_AND_SCROLLING
 #endif
 
+
+#ifdef MAEMO_CHANGES
+#define TEXT_VIEW_MAX_WINDOW_SIZE 16384
+#endif
+
 #ifdef DEBUG_VALIDATION_AND_SCROLLING
 #define DV(x) (x)
 #else
@@ -3379,13 +3384,36 @@ gtk_text_view_size_allocate (GtkWidget *widget,
     widget->allocation.width != allocation->width ||
     widget->allocation.height != allocation->height;
   
-  widget->allocation = *allocation;
+#ifdef MAEMO_CHANGES
+  widget->allocation.x = allocation->x;
+  widget->allocation.y = allocation->y;
+
+  if (allocation->width > TEXT_VIEW_MAX_WINDOW_SIZE)
+    {
+      widget->allocation.width = TEXT_VIEW_MAX_WINDOW_SIZE;
+      g_warning ("gtk_text_view_size_allocate: the text view requires too much width %d, add it directly to a scrollable widget instead of using a viewport", allocation->width);
+    }
+  else
+    {
+      widget->allocation.width = allocation->width;
+    }
+
+  if (allocation->height > TEXT_VIEW_MAX_WINDOW_SIZE)
+    {
+      widget->allocation.height = TEXT_VIEW_MAX_WINDOW_SIZE;
+      g_warning ("gtk_text_view_size_allocate: the text view requires too much height %d, add it directly to a scrollable widget instead of using a viewport", allocation->height);
+    }
+  else
+    {
+      widget->allocation.height = allocation->height;
+    }
+#endif
 
   if (GTK_WIDGET_REALIZED (widget))
     {
       gdk_window_move_resize (widget->window,
-                              allocation->x, allocation->y,
-                              allocation->width, allocation->height);
+                              widget->allocation.x, widget->allocation.y,
+                              widget->allocation.width, widget->allocation.height);
     }
 
   /* distribute width/height among child windows. Ensure all
@@ -3402,7 +3430,7 @@ gtk_text_view_size_allocate (GtkWidget *widget,
   else
     focus_edge_width = focus_width;
   
-  width = allocation->width - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+  width = widget->allocation.width - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
 
   if (text_view->left_window)
     left_rect.width = text_view->left_window->requisition.width;
@@ -3424,7 +3452,7 @@ gtk_text_view_size_allocate (GtkWidget *widget,
   bottom_rect.width = text_rect.width;
 
 
-  height = allocation->height - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+  height = widget->allocation.height - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
 
   if (text_view->top_window)
     top_rect.height = text_view->top_window->requisition.height;

@@ -1,3 +1,11 @@
+2009-08-11  Alejandro G. Castro  <alex@igalia.com>
+
+	Fixes: NB#131431 (gdk_flush in sapwood is causing tearing)
+
+	* gtk/gtktextview.c,
+	(gtk_text_view_size_allocate): Added a condition to test if the
+	size is going to be too big during the rendering.
+
 2009-08-11  Sven Herzberg  <herzi@lanedo.com>
 
 	About: NB#129361 - [AF checked] compositing issues with rgba
