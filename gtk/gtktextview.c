@@ -3884,8 +3884,13 @@ gtk_text_view_realize (GtkWidget *widget)
   attributes.width = widget->allocation.width;
   attributes.height = widget->allocation.height;
   attributes.wclass = GDK_INPUT_OUTPUT;
+#ifdef MAEMO_CHANGES
+  attributes.colormap = gdk_screen_get_rgb_colormap (gtk_widget_get_screen (widget));
+  attributes.visual = gdk_colormap_get_visual (attributes.colormap);
+#else
   attributes.visual = gtk_widget_get_visual (widget);
   attributes.colormap = gtk_widget_get_colormap (widget);
+#endif
   attributes.event_mask = GDK_VISIBILITY_NOTIFY_MASK | GDK_EXPOSURE_MASK;
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
@@ -8203,10 +8208,6 @@ text_window_realize (GtkTextWindow *win,
 
   attributes.x = 0;
   attributes.y = 0;
-#ifdef MAEMO_CHANGES
-  attributes.colormap = gdk_screen_get_rgb_colormap (gtk_widget_get_screen (win->widget));
-  attributes.visual = gdk_colormap_get_visual (attributes.colormap);
-#endif
   attributes.width = win->allocation.width;
   attributes.height = win->allocation.height;
   attributes.event_mask = (GDK_EXPOSURE_MASK            |

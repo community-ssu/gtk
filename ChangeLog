@@ -1,3 +1,12 @@
+2009-08-13  Sven Herzberg  <herzi@lanedo.com>
+
+	Fixes: NB#132734 (crash reporter crashes with RGBA image)
+
+	* gtk/gtktextview.c (gtk_text_view_realize), (text_window_realize):
+	make the complete widget RGB. This way we won't run into X11 drawing
+	primitives (like XDrawLine for the cursor) that uses the widget's GC
+	(with 32bit colormap) on the 16bit windows
+
 2009-08-11  Alejandro G. Castro  <alex@igalia.com>
 
 	Fixes: NB#131431 (gdk_flush in sapwood is causing tearing)
