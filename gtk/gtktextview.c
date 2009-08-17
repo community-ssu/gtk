@@ -3407,13 +3407,21 @@ gtk_text_view_size_allocate (GtkWidget *widget,
     {
       widget->allocation.height = allocation->height;
     }
+#else
+  widget->allocation = *allocation;
 #endif
 
   if (GTK_WIDGET_REALIZED (widget))
     {
+#ifdef MAEMO_CHANGES
       gdk_window_move_resize (widget->window,
                               widget->allocation.x, widget->allocation.y,
                               widget->allocation.width, widget->allocation.height);
+#else
+      gdk_window_move_resize (widget->window,
+                              allocation->x, allocation->y,
+                              allocation->width, allocation->height);
+#endif
     }
 
   /* distribute width/height among child windows. Ensure all
@@ -3430,7 +3438,11 @@ gtk_text_view_size_allocate (GtkWidget *widget,
   else
     focus_edge_width = focus_width;
   
+#ifdef MAEMO_CHANGES
   width = widget->allocation.width - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+#else
+  width = allocation->width - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+#endif
 
   if (text_view->left_window)
     left_rect.width = text_view->left_window->requisition.width;
@@ -3452,7 +3464,11 @@ gtk_text_view_size_allocate (GtkWidget *widget,
   bottom_rect.width = text_rect.width;
 
 
+#ifdef MAEMO_CHANGES
   height = widget->allocation.height - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+#else
+  height = allocation->height - focus_edge_width * 2 - GTK_CONTAINER (text_view)->border_width * 2;
+#endif
 
   if (text_view->top_window)
     top_rect.height = text_view->top_window->requisition.height;

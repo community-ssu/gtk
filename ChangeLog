@@ -1,3 +1,11 @@
+2009-08-17  Alberto Garcia  <agarcia@igalia.com>
+
+	About: NB#131431 (gdk_flush in sapwood is causing tearing)
+
+	* gtk/gtktextview.c (gtk_text_view_size_allocate):
+	Restore original GTK+ code modified after Alejandro's latest patch
+	using MAEMO_CHANGES guards.
+
 2009-08-13  Sven Herzberg  <herzi@lanedo.com>
 
 	Fixes: NB#132734 (crash reporter crashes with RGBA image)
