@@ -1,3 +1,19 @@
+2009-08-19  Sven Herzberg  <herzi@lanedo.com>
+
+	Revert the whole RGBA stuff
+
+	* gdk/gdkwindow.c (gdk_window_new),
+	(gdk_window_begin_paint_region), (gdk_window_end_paint),
+	(gdk_window_process_all_updates), (gdk_window_process_updates),
+	(gdk_window_invalidate_maybe_recurse),
+	(gdk_window_get_update_area), (_gdk_window_clear_update_area):
+	* gdk/gdkwindow.h:
+	* gdk/x11/gdkcolor-x11.c (gdk_screen_get_system_colormap):
+	* gdk/x11/gdkvisual-x11.c (_gdk_visual_init):
+	* gtk/gtktextview.c (gtk_text_view_realize):
+	* gtk/gtktreeview.c (gtk_tree_view_realize),
+	(gtk_tree_view_bin_expose): revert!
+
 2009-08-17  Alberto Garcia  <agarcia@igalia.com>
 
 	About: NB#131431 (gdk_flush in sapwood is causing tearing)

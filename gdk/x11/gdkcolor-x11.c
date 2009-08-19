@@ -358,12 +358,8 @@ gdk_colormap_sync (GdkColormap *colormap,
 GdkColormap *
 gdk_screen_get_system_colormap (GdkScreen *screen)
 {
-#ifdef MAEMO_CHANGES
-  GdkVisual *visual;
-#else
   GdkColormap *colormap = NULL;
   GdkColormapPrivateX11 *private;
-#endif
   GdkScreenX11 *screen_x11;
 
   g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
@@ -372,12 +368,6 @@ gdk_screen_get_system_colormap (GdkScreen *screen)
   if (screen_x11->system_colormap)
     return screen_x11->system_colormap;
 
-#ifdef MAEMO_CHANGES
-  visual = GDK_VISUAL (screen_x11->system_visual);
-  screen_x11->system_colormap = gdk_colormap_new (visual, FALSE);
-
-  return screen_x11->system_colormap;
-#else
   colormap = g_object_new (GDK_TYPE_COLORMAP, NULL);
   private = GDK_COLORMAP_PRIVATE_DATA (colormap);
 
@@ -416,7 +406,6 @@ gdk_screen_get_system_colormap (GdkScreen *screen)
   screen_x11->system_colormap = colormap;
   
   return colormap;
-#endif
 }
 
 /**
