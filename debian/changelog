@@ -1,10 +1,5 @@
 gtk+2.0 (2:2.14.7-1maemo6) unstable; urgency=low
 
-  [ Claudio Saavedra ]
-  * Fixes: NB#129361 - [AF checked] compositing issues with rgba
-    sapwood/gtk+
-  * Fixes: NB#89864 - [AF Checked] RGBA support
-
   [ Sven Herzberg ]
   * Fixes: NB#130014 - Crash when long tabbing on a contact which was
     deleted in outlook and Active Sync is in progress
