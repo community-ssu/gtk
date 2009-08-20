@@ -1,3 +1,14 @@
+2009-08-20  Alberto Garcia  <agarcia@igalia.com>
+
+	* gdk/gdkcairo.c
+	(gdk_cairo_set_source_pixbuf, +clear_surface_cache):
+	Cache the cairo surface created from each GdkPixbuf to avoid
+	having to repeat the same expensive computation once and again.
+	Clear cache every ~150 ms.
+
+	Fixes: NB#131815 (gdk_cairo_set_source_pixbuf() needs to be
+	optimized)
+
 2009-08-19  Sven Herzberg  <herzi@lanedo.com>
 
 	Revert the whole RGBA stuff

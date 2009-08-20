@@ -128,6 +128,16 @@ gdk_cairo_region (cairo_t         *cr,
 		     boxes[i].y2 - boxes[i].y1);
 }
 
+#ifdef MAEMO_CHANGES
+static gboolean
+clear_surface_cache (GHashTable **hashtable)
+{
+    g_hash_table_destroy (*hashtable);
+    *hashtable = NULL;
+    return FALSE;
+}
+#endif /* MAEMO_CHANGES */
+
 /**
  * gdk_cairo_set_source_pixbuf:
  * @cr: a #Cairo context
@@ -158,6 +168,26 @@ gdk_cairo_set_source_pixbuf (cairo_t         *cr,
   cairo_surface_t *surface;
   static const cairo_user_data_key_t key;
   int j;
+#ifdef MAEMO_CHANGES
+  static GHashTable *surface_cache_table = NULL;
+
+  if (surface_cache_table == NULL)
+    {
+      surface_cache_table = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+                                                   g_object_unref, (GDestroyNotify) cairo_surface_destroy);
+      gdk_threads_add_timeout_full (GDK_PRIORITY_REDRAW + 1, 150, (GSourceFunc) clear_surface_cache,
+                                    &surface_cache_table, NULL);
+    }
+  else
+    {
+      surface = g_hash_table_lookup (surface_cache_table, pixbuf);
+      if (surface)
+        {
+          cairo_set_source_surface (cr, surface, pixbuf_x, pixbuf_y);
+          return;
+        }
+    }
+#endif /* MAEMO_CHANGES */
 
   if (n_channels == 3)
     format = CAIRO_FORMAT_RGB24;
@@ -169,6 +199,11 @@ gdk_cairo_set_source_pixbuf (cairo_t         *cr,
   surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
                                                  format,
                                                  width, height, cairo_stride);
+
+#ifdef MAEMO_CHANGES
+  g_hash_table_insert (surface_cache_table, g_object_ref (G_OBJECT (pixbuf)),
+                       cairo_surface_reference (surface));
+#endif /* MAEMO_CHANGES */
 
   cairo_surface_set_user_data (surface, &key,
 			       cairo_pixels, (cairo_destroy_func_t)g_free);
