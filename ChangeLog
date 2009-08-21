@@ -1,3 +1,12 @@
+2009-08-21  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#129394 Able to enter the unsupported characters in the
+	Phone or Mobile field
+
+	* gtk/gtkentry.c (hildon_gtk_input_mode_is_valid_char): change
+	the set of allowed characters to what is specified:
+	"0 1 2 3 4 5 6 7 8 9 p # * +".
+
 2009-08-20  Alberto Garcia  <agarcia@igalia.com>
 
 	* gdk/gdkcairo.c
