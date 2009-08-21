@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.14.7-1maemo8) unstable; urgency=low
+
+  * Fixes: NB#131431 (gdk_flush in sapwood is causing tearing)
+  * Fixes: NB#131815 (gdk_cairo_set_source_pixbuf() needs to be
+    optimized)
+
+ -- Sven Herzberg <herzi@lanedo.com>  Fri, 21 Aug 2009 10:17:31 +0200
+
 gtk+2.0 (2:2.14.7-1maemo6) unstable; urgency=low
 
   [ Claudio Saavedra ]
