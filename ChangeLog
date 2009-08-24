@@ -1,3 +1,11 @@
+2009-08-24  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#134146 - Crash while popping up CSM after device has gone to
+	sleep
+
+	* gtk/gtkwindow.c (gtk_window_client_event): only call
+	delete_if_temporary if the widget actually is a temporary and mapped.
+
 2009-08-21  Michael Natterer  <mitch@lanedo.com>
 
 	Fixes: NB#129394 Able to enter the unsupported characters in the

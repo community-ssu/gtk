@@ -5288,7 +5288,9 @@ gtk_window_client_event (GtkWidget	*widget,
   if (event->message_type == atom_temporaries)
     {
       send_client_message_to_embedded_windows (widget, atom_temporaries);
-      delete_if_temporary (widget, event);
+      if (GTK_WIDGET_MAPPED (widget)
+          && gtk_window_get_is_temporary (widget))
+        delete_if_temporary (widget, event);
     }
 #endif /* MAEMO_CHANGES */
 
