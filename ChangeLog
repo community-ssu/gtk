@@ -1,3 +1,9 @@
+2009-08-24  Claudio Saavedra  <csaavedra@igalia.com>
+
+	Release 2:2.14.7-1maemo9
+
+	* debian/changelog: Updates.
+
 2009-08-24  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#134146 - Crash while popping up CSM after device has gone to
