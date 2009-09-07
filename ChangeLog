@@ -1,3 +1,7 @@
+2009-09-07  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* debian/changelog: Release 2:2.14.7-1maemo10
+
 2009-09-07  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#134994 - placeholder text is cut when panned slowly
