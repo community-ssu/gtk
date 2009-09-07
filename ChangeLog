@@ -1,5 +1,11 @@
 2009-09-07  Kristian Rietveld  <kris@lanedo.com>
 
+	Fixes: NB#137421 - Context menu opening takes too long time
+
+	* gtk/gtkwidget.c: set TAP_AND_HOLD_TIMER_COUNTER to 6 from 11.
+
+2009-09-07  Kristian Rietveld  <kris@lanedo.com>
+
 	Fixes: NB#125746 - File manager gets unresponsive after loong tapping
 	on media server folder
 
