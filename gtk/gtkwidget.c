@@ -10912,7 +10912,6 @@ gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
   if (!td->timer_id)
     {
       tap_and_hold_remove_timer (widget);
-      _gtk_widget_grab_notify (widget, FALSE);
 
       _gtk_menu_push_context_menu_behavior ();
 

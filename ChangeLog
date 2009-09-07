@@ -1,3 +1,13 @@
+2009-09-07  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#125746 - File manager gets unresponsive after loong tapping
+	on media server folder
+
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout): do not call
+	_gtk_widget_grab_notify().  The code handling the tap-and-hold signal
+	is responsible for grabbing if necessary.  When a menu is used here,
+	the menu obviously already takes care of the grabbing.
+
 2009-09-07  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* debian/changelog: Release 2:2.14.7-1maemo10
