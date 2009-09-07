@@ -4082,6 +4082,11 @@ gtk_text_view_style_set (GtkWidget *widget,
 
       g_object_unref (ltr_context);
       g_object_unref (rtl_context);
+
+      /* The call to gtk_text_layout_set_contexts() invalidates the entire
+       * layout, so re-validate the placeholder layout immediately.
+       */
+      gtk_text_layout_validate (priv->placeholder_layout, 2000);
     }
 #endif /* MAEMO_CHANGES */
 }
@@ -9576,7 +9581,7 @@ gtk_text_view_ensure_placeholder_layout (GtkTextView *text_view)
   /* Now make sure the layout is validated.  Since we expect the
    * placeholder to only be a single line, this should be quick.
    */
-  gtk_text_layout_validate (priv->placeholder_layout, 100);
+  gtk_text_layout_validate (priv->placeholder_layout, 2000);
 }
 
 /**

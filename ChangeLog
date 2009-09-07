@@ -1,3 +1,13 @@
+2009-09-07  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#134994 - placeholder text is cut when panned slowly
+
+	* gtk/gtktextview.c (gtk_text_view_style_set): immediately re-validate
+	the placeholder layout,
+	(gtk_text_view_ensure_placeholder_layout): increase the max pixels to
+	validate to 2000 (that is also used for incremental validations in
+	timeouts).
+
 2009-08-24  Claudio Saavedra  <csaavedra@igalia.com>
 
 	Release 2:2.14.7-1maemo9
