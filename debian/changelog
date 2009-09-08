@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.14.7-1maemo11) unstable; urgency=low
+
+  * Fixes: NB#125746 - File manager gets unresponsive after loong tapping
+    on media server folder
+  * Fixes: NB#137421 - Context menu opening takes too long time
+  * Fixes: NB#129022 - CSM is not proper while rotating from portrait mode
+    to landscape mode, viceversa
+  * Fixes: NB#134639 - Image viewer quits for non-jpeg images or saving
+    fails for jpegs, while saving image larger than 65500x1
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 08 Sep 2009 15:33:35 +0300
+
 gtk+2.0 (2:2.14.7-1maemo10) unstable; urgency=low
 
   * Fixes: NB#134994 - placeholder text is cut when panned slowly
