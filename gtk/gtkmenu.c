@@ -113,6 +113,9 @@ struct _GtkMenuPrivate
   gboolean context_menu;
   int popup_pointer_x;
   int popup_pointer_y;
+
+  /* Handling GdkScreen::size-changed */
+  guint size_changed_id;
 #endif /* MAEMO_CHANGES */
 };
 
@@ -268,6 +271,9 @@ static guint menu_signals[LAST_SIGNAL] = { 0 };
 
 #ifdef MAEMO_CHANGES
 static gint context_menu_counter = 0;
+
+static void menu_screen_size_changed (GdkScreen *screen,
+                                      GtkMenu   *menu);
 #endif
 
 static GtkMenuPrivate *
@@ -1098,6 +1104,11 @@ gtk_menu_init (GtkMenu *menu)
   priv->context_menu = FALSE;
   priv->popup_pointer_x = -1;
   priv->popup_pointer_y = -1;
+
+  priv->size_changed_id =
+      g_signal_connect (gtk_widget_get_screen (menu->toplevel), "size_changed",
+                        G_CALLBACK (menu_screen_size_changed),
+                        menu);
 #endif /* MAEMO_CHANGES */
 
   priv->have_layout = FALSE;
@@ -1158,8 +1169,26 @@ gtk_menu_destroy (GtkObject *object)
       priv->title = NULL;
     }
 
+#ifdef MAEMO_CHANGES
+  if (priv->size_changed_id)
+    {
+      g_signal_handler_disconnect (gtk_widget_get_screen (GTK_WIDGET (object)),
+                                   priv->size_changed_id);
+      priv->size_changed_id = 0;
+    }
+#endif /* MAEMO_CHANGES */
+
   GTK_OBJECT_CLASS (gtk_menu_parent_class)->destroy (object);
 }
+
+#ifdef MAEMO_CHANGES
+static void
+menu_screen_size_changed (GdkScreen *screen,
+                          GtkMenu   *menu)
+{
+  gtk_menu_reposition (menu);
+}
+#endif /* MAEMO_CHANGES */
 
 static void
 menu_change_screen (GtkMenu   *menu,
@@ -1173,6 +1202,15 @@ menu_change_screen (GtkMenu   *menu,
 	return;
     }
 
+#ifdef MAEMO_CHANGES
+  if (private->size_changed_id)
+    {
+      g_signal_handler_disconnect (gtk_widget_get_screen (GTK_WIDGET (menu)),
+                                   private->size_changed_id);
+      private->size_changed_id = 0;
+    }
+#endif /* MAEMO_CHANGES */
+
   if (menu->torn_off)
     {
       gtk_window_set_screen (GTK_WINDOW (menu->tearoff_window), new_screen);
@@ -1181,6 +1219,12 @@ menu_change_screen (GtkMenu   *menu,
 
   gtk_window_set_screen (GTK_WINDOW (menu->toplevel), new_screen);
   private->monitor_num = -1;
+
+#ifdef MAEMO_CHANGES
+  private->size_changed_id = g_signal_connect (new_screen, "size_changed",
+                                               G_CALLBACK (menu_screen_size_changed),
+                                               menu);
+#endif /* MAEMO_CHANGES */
 }
 
 static void

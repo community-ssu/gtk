@@ -1,3 +1,12 @@
+2009-09-08  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#129022 - CSM is not proper while rotating from portrait mode
+	to landscape mode, viceversa
+
+	* gtk/gtkmenu.c: connect to GdkScreen::size-changed and reposition the
+	menu in the signal handler,
+	(menu_change_screen): re-connect the signal.
+
 2009-09-07  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#137421 - Context menu opening takes too long time
