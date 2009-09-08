@@ -1,3 +1,11 @@
+2009-09-08  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#134639 - Image viewer quits for non-jpeg images or saving
+	fails for jpegs, while saving image larger than 65500x1
+
+	* gdk-pixbuf/io-jpeg.c (gdk_pixbuf__jpeg_image_load), (real_save_jpeg):
+	Initialize the JPEG error structure early enough.
+
 2009-09-08  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#129022 - CSM is not proper while rotating from portrait mode
