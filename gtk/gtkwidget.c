@@ -11044,9 +11044,13 @@ gtk_widget_insensitive_press ( GtkWidget *widget )
 /**
  * hildon_gtk_widget_set_theme_size:
  * @widget: A #GtkWidget
- * @size: Flags indicating the size of the widget
+ * @size: #HildonSizeType flags indicating the size of the widget
  *
- * This function sets the requested size of a widget.
+ * This function sets the requested size of a widget using one of the
+ * predefined sizes.
+ *
+ * It also changes the widget name (see gtk_widget_set_name()) so it
+ * can be themed accordingly.
  *
  * Since: maemo 2.0
  * Stability: Unstable

@@ -1,3 +1,13 @@
+2009-09-10  Alberto Garcia  <agarcia@igalia.com>
+
+	* docs/reference/gtk/gtk-sections.txt
+	* docs/reference/gtk/tmpl/gtkwidget.sgml
+	* gtk/gtkwidget.c:
+	Documentation updates.
+
+	Fixes: MB#4462 (Hildon API docs: HildonSizeType is not linked or
+	documented.)
+
 2009-09-08  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* debian/changelog: Release 2.14.7-1maemo11

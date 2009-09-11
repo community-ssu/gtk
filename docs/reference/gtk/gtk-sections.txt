@@ -5427,6 +5427,8 @@ gtk_widget_get_snapshot
 gtk_widget_get_window
 gtk_widget_get_allocation
 <SUBSECTION Hildon>
+HildonSizeType
+hildon_gtk_widget_set_theme_size
 gtk_widget_tap_and_hold_flags_get_type
 gtk_widget_tap_and_hold_menu_position_top
 gtk_widget_tap_and_hold_setup

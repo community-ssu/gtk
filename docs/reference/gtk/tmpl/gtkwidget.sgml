@@ -2677,6 +2677,31 @@ This function is deprecated; it does nothing.
 @Returns: 
 
 
+<!-- ##### ENUM HildonSizeType ##### -->
+<para>
+Predefined sizes for widgets. Note that these values are flags, not
+macros for actual pixel sizes, so they can only be used in functions
+that expect a #HildonSizeType parameter.
+</para>
+
+@HILDON_SIZE_AUTO_WIDTH: The widget requests its natural width.
+@HILDON_SIZE_HALFSCREEN_WIDTH: The widget requests half of the screen width.
+@HILDON_SIZE_FULLSCREEN_WIDTH: The widget requests the full screen width.
+@HILDON_SIZE_AUTO_HEIGHT: The widget requests its natural height.
+@HILDON_SIZE_FINGER_HEIGHT: The widget requests a height suitable for finger use.
+@HILDON_SIZE_THUMB_HEIGHT: The widget requests a height suitable for thumb use.
+@HILDON_SIZE_AUTO: Short for HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_AUTO_HEIGHT
+
+
+<!-- ##### FUNCTION hildon_gtk_widget_set_theme_size ##### -->
+<para>
+
+</para>
+
+@widget: 
+@size: 
+
+
 <!-- ##### FUNCTION gtk_widget_tap_and_hold_menu_position_top ##### -->
 <para>
 
