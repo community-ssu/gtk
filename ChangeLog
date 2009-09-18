@@ -1,3 +1,15 @@
+2009-09-18  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#139504 - GdkScreen needs to respond to size events from
+	the window manager
+
+	* gdk/x11/gdkscreen-x11.c (_gdk_x11_screen_size_changed): apply
+	patch from Gordon Williams to emit size-changed upon changes of
+	the _MAEMO_SCREEN_WIDTH and HEIGHT properties.
+	
+	* gdk/x11/gdkevents-x11.c (gdk_event_translate): listen for
+	property notify of _MAEMO_SCREEN_HEIGHT property here.
+
 2009-09-10  Alberto Garcia  <agarcia@igalia.com>
 
 	* docs/reference/gtk/gtk-sections.txt

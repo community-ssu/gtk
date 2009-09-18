@@ -1911,6 +1911,19 @@ gdk_event_translate (GdkDisplay *display,
 			   gdk_x11_get_xatom_name_for_display (display, xevent->xproperty.atom),
 			   "\""));
 
+#ifdef MAEMO_CHANGES
+      /* Check for maemo specific width/height change. Height is always
+       * changed last, so we only check on that. This allows us to relayout
+       * apps that depend on GdkScreen for orientation, *before* we do the
+       * real XRandR rotate.
+       */
+      if (xevent->xproperty.atom ==
+          gdk_x11_get_xatom_by_name_for_display (display, "_MAEMO_SCREEN_HEIGHT"))
+        {
+          _gdk_x11_screen_size_changed (screen, xevent);
+        }
+#endif /* MAEMO_CHANGES */
+
       if (window_private == NULL)
         {
 	  return_val = FALSE;
