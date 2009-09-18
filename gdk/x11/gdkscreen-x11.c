@@ -898,7 +898,7 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
 #ifdef MAEMO_CHANGES
   GdkWindow *root_window;
   GdkAtom type;
-  guchar *rwidth, *rheight;
+  guchar *rwidth = NULL, *rheight = NULL;
   gboolean has_props = FALSE;
 #endif /* MAEMO_CHANGES */
 

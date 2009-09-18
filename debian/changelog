@@ -5,7 +5,7 @@ gtk+2.0 (2:2.14.7-1maemo12) unstable; urgency=low
   * Fixes: MB#4462 (Hildon API docs: HildonSizeType is not linked or
     documented.)
 
- -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 18 Sep 2009 14:15:40 +0300
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 18 Sep 2009 16:19:25 +0300
 
 gtk+2.0 (2:2.14.7-1maemo11) unstable; urgency=low
 

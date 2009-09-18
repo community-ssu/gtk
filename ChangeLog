@@ -2,6 +2,11 @@
 
 	* debian/changelog: Release 2.14.7-1maemo12
 
+2009-09-18  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* gdk/x11/gdkscreen-x11.c: (_gdk_x11_screen_size_changed): Initialize
+	rwidth and rheight to NULL, to avoid eventual crashes.
+
 2009-09-18  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#139504 - GdkScreen needs to respond to size events from
