@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.14.7-1maemo13) unstable; urgency=low
+
+  * Fixes: NB#131644 - Unable to launch FKB when smileys are copied
+    and pasted in notes application.
+  * Fixes: NB#128756 - sliders in profiles, responding for up/down
+    arrow keys, though focus not visible
+
+ -- Michael Natterer <mitch@lanedo.com>  Fri, 09 Oct 2009 16:00:00 +0200
+
 gtk+2.0 (2:2.14.7-1maemo12) unstable; urgency=low
 
   * Fixes: NB#139504 - GdkScreen needs to respond to size events from

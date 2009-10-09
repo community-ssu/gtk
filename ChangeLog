@@ -1,5 +1,9 @@
 2009-10-09  Michael Natterer  <mitch@lanedo.com>
 
+	* debian/changelog: Release 2.14.7-1maemo13
+
+2009-10-09  Michael Natterer  <mitch@lanedo.com>
+
 	Fixes: NB#131644 - Unable to launch FKB when smileys are copied
 	and pasted in notes application.
 
