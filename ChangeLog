@@ -1,7 +1,21 @@
 2009-10-09  Michael Natterer  <mitch@lanedo.com>
 
+	Fixes: NB#131644 - Unable to launch FKB when smileys are copied
+	and pasted in notes application.
+
+	Apply patch from Kristian Rietveld:
+
+	* gtk/gtktextbufferserialize.c (serialize_text): in the main
+	serialization char iteration loop, skip over pixbufs we are unable
+	to retreive; additionally, if we still can't forward the iter,
+	break out of the loop instead of looping infinitely.
+
+2009-10-09  Michael Natterer  <mitch@lanedo.com>
+
 	Fixes: NB#128756 - sliders in profiles, responding for up/down
 	arrow keys, though focus not visible
+
+	Apply patch from Kristian Rietveld:
 
 	* gtk/gtkscale.c (gtk_scale_init): unset the GTK_CAN_FOCUS flag
 	on all scale widgets.
@@ -23,7 +37,7 @@
 	* gdk/x11/gdkscreen-x11.c (_gdk_x11_screen_size_changed): apply
 	patch from Gordon Williams to emit size-changed upon changes of
 	the _MAEMO_SCREEN_WIDTH and HEIGHT properties.
-	
+
 	* gdk/x11/gdkevents-x11.c (gdk_event_translate): listen for
 	property notify of _MAEMO_SCREEN_HEIGHT property here.
 
