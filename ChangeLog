@@ -1,3 +1,11 @@
+2009-10-09  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#128756 - sliders in profiles, responding for up/down
+	arrow keys, though focus not visible
+
+	* gtk/gtkscale.c (gtk_scale_init): unset the GTK_CAN_FOCUS flag
+	on all scale widgets.
+
 2009-09-18  Claudio Saavedra  <csaavedra@igalia.com>
 
 	* debian/changelog: Release 2.14.7-1maemo12

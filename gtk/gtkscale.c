@@ -363,7 +363,9 @@ gtk_scale_init (GtkScale *scale)
 
   range = GTK_RANGE (scale);
   
+#ifndef MAEMO_CHANGES
   GTK_WIDGET_SET_FLAGS (scale, GTK_CAN_FOCUS);
+#endif /* !MAEMO_CHANGES */
 
   range->slider_size_fixed = TRUE;
   range->has_stepper_a = FALSE;
