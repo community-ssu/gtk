@@ -1186,7 +1186,7 @@ static void
 menu_screen_size_changed (GdkScreen *screen,
                           GtkMenu   *menu)
 {
-  gtk_menu_reposition (menu);
+  gtk_menu_shell_cancel (GTK_MENU_SHELL (menu));
 }
 #endif /* MAEMO_CHANGES */
 

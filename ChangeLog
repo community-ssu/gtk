@@ -1,3 +1,13 @@
+2009-10-15  Michael Natterer  <mitch@lanedo.com>
+
+	Fixes: NB#137960 - position of CSM is changing while rotating from
+	portrait mode to landscape mode
+
+	Apply patch from Kristian Rietveld:
+
+	* gtk/gtkmenu.c (menu_screen_size_changed): simply close menus
+	instead of repositioning them when the screen is rotated.
+
 2009-10-15  Kristian Rietveld  <kris@lanedo.com>
 
 	Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
