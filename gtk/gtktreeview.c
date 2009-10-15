@@ -4022,6 +4022,24 @@ ensure_unprelighted (GtkTreeView *tree_view)
   g_assert (tree_view->priv->prelight_node == NULL);
 }
 
+#ifdef MAEMO_CHANGES
+static void
+ensure_unhighlighted (GtkTreeView *tree_view)
+{
+  /* Unconditionally unhighlight */
+  if (tree_view->priv->highlighted_node)
+    {
+      _gtk_tree_view_queue_draw_node (tree_view,
+                                      tree_view->priv->highlighted_tree,
+                                      tree_view->priv->highlighted_node,
+                                      NULL);
+
+      tree_view->priv->highlighted_tree = NULL;
+      tree_view->priv->highlighted_node = NULL;
+    }
+}
+#endif
+
 
 
 
@@ -9870,13 +9888,9 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   ensure_unprelighted (tree_view);
 
 #ifdef MAEMO_CHANGES
-  if (node == tree_view->priv->highlighted_node
-      && tree == tree_view->priv->highlighted_tree)
-    {
-      tree_view->priv->highlighted_node = NULL;
-      tree_view->priv->highlighted_tree = NULL;
-    }
-#endif /* MAEMO_CHANGES */
+  free_queued_actions (tree_view);
+  ensure_unhighlighted (tree_view);
+#endif
 
   /* Cancel editting if we've started */
   gtk_tree_view_stop_editing (tree_view, TRUE);
@@ -9992,6 +10006,11 @@ gtk_tree_view_rows_reordered (GtkTreeModel *model,
 
   /* we need to be unprelighted */
   ensure_unprelighted (tree_view);
+
+#ifdef MAEMO_CHANGES
+  free_queued_actions (tree_view);
+  ensure_unhighlighted (tree_view);
+#endif
 
   /* clear the timeout */
   cancel_arrow_animation (tree_view);

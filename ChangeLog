@@ -1,3 +1,13 @@
+2009-10-15  Kristian Rietveld  <kris@lanedo.com>
+
+	Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
+
+	* gtk/gtktreeview.c (ensure_unhighlighted): new function, analogous
+	to ensure_unprelighted(),
+	(gtk_tree_view_row_deleted): call ensure_unhighlighted() and
+	free_queued_actions() just after the call to ensure_unprelighted(),
+	(gtk_tree_view_rows_reordered): likewise.
+
 2009-10-09  Michael Natterer  <mitch@lanedo.com>
 
 	* debian/changelog: Release 2.14.7-1maemo13
