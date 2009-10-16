@@ -1,5 +1,16 @@
 2009-10-16  Michael Natterer  <mitch@lanedo.com>
 
+	Fixes: NB#136999 - Cannot paste phonenumber to mobile number
+	field, if number contains space
+
+	Apply patch from Christian Dywan:
+
+	* gtk/gtkentry.c: when in TELE input mode, don't fail when invalid
+	characters are pasted, but simply filter them out (so pasting
+	e.g. "+49 12 / 1234" results in pasting "49121234")
+
+2009-10-16  Michael Natterer  <mitch@lanedo.com>
+
 	Fixed: NB#120908 - Combo box is not disabled when there are no
 	words stored in the history of Find toolbar
 

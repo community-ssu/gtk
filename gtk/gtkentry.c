@@ -2916,7 +2916,8 @@ static gboolean
 gtk_entry_filter_text (GtkEntry    *entry,
                        const gchar *str,
                        gint         length,
-                       gint         nbytes)
+                       gint         nbytes,
+                       gchar      **filtered)
 {
   HildonGtkInputMode input_mode;
 
@@ -2929,6 +2930,28 @@ gtk_entry_filter_text (GtkEntry    *entry,
     return FALSE;
 
   input_mode = hildon_gtk_entry_get_input_mode (entry);
+
+  if ((input_mode & HILDON_GTK_INPUT_MODE_TELE) != 0)
+    {
+      gboolean valid = TRUE;
+      GString *result = g_string_sized_new (nbytes);
+      while(length)
+        {
+          gunichar chr = g_utf8_get_char (str);
+
+          if (hildon_gtk_input_mode_is_valid_char (input_mode, chr))
+            g_string_append_unichar (result, chr);
+          else
+            valid = FALSE;
+
+          str = g_utf8_next_char (str);
+          length--;
+        }
+
+      *filtered = g_string_free (result, FALSE);
+      return valid;
+    }
+
   while(length)
     {
       gunichar chr = g_utf8_get_char (str);
@@ -2956,6 +2979,9 @@ gtk_entry_real_insert_text (GtkEditable *editable,
   GtkEntry *entry = GTK_ENTRY (editable);
   gint index;
   gint n_chars;
+#ifdef MAEMO_CHANGES
+  gchar *filtered = NULL;
+#endif
 
   if (new_text_length < 0)
     new_text_length = strlen (new_text);
@@ -2963,11 +2989,20 @@ gtk_entry_real_insert_text (GtkEditable *editable,
   n_chars = g_utf8_strlen (new_text, new_text_length);
 
 #ifdef MAEMO_CHANGES
-  if (!gtk_entry_filter_text (entry, new_text, n_chars, new_text_length))
+  if (!gtk_entry_filter_text (entry, new_text, n_chars, new_text_length, &filtered))
     {
-      g_signal_emit (entry, signals[INVALID_INPUT], 0,
-                     GTK_INVALID_INPUT_MODE_RESTRICTION);
-      return;
+      if (filtered)
+        {
+          new_text = filtered;
+          new_text_length = strlen (filtered);
+          n_chars = g_utf8_strlen (filtered, new_text_length);
+        }
+      else
+        {
+          g_signal_emit (entry, signals[INVALID_INPUT], 0,
+                         GTK_INVALID_INPUT_MODE_RESTRICTION);
+          return;
+        }
     }
 #endif /* MAEMO_CHANGES */
 
@@ -3079,6 +3114,10 @@ gtk_entry_real_insert_text (GtkEditable *editable,
 
   emit_changed (entry);
   g_object_notify (G_OBJECT (editable), "text");
+
+#ifdef MAEMO_CHANGES
+  g_free (filtered);
+#endif
 }
 
 static void
