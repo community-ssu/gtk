@@ -1,5 +1,9 @@
 2009-10-16  Michael Natterer  <mitch@lanedo.com>
 
+	* debian/changelog: Release 2.14.7-1maemo14
+
+2009-10-16  Michael Natterer  <mitch@lanedo.com>
+
 	Fixes: NB#136999 - Cannot paste phonenumber to mobile number
 	field, if number contains space
 

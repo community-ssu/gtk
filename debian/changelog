@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.14.7-1maemo14) unstable; urgency=low
+
+  * Fixes: NB#136999 - Cannot paste phonenumber to mobile number
+    field, if number contains space
+  * Fixes: NB#120908 - Combo box is not disabled when there are no
+    words stored in the history of Find toolbar
+  * Fixes: NB#137960 - position of CSM is changing while rotating from
+    portrait mode to landscape mode
+  * Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
+
+ -- Michael Natterer <mitch@lanedo.com>  Fri, 16 Oct 2009 12:40:00 +0200
+
 gtk+2.0 (2:2.14.7-1maemo13) unstable; urgency=low
 
   * Fixes: NB#131644 - Unable to launch FKB when smileys are copied
