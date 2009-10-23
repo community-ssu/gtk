@@ -1,3 +1,11 @@
+2009-10-23  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#128673 - Virtual keypad opened when not
+	needed in Phone application -TRUE
+
+        * gtk/gtkenums.h: Add an input mode to disable the
+	fullscreen keyboard. Patch by Kristian Rietveld.
+
 2009-10-16  Michael Natterer  <mitch@lanedo.com>
 
 	* debian/changelog: Release 2.14.7-1maemo14
