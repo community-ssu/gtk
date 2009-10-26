@@ -1,3 +1,11 @@
+2009-10-26  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#143183 - [Select contact] button appears to be in pressed
+	state, in certain scenario
+
+	* gtk/gtkbutton.c (gtk_button_screen_changed): Reset the pressed state
+	of the button if it is pressed while the screen changes.
+
 2009-10-23  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#128673 - Virtual keypad opened when not
