@@ -1,3 +1,14 @@
+2009-11-05  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#140339 - Unnecessary wake-ups in application due to XAtoms
+
+	* gdk/x11/gdkevents-x11.c (_gdk_events_init),
+	(gdk_event_translate), (check_net_wm_check_window),
+	(fetch_net_wm_check_window):
+	* gdk/x11/gdkscreen-x11.c (_gdk_x11_screen_size_changed): Monitor
+	_MAEMO_SCREEN_SIZEwhich is an array on the WM window instead of the
+	separate properties on the root window. Based on a patch by Adam Endroi.
+
 2009-10-26  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#128673 - Virtual keypad opened when not

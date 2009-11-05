@@ -896,39 +896,37 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
 {
   gint width, height;
 #ifdef MAEMO_CHANGES
-  GdkWindow *root_window;
-  GdkAtom type;
-  guchar *rwidth = NULL, *rheight = NULL;
-  gboolean has_props = FALSE;
+  GdkDisplay *display;
+  GdkWindow *window;
+  gint32 *maemo_screen_size = NULL;
 #endif /* MAEMO_CHANGES */
 
   width = gdk_screen_get_width (screen);
   height = gdk_screen_get_height (screen);
 
 #ifdef MAEMO_CHANGES
-  /* The SCREEN_WIDTH/SCREEN_HEIGHT properties allow hildon-desktop to
+  /* The _MAEMO_SCREEN_SIZE property allows hildon-desktop to
    * resize/relayout applications to the correct orientation before
    * XRandR rotation actually happens.
    */
 
-  root_window = gdk_screen_get_root_window (screen);
-  type = gdk_atom_intern ("CARDINAL", FALSE);
+  if (GDK_SCREEN_X11 (screen)->wmspec_check_window == None)
+    return;
 
-  gdk_property_get (root_window,
-                    gdk_atom_intern_static_string ("_MAEMO_SCREEN_WIDTH"),
-                    type,
-                    0, 32, FALSE, 0, 0, 0, (guchar **) &rwidth);
-  gdk_property_get (root_window,
-                    gdk_atom_intern_static_string ("_MAEMO_SCREEN_HEIGHT"),
-                    type,
-                    0, 32, FALSE, 0, 0, 0, (guchar **) &rheight);
+  display = gdk_screen_get_display (screen);
+  if (!(window = gdk_window_lookup_for_display (display,
+                          GDK_SCREEN_X11 (screen)->wmspec_check_window)))
+    return;
 
-  if (rwidth && rheight)
+  if (gdk_property_get (window,
+                    gdk_atom_intern_static_string ("_MAEMO_SCREEN_SIZE"),
+                    gdk_atom_intern ("CARDINAL", FALSE),
+                    0, 8, FALSE, 0, 0, 0, (guchar **) &maemo_screen_size))
     {
       gint prop_width, prop_height;
 
-      prop_width = *(gint *)rwidth;
-      prop_height = *(gint *)rheight;
+      prop_width = maemo_screen_size[0];
+      prop_height = maemo_screen_size[1];
 
       if (prop_width != width || prop_height != height)
         {
@@ -940,18 +938,10 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
           g_signal_emit_by_name (screen, "size_changed");
         }
 
-      has_props = TRUE;
+      g_free (maemo_screen_size);
+      /* Ignore XRandR */
+      return;
     }
-
-  if (rwidth)
-    g_free (rwidth);
-
-  if (rheight)
-    g_free (rheight);
-
-  /* If we had properties, return and ignore XRandR */
-  if (has_props)
-    return;
 #endif /* MAEMO_CHANGES */
 
 #ifdef HAVE_RANDR

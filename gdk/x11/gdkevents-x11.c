@@ -125,6 +125,9 @@ static void gdk_xsettings_notify_cb (const char       *name,
 				     XSettingsSetting *setting,
 				     void             *data);
 
+static gboolean check_net_wm_check_window (GdkScreenX11 *screen_x11);
+static void fetch_net_wm_check_window     (GdkScreen *screen);
+
 /* Private variable declarations
  */
 
@@ -232,6 +235,13 @@ _gdk_events_init (GdkDisplay *display)
 					 gdk_atom_intern_static_string ("WM_PROTOCOLS"), 
 					 gdk_wm_protocols_filter,   
 					 NULL);
+
+  /* GdkScreenX11 need this in order to see some properties. */
+  fetch_net_wm_check_window (display_x11->default_screen);
+  if (GDK_SCREEN_X11(display_x11->default_screen)->wmspec_check_window == None)
+    /* No WM, poll for the wm_check window. */
+    g_timeout_add_seconds (10, (GSourceFunc)check_net_wm_check_window,
+                           display_x11->default_screen);
 }
 
 void
@@ -1009,6 +1019,10 @@ gdk_event_translate (GdkDisplay *display,
 
           /* careful, reentrancy */
           _gdk_x11_screen_window_manager_changed (GDK_SCREEN (screen_x11));
+
+          /* Rediscover the WM window. */
+          g_timeout_add_seconds (10, (GSourceFunc)check_net_wm_check_window,
+                                 screen);
         }
       
       /* Eat events on this window unless someone had wrapped
@@ -1912,13 +1926,11 @@ gdk_event_translate (GdkDisplay *display,
 			   "\""));
 
 #ifdef MAEMO_CHANGES
-      /* Check for maemo specific width/height change. Height is always
-       * changed last, so we only check on that. This allows us to relayout
-       * apps that depend on GdkScreen for orientation, *before* we do the
-       * real XRandR rotate.
+      /* Check for maemo specific size change. This allows us to relayout apps
+       * that depend on GdkScreen for orientation, *before* real XRandR rotate.
        */
       if (xevent->xproperty.atom ==
-          gdk_x11_get_xatom_by_name_for_display (display, "_MAEMO_SCREEN_HEIGHT"))
+          gdk_x11_get_xatom_by_name_for_display (display, "_MAEMO_SCREEN_SIZE"))
         {
           _gdk_x11_screen_size_changed (screen, xevent);
         }
@@ -2616,6 +2628,14 @@ gdk_x11_get_server_time (GdkWindow *window)
   return xevent.xproperty.time;
 }
 
+static gboolean
+check_net_wm_check_window (GdkScreenX11 *screen_x11)
+{
+  if (screen_x11->wmspec_check_window == None)
+    fetch_net_wm_check_window (GDK_SCREEN (screen_x11));
+  return screen_x11->wmspec_check_window == None;
+}
+
 static void
 fetch_net_wm_check_window (GdkScreen *screen)
 {
@@ -2670,9 +2690,14 @@ fetch_net_wm_check_window (GdkScreen *screen)
 
   if (gdk_error_trap_pop () == Success)
     {
+      GdkWindow *window;
+
+      /* We need to create a Gdkwindow in order to notice its destruction. */
       screen_x11->wmspec_check_window = *xwindow;
       screen_x11->need_refetch_net_supported = TRUE;
       screen_x11->need_refetch_wm_name = TRUE;
+      window = gdk_window_foreign_new_for_display (display, *xwindow);
+      gdk_window_set_events (window, GDK_PROPERTY_CHANGE_MASK);
       
       /* Careful, reentrancy */
       _gdk_x11_screen_window_manager_changed (GDK_SCREEN (screen_x11));
