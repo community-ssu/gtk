@@ -1,3 +1,7 @@
+2009-11-05  Michael Natterer  <mitch@lanedo.com>
+
+	* debian/changelog: Release 2.14.7-1maemo15
+
 2009-11-05  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#140339 - Unnecessary wake-ups in application due to XAtoms
