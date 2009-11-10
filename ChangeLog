@@ -1,3 +1,11 @@
+2009-11-10  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#143062 - Browser, "Save page as" title right-aligned
+
+	* gtk/gtkentry.c (gtk_entry_set_selection_bounds): Flip the direction of
+	the selection so that the leftmost part of text is visible when the text
+	is too long to fit the entry.
+
 2009-11-05  Michael Natterer  <mitch@lanedo.com>
 
 	* debian/changelog: Release 2.14.7-1maemo15

@@ -2747,6 +2747,10 @@ gtk_entry_set_selection_bounds (GtkEditable *editable,
 				gint         end)
 {
   GtkEntry *entry = GTK_ENTRY (editable);
+#ifdef MAEMO_CHANGES
+  GtkWidget *widget = GTK_WIDGET (editable);
+  gboolean flip = FALSE;
+#endif
 
   if (start < 0)
     start = entry->text_length;
@@ -2755,11 +2759,25 @@ gtk_entry_set_selection_bounds (GtkEditable *editable,
 
 #ifndef MAEMO_CHANGES
   _gtk_entry_reset_im_context (entry);
-#endif /* !MAEMO_CHANGES */
 
   gtk_entry_set_positions (entry,
 			   MIN (end, entry->text_length),
 			   MIN (start, entry->text_length));
+#else
+  if (gtk_widget_has_screen (widget))
+    {
+      GtkSettings *settings = gtk_widget_get_settings (widget);
+      g_object_get (settings, "gtk-touchscreen-mode", &flip, NULL);
+    }
+  if (flip)
+    gtk_entry_set_positions (entry,
+                             MIN (start, entry->text_length),
+                             MIN (end, entry->text_length));
+  else
+    gtk_entry_set_positions (entry,
+                             MIN (end, entry->text_length),
+                             MIN (start, entry->text_length));
+#endif /* !MAEMO_CHANGES */
 
   gtk_entry_update_primary_selection (entry);
 }
