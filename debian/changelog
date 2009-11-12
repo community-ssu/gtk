@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo16) unstable; urgency=low
+
+  * Fixes: NB#143062 - Browser, "Save page as" title right-aligned
+
+ -- Christian Dywan <christian@lanedo.com>  Thu, 12 Nov 2009 10:14:23 +0100
+
 gtk+2.0 (2:2.14.7-1maemo15) unstable; urgency=low
 
   * Fixes: NB#140339 - Unnecessary wake-ups in application due to XAtoms
