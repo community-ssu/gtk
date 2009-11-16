@@ -1,3 +1,12 @@
+2009-11-16  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#143062 - Browser, "Save page as" title right-aligned
+
+	* gtk/gtkentry.c (gtk_entry_class_init),
+	(gtk_entry_set_selection_bounds): Restrict the direction flipping to
+	select-all, by implementing a keybinding signal and using that, and
+	comparing the selection bounds. So Shift+Arrow works normally.
+
 2009-11-10  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#143062 - Browser, "Save page as" title right-aligned

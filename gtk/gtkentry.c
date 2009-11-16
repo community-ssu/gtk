@@ -128,6 +128,7 @@ enum {
   TOGGLE_OVERWRITE,
 #ifdef MAEMO_CHANGES
   INVALID_INPUT,
+  SELECT_ALL,
 #endif /* MAEMO_CHANGES */
   LAST_SIGNAL
 };
@@ -912,6 +913,27 @@ gtk_entry_class_init (GtkEntryClass *class)
                   _gtk_marshal_VOID__ENUM,
                   G_TYPE_NONE, 1,
                   GTK_TYPE_INVALID_INPUT_TYPE);
+
+  /**
+   * GtkEntry::select-all:
+   * @entry: the object which received the signal
+   *
+   * The ::select-all signal is a 
+   * <link linkend="keybinding-signals">keybinding signal</link>
+   * which gets emitted to select the complete contents of the entry.
+   *
+   * The default bindings for this signal are Ctrl-a and Ctrl-/.
+   *
+   * Since: 2.20
+   */
+  signals[SELECT_ALL] =
+    g_signal_new_class_handler (I_("select-all"),
+                                G_OBJECT_CLASS_TYPE (gobject_class),
+                                G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                                G_CALLBACK (gtk_entry_select_all),
+                                NULL, NULL,
+                                g_cclosure_marshal_VOID__VOID,
+                                G_TYPE_NONE, 0, G_TYPE_NONE);
 #endif /* MAEMO_CHANGES */
 
   /*
@@ -971,6 +993,12 @@ gtk_entry_class_init (GtkEntryClass *class)
 
   /* Select all
    */
+#ifdef MAEMO_CHANGES
+  gtk_binding_entry_add_signal (binding_set, GDK_a, GDK_CONTROL_MASK,
+                                "select-all", 0);
+  gtk_binding_entry_add_signal (binding_set, GDK_slash, GDK_CONTROL_MASK,
+                                "select-all", 0);
+#else
   gtk_binding_entry_add_signal (binding_set, GDK_a, GDK_CONTROL_MASK,
                                 "move-cursor", 3,
                                 GTK_TYPE_MOVEMENT_STEP, GTK_MOVEMENT_BUFFER_ENDS,
@@ -992,6 +1020,8 @@ gtk_entry_class_init (GtkEntryClass *class)
                                 GTK_TYPE_MOVEMENT_STEP, GTK_MOVEMENT_BUFFER_ENDS,
                                 G_TYPE_INT, 1,
 				G_TYPE_BOOLEAN, TRUE);  
+#endif
+
   /* Unselect all 
    */
   gtk_binding_entry_add_signal (binding_set, GDK_backslash, GDK_CONTROL_MASK,
@@ -2750,6 +2780,12 @@ gtk_entry_set_selection_bounds (GtkEditable *editable,
 #ifdef MAEMO_CHANGES
   GtkWidget *widget = GTK_WIDGET (editable);
   gboolean flip = FALSE;
+
+  if (start == 0 && end == -1 && gtk_widget_has_screen (widget))
+    {
+      GtkSettings *settings = gtk_widget_get_settings (widget);
+      g_object_get (settings, "gtk-touchscreen-mode", &flip, NULL);
+    }
 #endif
 
   if (start < 0)
@@ -2764,11 +2800,6 @@ gtk_entry_set_selection_bounds (GtkEditable *editable,
 			   MIN (end, entry->text_length),
 			   MIN (start, entry->text_length));
 #else
-  if (gtk_widget_has_screen (widget))
-    {
-      GtkSettings *settings = gtk_widget_get_settings (widget);
-      g_object_get (settings, "gtk-touchscreen-mode", &flip, NULL);
-    }
   if (flip)
     gtk_entry_set_positions (entry,
                              MIN (start, entry->text_length),
