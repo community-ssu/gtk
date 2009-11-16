@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo17) unstable; urgency=low
+
+  * Fixes: NB#143062 - Browser, "Save page as" title right-aligned
+
+ -- Christian Dywan <christian@lanedo.com>  Mon, 16 Nov 2009 13:01:11 +0100
+
 gtk+2.0 (2:2.14.7-1maemo16) unstable; urgency=low
 
   * Fixes: NB#143062 - Browser, "Save page as" title right-aligned
