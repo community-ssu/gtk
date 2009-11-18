@@ -931,7 +931,8 @@ gtk_query_immodules_2_0_LDADD = $(LDADDS)
 
 gtk_query_immodules_2_0_SOURCES = queryimmodules.c
 
-gtk_update_icon_cache_LDADD = $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
+gtk_update_icon_cache_LDADD = $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la \
+	$(top_builddir)/gdk/$(gdktargetlib)
 
 gtk_update_icon_cache_SOURCES = \
 	updateiconcache.c 

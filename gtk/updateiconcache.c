@@ -43,6 +43,11 @@
 #include <glib/gi18n.h>
 #include "gtkiconcachevalidator.h"
 
+#ifdef MAEMO_CHANGES
+#include "gdk/gdk.h"
+#include "x11/gdkx.h"
+#endif
+
 static gboolean force_update = FALSE;
 static gboolean ignore_theme_index = FALSE;
 static gboolean quiet = FALSE;
@@ -1702,6 +1707,19 @@ main (int argc, char **argv)
 
   g_type_init ();
   build_cache (path);
+#ifdef MAEMO_CHANGES
+  if (gdk_init_check (&argc, &argv))
+    {
+      GdkEventClient event;
+
+      event.type = GDK_CLIENT_EVENT;
+      event.window = NULL;
+      event.send_event = TRUE;
+      event.message_type = gdk_atom_intern ("_MAEMO_GTK_FLUSH_ICONS", FALSE);
+      event.data_format = 8;
+      gdk_event_send_clientmessage_toall ((GdkEvent *) &event);
+    }
+#endif
 
   if (strcmp (var_name, "-") != 0)
     write_csource (path);
