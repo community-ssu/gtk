@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo18) unstable; urgency=low
+
+  * Implement _MAEMO_GTK_FLUSH_ICONS atom and use it in gtk-update-icon-cache.
+
+ -- Christian Dywan <christian@lanedo.com>  Wed, 18 Nov 2009 12:54:03 +0100
+
 gtk+2.0 (2:2.14.7-1maemo17) unstable; urgency=low
 
   * Fixes: NB#143062 - Browser, "Save page as" title right-aligned
