@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo19) unstable; urgency=low
+
+  * Use dpkg file trigger on /usr/share/icons/hicolor for gtk-update-icon-cache.
+
+ -- Christian Dywan <christian@lanedo.com>  Fri, 20 Nov 2009 12:35:17 +0100
+
 gtk+2.0 (2:2.14.7-1maemo18) unstable; urgency=low
 
   * Implement _MAEMO_GTK_FLUSH_ICONS atom and use it in gtk-update-icon-cache.
