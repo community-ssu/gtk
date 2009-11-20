@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo12-1) unstable; urgency=low
+
+  * Use dpkg file trigger on /usr/share/icons/hicolor for gtk-update-icon-cache.
+
+ -- Christian Dywan <christian@lanedo.com>  Fri, 20 Nov 2009 12:35:17 +0100
+
 gtk+2.0 (2:2.14.7-1maemo12) unstable; urgency=low
 
   * Fixes: NB#139504 - GdkScreen needs to respond to size events from
