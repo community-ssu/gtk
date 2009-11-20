@@ -1,0 +1,1898 @@
+gtk+2.0 (2:2.14.7-1maemo12) unstable; urgency=low
+
+  * Fixes: NB#139504 - GdkScreen needs to respond to size events from
+    the window manager
+  * Fixes: MB#4462 (Hildon API docs: HildonSizeType is not linked or
+    documented.)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 18 Sep 2009 16:19:25 +0300
+
+gtk+2.0 (2:2.14.7-1maemo11) unstable; urgency=low
+
+  * Fixes: NB#125746 - File manager gets unresponsive after loong tapping
+    on media server folder
+  * Fixes: NB#137421 - Context menu opening takes too long time
+  * Fixes: NB#129022 - CSM is not proper while rotating from portrait mode
+    to landscape mode, viceversa
+  * Fixes: NB#134639 - Image viewer quits for non-jpeg images or saving
+    fails for jpegs, while saving image larger than 65500x1
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 08 Sep 2009 15:33:35 +0300
+
+gtk+2.0 (2:2.14.7-1maemo10) unstable; urgency=low
+
+  * Fixes: NB#134994 - placeholder text is cut when panned slowly
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 07 Sep 2009 10:22:39 +0300
+
+gtk+2.0 (2:2.14.7-1maemo9) unstable; urgency=low
+
+  * Fixes: NB#129394 Able to enter the unsupported characters in the
+    Phone or Mobile field
+  * Fixes: NB#134146 - Crash while popping up CSM after device has gone to
+     sleep
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 24 Aug 2009 16:28:39 +0200
+
+gtk+2.0 (2:2.14.7-1maemo8) unstable; urgency=low
+
+  * Fixes: NB#131431 (gdk_flush in sapwood is causing tearing)
+  * Fixes: NB#131815 (gdk_cairo_set_source_pixbuf() needs to be
+    optimized)
+
+ -- Sven Herzberg <herzi@lanedo.com>  Fri, 21 Aug 2009 10:17:31 +0200
+
+gtk+2.0 (2:2.14.7-1maemo6) unstable; urgency=low
+
+  [ Claudio Saavedra ]
+  * Fixes: NB#129361 - [AF checked] compositing issues with rgba
+    sapwood/gtk+
+  * Fixes: NB#89864 - [AF Checked] RGBA support
+
+  [ Sven Herzberg ]
+  * Fixes: NB#130014 - Crash when long tabbing on a contact which was
+    deleted in outlook and Active Sync is in progress
+
+ -- Sven Herzberg <herzi@lanedo.com>  Tue, 11 Aug 2009 11:20:50 +0200
+
+gtk+2.0 (2:2.14.7-1maemo5) unstable; urgency=low
+
+  * Fixes: NB#124303 (Truncation in dialogs)
+  * Fixes: NB#122395 - hildon_entry_set_placeholder() should be in
+    GtkEntry
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 04 Aug 2009 19:59:19 +0200
+
+gtk+2.0 (2:2.14.7-1maemo4) unstable; urgency=low
+
+  * Fixes: NB#129863 (Treeview is not doing proper updates during
+    scrolling)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 24 Jul 2009 12:09:34 +0200
+
+gtk+2.0 (2:2.14.7-1maemo3) unstable; urgency=low
+
+  * Fixes: NB#126846 - Media player crashing at
+    gtk_widget_real_tap_and_hold
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 22 Jul 2009 13:13:16 +0200
+
+gtk+2.0 (2:2.14.7-1maemo2) unstable; urgency=low
+
+  * Fixed: NB#108333 - Patch for GtkFrame to support new group title design
+  * Addresses: NB#106177 - No API to enable alphanumeric input mode
+    with numeric mode as default
+  * Fixes: NB#121248 - Focus missing while HW keys interaction
+    with Check boxes.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 15 Jul 2009 17:48:21 +0200
+
+gtk+2.0 (2:2.14.7-1maemo1) unstable; urgency=low
+
+  [ Michael Natterer ]
+  * Upgrade to GTK+ 2.14.7.
+
+  [ Claudio Saavedra ]
+  * debian/changelog updates.
+  * Fixes: NB#117759 [freetest] Black box is shown over URL field after gesture
+  * Fixes: NB#120033 FT_DE: settings is not showing call forwarding number
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 23 Jun 2009 14:28:08 +0300
+
+gtk+2.0 (2:2.14.3-1maemo5) unstable; urgency=low
+
+  * Fixes: NB#98617  - Make dialogs use proper border margins
+  * Fixes: NB#121544 - Memory leaks found when trying to delete contact(s)
+  * Fixes: NB#116326 - gtk_window_new() is slow due to
+    gtk_window_close_other_temporaries() call
+  * Fixes: NB#98617  - Make dialogs use proper border margins
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 17 Jun 2009 16:53:51 +0300
+
+gtk+2.0 (2:2.14.3-1maemo4) unstable; urgency=low
+
+  * Split gail into its own packages:
+    - libgail18
+    - libgail-dev
+    - libgail-common
+    - libgail18-dbg.
+    Fixes: NB#120834 (building arm-at fails,
+    libgail18_1.18.0-osso15+0m5_armel trying to overwrite
+    `/usr/lib/libgailutil.so.18.0.1', which is also in package
+    libgtk2.0-0)
+  * Update debian dependencies after the upgrade to 2.14.3.
+  * Increase compat level to 5.
+  * libgail18-dbg replaces, conflicts, and provides libgail-dbg.
+  * Fixes: NB#114454 - Not possible to set hildon icon size to toolbar
+    resulting in different sizes of thumbnails.
+  * Addresses: NB#106177 - No API to enable alphanumeric input mode
+    with numeric mode as default
+  * Fixes: NB#110433 - First menu item should not be automatically
+    selected
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 11 Jun 2009 13:42:21 +0300
+
+gtk+2.0 (2:2.14.3-1maemo3) unstable; urgency=low
+
+  * Fixes: NB#120404 (LOcation widget in home view doesnt respond on clicking)
+  * Minor fix in gdk/Makefile.am to help building packages.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 03 Jun 2009 15:41:00 +0300
+
+gtk+2.0 (2:2.14.3-1maemo2) unstable; urgency=low
+
+  * Fixes: NB#118755 (Application manager crashes when uninstalling an
+    application)
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 02 Jun 2009 12:57:30 +0300
+
+gtk+2.0 (2:2.14.3-1maemo1) unstable; urgency=low
+
+  [ Michael Natterer ]
+  * Upgrade to GTK+ 2.14.3
+
+  [ Claudio Saavedra ]
+  * Releasing. Behold.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 29 May 2009 16:32:19 +0200
+
+gtk+2.0 (2:2.12.12-1maemo18) unstable; urgency=low
+
+  * Fixes: NB#105891 - Drawing lines support in text area widget
+  * Addresses: NB#115510 - Kinetic scrolling too sensitive.
+  * Addresses: NB#114356 - NP-Audio: Clip used to launch CMS remains
+    highlighted along with the currently playing clip in NP List view.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 27 May 2009 09:19:00 +0200
+
+gtk+2.0 (2:2.12.12-1maemo17) unstable; urgency=low
+
+  * Fixes: NB#111809 - word completion candidate is seen though focus is
+    moved to other widget
+  * Addresses: NB#115510 - Kinetic scrolling too sensitive.
+  * Addresses: NB#112906 - Short cut keys are not working in legacy
+    applications
+  * Fixes: NB#116994 - clear private data item selection cannot be toggled
+    by tapping anywhere on the item
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 18 May 2009 17:51:29 +0300
+
+gtk+2.0 (2:2.12.12-1maemo16) unstable; urgency=low
+
+  * Addresses: NB#103219 - Could not select Block speed to 1 from the drop down box
+  * Addresses: Addresses: NB#98705 - When forwarding a mail with multiple
+    attachments a new editor opens with To field overlapped
+  * Addresses: NB#110837 - Double line is appearing in synchronization dialog.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 11 May 2009 17:15:32 +0300
+
+gtk+2.0 (2:2.12.12-1maemo15) unstable; urgency=low
+
+  * Addresses: NB#108333 - Patch for GtkFrame to support new group title
+    design
+  * Addresses: NB#102653 - Bad performance of GtkViewport in
+    HildonPannable while animating
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 23 Apr 2009 13:33:21 +0300
+
+gtk+2.0 (2:2.12.12-1maemo14) unstable; urgency=low
+
+  * Fixes: NB#110430 - Failed assertion in _gtk_rbtree_node_find_offset()
+  * Fixes: NB#97380 - Email editor doesn't open correctly when launched
+    from other applications
+  * Fixes: NB#111246 - GtkTreeView action area height in portrait should
+    be n*90px
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 17 Apr 2009 17:07:31 +0300
+
+gtk+2.0 (2:2.12.12-1maemo13) unstable; urgency=low
+
+  * Fixes: NB#106323 - Remove explicit 5px margin from GtkTreeView action
+    area
+  * Fixes: NB#92963 - gtk_text_view_validate_onscreen: assertion failed:
+    (text_view->onscreen_validated).
+  * Fixes: NB#95718 - Set correct state for GtkCellView in HildonCheckButton
+  * Fixes: NB#90356 - Do not show shortcuts in legacy application menus at
+    all
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 08 Apr 2009 10:44:39 +0300
+
+gtk+2.0 (2:2.12.12-1maemo12) unstable; urgency=low
+
+  * Add GdkPixbufSimpleAnim:loop property and its accessors. See
+    related #NB103564.
+  * Fixes: NB#102487 - Crash when closing conversation view window.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 26 Mar 2009 19:44:18 +0200
+
+gtk+2.0 (2:2.12.12-1maemo11) unstable; urgency=low
+
+  * Fixes: NB#101823 - Crash while browsing through file selection widget
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 13 Mar 2009 14:37:26 +0200
+
+gtk+2.0 (2:2.12.12-1maemo10) unstable; urgency=low
+
+  * Fixes: NB#102487 - Crash when closing conversation view window.
+  * Fix dialogs' button size.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 05 Mar 2009 12:46:45 +0200
+
+gtk+2.0 (2:2.12.12-1maemo9) unstable; urgency=low
+
+  * Fixes: NB#98830 - Legal bug: gtk+ component: license references
+    missing from Nokia copyrighted files
+  * Fixes: NB#101728 - Tree view should support an action area to embed
+    buttons in the scrollable area of the view
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Thu, 19 Feb 2009 15:47:46 +0200
+
+gtk+2.0 (2:2.12.12-1maemo8) unstable; urgency=low
+
+  * Fixes: NB#98806 - An unexpected item appears in some Email views when
+    'Enter' HW key is pressed.
+  * Fixes: NB#99342 - behaviour change for multiple selection mode
+  * Fixes: NB#93725 - Finish theming of GtkTreeView and GtkIconView
+  * Fixes: NB#99830 - Panned area panns back to the cursor and
+    doesn't stays where it is panned to
+  * Fixes: NB#95768 - Animation on CSM open is present in Bookmarks
+    view
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 06 Feb 2009 09:56:12 +0200
+
+gtk+2.0 (2:2.12.12-1maemo7) unstable; urgency=low
+
+  * Fixes: NB#93075 - Update icon size constants to Fremantle
+  * Fixes: NB#95401 - crash at IA__gdk_window_new
+  * Fixes: NB#98272 - GtkTreeSelection: Conditional jump or move
+    depends on uninitialised value(s)
+  * Fixes: NB#93161 - GTKTextView scrolls to cursor on size change
+    even if text view non-editable.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 26 Jan 2009 16:19:33 +0200
+
+gtk+2.0 (2:2.12.12-1maemo6) unstable; urgency=low
+
+  * Fixes: NB#91632 - Errors compiling gtk+ maemo version removing
+    MAEMO_CHANGES define
+
+  [ Kristian Rietveld ]
+  * add --with-maemo=yes flag to configure
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 07 Jan 2009 11:04:40 +0200
+
+gtk+2.0 (2:2.12.12-1maemo5) unstable; urgency=low
+
+  * Fixes: NB#93744: Tapping should jump to location on GtkScale
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 16 Dec 2008 12:58:42 +0100
+
+gtk+2.0 (2:2.12.12-1maemo4) unstable; urgency=low
+
+  * Fixes: NB#89408: Unable to select an item in the list picker
+  * Fixes: NB#91448: CSM shown no matter what tap-and-hold-query returns
+  * Fixes: NB#91934: Set state for gtkentry painting
+  * Fixes: NB#90883: Progressbar height change
+  * Fixes: NB#91480: GtkTreeView::hildon-ui-mode should not be construct-only
+  * Fixes: NB#88288: GtkTextView doesn't allow to paint borders around it
+    in theming.
+  * Fixes: NB#91712: Allow GtkEntry to draw progress
+  * Fixes: NB#90867: Automatically apply hildon sizing and theming to all standard
+    gtk dialogs.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Tue, 09 Dec 2008 10:20:40 +0100
+
+gtk+2.0 (2:2.12.12-1maemo3) unstable; urgency=low
+
+  * Fixes NB#89865: Remove Close-like buttons from GtkDialog
+  * Fixes NB#87440: Accelerator Labels not shown in menus created with
+    GtkUIManager
+  * Fixes NB#89611: GtkTreeView: use of an uninitialized variable
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 15 Oct 2008 13:01:36 +0300
+
+gtk+2.0 (2:2.12.12-1maemo2) unstable; urgency=low
+
+  * Add missing ca@valencia translation that broke the build.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 06 Oct 2008 12:23:35 +0300
+
+gtk+2.0 (2:2.12.12-1maemo1) unstable; urgency=low
+
+  [ Michael Natterer ]
+  * Upgrade to GTK+ 2.12.12
+
+  [ Claudio Saavedra ]
+  * Force "make clean" before "maintainer-clean" during clean to remove
+    gtk/tests binaries.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 03 Oct 2008 10:16:56 +0300
+
+gtk+2.0 (2:2.12.9-1maemo2) unstable; urgency=low
+
+  * Implements custom boolean accumulator for the tap-and-hold-query signal.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Wed, 24 Sep 2008 09:30:04 +0300
+
+gtk+2.0 (2:2.12.9-1maemo1) unstable; urgency=low
+
+  * Fixes: NB#87436 (Enter key is not handled to check/uncheck the
+    check-button in some scenarios)
+  * Misc GtkTreeView improvements.
+  * Fixes: NB#88199 (Incorrect alignment in the dialog right side buttons)
+  * New GtkTreeView::row-height style property.
+  * Set myself as the maintainer of the maemo package.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Mon, 15 Sep 2008 18:44:20 +0300
+
+gtk+2.0 (2:2.12.9-1maemo0) unstable; urgency=low
+
+  * Fixes inclusion of gtkfilechooserprivate.h in applications.
+  * Switch the debian versioning schema to use 'maemo' instead of 'osso'.
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 29 Aug 2008 13:51:07 +0300
+
+gtk+2.0 (2:2.12.9-0osso4) unstable; urgency=low
+
+  * Lot of changes, see ChangeLog.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Aug 2008 19:30:17 +0300
+
+gtk+2.0 (2:2.12.9-0osso3) unstable; urgency=low
+
+  * gtk/tests/treeview-hildon.c: s/g_return_if_fail/g_assert/.
+  * Implement GtkIconView behavior changes that are only in effect
+    when the hildon-mode style property is set to HILDON_FREMANTLE.
+  * gtk/gtkiconview.c (gtk_icon_view_class_init),
+    (gtk_icon_view_init), gtk_icon_view_[gs]et_property),
+    (gtk_icon_view_set_hildon_ui_mode): introduce hildon-ui-mode property,
+    (gtk_icon_view_style_set): reset hildon-ui-mode,
+    (gtk_icon_view_expose): draw tickmark over item when necessary,
+    (gtk_icon_view_motion), (gtk_icon_view_button_press),
+    (gtk_icon_view_button_release): add new-style row selection and
+    activation behaviors,
+    (gtk_icon_view_set_cursor),
+    (gtk_icon_view_move_cursor_up_down),
+    (gtk_icon_view_move_page_up_down),
+    (gtk_icon_view_move_cursor_left_right),
+    (gtk_icon_view_move_cursor_start_end): disable cursor movement in
+    new-style,
+    (verify_items), (gtk_icon_view_row_inserted),
+    (gtk_icon_view_row_deleted): enforce one-must-be-selected rule,
+    (gtk_icon_view_set_selection_mode): guard changes to selection mode in
+    normal-mode,
+    (free_queued*item): new functions.
+  * gtk/tests/Makefile.am:
+  * gtk/tests/iconview-hildon.c: add selftest.
+  * tests/Makefile.am:
+  * tests/testhildoniconview.c: add interactive test.
+  * Implement GtkTreeView behavior changes that are only in effect
+    when the hildon-mode style property is set to HILDON_FREMANTLE.
+  * gtk/gtkenums.h: add HildonUIMode.
+  * gtk/gtktreeview.c (gtk_tree_view_class_init),
+    (gtk_tree_view_init), gtk_tree_view_[gs]et_property),
+    (gtk_tree_view_set_hildon_ui_mode): introduce hildon-ui-mode property,
+    (gtk_tree_view_size_allocate_columns): allocate size for the
+    tickmark when needed,
+    (validate_row): request space for tickmark when needed,
+    (gtk_tree_view_bin_expose): render tickmark when needed,
+    (gtk_tree_view_button_press), (gtk_tree_view_button_release),
+    (gtk_tree_view_motion_bin_window), (gtk_tree_view_real_set_cursor):
+    add new-style row selection and activation behaviors,
+    (gtk_tree_view_style_set): reset hildon-ui-mode,
+    (gtk_tree_view_row_inserted), (gtk_tree_view_row_deleted),
+    (gtk_tree_view_set_model): enforce one-must-be-selected rule,
+    (gtk_tree_view_focus_to_cursor),
+    (gtk_tree_view_move_cursor_start_end): disable cursor,
+    (free_queued_*row): new functions.
+  * gtk/gtktreeprivate.h: add newly needed fields.
+  * gtk/gtktreeselection.c (gtk_tree_selection_set_mode): guard
+    changes to selection mode in normal-mode,
+    (_gtk_tree_selection_row_is_selectable): in normal-mode, no
+    rows are selectable,
+    (_gtk_tree_selection_internal_select_node): enforce
+    one-must-be-selected rule.
+  * gtk/tests/Makefile.am:
+  * gtk/tests/treeview-hildon.c: add selftest.
+  * tests/Makefile.am:
+  * tests/testhildontreeview.c: add interactive test.
+  * gtk/gtkimcontext.c (gtk_im_context_class_init):
+  * gtk/gtkentry.c (gtk_entry_class_init):
+  * gtk/gtktextview.c (gtk_text_view_class_init): use
+    HILDON_TYPE_GTK_INPUT_MODE instead of GTK_TYPE_GTK_INPUT_MODE.
+  * gdk/Makefile.am:
+  * gdk-pixbuf/Makefile.am:
+  * gtk/Makefile.am:
+  * perf/Makefile.am: do not hard code the prefix of the enum,
+    use @ENUMPREFIX@ instead.
+  * gtk/gtkwidget.c (gtk_widget_class_init): use HILDON_TYPE_MODE
+    for the hildon-mode style property instead of GTK_TYPE_MODE.
+  * gtk/gtkenums.h: add a temporary define to map
+    GTK_TYPE_GTK_INPUT_MODE to HILDON_TYPE_GTK_INPUT_MODE.
+  * Merge the testing framework and all unit tests from upstream
+    trunk as of today (too many commits in upstream to have their
+    ChangeLog entries copied here, thus only a summary):
+  * configure.in: depend on glib >= 2.15.0, add gtk/tests/Makefile
+  * Makefile.decl: makefile snippet to be included by all other
+    makefiles to put the test rules in place.
+  * */Makefile.am: include Makefile.decl in all makefiles.
+  * gdk/gdktestutils.h: new GDK test utils header.
+  * gdk/gdk.h: include it.
+  * gdk/gdk.symbols: add its symbols.
+  * gdk/directfb/gdktestutils-directfb.c
+  * gdk/quartz/gdktestutils-quartz.c
+  * gdk/win32/gdktestutils-win32.c
+  * gdk/x11/gdktestutils-x11.c: implement it in the various
+    backends.
+  * gtk/gtktestutils.[ch]: new GTK+ test utils files.
+  * gtk/gtk.h: include it.
+  * gtk/gtk.symbols: add its symbols.
+  * gtk/tests/pixbuf-init.c
+  * gtk/tests/textbuffer.c
+  * gtk/tests/defaultvalue.c
+  * gtk/tests/filechooser.c
+  * gtk/tests/floating.c
+  * gtk/tests/treeview-scrolling.c
+  * gtk/tests/builder.c
+  * gtk/tests/object.c
+  * gtk/tests/liststore.c
+  * gtk/tests/recentmanager.c
+  * gtk/tests/treestore.c
+  * gtk/tests/testing.c: unit tests. Some are moved from toplevel/tests
+    (note that these are not removed from there in maemo-gtk, but they
+    don't hurt either and toplevel/tests will by synced with upstream
+    on the next gtk upgrade). Some tests had to be edited because
+    they test vnew features of trunk that are not yet available in
+    maemo-gtk.
+  * Merge pixmap redirection code from upstream trunk, consisting of
+    the 8 indented commits below. Merged all commits completely even
+    if they affect unrelated files or non-X11 backends in order to
+    make applying of future offscreen rendering patches easier:
+  * gdk/gdk.symbols: Remove duplicate
+    gdk_window_redirect_to_drawable and gdk_window_remove_redirection
+  * gtk/gtk.symbols: Remove duplicate gtk_widget_get_snapshot
+  * **/makefile.msc gtk/makefile.msc.in : updated
+  * gtk/gtkwidget.c : fix c99ism (variable at start of block
+  * gdk/gdk.symbols gtk/gtk.symbols : export functions for window 
+    redirection
+  * gtk/gtkfilechooserdefault.c : #include <locale.h> for 
+    setlocale(LC_ALL, ...)
+  * gdk/gdk.symbols: Add gdk_window_redirect_to_drawable and
+    gdk_window_remove_redirection.
+  * gdk/win32/gdkwindow-win32.c (_gdk_window_new)
+    (_gdk_window_reparent): Rename to adapt to the offscreen rendering
+    changes. Remove now unnecessary parameter checks as the caller
+    does that already.
+  * gtk/gtk.symbols: Add gtk_widget_get_snapshot.
+  * gdk/quartz/gdkwindow-quartz.c:
+    (_gdk_window_new), (_gdk_window_reparent): Renamed to adapt to the
+    offscreen rendering changes, fixes build.
+  * gtk/gtkwidget.c: guard gtk_widget_get_snapshot() against
+    invalid or invisible widgets.
+  * gtk/gtkwidget.h: added GdkRectangle *clip_rect to gtk_widget_get_snapshot().
+  * gtk/gtkwidget.c: clip the returned snapshot pixmap to clip_rect.
+    return snapshot pixmap coordinates widget relative in *clip_rect.
+  * tests/testgtk.c: fixed bogus NULL pointer unref.
+  * gtk/gtkwidget.c gtk_widget_get_snapshot(): grow snapshot area from
+    widget's allocation to cover extra widget windows placed outside the
+    widget allocation (spinbutton arrows are the prime example for this).
+  * Applied pixmap redirection patch by Alexander Larsson with
+    various updates from:
+    Bug 318807 – Offscreen windows and window redirection.
+    Updates:
+  * updated docs to mention "Since 2.16".
+  * tests/testgtk.c: fixed snapshooting pixmap leak.
+    convert pixmap to pixbuf after snapshooting, to compensate for different
+    bit depths (occurs when snapshooting ARGB visuals and displaying the
+    pixmap in an RGB visual).
+  * gdk/gdkwindow.[hc]: made GdkWindowRedirect private.
+  * gdk/gdkwindow.c: removed damage idle handler, there's no aparent
+    need for it. enqueue damage notification as GDK_DAMAGE events
+    for each painting redirection at the start of the event queue.
+    consider windows with a redirection fully visible when invalidating,
+    and when updating from backing store. cleaned up stale variables.
+  * gdk/gdkevents.c: added _gdk_event_queue_prepend().
+  * gtk/gtkwidget.c: fixed coordinates for !NO_WINDOW widgets in
+    gtk_widget_get_snapshot; this fixes garbage snap offsets for gammacurve,
+    tree, drawingarea, text, handlebox, etc.
+    clip the redirected window hierarchy to window sizes, the visible
+    rectangles don't need to be taken into account here.
+    extended snapshooting docs to recommend gdk_pixbuf_get_from_drawable()
+    in case pixmap visuals could mismatch.
+  * gdk/x11/gdkwindow-x11.c: removed _gdk_windowing_window_get_visible_rect().
+  * tests/testgtk.c: add a "Snapshot" test to demonstrate snapshooting
+    of possibly obscured widgets into an offscreen pixmap.
+  * gtk/gtkwidget.[hc]: add GtkWidget::damage-event signal, add
+    gtk_widget_get_snapshot() to render a widget's contents to a GdkPixmap.
+  * gtk/gtkmain.c: dispatch GDK_DAMAGE events.
+  * gdk/gdkwindow.c: moved outer gdk_window_new() and gdk_window_reparent()
+    implementations here, adapted them to propagate redirects to child windows.
+    gdk_window_end_paint(): copy repainted window contents to redirection pixmap,
+    clipped to visible region. queue GDK_DAMAGE event delivery.
+    gdk_window_redirect_to_drawable(): install window painting redirection.
+    gdk_window_remove_redirection(): remove previously installed redirection.
+  * gdk/x11/gdkwindow-x11.c: added _gdk_windowing_window_get_visible_rect(),
+    renamed _gdk_window_new() and _gdk_window_reparent().
+  * gdk/gdkwindow.h: added GdkWindowRedirect* to GdkWindowObject, export
+    gdk_window_redirect_to_drawable() and gdk_window_remove_redirection().
+  * gdk/gdkevents.h: added GDK_DAMAGE event type.
+  * gdk/gdkevents.c: extract time and state from GDK_DAMAGE events.
+  * gdk/gdkinternals.h: added internal prototypes.
+  * gtk/gtkentry.[hc]: introduced hildon_gtk_entry_set_progress_adjustment()
+    to set an adjustment as progress indicator on GtkEntry widgets.
+  * Fixes: NB#86115: maemo-launcher does not work with
+    gtk_init_with_args(). Merged from upstream trunk:
+  * Bug 537985 – gtk_init_with_args() doesn't open a display after
+    gtk_parse_args()
+  * gtk/gtkmain.c (gtk_init_with_args): Open the default display
+    even when gtk_parse_args() has already been called.
+    Patch by Mathias Hasselmann
+
+ -- Karl Lattimer <karl.lattimer@nokia.com>  Mon, 30 Jun 2008 14:08:03 +0300 
+
+gtk+2.0 (2:2.12.9-0osso2) unstable; urgency=low
+
+  * gtk/gtkentry.c (gtk_entry_set_progress_adjustment): new function to
+    set an adjustment as progress indicator on GtkEntry widgets. Tim Janik
+    <timj@imendio.com>
+  * gtk/gtkdialog.c (gtk_dialog_init): change the layout of the
+    dialog so the buttons appear vertically on the right side. Alberto Garcia
+    <agarcia@ig\alia.com>
+  * gtk/gtkmenushell.c (gtk_menu_shell_button_release): one part of
+    the 2-12 upgrade patch got lost, making all menus behave
+    unpredictable-to-unusable. Should be fixed now. Michael Natterer
+    <mitch@imendio.com>
+  * gtk/gtkenums.h:
+  * gtk/gtkwidget.c (gtk_widget_class_init): introduce hildon-mode
+    style property. Kristian Rietveld  <kris@imendio.com>
+
+ -- Karl Lattimer <karl.lattimer@nokia.com>  Thu, 12 Jun 2008 13:40:00 +0300
+
+gtk+2.0 (2:2.12.9-0osso1) unstable; urgency=low
+
+  * Upgrade to GTK+ 2.12.9
+
+ -- Michael Natterer <mitch@imendio.com>  Fri, 23 May 2008 11:11:11 +0100
+
+gtk+2.0 (2:2.10.12-0osso35) unstable; urgency=low
+
+  * Fixes: NB#79639: Display is freezed when file location combobox is tapped while opening a page
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 28 Apr 2008 12:25:00 +0200
+
+gtk+2.0 (2:2.10.12-0osso34) unstable; urgency=low
+
+  * Introduce a changed signal for GtkCellRendererCombo to be able to fix NB#80708.
+  * Change how GtkMenu's "context_menu" flag gets set. Fixes: NB#80760: context sensitive menu disappears 
+    after stylus releasing
+  * Fixes: NB#77057: two submenus are closed in web plugin menu when last submenu is empty or has no 
+    focus set.
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Wed, 16 Apr 2008 12:33:00 +0200
+
+gtk+2.0 (2:2.10.12-0osso33) unstable; urgency=low
+
+  * Proxy tap and hold signals for the GtkButton inside GtkToolButton.
+    Fixes: NB#79312.
+  * Fix prototype for gdk_close_all_temporary_windows. Fixes: MB#2493
+  * Don't use g_free to free GObjects (that we don't even own) in text
+    buffer serialization code. Fixes: NB#77296
+  * Short circuit gtk_tree_model_filter_row_inserted when an empty root
+    level would be built. Fixes: NB#78691
+  * Introduce CellDataFunc hint functionality for GtkTreeViewColumn.
+    Fixes: NB#78800
+  * Plug various leaks. Fixes: NB#503569, NB#78606
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 05 Mar 2008 13:55:02 +0200
+
+gtk+2.0 (2:2.10.12-0osso32) unstable; urgency=low
+
+  * Remove spurious bugs from changelog.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 27 Nov 2007 13:00:55 +0200
+
+gtk+2.0 (2:2.10.12-0osso31) unstable; urgency=low
+
+  * Remove debug output in GtkMenu. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Nov 2007 18:10:58 +0200
+
+gtk+2.0 (2:2.10.12-0osso30) unstable; urgency=low
+
+  * Revert setting activate_time to 0 on gtk_menu_popup when button
+    is 0.
+  * Do not use show_now on gtk_menu_popup to show the menu toplevel,
+    it breaks submenus in some cases.
+  * Remove visibility-notify-event crack from GtkMenu, it's useless.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Nov 2007 17:58:51 +0200
+
+gtk+2.0 (2:2.10.12-0osso29) unstable; urgency=low
+
+  * Do not store activate_time for menus not opened on button_press.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 21 Nov 2007 13:51:49 +0200
+
+gtk+2.0 (2:2.10.12-0osso28) unstable; urgency=low
+
+  * Reverting last change, Core fixed it in their side. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Nov 2007 15:48:37 +0200
+
+gtk+2.0 (2:2.10.12-0osso27) unstable; urgency=low
+
+  * Ignore N810 motion notify noise. Fixes: NB#75484 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Nov 2007 15:13:35 +0200
+
+gtk+2.0 (2:2.10.12-0osso26) unstable; urgency=low
+
+  * Set the tap and hold cursor on the root window. Fixes: NB#66174.
+  * Fix grab failure in gtk_menu_popup. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  8 Nov 2007 16:18:24 +0200
+
+gtk+2.0 (2:2.10.12-0osso25) unstable; urgency=low
+
+  * Do not recalculate state on notify::{gtk-enable-accels,gtk-enable-mnemonics} 
+    unconditionally. Fixes: NB#74392
+  * Duplicate the string returned by d[n]gettext before it is potentially
+    freed in GtkBuildParser text parser function. Fixes: NB#75039
+  * Correctly tag maemo-only functions as "Since: maemo 4.0". Fixes: NB#74140
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri,  2 Nov 2007 15:34:02 +0200
+
+gtk+2.0 (2:2.10.12-0osso24) unstable; urgency=low
+
+  * Only add toplevel widgets to the size_allocated_containers list. Fixes:
+    NB#72632 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 16 Oct 2007 14:29:10 +0300
+
+gtk+2.0 (2:2.10.12-0osso23) unstable; urgency=low
+
+  * Remove all instances of the container from the size_allocated_containers
+    list, not only the first one. Follow up to bug #71770. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  9 Oct 2007 09:58:29 +0300
+
+gtk+2.0 (2:2.10.12-0osso22) unstable; urgency=low
+
+  * Stop rubberbanding when a row is deleted, fixes crashers when rows in
+    the selection are deleted before the rubberbanding internal state is
+    updated. Fixes: NB#71834
+  * When updating the adjustments as a result of container resize
+    (resize_update=TRUE) force the focused widget visible only if it is
+    smaller than the viewport. Otherwise the updates starts to oscillate
+    between two values (possibly HildonScrollArea is causing that.)
+    That should be enough for vkb resized dialogs. Fixes: NB#71902
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  8 Oct 2007 18:09:52 +0300
+
+gtk+2.0 (2:2.10.12-0osso21) unstable; urgency=low
+
+  * Remove the container from the size_allocated_containers list when it's
+    destroyed. Fixes: NB#71770
+  * Do not set the homogeneous property to true in GtkNotebook. Fixes: NB#56537
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  8 Oct 2007 11:49:59 +0300
+
+gtk+2.0 (2:2.10.12-0osso20) unstable; urgency=low
+
+  * Make GtkEntry truncate multiline pastes by default. Fixes: NB#70531
+  * Use theming API instead of cairo for GtkIconView focus rectangle. Fixes: NB#70554
+  * Emit ::insensitive-press from GtkMenuToolButton for its internal arrow. Fixes: NB#65190
+  * Paint the gap_box in GtkNotebook with notebook_show_arrow detail when arrows are
+    shown to get correct theming. Fixes: MB#1084
+  * Return FALSE from gtk_tree_view_has_special_cell when there is only 1 special
+    cell to get the focus rectangle around the whole row. Fixes: NB#70703
+  * Do not show titlebar for GtkMessageDialog. Fixes: NB#70820
+  * Reduce the minimum width of menuitems with submenus to improve cascading a bit.
+    Fixes: NB#66036
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 28 Sep 2007 13:26:46 +0300
+
+gtk+2.0 (2:2.10.12-0osso19) unstable; urgency=low
+
+  * debian/rules: updated shlibs to osso15 because the introduction of
+    GtkBuilder API.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Tue, 25 Sep 2007 11:53:55 +0300
+
+gtk+2.0 (2:2.10.12-0osso18) unstable; urgency=low
+
+  * debian/control.in
+  * debian/control: Bump Build-Depends to libglib2.0-dev (>= 2.12.12-1osso9)
+    due to the GScanner cache addition
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Sep 2007 11:10:17 +0300
+
+gtk+2.0 (2:2.10.12-0osso17) unstable; urgency=low
+
+  * debian/control.in:
+  * debian/control: Add glib, atk, pango and cairo doc packages to build
+    dependencies to get gtk-doc crossreferences right
+  * debian/rules: --enable-gtk-doc (with nodocs DEB_BUILD_OPTIONS support)
+    (Fixes: NB#69304)
+
+  * debian/control.in:
+  * debian/control: Add gtk20-l10n to dependencies. (Fixes: NB#63541)
+
+  * Fixes: NB#57886 adjustment that was bound to a container with
+    gtk_container_set_focus_vadjustment () needs update when container is
+    resized due to vkb popping up
+  * Fixes: NB#59117 Drag'n'Drop in gtk_tree_view with multiple selection
+    broken
+  * Fixes: NB#63578 GtkButtonBox can't handle allocation < requisition
+  * Fixes: NB#66723 Heterogeneous button size for GtkButtonBox
+  * Fixes: NB#68792 [Regression] GtkTreeView: Initial focus is on column
+    headers
+  * Fixes: NB#68989 Menu scroll arrows appear in mini size
+  * Fixes: NB#69051 Unable to move the focus out of textview with no visible
+    cursor
+  * Fixes: NB#69655 Full screen, Zoom in, Zoom out functionalities does not
+    work when entry completion popup is open
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Sep 2007 10:54:43 +0300
+
+gtk+2.0 (2:2.10.12-0osso16) unstable; urgency=low
+
+  * Use the reintroduced GScanner cache. Addresses NB#61907
+  * Constrain wrap width by 85% of the screen width instead of 50% for
+    labels. Fixes: NB#63754.
+  * Repaints GtkRange at 5Hz on scrolling. Fixes: NB#59279
+  * Notebook and TreeView fixes.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Mon, 17 Sep 2007 17:53:55 +0300
+
+gtk+2.0 (2:2.10.12-0osso15) unstable; urgency=low
+
+  * set event->window as tah_window instead of widget->window on button-press
+    while doing tap-and-hold. Fixes: NB#66174
+  * Delay vertical auto scrolling until an additional row has been
+    selected via pen dragging. Fixes: NB#60326
+  * bail out if can-focus is FALSE on GtkTreeView. Fixes: NB#65181
+  * don't do the GTK_RBNODE_IS_PARENT check in
+    gtk_tree_view_real_expand_collapse_cursor. Fixes: NB#64664
+  * Add GtkBuilder backport from upstream gtk+.
+    Fixes: MB#1721
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 31 Aug 2007 19:23:55 +0300
+
+gtk+2.0 (2:2.10.12-0osso14) unstable; urgency=low
+
+  * Add maemo-min-size and maemo-aspect-ratio style properties for
+    GtkArrow for fine grained control of their size. Fixes: NB#66402
+  * Add "submenu" property. Fix gtk_menu_item_set_submenu() to accept
+    NULL submenus and deprecate gtk_menu_item_remove_submenu() because
+    we have a properly working setter now. Fixes: MB#1701, NB#66518
+  * Clamp GtkEntryCompletion popup to the available space. Fixes: NB#55607
+  * Add arrow-scale property for GtkMenuItem.
+  * Add again the gtk grab to the popup window in entrycompletion.
+    Fixes: NB#66055
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 31 Aug 2007 14:59:47 +0300
+
+gtk+2.0 (2:2.10.12-0osso13) unstable; urgency=low
+
+  * debian/rules: update shlibs to >= 2:2.10.12-osso13
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 20 Aug 2007 17:48:36 +0300
+
+gtk+2.0 (2:2.10.12-0osso12) unstable; urgency=low
+
+  * Improve on "row-activate on single tap, but now until button-release".
+    Fixes: MB#1481
+  * Call gtk_window_close_other_temporaries on gtk_window_map for NON temporary
+    windows. Mark the toplevel window associated to GtkMenus as temporary, and
+    make it ignore delete-events when it is unmapped. Fixes: NB#56624
+    gtk_window_close_other_temporaries is now public, ** This is a new unstable API. **
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 17 Aug 2007 14:59:55 +0300
+
+gtk+2.0 (2:2.10.12-0osso11) unstable; urgency=low
+
+  * Send the insensitive-press signal if there is no grab widget or the
+    event widget is the grab widget.
+  * Do not select item on treeview when it's already selected an it's the
+    only item in the widget. Fixes: NB#60882
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 13 Aug 2007 15:49:13 +0300
+
+gtk+2.0 (2:2.10.12-0osso10) unstable; urgency=low
+
+  * Do not validate all the whole string unconditionally in
+    gtk_entry_filter_text. Fixes: NB#6478
+  * Revert the closing of all the temporary windows on window map. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  9 Aug 2007 16:23:27 +0300
+
+gtk+2.0 (2:2.10.12-0osso9) unstable; urgency=low
+
+  * Set hildon-input-mode property upon object construction. Fixes: NB#6295
+  * Send insensitive-press only	if the grab widget is our ancestor. Fixes: NB#63196
+  * Do a _gtk_entry_completion_resize_popup on the entry's size_allocate. Fixes: NB#63404
+  * Use _NET_INPUT_AREAS to decide GtkEntryCompletion popup positioning. Fixes: NB#55607
+  * Add gtk_file_info_set_icon_pixbuf. Fixes: NB#N64277
+  * Allow to use accelerators while the menu is open. Fixes NB#63378.
+  * Close all temporary windows each time a window is mapped, excluding
+    the new window if it were a temporary window itself. Fixes: NB#52664
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu,  2 Aug 2007 18:59:08 +0300
+
+gtk+2.0 (2:2.10.12-0osso8) unstable; urgency=low
+
+  * Use gtk-dnd-drag-threshold (which is 30) instead of a hardcoded
+    value of 20 pixels when deciding whether to pop down context menus
+    when the user drags the stylus outside the menu. Fixes: NB#61512
+  * Make Up/Down behave like Up/Down insteaf of TAB_BACKWARD/FORWARD in
+    GtkRadioButton. Fixes: NB#62251
+  * Do not add grabs for GtkEntryCompletion popup. Fixes: NB#60874
+  * Avoid infinite recursion by not forwarding insensitive press events back to
+    GtkMenuShell from GtkMenuShell. Fixes: NB#53311
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri,  6 Jul 2007 15:31:26 +0300
+
+gtk+2.0 (2:2.10.12-0osso7) unstable; urgency=low
+
+  * Rename gtk_window_is_temporary to gtk_window_set_is_temporary and
+    gtk_window_set_temporary to gtk_window_set_is_temporary 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 29 Jun 2007 14:48:22 +0300
+
+gtk+2.0 (2:2.10.12-0osso6) unstable; urgency=low
+
+  *** NOTE: This release adds new (unstable) API ***
+
+  * Add helper function to close all temporary windows: gdk_close_all_temporary_windows
+  * Don't overwrite insensitive state on menu's scroll arrows, Fixes: NB#59210
+  * Move the ::move-focus signal to GtkWidget, taken from upstream 2.11.x
+  * Mark GtkComboBox, GtkEntryCompletion and GtkMenu (indirectly) as temporary.
+    Fixes: NB#59773
+  * Make GtkWindow listen to the _GTK_DELETE_TEMPORARIES ClientEvent. When it's
+    received, it will broadcast the ::delete-event to all toplevel windows marked
+    with the "temporary" property. Also, of course, add the temporary property
+    to GtkWindow.
+  * Make GtkComboBox and GtkEntryCompletion handle ::delete-event to close
+    their popups.
+  * Fix GTK_BUTTONBOX_CENTER miscalculation in centering code.
+    Fixes: NB#61092, MB#1120
+  * Drop MAEMO_CHANGES code to use _NET_WM_STATE data on the object as
+    property mode for XChangeProperty.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 28 Jun 2007 15:08:37 +0300
+
+gtk+2.0 (2:2.10.12-0osso5) unstable; urgency=low
+
+  * Remove MAEMO_CHANGES code to move focus in TAB_FORWARD direction on the
+    default handler for activate in GtkEntry when activates-default is not
+    set.
+  * Take MAEMO_CHANGES into account when validating image flags in the
+    iconcache validator since we've extended them.
+  * Add HILDON_GTK_INPUT_MODE_MULTILINE to hint widgets capable of receiving
+    multiple lines of text.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 15 Jun 2007 13:57:02 +0300
+
+gtk+2.0 (2:2.10.12-0osso4) unstable; urgency=low
+
+  * Switch submenu opening direction only if the opposite direction has
+    more space than the current one. Fixes: NB#50636
+  * Fix inconsistency in SAVED_STATE of a widget hierarchy in some situations.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  5 Jun 2007 14:21:34 +0300
+
+gtk+2.0 (2:2.10.12-0osso3) unstable; urgency=low
+
+  * debian/control.in:
+  * debian/control: Bump glib Build-Depends to 2.12.12-1osso2 due to
+    introduction of GObjectClass.constructed.
+    Add libxtst-dev as build dependency.
+  * Fix gtk_action_set_short_label to use always the short_label, Fixes:
+    NB#53826
+  * Emit synthetized press/release button events from GtkMenuShell on
+    deactivation. Fixes: NB#58347
+  * Back out _gtk_menu_shell_set_first_click() and its logic.
+    Fixes: NB#57827, NB#57787, NB#5777
+  * Remove duplicate call to _gdk_event_button_generate() in
+     gdk/x11/gdkinput-x11.c:_gdk_input_common_other_event()
+  * Add implementation of DragDestInterface to GtkTreeModelFilter.
+    Fixes: NB##50640
+  * Allow Maemo specific hooks after widget construction by calling
+    them from GObjectClass.constructed.
+  * Use SCROLL_DELAY_FACTOR (5) in GtkMenu to slow down the scrolling
+    and use gtk-timeout-initial rather than gtk-timeout-repeat to not
+    start the scrolling so quickly.
+  * Misc fixes to GtkMenuShell.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 28 May 2007 15:09:06 +0300
+
+gtk+2.0 (2:2.10.12-0osso2) unstable; urgency=low
+
+  * Allow NULL models on gtk_combo_box_set_model. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 21 May 2007 15:45:36 +0300
+
+gtk+2.0 (2:2.10.12-0osso1) unstable; urgency=low
+
+  * Fix "make maintainer-clean" to only remove generated files.
+  * Upgrade to GTK+ 2.10.12. Fixes: NB#43972, NB#54788, MB#1169
+  * Make GtkMenu scroll arrows scroll by item. Fixes: NB#56638
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 21 May 2007 14:41:08 +0300
+
+gtk+2.0 (2:2.10.6-0osso13) unstable; urgency=low
+
+  * Import bugfixes for GtkTextView from upstream. Fixes: NB#54825
+  * Add Gtk/EnableAccels and Gtk/EnableMnemonics xsettings
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 14 May 2007 11:14:04 +0300
+
+gtk+2.0 (2:2.10.6-0osso12) unstable; urgency=low
+
+  * Add opposite-arrows style property (Note: naming is temporary, don't use
+    it yet) to GtkMenu. It moves the arrows side by side to the bottom of the
+    menu. Fixes: NB#51958
+  * Close the menu on MENU_DIR_PARENT even if it has no submenu. Fixes: NB#53787
+  * Stop the rubber banding on GtkTreeView's grab_notify if it was active.
+    Fixes: NB#55148
+  * Misc. cleanups in GtkMenu.
+  * Partial: NR#167813
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 10 May 2007 18:14:40 +0300
+
+gtk+2.0 (2:2.10.6-0osso11) unstable; urgency=low
+
+  * Send insensitive press event to the event widget instead of the grab
+    widget. Fixes: NB#54535
+  * Back out  "keep focussed child visible when size changes" feature from
+    gtkscrolledwindow.
+  * Added arrow-scalling style property to GtkArrow to control the
+    arrow/border ration within the allocation.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 25 Apr 2007 10:38:19 +0300
+
+gtk+2.0 (2:2.10.6-0osso10) unstable; urgency=low
+
+  * Don't close menus on clicks on their border area.
+  * Fix treeview focusing with button press.
+  * Add "maemo-position-theming" style property, used in sapwood to add
+    positioning data to the matching rules.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 16 Apr 2007 11:07:02 +0300
+
+gtk+2.0 (2:2.10.6-0osso9) unstable; urgency=low
+
+  * HILDON_GTK_INPUT_MODE_DICTIONARY added
+  * GtkMenuItem background drawn around the submenu arrow (needs theme update
+    for correct looks)
+  * Do not use GTK_WINDOW_TYPE_HINT_MENU for all menus (needs fix for MB#1141
+    for correct behavior)
+  * API documentation updates.
+  * debian/rules: Do not compress index.sgml files so that gtkdoc-fixxref can
+    access those and generate better cross reference when building hildon API
+    docs.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 29 Mar 2007 17:16:37 +0300
+
+gtk+2.0 (2:2.10.6-0osso8) unstable; urgency=low
+
+  *** NOTE: starting with this version we are ABI incompatible with maemo gtk+
+   2.6 ***
+
+  * Remove all the stubs from the header files.
+  * Add MAEMO_CHANGES protection to the DISABLE_XSHM feature.
+  * Stop supporting TYPE_HINT_MESSAGE. TYPE_HINT_NOTIFICATION is the new
+    black.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Mar 2007 16:51:16 +0200
+
+gtk+2.0 (2:2.10.6-0osso7) experimental; urgency=low
+
+  * Back out maemo icon theme load order patch.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  5 Mar 2007 17:31:20 +0200
+
+gtk+2.0 (2:2.10.6-0osso6) experimental; urgency=low
+
+  * Menu changes to menu item drawing when there's a submenu
+  * Use full widget width for popup in combombox when using list-mode 
+  * Back out checkboxmode from cellrenderertoggle
+  * Pop down combobox with F4 and F5
+  * GtkIconView selection drawing fixes
+  * Adapt progressbar minimum height to maemo specs
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Feb 2007 12:39:00 +0200
+
+gtk+2.0 (2:2.10.6-0osso5) experimental; urgency=low
+
+  * libgtk2.0-0.files: remove im-xim as unnecessary and in some cases harmful
+  * libgtk2.0-0.postinst: call hildon-theme-recache-all to regenerate theme
+    cache files (Fixes: MB#1024)
+  * Fixes: NB#38065 input method not return to VKB mode when connection is set
+    to offline mode and hw keyboard is actived
+  * Added gdk_event_request_motions () and use it all over the code
+  * Add GTK_BUTTONBOX_CENTER mode for GtkButtonBox and use it in GtkDialog
+  * Fix a problem with large ythickness in GtkFrame
+  * Add tree-view-separator-area style property for GtkButton, used to reserve
+    space between headers and content area in treeview
+  * Port over remaining logic changes in GtkMenu from maemo-gtk-2.6 (select
+    first item on opening, automatic popdown of obscured menus, ...)
+  * Reduce scratch image sizes
+  * Add content-area-spacing style property for GtkDialog
+  * Fix extension events
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 16 Feb 2007 15:22:32 +0200
+
+gtk+2.0 (2:2.10.6-0osso4) experimental; urgency=low
+
+  NOTE: Please remember you need to add "MAEMO_CHANGES" to your compilation
+  flags if you're using any of the Maemo GTK+ API.
+  See http://maemo.org/maemowiki/MaemoGtk210Overview for a review of the API.
+
+  * Pen dragging suport for GtkTreeView
+  * autodimmed property for GtkComboBox
+  * Fix scroll arrow backgrounds painting
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  6 Feb 2007 12:11:16 +0200
+
+gtk+2.0 (2:2.10.6-0osso3) experimental; urgency=low
+
+  * Backport from trunk:
+    - GtkComboBox keynav.
+    - Infrastructure and notification of failed navigation.
+    - GtkProgressBar style properties.
+    - GtkWidget::insensitive-press signal.
+    - gtkrc files parsing order.
+    - revert generic disabling of PRELIGHT state.
+    - Change GtkMenu window type, auto-select first item, various
+      drawing updates.
+  * Misc:
+    - Change MAEMO_CHANGES comments to #ifdef/#endif to allow conditionalized
+      inclusion of maemo-gtk changes during compilation.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 31 Jan 2007 15:12:14 +0200
+
+gtk+2.0 (2:2.10.6-0osso2) unstable; urgency=low
+
+  * Restore API compatibility with maemo gtk+ 2.6
+
+  * Add "fill-level" property to GtkRange
+
+  * Export symbols for implementing GtkFileChooser interface outside gtk:
+    - hildon_gtk_file_chooser_install_properties
+    - gtk/gtkfilesystemmodel.h, gtk/gtkfilechooserprivate.h,
+      gtk/gtkfilechooserutils.h
+  * Add stubs for removed / replaced API:
+    - gtk_widget_{get,set}_hildon_focus_handling
+    - osso_gtk_range_{get,set}_stream_indicator
+    - osso_gtk_range_{get,set}_stream_position
+    - gtk_style_lookup_logical_color
+    - gtk_text_buffer_{get,set}_can_paste_rich_text
+    - gtk_text_buffer_{get,set}_rich_text_format
+    - hildon_gtk_file_system_create
+    - gtk_file_system_render_icon
+    - hildon_gtk_button_set_depressed
+    - close signal (GtkMenuShell)
+    - "checkbox-mode" (GtkCellRendererToggle)
+  * Empty stubs:
+    - hildon_gtk_text_view_{get,set}_input_mode
+    - gtk_window_{get,set}_prev_focus_widget
+    - osso_gtk_button_set_detail_from_attach_flags
+    - osso_gtk_button_attach_details
+    - hildon_gtk_entry_{get,set}_input_mode
+    - invalid-input signal (GtkEntry)
+  * Restore the maemo API:
+    - tap'n'hold (GtkWidget, GtkContainer, GtkTreeView)
+    - insensitive-press signal (GtkWidget, GtkToolButton)
+    - row-insensitive signal (GtkTreeView)
+    - gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_has_selection
+    - hildon_gtk_im_context_{copy,cut,paste}
+    - HILDON_ICON_SIZE_{26,40,50,64}
+
+  * debian/rules:
+    - do not install .cvsignore files in gtk2.0-examples package
+    - Prefer HW floating points (via DEB_BUILD_OPTIONS=vfp)
+  * debian/control: Build-Depend on libtool >= 1.5.12 to handle four digits in
+    version
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 18:27:03 +0200
+
+gtk+2.0 (2:2.10.6-0osso1) unstable; urgency=low
+
+  * Upgrade to 2.10.6 ** ALL MAEMO PATCHES DROPPED
+    - debian/control:
+      + Build-Depend on libglib2.0-dev >= 2.12.0, libpango1.0-dev >= 1.12.0,
+        libatk1.0-dev >= 1.9.0, libcairo2-dev >= 1.2.0
+      + libgtk2.0-dev: updated depends versions, depend on libcairo2-dev
+  * debian/libgtk2.0-0.files: Remove maemo-gtk-im-switch which is not in
+    upstream
+  * debian/rules: update shlibs to >= 2:2.10.6
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  3 Nov 2006 15:03:54 +0200
+
+gtk+2.0 (2:2.6.10-2.osso21) unstable; urgency=low
+
+  [ Tommi Komulainen ]
+  * Fixes: NB#37295 Scrolling through calendar is too fast using hardkeys
+  * Help sapwood to fix NB#35602
+
+  [ Xan López ]
+  * Fixes: NB#43257 accounts ; account setup ; "googlemail.co.uk" is cut off
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 26 Oct 2006 15:00:18 +0300
+
+gtk+2.0 (2:2.6.10-2.osso20) unstable; urgency=low
+
+  [ Tommi Komulainen ]
+  * Fixes: NB#43513 Menus are set transient to the wrong window
+
+  [ Xan López ]
+  * Fixes: NB#42621 Text is not correctly aligned in HildonNote notifications
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 17 Oct 2006 16:26:52 +0300
+
+gtk+2.0 (2:2.6.10-2.osso19) unstable; urgency=low
+
+  * Fixes: NB#41981 GtkTreeSelection does not pick up the initial selection
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  6 Oct 2006 23:54:48 +0300
+
+gtk+2.0 (2:2.6.10-2.osso18) unstable; urgency=low
+
+    * Fixes: NB#42165 GtkComboBox prevents parent window from having its
+    background painted
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed,  4 Oct 2006 15:27:43 +0300
+
+gtk+2.0 (2:2.6.10-2.osso17) unstable; urgency=low
+
+  * The previous tag had some experimental code, making a proper release now.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Oct 2006 11:17:24 +0300
+
+gtk+2.0 (2:2.6.10-2.osso16) unstable; urgency=low
+
+  * Fixes: NB#41908 update_checkbox_mode function in Maemo modified gtk leaks
+    memory
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Oct 2006 11:17:24 +0300
+
+gtk+2.0 (2:2.6.10-2.osso15) unstable; urgency=low
+
+  * The CodeCamp release.
+
+  [ Tommi Komulainen ]
+  * Allow disabling XSHM usage by setting GDK_DISABLE_XSHM environment
+    variable (for NB#22173)
+  * Increase treeview column header resizing area width
+  * Fixes: NB#4379 GtkMenu - Initial focus missing on the menuitem.
+  * Fixes: NB#18559 NOKGTK-48 GtkScrolledWindow: not handling hiding child
+    widgets
+  * Fixes: NB#22069 Focus indicated incorrectly in the file manager
+  * Fixes: NB#22403 No API to de-initialize tap-and-hold i.e. to get rid of
+    the associated 40KB animation
+  * Fixes: NB#31766 GtkTreeView scrollbar redrawn when adding/removing rows in
+    collapsed branches
+  * Fixes: NB#33725 GtkArrow graphics are clipped
+  * Fixes: NB#36935 Checkbox in ListViews cannot be checked with HW key
+  * Fixes: NB#40428 AF-BAT:Calendar pop-up does not reflect the correct
+    first_weekday on changing region.
+  * Fixes: NB#41002 Tap and hold menu can cause a segmentation fault with
+    specific widget configuration
+
+  [ Xan López ]
+  * Fixes: NB#23025 GtkCalendar arrows not shown correctly
+  * Fixes: NB#37326 The Separator for combobox doesn't work
+  * Fixes: NB#38922 "Cursur" is getting bold when tab space key
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 22 Sep 2006 17:27:57 +0300
+
+gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
+
+  [ Tommi Komulainen ]
+  * Extension events are now always enabled for touchscreen
+  * Package new style debugging symbols (Fixes: NB#40541)
+    - debian/control.in:
+      + rename libgtk2.0-dbg to libgtk2.0-0-dbg
+      (Conflicts: and Replaces: libgtk2.0-dbg)
+    - debian/rules:
+      + remove extra cruft that used to handle debug versions of libraries
+      + adjust to new package name
+      + call dh_strip with --dbg-package=libgtk2.0-$(soname)
+    - debian/libgtk2.0-dbg.dirs, debian/libgtk2.0-dbg.files: removed
+  * Fixes: NB#22354 Minor memory leak in Gtk selection handling
+  * Fixes: NB#40033 Menu HW key does not close combobox popup
+
+  [ Xan López ]
+  * Fixes: NB#3490 TreeView not scrolling to first row
+  * Fixes: NB#22230 GtkNoteBook: Right arrow head is not shown when the
+    caption text of tab is very long.
+  * Fixes: NB#31582 "grab-notify" signal not correctly propagated for internal children
+  * Fixes: NB#36265, MB#759 "Close" button is different in GtkAboutDialog
+  * Fixes: NB#40316 Combobox leaks treeview
+  * Fixes: NB#40560 Ellipsized label width is not correctly computed.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 13:44:53 +0300
+
+gtk+2.0 (2:2.6.10-2.osso13) unstable; urgency=low
+
+  * Fixes: NB#11656 Withdrawn windows staying around
+  * Fixes: NB#23240 _gtk_im_module_get_default_context_id returns a duplicated
+    string as const char *
+  * Fixes: NB#37624 Focus in the content pane is not consistent with user
+    action
+  * Fixes: NB#39901 Tapping on dimmed row loses focus
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 11 Sep 2006 14:45:38 +0300
+
+gtk+2.0 (2:2.6.10-2.osso12) unstable; urgency=low
+
+  * Fixes: NB#35221 Having a property to set the png compression level would
+    be convenient.
+  * Fixes: NB#39784 Tap'n'hold on selected non-focused row clears selection
+  * Fixes: NB#37442,NB#37456 scrolling to the top/bottom of a file tree
+    doesn't scroll enough for the extreme of the selection
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 18:31:38 +0300
+
+gtk+2.0 (2:2.6.10-2.osso11) unstable; urgency=low
+
+  * Fixes: NB#30986,NB#37050,NB#37495 GtkComboBox popup remains when switching
+    to home using the hardware button
+  * Fixes: NB#33737 Formattings are lost at destination with copy-paste
+    operation
+  * Fixes: NB#37624,NB#37868 dimmed items in gtktreeview shouldn't be
+    focusable
+  * Fixes: NB#38982 Blinking behavior is different for centered alignment.
+  * Partially fixes NB#21506
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 12:45:15 +0300
+
+gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
+
+  * Fixes: NB#34004,NB#36078 combobox doesn't move to selected value in the
+    first time active
+  * Fixes: NB#34112 Popup in GtkComboBoxEntry when pressing return
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 28 Aug 2006 16:41:58 +0300
+
+gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
+
+  * Fixes: MB#724 submenu disappears immediately when popped up
+  * Fixes: NB#29343 GtkTreeView emits 'row-activated' signals inconsistently
+  * Fixes: NB#31719 "insensitive press" or similar signal not working on
+    disabled combobox
+  * Fixes: NB#33601 Addressbook and file manager: CSM are too agressively
+    dimmed
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 24 Aug 2006 11:03:03 +0300
+
+gtk+2.0 (2:2.6.10-2.osso8) unstable; urgency=low
+
+  * debian/control.in: remove obsolete xlibs-dev from Build-Depends
+  * Correctly checks for RANDR and SYNC extensions
+  * Fixes: NB#33120 AF-BAT:Calendar date labels are not updated when
+    switching languages
+  * Fixes: MB#707 GtkButton Images won't show if the button is created without
+    a label
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 20 Jul 2006 12:23:44 +0300
+
+gtk+2.0 (2:2.6.10-2.osso7) unstable; urgency=low
+
+  * Proper fix for NB#26600
+  * Fixes: NB#32507 Filemanager crashes when backup files are deleted from the
+    MMC card
+  * Fixes: NB#34607 Bookmarks application crashed.
+  * Fixes: NB#34609 File manager crashes after folder has been renamed from
+    leftside file view
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Jul 2006 10:49:13 +0300
+
+gtk+2.0 (2:2.6.10-2.osso6) unstable; urgency=low
+
+  * Make combobox popup as wide as the combobox itself to avoid truncations.
+  * Small optimizations to progress bar painting.
+  * Fixes: NB#32657 Critical warning in gtktreemodelfilter (fixed upstream)
+  * Fixes: NB#26099 Unable to set text in activity mode of gtkprogressbar.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  7 Jul 2006 11:21:02 +0300
+
+gtk+2.0 (2:2.6.10-2.osso5) unstable; urgency=low
+
+  * debian/rules:
+    - CFLAGS += -g
+  * Fixes: NB#21938 Valgrind warning on opening Calendar widget
+  * Fixes: NB#32491 calendar labels language
+  * Fixes: NB#32566 GtkComboBox: insensitive rows are selectable using L&R
+    keys
+  * Fixes: NB#32573 [regression] no scroll bar when opening history of entered
+    URL's
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Jun 2006 16:16:58 +0300
+
+gtk+2.0 (2:2.6.10-2.osso4) unstable; urgency=low
+
+  * Feature: Dynamically showing and hiding keyboard shortcuts.
+    (OSSO129887, OSSO129888)
+  * Bugs fixed:
+    NB#31455: Ellipsizing column headers ellipsize too eagerly
+    NB#31471: GtkTreeView: Icon in same column after ellipsizing text not
+              visible
+    NB#31497: GtkCellRendererText: Automatic ellipsizing truncated initially
+    NB#31695: Wrong folder is opened when double clicking a folder in MMC file
+              list view
+    NB#31696: Drag doesn't start if stylus leaves the widget before crossing
+              dnd threshold
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  9 Jun 2006 10:55:37 +0300
+
+gtk+2.0 (2:2.6.10-2.osso3.1) unstable; urgency=low
+
+  * debian/rules:
+    - do make install to debian/tmp first and then move only listed files to
+      right packages instead of putting everything to libgtk2.0-0, unless
+      otherwise mentioned, 
+  * debian/libgtk2.0-0.files:
+    - list the files we want
+  * Really fixes NB#31174
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  1 Jun 2006 08:53:15 +0300
+
+gtk+2.0 (2:2.6.10-2.osso3) unstable; urgency=low
+
+  * debian/libgtk2.0-dev.files: Kill .la files
+  * Bugs fixed:
+    NB#31174: /usr/lib/libgdk_pixbuf-2.0.la and
+              /usr/lib/libgdk_pixbuf_xlib-2.0.la should be removed from
+              library libgtk2.0-dev
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 May 2006 11:23:07 +0300
+
+gtk+2.0 (2:2.6.10-2.osso2) unstable; urgency=low
+
+  * Bugs fixed:
+    NB#30557: GtkHButtonBox is broken in modified gtk (GtkAboutDialog)
+    NB#31061: PANGO_ELLIPSIZE_MIDDLE mode does not work in gtkcellrenderertext
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 29 May 2006 19:13:01 +0300
+
+gtk+2.0 (2:2.6.10-2.osso1) unstable; urgency=low
+
+  * UI change: discontinuous selection in treeview
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 22 May 2006 17:16:46 +0300
+
+gtk+2.0 (2:2.6.10-1.osso17) unstable; urgency=low
+
+  * Bugs fixed:
+    NB#10197: API documentation is missing for the modified GTK.
+    NB#21875: tap'n'hold drag threshold calculated wrong
+    NB#24051: GtkWidgetPrivate and signal connections in gtkwidget.c
+    NB#25347: Glib CRITICAL error when changing theme while showing an
+              animation
+    NB#29142: Leak in gdk_drag_find_window_for_screen() when using Desktop
+              layout mode
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 19 May 2006 18:50:25 +0300
+
+gtk+2.0 (2:2.6.10-1.osso16) unstable; urgency=low
+
+  * debian/rules:
+    - Enable parallel builds (Thanks Alexander)
+    - Re-enable thumb mode
+  * Really fixes N#28529
+  * Bugs fixed:
+    NB#26453: apply thumb code generation for GTK+
+    NB#26600: FileManager crashes when the memory card is removed during a
+              backup operation.
+    NB#28149: GtkComboBox width is not determined according to the longest
+              string of it
+    NB#28529: Theming needs the arrow_width to be used even in list moce
+    NB#29115: GtkEntryCompletion: scrollbar is displayed when not needed
+    NB#29346: Applications crash when switching input method module
+    NB#29357: Notes loses focus to the combobox in the toolbar
+    NB#29420: GtkCombobox popup opened down
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 12 May 2006 16:26:50 +0300
+
+gtk+2.0 (2:2.6.10-1.osso15) unstable; urgency=low
+
+  * Bugs fixed:
+    N#21360: Colour copy paste does not work correctly in all cases
+    N#22469: Selection not behaving consistently with Copy command
+    N#25311: GtkTreeView paints far too much when new items are inserted
+    N#25460: Unexpected behavior upon choosing group membership by drag and
+             drop
+    N#28279: Internal GtkTreeView function check_if_can_focus_idle is called
+             after the view has been destroyed
+    N#28529: Theming needs the arrow_width to be used even in list moce
+    N#28612: Combobox focus grab closes IM
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  5 May 2006 14:47:29 +0300
+
+gtk+2.0 (2:2.6.10-1.osso14) unstable; urgency=low
+
+  * debian/rules: disable thumb support temporarily
+  * Close the entry completion window when VKB is hidden
+  * Bugs fixed:
+    N#26867: Unable to use input-method on the first attempt when
+             autocompletion list is open
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 26 Apr 2006 13:19:29 +0300
+
+gtk+2.0 (2:2.6.10-1.osso13) unstable; urgency=low
+
+  * Fixes compilation problems with glib 2.10
+  * debian/rules (CFLAGS, LDFLAGS): Really enable thumb code 
+  * Bugs fixed:
+    N#22694: Hildon modifications done into gtk_tree_view_row_changed cause
+             lot's of unneeded accesses to model
+    N#23018: Words entered in passwords field are shown in word completion and
+             gets added to dictionary
+    N#25274: Small UI glitch in GTKComboBoxEntry when getting focus
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Apr 2006 10:59:50 +0300
+
+gtk+2.0 (2:2.6.10-1.osso12) unstable; urgency=low
+
+  * debian/rules (LINGUAS): disable en_GB locale as well to save footprint
+    (it's not benefiting anyone anyway when the fallback is practically en_US)
+  * debian/rules (CFLAGS): Use soft-float and thumb mode if it enabled
+  * Bugs fixed:
+    N#25803: GtkWindow should remove its weak reference on
+             priv->prev_focus_widget
+    N#26453: apply thumb code generation for GTK+
+    N#26464: gdk-pixbuf problem with some specially crafted images
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 13 Apr 2006 16:53:13 +0300
+
+gtk+2.0 (2:2.6.10-1.osso11) unstable; urgency=low
+
+  * Widgets updated to comply with Hildon theming:
+    - GtkComboBox (in appear-as-list mode)
+    - GtkEntryCompletion
+    - GtkExpander
+    - GtkFileChooserButton
+  * Performance:
+    - GtkImage animation optimization removed as it breaks blinking icons in
+      TN. As a result applications displaying progress animations will take a
+      small performance hit.
+  * IM context documentation improvements
+  * Bugs fixed:
+    N#25361: Autocompletion choice drops down and blocks IM window
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Apr 2006 19:26:42 +0300
+
+gtk+2.0 (2:2.6.10-1.osso10) unstable; urgency=low
+
+  * UI change: Collapse folders only when tapping on already focused folder.
+  * Bugs fixed:
+    N#22537: Fileselection widget crashes when traversing through a hierarchy
+             of folders
+    N#22807: NOKGTK-58 GtkTreeView calculates cell sizes very inefficiently
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 24 Mar 2006 19:31:31 +0200
+
+gtk+2.0 (2:2.6.10-1.osso9) unstable; urgency=low
+
+  * debian/libgtk2.0-{common,dev}.files: Move localisation for property
+    descriptions (gtk20-properties.mo) in the -dev package as it has little
+    value outside GUI builders.
+  * Memory optimizations
+  * Bugs fixed:
+    N#20679: Valgrind warnings from the Gtk
+    N#24266: Device hanges on trying to opening context menu
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 16 Mar 2006 17:40:51 +0200
+
+gtk+2.0 (2:2.6.10-1.osso8) unstable; urgency=low
+
+  * Bugs fixed:
+    M#353: Toolbars without icons are invisible in icon-only mode
+    N#21336: Gtk loses memory on D&D selections
+    N#21857: hildon-fm leaks gdk_text properties on D&D
+    N#23669: The Alpha shortcut buttons are not visible in the main view
+    N#23240: _gtk_im_module_get_default_context_id returns a duplicated string
+             as const char *
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  7 Mar 2006 18:46:30 +0200
+
+gtk+2.0 (2:2.6.10-1.osso7) unstable; urgency=low
+
+  * Most if not all custom additions tagged with 'Since:' tags to enable
+    gtk-doc indexing
+  * Avoid needlessly loading iconv:
+    - Drop legacy window manager hints support (WM_NAME, WM_ICON_NAME, ...)
+      only set the newer EWMH hints (_NET_WM_NAME, ...)
+    - Don't try ISO-8859-1 -> UTF-8 conversion for ASCII comments in PNGs
+  * debian/rules: remove build-stamp on clean
+  * Bugs fixed:
+    22651: File manager crashes when selected sorting is "Type" on memory card
+           content
+    23182: Obsolete window title property and PNG comment charset conversions
+           wastes almost 100KB per application because iconv() is required
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 23 Feb 2006 14:19:30 +0200
+
+gtk+2.0 (2:2.6.10-1.osso6) unstable; urgency=low
+
+  * GtkTreeStore API addition to benefit GtkFileSystemMemory:
+    - gtk_tree_store_insert_with_values
+    - gtk_tree_store_insert_with_valuesv
+  * Bugs fixed:
+    M#352: GtkViewPort not releasing signal handlers on destruction / Gnome
+           Bugzilla #325869
+    N#22693: GDK warning when using GtkEntry
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 22 Feb 2006 12:28:18 +0200
+
+gtk+2.0 (2:2.6.10-1.osso5) unstable; urgency=low
+
+  * GtkIMContext API addition for passing more events through IM context:
+    - hildon_gtk_im_context_filter_event added
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 16 Feb 2006 19:05:59 +0200
+
+gtk+2.0 (2:2.6.10-1.osso4) unstable; urgency=low
+
+  * Export a couple of private symbols for hildon. 
+  * debian/rules: export LINGUAS to build only en_GB catalogs as the rest is
+    useless.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 31 Jan 2006 19:00:32 +0200
+
+gtk+2.0 (2:2.6.10-1.osso3) unstable; urgency=low
+
+  * GtkIMContext API additions:
+    - GtkIMContext extensions redesigned
+    - backwards compatibility supported
+    - debian/rules: update shlibs
+  * Fix module loading so that two theme engines (both derived from the pixbuf
+    engine) can be used at the same time.
+  * GtkLabel API/ABI change: remove unused functions and properties:
+    - GtkLabel::translatable (get_translatable, set_translatable)
+    - gtk_label_retranslate
+  * Stop exporting private symbols:
+    - anything begining with an underscore
+    - tap_and_hold_remove_timer (in gtkwidget.c)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 31 Jan 2006 14:58:34 +0200
+
+gtk+2.0 (2:2.6.10-1.osso2) unstable; urgency=low
+
+  * Backport GtkWindow::urgency-hint from 2.8
+    - debian/rules: update shlibs
+  * Begin using the new g_slice_*() API
+    - debian/control.in: Build-Depends: libglib2.0-dev (>= 2.6.6-1osso2)
+
+  * Bugfixes merged from IT-2005:
+    13454: HW keys - OGS - problem with UP and LEFT keys when OK button is
+           focused
+    18225: TN and status bar menus do not close in certain case
+    20212: Long touch animation circling: bias-aligned?
+    20552: GtkTreeView sometimes actives items after drag'n'drop
+    21366: Minor memory leak in Chess when file selector is destroyed
+    21542: Minor memory leak in filetree/treeview update
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 11 Jan 2006 18:21:14 +0200
+
+gtk+2.0 (2:2.6.10-1.osso1) unstable; urgency=low
+
+  * Upgrade to gtk+ 2.6.10
+    - GtkCalendar and GtkMenuShell ABI changes to restore compatibility with
+      upstream
+  * debian/*: redo packaging to build directly from svn trunk
+  * static libraries removed to simplify the build (they were unused anyway)
+  * debian/rules: configure with --disable-gtk-doc as the docs won't build
+    properly with currently available tools
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  2 Dec 2005 18:11:33 +0200
+
+gtk+2.0 (2:2.6.4-1.osso76) unstable; urgency=low
+
+  * Updated fix for bug 20810 to not remove builtin stock icons, depends on
+    bug 21042.
+
+  * Bugs fixed:
+    20677: Minor memory leak in Gtk Treeview
+    21039: gtk+ builtin stock icons are missing
+
+  * Together with update to hildon-libs fixes:
+    19283: Control panel - The vaules entered is not saved
+    19648: Hildon Date Editor widget detects values too high
+
+  * debian/rules: API addition to GtkCalendar, update shlibs
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  3 Nov 2005 14:45:59 +0200
+
+gtk+2.0 (2:2.6.4-1.osso75) unstable; urgency=low
+
+  * Bugs fixed:
+    20317: GtkTextView: alignment problems
+    20810: Gtk allocates >30k memory for Stock icons that are never used
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 26 Oct 2005 18:31:34 +0300
+
+gtk+2.0 (2:2.6.4-1.osso74) unstable; urgency=low
+
+  * Bugs fixed:
+    20725: Search application crashes
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 20 Oct 2005 17:18:29 +0300
+
+gtk+2.0 (2:2.6.4-1.osso73) unstable; urgency=low
+
+  * Bugs fixed:
+    20302: NOKGTK-51 Sometimes all folders or files are not shown
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 18 Oct 2005 16:23:07 +0300
+
+gtk+2.0 (2:2.6.4-1.osso72) unstable; urgency=low
+
+  * Bugs fixed, once again:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Oct 2005 19:18:10 +0300
+
+gtk+2.0 (2:2.6.4-1.osso71) unstable; urgency=low
+
+  * Bugs fixed:
+    19035: Submenu does not get focus correctly
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Oct 2005 18:57:05 +0300
+
+gtk+2.0 (2:2.6.4-1.osso70) unstable; urgency=low
+
+  * Bugs fixed:
+    20154: GdkPixbuf: libjpeg buffered mode wastes memory
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  3 Oct 2005 16:42:45 +0300
+
+gtk+2.0 (2:2.6.4-1.osso69) unstable; urgency=low
+
+  * Bugs fixed:
+    19943: Small memory leak from Gtk treeview on each fileselector opening
+    20050: GtkImage leaks animation frames
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 30 Sep 2005 18:39:37 +0300
+
+gtk+2.0 (2:2.6.4-1.osso68) unstable; urgency=low
+
+  * Bugs fixed:
+    19981: treeview leaks memory
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 28 Sep 2005 17:35:49 +0300
+
+gtk+2.0 (2:2.6.4-1.osso67) unstable; urgency=low
+
+  * Bugs fixed:
+    16999: Password entry not behaving consistent with
+    gtk_entry_set_visibility()
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 28 Sep 2005 14:57:38 +0300
+
+gtk+2.0 (2:2.6.4-1.osso66) unstable; urgency=low
+
+  * debian/patches/bug19667.diff: Added
+  * Bugs fixed:
+    19667: GtkCellRendererPixbuf memory leak.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Sep 2005 19:14:28 +0300
+
+gtk+2.0 (2:2.6.4-1.osso65) unstable; urgency=low
+
+  * debian/patches/bug19195.diff: Added
+  * Bugs fixed:
+    19195: Tap-n-hold animation leaks animation iterators
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 21 Sep 2005 12:39:58 +0300
+
+gtk+2.0 (2:2.6.4-1.osso64) unstable; urgency=low
+
+  * debian/patches/bug19416.diff: Added
+  * Bugs fixed:
+    19416: Audo file invisible in file selection widget
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 19 Sep 2005 15:54:44 +0300
+
+gtk+2.0 (2:2.6.4-1.osso63) unstable; urgency=low
+
+  * debian/patches/bug17314.diff: Added
+  * Bugs, hopefully for the last time, fixed:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 15 Sep 2005 19:10:57 +0300
+
+gtk+2.0 (2:2.6.4-1.osso62) unstable; urgency=low
+
+  * Bugs fixed:
+    18455: Incorrect focus handling between Menu and System modal dialog
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 14 Sep 2005 18:23:04 +0300
+
+gtk+2.0 (2:2.6.4-1.osso61) unstable; urgency=low
+
+  * Bugs fixed:
+    19117: Display blanked due to the Hildon File selection widget crash on
+           closing the MMC cover
+    19120: Input Method Main Menu disappears on tapping on menu items
+  * Bugs reopened: 17314, 18455
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Sep 2005 13:19:47 +0300
+
+gtk+2.0 (2:2.6.4-1.osso60) unstable; urgency=low
+
+  * Fix small memory leak.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 12 Sep 2005 12:33:59 +0300
+
+gtk+2.0 (2:2.6.4-1.osso59) unstable; urgency=low
+
+  * Bugs fixed:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+    18597: TRUE Long connection does not show in connectivity settings window
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 17:58:11 +0300
+
+gtk+2.0 (2:2.6.4-1.osso58) unstable; urgency=low
+
+  * Really fix 16761
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 13:53:51 +0300
+
+gtk+2.0 (2:2.6.4-1.osso57) unstable; urgency=low
+
+  * Bugs fixed:
+    18455: Incorrect focus handling between Menu and System modal dialog
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 12:16:01 +0300
+
+gtk+2.0 (2:2.6.4-1.osso56) unstable; urgency=low
+
+  * Bugs fixed:
+    11711: On opening the submenu sometimes the Main menu dissapears.
+    16744: E-mail application crashes sometimes when tapped on Bold toolbar
+           item
+    16761: AFW Stress Testing: VKB does not disappear when Find tool bar is
+           closed
+    18433: Gtk/Glib critical warning are thrown at runtime when fileselection
+           dialog is opened
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  7 Sep 2005 18:12:35 +0300
+
+gtk+2.0 (2:2.6.4-1.osso55) unstable; urgency=low
+
+  * debian/patches/001_im-switch.diff: Added
+  * Add support for runtime input method switching (and hardware keyboards)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  5 Sep 2005 18:53:25 +0300
+
+gtk+2.0 (2:2.6.4-1.osso54) unstable; urgency=low
+
+  * debian/patches/bug18487.diff: Added
+  * Bugs fixed:
+    18487: Crafted BMPs crash libpixbufloader-bmp.so
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  1 Sep 2005 14:56:10 +0300
+
+gtk+2.0 (2:2.6.4-1.osso53) unstable; urgency=low
+
+  * Bugs fixed:
+    17117: Layout problems in HWR Teach
+    18260: MMC not visible in file selector
+  * Bugs reopened: 17314
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 Aug 2005 17:27:34 +0300
+
+gtk+2.0 (2:2.6.4-1.osso52) unstable; urgency=low
+
+  * Bugs fixed:
+    16593: AFW Stress Testing: Menu disappears when we continuously navigate
+           between the menu items containing submenus
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+    17568: Desktop theme doesn't change (always) when theme is changed on
+           first bootup after flashing.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 25 Aug 2005 11:53:14 +0300
+
+gtk+2.0 (2:2.6.4-1.osso51) unstable; urgency=low
+
+  * debian/patches/bug17078-io-ico.diff: Removed, integrated in the big patch.
+  * debian/update-gtk-immodules.in:
+    - module version is 2.4.0.
+  * Bugs fixed:
+     8922: Errors during post-inst of Gtk 2.6
+    12176: it_IT Control Panel Date Time: Calendar view in English
+    16485: AFW Stress Testing: Device reboots on using the Web shortcut
+           details menu item in Home application menu.
+    17717: Autocapitalization in GtkEntry secret mode should be removed
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 22 Aug 2005 17:03:32 +0300
+
+gtk+2.0 (2:2.6.4-1.osso50) unstable; urgency=low
+
+  * debian/patches/bug17078-io-ico.diff: Added
+  * Bugs fixed:
+    17078: LibPixbufLoaderIco crashes when opening attached .ico image
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 18 Aug 2005 15:35:00 +0300
+
+gtk+2.0 (2:2.6.4-1.osso49) unstable; urgency=low
+
+  * debian/patches/*: replaced per-file patches with single diff.
+  * Bugs fixed:
+    16733: Strange auto-cap behavir with inverted question & exclamation marks
+    11711: On opening the submenu sometimes the Main menu dissapears.
+    10856: Modified GtkTreeView do not draw drag'n'drop destination row.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 11:41:43 +0300
+
+gtk+2.0 (2:2.6.4-1.osso48) unstable; urgency=low
+
+  * Bugs fixed:
+    13757: NOKGTK-44 Blank space appears in single line editor widgets when
+           selecting text by tapping
+    15422: 'File format not supported' error (should be OOM) for valid but
+           large 'image/jpeg' files
+    16736: NOKGTK-47 Crash in rich text deserialization
+
+  * debian/patches/gtkhbbox.c.diff: Fix crash when GtkHButtonBox is empty
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 11 Aug 2005 10:53:05 +0300
+
+gtk+2.0 (2:2.6.4-1.osso46) unstable; urgency=low
+
+  * Bugs fixed:
+     1883: Minor Code Review Comments For Gtkmenushell
+     8307: MMC is shown in multiple levels
+    10684: NOKGTK-22 Treeview (or filechooser specific) crash when editing
+    10856: Modified GtkTreeView does not draw drag'n'drop
+    11797: Problem with Search bookmark dalog appearance
+    13431: Opening submenus quickly causes problems
+    13838: choice list is too narrow in browser/toolbar
+    14611: Auto-capitalisation turns ON unexpectedly
+    14765: en-GB, , es-MX 2005-24, Search - Sort results by - choice list
+           items truncated
+    16060: GtkComboBox: Eating up key-press-event for GDK_Left
+    16417: <ESC> key closes all menu levels at once
+    16571: Critical warnings thrown upon creation of GtkTreeView
+    16576: Runtime critical warnings due to HildonTimeEditor
+
+  * Fixed (partially?)
+     8891: NOKGTK-38 copy/paste functionality not working fine
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  8 Aug 2005 15:52:19 +0300
+
+gtk+2.0 (2:2.6.4-1.osso34.1) unstable; urgency=low
+
+  * Maemo dev release
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 27 Jun 2005 13:41:16 +0300

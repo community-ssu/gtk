@@ -1,0 +1,4 @@
+usr/include/gail*
+usr/lib/libgail*.so
+usr/lib/libgail*.a
+usr/lib/pkgconfig/gail*.pc

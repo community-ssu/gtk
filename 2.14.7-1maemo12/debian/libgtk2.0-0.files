@@ -1,0 +1,4 @@
+usr/lib/libgtk*.so.*
+usr/lib/libgdk*.so.*
+usr/lib/gtk-2.0/*/engines/*.so
+usr/lib/gtk-2.0/*/loaders/*.so
