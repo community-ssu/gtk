@@ -1,3 +1,9 @@
+gtk+2.0 (3:2.14.7-1maemo20) unstable; urgency=low
+
+  * Increase version as well.
+
+ -- Christian Dywan <christian@lanedo.com>  Wed, 25 Nov 2009 12:05:13 +0100
+
 gtk+2.0 (3:2.14.7-1maemo19) unstable; urgency=low
 
   * Increase epoch to iron out the versioning.
