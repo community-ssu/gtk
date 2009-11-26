@@ -1,4 +1,4 @@
-gtk+2.0 (2:2.14.7-1maemo12-1) unstable; urgency=low
+gtk+2.0 (2:2.14.7-1maemo12.1) unstable; urgency=low
 
   * Use dpkg file trigger on /usr/share/icons/hicolor for gtk-update-icon-cache.
 
