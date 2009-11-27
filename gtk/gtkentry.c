@@ -2923,8 +2923,9 @@ gtk_entry_password_hint_free (GtkEntryPasswordHint *password_hint)
  * design might change, so for now we'll keep this here.
  */
 static gboolean
-hildon_gtk_input_mode_is_valid_char (HildonGtkInputMode mode,
-                                     gunichar           chr)
+hildon_gtk_input_mode_is_valid_char (HildonGtkInputMode  mode,
+                                     gunichar            chr,
+                                     gunichar           *chr_)
 {
   static const char *tele_chars_ascii = "p#*+";
 
@@ -2940,7 +2941,12 @@ hildon_gtk_input_mode_is_valid_char (HildonGtkInputMode mode,
       if ((mode & (HILDON_GTK_INPUT_MODE_NUMERIC |
                    HILDON_GTK_INPUT_MODE_HEXA |
                    HILDON_GTK_INPUT_MODE_TELE)) != 0)
-        return TRUE;
+        {
+          gchar* number = g_strdup_printf ("%d", g_unichar_digit_value (chr));
+          *chr_ = g_utf8_get_char (number);
+          g_free (number);
+          return chr == *chr_;
+        }
     }
   else
     {
@@ -2984,13 +2990,17 @@ gtk_entry_filter_text (GtkEntry    *entry,
     {
       gboolean valid = TRUE;
       GString *result = g_string_sized_new (nbytes);
+
       while(length)
         {
           gunichar chr = g_utf8_get_char (str);
+          gunichar chr_ = chr;
+          gboolean valid_char;
 
-          if (hildon_gtk_input_mode_is_valid_char (input_mode, chr))
-            g_string_append_unichar (result, chr);
-          else
+          valid_char = hildon_gtk_input_mode_is_valid_char (input_mode, chr, &chr_);
+          if (valid_char || chr != chr_)
+            g_string_append_unichar (result, chr_);
+          if (!valid_char)
             valid = FALSE;
 
           str = g_utf8_next_char (str);
@@ -3005,7 +3015,7 @@ gtk_entry_filter_text (GtkEntry    *entry,
     {
       gunichar chr = g_utf8_get_char (str);
 
-      if (!hildon_gtk_input_mode_is_valid_char (input_mode, chr))
+      if (!hildon_gtk_input_mode_is_valid_char (input_mode, chr, &chr))
         return FALSE;
 
       str = g_utf8_next_char (str);

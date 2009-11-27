@@ -1,3 +1,12 @@
+2009-11-27  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#146722 - [Arabic] Contacts doesnt support calls if the number
+	is in Hindu-Arabic in Rover
+
+	* gtk/gtkentry.c (hildon_gtk_input_mode_is_valid_char),
+	(gtk_entry_filter_text): Convert unicode numbers outside of ASCII to ASCII
+	and don't regard them as valid.
+
 2009-11-18  Christian Dywan  <christian@lanedo.com>
 
 	* gtk/Makefile.am:
