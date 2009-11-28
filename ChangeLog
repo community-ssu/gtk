@@ -1,3 +1,8 @@
+2009-11-28  Kristian Rietveld  <kris@lanedo.com>
+
+	* gdk/x11/gdkevents-x11.c: Add forgotten MAEMO_CHANGES around
+	chunks of the last patch (November 5) applied to this file.
+
 2009-11-27  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#146722 - [Arabic] Contacts doesnt support calls if the number

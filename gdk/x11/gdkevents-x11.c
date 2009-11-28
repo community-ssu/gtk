@@ -125,8 +125,10 @@ static void gdk_xsettings_notify_cb (const char       *name,
 				     XSettingsSetting *setting,
 				     void             *data);
 
+#ifdef MAEMO_CHANGES
 static gboolean check_net_wm_check_window (GdkScreenX11 *screen_x11);
 static void fetch_net_wm_check_window     (GdkScreen *screen);
+#endif /* MAEMO_CHANGES */
 
 /* Private variable declarations
  */
@@ -236,12 +238,14 @@ _gdk_events_init (GdkDisplay *display)
 					 gdk_wm_protocols_filter,   
 					 NULL);
 
+#ifdef MAEMO_CHANGES
   /* GdkScreenX11 need this in order to see some properties. */
   fetch_net_wm_check_window (display_x11->default_screen);
   if (GDK_SCREEN_X11(display_x11->default_screen)->wmspec_check_window == None)
     /* No WM, poll for the wm_check window. */
     g_timeout_add_seconds (10, (GSourceFunc)check_net_wm_check_window,
                            display_x11->default_screen);
+#endif /* MAEMO_CHANGES */
 }
 
 void
@@ -1020,9 +1024,11 @@ gdk_event_translate (GdkDisplay *display,
           /* careful, reentrancy */
           _gdk_x11_screen_window_manager_changed (GDK_SCREEN (screen_x11));
 
+#ifdef MAEMO_CHANGES
           /* Rediscover the WM window. */
           g_timeout_add_seconds (10, (GSourceFunc)check_net_wm_check_window,
                                  screen);
+#endif /* MAEMO_CHANGES */
         }
       
       /* Eat events on this window unless someone had wrapped
@@ -2628,6 +2634,7 @@ gdk_x11_get_server_time (GdkWindow *window)
   return xevent.xproperty.time;
 }
 
+#ifdef MAEMO_CHANGES
 static gboolean
 check_net_wm_check_window (GdkScreenX11 *screen_x11)
 {
@@ -2635,6 +2642,7 @@ check_net_wm_check_window (GdkScreenX11 *screen_x11)
     fetch_net_wm_check_window (GDK_SCREEN (screen_x11));
   return screen_x11->wmspec_check_window == None;
 }
+#endif /* MAEMO_CHANGES */
 
 static void
 fetch_net_wm_check_window (GdkScreen *screen)
@@ -2690,14 +2698,18 @@ fetch_net_wm_check_window (GdkScreen *screen)
 
   if (gdk_error_trap_pop () == Success)
     {
+#ifdef MAEMO_CHANGES
       GdkWindow *window;
 
       /* We need to create a Gdkwindow in order to notice its destruction. */
+#endif /* MAEMO_CHANGES */
       screen_x11->wmspec_check_window = *xwindow;
       screen_x11->need_refetch_net_supported = TRUE;
       screen_x11->need_refetch_wm_name = TRUE;
+#ifdef MAEMO_CHANGES
       window = gdk_window_foreign_new_for_display (display, *xwindow);
       gdk_window_set_events (window, GDK_PROPERTY_CHANGE_MASK);
+#endif /* MAEMO_CHANGES */
       
       /* Careful, reentrancy */
       _gdk_x11_screen_window_manager_changed (GDK_SCREEN (screen_x11));
