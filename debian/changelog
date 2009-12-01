@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo12.2) unstable; urgency=low
+
+  * Make gtk-update-icon-cache a no-op and remove the icon cache.
+
+ -- Christian Dywan <christian@lanedo.com>  Mon, 01 Dec 2009 14:39:11 +0100
+
 gtk+2.0 (2:2.14.7-1maemo12.1) unstable; urgency=low
 
   * Use dpkg file trigger on /usr/share/icons/hicolor for gtk-update-icon-cache.

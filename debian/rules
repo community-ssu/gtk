@@ -197,9 +197,9 @@ install: install-shared
 	for f in `find $(CURDIR)/debian/tmp/usr/share/themes -type f`; do \
 		chmod a-x $$f; \
 	done
-
-	# replace gtk-update-icon-cache with trigger wrapper
-	mv debian/tmp/usr/bin/gtk-update-icon-cache debian/tmp/usr/bin/gtk-update-icon-cache-now
+	
+	# replace gtk-update-icon-cache with void script
+	rm debian/tmp/usr/bin/gtk-update-icon-cache
 	install -m 755 $(CURDIR)/debian/gtk-update-icon-cache $(CURDIR)/debian/tmp/usr/bin/
 
 	# clean the unnecessary files up

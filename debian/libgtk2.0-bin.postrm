@@ -22,8 +22,11 @@ case "$1" in
        purge)
        	rm -rf /etc/gtk-2.0
 	;;
-       remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-
+       upgrade)
+	# remove icon cache, if one exists
+	rm /usr/share/icons/hicolor/icon-theme.cache
+	;;
+       remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 
         ;;
 
