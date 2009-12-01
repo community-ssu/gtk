@@ -24,7 +24,7 @@ case "$1" in
 	;;
        upgrade)
 	# remove icon cache, if one exists
-	rm /usr/share/icons/hicolor/icon-theme.cache
+	rm -f /usr/share/icons/hicolor/icon-theme.cache
 	;;
        remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 
