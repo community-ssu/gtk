@@ -290,10 +290,6 @@ binary-arch: build install
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
-	# install triggers
-	cp `pwd`/debian/libgtk2.0-bin.triggers \
-	    `pwd`/debian/libgtk2.0-bin/DEBIAN/triggers
-	chmod 0644 `pwd`/debian/libgtk2.0-bin/DEBIAN/triggers
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a
