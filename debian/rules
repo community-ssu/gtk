@@ -198,8 +198,8 @@ install: install-shared
 		chmod a-x $$f; \
 	done
 
-	# replace gtk-update-icon-cache with trigger wrapper
-	mv debian/tmp/usr/bin/gtk-update-icon-cache debian/tmp/usr/bin/gtk-update-icon-cache-now
+	# replace gtk-update-icon-cache with no-op wrapper
+	rm debian/tmp/usr/bin/gtk-update-icon-cache
 	install -m 755 $(CURDIR)/debian/gtk-update-icon-cache $(CURDIR)/debian/tmp/usr/bin/
 
 	# clean the unnecessary files up
@@ -290,10 +290,6 @@ binary-arch: build install
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
-	# install triggers
-	cp `pwd`/debian/libgtk2.0-bin.triggers \
-	    `pwd`/debian/libgtk2.0-bin/DEBIAN/triggers
-	chmod 0644 `pwd`/debian/libgtk2.0-bin/DEBIAN/triggers
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a

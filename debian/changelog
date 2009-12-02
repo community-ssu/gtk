@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.14.7-1maemo21) unstable; urgency=low
+
+  * Revert support for the _MAEMO_GTK_FLUSH_ICONS atom.
+  * Make gtk-update-icon-cache a no-op, remove the icon cache and remove the
+    dpkg file trigger.
+  * Fixes: NB#149092 - Remove icon cache
+
+ -- Christian Dywan <christian@lanedo.com>  Tue, 02 Dec 2009 16:34:23 +0100
+
 gtk+2.0 (2:2.14.7-1maemo20) unstable; urgency=low
 
   * Restore the previous epoch.

@@ -27,11 +27,8 @@ case "$1" in
     configure)
 	/usr/sbin/update-gtk-immodules
 	/usr/sbin/update-gdkpixbuf-loaders
-    ;;
-
-    triggered)
-	echo "Triggered icon cache update."
-	gtk-update-icon-cache-now -qft /usr/share/icons/hicolor
+	# remove icon cache, if one exists
+	rm -f /usr/share/icons/hicolor/icon-theme.cache
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
