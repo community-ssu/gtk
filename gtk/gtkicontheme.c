@@ -3420,9 +3420,6 @@ find_builtin_icon (const gchar *icon_name,
 void
 _gtk_icon_theme_check_reload (GdkDisplay *display)
 {
-#ifdef MAEMO_CHANGES
-  gpointer flush = g_object_get_data (G_OBJECT (display), "gtk-flush-icons");
-#endif
   gint n_screens, i;
   GdkScreen *screen;
   GtkIconTheme *icon_theme;
@@ -3437,10 +3434,6 @@ _gtk_icon_theme_check_reload (GdkDisplay *display)
       if (icon_theme)
 	{
 	  icon_theme->priv->check_reload = TRUE;
-#ifdef MAEMO_CHANGES
-          if (flush)
-            blow_themes (icon_theme);
-#endif
 	  ensure_valid_themes (icon_theme);
 	  icon_theme->priv->check_reload = FALSE;
 	}

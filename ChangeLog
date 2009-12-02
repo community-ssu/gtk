@@ -1,3 +1,10 @@
+2009-12-02  Christian Dywan  <christian@lanedo.com>
+
+	* gtk/Makefile.am:
+	* gtk/gtkicontheme.c (_gtk_icon_theme_check_reload):
+	* gtk/gtkwindow.c (gtk_window_client_event):
+	* gtk/updateiconcache.c (main): Revert _MAEMO_GTK_FLUSH_ICONS atom support.
+
 2009-11-28  Kristian Rietveld  <kris@lanedo.com>
 
 	* gdk/x11/gdkevents-x11.c: Add forgotten MAEMO_CHANGES around

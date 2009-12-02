@@ -5158,7 +5158,6 @@ gtk_window_focus_out_event (GtkWidget     *widget,
 static GdkAtom atom_rcfiles = GDK_NONE;
 static GdkAtom atom_iconthemes = GDK_NONE;
 #ifdef MAEMO_CHANGES
-static GdkAtom atom_flush_icons = GDK_NONE;
 static GdkAtom atom_temporaries = GDK_NONE;
 #endif /* MAEMO_CHANGES */
 
@@ -5269,7 +5268,6 @@ gtk_window_client_event (GtkWidget	*widget,
       atom_rcfiles = gdk_atom_intern_static_string ("_GTK_READ_RCFILES");
       atom_iconthemes = gdk_atom_intern_static_string ("_GTK_LOAD_ICONTHEMES");
 #ifdef MAEMO_CHANGES
-      atom_flush_icons = gdk_atom_intern_static_string ("_MAEMO_GTK_FLUSH_ICONS");
       atom_temporaries = gdk_atom_intern_static_string ("_GTK_DELETE_TEMPORARIES");
 #endif /* MAEMO_CHANGES */
     }
@@ -5287,15 +5285,6 @@ gtk_window_client_event (GtkWidget	*widget,
     }
 
 #ifdef MAEMO_CHANGES
-  if (event->message_type == atom_flush_icons)
-    {
-      GdkDisplay *display = gtk_widget_get_display (widget);
-      send_client_message_to_embedded_windows (widget, atom_flush_icons);
-      g_object_set_data (G_OBJECT (display), "gtk-flush-icons", widget);
-      _gtk_icon_theme_check_reload (display);
-      g_object_set_data (G_OBJECT (display), "gtk-flush-icons", NULL);
-    }
-
   if (event->message_type == atom_temporaries)
     {
       send_client_message_to_embedded_windows (widget, atom_temporaries);
