@@ -2,8 +2,9 @@ gtk+2.0 (2:2.14.7-1maemo12.2) unstable; urgency=low
 
   * Make gtk-update-icon-cache a no-op, remove the icon cache and remove the
     dpkg file trigger.
+  * Fixes: NB#149092 - Remove icon cache
 
- -- Christian Dywan <christian@lanedo.com>  Mon, 01 Dec 2009 18:42:09 +0100
+ -- Christian Dywan <christian@lanedo.com>  Wed, 02 Dec 2009 14:26:33 +0100
 
 gtk+2.0 (2:2.14.7-1maemo12.1) unstable; urgency=low
 
