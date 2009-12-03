@@ -1,3 +1,12 @@
+2009-12-03  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#125177 - GtkButton + hildon_gtk_widget_set_theme_size() has
+	wrong style when created via GtkBuilder
+
+	* gtk/gtkwidget.c (gtk_widget_buildable_interface_init),
+	(gtk_widget_buildable_set_name), (gtk_widget_buildable_get_name): Use
+	object data to store the buildable name.
+
 2009-12-02  Christian Dywan  <christian@lanedo.com>
 
 	* gtk/Makefile.am:
