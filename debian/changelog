@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.14.7-1maemo22) unstable; urgency=low
+
+  * Fixes: NB#130532 - Fonts are getting magnified
+  * Fixes: NB#125177 - GtkButton + hildon_gtk_widget_set_theme_size() has
+    wrong style when created via GtkBuilder
+
+ -- Christian Dywan <christian@lanedo.com>  Wed, 09 Dec 2009 11:15:53 +0100
+
 gtk+2.0 (2:2.14.7-1maemo21) unstable; urgency=low
 
   * Revert support for the _MAEMO_GTK_FLUSH_ICONS atom.
