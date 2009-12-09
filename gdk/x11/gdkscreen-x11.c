@@ -923,7 +923,7 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
                     gdk_atom_intern ("CARDINAL", FALSE),
                     0, 8, FALSE, 0, 0, 0, (guchar **) &maemo_screen_size))
     {
-      gint prop_width, prop_height;
+      gdouble prop_width, prop_height;
 
       prop_width = maemo_screen_size[0];
       prop_height = maemo_screen_size[1];
@@ -933,6 +933,8 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
           Screen *xscreen = gdk_x11_screen_get_xscreen (screen);
           xscreen->width = prop_width;
           xscreen->height = prop_height;
+          xscreen->mwidth = (prop_width / GDK_SCREEN_X11 (screen)->xft_dpi) * 25.4;
+          xscreen->mheight = (prop_height / GDK_SCREEN_X11 (screen)->xft_dpi) * 25.4;
 
           _gdk_x11_screen_process_monitors_change (screen);
           g_signal_emit_by_name (screen, "size_changed");

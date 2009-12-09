@@ -1,3 +1,10 @@
+2009-12-09  Christian Dywan  <christian@lanedo.com>
+
+	Fixes: NB#130532 - Fonts are getting magnified
+
+	* gdk/x11/gdkscreen-x11.c (_gdk_x11_screen_size_changed): Manually
+	update the screen size in milimeters.
+
 2009-12-03  Christian Dywan  <christian@lanedo.com>
 
 	Fixes: NB#125177 - GtkButton + hildon_gtk_widget_set_theme_size() has
