@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo23) unstable; urgency=low
+
+  * Fixes: NB#149128 - Remove doc files from gtk deb
+
+ -- Michael Natterer <mitch@lanedo.com>  Fri, 08 Jan 2010 15:15:15 +0100
+
 gtk+2.0 (2:2.14.7-1maemo22) unstable; urgency=low
 
   * Fixes: NB#130532 - Fonts are getting magnified

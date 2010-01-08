@@ -216,7 +216,7 @@ binary-indep: build install
 	dh_testdir -i
 	dh_testroot -i
 
-	dh_installdocs -i
+	dh_installdocs -plibgtk2.0-doc
 
 	rm -rf $(CURDIR)/debian/libgtk$(apiver)-common/usr/share/doc/libgtk$(apiver)-common
 
@@ -244,7 +244,7 @@ binary-indep: build install
 	done
 
 	dh_installinfo -i
-	dh_installchangelogs -i $(SOURCE_DIR)/ChangeLog
+	dh_installchangelogs -plibgtk2.0-doc $(SOURCE_DIR)/ChangeLog
 	dh_compress -i -Xindex.sgml
 	dh_fixperms -i
 	dh_installdeb -i
@@ -258,7 +258,7 @@ binary-arch: build install
 	dh_testroot -a
 
 #	dh_installdebconf	
-	dh_installdocs -a
+#	dh_installdocs -a
 
 	rm -rf $(CURDIR)/debian/libgtk$(apiver)-$(soname)-dbg/usr/share/doc/libgtk$(apiver)-$(soname)-dbg
 	rm -rf $(CURDIR)/debian/libgtk$(apiver)-dev/usr/share/doc/libgtk$(apiver)-dev
@@ -276,7 +276,7 @@ binary-arch: build install
 
 	dh_installman -a
 	dh_installinfo -a
-	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
+#	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
 	dh_strip -plibgail18 -plibgail-common --dbg-package=libgail18-dbg
 	dh_strip -Nlibgail18 -Nlibgail-common --dbg-package=libgtk2.0-$(soname)-dbg
 	dh_compress -a -Xindex.sgml
