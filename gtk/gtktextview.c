@@ -4775,8 +4775,8 @@ gtk_text_view_paint (GtkWidget      *widget,
                           NULL,
                           - text_view->xoffset,
                           - text_view->yoffset,
-                          area->x + area->width + text_view->xoffset,
-                          area->y + area->height + text_view->yoffset);
+                          text_view->xoffset + widget->allocation.width,
+                          text_view->yoffset + widget->allocation.height);
     }
 #endif
 
