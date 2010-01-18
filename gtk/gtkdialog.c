@@ -83,6 +83,10 @@ static void      gtk_dialog_get_property         (GObject      *object,
                                                   GParamSpec   *pspec);
 static void      gtk_dialog_style_set            (GtkWidget    *widget,
                                                   GtkStyle     *prev_style);
+#ifdef MAEMO_CHANGES
+static void      gtk_dialog_realize              (GtkWidget    *widget);
+static void      gtk_dialog_unrealize            (GtkWidget    *widget);
+#endif
 static void      gtk_dialog_map                  (GtkWidget    *widget);
 
 static void      gtk_dialog_close                (GtkDialog    *dialog);
@@ -146,6 +150,10 @@ gtk_dialog_class_init (GtkDialogClass *class)
   
   widget_class->map = gtk_dialog_map;
   widget_class->style_set = gtk_dialog_style_set;
+#ifdef MAEMO_CHANGES
+  widget_class->realize = gtk_dialog_realize;
+  widget_class->unrealize = gtk_dialog_unrealize;
+#endif
 
   class->close = gtk_dialog_close;
   
@@ -640,6 +648,81 @@ gtk_dialog_style_set (GtkWidget *widget,
 {
   update_spacings (GTK_DIALOG (widget));
 }
+
+#ifdef MAEMO_CHANGES
+static void
+gtk_dialog_resize_button (GtkWidget *button,
+                          gpointer  *data)
+{
+  gint width = GPOINTER_TO_INT (data);
+  g_object_set (button, "width-request", width, NULL);
+}
+
+static void
+gtk_dialog_screen_size_changed_cb (GdkScreen *screen,
+                                   GtkDialog *dialog)
+{
+  GtkDialogPrivate *priv = GET_PRIVATE (dialog);
+  GtkWidget *parent = gtk_widget_get_parent (dialog->action_area);
+  gint width = gdk_screen_get_width (screen);
+  gboolean portrait = width < gdk_screen_get_height (screen);
+  gint button_width, padding;
+
+  g_object_ref (dialog->action_area);
+  gtk_container_remove (GTK_CONTAINER (parent), dialog->action_area);
+
+  if (portrait)
+    {
+      parent = dialog->vbox;
+      button_width = width - 16 /* HILDON_MARGIN_DOUBLE */ * 2;
+      padding = 16 /* HILDON_MARGIN_DOUBLE */;
+    }
+  else
+    {
+      parent = gtk_widget_get_parent (dialog->vbox);
+      button_width = 174 /* HILDON_DIALOG_BUTTON_WIDTH */;
+      padding = 0;
+    }
+
+  gtk_box_pack_end (GTK_BOX (parent), dialog->action_area, portrait, TRUE, padding);
+  gtk_box_reorder_child (GTK_BOX (parent), dialog->action_area, 0);
+  gtk_container_foreach (GTK_CONTAINER (dialog->action_area),
+                         (GtkCallback) gtk_dialog_resize_button,
+                         GINT_TO_POINTER (button_width));
+  g_object_unref (dialog->action_area);
+
+  if (portrait)
+    gtk_box_set_spacing (GTK_BOX (priv->hbox), padding);
+  else
+    update_spacings (dialog);
+
+  gtk_window_resize (GTK_WINDOW (dialog), 1, 1);
+}
+
+static void
+gtk_dialog_realize (GtkWidget *widget)
+{
+  GdkScreen *screen = gtk_widget_get_screen (widget);
+
+  GTK_WIDGET_CLASS (gtk_dialog_parent_class)->realize (widget);
+
+  if (gdk_screen_get_width (screen) < gdk_screen_get_height (screen))
+    gtk_dialog_screen_size_changed_cb (screen, GTK_DIALOG (widget));
+  g_signal_connect (screen, "size-changed",
+    G_CALLBACK (gtk_dialog_screen_size_changed_cb), widget);
+}
+
+static void
+gtk_dialog_unrealize (GtkWidget *widget)
+{
+  GdkScreen *screen = gtk_widget_get_screen (widget);
+
+  g_signal_handlers_disconnect_by_func (screen,
+    gtk_dialog_screen_size_changed_cb, widget);
+
+  GTK_WIDGET_CLASS (gtk_dialog_parent_class)->unrealize (widget);
+}
+#endif
 
 static GtkWidget *
 dialog_find_button (GtkDialog *dialog,
