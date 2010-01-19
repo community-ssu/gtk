@@ -136,6 +136,16 @@ clear_surface_cache (GHashTable **hashtable)
     *hashtable = NULL;
     return FALSE;
 }
+
+void
+gdk_composite_src_0888_8888_rev_asm_neon (int width, int height,
+					  void *dst, int dst_stride,
+					  void *src, int src_stride);
+
+void
+gdk_composite_src_pixbuf_8888_asm_neon (int width, int height,
+					void *dst, int dst_stride,
+					void *src, int src_stride);
 #endif /* MAEMO_CHANGES */
 
 /**
@@ -208,6 +218,27 @@ gdk_cairo_set_source_pixbuf (cairo_t         *cr,
   cairo_surface_set_user_data (surface, &key,
 			       cairo_pixels, (cairo_destroy_func_t)g_free);
 
+#ifdef MAEMO_CHANGES
+#ifdef __ARM_ARCH_7A__
+  if (n_channels == 3)
+    {
+      gdk_composite_src_0888_8888_rev_asm_neon (width, height,
+						cairo_pixels,
+						cairo_stride >> 2,
+						gdk_pixels,
+						gdk_rowstride);
+    }
+  else if ((gdk_rowstride & 3) == 0 && ((int)gdk_pixels & 3) == 0)
+    {
+      gdk_composite_src_pixbuf_8888_asm_neon (width, height,
+					      cairo_pixels,
+					      cairo_stride >> 2,
+					      gdk_pixels,
+					      gdk_rowstride >> 2);
+    }
+  else
+#endif
+#endif /* MAEMO_CHANGES */
   for (j = height; j; j--)
     {
       guchar *p = gdk_pixels;

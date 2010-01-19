@@ -946,12 +946,27 @@ scale_pixel (guchar *dest, int dest_x, int dest_channels, int dest_has_alpha,
     }
 }
 
+#ifdef MAEMO_CHANGES
+#ifdef __GNUC__
+#define gdk_always_inline __attribute__((always_inline))
+#else
+#define gdk_always_inline
+#endif
+
+static guchar * gdk_always_inline
+scale_line_imp (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
+		guchar *dest_end, int dest_channels, int dest_has_alpha,
+		guchar **src, int src_channels, gboolean src_has_alpha,
+		int x_init, int x_step, int src_width, int check_size,
+		guint32 color1, guint32 color2)
+#else
 static guchar *
 scale_line (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
 	    guchar *dest_end, int dest_channels, int dest_has_alpha,
 	    guchar **src, int src_channels, gboolean src_has_alpha, int x_init,
 	    int x_step, int src_width, int check_size, guint32 color1,
 	    guint32 color2)
+#endif
 {
   int x = x_init;
   int i, j;
@@ -1036,6 +1051,45 @@ scale_line (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
 
   return dest;
 }
+
+#ifdef MAEMO_CHANGES
+static guchar *
+scale_line (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
+	    guchar *dest_end, int dest_channels, int dest_has_alpha,
+	    guchar **src, int src_channels, gboolean src_has_alpha, int x_init,
+	    int x_step, int src_width, int check_size, guint32 color1,
+	    guint32 color2)
+{
+  return scale_line_imp (weights, n_x, n_y, dest, dest_x, dest_end,
+			 dest_channels, dest_has_alpha, src, src_channels,
+			 src_has_alpha, x_init, x_step, src_width, check_size,
+			 color1, color2);
+}
+
+static guchar *
+scale_line_33_33 (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
+		  guchar *dest_end, int dest_channels, int dest_has_alpha,
+		  guchar **src, int src_channels, gboolean src_has_alpha,
+		  int x_init, int x_step, int src_width, int check_size,
+		  guint32 color1, guint32 color2)
+{
+  return scale_line_imp (weights, 3, 3, dest, dest_x, dest_end, 3,
+			 dest_has_alpha, src, 3, src_has_alpha, x_init,
+			 x_step, src_width, check_size, color1, color2);
+}
+
+static guchar *
+scale_line_33_33_na (int *weights, int n_x, int n_y, guchar *dest, int dest_x,
+		     guchar *dest_end, int dest_channels, int dest_has_alpha,
+		     guchar **src, int src_channels, gboolean src_has_alpha,
+		     int x_init, int x_step, int src_width, int check_size,
+		     guint32 color1, guint32 color2)
+{
+  return scale_line_imp (weights, 3, 3, dest, dest_x, dest_end, 3,
+			 0, src, 3, 0, x_init, x_step, src_width,
+			 check_size, color1, color2);
+}
+#endif
 
 #ifdef USE_MMX 
 static guchar *
@@ -2198,6 +2252,16 @@ _pixops_scale_real (guchar        *dest_buf,
 #endif
 	line_func = scale_line_22_33;
     }
+#ifdef MAEMO_CHANGES
+  else if (filter.x.n == 3 && filter.y.n == 3 &&
+	   dest_channels == 3 && src_channels == 3)
+    {
+      if (!dest_has_alpha && !src_has_alpha)
+	line_func = scale_line_33_33_na;
+      else
+	line_func = scale_line_33_33;
+    }
+#endif
   else
     line_func = scale_line;
   
