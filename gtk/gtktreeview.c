@@ -12391,6 +12391,8 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       tree_view->priv->fixed_height = -1;
 #ifdef MAEMO_CHANGES
       tree_view->priv->top_row_dy = 0;
+#else
+      tree_view->priv->dy = tree_view->priv->top_row_dy = 0;
 #endif
     }
 
