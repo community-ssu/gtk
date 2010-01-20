@@ -1,4 +1,4 @@
-gtk+2.0 (2:2.14.7-1maemo23) unstable; urgency=low
+gtk+2.0 (2:2.14.7-1maemo24) unstable; urgency=low
 
   * Fixes: NB#116221 - Sharing TIF image with Size Option Large makes
     the image much larger than the original one when shared to OVI or
