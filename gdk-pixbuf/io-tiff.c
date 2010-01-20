@@ -147,6 +147,7 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
 	guchar *pixels = NULL;
 	gint width, height, rowstride, bytes;
 	GdkPixbuf *pixbuf;
+        guint16 bits_per_sample = 0;
 	uint16 orientation = 0;
 	uint16 transform = 0;
         uint16 codec;
@@ -230,6 +231,15 @@ tiff_image_parse (TIFF *tiff, TiffContext *context, GError **error)
                                      _("Insufficient memory to open TIFF file"));
                 return NULL;
         }
+
+        /* Save the bits per sample as an option since pixbufs are
+           expected to be always 8 bits per sample. */
+        TIFFGetField (tiff, TIFFTAG_BITSPERSAMPLE, &bits_per_sample);
+        if (bits_per_sample > 0) {
+		gchar str[5];
+		g_snprintf (str, sizeof (str), "%d", bits_per_sample);
+		gdk_pixbuf_set_option (pixbuf, "bits-per-sample", str);
+	}
 
 	/* Set the "orientation" key associated with this image. libtiff 
 	   orientation handling is odd, so further processing is required
@@ -656,12 +666,15 @@ gdk_pixbuf__tiff_image_save_to_callback (GdkPixbufSaveFunc   save_func,
 {
         TIFF *tiff;
         gint width, height, rowstride;
+        const gchar* bits_per_sample;
+        const gchar* compression;
         guchar *pixels;
         gboolean has_alpha;
         gushort alpha_samples[1] = { EXTRASAMPLE_UNASSALPHA };
         int y;
         TiffSaveContext *context;
         gboolean retval;
+        guchar *mono_row = NULL;
 
         tiff_push_handlers ();
 
@@ -691,49 +704,89 @@ gdk_pixbuf__tiff_image_save_to_callback (GdkPixbufSaveFunc   save_func,
         height = gdk_pixbuf_get_height (pixbuf);
         width = gdk_pixbuf_get_width (pixbuf);
 
+        TIFFSetField (tiff, TIFFTAG_SUBFILETYPE, 0);
         TIFFSetField (tiff, TIFFTAG_IMAGEWIDTH, width);
         TIFFSetField (tiff, TIFFTAG_IMAGELENGTH, height);
-        TIFFSetField (tiff, TIFFTAG_BITSPERSAMPLE, 8);
-        TIFFSetField (tiff, TIFFTAG_SAMPLESPERPIXEL, has_alpha ? 4 : 3);
-        TIFFSetField (tiff, TIFFTAG_ROWSPERSTRIP, height);
 
-        /* libtiff supports a number of 'codecs' such as:
-           1 None, 2 Huffman, 5 LZW, 7 JPEG, 8 Deflate, see tiff.h */
+        /* We recognize "compression" and "bits-per-sample" */
+        bits_per_sample = gdk_pixbuf_get_option (pixbuf, "bits-per-sample");
+        compression = gdk_pixbuf_get_option (pixbuf, "compression");
+
+        /* Options for saving have priority */
         if (keys && *keys && values && *values) {
             guint i = 0;
 
             while (keys[i]) {
-                if (g_str_equal (keys[i], "compression")) {
-                    guint16 codec = strtol (values[i], NULL, 0);
-                    if (TIFFIsCODECConfigured (codec))
-                        TIFFSetField (tiff, TIFFTAG_COMPRESSION, codec);
-                    else {
-                        tiff_set_error (error,
-                                        GDK_PIXBUF_ERROR_FAILED,
-                            _("TIFF compression doesn't refer to a valid codec."));
-
-                        tiff_pop_handlers ();
-
-                        free_save_context (context);
-                        return FALSE;
-                    }
-                }
+                if (g_str_equal (keys[i], "bits-per-sample"))
+                    bits_per_sample = values[i];
+                else if (g_str_equal (keys[i], "compression"))
+                    compression = values[i];
                 i++;
             }
         }
 
-        if (has_alpha)
-                TIFFSetField (tiff, TIFFTAG_EXTRASAMPLES, 1, alpha_samples);
+        /* libtiff supports a number of 'codecs' such as:
+           1 None, 2 Huffman, 5 LZW, 7 JPEG, 8 Deflate, see tiff.h */
 
-        TIFFSetField (tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
-        TIFFSetField (tiff, TIFFTAG_FILLORDER, FILLORDER_MSB2LSB);        
+        if (compression) {
+            guint16 codec = strtol (compression, NULL, 0);
+            if (TIFFIsCODECConfigured (codec))
+                TIFFSetField (tiff, TIFFTAG_COMPRESSION, codec);
+            else {
+                tiff_set_error (error,
+                                GDK_PIXBUF_ERROR_FAILED,
+                    _("TIFF compression doesn't refer to a valid codec."));
+                tiff_pop_handlers ();
+                free_save_context (context);
+                return FALSE;
+            }
+        }
+
+        /* We support 1 bit or 8 bit saving */
+        if (bits_per_sample && g_str_equal (bits_per_sample, "1")) {
+                TIFFSetField (tiff, TIFFTAG_BITSPERSAMPLE, 1);
+                TIFFSetField (tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
+                TIFFSetField (tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+                TIFFSetField (tiff, TIFFTAG_COMPRESSION, COMPRESSION_CCITTFAX4);
+
+                mono_row = g_new (guchar, (width + 7) / 8);
+        }
+        else {
+                TIFFSetField (tiff, TIFFTAG_BITSPERSAMPLE, 8);
+                TIFFSetField (tiff, TIFFTAG_SAMPLESPERPIXEL, has_alpha ? 4 : 3);
+                TIFFSetField (tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+
+                if (has_alpha)
+                        TIFFSetField (tiff, TIFFTAG_EXTRASAMPLES, 1, alpha_samples);
+        }
+
+        TIFFSetField (tiff, TIFFTAG_ROWSPERSTRIP, height);
+        TIFFSetField (tiff, TIFFTAG_FILLORDER, FILLORDER_MSB2LSB);
         TIFFSetField (tiff, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 
         for (y = 0; y < height; y++) {
-                if (TIFFWriteScanline (tiff, pixels + y * rowstride, y, 0) == -1 ||
-                    global_error)
-                        break;
+                if (mono_row) {
+                        guint x;
+
+                        memset (mono_row, 0, (width + 7) / 8);
+
+                        for (x = 0; x < width; x++)
+                                if (pixels[y * rowstride + x * (has_alpha ? 4 : 3)] > 128)
+                                        mono_row[x / 8] |= (0x1 << (7 - (x % 8)));
+
+                        if (TIFFWriteScanline (tiff, mono_row, y, 0) == -1 ||
+                            global_error)
+                                break;
+                }
+                else {
+                        if (TIFFWriteScanline (tiff, pixels + y * rowstride, y, 0) == -1 ||
+                            global_error)
+                                break;
+                }
         }
+
+        if (mono_row)
+                g_free (mono_row);
 
         if (global_error) {
                 tiff_set_error (error,
