@@ -12153,44 +12153,6 @@ adjust_allocation (GtkWidget *widget,
   adjust_allocation_recurse (widget, &scroll_data);
 }
 
-#ifdef MAEMO_CHANGES
-static void
-adjust_tree_view_child (GtkTreeView *tree_view,
-                        GtkWidget   *widget,
-                        int          dy)
-{
-  GList *list;
-  GtkTreeViewChild *child = NULL;
-
-  adjust_allocation (widget, 0, dy);
-
-  for (list = tree_view->priv->children; list; list = list->next)
-    {
-      child = (GtkTreeViewChild *)list->data;
-      if (child->widget == widget)
-        {
-          child->y += dy;
-          break;
-        }
-    }
-}
-
-static void
-adjust_tree_view_children (GtkTreeView *tree_view,
-                           int          dy)
-{
-  if (tree_view->priv->edited_column
-      && GTK_IS_WIDGET (tree_view->priv->edited_column->editable_widget))
-    adjust_tree_view_child (tree_view,
-                            tree_view->priv->edited_column->editable_widget,
-                            dy);
-
-  if (tree_view->priv->action_area_event_box)
-    adjust_tree_view_child (tree_view, tree_view->priv->action_area_event_box,
-                            dy);
-}
-#endif /* MAEMO_CHANGES */
-
 /* Callbacks */
 static void
 gtk_tree_view_adjustment_changed (GtkAdjustment *adjustment,
@@ -12207,7 +12169,6 @@ gtk_tree_view_adjustment_changed (GtkAdjustment *adjustment,
 		       - tree_view->priv->hadjustment->value,
 		       0);
       dy = tree_view->priv->dy - (int) tree_view->priv->vadjustment->value;
-#ifndef MAEMO_CHANGES
       if (dy && tree_view->priv->edited_column)
 	{
 	  if (GTK_IS_WIDGET (tree_view->priv->edited_column->editable_widget))
@@ -12229,10 +12190,7 @@ gtk_tree_view_adjustment_changed (GtkAdjustment *adjustment,
 		    }
 		}
 	    }
-        }
-#else /* MAEMO_CHANGES */
-      adjust_tree_view_children (tree_view, dy);
-#endif /* MAEMO_CHANGES */
+	}
       gdk_window_scroll (tree_view->priv->bin_window, 0, dy);
 
       if (tree_view->priv->dy != (int) tree_view->priv->vadjustment->value)
@@ -12389,11 +12347,7 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       tree_view->priv->search_column = -1;
       tree_view->priv->fixed_height_check = 0;
       tree_view->priv->fixed_height = -1;
-#ifdef MAEMO_CHANGES
-      tree_view->priv->top_row_dy = 0;
-#else
       tree_view->priv->dy = tree_view->priv->top_row_dy = 0;
-#endif
     }
 
   tree_view->priv->model = model;
