@@ -1,16 +1,13 @@
-gtk+2.0 (2:2.14.7-1maemo24) unstable; urgency=low
+gtk+2.0 (2:2.14.7-1maemo25) unstable; urgency=low
 
   * Fixes: NB#116221 - Sharing TIF image with Size Option Large makes
     the image much larger than the original one when shared to OVI or
     Flickr.
-  * Fixes: NB#150732 - Button from hildon treeview action area
-    disappears if it showed while changing model.
-  * Fixes: NB#124551 - rendering effects are seen in the first lines
-    of the SMS view editor
   * Fixes: NB#143098 - Right arrow key after doing a select all, places the
     cursor at the beginning of the selection rather than the end on textview.
+  * Fixes: NB#132036 - NEON optimizations for libjpeg62 and gdk-pixbuf
 
- -- Christian Dywan <christian@lanedo.com>  Wed, 20 Jan 2010 11:32:32 +0100
+ -- Christian Dywan <christian@lanedo.com>  Fri, 22 Jan 2010 15:55:11 +0100
 
 gtk+2.0 (2:2.14.7-1maemo22) unstable; urgency=low
 
