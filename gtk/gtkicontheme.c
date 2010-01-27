@@ -3433,6 +3433,9 @@ _gtk_icon_theme_check_reload (GdkDisplay *display)
       icon_theme = g_object_get_data (G_OBJECT (screen), "gtk-icon-theme");
       if (icon_theme)
 	{
+#ifdef MAEMO_CHANGES
+          icon_theme->priv->last_stat_time = 0;
+#endif
 	  icon_theme->priv->check_reload = TRUE;
 	  ensure_valid_themes (icon_theme);
 	  icon_theme->priv->check_reload = FALSE;
