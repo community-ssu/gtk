@@ -84,6 +84,8 @@ static void      gtk_dialog_get_property         (GObject      *object,
 static void      gtk_dialog_style_set            (GtkWidget    *widget,
                                                   GtkStyle     *prev_style);
 #ifdef MAEMO_CHANGES
+static void      gtk_dialog_size_request         (GtkWidget      *widget,
+                                                  GtkRequisition *requisition);
 static void      gtk_dialog_realize              (GtkWidget    *widget);
 static void      gtk_dialog_unrealize            (GtkWidget    *widget);
 #endif
@@ -151,6 +153,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
   widget_class->map = gtk_dialog_map;
   widget_class->style_set = gtk_dialog_style_set;
 #ifdef MAEMO_CHANGES
+  widget_class->size_request = gtk_dialog_size_request;
   widget_class->realize = gtk_dialog_realize;
   widget_class->unrealize = gtk_dialog_unrealize;
 #endif
@@ -721,6 +724,34 @@ gtk_dialog_unrealize (GtkWidget *widget)
     gtk_dialog_screen_size_changed_cb, widget);
 
   GTK_WIDGET_CLASS (gtk_dialog_parent_class)->unrealize (widget);
+}
+
+static void
+gtk_dialog_size_request (GtkWidget      *widget,
+			 GtkRequisition *requisition)
+{
+  GtkWindow *window;
+  GdkWindowTypeHint type_hint;
+
+  GTK_WIDGET_CLASS (gtk_dialog_parent_class)->size_request (widget, requisition);
+
+  window = GTK_WINDOW (widget);
+  type_hint = gtk_window_get_type_hint (window);
+
+  if (window->type == GTK_WINDOW_TOPLEVEL &&
+      (type_hint == GDK_WINDOW_TYPE_HINT_NORMAL ||
+       type_hint == GDK_WINDOW_TYPE_HINT_DIALOG))
+    {
+      gint width;
+
+      gtk_widget_get_size_request (widget, &width, NULL);
+
+      if (width == -1)
+        {
+          GdkScreen *screen = gtk_widget_get_screen (widget);
+          requisition->width = gdk_screen_get_width (screen);
+        }
+    }
 }
 #endif
 
