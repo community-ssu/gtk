@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.14.7-1maemo27) unstable; urgency=low
+
+  * Fixes: NB#155392 - GtkDialog are not made full width
+  * Fixes: NB#136782 - Task launcher shows standard icon instead of
+    application icon
+
+ -- Alberto Garcia <agarcia@igalia.com>  Wed, 03 Feb 2010 12:48:07 +0100
+
 gtk+2.0 (2:2.14.7-1maemo26) unstable; urgency=low
 
   * Fixes: NB#116221 - Sharing TIF image with Size Option Large makes
