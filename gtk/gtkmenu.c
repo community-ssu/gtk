@@ -677,6 +677,21 @@ gtk_menu_class_init (GtkMenuClass *class)
                                                                P_("Amount of space used up by the scroll arrows, relative to scroll-arrow-vlength"),
                                                                0.0, 1.0, 0.7,
                                                                GTK_PARAM_READABLE));
+
+  /**
+   * GtkMenu::maemo-decorated
+   *
+   * Whether the menu window is decorated by the window manager.
+   *
+   * Since: maemo 5.0
+   * Stability: Unstable
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_boolean ("maemo-decorated",
+                                                                 P_("Decorated"),
+                                                                 P_("Whether the menu window is decorated by the window manager"),
+                                                                 TRUE,
+                                                                 GTK_PARAM_READABLE));
 #endif
 
  gtk_container_class_install_child_property (container_class,
@@ -1042,6 +1057,9 @@ static void
 gtk_menu_init (GtkMenu *menu)
 {
   GtkMenuPrivate *priv = gtk_menu_get_private (menu);
+#ifdef MAEMO_CHANGES
+  gboolean decorated = TRUE;
+#endif
 
   menu->parent_menu_item = NULL;
   menu->old_active_menu_item = NULL;
@@ -1066,7 +1084,8 @@ gtk_menu_init (GtkMenu *menu)
   gtk_window_set_mnemonic_modifier (GTK_WINDOW (menu->toplevel), 0);
 
 #ifdef MAEMO_CHANGES
-  gtk_window_set_decorated (GTK_WINDOW (menu->toplevel), FALSE);
+  gtk_widget_style_get (menu, "maemo-decorated", &decorated, NULL);
+  gtk_window_set_decorated (GTK_WINDOW (menu->toplevel), decorated);
   gtk_widget_add_events (menu->toplevel, GDK_VISIBILITY_NOTIFY_MASK);
   gtk_window_set_is_temporary (GTK_WINDOW (menu->toplevel), TRUE);
 #endif /* MAEMO_CHANGES */
