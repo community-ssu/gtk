@@ -911,12 +911,12 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
    */
 
   if (GDK_SCREEN_X11 (screen)->wmspec_check_window == None)
-    return;
+    goto fallback;
 
   display = gdk_screen_get_display (screen);
   if (!(window = gdk_window_lookup_for_display (display,
                           GDK_SCREEN_X11 (screen)->wmspec_check_window)))
-    return;
+    goto fallback;
 
   if (gdk_property_get (window,
                     gdk_atom_intern_static_string ("_MAEMO_SCREEN_SIZE"),
@@ -944,6 +944,7 @@ _gdk_x11_screen_size_changed (GdkScreen *screen,
       /* Ignore XRandR */
       return;
     }
+fallback:
 #endif /* MAEMO_CHANGES */
 
 #ifdef HAVE_RANDR
