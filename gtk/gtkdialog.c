@@ -687,7 +687,7 @@ gtk_dialog_screen_size_changed_cb (GdkScreen *screen,
       padding = 0;
     }
 
-  gtk_box_pack_end (GTK_BOX (parent), dialog->action_area, portrait, TRUE, padding);
+  gtk_box_pack_end (GTK_BOX (parent), dialog->action_area, FALSE, TRUE, padding);
   gtk_box_reorder_child (GTK_BOX (parent), dialog->action_area, 0);
   gtk_container_foreach (GTK_CONTAINER (dialog->action_area),
                          (GtkCallback) gtk_dialog_resize_button,
