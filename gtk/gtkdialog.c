@@ -653,12 +653,27 @@ gtk_dialog_style_set (GtkWidget *widget,
 }
 
 #ifdef MAEMO_CHANGES
+static G_GNUC_CONST GQuark
+auto_resize_quark (void)
+{
+  static GQuark quark = 0;
+
+  if (G_UNLIKELY (quark == 0))
+    quark = g_quark_from_static_string ("gtk-dialog-widget-auto-resize");
+
+  return quark;
+}
+
 static void
 gtk_dialog_resize_button (GtkWidget *button,
                           gpointer  *data)
 {
-  gint width = GPOINTER_TO_INT (data);
-  g_object_set (button, "width-request", width, NULL);
+  /* Only resize widgets added with gtk_dialog_add_button () */
+  if (g_object_get_qdata (G_OBJECT (button), auto_resize_quark ()))
+    {
+      gint width = GPOINTER_TO_INT (data);
+      g_object_set (button, "width-request", width, NULL);
+    }
 }
 
 static void
@@ -1031,6 +1046,7 @@ gtk_dialog_add_button (GtkDialog   *dialog,
     }
     hildon_gtk_widget_set_theme_size (button, HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT);
     g_object_set (button, "width-request", HILDON_DIALOG_BUTTON_WIDTH, NULL);
+    g_object_set_qdata (G_OBJECT (button), auto_resize_quark (), GINT_TO_POINTER (TRUE));
 #else
   gtk_widget_show (button);
 #endif /* MAEMO_CHANGES */
