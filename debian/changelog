@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.14.7-1maemo29) unstable; urgency=low
+
+  * Fixes: NB#154810 - Replace file Confirmation Note is not shown in Save
+  * Fixes: NB#156830 - portrait layout for receiving call shown in
+    landscape mode
+  * Fixes: NB#156896 - Problem with GtkDialog in portrait mode
+  * Fixes: NB#155084 - Lock code dialog corruption
+
+ -- Alberto Garcia <agarcia@igalia.com>  Wed, 24 Feb 2010 11:45:00 +0000
+
 gtk+2.0 (2:2.14.7-1maemo28) unstable; urgency=low
 
   * Fixes: NB#155392 - GtkDialog are not made full width
