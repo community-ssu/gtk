@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo30) unstable; urgency=low
+
+  * Fixes: NB#151715 - theme is not applied for applications
+
+ -- Alberto Garcia <agarcia@igalia.com>  Mon, 08 Mar 2010 12:07:18 +0100
+
 gtk+2.0 (2:2.14.7-1maemo29) unstable; urgency=low
 
   * Fixes: NB#154810 - Replace file Confirmation Note is not shown in Save
