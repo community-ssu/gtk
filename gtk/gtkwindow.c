@@ -5275,7 +5275,14 @@ gtk_window_client_event (GtkWidget	*widget,
   if (event->message_type == atom_rcfiles) 
     {
       send_client_message_to_embedded_windows (widget, atom_rcfiles);
+#ifdef MAEMO_CHANGES
+      /* The theme may have been changed and a resource file may happen to have
+        the exact same modification time, so we pass TRUE for force_reload.
+        See NB#151715 for a discussion. */
+      gtk_rc_reparse_all_for_settings (gtk_widget_get_settings (widget), TRUE);
+#else
       gtk_rc_reparse_all_for_settings (gtk_widget_get_settings (widget), FALSE);
+#endif
     }
 
   if (event->message_type == atom_iconthemes) 
