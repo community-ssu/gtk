@@ -61,9 +61,6 @@ static void gtk_adjustment_set_property                (GObject      *object,
 static void gtk_adjustment_dispatch_properties_changed (GObject      *object,
                                                         guint         n_pspecs,
                                                         GParamSpec  **pspecs);
-static void gtk_adjustment_dispatch_properties_changed (GObject      *object,
-                                                        guint         n_pspecs,
-                                                        GParamSpec  **pspecs);
 
 static guint adjustment_signals[LAST_SIGNAL] = { 0 };
 
@@ -78,7 +75,6 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 
   gobject_class->set_property                = gtk_adjustment_set_property;
   gobject_class->get_property                = gtk_adjustment_get_property;
-  gobject_class->dispatch_properties_changed = gtk_adjustment_dispatch_properties_changed;
   gobject_class->dispatch_properties_changed = gtk_adjustment_dispatch_properties_changed;
 
   class->changed = NULL;
