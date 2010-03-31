@@ -4508,6 +4508,10 @@ gtk_window_unmap (GtkWidget *widget)
   else 
     gdk_window_withdraw (widget->window);
   
+#ifdef MAEMO_CHANGES
+  /* Keep it in sync with configure_request_count. */
+  gdk_window_reset_toplevel_updates_libgtk_only (widget->window);
+#endif
   window->configure_request_count = 0;
   window->configure_notify_received = FALSE;
 
