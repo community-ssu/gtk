@@ -7,8 +7,8 @@ gtk+2.0 (2:2.14.7-1maemo32) unstable; urgency=low
 
 gtk+2.0 (2:2.14.7-1maemo31) unstable; urgency=low
 
-  * Fixes: NB#162694 - Call menu is blank
-  * Fixes: NB#162617 - Desktop menu is distorted
+  * Fixed NB#162694 - Call menu is blank
+  * Fixed NB#162617 - Desktop menu is distorted
 
  -- Alberto Garcia <agarcia@igalia.com>  Wed, 31 Mar 2010 16:10:17 +0200
 
