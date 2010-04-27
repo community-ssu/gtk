@@ -2530,12 +2530,12 @@ gtk_tree_view_column_get_sort_order      (GtkTreeViewColumn     *tree_column)
  * @iter: The #GtkTreeIter to to get the cell renderer's attributes from.
  * @is_expander: %TRUE, if the row has children
  * @is_expanded: %TRUE, if the row has visible children
- * @hint: A #GtkTreeCellDataHint for the CellDataFunc.
+ * @hint: A #GtkTreeCellDataHint for the #GtkTreeCellDataFunc.
  * 
  * Sets the cell renderer based on the @tree_model and @iter.  That is, for
  * every attribute mapping in @tree_column, it will get a value from the set
  * column on the @iter, and use that value to set the attribute on the cell
- * renderer.  The @hint is a hint for the CellDataFunc so that it does not
+ * renderer.  The @hint is a hint for the #GtkTreeCellDataFunc so that it does not
  * have to set all cell renderer properties, possible leading to some
  * optimizations.  This is used primarily by the #GtkTreeView.
  *
@@ -2595,11 +2595,11 @@ gtk_tree_view_column_cell_set_cell_data_with_hint (GtkTreeViewColumn   *tree_col
 /**
  * gtk_tree_view_column_get_cell_data_hint:
  * @tree_column: A #GtkTreeViewColumn.
- * 
+ *
  * Returns the current value of the cell data hint as a
- * GtkTreeCellDataHint.  Note that the value returned is only
- * valid when called from a GtkTreeCellDataFunc.  The value of the hint
- * tells you why the GtkTreeView is calling the GtkTreeCellDataFunc.
+ * #GtkTreeCellDataHint.  Note that the value returned is only
+ * valid when called from a #GtkTreeCellDataFunc.  The value of the hint
+ * tells you why the #GtkTreeView is calling the #GtkTreeCellDataFunc.
  * Based on this hint, you can omit to generate the data and set certain
  * cell renderer properties to improve performance.
  *
