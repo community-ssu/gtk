@@ -2460,9 +2460,6 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget,
   gboolean column_changed = FALSE;
   gboolean rtl;
   gboolean update_expand;
-#ifdef MAEMO_CHANGES
-  HildonMode mode;
-#endif /* MAEMO_CHANGES */
   
   tree_view = GTK_TREE_VIEW (widget);
 
@@ -2483,12 +2480,6 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget,
 
   rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 
-#ifdef MAEMO_CHANGES
-  gtk_widget_style_get (widget,
-                        "hildon-mode", &mode,
-                        NULL);
-#endif /* MAEMO_CHANGES */
-
   /* find out how many extra space and expandable columns we have */
   for (list = tree_view->priv->columns; list != last_column->next; list = list->next)
     {
@@ -2504,7 +2495,7 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget,
     }
 
 #ifdef MAEMO_CHANGES
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
       && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE)
     {
@@ -2908,7 +2899,6 @@ gtk_tree_view_button_press (GtkWidget      *widget,
       gboolean node_selected;
 #ifdef MAEMO_CHANGES
       gboolean node_is_selectable;
-      HildonMode mode;
 #endif /* MAEMO_CHANGES */
 
       /* Empty tree? */
@@ -3015,11 +3005,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	}
 
 #ifdef MAEMO_CHANGES
-      gtk_widget_style_get (widget,
-                            "hildon-mode", &mode,
-                            NULL);
-
-      if (mode == HILDON_FREMANTLE
+      if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
           && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE
           && (gint)event->x < background_area.x + HILDON_TICK_MARK_SIZE)
@@ -3123,7 +3109,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
           tree_view->priv->press_start_x = event->x;
           tree_view->priv->press_start_y = event->y;
 
-          if (mode == HILDON_DIABLO
+          if (tree_view->priv->hildon_mode == HILDON_DIABLO
 	      && tree_view->priv->rubber_banding_enable
 	      && node_is_selectable
 	      && !node_selected
@@ -3168,7 +3154,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
           tree_view->priv->queued_tapped_row =
               gtk_tree_row_reference_new (tree_view->priv->model, path);
 
-          if (mode == HILDON_FREMANTLE
+          if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
               && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
             {
               /* This row should be activated on button-release */
@@ -3180,7 +3166,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
               tree_view->priv->highlighted_node = node;
               gtk_tree_view_queue_draw_path (tree_view, path, NULL);
             }
-          else if (mode == HILDON_DIABLO
+          else if (tree_view->priv->hildon_mode == HILDON_DIABLO
                    && node_selected
                    && !column_handled_click
                    && gtk_tree_row_reference_valid (tree_view->priv->cursor))
@@ -3198,7 +3184,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 	    }
 
 	  if (node_is_selectable
-              && mode == HILDON_DIABLO
+              && tree_view->priv->hildon_mode == HILDON_DIABLO
 	      && !column_handled_click
 	      && !tree_view->priv->queued_activate_row
 	      && tree_view->priv->rubber_band_status == RUBBER_BAND_OFF
@@ -3238,7 +3224,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
               gtk_tree_view_queue_draw_path (tree_view, path, NULL);
 	    }
           else if (node_is_selectable
-                   && mode == HILDON_FREMANTLE
+                   && tree_view->priv->hildon_mode == HILDON_FREMANTLE
                    && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
                    && !column_handled_click
                    && !tree_view->priv->queued_activate_row)
@@ -3556,7 +3542,6 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 {
   GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
 #ifdef MAEMO_CHANGES
-  HildonMode mode;
   gint new_y;
   GtkRBTree *tree;
   GtkRBNode *node;
@@ -3575,10 +3560,6 @@ gtk_tree_view_button_release (GtkWidget      *widget,
     return gtk_tree_view_button_release_column_resize (widget, event);
 
 #ifdef MAEMO_CHANGES
-  gtk_widget_style_get (widget,
-                        "hildon-mode", &mode,
-                        NULL);
-
   if (tree_view->priv->tree)
     {
       /* Get the node where the mouse was released */
@@ -3638,7 +3619,7 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_activate_row);
 
-      if (mode == HILDON_FREMANTLE
+      if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
         {
           if (tree_view->priv->highlighted_node)
@@ -3679,7 +3660,7 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
       path = gtk_tree_row_reference_get_path (tree_view->priv->queued_expand_row);
 
-      if (mode == HILDON_FREMANTLE)
+      if (tree_view->priv->hildon_mode == HILDON_FREMANTLE)
         {
           /* We should not take the cursor into accont.  We do check
            * with the node where the mouse was released.
@@ -4832,25 +4813,16 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
   GtkRBTree *tree;
   GtkRBNode *node;
   gint new_y;
-#ifdef MAEMO_CHANGES
-  HildonMode mode;
-#endif /* MAEMO_CHANGES */
 
   tree_view = (GtkTreeView *) widget;
 
   if (tree_view->priv->tree == NULL)
     return FALSE;
 
-#ifdef MAEMO_CHANGES
-  gtk_widget_style_get (widget,
-                        "hildon-mode", &mode,
-                        NULL);
-#endif /* MAEMO_CHANGES */
-
   if (tree_view->priv->rubber_band_status == RUBBER_BAND_MAYBE_START)
     {
 #ifdef MAEMO_CHANGES
-      if (mode == HILDON_DIABLO
+      if (tree_view->priv->hildon_mode == HILDON_DIABLO
           && gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
 	{
 	  GtkTreePath *path;
@@ -4881,7 +4853,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
   /* If the drag-threshold has been passed, the row should
    * not be activated or selected and the highlight removed.
    */
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && gtk_drag_check_threshold (widget,
                                    tree_view->priv->press_start_x,
                                    tree_view->priv->press_start_y,
@@ -4900,7 +4872,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
   /* only check for an initiated drag when a button is pressed */
   if (tree_view->priv->pressed_button >= 0
 #ifdef MAEMO_CHANGES
-      && mode == HILDON_DIABLO
+      && tree_view->priv->hildon_mode == HILDON_DIABLO
 #endif /* MAEMO_CHANGES */
       && !tree_view->priv->rubber_band_status)
     gtk_tree_view_maybe_begin_dragging_row (tree_view, event);
@@ -5112,7 +5084,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 #ifdef MAEMO_CHANGES
   gint expose_start;
   gboolean render_checkboxes = FALSE;
-  HildonMode mode;
 #endif /* MAEMO_CHANGES */
 
   rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
@@ -5123,9 +5094,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 			"allow-rules", &allow_rules,
 			"focus-line-width", &focus_line_width,
 			"row-ending-details", &row_ending_details,
-#ifdef MAEMO_CHANGES
-                        "hildon-mode", &mode,
-#endif /* MAEMO_CHANGES */
 			NULL);
 
   if (tree_view->priv->tree == NULL)
@@ -5237,7 +5205,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
     }
 
 #ifdef MAEMO_CHANGES
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
       && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE)
     render_checkboxes = TRUE;
@@ -6664,7 +6632,6 @@ validate_row (GtkTreeView *tree_view,
   gint separator_height;
 #ifdef MAEMO_CHANGES
   gint row_height;
-  HildonMode mode;
   gboolean is_header = FALSE;
 #endif /* MAEMO_CHANGES */
 
@@ -6689,7 +6656,6 @@ validate_row (GtkTreeView *tree_view,
                         "separator-height", &separator_height,
 #ifdef MAEMO_CHANGES
                         "row-height", &row_height,
-                        "hildon-mode", &mode,
 #endif /* MAEMO_CHANGES */
 			NULL);
   
@@ -6764,7 +6730,7 @@ validate_row (GtkTreeView *tree_view,
 	tmp_width = tmp_width + horizontal_separator;
 
 #ifdef MAEMO_CHANGES
-      if (mode == HILDON_FREMANTLE
+      if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
           && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE)
         {
@@ -9270,6 +9236,12 @@ gtk_tree_view_style_set (GtkWidget *widget,
 
   if (tree_view->priv->action_area_visible)
     hildon_tree_view_set_action_area_height (tree_view);
+
+  /* Cache the hildon-mode because it is slow to call gtk_widget_style_get
+   * too much. */
+  gtk_widget_style_get (GTK_WIDGET (tree_view),
+                        "hildon-mode", &tree_view->priv->hildon_mode,
+                        NULL);
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);
@@ -9608,9 +9580,6 @@ gtk_tree_view_row_inserted (GtkTreeModel *model,
   gint height;
   gboolean free_path = FALSE;
   gboolean node_visible = TRUE;
-#ifdef MAEMO_CHANGES
-  HildonMode mode;
-#endif /* MAEMO_CHANGES */
 
   g_return_if_fail (path != NULL || iter != NULL);
 
@@ -9714,14 +9683,10 @@ gtk_tree_view_row_inserted (GtkTreeModel *model,
     }
 
 #ifdef MAEMO_CHANGES
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
   /* If this was the first node inserted in the tree, we want to
    * select it.
    */
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
       && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE
       && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
@@ -9860,9 +9825,6 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   GtkRBNode *node;
   GList *list;
   gint selection_changed = FALSE;
-#ifdef MAEMO_CHANGES
-  HildonMode mode;
-#endif /* MAEMO_CHANGES */
 
   g_return_if_fail (path != NULL);
 
@@ -9934,12 +9896,8 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   install_scroll_sync_handler (tree_view);
 
 #ifdef MAEMO_CHANGES
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
   if (selection_changed
-      && mode == HILDON_FREMANTLE
+      && tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
       && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE
       && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) < 1)
@@ -11011,14 +10969,9 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
 
 {
   GtkTreePath *cursor_path;
+
 #ifdef MAEMO_CHANGES
-  HildonMode mode;
-
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
-  if (mode == HILDON_FREMANTLE)
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE)
     return;
 #endif /* MAEMO_CHANGES */
 
@@ -11062,7 +11015,7 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
 	{
 	  if (tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE
 #ifdef MAEMO_CHANGES
-              && mode == HILDON_DIABLO
+              && tree_view->priv->hildon_mode == HILDON_DIABLO
 #endif /* MAEMO_CHANGES */
               )
 	    gtk_tree_view_real_set_cursor (tree_view, cursor_path, FALSE, FALSE);
@@ -12357,13 +12310,6 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       GtkTreePath *path;
       GtkTreeIter iter;
       GtkTreeModelFlags flags;
-#ifdef MAEMO_CHANGES
-      HildonMode mode;
-
-      gtk_widget_style_get (GTK_WIDGET (tree_view),
-                            "hildon-mode", &mode,
-                            NULL);
-#endif /* MAEMO_CHANGES */
   
       if (tree_view->priv->search_column == -1)
 	{
@@ -12420,7 +12366,7 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
 	  gtk_tree_view_build_tree (tree_view, tree_view->priv->tree, &iter, 1, FALSE);
 	}
 #ifdef MAEMO_CHANGES
-      if (mode == HILDON_FREMANTLE
+      if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
           && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
           && tree_view->priv->selection->type != GTK_SELECTION_MULTIPLE)
         {
@@ -14189,18 +14135,12 @@ gtk_tree_view_real_set_cursor (GtkTreeView     *tree_view,
   GtkRBTree *tree = NULL;
   GtkRBNode *node = NULL;
 #ifdef MAEMO_CHANGES
-  HildonMode hildon_mode;
-
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &hildon_mode,
-                        NULL);
-
   _gtk_tree_view_find_node (tree_view, path, &tree, &node);
 
   /* If we are in legacy or in (new-style) edit mode, row-insensitive
    * can be emitted.
    */
-  if ((hildon_mode == HILDON_DIABLO
+  if ((tree_view->priv->hildon_mode == HILDON_DIABLO
        || tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT)
       && !_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
                                                  node, path))
@@ -14224,7 +14164,7 @@ gtk_tree_view_real_set_cursor (GtkTreeView     *tree_view,
   /* One cannot set the cursor on a separator. */
 #ifdef MAEMO_CHANGES
   if (!row_is_separator (tree_view, NULL, NULL, path)
-      && hildon_mode == HILDON_DIABLO)
+      && tree_view->priv->hildon_mode == HILDON_DIABLO)
 #else /* !MAEMO_CHANGES */
   if (!row_is_separator (tree_view, NULL, path))
 #endif /* !MAEMO_CHANGES */
@@ -14247,7 +14187,7 @@ gtk_tree_view_real_set_cursor (GtkTreeView     *tree_view,
 
           if (tree_view->priv->ctrl_pressed
 #ifdef MAEMO_CHANGES
-              || (hildon_mode == HILDON_FREMANTLE
+              || (tree_view->priv->hildon_mode == HILDON_FREMANTLE
                   && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_EDIT
                   && tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE)
 #endif /* MAEMO_CHANGES */
@@ -14279,7 +14219,7 @@ gtk_tree_view_real_set_cursor (GtkTreeView     *tree_view,
 
 #ifdef MAEMO_CHANGES
   /* Only in the original mode we want to handle the cursor */
-  if (hildon_mode == HILDON_DIABLO)
+  if (tree_view->priv->hildon_mode == HILDON_DIABLO)
 #endif /* MAEMO_CHANGES */
   g_signal_emit (tree_view, tree_view_signals[CURSOR_CHANGED], 0);
 }
@@ -17523,7 +17463,6 @@ gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
   gdouble x, y;
   gint new_y;
   gboolean sensitive;
-  HildonMode mode;
 
   if (!tree_view->priv->tree)
     return FALSE;
@@ -17538,13 +17477,9 @@ gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
   if (node == NULL)
     return TRUE;
 
-  gtk_widget_style_get (widget,
-                        "hildon-mode", &mode,
-                        NULL);
-
   path = _gtk_tree_view_find_path (tree_view, tree, node);
 
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL)
     {
       /* The normal mode has no notion of selection, so we special-case
@@ -17566,16 +17501,10 @@ gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
 static void
 free_queued_select_row (GtkTreeView *tree_view)
 {
-  HildonMode mode;
-
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
   /* We only clear the selected flag (used for highlight) if the node
    * was previously *not* selected.
    */
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
     {
       if (tree_view->priv->highlighted_node)
@@ -17597,13 +17526,7 @@ free_queued_select_row (GtkTreeView *tree_view)
 static void
 free_queued_activate_row (GtkTreeView *tree_view)
 {
-  HildonMode mode;
-
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
-  if (mode == HILDON_FREMANTLE
+  if (tree_view->priv->hildon_mode == HILDON_FREMANTLE
       && tree_view->priv->hildon_ui_mode == HILDON_UI_MODE_NORMAL
       && gtk_tree_row_reference_valid (tree_view->priv->queued_activate_row))
     {
@@ -17648,8 +17571,6 @@ void
 hildon_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
                                      HildonUIMode   hildon_ui_mode)
 {
-  HildonMode mode;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
   /* Don't check if the new mode matches the old mode; always continue
@@ -17657,11 +17578,7 @@ hildon_tree_view_set_hildon_ui_mode (GtkTreeView   *tree_view,
    */
   tree_view->priv->hildon_ui_mode = hildon_ui_mode;
 
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &mode,
-                        NULL);
-
-  if (mode == HILDON_DIABLO)
+  if (tree_view->priv->hildon_mode == HILDON_DIABLO)
     return;
 
   /* For both normal and edit mode a couple of things are disabled. */

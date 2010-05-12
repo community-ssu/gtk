@@ -292,6 +292,7 @@ struct _GtkTreeViewPrivate
   GtkTreeCellDataHint cell_data_hint;
 
   HildonUIMode hildon_ui_mode;
+  HildonMode hildon_mode;
 
   GdkPixbuf *tickmark_icon;
 
