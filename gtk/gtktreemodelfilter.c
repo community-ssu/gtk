@@ -1638,11 +1638,6 @@ gtk_tree_model_filter_row_deleted (GtkTreeModel *c_model,
 
   g_return_if_fail (c_path != NULL);
 
-#ifdef MAEMO_CHANGES
-  parent = NULL;
-  parent_level = NULL;
-#endif /* MAEMO_CHANGES */
-
   /* special case the deletion of an ancestor of the virtual root */
   if (filter->priv->virtual_root &&
       (gtk_tree_path_is_ancestor (c_path, filter->priv->virtual_root) ||
