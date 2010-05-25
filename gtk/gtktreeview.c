@@ -1570,7 +1570,9 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->queued_shift_pressed = FALSE;
 
   tree_view->priv->hildon_ui_mode = HILDON_UI_MODE_NORMAL;
-  tree_view->priv->hildon_mode = HILDON_FREMANTLE;
+  gtk_widget_style_get (GTK_WIDGET (tree_view),
+                        "hildon-mode", &tree_view->priv->hildon_mode,
+                        NULL);
 #endif /* MAEMO_CHANGES */
 
 #ifdef MAEMO_CHANGES
