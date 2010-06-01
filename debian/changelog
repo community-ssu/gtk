@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.14.7-1maemo33) unstable; urgency=low
+
+  * Fixes: NB#165639 - GtkTreeModelFilter wasting CPU in g_array_remove_index()
+  * Fixes: NB#167197 - GtkTreeView is calling gtk_widget_style_get() too much
+
+ -- Alberto Garcia <agarcia@igalia.com>  Tue, 01 Jun 2010 17:36:10 +0200
+
 gtk+2.0 (2:2.14.7-1maemo32) unstable; urgency=low
 
   * Fixes: NB#162994 - Call menu is blank (PE1 version)
