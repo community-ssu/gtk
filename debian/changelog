@@ -7,8 +7,8 @@ gtk+2.0 (2:2.14.7-1maemo33) unstable; urgency=low
 
 gtk+2.0 (2:2.14.7-1maemo32) unstable; urgency=low
 
-  * Fixes: NB#162994 - Call menu is blank (PE1 version)
-  * Fixes: NB#162995 - Desktop menu is distorted (PE1 version)
+  * Fixed cloned bug #162994 - Call menu is blank (PE1 version)
+  * Fixed cloned bug #162995 - Desktop menu is distorted (PE1 version)
 
  -- Marc Ordinas i Llopis <marc.ordinasillopis@collabora.cu.uk>  Thu, 01 Apr 2010 11:46:52 +0200
 
