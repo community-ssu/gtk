@@ -9223,6 +9223,12 @@ gtk_tree_view_style_set (GtkWidget *widget,
   _gtk_rbtree_mark_invalid (tree_view->priv->tree);
 
 #ifdef MAEMO_CHANGES
+  /* Cache the hildon-mode because it is slow to call gtk_widget_style_get
+   * too much. */
+  gtk_widget_style_get (GTK_WIDGET (tree_view),
+                        "hildon-mode", &tree_view->priv->hildon_mode,
+                        NULL);
+
   /* Reset the UI mode */
   hildon_tree_view_set_hildon_ui_mode (tree_view, tree_view->priv->hildon_ui_mode);
 
@@ -9239,12 +9245,6 @@ gtk_tree_view_style_set (GtkWidget *widget,
 
   if (tree_view->priv->action_area_visible)
     hildon_tree_view_set_action_area_height (tree_view);
-
-  /* Cache the hildon-mode because it is slow to call gtk_widget_style_get
-   * too much. */
-  gtk_widget_style_get (GTK_WIDGET (tree_view),
-                        "hildon-mode", &tree_view->priv->hildon_mode,
-                        NULL);
 #endif /* MAEMO_CHANGES */
 
   gtk_widget_queue_resize (widget);
