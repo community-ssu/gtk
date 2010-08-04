@@ -1047,6 +1047,9 @@ load_themes (GtkIconTheme *icon_theme)
   GTimeVal tv;
   IconThemeDirMtime *dir_mtime;
   struct stat stat_buf;
+#ifdef MAEMO_CHANGES
+  GList *t, *d;
+#endif /* MAEMO_CHANGES */
   
   priv = icon_theme->priv;
 
@@ -1148,6 +1151,25 @@ load_themes (GtkIconTheme *icon_theme)
 	}
       g_dir_close (gdir);
     }
+
+#ifdef MAEMO_CHANGES
+  for (t = priv->themes; t; t = t->next)
+    {
+      for (d = ((IconTheme *)t->data)->dirs; d; d = d->next)
+        {
+          const char *dir = ((IconThemeDir *)d->data)->dir;
+
+          if (g_stat (dir, &stat_buf) != 0 || !S_ISDIR (stat_buf.st_mode))
+            continue;
+          dir_mtime = g_slice_new (IconThemeDirMtime);
+          priv->dir_mtimes = g_list_append (priv->dir_mtimes, dir_mtime);
+
+          dir_mtime->dir = g_strdup (dir);
+          dir_mtime->cache = NULL;
+          dir_mtime->mtime = stat_buf.st_mtime;
+        }
+    }
+#endif /* MAEMO_CHANGES */
 
   priv->themes_valid = TRUE;
   
