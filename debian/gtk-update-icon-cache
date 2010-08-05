@@ -1,1 +1,6 @@
 #!/bin/sh -e
+
+# Update cache dir's mtime to make GTK rescan the icon theme
+[ -d "$1" ] && touch "$1"
+
+exit 0
