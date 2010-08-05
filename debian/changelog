@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.14.7-1maemo34) unstable; urgency=low
+
+  * Fixes: NB#136782 - Task launcher shows standard icon instead of
+    application icon
+  * Fixes: NB#175659 - One of the account is always highlighted in VoIP
+    and IM accounts selection
+
+ -- Alberto Garcia <agarcia@igalia.com>  Thu, 05 Aug 2010 15:28:06 +0200
+
 gtk+2.0 (2:2.14.7-1maemo33) unstable; urgency=low
 
   * Fixes: NB#165639 - GtkTreeModelFilter wasting CPU in g_array_remove_index()
