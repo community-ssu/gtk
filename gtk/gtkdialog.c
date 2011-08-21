@@ -29,6 +29,9 @@
 #include "config.h"
 #ifdef MAEMO_CHANGES
 #include "gtkalignment.h"
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include "x11/gdkx.h"
 #endif /* MAEMO_CHANGES */
 #include "gtkbutton.h"
 #include "gtkdialog.h"
@@ -676,6 +679,59 @@ gtk_dialog_resize_button (GtkWidget *button,
     }
 }
 
+static gboolean
+gtk_dialog_get_disable_portrait(GtkDialog *dialog)
+{
+  Atom actual_type;
+  int actual_format;
+  unsigned long num_items, bytes_left;
+  unsigned char *ret_data_ptr = 0,*leader_data;
+  Display * dpy = GDK_WINDOW_XDISPLAY (GTK_WIDGET(dialog)->window);
+  int error,result;
+  gboolean disable_portrait=False;
+
+  gdk_error_trap_push ();
+
+
+  result = XGetWindowProperty (dpy,
+                                   GDK_WINDOW_XWINDOW (GTK_WIDGET(dialog)->window),
+                                   XInternAtom(dpy,"WM_CLIENT_LEADER",False),
+                                   0L, (~0L), False,
+                                   XA_WINDOW, &actual_type, &actual_format, &num_items,
+                                   &bytes_left, &leader_data);
+  error = gdk_error_trap_pop ();
+
+  if (error || (result != Success) || !leader_data)
+  {
+    g_warning("gtk_dialog_get_disable_portrait - unable to get window leader.");
+    return False;
+  }
+
+  gdk_error_trap_push ();
+
+  result = XGetWindowProperty(
+        dpy,
+        *(Window*)leader_data,
+        XInternAtom(dpy, "_HILDON_PORTRAIT_MODE_TASKNAV_DISABLE", False),
+        0,1/*= one 32 bits item */ ,False,
+        XA_CARDINAL, &actual_type, &actual_format, &num_items,
+        &bytes_left, &ret_data_ptr);
+
+  error = gdk_error_trap_pop ();
+
+  XFree(leader_data);
+
+  if (!error && ret_data_ptr && (result == Success))
+  {
+    disable_portrait = *((int*)ret_data_ptr);
+    XFree(ret_data_ptr);
+    return disable_portrait;
+  }
+
+
+  return disable_portrait;
+}
+
 static void
 gtk_dialog_screen_size_changed_cb (GdkScreen *screen,
                                    GtkDialog *dialog)
@@ -685,6 +741,14 @@ gtk_dialog_screen_size_changed_cb (GdkScreen *screen,
   gint width = gdk_screen_get_width (screen);
   gboolean portrait = width < gdk_screen_get_height (screen);
   gint button_width, padding;
+
+  if(portrait)
+    {
+      GtkWidget *toplevel = gtk_widget_get_toplevel (dialog);
+      if (GTK_WIDGET_TOPLEVEL (toplevel) && gtk_dialog_get_disable_portrait(toplevel))
+          /* we are stuck in landscape, skip the circus */
+          return;
+    }
 
   g_object_ref (dialog->action_area);
   gtk_container_remove (GTK_CONTAINER (parent), dialog->action_area);
