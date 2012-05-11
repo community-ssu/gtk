@@ -23,7 +23,7 @@ endif
 
 # Prefer hardware floating point if enabled
 ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -mfpu=vfp -mfloat-abi=softfp
+	CFLAGS += -mfpu=vfp -mfloat-abi=softfp -mthumb
         ENABLE_GTK_DOC = --disable-gtk-doc
 else
 # Use soft-float and thumb mode if it enabled.
