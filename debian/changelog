@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.14.7-1maemo34+0cssu1-thumb2) unstable; urgency=low
+
+  * fix debian/control
+
+ -- Ivaylo Dimitrov <freemangordon@abv.bg>  Sun, 27 May 2012 12:40:41 +0300
+
+gtk+2.0 (2:2.14.7-1maemo34+0cssu1-thumb1) unstable; urgency=low
+
+  * add kernel-feature-errata-430973-workaround as a dependency
+
+ -- Ivaylo Dimitrov <freemangordon@abv.bg>  Sun, 27 May 2012 13:28:13 +0300
+
 gtk+2.0 (2:2.14.7-1maemo34+0cssu1-thumb0) unstable; urgency=low
 
   * Thumb compiled
