@@ -1,4 +1,4 @@
-gtk+2.0 (2:2.14.7-1maemo34+0cssu1-thumb2) unstable; urgency=low
+gtk+2.0 (2:2.14.7-1maemo34+0cssu1+thumb2) unstable; urgency=low
 
   * fix debian/control
 
