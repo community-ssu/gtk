@@ -107,6 +107,7 @@ autoheader || exit $?
 
 $AUTOMAKE --add-missing || exit $?
 autoconf || exit $?
+autoreconf
 cd $ORIGDIR || exit $?
 
 if test -z "$AUTOGEN_SUBDIR_MODE"; then
