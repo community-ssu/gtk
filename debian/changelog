@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.14.7-1maemo34+0cssu2) unstable; urgency=low
+
+  * Increase version for including fixes from 2:2.14.7-1maemo34
+
+ -- Pali Rohár <pali.rohar@gmail.com>  Tue, 29 Jan 2013 15:22:00 +0100
+
 gtk+2.0 (2:2.14.7-1maemo34+0cssu1) unstable; urgency=low
 
   * Support for landscape dialogs in portrait mode
